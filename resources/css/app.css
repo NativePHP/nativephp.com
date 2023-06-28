@@ -1,0 +1,129 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+[x-cloak] {
+    display: none;
+}
+
+nav a {
+    @apply no-underline;
+}
+
+nav a:hover {
+    @apply text-gray-600;
+}
+
+nav ul {
+    @apply list-none text-sm;
+}
+
+nav ul li {
+    @apply font-bold;
+}
+
+nav ul li ul li {
+    @apply font-normal;
+    @apply my-3;
+}
+
+nav ul li ul {
+    @apply mb-6;
+    @apply pl-4;
+}
+
+.prose h1 {
+    @apply text-3xl;
+}
+
+.prose h2 {
+    @apply text-2xl;
+}
+
+.prose h3 {
+    @apply text-lg;
+}
+
+.prose h4 {
+    @apply text-base;
+}
+
+.prose pre  {
+    @apply p-6 rounded-xl shadow-lg;
+}
+
+.prose pre code {
+    @apply text-white;
+}
+
+.prose code {
+    @apply px-1;
+}
+
+.prose a {
+    @apply text-indigo-700;
+}
+
+.prose a:hover {
+    @apply text-indigo-600 no-underline;
+}
+
+.prose img {
+    @apply rounded-xl shadow-md;
+}
+
+.prose img.no-format {
+    @apply rounded-none shadow-none;
+}
+
+/*
+ Margin and rounding are personal preferences,
+ overflow-x-auto is recommended.
+*/
+.prose pre {
+    @apply my-4 rounded overflow-x-auto bg-transparent p-0;
+}
+
+/*
+ Add some vertical padding and expand the width
+ to fill its container. The horizontal padding
+ comes at the line level so that background
+ colors extend edge to edge.
+*/
+.prose pre code.torchlight {
+    @apply block py-4 min-w-max;
+}
+
+/*
+ Horizontal line padding.
+*/
+.prose pre code.torchlight .line {
+    @apply px-4;
+}
+
+/*
+ Push the code away from the line numbers and
+ summary caret indicators.
+*/
+.prose pre code.torchlight .line-number,
+.prose pre code.torchlight .summary-caret {
+    @apply mr-4;
+}
+
+@media (max-width: 1024px) {
+    nav ul {
+        @apply text-base;
+    }
+    nav ul li ul {
+        @apply mb-0;
+        @apply pl-2;
+    }
+    nav ul li ul li {
+        @apply mb-4;
+    }
+    nav ul li ul li a {
+        @apply w-full;
+        @apply py-2;
+        @apply flex flex-1;
+    }
+}
