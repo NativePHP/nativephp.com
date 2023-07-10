@@ -10,6 +10,12 @@ export default {
 
     safelist: ['inline', 'text-red-600', 'mr-2', 'font-bold', 'no-underline'],
 
+    theme: {
+        container: {
+            center: true,
+        },
+    },
+
     plugins: [
         require('@tailwindcss/typography'),
     ],
