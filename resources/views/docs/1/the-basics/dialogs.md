@@ -106,7 +106,7 @@ You may change this behavior using the `showHiddenFiles()` method.
 
 ```php
 Dialog::new()
-    ->showHiddenFiles()
+    ->withHiddenFiles()
     ->open();
 ```
 
