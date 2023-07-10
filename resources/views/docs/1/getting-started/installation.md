@@ -7,6 +7,7 @@ order: 100
 
 1. PHP 8.1
 2. Laravel 9 or higher
+3. NPM
 
 # Installation
 
