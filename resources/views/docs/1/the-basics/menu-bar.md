@@ -21,7 +21,7 @@ By default, adding a menu bar will automatically hide the dock icon of your appl
 ```php
 namespace App\Providers;
 
-use Native\Laravel\Facades\Window;
+use Native\Laravel\Facades\MenuBar;
 
 class NativeAppServiceProvider
 {
@@ -41,7 +41,7 @@ To do so, you may use the `MenuBar::create()` method, but this time call the `sh
 ```php
 namespace App\Providers;
 
-use Native\Laravel\Facades\Window;
+use Native\Laravel\Facades\MenuBar;
 
 class NativeAppServiceProvider
 {
@@ -66,12 +66,12 @@ MenuBar::show();
 You may use the `MenuBar::hide()` method to manually close the menu bar window.
 
 ```php
-MenuBar::show();
+MenuBar::hide();
 ```
 
 ### Menu Bar Labels
 
-By default, the menu bar will only show the configured menu bar icon.
+By default, the menu bar will only show the configured [menu bar icon](#menu-bar-icon).
 Additionally, you may add a label to the menu bar that will be shown next to the icon.
 
 This label can be changed at any time by using the `label()` method.
@@ -202,7 +202,7 @@ All events get dispatched as regular Laravel events, so you may use your `EventS
 Sometimes you may want to listen and react to window events in real-time, which is why NativePHP also broadcasts all
 window events to the `nativephp` broadcast channel.
 
-To learn more about NativePHP's broadcasting capabilities, please refer to the [Broadcasting](/docs/broadcasting) section.
+To learn more about NativePHP's broadcasting capabilities, please refer to the [Broadcasting](/docs/digging-deeper/broadcasting) section.
 
 ### Menu Bar Opened
 
