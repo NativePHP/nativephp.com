@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ShowDocumentationController;
+use Illuminate\Support\Str;
 
 /*
 |--------------------------------------------------------------------------
@@ -17,5 +18,18 @@ use App\Http\Controllers\ShowDocumentationController;
 Route::get('/', function () {
     return view('welcome');
 });
-Route::redirect('/docs', '/docs/1')->name('docs');
-Route::get('/docs/{version}/{page?}', ShowDocumentationController::class)->where('page', '(.*)');
+
+Route::get('/docs/{version}/{page?}', ShowDocumentationController::class)
+    ->where('page', '(.*)')
+    ->where('version', '[0-9]+');
+
+// Forward unversioned requests to the latest version
+Route::get('/docs/{page?}', function ($page = null) {
+    $latestVersion = '1';
+
+    $referer = request()->header('referer');
+
+    $version = Str::before(ltrim(Str::after($referer, url('/docs/')), '/'), '/') ?: $latestVersion;
+
+    return redirect("/docs/{$version}/{$page}");
+})->name('docs')->where('page', '.*');
