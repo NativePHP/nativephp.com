@@ -3,6 +3,13 @@ title: Notifications
 order: 500
 ---
 
-## Opening native dialogs
+## Notifications
 
-NativePHP allows you to open native file dialogs. 
+NativePHP supports showing standard OS notifications. 
+
+### Showing a notification
+
+To show a notification, you can use the `NativePHP\Notifications\Notification` class.
+
+```php
+```
