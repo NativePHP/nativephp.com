@@ -63,7 +63,7 @@ that puts cowboy hats on every smiley-face emoji it sees.
 ## What's next?
 
 Go read the docs! We've tried to make them as comprehensive as possible, but if you find something missing, please
-feel free [contribute](https://github.com/nativephp/nativephp.com).
+feel free to [contribute](https://github.com/nativephp/nativephp.com).
 
 This site and all the NativePHP are open source and available on [GitHub](https://github.com/nativephp).
 
