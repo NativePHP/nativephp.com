@@ -17,8 +17,8 @@ composer require nativephp/electron
 
 # Run the installer
 
-The NativePHP installer takes care of publishing the NativePHP service provider, which takes care of bootstrapping your native application.
-It also published the NativePHP configuration file.
+The NativePHP installer takes care of publishing the NativePHP service provider, which takes care of bootstrapping your
+native application. It also publishes the NativePHP configuration file.
 
 ```bash
 php artisan native:install
