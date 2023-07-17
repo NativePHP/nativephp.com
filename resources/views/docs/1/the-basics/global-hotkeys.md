@@ -1,5 +1,5 @@
 ---
-title: Global hotkeys
+title: Global Hotkeys
 order: 600
 ---
 
