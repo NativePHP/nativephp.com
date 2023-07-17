@@ -45,7 +45,7 @@ writing your migrations.
 **It's important to test your migrations before releasing updates!** You don't want to accidentally delete your user's
 data when they update your app.
 
-## When _not_ to use a database
+## When not to use a database
 
 If you're only storing small amounts of very simple metadata or working files, you may not need a database at all.
 Consider storing files instead. These could be JSON, CSV, plain text or any other format that makes sense for
