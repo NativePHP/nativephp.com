@@ -268,34 +268,4 @@ Menu::new()
     ->register();
 ```
 
-### Available modifiers
-* `Command` or `Cmd`
-* `Control` or `Ctrl`
-* `CommandOrControl` or `CmdOrCtrl`
-* `Alt`
-* `Option`
-* `AltGr`
-* `Shift`
-* `Super`
-* `Meta`
-
-### Available key codes
-
-* `0` to `9`
-* `A` to `Z`
-* `F1` to `F24`
-* `Backspace`
-* `Delete`
-* `Insert`
-* `Return` or `Enter`
-* `Up`, `Down`, `Left` and `Right`
-* `Home` and `End`
-* `PageUp` and `PageDown`
-* `Escape` or `Esc`
-* `VolumeUp`, `VolumeDown` and `VolumeMute`
-* `MediaNextTrack`, `MediaPreviousTrack`, `MediaStop` and `MediaPlayPause`
-* `PrintScreen`
-* `Numlock`
-* `Scrolllock`
-* `Space`
-* `Plus`
+You can find a list of available hotkey modifiers in the [global hotkey documentation section](/docs/1/the-basics/global-hotkeys#available-modifiers) 

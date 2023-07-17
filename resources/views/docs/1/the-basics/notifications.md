@@ -3,6 +3,38 @@ title: Notifications
 order: 500
 ---
 
-## Opening native dialogs
+## Native Notifications
 
-NativePHP allows you to open native file dialogs. 
+NativePHP allows you to send system notifications using an elegant PHP API. These notifications are, unlike Laravel's built-in notifications, actual UI notifications displayed by your operating system.
+
+### Sending Notifications
+
+You may send a notification using the `Notification` facade.
+
+```php
+use Native\Laravel\Facades\Notification;
+
+Notification::title('Hello from NativePHP')
+    ->message('This is a detail message coming from your Laravel app.')
+    ->show();
+```
+
+This will show a system-wide notification to the user with the given title and message.
+
+## Events
+
+### Notification Click Events
+
+You may register a custom event along with your NativePHP notification. 
+This event will be fired when a user clicks on the notification, so that you may add some custom logic within your application in this scenario.
+
+To attach an event to your notification, you may use the `event` method. The argument passed to this method is the class name of the event that should get dispatched upon clicking on the notification.
+
+```php
+use Native\Laravel\Facades\Notification;
+
+Notification::title('Hello from NativePHP')
+    ->message('This is a detail message coming from your Laravel app.')
+    ->event(\App\Events\MyNotificationEvent::class)
+    ->show();
+```
