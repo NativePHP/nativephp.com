@@ -5,8 +5,8 @@ order: 200
 
 ## Working with the Menu Bar
 
-NativePHP allows you to create a native application menu bar for your application.
-This can be used as an addition to your existing application that already uses windows, or as a standalone (menu-bar only) application.
+NativePHP allows you to create a native application menu bar for your application. This can be used as an addition to
+your existing application that already uses windows, or as a standalone (menu-bar only) application.
 
 When the user clicks on the menu bar icon, the menu bar window will open and show the given URL or route.
 
