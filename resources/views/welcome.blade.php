@@ -25,14 +25,20 @@
                     <br class="sm:block hidden">
                     using the tools you already know.
                 </h3>
-                <div class="sm:flex-row sm:space-x-6 flex flex-col items-center mt-6">
-                    <a href="/docs/" class="sm:w-auto focus:outline-none w-full px-12 py-4 text-lg font-bold text-gray-900 bg-white border rounded-lg">
-                        Get started
-                    </a>
-                    <a href="https://github.com/nativephp/laravel" target="_blank" class="sm:w-auto focus:outline-none sm:mt-0 w-full px-12 py-4 mt-3 text-lg font-bold text-gray-900 bg-transparent border rounded-lg">
-                        Source code
-                    </a>
-                </div>
+                @if(now()->isAfter('2023-07-20 00:00:00'))
+                    <div class="sm:flex-row sm:space-x-6 flex flex-col items-center mt-6">
+                        <a href="/docs/" class="sm:w-auto focus:outline-none w-full px-12 py-4 text-lg font-bold text-gray-900 bg-white border rounded-lg">
+                            Get started
+                        </a>
+                        <a href="https://github.com/nativephp/laravel" target="_blank" class="sm:w-auto focus:outline-none sm:mt-0 w-full px-12 py-4 mt-3 text-lg font-bold text-gray-900 bg-transparent border rounded-lg">
+                            Source code
+                        </a>
+                    </div>
+                @else
+                    <div class="underline text-lg">
+                        Coming July 20, at <a href="https://laracon.us">Laracon US</a>.
+                    </div>
+                @endif
             </header>
 
             <footer class="md:px-0 p-12 justify-end">
