@@ -30,10 +30,10 @@ keeping download & install size small.
 ### Configuration
 
 You do not need to do anything special to configure your application to use SQLite. NativePHP will automatically:
-- switch to using SQLite when building your application,
-- create a database file for you in the `storage` directory on the user's system,
-- configure your application to use that database file, and
-- run your migrations each time your app starts.
+- Switch to using SQLite when building your application
+- Create a database file for you in the `storage` directory on the user's system
+- Configure your application to use that database file
+- Run your migrations each time your app starts if needed
 
 ## Migrations
 

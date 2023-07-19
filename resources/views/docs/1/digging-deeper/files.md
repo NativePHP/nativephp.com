@@ -3,10 +3,10 @@ title: Files
 order: 300
 ---
 
-# Files & Paths
+## Files & Paths
 
-Working with files in NativePHP is just like working with files in a regular Laravel application. To achieve this,
-NativePHP rewrites the `Application::$storagePath()` (and thus `app()->storagePath()` and the `storage_path()` helper)
+Working with files in NativePHP is just like working with files in a regular Laravel application. 
+To achieve this, NativePHP rewrites the `Application::$storagePath()` (and thus `app()->storagePath()` and the `storage_path()` helper)
 to the [Electron `app.getPath('appData')` path](https://www.electronjs.org/docs/latest/api/app#appgetpathname),
 which is different for each operating system.
 
@@ -28,7 +28,7 @@ settings and any user data that the user doesn't need direct access to.
 
 It's also the location where your SQLite database will be stored. 
 
-## Storing files elsewhere
+### Storing files elsewhere
 
 NativePHP doesn't interfere with any of your _existing_ filesystem configuration, so you may continue to configure
 [Filesystems](https://laravel.com/docs/filesystems) as you normally would, however you should be aware that it does
