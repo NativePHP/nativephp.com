@@ -7,6 +7,7 @@ order: 100
 
 1. PHP 8.1
 2. Laravel 9 or higher
+3. NPM
 
 # Installation
 
@@ -16,8 +17,8 @@ composer require nativephp/electron
 
 # Run the installer
 
-The NativePHP installer takes care of publishing the NativePHP service provider, which takes care of bootstrapping your native application.
-It also published the NativePHP configuration file.
+The NativePHP installer takes care of publishing the NativePHP service provider, which takes care of bootstrapping your
+native application. It also publishes the NativePHP configuration file.
 
 ```bash
 php artisan native:install

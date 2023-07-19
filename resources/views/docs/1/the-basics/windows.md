@@ -10,12 +10,7 @@ While this usually happens in your `NativeAppServiceProvider`, you are free to o
 
 ### Opening Windows
 
-To open a window, you may use the `Window` facade.  
-When opening a window, NativePHP will automatically open the root URL of your application.
-You may pass a unique identifier to the `open()` method to distinguish between multiple windows.  
-The default ID, if none is specified, is `main`.
-
-You can use the ID to reference the window in other methods, such as `Window::close()` or `Window::resize()`.
+To open a window, you may use the `Window` facade.
 
 ```php
 namespace App\Providers;
@@ -33,6 +28,13 @@ class NativeAppServiceProvider
 }
 ```
 
+When opening a window, NativePHP will automatically open the root URL of your application.
+You may pass a unique identifier to the `open()` method to distinguish between multiple windows.
+
+The default ID, if none is specified, is `main`.
+
+You can use the ID to reference the window in other methods, such as `Window::close()` or `Window::resize()`.
+
 ### Closing Windows
 
 To close a window, you may use the `Window::close()` method.
@@ -46,8 +48,10 @@ Window::close('settings');
 
 ### Resizing Windows
 
-You may use the `Window::resize()` method to resize a window. This method accepts a width and height as its first and second arguments, respectively.  
-You may pass a unique identifier to the `resize()` method to specify which window to resize.  
+You may use the `Window::resize()` method to resize a window. This method accepts a width and height as its first and second arguments, respectively.
+
+You may pass a unique identifier to the `resize()` method to specify which window to resize.
+
 If you do not specify a window ID, NativePHP will try to detect the window ID automatically based on the current route.
 
 ```php
@@ -131,7 +135,8 @@ Window::open()
     ->height(800);
 ```
 
-If you want to constrain the window to a specific size, you may make use of the `minWidth()`, `minHeight()`, `maxWidth()`, and `maxHeight()` methods.
+If you want to constrain the window to a specific size, you may make use of the `minWidth()`, `minHeight()`,
+`maxWidth()`, and `maxHeight()` methods.
 
 ```php
 Window::open()
@@ -152,9 +157,9 @@ Window::open()
 
 ### Remembering Window State
 
-The users of your application may resize or move the window and expect it to be in 
-the same position and size the next time they open it. 
-NativePHP provides a simple way to manage the state of your window. You may use the `rememberState()` method to instruct NativePHP to remember the state of the window.
+The users of your application may resize or move the window and expect it to be in the same position and size the next
+time they open it. NativePHP provides a simple way to manage the state of your window. You may use the `rememberState()`
+method to instruct NativePHP to remember the state of the window.
 
 ```php
 Window::open()
@@ -227,6 +232,7 @@ Window::open()
 
 If you would like to toggle the always on top state of a window, you may use the `alwaysOnTop()` method on the `Window` facade 
 directly and pass the window ID as the second argument.
+
 If you do not specify a window ID, NativePHP will try to detect the window ID automatically based on the current route.
 
 ```php
@@ -280,7 +286,7 @@ All events get dispatched as regular Laravel events, so you may use your `EventS
 Sometimes you may want to listen and react to window events in real-time, which is why NativePHP also broadcasts all
 window events to the `nativephp` broadcast channel. 
 
-To learn more about NativePHP's broadcasting capabilities, please refer to the [Broadcasting](/docs/broadcasting) section.
+To learn more about NativePHP's broadcasting capabilities, please refer to the [Broadcasting](/docs/digging-deeper/broadcasting) section.
 
 ### Window Shown Event
 

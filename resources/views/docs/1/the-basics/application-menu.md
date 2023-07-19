@@ -6,7 +6,7 @@ order: 300
 ## Configuring the Application Menu
 
 NativePHP allows you to configure the native menu of your application, as well as context menus or dock menus.
-All the various menus make use of the `Menu` facade.
+You can use the `Menu` facade which provides you with a single re-usable abstraction for building all of these menus.
 
 The configuration of your application menu should happen in the `boot` method of your `NativeAppServiceProvider`.
 
@@ -48,7 +48,8 @@ NativePHP comes with a few predefined menus that you can use out of the box.
 
 ### The default application menu
 
-You may use the `appMenu()` method to create the default application menu. This menu contains all the default items that you would expect in an application menu (e.g. About, Services, Quit, etc.).
+You may use the `appMenu()` method to create the default application menu. This menu contains all the default items
+that you would expect in an application menu (e.g. About, Services, Quit, etc.).
 
 ```php
 Menu::new()
@@ -60,7 +61,11 @@ The `appMenu` will use the name of your application as its title.
 
 ### The default edit menu
 
-You may use the `editMenu()` method to create the default edit menu. This menu contains all the default items and their functionality that you would expect in an edit menu (e.g. Undo, Redo, Cut, Copy, Paste, etc.).
+You may use the `editMenu()` method to create the default edit menu. This menu contains all the default items and their
+functionality that you would expect in an edit menu (e.g. Undo, Redo, Cut, Copy, Paste, etc.).
+
+> The `editMenu()` enables a number of common keyboard shortcuts (like cut, copy, paste). Without it, you will need
+> to define these yourself.
 
 ```php
 Menu::new()
@@ -68,7 +73,7 @@ Menu::new()
     ->register();
 ```
 
-The window menu uses "Edit" as its title by default. You may change this by passing a string to the `editMenu()` method.
+The edit menu uses "Edit" as its title by default. You may change this by passing a string to the `editMenu()` method.
 
 ```php
 Menu::new()
@@ -78,7 +83,8 @@ Menu::new()
 
 ### The default view menu
 
-You may use the `viewMenu()` method to create the default view menu. This menu contains all the default items and their functionality that you would expect in a view menu (e.g. Toggle Fullscreen, Toggle Developer Tools, etc.).
+You may use the `viewMenu()` method to create the default view menu. This menu contains all the default items and their
+functionality that you would expect in a view menu (e.g. Toggle Fullscreen, Toggle Developer Tools, etc.).
 
 ```php
 Menu::new()
@@ -86,7 +92,7 @@ Menu::new()
     ->register();
 ```
 
-The window menu uses "View" as its title by default. You may change this by passing a string to the `viewMenu()` method.
+The view menu uses "View" as its title by default. You may change this by passing a string to the `viewMenu()` method.
 
 ```php
 Menu::new()
@@ -138,17 +144,20 @@ Menu::new()
     ->register();
 ```
 
-## Available Menu Items
+## Available Submenu Items
 
 ### Labels
 
 NativePHP allows you to add labels to your menus. You may use the `label()` method to add a label to your menu.
-Clicking on a label will not trigger any action or event.
+Clicking on a label will trigger the `Native\Laravel\Events\Menu\MenuItemClicked` event will be
+[broadcast](/docs/digging-deeper/broadcasting).
 
 ```php
 Menu::new()
     ->appMenu()
-    ->label('My Label')
+    ->submenu('My Submenu', Menu::new()
+        ->label('My Label')
+    )
     ->register();
 ```
 
