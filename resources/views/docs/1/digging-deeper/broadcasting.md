@@ -17,7 +17,7 @@ A full list of all events fired and broadcast by NativePHP can be found in the
 
 ## Broadcasting custom events
 
-You can also broadcast your own custom events. Simply instruct your event to implement the `ShouldBroadcast` contract
+You can also broadcast your own custom events. Simply instruct your event to implement the `ShouldBroadcastNow` contract
 and define the `broadcastsOn` method in your event, returning `nativephp` as one of the channels it broadcasts to:
 
 ```php
