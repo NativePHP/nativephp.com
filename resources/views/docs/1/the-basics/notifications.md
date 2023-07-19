@@ -7,6 +7,8 @@ order: 500
 
 NativePHP allows you to send system notifications using an elegant PHP API. These notifications are, unlike Laravel's built-in notifications, actual UI notifications displayed by your operating system.
 
+When used sparingly, notifications can be a great way to inform the user about events that are occurring in your application and to bring their attention back to it, especially if further input from them is required.
+
 ### Sending Notifications
 
 You may send a notification using the `Notification` facade.
