@@ -48,8 +48,8 @@ data when they update your app.
 ## When not to use a database
 
 If you're only storing small amounts of very simple metadata or working files, you may not need a database at all.
-Consider storing files instead. These could be JSON, CSV, plain text or any other format that makes sense for
-your application.
+Consider [storing files](/docs/digging-deeper/files) instead. These could be JSON, CSV, plain text or any other format
+that makes sense for your application.
 
 Consider also using file storage for very critical metadata about the state of your application on a user's device.
 If you rely on the same database you store the user's data to store this information, if the database becomes
