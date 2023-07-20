@@ -26,7 +26,7 @@
                     using the tools you already know.
                 </h3>
                 <div class="sm:flex-row sm:space-x-6 flex flex-col items-center mt-6">
-                    <a href="/docs" class="sm:w-auto focus:outline-none w-full px-12 py-4 text-lg font-bold text-gray-900 bg-white border rounded-lg">
+                    <a href="/docs/1" class="sm:w-auto focus:outline-none w-full px-12 py-4 text-lg font-bold text-gray-900 bg-white border rounded-lg">
                         Get started
                     </a>
                     <a href="https://github.com/nativephp/laravel" target="_blank" class="sm:w-auto focus:outline-none sm:mt-0 w-full px-12 py-4 mt-3 text-lg font-bold text-gray-900 bg-transparent border rounded-lg">
