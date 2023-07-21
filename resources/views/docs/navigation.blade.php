@@ -1,7 +1,7 @@
 <div
     class="hidden lg:block absolute z-20 w-[18rem] inset-0 top-24 left-[max(0px,calc(50%-45rem))] right-auto ">
 
-    <div class="w-full border-r border-red-600 border-opacity-10 pt-8 pb-12 pl-4">
+    <div class="w-full sticky top-0 border-r border-red-600 border-opacity-10 pt-8 pb-12 pl-4">
 
         <nav class="flex flex-1 flex-col">
             {!! $navigation !!}
