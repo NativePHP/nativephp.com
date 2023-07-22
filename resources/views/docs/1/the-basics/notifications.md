@@ -11,12 +11,16 @@ When used sparingly, notifications can be a great way to inform the user about e
 
 ### Sending Notifications
 
-You may send a notification using the `Notification` facade.
+You may send a notification using the `Notification` class and a `Client` object.
 
 ```php
-use Native\Laravel\Facades\Notification;
+use Native\Laravel\Notification;
+use Native\Laravel\Client\Client;
 
-Notification::title('Hello from NativePHP')
+$client = new Client;
+$notification = new Notification($client)
+
+$notifcation->title('Hello from NativePHP')
     ->message('This is a detail message coming from your Laravel app.')
     ->show();
 ```
@@ -33,9 +37,13 @@ This event will be fired when a user clicks on the notification, so that you may
 To attach an event to your notification, you may use the `event` method. The argument passed to this method is the class name of the event that should get dispatched upon clicking on the notification.
 
 ```php
-use Native\Laravel\Facades\Notification;
+use Native\Laravel\Notification;
+use Native\Laravel\Client\Client;
 
-Notification::title('Hello from NativePHP')
+$client = new Client;
+$notification = new Notification($client)
+
+$notification->title('Hello from NativePHP')
     ->message('This is a detail message coming from your Laravel app.')
     ->event(\App\Events\MyNotificationEvent::class)
     ->show();
