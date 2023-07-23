@@ -15,7 +15,7 @@ nav a:hover {
 }
 
 nav ul {
-    @apply list-none text-sm;
+    @apply text-sm list-none;
 }
 
 nav ul li {
@@ -49,7 +49,7 @@ nav ul li ul {
 }
 
 .prose pre  {
-    @apply p-6 rounded-xl shadow-lg;
+    @apply p-6 shadow-lg rounded-xl;
 }
 
 .prose pre code {
@@ -69,7 +69,7 @@ nav ul li ul {
 }
 
 .prose img {
-    @apply rounded-xl shadow-md;
+    @apply shadow-md rounded-xl;
 }
 
 .prose img.no-format {
@@ -81,7 +81,7 @@ nav ul li ul {
  overflow-x-auto is recommended.
 */
 .prose pre {
-    @apply my-4 rounded overflow-x-auto bg-transparent p-0;
+    @apply p-0 my-4 overflow-x-auto bg-transparent rounded;
 }
 
 /*
@@ -125,5 +125,19 @@ nav ul li ul {
         @apply w-full;
         @apply py-2;
         @apply flex flex-1;
+    }
+}
+
+@media (prefers-color-scheme: dark) {
+    nav a:hover {
+        @apply text-gray-300;
+    }
+
+    .prose a {
+        @apply text-indigo-300;
+    }
+    
+    .prose a:hover {
+        @apply text-indigo-300 no-underline;
     }
 }
