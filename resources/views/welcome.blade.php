@@ -14,6 +14,10 @@
         />
         <link rel="icon" href="/favicon.svg" type="image/svg+xml">
         @vite(["resources/css/app.css", "resources/js/app.js"])
+
+        <!-- Fathom - beautiful, simple website analytics -->
+        <script src="https://cdn.usefathom.com/script.js" data-site="HALHTNZU" defer></script>
+        <!-- / Fathom -->
     </head>
     <body class="w-full h-screen text-slate-900 bg-gray-50">
         <main id="app" class="min-h-screen flex items-center flex-col justify-center">
@@ -31,6 +35,14 @@
                     </a>
                     <a href="https://github.com/nativephp/laravel" target="_blank" class="sm:w-auto focus:outline-none sm:mt-0 w-full px-12 py-4 mt-3 text-lg font-bold text-gray-900 bg-transparent border rounded-lg">
                         Source code
+                    </a>
+                </div>
+
+                <div class="mt-6 px-12">
+                    <h2 class="text-2xl font-bold">Sponsors</h2>
+
+                    <a href="https://beyondco.de">
+                        <img src="/img/sponsors/beyondcode.png">
                     </a>
                 </div>
             </header>
