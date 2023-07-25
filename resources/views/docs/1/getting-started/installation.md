@@ -6,8 +6,9 @@ order: 100
 # Requirements
 
 1. PHP 8.1
-2. Laravel 9 or higher
+2. Laravel 10 or higher
 3. NPM
+4. Linux/MacOS
 
 # Installation
 
