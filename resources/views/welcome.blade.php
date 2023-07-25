@@ -41,7 +41,7 @@
                 <div class="mt-6 px-12">
                     <h2 class="text-2xl font-bold">Sponsors</h2>
 
-                    <a href="https://beyondco.de">
+                    <a href="https://beyondco.de/?utm_source=nativephp&utm_medium=logo&utm_campaign=nativephp">
                         <img src="/img/sponsors/beyondcode.png">
                     </a>
                 </div>
