@@ -15,9 +15,9 @@
         <link rel="icon" href="/favicon.svg" type="image/svg+xml">
         @vite(["resources/css/app.css", "resources/js/app.js"])
 
-         <!-- Fathom - beautiful, simple website analytics -->
-         <script src="https://cdn.usefathom.com/script.js" data-site="HALHTNZU" defer></script>
-         <!-- / Fathom -->
+        <!-- Fathom - beautiful, simple website analytics -->
+        <script src="https://cdn.usefathom.com/script.js" data-site="HALHTNZU" defer></script>
+        <!-- / Fathom -->
     </head>
     <body class="w-full h-screen text-slate-900 bg-gray-50 dark:bg-gray-900 dark:text-white">
         <main id="app" class="flex flex-col items-center justify-center min-h-screen">
@@ -39,7 +39,7 @@
                     </a>
                 </div>
 
-                <div class="px-12 mt-6">
+                <div class="mt-6 px-12">
                     <h2 class="text-2xl font-bold">Sponsors</h2>
 
                     <a href="https://beyondco.de/?utm_source=nativephp&utm_medium=logo&utm_campaign=nativephp">
