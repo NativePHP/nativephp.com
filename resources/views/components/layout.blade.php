@@ -23,7 +23,7 @@
     <script src="https://cdn.usefathom.com/script.js" data-site="HALHTNZU" defer></script>
     <!-- / Fathom -->
 </head>
-<body class="min-h-screen bg-white font-sans antialiased">
+<body class="min-h-screen font-sans antialiased bg-white dark:bg-gray-900 dark:text-white">
 <x-banner />
 {{ $slot }}
 </body>
