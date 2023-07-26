@@ -136,3 +136,15 @@ Dialog::new()
     ->asSheet()
     ->open();
 ```
+
+### Opening Folders
+
+By default, the dialog opens a file or group of files.
+
+If you would like to open a folder instead, you may use the `folders()` method.
+
+```php
+Dialog::new()
+    ->folders()
+    ->open();
+```
