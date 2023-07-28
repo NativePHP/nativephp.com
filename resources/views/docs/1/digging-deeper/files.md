@@ -5,7 +5,7 @@ order: 300
 
 ## Files & Paths
 
-Working with files in NativePHP is just like working with files in a regular Laravel application. 
+Working with files in NativePHP is just like working with files in a regular Laravel application.
 To achieve this, NativePHP rewrites the `Application::$storagePath()` (and thus `app()->storagePath()` and the `storage_path()` helper)
 to the [Electron `app.getPath('appData')` path](https://www.electronjs.org/docs/latest/api/app#appgetpathname),
 which is different for each operating system.
@@ -26,12 +26,12 @@ You should use this `Application::storagePath()` when storing files on your user
 available even when your application is updated or removed from the system, e.g. your application's configuration,
 settings and any user data that the user doesn't need direct access to.
 
-It's also the location where your SQLite database will be stored. 
+It's also the location where your SQLite database will be stored.
 
 ### Storing files elsewhere
 
 NativePHP doesn't interfere with any of your _existing_ filesystem configuration, so you may continue to configure
-[Filesystems](https://laravel.com/docs/filesystems) as you normally would, however you should be aware that it does
+[Filesystem](https://laravel.com/docs/filesystem) as you normally would, however you should be aware that it does
 _add_ some new default filesystems for your convenience.
 
 Consider that your users want to store their files in locations other than the obscure `appdata` directories on their
@@ -74,7 +74,7 @@ time.
 You should prepare more carefully for such scenarios when interacting with any APIs that require network connectivity
 by checking for a connection _before_ making a request and/or handling exceptions gracefully should a request fail.
 
-This will help maintain a smooth user experience 
+This will help maintain a smooth user experience
 [/aside]
 
 NativePHP uses the `local` disk by default. If you would like to use a different disk, you may configure this in your
