@@ -5,7 +5,7 @@ order: 200
 
 # Configuration
 
-The `native:install` command publishes a configuration file to `config/native.php`. 
+The `native:install` command publishes a configuration file to `config/nativephp.php`. 
 This file contains all the configuration options for NativePHP.
 
 ```php
