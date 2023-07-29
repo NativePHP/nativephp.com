@@ -256,9 +256,7 @@ Window::open()
 ### Hiding the menu
 
 By default on Windows and Linux the application menu will be visible.
-If you wish to hide and have it reveal when the user presses ALT.
-
-You may use the `hideMenu()` method to have it hidden when the window opens.
+This method will hide the menu and have it reveal when the user presses ALT.
 
 ```php
 Window::open()
