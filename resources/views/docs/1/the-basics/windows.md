@@ -253,6 +253,16 @@ Window::open()
     ->backgroundColor('#00000050'); // Semi-transparent black
 ```
 
+### Hiding the menu
+
+By default on Windows and Linux the application menu will be visible.
+This method will hide the menu and have it reveal when the user presses ALT.
+
+```php
+Window::open()
+    ->hideMenu();
+```
+
 ## Window Title Styles
 
 ### Default Title Style
