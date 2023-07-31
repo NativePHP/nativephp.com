@@ -16,6 +16,11 @@ order: 100
 composer require nativephp/electron
 ```
 
+# Install Laravel
+
+NativePHP is a Laravel Package. You can install it on an existing Laravel application, or [start a new one](https://laravel.com/docs/10.x/installation)
+
+
 # Run the installer
 
 The NativePHP installer takes care of publishing the NativePHP service provider, which takes care of bootstrapping your
