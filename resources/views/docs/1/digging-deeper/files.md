@@ -46,13 +46,13 @@ You can use these filesystem simply using the `Storage` facade like this:
 
 ```php
 Storage::disk('user_home')->get('file.txt');
-Storage::disk('user_desktop')->get('file.txt');
-Storage::disk('user_documents')->get('file.txt');
-Storage::disk('user_downloads')->get('file.txt');
-Storage::disk('user_music')->get('file.txt');
-Storage::disk('user_pictures')->get('file.txt');
-Storage::disk('user_videos')->get('file.txt');
-Storage::disk('user_recent')->get('file.txt');
+Storage::disk('desktop')->get('file.txt');
+Storage::disk('documents')->get('file.txt');
+Storage::disk('downloads')->get('file.txt');
+Storage::disk('music')->get('file.txt');
+Storage::disk('pictures')->get('file.txt');
+Storage::disk('videos')->get('file.txt');
+Storage::disk('recent')->get('file.txt');
 ```
 
 Note that the PHP process which runs your application operates with the same privileges as the logged-in user, this
