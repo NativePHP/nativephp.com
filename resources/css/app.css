@@ -136,8 +136,63 @@ nav ul li ul {
     .prose a {
         @apply text-indigo-300;
     }
-    
+
     .prose a:hover {
         @apply text-indigo-300 no-underline;
     }
+}
+
+
+:root {
+    --docsearch-container-background: rgba(0, 0, 0, 0.5);
+    --docsearch-primary-color: #06b6d4;
+}
+
+[id=docsearch] {
+    width: 100%;
+    @apply md:w-auto;
+}
+
+.DocSearch-Button {
+    @apply border border-solid border-gray-400/50 dark:border-white/10 dark:bg-black/10 flex items-center w-full rounded;
+}
+.DocSearch-Button:hover {
+    box-shadow: none;
+    @apply text-gray-400 border-gray-400/70 bg-transparent dark:border-white/20;
+}
+
+.DocSearch-Button .DocSearch-Search-Icon {
+    height: 0.87rem;
+    @apply text-gray-500 dark:text-white/60;
+}
+
+.DocSearch-Button-Placeholder {
+    @apply dark:text-white/60 pr-56 text-xs;
+}
+
+.DocSearch-Button-Keys {
+    display: flex;
+    min-width: auto;
+
+    @apply mt-1 text-xs leading-none;
+}
+
+.DocSearch-Button-Key {
+    background: none;
+    box-shadow: none;
+    width: auto;
+
+    @apply font-sans mr-0.5;
+}
+
+.DocSearch-Modal {
+    @apply text-black;
+}
+
+.DocSearch-Screen-Icon {
+    display: none;
+}
+
+.DocSearch-Input {
+    @apply focus-visible:outline-none;
 }

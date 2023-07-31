@@ -10,7 +10,7 @@
     {!! SEOMeta::generate() !!}
     {!! OpenGraph::generate() !!}
     {!! Twitter::generate() !!}
-
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@docsearch/css@3"/></pre></li>
     <link rel="preconnect" href="https://fonts.bunny.net" />
     <link
         href="https://fonts.bunny.net/css?family=be-vietnam-pro:700|inter:400,500,600|rubik:400,700"
@@ -26,5 +26,16 @@
 <body class="min-h-screen font-sans antialiased bg-white dark:bg-gray-900 dark:text-white">
 <x-banner />
 {{ $slot }}
+<script src="https://cdn.jsdelivr.net/npm/@docsearch/js@3"></script>
+<script type="text/javascript">
+    docsearch({
+        appId: 'ZNII9QZ8WI',
+        apiKey: '9be495a1aaf367b47c873d30a8e7ccf5',
+        indexName: 'nativephp',
+        insights: true,
+        container: '#docsearch',
+        debug: false
+    });
+</script>
 </body>
 </html>
