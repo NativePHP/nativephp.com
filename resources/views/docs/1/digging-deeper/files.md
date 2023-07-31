@@ -45,14 +45,14 @@ If your application also defines any of these filesystems, NativePHP will overri
 You can use these filesystem simply using the `Storage` facade like this:
 
 ```php
-Storage::disk('user.home')->get('file.txt');
-Storage::disk('user.desktop')->get('file.txt');
-Storage::disk('user.documents')->get('file.txt');
-Storage::disk('user.downloads')->get('file.txt');
-Storage::disk('user.music')->get('file.txt');
-Storage::disk('user.pictures')->get('file.txt');
-Storage::disk('user.videos')->get('file.txt');
-Storage::disk('user.recent')->get('file.txt');
+Storage::disk('user_home')->get('file.txt');
+Storage::disk('user_desktop')->get('file.txt');
+Storage::disk('user_documents')->get('file.txt');
+Storage::disk('user_downloads')->get('file.txt');
+Storage::disk('user_music')->get('file.txt');
+Storage::disk('user_pictures')->get('file.txt');
+Storage::disk('user_videos')->get('file.txt');
+Storage::disk('user_recent')->get('file.txt');
 ```
 
 Note that the PHP process which runs your application operates with the same privileges as the logged-in user, this
