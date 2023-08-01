@@ -14,6 +14,10 @@
         <div class="flex items-center space-x-12">
             <div id="docsearch"></div>
 
+            <a href="https://discord.gg/X62tWNStZK">
+                <x-icons.discord class="w-5 h-5 dark:fill-white" />
+            </a>
+
             <a href="https://github.com/nativephp">
                 <x-icons.github class="w-5 h-5 dark:fill-white" />
             </a>
