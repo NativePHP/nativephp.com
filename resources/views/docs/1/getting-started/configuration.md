@@ -8,6 +8,8 @@ order: 200
 The `native:install` command publishes a configuration file to `config/nativephp.php`. 
 This file contains all the configuration options for NativePHP.
 
+## Default Configuration File
+
 ```php
 return [
     /**
@@ -86,4 +88,42 @@ return [
         ],
     ],
 ];
+```
+
+## Customize php.ini
+
+When your NativePHP application starts, you may want to customize php.ini directives that will be used for your application.
+
+You may configure these directives via the `phpIni()` method on your `NativeAppServiceProvider`.
+This method should return an array of php.ini directives to be set.
+
+```php
+namespace App\Providers;
+
+use Native\Laravel\Facades\Window;
+use Native\Laravel\Contracts\ProvidesPhpIni;
+
+class NativeAppServiceProvider implements ProvidesPhpIni
+{
+    /**
+     * Executed once the native application has been booted.
+     * Use this method to open windows, register global shortcuts, etc.
+     */
+    public function boot(): void
+    {
+        Window::open();
+    }
+
+
+    public function phpIni(): array
+    {
+        return [
+            'memory_limit' => '512M',
+            'display_errors' => '1',
+            'error_reporting' => 'E_ALL',
+            'max_execution_time' => '0',
+            'max_input_time' => '0',
+        ];
+    }
+}
 ```
