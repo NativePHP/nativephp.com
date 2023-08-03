@@ -5,7 +5,7 @@ order: 200
 
 ## Working with the Menu Bar
 
-![CleanShot 2023-08-01 at 07 42 50@2x](https://github.com/NativePHP/nativephp.com/assets/1394539/676898bb-6740-470f-bdaa-07af6e402138)
+![Menu Bar Example on macOS](/img/docs/menubar.png)
 
 
 NativePHP allows you to create a native application menu bar for your application. This can be used as an addition to
@@ -74,7 +74,7 @@ MenuBar::hide();
 
 ### Menu Bar Labels
 
-![CleanShot 2023-08-01 at 07 45 36@2x](https://github.com/NativePHP/nativephp.com/assets/1394539/9eeb9014-bb1c-4f7b-b9d8-1c0f352765d6)
+![Menu Bar Labels](/img/docs/menubar-labels.png)
 
 
 By default, the menu bar will only show the configured [menu bar icon](#menu-bar-icon).
@@ -103,7 +103,7 @@ MenuBar::label('');
 
 ### Menu Bar URL
 
-![native_php_menu_bar_window](https://github.com/NativePHP/nativephp.com/assets/1394539/f8d33bb8-d8a0-4e2b-b480-0b9b27c00a65)
+![Menu Bar Window](/img/docs/menubar-window.png)
 
 
 By default, the `MenuBar::create()` method will configure your menu bar to show the root URL of your application when clicked.
@@ -143,9 +143,8 @@ menuBarIcon@2x.png
 On macOS, it is recommended to use a so-called "Template Image".  
 This is an image that is rendered as a white or black image with a transparent background.
 
-<img width="601" alt="native_php_icon_template_black" src="https://github.com/NativePHP/nativephp.com/assets/1394539/d88bd692-f8eb-435e-984b-f71640d5d77e">
-
-<img width="601" alt="native_php_icon_template_white" src="https://github.com/NativePHP/nativephp.com/assets/1394539/2c93b58c-59de-4654-a468-4df9eb15cdbe">
+![Menu Bar Icon Light Mode](/img/docs/menubar-icon-light.png)
+![Menu Bar Icon Dark Mode](/img/docs/menubar-icon-dark.png)
 
 NativePHP can automatically convert your image to a template image. To do so, you may name your image file with `Template` appended to the file name.
 
@@ -165,7 +164,7 @@ MenuBar::create()
 
 ### Menu Bar Window Sizes
 
-![CleanShot 2023-08-01 at 08 11 47@2x](https://github.com/NativePHP/nativephp.com/assets/1394539/5db6e1c7-40ea-441e-9815-ee1fe02f3428)
+![Menu Bar Window Sizes](/img/docs/menubar-window-size.png)
 
 
 The default size of the menu bar window is **400x400 pixels**.
@@ -195,7 +194,7 @@ You may add a context menu to your menu bar icon. This context menu will be show
 
 ### Adding a Context Menu
 
-![native_php_menu_bar_context_menu](https://github.com/NativePHP/nativephp.com/assets/1394539/7d86c86f-b38a-414b-9b0c-627417c1d5f2)
+![Menu Bar Context Menu](/img/docs/menubar-context-menu.png)
 
 To add a context menu, you may use the `contextMenu()` method on the `MenuBar`. 
 This method accepts a `Native\Laravel\Menu\Menu` instance.
