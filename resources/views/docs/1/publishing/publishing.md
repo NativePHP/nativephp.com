@@ -21,7 +21,7 @@ You can also specify a platform to build for by passing the `os` argument, so fo
 whilst on a Mac:
 
 ```shell
-php artisan native:publish windows
+php artisan native:publish win
 ```
 
 Possible options are: `mac`, `win`, `linux`.
