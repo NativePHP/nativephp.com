@@ -31,19 +31,62 @@ keeping download & install size small.
 
 You do not need to do anything special to configure your application to use SQLite. NativePHP will automatically:
 - Switch to using SQLite when building your application
-- Create a database file for you in the `storage` directory on the user's system
+- Create a database file for you in the `appdata` directory on the user's system
 - Configure your application to use that database file
-- Run your migrations each time your app starts if needed
+- Run your migrations each time your app starts, as needed
+
+## Development
+
+Remember that in [development](/docs/getting-started/development) your application's database is always going to be
+the SQLite database created in the `appdata` folder for your application.
+
+This means that even if you've got different config in your `.env` file, your application will not be connecting to any
+other database when it is running within the Electron/Tauri environment.
 
 ## Migrations
 
 When writing migrations, you need to consider any special recommendations for working with SQLite. For example,
 SQLite disables foreign key constraints by default. If your application relies upon foreign key constraints,
-[you need to enable SQLite support for them](https://laravel.com/docs/10.x/database#configuration) before
+[you need to enable SQLite support for them](https://laravel.com/docs/database#configuration) before
 writing your migrations.
 
 **It's important to test your migrations before releasing updates!** You don't want to accidentally delete your user's
 data when they update your app.
+
+### Running migrations
+
+NativePHP will attempt to migrate your database on each boot-up.
+
+You may also wish to manually migrate it during development, either while the application is already running or without
+booting the application.
+
+You can do this with the `native:migrate` command:
+
+```shell
+php artisan native:migrate
+```
+
+This command uses the exact same signature as the Laravel `migrate` command, so everything you're used to there can be
+used here.
+
+### Refreshing your app database
+
+You can completely refresh your app database using the `native:migrate fresh` command:
+
+```shell
+php artisan native:migrate fresh
+```
+
+**This is a destructive action that will delete all data in your database.**
+
+## Seeding
+
+When developing, it's especially useful to seed your database with sample data. If you've set up
+[Database Seeders](https://laravel.com/docs/seeding), you can run these using the `native:db:seed` command:
+
+```shell
+php artisan native:db:seed
+```
 
 ## When not to use a database
 
