@@ -18,7 +18,7 @@ And they said PHP was dead.
 
 Strictly speaking, NativePHP is a combination of elements:
 
-1. A collection of easy-to-use classes - abstractions - to enable you to interact with a variety of host operating 
+1. A collection of easy-to-use classes - abstractions - to enable you to interact with a variety of host operating
 system features.
 2. A set of tools to enable building and bundling your native application using either the Electron or Tauri browser
 environment.
@@ -50,7 +50,7 @@ NativePHP comes with a bunch of useful features out of the box, including:
 
 All of this and more is explored in the rest of these docs.
 
-## What can I build with NativePHP? 
+## What can I build with NativePHP?
 
 Honestly, anything you want. We believe NativePHP is going to empower thousands of developers to build all kinds of
 applications. The only limit is your imagination.
@@ -75,7 +75,7 @@ NativePHP wouldn't be possible without the following projects and the hard work 
 
 - [PHP](https://php.net)
 - [Electron](https://electronjs.org)
-- [Tauri](https://tauri.studio)
+- [Tauri](https://tauri.app)
 - [Laravel](https://laravel.com)
 - [Symfony](https://symfony.com)
 - [Static PHP CLI](https://github.com/crazywhalecc/static-php-cli/)
