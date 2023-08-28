@@ -40,21 +40,7 @@ class NativeAppServiceProvider
      */
     public function boot(): void
     {
-        Menu::new()
-            ->appMenu()
-            ->submenu('About', Menu::new()
-                ->link('https://nativephp.com', 'NativePHP')
-            )
-            ->submenu('View', Menu::new()
-                ->toggleFullscreen()
-                ->separator()
-                ->toggleDevTools()
-            )
-            ->register();
-
-        Window::open()
-            ->width(800)
-            ->height(800);
+        Window::open();
     }
 }
 ```
