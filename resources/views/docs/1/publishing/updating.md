@@ -19,8 +19,9 @@ will download the new version and replace the existing application files with th
 This means your application's builds need to be hosted online. NativePHP will automatically upload your application for
 you. After configuring the updater, simply use the [`php artisan native:publish`](/docs/publishing/publishing) command.
 
-The updater supports two providers:
+The updater supports three providers:
 
+- GitHub Releases (`github`)
 - Amazon S3 (`s3`)
 - DigitalOcean Spaces (`spaces`)
 
@@ -38,6 +39,17 @@ The default updater configuration looks like this:
         'default' => env('NATIVEPHP_UPDATER_PROVIDER', 'spaces'),
 
         'providers' => [
+            'github' => [
+                'driver' => 'github',
+                'repo' => env('GITHUB_REPO'),
+                'owner' => env('GITHUB_OWNER'),
+                'token' => env('GITHUB_TOKEN'),
+                'vPrefixedTagName' => env('GITHUB_V_PREFIXED_TAG_NAME', true),
+                'private' => env('GITHUB_PRIVATE', false),
+                'channel' => env('GITHUB_CHANNEL', 'latest'),
+                'releaseType' => env('GITHUB_RELEASE_TYPE', 'draft'),
+            ],
+
             's3' => [
                 'driver' => 's3',
                 'key' => env('AWS_ACCESS_KEY_ID'),
