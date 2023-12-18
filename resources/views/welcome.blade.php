@@ -42,10 +42,17 @@
                 <div class="mt-6 px-12">
                     <h2 class="text-2xl font-bold">Sponsors</h2>
 
-                    <a href="https://beyondco.de/?utm_source=nativephp&utm_medium=logo&utm_campaign=nativephp">
-                        <img src="/img/sponsors/beyondcode.png" class="block dark:hidden">
-                        <img src="/img/sponsors/beyondcode-dark.png" class="hidden dark:block">
-                    </a>
+                    <div class="flex gap-16 items-center justify-center mt-8">
+                        <a href="https://beyondco.de/?utm_source=nativephp&utm_medium=logo&utm_campaign=nativephp">
+                            <img src="/img/sponsors/beyondcode.png" class="block dark:hidden">
+                            <img src="/img/sponsors/beyondcode-dark.png" class="hidden dark:block">
+                        </a>
+
+                        <a href="https://laradir.com/?ref=nativephp">
+                            <img src="/img/sponsors/laradir.svg" class="block dark:hidden h-16">
+                            <img src="/img/sponsors/laradir-dark.svg" class="hidden dark:block h-16">
+                        </a>
+                    </div>
                 </div>
             </header>
 
