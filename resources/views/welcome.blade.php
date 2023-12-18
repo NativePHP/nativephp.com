@@ -42,7 +42,7 @@
                 <div class="mt-6 px-12">
                     <h2 class="text-2xl font-bold">Sponsors</h2>
 
-                    <div class="flex gap-16 items-center justify-center mt-8">
+                    <div class="flex flex-col sm:flex-row gap-16 items-center justify-center mt-8">
                         <a href="https://beyondco.de/?utm_source=nativephp&utm_medium=logo&utm_campaign=nativephp">
                             <img src="/img/sponsors/beyondcode.png" class="block dark:hidden">
                             <img src="/img/sponsors/beyondcode-dark.png" class="hidden dark:block">
