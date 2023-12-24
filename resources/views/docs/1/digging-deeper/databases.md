@@ -71,10 +71,10 @@ used here.
 
 ### Refreshing your app database
 
-You can completely refresh your app database using the `native:migrate fresh` command:
+You can completely refresh your app database using the `migrate:refresh` command:
 
 ```shell
-php artisan native:migrate fresh
+php artisan migrate:refresh
 ```
 
 **This is a destructive action that will delete all data in your database.**
