@@ -24,15 +24,14 @@ For example, you may want to open a window, register global shortcuts, or config
 The default `NativeAppServiceProvider` looks like this:
 
 ```php
+<?php
+
 namespace App\Providers;
 
-use Native\Laravel\Facades\ContextMenu;
-use Native\Laravel\Facades\Dock;
 use Native\Laravel\Facades\Window;
-use Native\Laravel\GlobalShortcut;
-use Native\Laravel\Menu\Menu;
+use Native\Laravel\Contracts\ProvidesPhpIni;
 
-class NativeAppServiceProvider
+class NativeAppServiceProvider implements ProvidesPhpIni
 {
     /**
      * Executed once the native application has been booted.
@@ -40,21 +39,17 @@ class NativeAppServiceProvider
      */
     public function boot(): void
     {
-        Menu::new()
-            ->appMenu()
-            ->submenu('About', Menu::new()
-                ->link('https://nativephp.com', 'NativePHP')
-            )
-            ->submenu('View', Menu::new()
-                ->toggleFullscreen()
-                ->separator()
-                ->toggleDevTools()
-            )
-            ->register();
+        Window::open();
+    }
 
-        Window::open()
-            ->width(800)
-            ->height(800);
+    /**
+     * Return an array of php.ini directives to be set.
+     */
+    public function phpIni(): array
+    {
+        return [
+        ];
     }
 }
+
 ```
