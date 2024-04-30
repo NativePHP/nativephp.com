@@ -24,8 +24,6 @@ For example, you may want to open a window, register global shortcuts, or config
 The default `NativeAppServiceProvider` looks like this:
 
 ```php
-<?php
-
 namespace App\Providers;
 
 use Native\Laravel\Facades\Window;
@@ -51,5 +49,4 @@ class NativeAppServiceProvider implements ProvidesPhpIni
         ];
     }
 }
-
 ```
