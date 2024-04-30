@@ -37,3 +37,24 @@ php artisan native:build win
 Possible options are: `mac`, `win`, `linux`.
 
 **Cross-compilation is not supported on all platforms.**
+
+## Code signing
+Both macOS and Windows require your app to be signed before it can be distributed to your users.
+
+NativePHP makes this as easy for you as it can, but each platform does have slightly different requirements.
+
+### Windows
+[See the Electron documentation](https://www.electronforge.io/guides/code-signing/code-signing-windows) for more details.
+
+### macOS
+[See the Electron documentation](https://www.electronforge.io/guides/code-signing/code-signing-macos) for more details.
+
+To prepare for signing and notarizing, please provide the following environment variables when running `php artisan native:build`:
+
+```dotenv
+NATIVEPHP_APPLE_ID=developer@abcwidgets.com
+NATIVEPHP_APPLE_ID_PASS=app-specific-password
+NATIVEPHP_APPLE_TEAM_ID=8XCUU22SN2
+```
+
+These can be added to your `.env` file as they will be stripped out when your app is built.
