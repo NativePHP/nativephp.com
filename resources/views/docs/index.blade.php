@@ -1,6 +1,6 @@
 <x-layout>
 
-    <main class="relative px-4 pt-16 mx-auto mb-64 max-w-7xl">
+    <main class="relative px-4 lg:pt-16 mx-auto mb-64 max-w-7xl">
         @include('docs.navigation')
 
         <div class="lg:pl-[20rem] lg:pt-4">
