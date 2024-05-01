@@ -17,7 +17,7 @@ If you need to perform any sensitive operations, such as accessing an API or dat
 separate API that you create specifically for your application. You can then call _this_ API from your application and
 have it perform the sensitive operations on your behalf.
 
-See [Security](/digging-deeper/security) for more tips.
+See [Security](/docs/digging-deeper/security) for more tips.
 
 ## Removing sensitive data from your environment files
 

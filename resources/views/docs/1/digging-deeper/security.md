@@ -32,8 +32,8 @@ If your application allows users to connect _their own_ API keys for a service, 
 care. If you choose to store them anywhere (either in a [File](/docs/digging-deeper/files) or
 [Database](/docs/digging-deeper/databases)), make sure you store them encrypted and decrypt them only when in use.
 
-See [Environment Files](/getting-started/env-files#removing-sensitive-data-from-your-environment-files) for details on
-how to redact your `.env` files at build-time.
+See [Environment Files](/docs/getting-started/env-files#removing-sensitive-data-from-your-environment-files) for details
+on how to redact your `.env` files at build-time.
 
 ### Files and privileges
 
