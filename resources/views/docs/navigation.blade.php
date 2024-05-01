@@ -10,10 +10,10 @@
     <div class="flex justify-end">
         <button type="button" class="p-4" @click="showDocsNavigation = !showDocsNavigation">
             <div x-show="!showDocsNavigation">
-                <x-icons.menu class="w-6 h-6 text-red-600 dark:text-red-300" />
+                <x-icons.menu class="w-6 h-6 text-teal-600 dark:text-red-300" />
             </div>
             <div x-show="showDocsNavigation">
-                <x-icons.close class="w-6 h-6" />
+                <x-icons.close class="w-6 h-6 text-teal-600" />
             </div>
         </button>
     </div>
