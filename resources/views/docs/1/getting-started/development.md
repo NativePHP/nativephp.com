@@ -5,6 +5,10 @@ order: 300
 
 # Development
 
+```shell
+php artisan native:serve
+```
+
 NativePHP isn't prescriptive about how you develop your application. You can build it in the way you're most comfortable
 and familiar with, just as if you were building a traditional web application.
 
@@ -12,12 +16,14 @@ The only difference comes in the feedback cycle. Instead of switching to and ref
 be serving your application using `php artisan native:serve` and refreshing (and in some cases restarting) your
 application to see changes.
 
+This is known as 'running a dev build'.
+
 ## What does the `native:serve` command do?
 
 The `native:serve` command runs the Electron/Tauri 'debug build' commands, which build your application with various
-debug options set to help make debugging easier, such as allowing you to show the Dev Tools.
+debug options set to help make debugging easier, such as allowing you to show the Dev Tools in the embedded web view.
 
-It also keeps the connection to the terminal open so you can see and inspect useful output from your app, like logs,
+It also keeps the connection to the terminal open so you can see and inspect useful output from your app, such as logs,
 in real time.
 
 These builds are unsigned and not meant for distribution. They do not go through various optimizations typically done
@@ -41,7 +47,6 @@ source code for changes. It is left to you to determine how you want to approach
 If you're using Vite, hot reloading will just work inside your app as long as you've booted your Vite dev server and
 [included the Vite script tag](https://laravel.com/docs/vite#loading-your-scripts-and-styles) in your views
 (ideally in your app's main layout file).
-
 
 You can do this easily in Blade using the `@@vite` directive.
 

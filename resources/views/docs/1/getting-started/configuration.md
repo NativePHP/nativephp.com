@@ -50,6 +50,33 @@ return [
     'provider' => \App\Providers\NativeAppServiceProvider::class,
 
     /**
+     * A list of environment keys that should be removed from the
+     * .env file when the application is bundled for production.
+     * You may use wildcards to match multiple keys.
+     */
+    'cleanup_env_keys' => [
+        'AWS_*',
+        'GITHUB_*',
+        'DO_SPACES_*',
+        '*_SECRET',
+        'NATIVEPHP_UPDATER_PATH',
+        'NATIVEPHP_APPLE_ID',
+        'NATIVEPHP_APPLE_ID_PASS',
+        'NATIVEPHP_APPLE_TEAM_ID',
+    ],
+
+    /**
+     * A list of files and folders that should be removed from the
+     * final app before it is bundled for production.
+     * You may use glob / wildcard patterns here.
+     */
+    'cleanup_exclude_files' => [
+        'content',
+        'storage/app/framework/{sessions,testing,cache}',
+        'storage/logs/laravel.log',
+    ],
+
+    /**
      * The NativePHP updater configuration.
      */
     'updater' => [
@@ -62,11 +89,22 @@ return [
 
         /**
          * The updater provider to use.
-         * Supported: "s3", "spaces"
+         * Supported: "github", "s3", "spaces"
          */
         'default' => env('NATIVEPHP_UPDATER_PROVIDER', 'spaces'),
 
         'providers' => [
+            'github' => [
+                'driver' => 'github',
+                'repo' => env('GITHUB_REPO'),
+                'owner' => env('GITHUB_OWNER'),
+                'token' => env('GITHUB_TOKEN'),
+                'vPrefixedTagName' => env('GITHUB_V_PREFIXED_TAG_NAME', true),
+                'private' => env('GITHUB_PRIVATE', false),
+                'channel' => env('GITHUB_CHANNEL', 'latest'),
+                'releaseType' => env('GITHUB_RELEASE_TYPE', 'draft'),
+            ],
+
             's3' => [
                 'driver' => 's3',
                 'key' => env('AWS_ACCESS_KEY_ID'),

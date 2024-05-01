@@ -5,15 +5,19 @@ order: 400
 
 # Environment Files
 
-When NativePHP bundles your application, it will copy your entire application directory into the bundle, including your `.env`
-file. This means that your `.env` file will be accessible to anyone who has access to your application bundle.
+When NativePHP bundles your application, it will copy your entire application directory into the bundle, including your
+`.env` file.
 
-You should be careful to not include any sensitive information in your `.env` file, such as API keys or passwords.
-Unlike a traditional web application, your `.env` file can be read by anyone who has access to your application bundle.
+**This means that your `.env` file will be accessible to anyone who has access to your application bundle.**
+
+So you should be careful to not include any sensitive information in your `.env` file, such as API keys or passwords.
+This is quite unlike a traditional web application deployed to a server you control.
 
 If you need to perform any sensitive operations, such as accessing an API or database, you should do so using a
-separate API that you create specifically for your application. You can then call this API from your application and
+separate API that you create specifically for your application. You can then call _this_ API from your application and
 have it perform the sensitive operations on your behalf.
+
+See [Security](/digging-deeper/security) for more tips.
 
 ## Removing sensitive data from your environment files
 

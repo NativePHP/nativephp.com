@@ -36,7 +36,7 @@ makes you and your team feel most productive.
 Building a React front-end? No problem. Vue? Sure. Livewire or Inertia? Doesn't matter! Plain old HTML and CSS?
 You got it. Tailwind? Bootstrap? Material UI? Whatever you want.
 
-NativePHP is not some new custom fork of PHP. This is the good old PHP you know and love.
+NativePHP is not some new custom fork of PHP. This is the good new PHP you know and love.
 
 ## What's in the box?
 
@@ -65,7 +65,7 @@ that puts cowboy hats on every smiley-face emoji it sees.
 Go read the docs! We've tried to make them as comprehensive as possible, but if you find something missing, please
 feel free to [contribute](https://github.com/nativephp/nativephp.com).
 
-This site and all the NativePHP are open source and available on [GitHub](https://github.com/nativephp).
+This site and all the NativePHP repositories are open source and available on [GitHub](https://github.com/nativephp).
 
 Ready to jump in? [Let's get started](installation).
 
