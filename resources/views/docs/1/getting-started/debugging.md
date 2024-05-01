@@ -92,11 +92,11 @@ M-series (ARM) Mac:
 ```
 Windows:
 ```shell
-C:\path\to\your\app\vendor\nativephp\resources\js\resources\php\php.exe -v
+C:\path\to\your\app\vendor\nativephp\electron\resources\js\resources\php\php.exe -v
 ```
 
 #### For production builds:
-M-series (ARM) Mac computer:
+M-series (ARM) Mac:
 ```shell
 /path/to/your/app/dist/mac-arm/AppName/Contents/Resources/app.asar.unpacked/resources/php/php -v
 ```
