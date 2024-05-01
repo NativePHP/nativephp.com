@@ -20,6 +20,7 @@
         <!-- / Fathom -->
     </head>
     <body class="w-full h-screen text-slate-900 bg-gray-50 dark:bg-gray-900 dark:text-white">
+    <x-alert />
         <main id="app" class="flex flex-col items-center justify-center min-h-screen">
             <header class="flex flex-col items-center justify-center flex-1 gap-12 text-center md:py-12">
                 <img src="{{ asset('logo.svg') }}" class="px-12 lg:h-32 dark:hidden">
