@@ -71,7 +71,7 @@ used here.
 
 ### Refreshing your app database
 
-You can completely refresh your app database using the `native:migrate fresh` command:
+You can completely refresh your app database using the `native:migrate:fresh` command:
 
 ```shell
 php artisan native:migrate:fresh
