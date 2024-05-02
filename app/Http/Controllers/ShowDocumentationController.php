@@ -28,6 +28,8 @@ class ShowDocumentationController extends Controller
 
         abort_unless(is_dir(resource_path('views/docs/'.$version)), 404);
 
+        session(['viewing_docs_version' => $version]);
+
         $navigation = Cache::remember("docs_nav_{$version}", now()->addDay(), function () use ($version) {
             return $this->getNavigation($version);
         });

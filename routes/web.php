@@ -25,11 +25,18 @@ Route::get('/docs/{version}/{page?}', ShowDocumentationController::class)
 
 // Forward unversioned requests to the latest version
 Route::get('/docs/{page?}', function ($page = null) {
-    $latestVersion = '1';
+    $version = session('viewing_docs_version', '1');
 
     $referer = request()->header('referer');
 
-    $version = Str::before(ltrim(Str::after($referer, url('/docs/')), '/'), '/') ?: $latestVersion;
+    // If coming from elsewhere in the docs, match the current version being viewed
+    if (
+        ! session()->has('viewing_docs_version')
+        && parse_url($referer, PHP_URL_HOST) === parse_url(url('/'), PHP_URL_HOST)
+        && str($referer)->contains('/docs/')
+    ) {
+        $version = Str::before(ltrim(Str::after($referer, url('/docs/')), '/'), '/');
+    }
 
     return redirect("/docs/{$version}/{$page}");
 })->name('docs')->where('page', '.*');
