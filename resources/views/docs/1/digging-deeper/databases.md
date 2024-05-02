@@ -38,27 +38,27 @@ You do not need to do anything special to configure your application to use SQLi
 ## Development
 
 Remember that in [development](/docs/getting-started/development) your application's database is always going to be
-the SQLite database created in the `appdata` folder for your application.
+the SQLite database created in the [`appdata`](/docs/getting-started/debugging#appdata) folder for your application.
 
 This means that even if you've got different config in your `.env` file, your application will not be connecting to any
 other database when it is running within the Electron/Tauri environment.
 
 ## Migrations
 
-When writing migrations, you need to consider any special recommendations for working with SQLite. For example,
-SQLite disables foreign key constraints by default. If your application relies upon foreign key constraints,
-[you need to enable SQLite support for them](https://laravel.com/docs/database#configuration) before
-writing your migrations.
+When writing migrations, you need to consider any special recommendations for working with SQLite.
 
-**It's important to test your migrations before releasing updates!** You don't want to accidentally delete your user's
-data when they update your app.
+For example, prior to Laravel 11, SQLite foreign key constraints are turned off by default. If your application relies
+upon foreign key constraints, [you need to enable SQLite support for them](https://laravel.com/docs/database#configuration) before running your migrations.
+
+**It's important to test your migrations on prod builds before releasing updates!** You don't want to accidentally
+delete your user's data when they update your app.
 
 ### Running migrations
 
 NativePHP will attempt to migrate your database on each boot-up.
 
-You may also wish to manually migrate it during development, either while the application is already running or without
-booting the application.
+You may also wish to manually migrate it during development. You can do this whether the application is running or not,
+but depending on how your app behaves, it may be better to do it before opening the app.
 
 You can do this with the `native:migrate` command:
 
@@ -74,7 +74,7 @@ used here.
 You can completely refresh your app database using the `native:migrate fresh` command:
 
 ```shell
-php artisan native:migrate fresh
+php artisan native:migrate:fresh
 ```
 
 **This is a destructive action that will delete all data in your database.**
