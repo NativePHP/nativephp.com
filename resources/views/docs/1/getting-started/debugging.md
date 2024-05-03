@@ -114,7 +114,7 @@ current OS+arch.
 Checking this will also prove that the executable itself is stable:
 
 #### For dev builds:
-M-series (ARM) Mac:
+macOS & Linux:
 ```shell
 /path/to/your/app/vendor/nativephp/electron/resources/js/resources/php/php -v
 ```
@@ -124,9 +124,9 @@ C:\path\to\your\app\vendor\nativephp\electron\resources\js\resources\php\php.exe
 ```
 
 #### For production builds:
-M-series (ARM) Mac:
+macOS:
 ```shell
-/path/to/your/app/dist/mac-arm/AppName/Contents/Resources/app.asar.unpacked/resources/php/php -v
+/path/to/your/app/dist/{os+arch}/AppName/Contents/Resources/app.asar.unpacked/resources/php/php -v
 ```
 
 Windows:
