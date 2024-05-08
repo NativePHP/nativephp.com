@@ -9,8 +9,8 @@
                 <div class="flex items-center px-6 py-4 mb-8 space-x-4 text-lg text-red-800 border-2 border-red-500 bg-red-50 dark:text-white dark:bg-red-800">
                     <span class="text-5xl">⚠️</span>
                     <span>
-                        NativePHP is currently an <em class="font-bold">alpha</em> release and is not ready for production applications
-                        yet.
+                        NativePHP is currently in <em class="font-bold">alpha</em>. We do not recommend distributing
+                        production releases of your applications yet.
                     </span>
                 </div>
 
