@@ -79,6 +79,3 @@ NativePHP wouldn't be possible without the following projects and the hard work 
 - [Laravel](https://laravel.com)
 - [Symfony](https://symfony.com)
 - [Static PHP CLI](https://github.com/crazywhalecc/static-php-cli/)
-
-NativePHP is a copyright of and maintained by [Marcel Pociot](https://twitter.com/marcelpociot) and
-[Simon Hamp](https://twitter.com/simonhamp).

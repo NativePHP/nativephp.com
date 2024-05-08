@@ -58,10 +58,7 @@
                 </div>
             </header>
 
-            <footer class="justify-end p-12 md:px-0">
-                <small class="block text-sm text-center md:text-xs">© {{ date('Y') }} NativePHP</small>
-            </footer>
-
+            <x-footer />
         </main>
 
     </body>

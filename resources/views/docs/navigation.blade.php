@@ -1,4 +1,4 @@
-<div class="hidden lg:block absolute z-20 w-[18rem] inset-0 top-24 left-[max(0px,calc(50%-45rem))] right-auto ">
+<div class="hidden lg:block relative z-20 w-[18rem] inset-0 top-24 left-[max(0px,calc(50%-45rem))] right-auto ">
     <div class="sticky top-0 w-full border-r border-[#00aaa6] border-opacity-10 dark:border-opacity-90 pt-8 pb-12 pl-4">
         <nav class="flex flex-col flex-1">
             {!! $navigation !!}
