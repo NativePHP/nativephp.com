@@ -77,6 +77,9 @@ How to setup your storage and generate the relevant API credentials:
 - Amazon S3 - See [this video](https://www.youtube.com/watch?v=FLIp6BLtwjk&ab_channel=CloudCasts) by Chris Fidao or 
     this [Step 2](https://www.twilio.com/docs/video/tutorials/storing-aws-s3#step-2) of this article by Twilio
 
+  If you got the error message "The bucket does not allow ACLs" you can follow this guide from [Learn AWS](https://www.learnaws.org/2023/08/26/aws-s3-bucket-does-not-allow-acls)
+      on how to setup your bucket correctly.
+
 ## Disabling the updater
 
 If you don't want your application to check for updates, you can disable the updater by setting the
