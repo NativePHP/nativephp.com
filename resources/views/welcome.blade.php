@@ -55,6 +55,10 @@
                             <img src="/img/sponsors/laradir-dark.svg" class="hidden dark:block h-16">
                         </a>
                     </div>
+
+                    <a href="https://github.com/sponsors/simonhamp" target="_blank" class="inline-block px-4 py-1.5 text-xs font-semibold text-black bg-white border rounded mt-6">
+                        Place your logo here
+                    </a>
                 </div>
             </header>
 
