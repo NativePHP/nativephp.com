@@ -22,9 +22,9 @@
     <body class="w-full h-screen text-slate-900 bg-gray-50 dark:bg-gray-900 dark:text-white">
         <x-alert />
 
-        <main id="app" class="flex flex-col items-center justify-center min-h-screen">
-            <header class="flex flex-col items-center justify-center flex-1 gap-12 text-center md:py-12">
-                <img src="{{ asset('logo.svg') }}" class="px-12 lg:h-32 dark:hidden mt-12 lg:mt-0">
+        <main id="app" class="flex flex-col items-center min-h-screen">
+            <header class="flex flex-col items-center flex-1 gap-12 text-center md:py-12">
+                <img src="{{ asset('logo.svg') }}" class="px-12 lg:h-32 dark:hidden mt-24">
                 <img src="{{ asset('logo-dark.svg') }}" class="hidden px-12 lg:h-32 dark:block">
                 <h1 class="sr-only">NativePHP</h1>
                 <h3 class="px-6 mt-12 text-lg leading-tight lg:text-2xl md:text-xl">
