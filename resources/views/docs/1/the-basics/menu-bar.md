@@ -199,7 +199,7 @@ You may add a context menu to your menu bar icon. This context menu will be show
 To add a context menu, you may use the `contextMenu()` method on the `MenuBar`. 
 This method accepts a `Native\Laravel\Menu\Menu` instance.
 
-To learn more about the menu builder, please refer to the [Menu Builder](/docs/1/the-basics/menu-builder) documentation.
+To learn more about the menu builder, please refer to the [Menu Builder](/docs/the-basics/menu-builder) documentation.
 
 ```php
 MenuBar::create()

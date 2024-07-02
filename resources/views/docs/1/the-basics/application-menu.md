@@ -277,4 +277,4 @@ Menu::new()
     ->register();
 ```
 
-You can find a list of available hotkey modifiers in the [global hotkey documentation section](/docs/1/the-basics/global-hotkeys#available-modifiers) 
+You can find a list of available hotkey modifiers in the [global hotkey documentation section](/docs/the-basics/global-hotkeys#available-modifiers) 
