@@ -11,7 +11,10 @@
                         <span class="text-5xl">⚠️</span>
                         <span>
                             NativePHP is currently in <em class="font-bold">alpha</em>. We do not recommend distributing
-                            production releases of your applications yet.
+                            production releases of your applications yet.<br><br>
+                            <a href="https://github.com/sponsors/simonhamp" class="underline" target="_blank">
+                                Can you help us get production-ready?
+                            </a>
                         </span>
                     </div>
 
