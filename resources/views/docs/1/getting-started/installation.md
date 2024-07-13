@@ -23,7 +23,7 @@ you may encounter more unexpected issues and have more manual steps to create wo
 ## Laravel
 
 NativePHP is built to work best with Laravel. You can install it into an existing Laravel application, or
-[start a new one](https://laravel.com/docs/10.x/installation).
+[start a new one](https://laravel.com/docs/11.x/installation).
 
 ## Install a NativePHP runtime
 
