@@ -20,15 +20,27 @@ about whether something is Linux-, Mac-, or Windows-only.
 
 ## TouchID
 
-For Mac systems that support TouchID, you can use TouchID to protect and unlock various parts of your application:
+For Mac systems that support TouchID, you can use TouchID to protect and unlock various parts of your application.
 
 ```php
 use Native\Laravel\Facades\System;
 
-if (System::canPromptTouchID() && System::promptTouchID()) {
-    // Do you super secret activity here
+if (System::canPromptTouchID() && System::promptTouchID('access your Contacts')) {
+    // Do your super secret activity here
 }
 ```
+
+You must pass a `string $reason` as the only argument to `System::promptTouchID`. This will show up in the dialog that
+TouchID users are familiar with:
+
+![TouchID Prompt Example on macOS](/img/docs/touchid.png)
+
+Using this, you can gate certain parts of your app, or your *entire* application, allowing you to offer an extra layer
+of protection for your user's data.
+
+**Note: Despite the name, TouchID only gives you greater *confidence* that the person using your app is the same as the
+person who has unlocked the device your app is installed on. It does not allow you to *identify* that user, nor does
+it give you any special privileges to their system.**
 
 ## Printing
 
