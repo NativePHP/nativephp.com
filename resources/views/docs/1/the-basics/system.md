@@ -67,8 +67,7 @@ You can also print directly to PDF:
 System::printToPDF('<html>...');
 ```
 
-This returns the PDF data in a `base64_encoded` binary string. So be sure to `base64_decode` it before storing it to disk.
-You could save it directly to disk or prompt the user for a location to save it:
+This returns the PDF data in a `base64_encoded` binary string. So be sure to `base64_decode` it before storing it to disk:
 
 ```php
 use Illuminate\Support\Facades\Storage;
