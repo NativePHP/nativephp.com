@@ -95,7 +95,7 @@ select their current time zone.
 to simplify things, as there are many overlapping time zones and methods of naming them.**
 
 Using this approach, your app will be responsive to changes in the system's time zone settings, e.g. in case the
-user moves between timezones.
+user moves between time zones.
 
 Get the current system time zone:
 
