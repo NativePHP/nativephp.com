@@ -18,7 +18,7 @@ the platform on which your app is running.
 While some features are platform-specific, NativePHP gracefully handles this for you so that you don't have to think
 about whether something is Linux-, Mac-, or Windows-only.
 
-## Prompt for TouchID
+## TouchID
 
 For Mac systems that support TouchID, you can use TouchID to protect and unlock various parts of your application:
 
@@ -37,9 +37,9 @@ You can list all available printers:
 ```php
 @use(Native\Laravel\Facades\System)
 
-@foreach(System::printers() as $printer)
-    {{ $printer->displayName }}
-@foreach
+@@foreach(System::printers() as $printer)
+    @{{ $printer->displayName }}
+@@foreach
 ```
 
 Each item in the printers array is a `\Native\Laravel\DataObjects\Printer` which contains various device details and
