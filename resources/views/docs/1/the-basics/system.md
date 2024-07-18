@@ -91,8 +91,8 @@ expects to use.
 You can use this to show dates and times in the appropriate time zone without having to ask your users to manually
 select their current time zone.
 
-**Note: It some cases, this mechanism may not select the exact time zone of the user. It uses an approximation to
-simplify things, as there are many overlapping time zones and methods of naming them.**
+**Note: In some cases, this mechanism may not select the _exact_ time zone that the user is in. It uses an approximation
+to simplify things, as there are many overlapping time zones and methods of naming them.**
 
 Using this approach, your app will be responsive to changes in the system's time zone settings, e.g. in case the
 user moves between timezones.
