@@ -35,7 +35,7 @@ if (System::canPromptTouchID() && System::promptTouchID()) {
 You can list all available printers:
 
 ```php
-@use(Native\Laravel\Facades\System)
+@@use(Native\Laravel\Facades\System)
 
 @@foreach(System::printers() as $printer)
     @{{ $printer->displayName }}
