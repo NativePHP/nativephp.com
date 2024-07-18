@@ -34,12 +34,12 @@ if (System::canPromptTouchID() && System::promptTouchID()) {
 
 You can list all available printers:
 
-```php
+```blade
 @@use(Native\Laravel\Facades\System)
 
 @@foreach(System::printers() as $printer)
     @{{ $printer->displayName }}
-@@foreach
+@@endforeach
 ```
 
 Each item in the printers array is a `\Native\Laravel\DataObjects\Printer` which contains various device details and
