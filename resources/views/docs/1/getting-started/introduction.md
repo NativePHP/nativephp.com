@@ -9,6 +9,8 @@ NativePHP is a new framework for rapidly building rich, native desktop applicati
 developer, you'll feel right at home. If you're new to PHP, we think you'll find NativePHP easy to pick up and use.
 Whatever your path, we think you're going to be productive quickly.
 
+**NativePHP makes distributing PHP apps to users on any platform a cinch.**
+
 NativePHP is taking the world by storm, enabling PHP developers to create true cross-platform, native apps
 using the tools and technologies they already know: HTML, CSS, Javascript, and, of course, PHP.
 
@@ -26,17 +28,19 @@ environment.
 
 ## What NativePHP isn't
 
-NativePHP is not an especially opinionated way to build native apps. Right now, we only support a Laravel driver, but
-we're already working on making it work whatever framework you're using - and even if you're not using a framework at
-all.
+NativePHP is **not an especially opinionated way to build native apps**. Right now, **we only support a Laravel driver**,
+but we'd love for it to work whatever PHP framework you're using - and even if you're not using a framework at all.
+Can you help? Please consider [contributing](https://github.com/NativePHP/laravel/blob/main/CONTRIBUTING.md).
 
-NativePHP is not a GUI framework. We don't want to tell you how to build your app. You can choose whatever UI toolset
+NativePHP is **not a GUI framework**. We don't want to tell you how to build your app. You can choose whatever UI toolset
 makes you and your team feel most productive.
 
 Building a React front-end? No problem. Vue? Sure. Livewire or Inertia? Doesn't matter! Plain old HTML and CSS?
 You got it. Tailwind? Bootstrap? Material UI? Whatever you want.
 
-NativePHP is not some new custom fork of PHP. This is the good new PHP you know and love.
+NativePHP is **not some new, custom fork of PHP**. This is the good new PHP you know and love.
+
+It's also not an extension that you need to figure out and install into PHP.
 
 ## What's in the box?
 
