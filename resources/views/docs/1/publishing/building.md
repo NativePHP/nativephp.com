@@ -17,6 +17,17 @@ your app to provide automatic updates.
 You should build your application for each platform you intend to support and test it on each platform _before_
 publishing to make sure that everything works as expected.
 
+## Versioning
+
+For every build you create, you should change the version of your application in your app's `config/nativephp.php` file.
+
+This can be any format you choose, but you may find that a simple incrementing build number is the easiest to manage.
+
+**Migrations will only run on the user's machine if the version reference is _different_ to the currently-installed version.**
+
+You may choose to have a different version number that uses a different scheme (e.g. SemVer) that you use for user-facing
+releases.
+
 ## Running a build
 
 ```shell
