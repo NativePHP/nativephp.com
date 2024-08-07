@@ -191,6 +191,7 @@ Window::open()
 ### Movable Windows
 
 By default, all windows created with the `Window` facade are movable.
+
 You may use the `movable()` method to disable moving.
 
 ```php
@@ -209,6 +210,22 @@ Window::open()
     ->minimizable(false)
     ->maximizable(false)
     ->closable(false);
+```
+
+### Full Screen Windows
+
+By default, all windows created with the `Window` facade are fullscreen-able, meaning that they can enter Full Screen Mode.
+
+You may use the `fullscreenable()` method to disable this feature.
+
+```php
+Window::open()->fullscreenable(false);
+```
+
+If you wish, you may open a window in full screen mode using the `fullscreen()` method.
+
+```php
+Window::open()->fullscreen();
 ```
 
 ### Window Shadow
