@@ -38,7 +38,9 @@ You can use the ID to reference the window in other methods, such as `Window::cl
 ### Closing Windows
 
 To close a window, you may use the `Window::close()` method.
-You may pass a unique identifier to the `close()` method to specify which window to close. 
+
+You may pass a unique identifier to the `close()` method to specify which window to close.
+
 If you do not specify a window ID, NativePHP will try to detect the window ID automatically based on the current route.
 
 ```php
@@ -210,6 +212,20 @@ Window::open()
     ->minimizable(false)
     ->maximizable(false)
     ->closable(false);
+```
+
+#### Maximize a Window
+
+To maximize a window, you may use the `Window::maximize()` method.
+
+You may pass the window ID to the `maximize()` method to specify which window to maximize.
+
+If you do not specify a window ID, NativePHP will try to detect the window ID automatically based on the current route.
+
+```php
+Window::open('secondary');
+
+Window::maximize('secondary');
 ```
 
 ### Full Screen Windows
