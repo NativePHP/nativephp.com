@@ -62,6 +62,50 @@ Window::resize(400, 300);
 Window::resize(400, 300, 'settings');
 ```
 
+### Minimizing and Maximizing
+
+There are convenience methods that allow you to minimize and maximize windows.
+
+#### Minimize a Window
+
+To maximize a window, you may use the `Window::minimize()` method.
+
+You may pass the window ID to the `minimize()` method to specify which window to minimize.
+
+If you do not specify a window ID, NativePHP will try to detect the window ID automatically based on the current route.
+
+```php
+Window::open('secondary');
+
+// Later...
+
+Window::minimize('secondary');
+```
+
+#### Maximize a Window
+
+To maximize a window, you may use the `Window::maximize()` method.
+
+You may pass the window ID to the `maximize()` method to specify which window to maximize.
+
+If you do not specify a window ID, NativePHP will try to detect the window ID automatically based on the current route.
+
+```php
+Window::open('secondary');
+
+// Later...
+
+Window::maximize('secondary');
+```
+
+Of course, you may also wish to open windows in a minimized or maximized state. You can achieve this simply by chaining the
+`minimized()` and `maximized()` methods to your `Window::open()` call:
+
+```php
+Window::open()
+    ->maximized();
+```
+
 ### Retrieving the Current Window
 
 You may use the `Window::current()` method to retrieve the currently focused window.
@@ -212,20 +256,6 @@ Window::open()
     ->minimizable(false)
     ->maximizable(false)
     ->closable(false);
-```
-
-#### Maximize a Window
-
-To maximize a window, you may use the `Window::maximize()` method.
-
-You may pass the window ID to the `maximize()` method to specify which window to maximize.
-
-If you do not specify a window ID, NativePHP will try to detect the window ID automatically based on the current route.
-
-```php
-Window::open('secondary');
-
-Window::maximize('secondary');
 ```
 
 ### Full Screen Windows
