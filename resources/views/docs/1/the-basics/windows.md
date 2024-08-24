@@ -38,7 +38,9 @@ You can use the ID to reference the window in other methods, such as `Window::cl
 ### Closing Windows
 
 To close a window, you may use the `Window::close()` method.
-You may pass a unique identifier to the `close()` method to specify which window to close. 
+
+You may pass a unique identifier to the `close()` method to specify which window to close.
+
 If you do not specify a window ID, NativePHP will try to detect the window ID automatically based on the current route.
 
 ```php
@@ -58,6 +60,50 @@ If you do not specify a window ID, NativePHP will try to detect the window ID au
 Window::resize(400, 300);
 
 Window::resize(400, 300, 'settings');
+```
+
+### Minimizing and Maximizing
+
+There are convenience methods that allow you to minimize and maximize windows.
+
+#### Minimize a Window
+
+To maximize a window, you may use the `Window::minimize()` method.
+
+You may pass the window ID to the `minimize()` method to specify which window to minimize.
+
+If you do not specify a window ID, NativePHP will try to detect the window ID automatically based on the current route.
+
+```php
+Window::open('secondary');
+
+// Later...
+
+Window::minimize('secondary');
+```
+
+#### Maximize a Window
+
+To maximize a window, you may use the `Window::maximize()` method.
+
+You may pass the window ID to the `maximize()` method to specify which window to maximize.
+
+If you do not specify a window ID, NativePHP will try to detect the window ID automatically based on the current route.
+
+```php
+Window::open('secondary');
+
+// Later...
+
+Window::maximize('secondary');
+```
+
+Of course, you may also wish to open windows in a minimized or maximized state. You can achieve this simply by chaining the
+`minimized()` and `maximized()` methods to your `Window::open()` call:
+
+```php
+Window::open()
+    ->maximized();
 ```
 
 ### Retrieving the Current Window
@@ -191,6 +237,7 @@ Window::open()
 ### Movable Windows
 
 By default, all windows created with the `Window` facade are movable.
+
 You may use the `movable()` method to disable moving.
 
 ```php
@@ -209,6 +256,22 @@ Window::open()
     ->minimizable(false)
     ->maximizable(false)
     ->closable(false);
+```
+
+### Full Screen Windows
+
+By default, all windows created with the `Window` facade are fullscreen-able, meaning that they can enter Full Screen Mode.
+
+You may use the `fullscreenable()` method to disable this feature.
+
+```php
+Window::open()->fullscreenable(false);
+```
+
+If you wish, you may open a window in full screen mode using the `fullscreen()` method.
+
+```php
+Window::open()->fullscreen();
 ```
 
 ### Window Shadow
