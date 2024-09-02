@@ -18,6 +18,51 @@ the platform on which your app is running.
 While some features are platform-specific, NativePHP gracefully handles this for you so that you don't have to think
 about whether something is Linux-, Mac-, or Windows-only.
 
+## Encryption / Decryption
+
+Almost every non-trivial application will require some concept of secure data storage and retrieval. For example, if
+you want to generate and store an API key to access a third-party service on behalf of your user.
+
+You shouldn't ship these sorts of secrets _with_ your app, but rather generate them or ask your user for them at
+runtime.
+
+But when your app is running on a user's device, you have
+[far less control and fewer guarantees](/docs/digging-deeper/security) over the safety of any secrets stored.
+
+On a traditional server-rendered application, this is a relatively simple problem to solve using server-side encryption
+with keys which are hidden from end users.
+
+For this to work on the user's device, you need to be able to generate and store an encryption key securely.
+
+NativePHP takes care of the key generation and storage for you, all that's left for you to do is encrypt, store and
+decrypt the secrets that you need to store on behalf of your user.
+
+NativePHP allows you to encrypt and decrypt data in your application easily:
+
+```php
+use Native\Laravel\Facades\System;
+
+if (System::canEncrypt()) {
+    $encrypted = System::encrypt('secret_key_a79hiunfw86...');
+
+    // $encrypted => 'djEwJo+Huv+aeBgUoav5nIJWRQ=='
+}
+```
+
+You can then safely store the encrypted string in a database or the filesystem.
+
+When you need to get the original value, you can decrypt it:
+
+```php
+use Native\Laravel\Facades\System;
+
+if (System::canEncrypt()) {
+    $decrypted = System::decrypt('djEwJo+Huv+aeBgUoav5nIJWRQ==');
+
+    // $decrypted = 'secret_key_a79hiunfw86...'
+}
+```
+
 ## TouchID
 
 For Mac systems that support TouchID, you can use TouchID to protect and unlock various parts of your application.
