@@ -30,7 +30,8 @@ level of entropy, as this makes them hard to guess and hard to abuse.
 
 If your application allows users to connect _their own_ API keys for a service, you should treat these keys with great
 care. If you choose to store them anywhere (either in a [File](/docs/digging-deeper/files) or
-[Database](/docs/digging-deeper/databases)), make sure you store them encrypted and decrypt them only when in use.
+[Database](/docs/digging-deeper/databases)), make sure you store them
+[encrypted](/docs/the-basics/system#encryption-decryption) and decrypt them only when needed.
 
 See [Environment Files](/docs/getting-started/env-files#removing-sensitive-data-from-your-environment-files) for details
 on how to redact your `.env` files at build-time.
