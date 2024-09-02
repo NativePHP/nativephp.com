@@ -38,6 +38,19 @@ You can stop the `native:serve` command by pressing `Ctrl-C` on your keyboard in
 
 Alternatively, you can use hot reloading.
 
+### App Icon
+
+The `native:serve` and `native:build` commands look for the following icon files when building your application:
+
+- `public/icon.png` - your main icon, used on the Desktop, Dock and app switcher.
+- `public/IconTemplate.png` - used in the Menu Bar on non-retina displays.
+- `public/IconTemplate@2x.png` - used in the Menu Bar on retina displays.
+
+If any of these files exist, they will be moved into the relevant location to be used as your application's icons.
+You simply need to follow the naming convention.
+
+Your main icon should be at least 512x512 pixels.
+
 ## Hot Reloading
 
 Hot reloading is an awesome feature for automatically seeing changes to your application during development. NativePHP
