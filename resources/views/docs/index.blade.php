@@ -13,7 +13,9 @@
                             NativePHP is currently
                             <a href="/docs/getting-started/status" class="font-bold italic font-mono flex-inline px-2 text-base bg-orange-200 rounded">alpha</a>.
                             <br><br>
-                            <a href="https://github.com/nativephp/laravel?sponsor=1" class="font-bold inline-flex items-center bg-orange-200 rounded-md px-3 py-1 border border-orange-400 hover:bg-orange-300 group" target="_blank">
+                            <a href="https://github.com/nativephp/laravel?sponsor=1"
+                               onclick="fathom.trackEvent('beta_interest');"
+                               class="font-bold inline-flex items-center bg-orange-200 rounded-md px-3 py-1 border border-orange-400 hover:bg-orange-300 group" target="_blank">
                                 Let's get to beta!
                                 <x-heroicon-o-rocket-launch class="ml-2 size-5 group-hover:hidden" />
                                 <x-heroicon-s-rocket-launch class="hidden ml-2 size-5 group-hover:block" />
