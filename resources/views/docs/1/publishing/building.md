@@ -52,7 +52,7 @@ Possible options are: `mac`, `win`, `linux`.
 #### Cross-compilation on Linux
 
 Compiling Windows binaries is possible with [wine](https://www.winehq.org/).
-nsis requires 32-bit wine when building x64 applications.
+NSIS requires 32-bit wine when building x64 applications.
 
 ```bash
 # Example installation of wine for Debian based distributions (Ubuntu)
