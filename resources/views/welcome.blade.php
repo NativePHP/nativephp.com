@@ -56,6 +56,16 @@
                         </a>
                     </div>
 
+                    <div class="flex flex-col sm:flex-row gap-16 items-center justify-center mt-8">
+                        <a href="https://www.redgalaxy.co.uk/">
+                            <img src="/img/sponsors/redgalaxy.svg" class="block h-12">
+                        </a>
+
+                        <a href="https://sevalla.com/?utm_source=nativephp&utm_medium=Referral&utm_campaign=homepage">
+                            <img src="/img/sponsors/sevalla.png" class="block h-12">
+                        </a>
+                    </div>
+
                     <a href="https://github.com/sponsors/simonhamp" target="_blank" class="inline-block px-4 py-1.5 text-xs font-semibold text-black bg-white border rounded mt-6">
                         Place your logo here
                     </a>
