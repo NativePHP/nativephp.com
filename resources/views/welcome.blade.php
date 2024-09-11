@@ -62,12 +62,17 @@
                         </a>
 
                         <a href="https://sevalla.com/?utm_source=nativephp&utm_medium=Referral&utm_campaign=homepage">
-                            <img src="/img/sponsors/sevalla.png" class="block h-12">
+                            <img src="/img/sponsors/sevalla.png" class="block h-12 dark:hidden">
+                            <img src="/img/sponsors/sevalla-dark.png" class="h-12 hidden dark:block">
+                        </a>
+
+                        <a href="https://serverauth.com/">
+                            <img src="/img/sponsors/serverauth.svg" class="block h-12 fill-[#042340] darK:fill-white">
                         </a>
                     </div>
 
                     <a href="https://github.com/sponsors/simonhamp" target="_blank" class="inline-block px-4 py-1.5 text-xs font-semibold text-black bg-white border rounded mt-6">
-                        Place your logo here
+                        Add your logo here
                     </a>
                 </div>
             </header>
