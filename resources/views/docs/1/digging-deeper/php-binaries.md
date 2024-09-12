@@ -60,10 +60,14 @@ Note how the platform is the first folder (`linux`, `mac`, `win`) and the archit
 You do not need to build binaries for every PHP version or every platform; You only need binaries for the platforms you
 wish to support and for the version of PHP that your application requires.
 
-Make sure the binaries are zipped and named like so:
+Make sure the binaries are named `php` (macOS/Linux) or `php.exe` (Windows) and zipped and named like so:
 
 ```shell
-php-[PHP_MAJOR_VERSION].[PHP_MINOR_VERSION].zip
+// macoS / Linux
+zip php-[PHP_MAJOR_VERSION].[PHP_MINOR_VERSION].zip php
+
+// Windows
+powershell Compress-Archive -Path "php.exe" -DestinationPath "php-[PHP_MAJOR_VERSION].[PHP_MINOR_VERSION].zip"
 ```
 
 NativePHP will then build your application using the relevant binaries found in this custom location.
