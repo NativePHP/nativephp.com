@@ -5,7 +5,7 @@ order: 100
 
 # Broadcasting
 
-NativePHP facilitates event broadcasting of both [custom events](#custom-events) and [native events](#native-events). You may listen to serverside events using either [Electrons' IPC](#javascript), for updating the frontend when a event is dispatched from the back-end, or use Laravel Echo and [Websockets](#websockets) for more demanding scenario's. The IPC approach should cover most use-cases.
+NativePHP facilitates event broadcasting of both [custom events](#custom-events) and [native events](#native-events). You can listen to serverside events using either [Electrons' IPC](#javascript) for updating the client when an event is dispatched from the back-end, or use Laravel Echo and [Websockets](#websockets) for more demanding scenarios. The IPC approach should cover most use cases.
 
 ## Native events
 
@@ -14,7 +14,7 @@ NativePHP fires various events during its operations, such as `WindowBlurred` & 
 
 ## Custom events
 
-You can also broadcast your own events. Simply instruct your event to implement the `ShouldBroadcastNow` contract and define the `broadcastsOn` method in your event, returning `nativephp` as one of the channels it broadcasts to:
+You can also broadcast your own events. Simply implement the `ShouldBroadcastNow` contract in your event class and define the `broadcastOn` method, returning nativephp as one of the channels it broadcasts to:
 
 ```php
 use Illuminate\Broadcasting\Channel;
@@ -31,7 +31,7 @@ class JobFinished implements ShouldBroadcastNow
 }
 ```
 
-This is great for times when you want to offload an intensive task to a background queue and await its completion without constantly polling your application for its status.
+This is particularly useful for scenarios where you want to offload an intensive task to a background queue and await its completion without constantly polling your application for its status.
 
 ## Listening with IPC
 
@@ -71,7 +71,7 @@ class AppSettings extends Component
 }
 ```
 
-Alternatively you may also use the `$listeners` property to define all your component's listeners in one spot:
+Alternatively you may also use the `$listeners` property to define all your component's listeners in one place:
 
 ```php
 // Special Syntax: ['native:{event}' => '{method}']
@@ -86,10 +86,11 @@ protected $listeners = [
 NativePHP broadcasts events over a websocket connection on the `nativephp` broadcast channel.
 This allows you to listen for these events in real-time using Laravel Echo.
 
-In order to make use of WebSockets in your NativePHP application, you can install the [Laravel WebSockets](https://beyondco.de/docs/laravel-websockets) package in your Laravel app.
-NativePHP automatically runs `php artisan websockets:serve` to start your WebSocket server once your application runs, allowing you to use Laravel Echo to connect to it and listen for events in real-time.
+To use WebSockets in your NativePHP application, install the [Laravel WebSockets](https://beyondco.de/docs/laravel-websockets) package in your Laravel app.
 
-Please refer to the Laravel docs to learn more about [Laravel Echo](https://laravel.com/docs/11.x/broadcasting#client-side-installation)
+NativePHP automatically runs `php artisan websockets:serve` to start your WebSocket server when your application runs, enabling you to use Laravel Echo to connect and listen for events in real-time.
 
-> The Laravel Websockets package is currently only available for Laravel 10 and lower.
+For more information on setting up and using Laravel Echo, refer to the [Laravel documentation](https://laravel.com/docs/11.x/broadcasting#client-side-installation).
+
+> Note: The Laravel Websockets package is currently only available for Laravel 10 and lower.
 > Laravel Reverb support is coming soon!
