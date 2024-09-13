@@ -7,7 +7,7 @@ order: 100
 
 NativePHP facilitates event broadcasting of both [native events](#native-events) (emitted by Electron/Tauri) and
 [custom events](#custom-events) dispatched by your Laravel app. You can listen to all of these events in your
-Laravel application as you normally would or in the [JavaSscript](#javascript) on your pages.
+Laravel application as you normally would or in the [JavaSscript](#listening-with-javascript) on your pages.
 
 ## Native events
 
