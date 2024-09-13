@@ -43,13 +43,21 @@ its completion without constantly polling your application for its status.
 You can listen to all PHP events in real-time using JavaScript by making use of Electron's
 [Inter-Process-Communication System](https://electronjs.org/docs/latest/api/ipc-renderer).
 
-```js
-const ipcRenderer = require("electron").ipcRenderer;
+NativePHP injecst a `window.Native` object in every window you can use to listen to these events
 
-ipcRenderer.on("native-event", (_, data) => {
-    const eventClassName = data.event;
-    const eventPayload = data.payload;
+```js
+Native.on("Native\\Laravel\\Events\\Windows\\WindowBlurred", (payload, event) => {
+    //
 });
+```
+
+Alternitevely you can use the `Native.on` listener to immediately do something with the event payload. 
+
+``` js
+let podcastId = Native.on(
+    "App\\Events\\PodcastProcessed",
+    payload => payload.podcastId
+);
 ```
 
 ## Listening with Livewire
