@@ -38,12 +38,12 @@ class JobFinished implements ShouldBroadcastNow
 This is particularly useful for scenarios where you want to offload an intensive task to a background queue and await
 its completion without constantly polling your application for its status.
 
-## Listening with IPC in Electron
+## Listening with JavaScript
 
-You can listen to all PHP events in real-time using JavaScript by making use of Electron's
-[Inter-Process-Communication System](https://electronjs.org/docs/latest/api/ipc-renderer).
+You can listen to all native and custom events emitted by your application in real-time using JavaScript.
 
-NativePHP injecst a `window.Native` object in every window you can use to listen to these events
+NativePHP injecst a `window.Native` object into every window. The `on()` method allows you to register a callback as
+the second parameter that will run when the event specified in the first parameter is fired:
 
 ```js
 Native.on("Native\\Laravel\\Events\\Windows\\WindowBlurred", (payload, event) => {
@@ -51,7 +51,7 @@ Native.on("Native\\Laravel\\Events\\Windows\\WindowBlurred", (payload, event) =>
 });
 ```
 
-Alternitevely you can use the `Native.on` listener to immediately do something with the event payload. 
+Alternatively you can use the `Native.on` listener to immediately do something with the event payload. 
 
 ``` js
 let podcastId = Native.on(
