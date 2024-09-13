@@ -51,15 +51,6 @@ Native.on("Native\\Laravel\\Events\\Windows\\WindowBlurred", (payload, event) =>
 });
 ```
 
-Alternatively you can use the `Native.on` listener to immediately do something with the event payload. 
-
-``` js
-let podcastId = Native.on(
-    "App\\Events\\PodcastProcessed",
-    payload => payload.podcastId
-);
-```
-
 ## Listening with Livewire
 
 To make this process even easier when using [Livewire](https://livewire.laravel.com), you may use the `native:` prefix when
