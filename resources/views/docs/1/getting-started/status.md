@@ -1,10 +1,15 @@
 ---
-title: Status
+title: Roadmap
 order: 002
 ---
 
-## Current Status
+## Roadmap
+We're currently focused on reaching v1.
 
+We've put together a basic [roadmap](https://github.com/orgs/NativePHP/projects/2/views/1) to help visualize our
+current _estimated_ development timeline.
+
+## Current Status
 NativePHP is currently in the `alpha` stage.
 
 We need your help with testing and bug-hunting, so we want you to _build_ apps with NativePHP.
@@ -27,7 +32,3 @@ Be sure to share your findings through the [forum](https://github.com/orgs/nativ
 If you're building an app that you plan to distribute,
 [can you sponsor the development of NativePHP](https://github.com/nativephp/laravel?sponsor=1) to help us get to the
 v1.0 release sooner?
-
-## Roadmap
-We've put together a basic [roadmap](https://github.com/orgs/NativePHP/projects/2/views/1) to help visualize our
-current _estimated_ development timeline. 
