@@ -1,7 +1,6 @@
-<div class="lg:sticky top-0 relative text-white bg-gray-50 border-b border-gray-100 z-50 dark:bg-gray-800">
-    <div
-        class="flex items-center justify-between gap-6 px-6 py-3 mx-auto max-w-7xl sm:py-4"
-    >
+<div class="lg:sticky top-0 text-white bg-gray-50 border-b border-gray-100 z-50 dark:bg-gray-800">
+    <x-alert />
+    <div class="flex items-center justify-between gap-6 px-6 py-3 mx-auto max-w-screen-xl sm:py-4">
         <a
             href="/"
             class="inline-flex items-center gap-3 transition rounded hover:text-white/80 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/80 focus-visible:ring-offset-2 focus-visible:ring-offset-red-600"
