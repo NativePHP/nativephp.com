@@ -9,6 +9,17 @@
 nav a {
     @apply no-underline;
 }
+nav .active > a {
+    @apply text-[#00aaa6];
+}
+
+/*nav .active {*/
+/*    @apply bg-gray-50;*/
+/*}*/
+
+nav ul li ul li.exact-active a  {
+    @apply text-[#00aaa6];
+}
 
 nav a:hover {
     @apply text-gray-600;

@@ -1,5 +1,5 @@
 <div class="hidden lg:block relative z-20 w-[18rem] inset-0 left-[max(0px,calc(50%-45rem))] right-auto ">
-    <div class="sticky max-h-screen overflow-y-scroll top-0 w-full border-r border-[#00aaa6] border-opacity-10 dark:border-opacity-90 pt-8 pb-12 pl-4">
+    <div class="sticky max-h-screen overflow-y-scroll top-20 w-full border-r border-[#00aaa6] border-opacity-10 dark:border-opacity-90 pt-6 pb-24 pl-4">
         <nav class="flex flex-col flex-1">
             {!! $navigation !!}
         </nav>
