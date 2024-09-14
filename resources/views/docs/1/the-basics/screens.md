@@ -48,7 +48,11 @@ function getCurrentScreen()
 
 The `cursorPosition` method gives you the coordinates of the current absolute position of the mouse cursor.
 
-The position of the cursor is relative to the top-left corner of the primary display. So if your external display is on the right of your laptop screen, the `x` value will be negative.
+The position of the cursor is relative to the top-left corner of the primary display. These values can be
+negative as well as positive.
+
+For example, a secondary display may be oriented by your system to the right of your primary display.
+If your mouse cursor is on the secondary display when calling `Screen::cursorPosition()`, the `x` value will be a negative integer.
 ```php
 $position = Screen::cursorPosition();
 
