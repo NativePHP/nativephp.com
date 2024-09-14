@@ -1,4 +1,5 @@
-<div class="lg:sticky top-0 text-white bg-gray-50 border-b border-gray-100 z-50 dark:bg-gray-800">
+<div class="lg:sticky top-0 text-white bg-gray-50 border-b border-gray-100 z-50 dark:bg-gray-800 dark:border-0">
+
     <x-alert />
     <div class="flex items-center justify-between gap-6 px-6 py-3 mx-auto max-w-screen-xl sm:py-4">
         <a
@@ -14,15 +15,15 @@
             <div id="docsearch" class="mr-12"></div>
 
             <a href="https://discord.gg/X62tWNStZK" title="Go to discord server">
-                <x-icons.discord class="size-5 dark:fill-white" />
+                <x-icons.discord  class="size-5 dark:fill-white hover:fill-[#00aaa6]" />
             </a>
 
             <a href="https://pinkary.com/@nativephp" title="Pinkary of NativePHP">
-                <x-icons.pinkary class="size-5 dark:fill-white" />
+                <x-icons.pinkary class="size-5 text-black dark:invert hover:text-[#00aaa6] hover:invert-0" />
             </a>
 
             <a href="https://github.com/nativephp" title="Source code of NativePHP">
-                <x-icons.github class="size-5 dark:fill-white" />
+                <x-icons.github class="size-5  dark:fill-white hover:fill-[#00aaa6]" />
             </a>
         </div>
     </div>

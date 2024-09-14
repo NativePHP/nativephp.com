@@ -17,12 +17,14 @@ nav .active > a {
 /*    @apply bg-gray-50;*/
 /*}*/
 
+
+
 nav ul li ul li.exact-active a  {
     @apply text-[#00aaa6];
 }
 
 nav a:hover {
-    @apply text-gray-600;
+    @apply text-gray-400;
 }
 
 nav ul {

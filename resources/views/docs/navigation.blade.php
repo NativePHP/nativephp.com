@@ -1,6 +1,7 @@
 <div class="
 fixed -mx-3 overflow-y-auto max-h-[calc(100%-134px)] hidden lg:block py-8 lg:max-w-[240px] lg:w-full
- border-r border-[#00aaa6] border-opacity-10 dark:border-opacity-90
+ border-r border-[#00aaa6] border-opacity-10 dark:border-0
+ dark:text-gray-200
   pl-4
  ">
     <nav class="flex flex-col flex-1">
