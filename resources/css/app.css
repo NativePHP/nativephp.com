@@ -6,6 +6,11 @@
     display: none;
 }
 
+/* Look cool on safari */
+.blur-background {
+    backdrop-filter: blur(20px);
+}
+
 nav a {
     @apply no-underline;
 }
