@@ -24,7 +24,7 @@ $screens = Screen::displays();
 
 The screen bounds are the desktop area that the screen covers. The `x` and `y` values are the top-left corner of the screen relative to the primary display, and the `width` and `height` values are the width and height of the screen.
 
-Example to found out in what screen the window is located:
+You can use this to find out which screen a particular window is located on:
 
 ```php
 function getCurrentScreen()
