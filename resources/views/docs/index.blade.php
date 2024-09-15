@@ -4,6 +4,7 @@
         <div class="max-w-screen-xl w-full mx-auto px-3 sm:px-6 flex flex-wrap justify-between gap-8">
             @include('docs.navigation')
 
+
             <div class="overflow-hidden lg:ml-[240px] max-w-prose w-full py-8 sm:px-8">
 
                 <div class="text-5xl font-bold tracking-tight mb-4 text-[#00aaa6]">

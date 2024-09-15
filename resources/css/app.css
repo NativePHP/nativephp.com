@@ -141,7 +141,6 @@ nav ul li ul {
     }
     nav ul li ul li a {
         @apply w-full;
-        @apply py-2;
         @apply flex flex-1;
     }
 }
