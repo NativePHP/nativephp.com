@@ -2,12 +2,10 @@
 
 namespace App\Support\CommonMark;
 
+use App\Extensions\TorchlightWithCopyExtension;
 use League\CommonMark\CommonMarkConverter;
-use League\CommonMark\Extension\CommonMark\Node\Block\FencedCode;
 use League\CommonMark\Extension\CommonMark\Node\Block\Heading;
-use League\CommonMark\Extension\CommonMark\Node\Block\IndentedCode;
 use League\CommonMark\Extension\Table\TableExtension;
-use Torchlight\Commonmark\V2\TorchlightExtension;
 
 class CommonMark
 {
@@ -16,7 +14,7 @@ class CommonMark
         $converter = new CommonMarkConverter();
         $converter->getEnvironment()->addRenderer(Heading::class, new HeadingRenderer());
         $converter->getEnvironment()->addExtension(new TableExtension());
-        $converter->getEnvironment()->addExtension(new TorchlightExtension());
+        $converter->getEnvironment()->addExtension(new TorchlightWithCopyExtension());
 
         return $converter->convert($markdown);
     }

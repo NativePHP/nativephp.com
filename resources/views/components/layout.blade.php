@@ -23,8 +23,10 @@
     <script src="https://cdn.usefathom.com/script.js" data-site="HALHTNZU" defer></script>
     <!-- / Fathom -->
 </head>
-<body class="min-h-screen font-sans antialiased bg-white dark:bg-gray-900 dark:text-white">
-<x-alert />
+<body class="min-h-screen font-sans antialiased bg-white dark:bg-gray-900 dark:text-white"
+      x-data="{ showDocsNavigation: false }"
+>
+
 <x-banner />
 {{ $slot }}
 <script src="https://cdn.jsdelivr.net/npm/@docsearch/js@3"></script>
