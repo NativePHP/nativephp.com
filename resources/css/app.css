@@ -99,7 +99,7 @@ nav ul li ul {
  overflow-x-auto is recommended.
 */
 .prose pre {
-    @apply p-0 my-4 overflow-x-auto bg-transparent rounded;
+    @apply p-0 my-4 overflow-x-auto bg-transparent rounded-md;
 }
 
 /*

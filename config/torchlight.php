@@ -62,5 +62,8 @@ return [
         // When lines are collapsed, this is the text that will
         // be shown to indicate that they can be expanded.
         // 'summaryCollapsedIndicator' => '...',
+
+        // Show or hide the copy button on code blocks.
+        'copyable' => true,
     ]
 ];

@@ -1,6 +1,6 @@
 <div class="lg:sticky top-0 blur-background text-white bg-gray-50/85 border-b border-gray-100 z-50 dark:bg-gray-800/85 dark:border-0">
 
-{{--    <x-alert />--}}
+    <x-alert />
     <div class="flex items-center justify-between gap-6 px-6 py-3 mx-auto max-w-screen-xl sm:py-4">
         <a
             href="/"
