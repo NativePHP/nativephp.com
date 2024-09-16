@@ -10,9 +10,8 @@ When your NativePHP application starts - whether it's in development or producti
 1. The native shell (Electron or Tauri) is started.
 2. NativePHP runs `php artisan migrate` to ensure your database is up-to-date.
 3. NativePHP runs `php artisan serve` to start the PHP development server.
-4. NativePHP boots your application by running the `boot()` method on your `NativeAppServiceProvider`.
-
-In addition to the `boot()` method, NativePHP also dispatches a `Native\Laravel\Events\App\ApplicationBooted` event.
+4. NativePHP boots your application by running the `boot()` method on your `NativeAppServiceProvider`. 
+5. NativePHP also dispatches a `ApplicationBooted` event.
 
 ## The NativeAppServiceProvider
 
@@ -50,3 +49,8 @@ class NativeAppServiceProvider implements ProvidesPhpIni
     }
 }
 ```
+
+## Events
+
+### ApplicationBooted
+Like mentioned above, the `Native\Laravel\Events\App\ApplicationBooted` event is dispatched when your application has been booted.
