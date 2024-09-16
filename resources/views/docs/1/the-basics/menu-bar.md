@@ -223,16 +223,16 @@ window events to the `nativephp` broadcast channel.
 
 To learn more about NativePHP's broadcasting capabilities, please refer to the [Broadcasting](/docs/digging-deeper/broadcasting) section.
 
-### MenuBarShown
+### `MenuBarShown`
 
 The `Native\Laravel\Events\MenuBar\MenuBarShown` event will be dispatched when the user clicks on the menu bar icon and the menu bar window opens, or when
 the menu bar gets shown by using the `MenuBar::show()` method.
 
-### MenuBarHidden
+### `MenuBarHidden`
 
 The `Native\Laravel\Events\MenuBar\MenuBarHidden` event will be dispatched when the user clicks out of the menu bar window and the menu bar window closes, or when
 the menu bar gets hidden by using the `MenuBar::hide()` method.
 
-### MenuBarContextMenuOpened
+### `MenuBarContextMenuOpened`
 
 The `Native\Laravel\Events\MenuBar\MenuBarContextMenuOpened` event will be dispatched when the user right-clicks on the menu bar icon and the context menu opens.

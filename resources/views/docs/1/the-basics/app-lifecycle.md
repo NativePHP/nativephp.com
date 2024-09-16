@@ -52,5 +52,5 @@ class NativeAppServiceProvider implements ProvidesPhpIni
 
 ## Events
 
-### ApplicationBooted
+### `ApplicationBooted`
 Like mentioned above, the `Native\Laravel\Events\App\ApplicationBooted` event is dispatched when your application has been booted.

@@ -42,6 +42,6 @@ Notification::title('Hello from NativePHP')
 
 ## Events
 
-### NotificationClicked
-The `NotificationClicked` event is dispatched when a user clicks on a notification.
+### `NotificationClicked`
+The `Native\Laravel\Events\Notifications\NotificationClicked` event is dispatched when a user clicks on a notification.
 

@@ -81,19 +81,19 @@ if (PowerMonitor::isOnBatteryPower()) {
 
 You can listen to the following events to get handle when the system's power state changes:
 
-### PowerStateChanged
+### `PowerStateChanged`
 
 This `Native\Laravel\Events\PowerStateChanged` event is fired whenever the power state of the system changes. For example, when the system goes from battery power to AC power, or vice versa.
 
 The event contains a public `$state` property which is an enum value of `Native\Laravel\Enums\PowerStatesEnum`.
 
-### SpeedLimitChanged
+### `SpeedLimitChanged`
 
 This `Native\Laravel\Events\SpeedLimitChanged` event is fired whenever the CPU speed limit changes, usually due to thermal throttling or low battery.
 
 The event contains a public `$limit` property which is the percentage of the maximum CPU speed that is currently allowed.
 
-### ThermalStateChanged
+### `ThermalStateChanged`
 
 The `Native\Laravel\Events\ThermalStateChanged` event is fired whenever the thermal state of the system changes.
 
