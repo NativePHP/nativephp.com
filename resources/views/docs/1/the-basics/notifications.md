@@ -26,7 +26,7 @@ Notification::title('Hello from NativePHP')
 
 This will show a system-wide notification to the user with the given title and message.
 
-### Handle click on a notification
+### Handling clicks on notifications
 
 You may register a custom event along with your NativePHP notification. 
 This event will be fired when a user clicks on the notification, so that you may add some custom logic within your application in this scenario.
