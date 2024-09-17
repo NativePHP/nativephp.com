@@ -69,6 +69,10 @@
                         <a href="https://serverauth.com/" class="block h-12 fill-[#042340] dark:fill-white">
                             {!! file_get_contents(public_path('/img/sponsors/serverauth.svg')) !!}
                         </a>
+
+                        <a href="https://kaashosting.com/" class="block h-10 fill-[#042340] dark:fill-white">
+                            {!! file_get_contents(public_path('/img/sponsors/kaashosting.svg')) !!}
+                        </a>
                     </div>
 
                     <a href="https://github.com/sponsors/simonhamp" target="_blank" class="inline-block px-4 py-1.5 text-xs font-semibold text-black bg-white border rounded mt-6">
