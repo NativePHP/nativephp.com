@@ -8,13 +8,15 @@ order: 700
 NativePHP allows you to easily read from and write to the system clipboard using just PHP, thanks to the `Clipboard`
 facade.
 
+```php
+use Native\Laravel\Facades\Clipboard;
+```
+
 ### Reading from the Clipboard
 
 You can read `text`, `html` or `image` data from the clipboard using the appropriate method:
 
 ```php
-use Native\Laravel\Facades\Clipboard;
-
 Clipboard::text();
 Clipboard::html();
 Clipboard::image();
@@ -25,8 +27,6 @@ Clipboard::image();
 You can write `text`, `html` or `image` data to the clipboard using the appropriate method:
 
 ```php
-use Native\Laravel\Facades\Clipboard;
-
 Clipboard::text('Some copied text');
 Clipboard::html('<div>Some copied HTML</div>');
 Clipboard::image('path/to/image.png');
@@ -40,8 +40,6 @@ serializing the image data for you.
 You may also programmatically clear the clipboard using the `clear()` method.
 
 ```php
-use Native\Laravel\Facades\Clipboard;
-
 Clipboard::clear();
 ```
 

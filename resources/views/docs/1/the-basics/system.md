@@ -18,6 +18,11 @@ the platform on which your app is running.
 While some features are platform-specific, NativePHP gracefully handles this for you so that you don't have to think
 about whether something is Linux-, Mac-, or Windows-only.
 
+Most of the system-related features are available through the `System` facade.
+```php
+use Native\Laravel\Facades\System;
+```
+
 ## Encryption / Decryption
 
 Almost every non-trivial application will require some concept of secure data storage and retrieval. For example, if
@@ -40,8 +45,6 @@ decrypt the secrets that you need to store on behalf of your user.
 NativePHP allows you to encrypt and decrypt data in your application easily:
 
 ```php
-use Native\Laravel\Facades\System;
-
 if (System::canEncrypt()) {
     $encrypted = System::encrypt('secret_key_a79hiunfw86...');
 
@@ -54,8 +57,6 @@ You can then safely store the encrypted string in a database or the filesystem.
 When you need to get the original value, you can decrypt it:
 
 ```php
-use Native\Laravel\Facades\System;
-
 if (System::canEncrypt()) {
     $decrypted = System::decrypt('djEwJo+Huv+aeBgUoav5nIJWRQ==');
 
@@ -68,8 +69,6 @@ if (System::canEncrypt()) {
 For Mac systems that support TouchID, you can use TouchID to protect and unlock various parts of your application.
 
 ```php
-use Native\Laravel\Facades\System;
-
 if (System::canPromptTouchID() && System::promptTouchID('access your Contacts')) {
     // Do your super secret activity here
 }

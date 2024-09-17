@@ -213,7 +213,7 @@ MenuBar::create()
     );
 ```
 
-## Menu Bar Events
+## Events
 
 NativePHP provides a simple way to listen for menu bar events.
 All events get dispatched as regular Laravel events, so you may use your `EventServiceProvider` to register listeners.
@@ -223,16 +223,16 @@ window events to the `nativephp` broadcast channel.
 
 To learn more about NativePHP's broadcasting capabilities, please refer to the [Broadcasting](/docs/digging-deeper/broadcasting) section.
 
-### Menu Bar Opened
+### `MenuBarShown`
 
 The `Native\Laravel\Events\MenuBar\MenuBarShown` event will be dispatched when the user clicks on the menu bar icon and the menu bar window opens, or when
 the menu bar gets shown by using the `MenuBar::show()` method.
 
-### Menu Bar Closed
+### `MenuBarHidden`
 
 The `Native\Laravel\Events\MenuBar\MenuBarHidden` event will be dispatched when the user clicks out of the menu bar window and the menu bar window closes, or when
 the menu bar gets hidden by using the `MenuBar::hide()` method.
 
-### Menu Bar Context Menu Opened
+### `MenuBarContextMenuOpened`
 
 The `Native\Laravel\Events\MenuBar\MenuBarContextMenuOpened` event will be dispatched when the user right-clicks on the menu bar icon and the context menu opens.

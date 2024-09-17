@@ -8,6 +8,10 @@ order: 300
 NativePHP allows you to configure the native menu of your application, as well as context menus or dock menus.
 You can use the `Menu` facade which provides you with a single re-usable abstraction for building all of these menus.
 
+```php
+use Native\Laravel\Facades\Menu;
+```
+
 The configuration of your application menu should happen in the `boot` method of your `NativeAppServiceProvider`.
 
 ### Creating a menu

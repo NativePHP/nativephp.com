@@ -356,54 +356,7 @@ In order to keep the window draggable, you should add an HTML element with the f
 NativePHP provides a simple way to listen for native window events.
 All events get dispatched as regular Laravel events, so you may use your `EventServiceProvider` to register listeners.
 
-Sometimes you may want to listen and react to window events in real-time, which is why NativePHP also broadcasts all
-window events to the `nativephp` broadcast channel. 
-
-To learn more about NativePHP's broadcasting capabilities, please refer to the [Broadcasting](/docs/digging-deeper/broadcasting) section.
-
-### Window Shown Event
-
-The `Native\Laravel\Events\Windows\WindowShown` event will be dispatched when a window is shown to the user.
-The payload of this event contains the window ID.
-
-### Window Closed Event
-
-The `Native\Laravel\Events\Windows\WindowClosed` event will be dispatched when a window is closed.
-The payload of this event contains the window ID.
-
-### Window Focused Event
-
-The `Native\Laravel\Events\Windows\WindowFocused` event will be dispatched when a window is focused.
-The payload of this event contains the window ID.
-
-### Window Blurred Event
-
-The `Native\Laravel\Events\Windows\WindowBlurred` event will be dispatched when a window is blurred.
-The payload of this event contains the window ID.
-
-### Window Minimized Event
-
-The `Native\Laravel\Events\Windows\WindowMinimized` event will be dispatched when a window is minimized.
-The payload of this event contains the window ID.
-
-### Window Maximized Event
-
-The `Native\Laravel\Events\Windows\WindowMaximized` event will be dispatched when a window is maximized.
-The payload of this event contains the window ID.
-
-### Window Resized Event
-
-The `Native\Laravel\Events\Windows\WindowResized` event will be dispatched after a window has been resized.
-The payload of this event contains the window ID and the new window `$width` and `$height`.
-
-You may register listeners for these events in your `EventServiceProvider`:
-
 ```php
-/**
- * The event listener mappings for the application.
- *
- * @var array
- */
 protected $listen = [
     'Native\Laravel\Events\Windows\WindowShown' => [
         'App\Listeners\WindowWasShownListener',
@@ -411,3 +364,44 @@ protected $listen = [
     // ...
 ];
 ```
+
+Sometimes you may want to listen and react to window events in real-time, which is why NativePHP also broadcasts all
+window events to the `nativephp` broadcast channel. 
+
+To learn more about NativePHP's broadcasting capabilities, please refer to the [Broadcasting](/docs/digging-deeper/broadcasting) section.
+
+### `WindowShown`
+
+The `Native\Laravel\Events\Windows\WindowShown` event will be dispatched when a window is shown to the user.
+The payload of this event contains the window ID.
+
+### `WindowClosed`
+
+The `Native\Laravel\Events\Windows\WindowClosed` event will be dispatched when a window is closed.
+The payload of this event contains the window ID.
+
+### `WindowFocused`
+
+The `Native\Laravel\Events\Windows\WindowFocused` event will be dispatched when a window is focused.
+The payload of this event contains the window ID.
+
+### `WindowBlurred`
+
+The `Native\Laravel\Events\Windows\WindowBlurred` event will be dispatched when a window is blurred.
+The payload of this event contains the window ID.
+
+### `WindowMinimized`
+
+The `Native\Laravel\Events\Windows\WindowMinimized` event will be dispatched when a window is minimized.
+The payload of this event contains the window ID.
+
+### `WindowMaximized`
+
+The `Native\Laravel\Events\Windows\WindowMaximized` event will be dispatched when a window is maximized.
+The payload of this event contains the window ID.
+
+### `WindowResized`
+
+The `Native\Laravel\Events\Windows\WindowResized` event will be dispatched after a window has been resized.
+The payload of this event contains the window ID and the new window `$width` and `$height`.
+
