@@ -72,7 +72,7 @@
                             {!! file_get_contents(public_path('/img/sponsors/serverauth.svg')) !!}
                         </a>
 
-                        <a href="https://kaashosting.com/" class="block h-10 fill-[#042340] dark:fill-white">
+                        <a href="https://www.kaashosting.nl/?lang=en" class="block h-10 fill-[#042340] dark:fill-white">
                             {!! file_get_contents(public_path('/img/sponsors/kaashosting.svg')) !!}
                         </a>
                     </div>
