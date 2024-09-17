@@ -66,8 +66,8 @@
                             <img src="/img/sponsors/sevalla-dark.png" class="h-12 hidden dark:block">
                         </a>
 
-                        <a href="https://serverauth.com/">
-                            <img src="/img/sponsors/serverauth.svg" class="block h-12 fill-[#042340] darK:fill-white">
+                        <a href="https://serverauth.com/" class="block h-12 fill-[#042340] dark:fill-white">
+                            {!! file_get_contents(public_path('/img/sponsors/serverauth.svg')) !!}
                         </a>
                     </div>
 
