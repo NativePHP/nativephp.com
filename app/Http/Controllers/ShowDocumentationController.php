@@ -87,6 +87,25 @@ class ShowDocumentationController extends Controller
             ->setActive(\request()->path())
             ->__toString();
 
+        $pageProperties['editUrl'] = "https://github.com/NativePHP/nativephp.com/tree/main/resources/views/docs/{$version}/{$page}.md";
+
+        // Find the next & previous page in the navigation
+        $pageProperties['nextPage'] = null;
+        $pageProperties['previousPage'] = null;
+
+        foreach ($navigation as $section) {
+            foreach ($section['children'] as $key => $child) {
+                if ($child['path'] === '/'.$pageProperties['pagePath']) {
+                    if (isset($section['children'][$key + 1])) {
+                        $pageProperties['nextPage'] = $section['children'][$key + 1];
+                    }
+                    if (isset($section['children'][$key - 1])) {
+                        $pageProperties['previousPage'] = $section['children'][$key - 1];
+                    }
+                }
+            }
+        }
+
         if (isset($pageProperties['packageName'])) {
             $cardFilename = '/img/docs/'.strtolower(Str::slug($pageProperties['packageName'])).'/img/card.png';
             $cardPath = public_path($cardFilename);
