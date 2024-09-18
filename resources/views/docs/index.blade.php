@@ -52,7 +52,7 @@
             xl:fixed xl:right-[max(0px,calc(50%-48rem))] xl:block xl:py-8 xl:px-4 xl:pr-3 xl:w-full xl:max-w-sm">
                 <x-sidebar-title>On this page</x-sidebar-title>
                 @if (count($tableOfContents) > 0)
-                    <ul class="pl-3 mt-4 space-y-2 text-sm">
+                    <ul class="pl-2 space-y-2 text-sm">
                         @foreach($tableOfContents as $item)
                             <li class="hover:text-gray-400 @if($item['level'] == 2) font-medium text-gray-800 dark:text-gray-200 @endif  @if($item['level'] == 3) ml-4 @endif">
                                 <a href="#{{ $item['anchor'] }}">{{ $item['title'] }}</a>
@@ -61,13 +61,13 @@
                     </ul>
                 @endif
 
-                <x-sidebar-title class="mt-12">Featured sponsors</x-sidebar-title>
-                <div class="flex flex-col gap-4 mt-4 w-3/4 pl-3">
+                <x-sidebar-title class="mt-14">Featured sponsors</x-sidebar-title>
+                <div class="mt-4 flex flex-col gap-4 w-3/4 pl-3">
                     <x-sponsors-featured height="h-12"/>
                 </div>
 
-                <x-sidebar-title class="mt-12">Corporate sponsors</x-sidebar-title>
-                <div class="flex flex-col gap-6 mt-4 w-3/4 pl-3">
+                <x-sidebar-title class="mt-14">Corporate sponsors</x-sidebar-title>
+                <div class="mt-4 flex flex-col gap-6 w-3/4 pl-3">
                     <x-sponsors-corporate height="h-8"/>
                 </div>
             </div>

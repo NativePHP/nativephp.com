@@ -5,6 +5,5 @@
 </a>
 
 <a href="https://laradir.com/?ref=nativephp" title="Laradir sponsor">
-    <img src="/img/sponsors/laradir.svg" class="block dark:hidden {{ $height }} max-w-full">
-    <img src="/img/sponsors/laradir-dark.svg" class="hidden dark:block {{ $height }} max-w-full">
+    <x-sponsors.laradir class="block {{ $height }} max-w-full"/>
 </a>
