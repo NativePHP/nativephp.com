@@ -63,7 +63,7 @@
 
                 <x-sidebar-title class="mt-14">Featured sponsors</x-sidebar-title>
                 <div class="mt-4 flex flex-col gap-4 w-3/4 pl-3">
-                    <x-sponsors-featured height="h-12"/>
+                    <x-sponsors-featured height="h-12" :same-height="false"/>
                 </div>
 
                 <x-sidebar-title class="mt-14">Corporate sponsors</x-sidebar-title>
