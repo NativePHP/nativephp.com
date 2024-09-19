@@ -10,29 +10,8 @@
                 <div class="text-5xl font-bold tracking-tight mb-4 text-[#00aaa6]">
                     {{$title}}
                 </div>
-                <div class="rounded-lg flex items-center p-3 mt-8 space-x-6 border
-                text-orange-800 border-orange-300 bg-orange-50
-                dark:text-orange-100 dark:bg-orange-900/80 dark:border-orange-600">
-                    <x-heroicon-o-shield-exclamation class="size-10 ml-3"/>
-                    <div>
-                        <p>
-                            NativePHP is currently in
-                            <a href="/docs/getting-started/status" class="font-bold italic font-mono flex-inline px-1 py-0.5 text-base bg-orange-200 dark:bg-orange-600 rounded">alpha</a>
-                            development
-                        </p>
 
-                        <a href="https://github.com/nativephp/laravel?sponsor=1"
-                           onclick="fathom.trackEvent('beta_interest');"
-                           class="group mt-4 font-bold inline-flex items-center rounded-md px-3 py-1
-                            bg-orange-200 border border-orange-400 hover:bg-orange-300
-                            dark:bg-orange-600 dark:border-orange-400 dark:hover:bg-orange-500 dark:text-orange-100
-                            " target="_blank">
-                            Let's get to beta!
-                            <x-heroicon-o-rocket-launch class="ml-2 size-5 group-hover:hidden"/>
-                            <x-heroicon-s-rocket-launch class="hidden ml-2 size-5 group-hover:block"/>
-                        </a>
-                    </div>
-                </div>
+                <x-alert-beta/>
 
                 @if (count($tableOfContents) > 0)
                     <ul class="mt-8 space-y-2 block xl:hidden">
@@ -46,6 +25,33 @@
 
                 <div class="mt-8 prose dark:prose-invert">
                     {!! $content !!}
+                </div>
+
+                <x-separator class="mt-8 -mr-4 -ml-4"/>
+
+                @php $linkAlign = $previousPage === null ? 'right' : 'between'; @endphp
+                <x-flex-list-of-links align="{{$linkAlign}}" class="mt-8">
+                    @if($previousPage !== null)
+                        <x-link-button href="{{ $previousPage['path'] }}">
+                            <span class="md:hidden">Previous page: </span>
+                            <span aria-hidden="true" class="hidden sm:inline">&larr;</span>
+                            <span>{{ $previousPage['title'] }}</span>
+                        </x-link-button>
+                    @endif
+                    @if($nextPage !== null)
+                        <x-link-button href="{{ $nextPage['path'] }}">
+                            <span class="md:hidden">Next page: </span>
+                            <span>{{ $nextPage['title'] }}</span>
+                            <span aria-hidden="true" class="hidden sm:inline"> &rarr;</span>
+                        </x-link-button>
+                    @endif
+                </x-flex-list-of-links>
+
+                <x-separator class="mt-8 -mr-4 -ml-4"/>
+                <div class="mt-8 text-center">
+                    <a href="{{ $editUrl }}" target="_blank" rel="noopener noreferrer" class="text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300">
+                        Edit this page on GitHub
+                    </a>
                 </div>
             </div>
             <div class="hidden max-h-[calc(100%-134px)] overflow-y-auto
