@@ -42,7 +42,7 @@ its completion without constantly polling your application for its status.
 
 You can listen to all native and custom events emitted by your application in real-time using JavaScript.
 
-NativePHP injecst a `window.Native` object into every window. The `on()` method allows you to register a callback as
+NativePHP injects a `window.Native` object into every window. The `on()` method allows you to register a callback as
 the second parameter that will run when the event specified in the first parameter is fired:
 
 ```js
