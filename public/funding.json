@@ -1,0 +1,119 @@
+{
+    "version": "v1.0.0",
+    "entity": {
+        "type": "individual",
+        "role": "maintainer",
+        "name": "Simon Hamp",
+        "email": "simon.hamp@me.com",
+        "description": "PHP and Laravel developer who believes that it's time for PHP to be used everywhere!",
+        "webpageUrl": {
+            "url": "https://simonhamp.me",
+            "wellKnown": "https://simonhamp.me/.well-known/funding-manifest-urls"
+        }
+    },
+    "projects": [{
+        "guid": "nativephp",
+        "name": "NativePHP",
+        "description": "NativePHP is a new way to build native applications, using the tools you already know.",
+        "webpageUrl": {
+            "url": "https://nativephp.com/"
+        },
+        "repositoryUrl": {
+            "url": "https://github.com/nativephp/laravel",
+            "wellKnown": "https://github.com/nativephp/laravel/blob/main/.well-known/funding-manifest-urls"
+        },
+        "licenses": ["spdx:MIT"],
+        "tags": ["php", "laravel", "electron", "tauri"]
+    }],
+    "funding": {
+        "channels": [
+            {
+                "guid": "github-sponsors",
+                "type": "other",
+                "address": "https://github.com/sponsors/simonhamp"
+            },
+            {
+                "guid": "open-collective",
+                "type": "other",
+                "address": "https://opencollective.com/nativephp"
+            }
+        ],
+        "plans": [
+            {
+                "guid": "s1-monthly",
+                "status": "active",
+                "name": "Sponsor",
+                "amount": 100,
+                "currency": "USD",
+                "frequency": "monthly",
+                "channels": ["github-sponsors", "open-collective"]
+            },
+            {
+                "guid": "s2-monthly",
+                "status": "active",
+                "name": "Sponsor",
+                "amount": 250,
+                "currency": "USD",
+                "frequency": "monthly",
+                "channels": ["github-sponsors", "open-collective"]
+            },
+            {
+                "guid": "s5-monthly",
+                "status": "active",
+                "name": "Sponsor",
+                "amount": 500,
+                "currency": "USD",
+                "frequency": "monthly",
+                "channels": ["github-sponsors", "open-collective"]
+            },
+            {
+                "guid": "f1-monthly",
+                "status": "active",
+                "name": "Featured Sponsor",
+                "amount": 1000,
+                "currency": "USD",
+                "frequency": "monthly",
+                "channels": ["github-sponsors", "open-collective"]
+            },
+            {
+                "guid": "f2-monthly",
+                "status": "active",
+                "name": "Featured Sponsor",
+                "amount": 2500,
+                "currency": "USD",
+                "frequency": "monthly",
+                "channels": ["github-sponsors", "open-collective"]
+            },
+            {
+                "guid": "f5-monthly",
+                "status": "active",
+                "name": "Featured Sponsor",
+                "amount": 5000,
+                "currency": "USD",
+                "frequency": "monthly",
+                "channels": ["github-sponsors", "open-collective"]
+            },
+            {
+                "guid": "custom-single",
+                "status": "active",
+                "name": "Custom",
+                "amount": 0,
+                "currency": "USD",
+                "frequency": "one-time",
+                "channels": ["github-sponsors", "open-collective"]
+            },
+            {
+                "guid": "custom-monthly",
+                "status": "active",
+                "name": "Custom",
+                "amount": 0,
+                "currency": "USD",
+                "frequency": "monthly",
+                "channels": ["github-sponsors", "open-collective"]
+            }
+        ],
+        "history": [
+            {"year": 2024, "income": 2000, "expenses": 55000, "taxes": 0, "currency": "USD", "description": "Started accepting donations for the first time."}
+        ]
+    }
+}
