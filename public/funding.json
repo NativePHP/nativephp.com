@@ -20,7 +20,7 @@
         },
         "repositoryUrl": {
             "url": "https://github.com/nativephp/laravel",
-            "wellKnown": "https://raw.githubusercontent.com/nativephp/laravel/refs/heads/main/.well-known/funding-manifest-urls"
+            "wellKnown": "https://github.com/nativephp/laravel/raw/main/.well-known/funding-manifest-urls"
         },
         "licenses": ["spdx:MIT"],
         "tags": ["php", "laravel", "electron", "tauri"]
