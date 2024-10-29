@@ -282,7 +282,8 @@ To learn more about NativePHP's broadcasting capabilities, please refer to the
 This `Native\Laravel\Events\ChildProcess\ProcessSpawned` event will be dispatched when a Child Process has successfully
 been spawned. The payload of the event contains the `$alias` and the `$pid` of the process.
 
-> In Electron, the `$pid` here will be the Process ID of an Electron Helper process which spawns the underlying process.
+**In Electron, the `$pid` here will be the Process ID of an Electron Helper process which spawns the underlying
+process.**
 
 ### `ProcessExited`
 This `Native\Laravel\Events\ChildProcess\ProcessExited` event will be dispatched when a Child Process exits. The
