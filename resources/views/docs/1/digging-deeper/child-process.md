@@ -14,6 +14,15 @@ get shut down gracefully.
 "Spawning" a Child Process is like running a command from the CLI. Any command you can run in the terminal can be a
 Child Process.
 
+```php
+ChildProcess::start(
+    cmd: 'tail -f storage/logs/laravel.log',
+    alias: 'tail'
+);
+```
+
+Any process invoked using the ChildProcess facade will be non-blocking and keep running in the background. Even if the request that triggered it has finished.
+
 **Bear in mind that your Child Process ("command line") arguments may need to differ depending on which platform your
 application is running on (Mac/Linux vs Windows).**
 
