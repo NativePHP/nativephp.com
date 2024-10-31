@@ -225,46 +225,6 @@ ChildProcess::message('Hello, world!', 'tail');
 
 The message format and how they are handled will be determined by the program you're running.
 
-## Handling output
-
-A Child Process may send output via any of the following interfaces:
-
--   Its standard output stream (`STDOUT`).
--   Its standard error stream (`STDERR`).
--   A custom interface, e.g. a network socket.
-
-### Listening for Output (`STDOUT`)
-
-You may receive standard output for a process by registering an event listener for the
-[`MessageReceived`](#codemessagereceivedcode) event:
-
-```php
-use Illuminate\Support\Facades\Event;
-use Native\Laravel\Events\ChildProcess\MessageReceived;
-
-Event::listen(MessageReceived::class, function (MessageReceived $event) {
-    if ($event->alias === 'tail') {
-        //
-    }
-});
-```
-
-### Listening for Errors (`STDERR`)
-
-You may receive standard errors for a process by registering an event listener for the
-[`ErrorReceived`](#codeerrorreceivedcode) event:
-
-```php
-use Illuminate\Support\Facades\Event;
-use Native\Laravel\Events\ChildProcess\ErrorReceived;
-
-Event::listen(ErrorReceived::class, function (ErrorReceived $event) {
-    if ($event->alias === 'tail') {
-        //
-    }
-});
-```
-
 ## Stopping a Child Process
 
 Your child processes will shut down when your application exits. However, you may also choose to stop them manually or
@@ -302,18 +262,53 @@ Alternatively, you may use the `ChildProcess` facade to restart a process via it
 ChildProcess::restart('tail');
 ```
 
+## Handling output
+
+A Child Process may send output via any of the following interfaces:
+
+-   Its standard output stream (`STDOUT`).
+-   Its standard error stream (`STDERR`).
+-   A custom interface, e.g. a network socket.
+-   Broadcasting a Custom Event
+
+`STDOUT`, `STDERR` & [Custom Events](/docs/1/digging-deeper/broadcasting#custom-events) are dispatched using Laravel's event system.
+
+You may listen to these events by registering a listener in your app service provider, or on the front end using the [Native helper](/docs/1/digging-deeper/broadcasting#listening-with-javascript).
+
+Please see the [Events](#events) section for a full list of events.
+
+### Listening for Output (`STDOUT`)
+
+You may receive standard output for a process by registering an event listener for the
+[`MessageReceived`](#codemessagereceivedcode) event:
+
+### Listening for Errors (`STDERR`)
+
+You may receive standard errors for a process by registering an event listener for the
+[`ErrorReceived`](#codeerrorreceivedcode) event:
+
 ## Events
 
 NativePHP provides a simple way to listen for Child Process events.
 
-All events get dispatched as regular Laravel events, so you may use your `EventServiceProvider` to register listeners.
+All events get dispatched as regular Laravel events, so you may use your `AppServiceProvider` to register listeners.
 
 ```php
-protected $listen = [
-    'Native\Laravel\Events\ChildProcess\MessageReceived' => [
-        'App\Listeners\MainLoopEvent',
-    ],
-];
+use Illuminate\Support\Facades\Event;
+use Native\Laravel\Events\ChildProcess\MessageReceived;
+
+/**
+ * Bootstrap any application services.
+ */
+public function boot(): void
+{
+    Event::listen(MessageReceived::class, function(MessageReceived $event) {
+        if ($event->alias === 'tail') {
+            //
+        }
+    });
+}
+
 ```
 
 Sometimes you may want to listen and react to these events in real-time, which is why NativePHP also broadcasts all
