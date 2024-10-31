@@ -317,7 +317,15 @@ protected $listen = [
 ```
 
 Sometimes you may want to listen and react to these events in real-time, which is why NativePHP also broadcasts all
-Child Process events to the `nativephp` broadcast channel.
+Child Process events to the `nativephp` broadcast channel. Any events broadcasted this way also get dispatched over IPC, enabling you to react to them on the front-end without using websockets.
+
+```js
+Native.on("Native\\Laravel\\Events\\ChildProcess\\MessageReceived", (event) => {
+    if (event.alias === "tail") {
+        container.append(event.data);
+    }
+});
+```
 
 To learn more about NativePHP's broadcasting capabilities, please refer to the
 [Broadcasting](/docs/digging-deeper/broadcasting) section.
