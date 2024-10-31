@@ -88,7 +88,7 @@ You may start a process using the `ChildProcess` facade:
 use Native\Laravel\Facades\ChildProcess;
 
 ChildProcess::start(
-    cmd: 'tail -n50 storage/logs/laravel.log',
+    cmd: 'tail -f storage/logs/laravel.log',
     alias: 'tail'
 );
 ```
@@ -111,7 +111,7 @@ By default, the child process will use the working directory of your application
 
 ```php
 ChildProcess::start(
-    cmd: ['tail', '-n50', 'logs/laravel.log'],
+    cmd: ['tail', '-f', 'logs/laravel.log'],
     alias: 'tail',
     cwd: storage_path()
 );
@@ -125,7 +125,7 @@ process gets booted up again in case it crashes.
 
 ```php
 ChildProcess::start(
-    cmd: ['tail', '-n50', 'logs/laravel.log'],
+    cmd: ['tail', '-f', 'logs/laravel.log'],
     alias: 'tail',
     persistent: true
 );
@@ -166,7 +166,7 @@ This will return a `Native\Laravel\ChildProcess` instance.
 You can use the `ChildProcess` facade's `all` method to get all running processes:
 
 ```php
-$tail = ChildProcess::all();
+$processes = ChildProcess::all();
 ```
 
 This will return an array of `Native\Laravel\ChildProcess` instances.
@@ -204,7 +204,7 @@ You can pass arguments to the program via the `$cmd` parameter of the `start` me
 
 ```php
 ChildProcess::start(
-    cmd: ['tail', '-n50', 'storage/logs/laravel.log'],
+    cmd: ['tail', '-f', 'storage/logs/laravel.log'],
     alias: 'tail'
 );
 ```
