@@ -244,7 +244,7 @@ use Native\Laravel\Events\ChildProcess\MessageReceived;
 
 Event::listen(MessageReceived::class, function (MessageReceived $event) {
     if ($event->alias === 'tail') {
-        info($event->data);
+        //
     }
 });
 ```
@@ -260,7 +260,7 @@ use Native\Laravel\Events\ChildProcess\ErrorReceived;
 
 Event::listen(ErrorReceived::class, function (ErrorReceived $event) {
     if ($event->alias === 'tail') {
-        info($event->data);
+        //
     }
 });
 ```
