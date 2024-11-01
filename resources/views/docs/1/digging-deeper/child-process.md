@@ -245,6 +245,8 @@ ChildProcess::stop('tail');
 This will attempt to stop the process gracefully. The [`ProcessExited`](#codeprocessexitedcode) event will be
 dispatched if the process exits.
 
+Note that [persistent processes](/docs/1/digging-deeper/child-process#persistent-processes) restart when you stop them manually. The only way to stop a persistent process is by quitting the application.
+
 ## Restarting a Child Process
 
 As a convenience, you may simply restart a Child Process using the `restart` method. This may be useful in cases where
