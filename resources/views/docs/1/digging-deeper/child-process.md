@@ -135,7 +135,7 @@ ChildProcess::start(
 
 ### PHP scripts
 
-For your convenience NativePHP provides a simple method to execute PHP scripts with in the background using NativePHP's packaged PHP binary:
+For your convenience, NativePHP provides a simple method to execute PHP scripts in the background using NativePHP's packaged PHP binary:
 
 ```php
 ChildProcess::php('path/to/script.php', alias: 'script');
@@ -143,7 +143,7 @@ ChildProcess::php('path/to/script.php', alias: 'script');
 
 ### Artisan commands
 
-NativePHP provides a similar method to run artisan commands:
+NativePHP provides a similar method convenience for Artisan commands:
 
 ```php
 ChildProcess::artisan('smtp:serve', alias: 'smtp-server');
@@ -191,7 +191,8 @@ ChildProcess::stop('tail');
 This will attempt to stop the process gracefully. The [`ProcessExited`](#codeprocessexitedcode) event will be
 dispatched if the process exits.
 
-Note that [persistent processes](/docs/1/digging-deeper/child-process#persistent-processes) restart when you stop them manually. The only way to stop a persistent process is by quitting the application.
+Note that [persistent processes](/docs/1/digging-deeper/child-process#persistent-processes) will restart even when you
+stop them manually. The only way to stop a persistent process is by quitting the application.
 
 ## Restarting a Child Process
 
@@ -273,9 +274,11 @@ A Child Process may send output via any of the following interfaces:
 -   A custom interface, e.g. a network socket.
 -   Broadcasting a Custom Event
 
-`STDOUT`, `STDERR` & [Custom Events](/docs/1/digging-deeper/broadcasting#custom-events) are dispatched using Laravel's event system.
+`STDOUT`, `STDERR` & [Custom Events](/docs/1/digging-deeper/broadcasting#custom-events) are dispatched using
+Laravel's event system.
 
-You may listen to these events by registering a listener in your app service provider, or on the front end using the [Native helper](/docs/1/digging-deeper/broadcasting#listening-with-javascript).
+You may listen to these events by registering a listener in your app service provider, or on the front end
+using the [Native helper](/docs/1/digging-deeper/broadcasting#listening-with-javascript).
 
 Please see the [Events](#events) section for a full list of events.
 
