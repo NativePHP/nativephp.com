@@ -106,6 +106,36 @@ Window::open()
     ->maximized();
 ```
 
+#### Changing the URL
+
+While the URL in a window will change based on user activity, your Laravel routes and the flow of your application,
+sometimes it may be useful to change the URL of a window outside of the usual typical request-response cycle of PHP.
+
+For this, you can use the `url()` method:
+
+```php
+Window::open('secondary');
+
+// Later...
+
+Window::url(route('home'));
+```
+
+A case where this may be useful is when handling [Event-based menu item](/docs/the-basics/application-menu#event-based-menu-items)
+or in response to some output from a queued job, scheduled task or [Child Process](/docs/digging-deeper/child-process).
+
+#### Changing the Window Title
+
+To change a window's Title, you may use the `title()` method:
+
+```php
+Window::open('secondary');
+
+// Later...
+
+Window::title('Mmmm... delicious!');
+```
+
 ### Retrieving the Current Window
 
 You may use the `Window::current()` method to retrieve the currently focused window.
