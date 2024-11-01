@@ -171,6 +171,45 @@ $processes = ChildProcess::all();
 
 This will return an array of `Native\Laravel\ChildProcess` instances.
 
+## Stopping a Child Process
+
+Your child processes will shut down when your application exits. However, you may also choose to stop them manually or
+provide this control to your user.
+
+If you have a `Native\Laravel\ChildProcess` instance, you may call the `stop` method on it:
+
+```php
+$tail->stop();
+```
+
+Alternatively, you may use the `ChildProcess` facade to stop a process via its alias:
+
+```php
+ChildProcess::stop('tail');
+```
+
+This will attempt to stop the process gracefully. The [`ProcessExited`](#codeprocessexitedcode) event will be
+dispatched if the process exits.
+
+Note that [persistent processes](/docs/1/digging-deeper/child-process#persistent-processes) restart when you stop them manually. The only way to stop a persistent process is by quitting the application.
+
+## Restarting a Child Process
+
+As a convenience, you may simply restart a Child Process using the `restart` method. This may be useful in cases where
+the program has become unresponsive and you simply need to "reboot" it.
+
+If you have a `Native\Laravel\ChildProcess` instance, you may call the `restart` method on it:
+
+```php
+$tail->stop();
+```
+
+Alternatively, you may use the `ChildProcess` facade to restart a process via its alias:
+
+```php
+ChildProcess::restart('tail');
+```
+
 ## Sending input
 
 There are multiple ways to provide input to your Child Process:
@@ -224,45 +263,6 @@ ChildProcess::message('Hello, world!', 'tail');
 ```
 
 The message format and how they are handled will be determined by the program you're running.
-
-## Stopping a Child Process
-
-Your child processes will shut down when your application exits. However, you may also choose to stop them manually or
-provide this control to your user.
-
-If you have a `Native\Laravel\ChildProcess` instance, you may call the `stop` method on it:
-
-```php
-$tail->stop();
-```
-
-Alternatively, you may use the `ChildProcess` facade to stop a process via its alias:
-
-```php
-ChildProcess::stop('tail');
-```
-
-This will attempt to stop the process gracefully. The [`ProcessExited`](#codeprocessexitedcode) event will be
-dispatched if the process exits.
-
-Note that [persistent processes](/docs/1/digging-deeper/child-process#persistent-processes) restart when you stop them manually. The only way to stop a persistent process is by quitting the application.
-
-## Restarting a Child Process
-
-As a convenience, you may simply restart a Child Process using the `restart` method. This may be useful in cases where
-the program has become unresponsive and you simply need to "reboot" it.
-
-If you have a `Native\Laravel\ChildProcess` instance, you may call the `restart` method on it:
-
-```php
-$tail->stop();
-```
-
-Alternatively, you may use the `ChildProcess` facade to restart a process via its alias:
-
-```php
-ChildProcess::restart('tail');
-```
 
 ## Handling output
 
