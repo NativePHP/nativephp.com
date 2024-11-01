@@ -118,7 +118,7 @@ Window::open('secondary');
 
 // Later...
 
-Window::url(route('home'));
+Window::get('secondary')->url(route('home'));
 ```
 
 A case where this may be useful is when handling [Event-based menu item](/docs/the-basics/application-menu#event-based-menu-items)
@@ -133,7 +133,7 @@ Window::open('secondary');
 
 // Later...
 
-Window::title('Mmmm... delicious!');
+Window::get('secondary')->title('Mmmm... delicious!');
 ```
 
 ### Retrieving the Current Window
