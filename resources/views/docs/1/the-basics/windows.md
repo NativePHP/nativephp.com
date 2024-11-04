@@ -153,6 +153,16 @@ This method returns an object with the following properties:
 $currentWindow = Window::current();
 ```
 
+### Retrieving all Windows
+
+You may use the `Window::all()` method to retrieve all open windows.
+
+```php
+foreach (Window::all() as $window) {
+    $window->url(route('home'));
+}
+```
+
 ## Managing Multiple Windows
 
 If you would like to open multiple windows, you may use the `Window::open()` method multiple times.
