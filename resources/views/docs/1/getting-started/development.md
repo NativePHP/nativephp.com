@@ -35,21 +35,7 @@ build environment. This means that changes you make to your application code _wi
 application until you restart it.
 
 You can stop the `native:serve` command by pressing `Ctrl-C` on your keyboard in the terminal window it's running in.
-
-Alternatively, you can use hot reloading.
-
-### App Icon
-
-The `native:serve` and `native:build` commands look for the following icon files when building your application:
-
-- `public/icon.png` - your main icon, used on the Desktop, Dock and app switcher.
-- `public/IconTemplate.png` - used in the Menu Bar on non-retina displays.
-- `public/IconTemplate@2x.png` - used in the Menu Bar on retina displays.
-
-If any of these files exist, they will be moved into the relevant location to be used as your application's icons.
-You simply need to follow the naming convention.
-
-Your main icon should be at least 512x512 pixels.
+It will also terminate when you quit your application.
 
 ## Hot Reloading
 
@@ -73,24 +59,53 @@ Now changes you make to files in your source code will cause a hot reload in you
 
 Which files trigger reloads will depend on your Vite configuration.
 
+## `composer native:dev`
+
+You may find the `native:dev` script convenient. By default, it is setup to run both `native:serve` and `npm run dev`
+concurrently in a single command:
+
+```shell
+composer native:dev
+```
+
+You may modify this script to suit your needs. Simply edit the command in your `composer.json` scripts section.
+
 ## First run
 
 When your application runs for the first time, a number of things occur.
 
 NativePHP will:
 
-1. Create the `appdata` folder - where this is created depends which platform you're developing on. It is named
-  according to your `nativephp.app_id` config value (which is based on the `NATIVEPHP_APP_ID` env variable).
-2. Create a SQLite database
-3. Migrate the database
+1. Create the `appdata` folder - where this is created depends which platform you're developing on. In development, it
+  is named according to your `APP_NAME`.
+2. Create a `nativephp.sqlite` SQLite database in your `database` folder.
+3. Migrate this database.
 
-This is identical to what will happen when a new user runs a production build of your app for the first time on their
-device.
+The `appdata` structure is identical to that created by _production_ builds of your app, but when running in
+development, the database created there is _not_ migrated.
 
-**If you change your `app_id`, a new `appdata` folder may need to be created and all of these steps will need to run
-again. No previous files will be deleted.**
+**If you change your `APP_NAME`, a new `appdata` folder will be created. No previous files will be deleted.**
 
 ## Subsequent runs
 
-Every time your application boots, NativePHP checks that these files exist and creates them if they don't. It also tries
-to run your migrations. This is done with the `--force` flag so that it is fully automated even in production.
+In development, your application will not run migrations of the `nativephp.sqlite` database for you. You must do this
+manually:
+
+```shell
+php artisan native:migrate
+```
+
+For more details, see the [Databases](/docs/digging-deeper/databases) section.
+
+## App Icon
+
+The `native:serve` and `native:build` commands look for the following icon files when building your application:
+
+- `public/icon.png` - your main icon, used on the Desktop, Dock and app switcher.
+- `public/IconTemplate.png` - used in the Menu Bar on non-retina displays.
+- `public/IconTemplate@2x.png` - used in the Menu Bar on retina displays.
+
+If any of these files exist, they will be moved into the relevant location to be used as your application's icons.
+You simply need to follow the naming convention.
+
+Your main icon should be at least 512x512 pixels.
