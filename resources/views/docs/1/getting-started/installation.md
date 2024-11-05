@@ -27,7 +27,7 @@ NativePHP is built to work best with Laravel. You can install it into an existin
 
 ## Install a NativePHP runtime
 
-```bash
+```shell
 composer require nativephp/electron
 ```
 
@@ -35,26 +35,32 @@ The Tauri runtime is coming soon.
 
 ## Run the NativePHP installer
 
-```bash
+```shell
 php artisan native:install
 ```
 
 The NativePHP installer takes care of publishing the NativePHP service provider, which bootstraps the necessary
-dependencies for your application to work with the runtime you're using: Electron or Tauri. It also publishes the
-NativePHP configuration file to `config/nativephp.php`.
+dependencies for your application to work with the runtime you're using: Electron or Tauri.
+
+It also publishes the NativePHP configuration file to `config/nativephp.php`.
+
+It adds the `composer native:dev` script to your `composer.json`, which you are free to modify to suit your needs.
 
 Finally, it installs any other dependencies needed for the specific runtime you're using, e.g. for Electron it installs
 the NPM dependencies.
 
-**Whenever you set up NativePHP on a new machine or in CI, you should run the installer to make sure all of the
+**Whenever you set up NativePHP on a new machine or in CI, you should run the installer to make sure all the
 necessary dependencies are in place to build your application.**
 
 ## Start the development server
 
-```bash
+**Heads up!** Before starting your app in a native context, try running it in the browser. You may bump into exceptions
+which need addressing before you can run your app natively, and may be trickier to spot when doing so.
+
+Once you're ready:
+
+```shell
 php artisan native:serve
 ```
 
-This spins up a development build of your application for local testing.
-
-And that's it! You should now see your Laravel application running in a native desktop window.
+And that's it! You should now see your Laravel application running in a native desktop window. 🎉
