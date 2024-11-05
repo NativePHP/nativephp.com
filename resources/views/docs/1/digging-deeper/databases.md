@@ -55,12 +55,10 @@ delete your user's data when they update your app.
 
 ### Running migrations
 
-NativePHP will attempt to migrate your database on each boot-up.
+In production builds of your app, NativePHP will check to see if the app version has changed and attempt to migrate
+the user's copy of your database in their `appdata` folder.
 
-You may also wish to manually migrate it during development. You can do this whether the application is running or not,
-but depending on how your app behaves, it may be better to do it before opening the app.
-
-You can do this with the `native:migrate` command:
+During development, you will need to migrate your development database manually:
 
 ```shell
 php artisan native:migrate
@@ -68,6 +66,9 @@ php artisan native:migrate
 
 This command uses the exact same signature as the Laravel `migrate` command, so everything you're used to there can be
 used here.
+
+You can do this whether the application is running or not, but depending on how your app behaves, it may be better to
+do it _before_ running your app.
 
 ### Refreshing your app database
 
