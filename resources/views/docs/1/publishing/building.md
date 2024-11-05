@@ -74,7 +74,8 @@ NativePHP makes this as easy for you as it can, but each platform does have slig
 
 [See the Electron documentation](https://www.electronforge.io/guides/code-signing/code-signing-macos) for more details.
 
-To prepare for signing and notarizing, please provide the following environment variables when running `php artisan native:build`:
+To prepare for signing and notarizing, please provide the following environment variables when running
+`php artisan native:build`:
 
 ```dotenv
 NATIVEPHP_APPLE_ID=developer@abcwidgets.com
@@ -83,3 +84,36 @@ NATIVEPHP_APPLE_TEAM_ID=8XCUU22SN2
 ```
 
 These can be added to your `.env` file as they will be stripped out when your app is built.
+
+## First run
+
+When your application runs for the first time, a number of things occur.
+
+NativePHP will:
+
+1. Create the `appdata` folder - where this is created depends which platform you're developing on. It is named
+  according to your `nativephp.app_id` [config](/docs/getting-started/configuration) value (which is based on the
+  `NATIVEPHP_APP_ID` env variable).
+2. Creating the `{appdata}/database/database.sqlite` SQLite database - your user's copy of your app's database.
+3. Migrate this database.
+
+If you wish to seed the user's database, you should run this somewhere that runs
+[every time your app boots](/docs/the-basics/app-lifecycle#codeApplicationBootedcode).
+
+Check if the database was already seeded and, if not, run the appropriate `db:seed` command. For example:
+
+```php
+use App\Models\Config;
+use Illuminate\Support\Facades\Artisan;
+
+if (Config::where('seeded', true)->count() === 1) {
+    Artisan::call('db:seed');
+}
+```
+
+## Subsequent runs
+
+Each time a user opens your app, NativePHP will check to see if the [app version](#versioning) has changed and attempt
+to migrate the user's copy of your database in their `appdata` folder.
+
+This is why you should change the version identifier for each release.
