@@ -27,7 +27,7 @@
             <x-icons.pinkary class="size-5 text-black dark:invert hover:text-[#00aaa6] hover:invert-0" />
         </a>
 
-        <a href="https://opencollective.com/nativephp" title="NativePHP on LinkedIn">
+        <a href="https://opencollective.com/nativephp" title="NativePHP on Open Collective">
             <x-icons.opencollective class="size-5 text-black dark:invert hover:text-[#00aaa6] hover:invert-0" />
         </a>
 
