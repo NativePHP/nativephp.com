@@ -131,8 +131,6 @@ ChildProcess::start(
 );
 ```
 
-**The only way to stop a persistent process is for your application to quit.**
-
 ### PHP scripts
 
 For your convenience, NativePHP provides a simple method to execute PHP scripts in the background using NativePHP's packaged PHP binary:
@@ -191,8 +189,7 @@ ChildProcess::stop('tail');
 This will attempt to stop the process gracefully. The [`ProcessExited`](#codeprocessexitedcode) event will be
 dispatched if the process exits.
 
-Note that [persistent processes](/docs/1/digging-deeper/child-process#persistent-processes) will restart even when you
-stop them manually. The only way to stop a persistent process is by quitting the application.
+Note that [persistent processes](/docs/1/digging-deeper/child-process#persistent-processes) will be permanently stopped and will only be restarted when the `start` method is called again. If you want to restart a persistent process, use the `restart` method instead.
 
 ## Restarting a Child Process
 
