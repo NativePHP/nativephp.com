@@ -203,7 +203,7 @@ MenuBar::resizable(false);
 
 ### Positioning
 
-Set the position of the menu bar window using the `HasPositioner` trait:
+You may manually set the position of the menu bar window:
 ```php
 MenuBar::create()
     ->x(100)
