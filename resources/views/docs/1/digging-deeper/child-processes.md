@@ -199,7 +199,7 @@ the program has become unresponsive and you simply need to "reboot" it.
 If you have a `Native\Laravel\ChildProcess` instance, you may call the `restart` method on it:
 
 ```php
-$tail->stop();
+$tail->restart();
 ```
 
 Alternatively, you may use the `ChildProcess` facade to restart a process via its alias:
