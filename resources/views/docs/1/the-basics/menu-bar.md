@@ -171,7 +171,7 @@ MenuBar::create()
 
 ### Vibrancy and Background Color
 
-For macOS, use the `HasVibrancy` trait to apply window vibrancy effects:
+For macOS, you may use the `vibrancy` method to apply window vibrancy effects:
 ```php
 MenuBar::create()->vibrancy('light');
 ```
