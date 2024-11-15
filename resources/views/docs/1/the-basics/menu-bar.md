@@ -261,7 +261,17 @@ To learn more about NativePHP's broadcasting capabilities, please refer to the [
 
 Attach a custom event that should be fired when the menu bar icon is clicked. This only works when combined with [`onlyShowContextMenu()`](#context-menu-only):
 ```php
-MenuBar::create()->event('custom-event-name');
+MenuBar::create()->event(MenuBarClicked::class);
+
+class MenuBarClicked
+{
+    public function __construct(public array $combo, public array $bounds, public array $position)
+    {
+        // $combo - details of any combo keys pressed when the click occurred
+        // $bounds - the current absolute bounds of the menu bar icon at the time of the event
+        // $position - the absolute cursor position at the time of the event
+    }
+}
 ```
 
 ### `MenuBarShown`
