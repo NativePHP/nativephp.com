@@ -99,6 +99,13 @@ To remove the label, you may pass an empty string to the `label()` method.
 MenuBar::label('');
 ```
 
+### Tooltip
+
+Add a tooltip to the menu bar icon:
+```php
+MenuBar::tooltip('Click to open');
+```
+
 ## Configuring the Menu Bar
 
 ### Menu Bar URL
@@ -162,6 +169,17 @@ MenuBar::create()
     ->icon(storage_path('app/menuBarIconTemplate.png'));
 ```
 
+### Vibrancy and Background Color
+
+For macOS, you may use the `vibrancy` method to apply window vibrancy effects:
+```php
+MenuBar::create()->vibrancy('light');
+```
+
+To create a solid background color instead:
+```php
+MenuBar::create()->backgroundColor('#ffffff');
+```
 ### Menu Bar Window Sizes
 
 ![Menu Bar Window Sizes](/img/docs/menubar-window-size.png)
@@ -174,6 +192,22 @@ You may use the `width()` and `height()` methods to specify the size of the wind
 MenuBar::create()
     ->width(800)
     ->height(600);
+```
+
+### Resizable Window
+
+Allow or prevent resizing of the menu bar window:
+```php
+MenuBar::resizable(false);
+```
+
+### Positioning
+
+You may manually set the position of the menu bar window:
+```php
+MenuBar::create()
+    ->x(100)
+    ->y(200);
 ```
 
 ### Menu Bar on Top
@@ -223,6 +257,23 @@ window events to the `nativephp` broadcast channel.
 
 To learn more about NativePHP's broadcasting capabilities, please refer to the [Broadcasting](/docs/digging-deeper/broadcasting) section.
 
+### Listening for Custom Events
+
+Attach a custom event that should be fired when the menu bar icon is clicked. This only works when combined with [`onlyShowContextMenu()`](#context-menu-only):
+```php
+MenuBar::create()->event(MenuBarClicked::class);
+
+class MenuBarClicked
+{
+    public function __construct(public array $combo, public array $bounds, public array $position)
+    {
+        // $combo - details of any combo keys pressed when the click occurred
+        // $bounds - the current absolute bounds of the menu bar icon at the time of the event
+        // $position - the absolute cursor position at the time of the event
+    }
+}
+```
+
 ### `MenuBarShown`
 
 The `Native\Laravel\Events\MenuBar\MenuBarShown` event will be dispatched when the user clicks on the menu bar icon and the menu bar window opens, or when
@@ -236,3 +287,10 @@ the menu bar gets hidden by using the `MenuBar::hide()` method.
 ### `MenuBarContextMenuOpened`
 
 The `Native\Laravel\Events\MenuBar\MenuBarContextMenuOpened` event will be dispatched when the user right-clicks on the menu bar icon and the context menu opens.
+
+### Context Menu Only
+
+Show only the context menu without opening a window when the menu bar icon is clicked:
+```php
+MenuBar::onlyShowContextMenu();
+```
