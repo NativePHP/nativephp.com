@@ -259,7 +259,7 @@ To learn more about NativePHP's broadcasting capabilities, please refer to the [
 
 ### Listening for Custom Events
 
-Attach a custom event handler to the menu bar:
+Attach a custom event that should be fired when the menu bar icon is clicked. This only works when combined with [`onlyShowContextMenu()`](#context-menu-only):
 ```php
 MenuBar::create()->event('custom-event-name');
 ```
