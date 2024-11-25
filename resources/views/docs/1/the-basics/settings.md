@@ -5,9 +5,12 @@ order: 450
 
 ## Storing Settings
 
-NativePHP offers an easy method to store and retrieve settings in your application. This is helpful for saving application-wide settings that persist even after closing and reopening the application.
+NativePHP offers an easy method to store and retrieve settings in your application. This is helpful for saving application-wide
+settings that persist even after closing and reopening the application.
 
-Settings are managed using the `Settings` facade and  are stored in a file name `config.json` in the [AppData](/docs/1/getting-started/debugging#start-from-scratch) directory of your application.
+Settings are managed using the `Settings` facade and are stored in a file named `config.json` in the
+[`appdata`](/docs/1/getting-started/debugging#start-from-scratch) directory of your application.
+
 ```php
 use Native\Laravel\Facades\Settings;
 ```
@@ -28,10 +31,10 @@ You may also provide a default value to return if the setting does not exist.
 ```php
 $value = Settings::get('key', 'default');
 ```
-If the setting does not exist, "default" will be returned.
+If the setting does not exist, `default` will be returned.
 
 ### Forgetting a value
-If you wanna remove a setting, use the `forget` method.
+If you want to remove a setting altogether, use the `forget` method.
 ```php
 Settings::forget('key');
 ```
@@ -64,7 +67,7 @@ use Native\Laravel\Events\Notifications\SettingChanged;
 class Settings extends Component
 {
     protected $listeners = [
-        SettingChanged::class => '$refresh'
+        SettingChanged::class => '$refresh',
     ];
 }
 ```
