@@ -68,7 +68,7 @@ There are convenience methods that allow you to minimize and maximize windows.
 
 #### Minimize a Window
 
-To maximize a window, you may use the `Window::minimize()` method.
+To minimize a window, you may use the `Window::minimize()` method.
 
 You may pass the window ID to the `minimize()` method to specify which window to minimize.
 
