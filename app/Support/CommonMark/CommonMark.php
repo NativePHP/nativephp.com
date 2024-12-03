@@ -11,10 +11,10 @@ class CommonMark
 {
     public static function convertToHtml(string $markdown): string
     {
-        $converter = new CommonMarkConverter();
-        $converter->getEnvironment()->addRenderer(Heading::class, new HeadingRenderer());
-        $converter->getEnvironment()->addExtension(new TableExtension());
-        $converter->getEnvironment()->addExtension(new TorchlightWithCopyExtension());
+        $converter = new CommonMarkConverter;
+        $converter->getEnvironment()->addRenderer(Heading::class, new HeadingRenderer);
+        $converter->getEnvironment()->addExtension(new TableExtension);
+        $converter->getEnvironment()->addExtension(new TorchlightWithCopyExtension);
 
         return $converter->convert($markdown);
     }
