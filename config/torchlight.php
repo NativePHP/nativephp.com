@@ -40,7 +40,7 @@ return [
     // block, Torchlight will look for code snippets in the
     // following directories.
     'snippet_directories' => [
-        resource_path()
+        resource_path(),
     ],
 
     // Global options to control blocks-level settings.
@@ -65,5 +65,5 @@ return [
 
         // Show or hide the copy button on code blocks.
         'copyable' => true,
-    ]
+    ],
 ];

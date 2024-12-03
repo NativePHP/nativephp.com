@@ -20,7 +20,7 @@ use Symfony\Component\Finder\SplFileInfo;
 
 class ShowDocumentationController extends Controller
 {
-    public function __invoke(Request $request, string $version, string $page = null)
+    public function __invoke(Request $request, string $version, ?string $page = null)
     {
         if (config('app.env') === 'local') {
             Cache::flush();
@@ -123,7 +123,7 @@ class ShowDocumentationController extends Controller
         $basePath = resource_path('views');
         $path = "$basePath/docs/$version";
 
-        $mainNavigation = (new Finder())
+        $mainNavigation = (new Finder)
             ->files()
             ->name('_index.md')
             ->depth(1)
@@ -131,7 +131,7 @@ class ShowDocumentationController extends Controller
 
         $navigation = collect();
 
-        $mainPages = (new Finder())
+        $mainPages = (new Finder)
             ->files()
             ->notName('_index.md')
             ->name('*.md')
@@ -145,7 +145,7 @@ class ShowDocumentationController extends Controller
             $path = Str::after($mainPage->getPath(), $basePath).'/'.$mainPage->getBasename('.md');
 
             $navigation->push([
-                'path'  => $path,
+                'path' => $path,
                 'title' => $parsedSection->matter('title', ''),
                 'order' => $parsedSection->matter('order', 0),
             ]);
@@ -156,11 +156,11 @@ class ShowDocumentationController extends Controller
             $parsedSection = YamlFrontMatter::parse($section->getContents());
             $navigationEntry = [
                 'relative_path' => $section->getRelativePath(),
-                'title'         => $parsedSection->matter('title', ''),
-                'order'         => $parsedSection->matter('order', 0),
+                'title' => $parsedSection->matter('title', ''),
+                'order' => $parsedSection->matter('order', 0),
             ];
 
-            $subSections = (new Finder())
+            $subSections = (new Finder)
                 ->files()
                 ->notName('_index.md')
                 ->name('*.md')
@@ -183,7 +183,7 @@ class ShowDocumentationController extends Controller
                 }
 
                 $children->push([
-                    'path'  => $path,
+                    'path' => $path,
                     'title' => $title,
                     'order' => $parsedSection->matter('order', 0),
                 ]);
@@ -245,7 +245,7 @@ class ShowDocumentationController extends Controller
     {
         $firstNavigationPath = collect($navigation)
             ->filter(function ($nav) use ($page) {
-                if (!is_null($page)) {
+                if (! is_null($page)) {
                     return Arr::get($nav, 'relative_path') === $page;
                 }
 
@@ -267,7 +267,7 @@ class ShowDocumentationController extends Controller
             ->flatten(1)
             ->first();
 
-        if (is_null($firstNavigationPath) && !is_null($page)) {
+        if (is_null($firstNavigationPath) && ! is_null($page)) {
             return $this->redirectToFirstNavigationPage($navigation);
         }
 

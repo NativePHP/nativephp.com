@@ -1,7 +1,7 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ShowDocumentationController;
+use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Str;
 
 /*
