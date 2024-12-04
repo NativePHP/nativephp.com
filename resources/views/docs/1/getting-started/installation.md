@@ -52,6 +52,14 @@ the NPM dependencies.
 **Whenever you set up NativePHP on a new machine or in CI, you should run the installer to make sure all the
 necessary dependencies are in place to build your application.**
 
+## Create the database
+
+```shell
+php artisan native:migrate
+```
+
+NativePHP applications use SQLite as a driver for caching and queuing. This command will create the `nativephp.sqlite` file in the `database` directory and migrate the necessary database for your application to run.
+
 ## Start the development server
 
 **Heads up!** Before starting your app in a native context, try running it in the browser. You may bump into exceptions
