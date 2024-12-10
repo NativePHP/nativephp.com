@@ -67,7 +67,7 @@ use Native\Laravel\Events\Notifications\SettingChanged;
 class Settings extends Component
 {
     protected $listeners = [
-        SettingChanged::class => '$refresh',
+        'native:'.SettingChanged::class => '$refresh',
     ];
 }
 ```
