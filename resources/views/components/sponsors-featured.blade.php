@@ -4,6 +4,6 @@
     <img src="/img/sponsors/beyondcode-dark.png" class="hidden dark:block {{ $height }} w-auto max-w-full">
 </a>
 
-<a href="https://laradir.com/?ref=nativephp" title="Laradir sponsor">
+<a href="https://laradevs.com/?ref=nativephp" title="Laradevs sponsor">
     <x-sponsors.laradir class="block {{ $height }} {{ $sameHeight ? 'py-[5%]':''  }} max-w-full"/>
 </a>
