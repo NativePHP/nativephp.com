@@ -5,7 +5,7 @@ order: 300
 
 ## Configuring the Application Menu
 
-NativePHP allows you to configure the native menu of your application, as well as context menus and Dock menus, using a
+NativePHP allows you to configure the native menu of your application, as well as context menus, MenuBar and Dock menus, using a
 single, unified and expressive Menu API, available through the `Menu` facade. Use this for building all of your app's menus.
 
 ```php
@@ -65,17 +65,16 @@ Menu::default();
 
 ### Recreating the menu
 
-It's sometimes desirable to update the main application menu in response to changes in your application, making it
-contextually sensitive perhaps based on which window currently has focus.
+It's sometimes desirable to update the main application menu with a brand new configuration in response to changes in your
+application, making it contextually sensitive, perhaps based on which window currently has focus.
 
-You can update your application menu at any time by calling `Menu::create()` with your desired menu structure.
+You can update your application menu at any time simply by calling `Menu::create()` again with your desired menu structure.
+This might be in an event listener, a controller action or even a Livewire action method.
 
 ## Predefined menus
 
 NativePHP comes with a few predefined menus that you can use out of the box. These are a convenience and, for the most
 part, the only thing that can be changed about them is their label.
-
-> On macOS, the first item in your application menu will _always_ use the name of your application as its label.
 
 You may change this by passing a string as the first parameter to each method, for example:
 
@@ -83,9 +82,13 @@ You may change this by passing a string as the first parameter to each method, f
 Menu::edit('My Edit Menu')
 ```
 
-> The default menus often enable a number of common keyboard shortcuts, such as those typically used for cut, copy, and
-> paste. If you decide to build custom versions of these menus, you will need to explicitly define these shortcuts
-> ("hotkeys") yourself.
+**The default menus enable a number of common keyboard shortcuts ("hotkeys"), such as those typically used for cut,
+copy, and paste. If you decide to build custom versions of these menus, you will need to explicitly define these
+shortcuts yourself.**
+
+**On macOS, the first item in your application menu will _always_ use the name of your application as its label,
+overriding any custom label you set, regardless of which type of submenu you place first.**
+
 
 ### The App menu
 
@@ -98,9 +101,11 @@ Menu::create(
 );
 ```
 
+**The app menu is only available for macOS. It is typically used as the first menu in your application's menu.**
+
 ### The File menu
 
-You may use the `Menu::file()` method to create the default edit menu. This menu contains items and functionality that
+You may use the `Menu::file()` method to create the default file menu. This menu contains items and functionality that
 you would expect in a file menu (e.g. Close/Quit).
 
 ```php
