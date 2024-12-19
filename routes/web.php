@@ -19,13 +19,15 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('/docs/{version}/{page?}', ShowDocumentationController::class)
+Route::get('/docs/{version}/{lang}/{page?}', ShowDocumentationController::class)
     ->where('page', '(.*)')
-    ->where('version', '[0-9]+');
+    ->where('version', '[0-9]+')
+    ->where('lang', '[a-z]{2}');
 
 // Forward unversioned requests to the latest version
 Route::get('/docs/{page?}', function ($page = null) {
     $version = session('viewing_docs_version', '1');
+    $lang = session('viewing_docs_lang', 'en');
 
     $referer = request()->header('referer');
 
@@ -38,5 +40,5 @@ Route::get('/docs/{page?}', function ($page = null) {
         $version = Str::before(ltrim(Str::after($referer, url('/docs/')), '/'), '/');
     }
 
-    return redirect("/docs/{$version}/{$page}");
+    return redirect("/docs/{$version}/{$lang}/{$page}");
 })->name('docs')->where('page', '.*');
