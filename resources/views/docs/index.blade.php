@@ -33,14 +33,14 @@
                 <x-flex-list-of-links align="{{$linkAlign}}" class="mt-8">
                     @if($previousPage !== null)
                         <x-link-button href="{{ $previousPage['path'] }}">
-                            <span class="md:hidden">Previous page: </span>
+                            <span class="md:hidden">{{__('Previous page:')}} </span>
                             <span aria-hidden="true" class="hidden sm:inline">&larr;</span>
                             <span>{{ $previousPage['title'] }}</span>
                         </x-link-button>
                     @endif
                     @if($nextPage !== null)
                         <x-link-button href="{{ $nextPage['path'] }}">
-                            <span class="md:hidden">Next page: </span>
+                            <span class="md:hidden">{{__('Next page:')}} </span>
                             <span>{{ $nextPage['title'] }}</span>
                             <span aria-hidden="true" class="hidden sm:inline"> &rarr;</span>
                         </x-link-button>
@@ -50,13 +50,13 @@
                 <x-separator class="mt-8 -mr-4 -ml-4"/>
                 <div class="mt-8 text-center">
                     <a href="{{ $editUrl }}" target="_blank" rel="noopener noreferrer" class="text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300">
-                        Edit this page on GitHub
+                        {{__('Edit this page on GitHub')}}
                     </a>
                 </div>
             </div>
             <div class="hidden max-h-[calc(100%-134px)] overflow-y-auto
             xl:fixed xl:right-[max(0px,calc(50%-48rem))] xl:block xl:py-8 xl:px-4 xl:pr-3 xl:w-full xl:max-w-sm">
-                <x-sidebar-title>On this page</x-sidebar-title>
+                <x-sidebar-title>{{__('On this page')}}</x-sidebar-title>
                 @if (count($tableOfContents) > 0)
                     <ul class="pl-2 space-y-2 text-sm">
                         @foreach($tableOfContents as $item)
@@ -67,12 +67,12 @@
                     </ul>
                 @endif
 
-                <x-sidebar-title class="mt-14">Featured sponsors</x-sidebar-title>
+                <x-sidebar-title class="mt-14">{{__('Featured sponsors')}}</x-sidebar-title>
                 <div class="mt-4 flex flex-col gap-4 w-3/4 pl-3">
                     <x-sponsors-featured height="h-12" :same-height="false"/>
                 </div>
 
-                <x-sidebar-title class="mt-14">Corporate sponsors</x-sidebar-title>
+                <x-sidebar-title class="mt-14">{{__('Corporate sponsors')}}</x-sidebar-title>
                 <div class="mt-4 flex flex-col gap-6 w-3/4 pl-3">
                     <x-sponsors-corporate height="h-8"/>
                 </div>
