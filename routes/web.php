@@ -3,6 +3,7 @@
 use App\Http\Controllers\ShowDocumentationController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Session;
 
 /*
 |--------------------------------------------------------------------------
@@ -42,3 +43,11 @@ Route::get('/docs/{page?}', function ($page = null) {
 
     return redirect("/docs/{$version}/{$lang}/{$page}");
 })->name('docs')->where('page', '.*');
+
+Route::post('/lang/{lang}', function ($lang) {
+
+    session(['viewing_docs_lang' => $lang]);
+    Session::put('locale', $lang);
+
+    return back();
+})->name('lang');
