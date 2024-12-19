@@ -299,13 +299,17 @@ In some cases, your app may not require a preferences panel, and a few interacti
 your user to configure some settings. Or you may wish to make certain commonly-used settings more readily accessible.
 
 Checkbox and Radio items enable you to create menu items for just these purposes. They operate in a very similar way
-to checkboxes and radio buttons in a web form.
+to checkboxes and radio buttons in a web form. Their default state is 'unchecked'.
 
 You may use the `Menu::checkbox()` and `Menu::radio()` methods to create such items, passing the initial state of the
-item to the `checked` parameter (the default state is 'unchecked'):
+item to the `checked` parameter or using the `checked()` chainable method:
 
 ```php
 Menu::checkbox('Word wrap', checked: true);
+
+// Or
+
+Menu::checkbox('Word wrap')->checked();
 ```
 
 When Checkbox and Radio items are triggered, the click event data will indicate whether or not the item is currently
