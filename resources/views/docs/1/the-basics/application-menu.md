@@ -259,8 +259,8 @@ Menu::make(
 );
 ```
 
-These are great if when you want your app to do something in response to the user clicking the menu item or pressing
-the hotkey combo.
+These are great when you want your app to do something in response to the user clicking the menu item or pressing
+a hotkey combo.
 
 ### Link items
 
