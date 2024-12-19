@@ -6,9 +6,12 @@ order: 600
 ## Global Hotkeys 
 
 In your NativePHP application, you may define multiple global hotkeys.
-Unlike hotkeys that you may define in your application via JavaScript, these hotkeys are globally registered. This means that your application will even receive these hotkeys, when it is running in the background and not focused.
+Unlike hotkeys that you may define in your application via JavaScript, these hotkeys are globally registered.
+This means that your application may be aware of these hotkeys being triggered even when it is running in the
+background and not focused.
 
-As these global hotkeys are usually used in your entire application, a common approach to registering them is inside the `NativeAppServiceProvider` class.
+As these global hotkeys are usually used in your entire application, a common approach to registering them is inside
+the `NativeAppServiceProvider` class.
 
 ```php
 namespace App\Providers;
@@ -31,9 +34,11 @@ class NativeAppServiceProvider
 ## Registering Hotkeys
 
 You may register a global shortcut using the `GlobalShortcut` facade.
-Using the `key` method, you may specify the hotkey to listen for. The hotkey must be a string that contains the modifiers and the key separated by a `+` sign.
+Using the `key` method, you may specify the hotkey to listen for. The hotkey must be a string that contains the
+modifiers and the key separated by a `+` sign.
 
-For example, if you want to register a hotkey that triggers the `MyEvent` event when the user presses `Cmd+Shift+D`, you may do the following:
+For example, if you want to register a hotkey that triggers the `MyEvent` event when the user presses `Cmd+Shift+D`,
+you may do the following:
 
 ```php
 GlobalShortcut::key('Cmd+Shift+D')
