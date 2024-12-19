@@ -96,7 +96,7 @@ class ShowDocumentationController extends Controller
 
         foreach ($navigation as $section) {
             foreach ($section['children'] as $key => $child) {
-                if ($child['path'] === '/'.$pageProperties['pagePath']) {
+                if (Str::replaceFirst('\\', '/', $child['path']) === '/'.$pageProperties['pagePath']) {
                     if (isset($section['children'][$key + 1])) {
                         $pageProperties['nextPage'] = $section['children'][$key + 1];
                     }
