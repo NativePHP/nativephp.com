@@ -20,18 +20,19 @@ use Symfony\Component\Finder\SplFileInfo;
 
 class ShowDocumentationController extends Controller
 {
-    public function __invoke(Request $request, string $version, ?string $page = null)
+    public function __invoke(Request $request, string $version, string $lang = 'en', ?string $page = null)
     {
         if (config('app.env') === 'local') {
             Cache::flush();
         }
 
-        abort_unless(is_dir(resource_path('views/docs/'.$version)), 404);
+        abort_unless(is_dir(resource_path('views/docs/'.$version.'/'.$lang)), 404);
 
         session(['viewing_docs_version' => $version]);
+        session(['viewing_docs_lang' => $lang]);
 
-        $navigation = Cache::remember("docs_nav_{$version}", now()->addDay(), function () use ($version) {
-            return $this->getNavigation($version);
+        $navigation = Cache::remember("docs_nav_{$version}_{$lang}", now()->addDay(), function () use ($version, $lang) {
+            return $this->getNavigation($version, $lang);
         });
 
         if (is_null($page)) {
@@ -39,8 +40,8 @@ class ShowDocumentationController extends Controller
         }
 
         try {
-            $pageProperties = Cache::remember("docs_{$version}_{$page}", now()->addDay(), function () use ($version, $page) {
-                return $this->getPageProperties($version, $page);
+            $pageProperties = Cache::remember("docs_{$version}_{$lang}_{$page}", now()->addDay(), function () use ($version, $page, $lang) {
+                return $this->getPageProperties($version, $page, $lang);
             });
         } catch (InvalidArgumentException $e) {
             return $this->redirectToFirstNavigationPage($navigation, $page);
@@ -52,9 +53,9 @@ class ShowDocumentationController extends Controller
         return view('docs.index')->with($pageProperties);
     }
 
-    protected function getPageProperties($version, $page = null): array
+    protected function getPageProperties($version, $page = null, $lang = 'en'): array
     {
-        $markdownFileName = $version.'.'.($page ?? 'index');
+        $markdownFileName = $version.'.'.$lang.'.'.($page ?? 'index');
 
         $content = $this->getMarkdownView("docs.{$markdownFileName}", [
             'user' => auth()->user(),
@@ -63,7 +64,7 @@ class ShowDocumentationController extends Controller
         $document = YamlFrontMatter::parse($content);
         $pageProperties = $document->matter();
 
-        $versionProperties = YamlFrontMatter::parseFile(resource_path("views/docs/{$version}/_index.md"));
+        $versionProperties = YamlFrontMatter::parseFile(resource_path("views/docs/{$version}/{$lang}/_index.md"));
         $pageProperties = array_merge($pageProperties, $versionProperties->matter());
 
         $pageProperties['version'] = $version;
@@ -72,7 +73,7 @@ class ShowDocumentationController extends Controller
         $pageProperties['content'] = CommonMark::convertToHtml($document->body(), $version);
         $pageProperties['tableOfContents'] = $this->extractTableOfContents($document->body());
 
-        $navigation = $this->getNavigation($version);
+        $navigation = $this->getNavigation($version, $lang);
         $pageProperties['navigation'] = Menu::build($navigation, function (Menu $menu, $nav) {
             if (array_key_exists('path', $nav)) {
                 $menu->link($nav['path'], $nav['title']);
@@ -118,10 +119,10 @@ class ShowDocumentationController extends Controller
         return $pageProperties;
     }
 
-    protected function getNavigation(string $version): array
+    protected function getNavigation(string $version, string $lang = 'en'): array
     {
         $basePath = resource_path('views');
-        $path = "$basePath/docs/$version";
+        $path = "$basePath/docs/$version/$lang";
 
         $mainNavigation = (new Finder)
             ->files()
@@ -226,9 +227,9 @@ class ShowDocumentationController extends Controller
         return $matches[1] ?? '';
     }
 
-    protected function markdownViewExists($version, $page): bool
+    protected function markdownViewExists($version, $page, $lang = 'en'): bool
     {
-        $markdownFileName = $version.'.'.($page ?? 'index');
+        $markdownFileName = $version.'.'.$lang.'.'.($page ?? 'index');
 
         try {
             $this->getMarkdownView("docs.{$markdownFileName}", [
