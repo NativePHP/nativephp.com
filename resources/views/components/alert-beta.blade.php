@@ -5,11 +5,16 @@
     <div>
         <p>
             NativePHP is currently in
-            <a href="/docs/getting-started/status" class="font-bold italic font-mono flex-inline px-1 py-0.5 text-base bg-orange-200 dark:bg-orange-600 rounded">alpha</a>
+            <span
+                class="font-bold italic font-mono flex-inline px-2 text-base bg-orange-200 dark:bg-orange-600
+                    rounded inline-block"
+            >
+                alpha
+            </span>
             development
         </p>
 
-        <a href="https://github.com/nativephp/laravel?sponsor=1"
+        <a href="/docs/getting-started/status"
            onclick="fathom.trackEvent('beta_interest');"
            class="group mt-4 font-bold inline-flex items-center rounded-md px-3 py-1
                             bg-orange-200 border border-orange-400 hover:bg-orange-300
