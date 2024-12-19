@@ -88,7 +88,7 @@ class ShowDocumentationController extends Controller
             ->setActive(\request()->path())
             ->__toString();
 
-        $pageProperties['editUrl'] = "https://github.com/NativePHP/nativephp.com/tree/main/resources/views/docs/{$version}/{$page}.md";
+        $pageProperties['editUrl'] = "https://github.com/NativePHP/nativephp.com/tree/main/resources/views/docs/{$version}/{$lang}/{$page}.md";
 
         // Find the next & previous page in the navigation
         $pageProperties['nextPage'] = null;
