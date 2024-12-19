@@ -229,8 +229,8 @@ been pressed at the time the item was clicked.
 
 ### Hotkeys
 
-Hotkeys can be defined for all menu items, either via their relevant `Menu` facade method or by using the `hotkey()`
-chainable method:
+Hotkeys can be defined for all menu items, either via the `hotkey` parameter of the respective `Menu` facade method or
+by using the `hotkey()` chainable method:
 
 ```php
 Menu::label('Quick search', hotkey: 'Ctrl+K');
