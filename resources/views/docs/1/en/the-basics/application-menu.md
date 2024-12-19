@@ -5,7 +5,7 @@ order: 300
 
 ## Configuring the Application Menu
 
-NativePHP allows you to configure the native menu of your application, as well as context menus and Dock menus, using a
+NativePHP allows you to configure the native menu of your application, as well as context menus, MenuBar and Dock menus, using a
 single, unified and expressive Menu API, available through the `Menu` facade. Use this for building all of your app's menus.
 
 ```php
@@ -65,17 +65,16 @@ Menu::default();
 
 ### Recreating the menu
 
-It's sometimes desirable to update the main application menu in response to changes in your application, making it
-contextually sensitive perhaps based on which window currently has focus.
+It's sometimes desirable to update the main application menu with a brand new configuration in response to changes in your
+application, making it contextually sensitive, perhaps based on which window currently has focus.
 
-You can update your application menu at any time by calling `Menu::create()` with your desired menu structure.
+You can update your application menu at any time simply by calling `Menu::create()` again with your desired menu structure.
+This might be in an event listener, a controller action or even a Livewire action method.
 
 ## Predefined menus
 
 NativePHP comes with a few predefined menus that you can use out of the box. These are a convenience and, for the most
 part, the only thing that can be changed about them is their label.
-
-> On macOS, the first item in your application menu will _always_ use the name of your application as its label.
 
 You may change this by passing a string as the first parameter to each method, for example:
 
@@ -83,9 +82,13 @@ You may change this by passing a string as the first parameter to each method, f
 Menu::edit('My Edit Menu')
 ```
 
-> The default menus often enable a number of common keyboard shortcuts, such as those typically used for cut, copy, and
-> paste. If you decide to build custom versions of these menus, you will need to explicitly define these shortcuts
-> ("hotkeys") yourself.
+**The default menus enable a number of common keyboard shortcuts ("hotkeys"), such as those typically used for cut,
+copy, and paste. If you decide to build custom versions of these menus, you will need to explicitly define these
+shortcuts yourself.**
+
+**On macOS, the first item in your application menu will _always_ use the name of your application as its label,
+overriding any custom label you set, regardless of which type of submenu you place first.**
+
 
 ### The App menu
 
@@ -98,9 +101,11 @@ Menu::create(
 );
 ```
 
+**The app menu is only available for macOS. It is typically used as the first menu in your application's menu.**
+
 ### The File menu
 
-You may use the `Menu::file()` method to create the default edit menu. This menu contains items and functionality that
+You may use the `Menu::file()` method to create the default file menu. This menu contains items and functionality that
 you would expect in a file menu (e.g. Close/Quit).
 
 ```php
@@ -224,11 +229,8 @@ been pressed at the time the item was clicked.
 
 ### Hotkeys
 
-When a menu item is fired from a key combo press, the event's `$combo` parameter will have its `triggeredByAccelerator`
-equal to `true`.
-
-Hotkeys can be defined for all menu items, either via their relevant `Menu` facade method or by using the `hotkey()`
-chainable method:
+Hotkeys can be defined for all menu items, either via the `hotkey` parameter of the respective `Menu` facade method or
+by using the `hotkey()` chainable method:
 
 ```php
 Menu::label('Quick search', hotkey: 'Ctrl+K');
@@ -244,6 +246,9 @@ You can find a list of available hotkey modifiers in the
 Unlike global hotkeys, hotkeys registered to menu items will only be fired when one of your application's windows are
 focused or the relevant context menu is open.
 
+When a menu item is fired from a hotkey combo press, the event's `$combo` parameter will have its `triggeredByAccelerator`
+value set to `true`.
+
 ### Label items
 
 The simplest menu item is just a label. You may use the `Menu::label()` method to add a label item to your menu:
@@ -254,15 +259,15 @@ Menu::make(
 );
 ```
 
-These are great if you just want your app to do something in response to the user clicking the menu item or pressing
-the hotkey combo.
+These are great when you want your app to do something in response to the user clicking the menu item or pressing
+a hotkey combo.
 
 ### Link items
 
-Link items allow you to define navigational elements within your menu. These can either navigate users to another URL
+Link items allow you to define navigational elements within your menus. These can either navigate users to another URL
 within your application or to an external page hosted on the internet.
 
-You may add a link to your menu by using the `Menu::link()` method.
+You may add a link to your menu by using the `Menu::link()` method:
 
 ```php
 Menu::link('/login', 'Login');
@@ -290,20 +295,25 @@ may introduce serious vulnerabilities onto your user's device.**
 
 ### Checkbox and Radio items
 
-In some cases, your app may not require a preferences panel, and a few interactive menu items will suffice to allow
-your user to configure some settings. Or you may wish to make certain commonly-used setting more accessible.
+In some cases, your app may not require a preferences panel, and a few interactive menu items may suffice to allow
+your user to configure some settings. Or you may wish to make certain commonly-used settings more readily accessible.
 
 Checkbox and Radio items enable you to create menu items for just these purposes. They operate in a very similar way
-to checkboxes and radio buttons in a web view.
+to checkboxes and radio buttons in a web form. Their default state is 'unchecked'.
 
 You may use the `Menu::checkbox()` and `Menu::radio()` methods to create such items, passing the initial state of the
-item to the `checked` parameter:
+item to the `checked` parameter or using the `checked()` chainable method:
 
 ```php
-Menu::checkbox('Word wrap', checked: false);
+Menu::checkbox('Word wrap', checked: true);
+
+// Or
+
+Menu::checkbox('Word wrap')->checked();
 ```
 
-When Checkbox and Radio items are triggered, the event data will indicate whether or not the item is currently checked.
+When Checkbox and Radio items are triggered, the click event data will indicate whether or not the item is currently
+checked via the `$item['checked']` value.
 
 #### Radio groups
 
@@ -329,15 +339,15 @@ These two radio groups will operate independently of each other.
 
 NativePHP also ships with a number of "special" menu items that provide specific behavior for you to use in your menus.
 
-These items usually have default labels and hotkeys associated with them and provide the basic default functionality
+These items usually have default labels and hotkeys associated with them and provide the basic, default functionality
 commonly associated with them in any web browser. Therefore, they do not fire any click events.
 
-You may only override their label.
+You may only override their labels.
 
 ### Separators
 You may add separators to your menu by using the `Menu::separator()` method.
 
-A separator is a horizontal line that separates menu items.
+A separator is a horizontal line that visually separates menu items.
 
 ```php
 Menu::make(
@@ -347,9 +357,12 @@ Menu::make(
 );
 ```
 
+As already noted, they also aid in logically grouping radio items.
+
 ### Undo and Redo
-If you have chosen not to include the [default Edit menu](#the-edit-menu) to your application menu,
-you may add undo and redo functionality to your app by using the `Menu::undo()` and `Menu::redo()` methods.
+If you have chosen not to include the [default Edit menu](#the-edit-menu) in your application menu,
+you may add the default undo and redo functionality to your app by using the `Menu::undo()` and
+`Menu::redo()` methods.
 
 ```php
 Menu::make()
@@ -363,9 +376,9 @@ but for more complex undo/redo workflows, you may wish to implement your own log
 these items.**
 
 ### Cut, Copy, and Paste
-If you have chosen not to include the [default Edit menu](#the-edit-menu) to your application menu,
-you may add cut, copy and paste functionality to your app by using the `Menu::cut()`, `Menu::copy()` and `Menu::paste()`
-methods.
+If you have chosen not to include the [default Edit menu](#the-edit-menu) in your application menu,
+you may add the default cut, copy and paste functionality to your app by using the `Menu::cut()`, `Menu::copy()` and
+`Menu::paste()` methods.
 
 ```php
 Menu::make()
@@ -387,7 +400,7 @@ if your currently-focused window is [fullscreen-able](/docs/the-basics/windows#f
 
 ```php
 Menu::make()
-    Menu::fullscreen('Go full screen'),
+    Menu::fullscreen('Supersize me!'),
 );
 ```
 
