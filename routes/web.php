@@ -23,7 +23,8 @@ Route::get('/', function () {
 Route::get('/docs/{version}/{lang}/{page?}', ShowDocumentationController::class)
     ->where('page', '(.*)')
     ->where('version', '[0-9]+')
-    ->where('lang', '[a-z]{2}');
+    ->where('lang', '[a-z]{2}')
+    ->name('versionedDocs');
 
 // Forward unversioned requests to the latest version
 Route::get('/docs/{page?}', function ($page = null) {
@@ -47,6 +48,22 @@ Route::get('/docs/{page?}', function ($page = null) {
 Route::post('/lang/{lang}', function ($lang) {
 
     session(['viewing_docs_lang' => $lang]);
+
+    $referer = request()->header('referer');
+    
+    if(! $referer) {
+        return redirect('/');
+    }
+
+    $previousRequest = request()->create($referer);
+    $previousRoute = Route::getRoutes()->match($previousRequest);
+    $previousRouteParameters = $previousRoute->parameters();
+
+    if(isset($previousRouteParameters['lang'])) {
+        $previousRouteParameters['lang'] = $lang;
+
+        return redirect()->route($previousRoute->getName(), $previousRouteParameters);
+    }
 
     return back();
 })->name('lang');
