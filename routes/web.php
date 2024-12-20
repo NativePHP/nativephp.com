@@ -47,7 +47,6 @@ Route::get('/docs/{page?}', function ($page = null) {
 Route::post('/lang/{lang}', function ($lang) {
 
     session(['viewing_docs_lang' => $lang]);
-    Session::put('locale', $lang);
 
     return back();
 })->name('lang');
