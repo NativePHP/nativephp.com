@@ -19,6 +19,7 @@ class SetLocale
         $lang = Session::get('viewing_docs_lang') ?? $request->getPreferredLanguage(['en', 'es']) ?? 'en';
 
         app()->setLocale($lang);
+        session(['viewing_docs_lang' => $lang]);
 
         return $next($request);
     }
