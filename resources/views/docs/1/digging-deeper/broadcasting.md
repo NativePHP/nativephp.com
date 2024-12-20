@@ -58,18 +58,19 @@ listening to events. This is similar to
 [listening to Laravel Echo events using Livewire](https://livewire.laravel.com/docs/events#real-time-events-using-laravel-echo).
 
 You may use a string name:
+
 ```php
 class AppSettings extends Component
 {
     public $windowFocused = true;
 
-    #[On('native:\\Native\Laravel\Events\Windows\WindowFocused')]
+    #[On('native:\\Native\\Laravel\\Events\\Windows\\WindowFocused')]
     public function windowFocused()
     {
         $this->windowFocused = true;
     }
 
-    #[On('native:\\Native\Laravel\Events\Windows\WindowBlurred')]
+    #[On('native:\\Native\\Laravel\\Events\\Windows\\WindowBlurred')]
     public function windowBlurred()
     {
         $this->windowFocused = false;
@@ -77,8 +78,12 @@ class AppSettings extends Component
 }
 ```
 
-or use the class name:
+You may find it more convenient to use PHP's class name resolution keyword, `::class`:
+
 ```php
+use Native\Laravel\Events\Windows\WindowBlurred;
+use Native\Laravel\Events\Windows\WindowFocused;
+
 class AppSettings extends Component
 {
     public $windowFocused = true;
