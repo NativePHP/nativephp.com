@@ -9,7 +9,7 @@ NativePHP offers an easy method to store and retrieve settings in your applicati
 settings that persist even after closing and reopening the application.
 
 Settings are managed using the `Settings` facade and are stored in a file named `config.json` in the
-[`appdata`](/docs/1/getting-started/debugging#start-from-scratch) directory of your application.
+[`appdata`](/docs/getting-started/debugging#start-from-scratch) directory of your application.
 
 ```php
 use Native\Laravel\Facades\Settings;
