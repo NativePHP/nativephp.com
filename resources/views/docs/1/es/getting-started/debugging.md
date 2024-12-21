@@ -30,7 +30,7 @@ Aquí tienes algunos consejos para la depuración:
 ### Dos o tres copias
 Recuerda que cuando se genera una compilación (de desarrollo o producción), toda tu aplicación Laravel es _copiada_ dentro de la carpeta de compilación.
 
-La copia de la compilación de desarrollo se almacena en `vendor` (¡santa incepción, Batman!).
+La copia de la compilación de desarrollo se almacena en `vendor`.
 
 Las compilaciones de producción se empaquetan en la carpeta `dist`.
 
@@ -107,7 +107,7 @@ Windows:
 ```
 C:\path\to\your\app\dist\win-unpacked\resources\app.asar.unpacked\resources\php\php.exe -v
 ```
-```
+
 
 ## ¿Aún atascado?
 Si has encontrado un error, por favor [abre un issue](https://github.com/nativephp/laravel/issues/new) en GitHub.

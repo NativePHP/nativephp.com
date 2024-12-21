@@ -5,7 +5,7 @@ order: 001
 
 # ¡Hola, NativePHP!
 
-NativePHP es un nuevo framework para construir rápidamente aplicaciones de escritorio nativas y ricas utilizando PHP. Si ya eres un desarrollador de PHP, te sentirás como en casa. Si eres nuevo en PHP, creemos que encontrarás NativePHP fácil de aprender y usar. Sea cual sea tu camino, creemos que serás productivo rápidamente.
+NativePHP es un nuevo framework para construir rápidamente aplicaciones de escritorio nativas y potentes utilizando PHP. Si ya eres un desarrollador de PHP, te sentirás como en casa. Si eres nuevo en PHP, creemos que encontrarás NativePHP fácil de aprender y usar. Sea cual sea tu camino, creemos que serás productivo rápidamente.
 
 **NativePHP hace que distribuir aplicaciones PHP a usuarios en cualquier plataforma sea muy sencillo.**
 
@@ -31,7 +31,7 @@ NativePHP **no es un framework de GUI**. No queremos decirte cómo construir tu 
 
 NativePHP **no es una bifurcación nueva y personalizada de PHP**. Este es el buen PHP nuevo que conoces y amas.
 
-Tampoco es una extensión que necesites averiguar e instalar en PHP.
+Tampoco es una extensión que tengas que entender e instalar en PHP.
 
 ## ¿Qué hay en la caja?
 
