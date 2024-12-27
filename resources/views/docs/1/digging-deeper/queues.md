@@ -15,12 +15,50 @@ Jobs live in the SQLite [database](/docs/digging-deeper/databases) that your app
 migration will have been created and migrated for you.
 
 ## Processing Jobs / Working the Queue
-When your application boots up, NativePHP starts a single queue worker, ready to process any jobs you send its way.
+By default, there is no configuration needed to process jobs. The `NativeServiceProvider::class` will boot up one default worker
+which will consume jobs from the `default` queue. If you want to run more workers or modify the configuration of any worker, you may
+refer to [Configuring workers](#configuring-workers).
 
-There's nothing more required.
+### Configuring workers
+Once you publish the NativePHP config file using `php artisan vendor:publish`, you will find a `queue_workers` key in 
+`config/nativephp.php`. Here are some acceptable values to get you started:
 
-In the context of your user's device, it's very rare that you would need multiple queues or many workers, as your
-application is likely to only be used by one user at a time.
+```php
+'queue_workers' => [
+    'one',
+    'two',
+    'three' => [
+        'queues' => ['high'],
+        'memory_limit' => 1024,
+        'timeout' => 600,
+    ],
+    'four' => [
+        'queues' => ['high'],
+    ],
+    'five' => [
+        'memory_limit' => 1024,
+    ],
+],
+```
+
+Not providing a nested array for the `memory_limit`, `queues` and `timeout` will result in default values being used.
+
+### Managing workers
+
+The handy `QueueWorker::up()` and `QueueWorker::down()` methods available on `Facades\QueueWorker` can be used to start
+and stop workers in code. This is useful for niche scenarios, but is worth mentioning nonetheless.
+
+```php
+use Native\Laravel\Facades\QueueWorker;
+use Native\DTOs\QueueConfig;
+
+$queueConfig = new QueueConfig(alias: 'manual', queuesToConsume: ['default'], memoryLimit: 1024, timeout: 600);
+
+QueueWorker::up($queueConfig);
+
+// Later...
+QueueWorker::down(alias: 'manual');
+```
 
 ## When to Queue
 Given that your database and application typically exist on the same machine (i.e. there's no network involved),
