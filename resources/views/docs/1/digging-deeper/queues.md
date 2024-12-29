@@ -15,9 +15,9 @@ Jobs live in the SQLite [database](/docs/digging-deeper/databases) that your app
 migration will have been created and migrated for you.
 
 ## Processing Jobs / Working the Queue
-By default, there is no configuration needed to process jobs. The `NativeServiceProvider::class` will boot up one default worker
-which will consume jobs from the `default` queue. If you want to run more workers or modify the configuration of any worker, you may
-refer to [Configuring workers](#configuring-workers).
+By default, NativePHP will boot up a single queue worker which will consume jobs from the `default` queue.
+
+If you wish to modify the configuration of this worker or run more workers, see [Configuring workers](#configuring-workers).
 
 ### Configuring workers
 Once you publish the NativePHP config file using `php artisan vendor:publish`, you will find a `queue_workers` key in 
@@ -25,8 +25,8 @@ Once you publish the NativePHP config file using `php artisan vendor:publish`, y
 
 ```php
 'queue_workers' => [
-    'one',
-    'two',
+    'one' => [],
+    'two' => [],
     'three' => [
         'queues' => ['high'],
         'memory_limit' => 1024,
@@ -41,20 +41,34 @@ Once you publish the NativePHP config file using `php artisan vendor:publish`, y
 ],
 ```
 
-Not providing a nested array for the `memory_limit`, `queues` and `timeout` will result in default values being used.
+Each item in the array will be spun up as a persistent [Child Process](/docs/digging-deeper/child-processes), with the key
+name you provide being used as both the process's and the worker's alias.
+
+You may configure which queues a worker is able to process jobs from, its memory limit and its timeout.
+
+If you do not provide values for any of these settings, the following sensible defaults will be used:
+
+```php
+'queues' => ['default'],
+'memory_limit' => 128,
+'timeout' => 60,
+```
 
 ### Managing workers
 
 The handy `QueueWorker::up()` and `QueueWorker::down()` methods available on `Facades\QueueWorker` can be used to start
-and stop workers in code. This is useful for niche scenarios, but is worth mentioning nonetheless.
+and stop workers, should you need to.
 
 ```php
-use Native\Laravel\Facades\QueueWorker;
 use Native\DTOs\QueueConfig;
+use Native\Laravel\Facades\QueueWorker;
 
 $queueConfig = new QueueConfig(alias: 'manual', queuesToConsume: ['default'], memoryLimit: 1024, timeout: 600);
 
 QueueWorker::up($queueConfig);
+
+// Alternatively, if you already have the worker config in your config/nativephp.php file, you may simply use its alias:
+QueueWorker::up(alias: 'manual');
 
 // Later...
 QueueWorker::down(alias: 'manual');
