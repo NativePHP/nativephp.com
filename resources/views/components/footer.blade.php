@@ -5,11 +5,11 @@
             © {{ date('Y') }} NativePHP.
         </p>
         <p>
-            NativePHP is a copyright of and maintained by <a href="https://twitter.com/marcelpociot">Marcel Pociot</a>
-            and <a href="https://twitter.com/simonhamp">Simon Hamp</a>.
+            {{__('NativePHP is a copyright of and maintained by')}} <a href="https://twitter.com/marcelpociot">Marcel Pociot</a>
+            {{__('and')}} <a href="https://twitter.com/simonhamp">Simon Hamp</a>.
         </p>
         <p>
-            Logo by <a href="https://twitter.com/caneco" target="_blank">Caneco</a>.
+            {{__('Logo by')}} <a href="https://twitter.com/caneco" target="_blank">Caneco</a>.
         </p>
     </div>
 

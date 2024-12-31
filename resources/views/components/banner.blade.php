@@ -46,6 +46,9 @@
                 </div>
             </button>
         </div>
+        <div class="hidden lg:flex items-center space-x-5">
+            <x-lang-button />
+        </div>
     </div>
 </div>
 <div class="block lg:hidden">

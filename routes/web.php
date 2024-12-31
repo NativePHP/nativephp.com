@@ -3,6 +3,7 @@
 use App\Http\Controllers\ShowDocumentationController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Session;
 
 /*
 |--------------------------------------------------------------------------
@@ -19,13 +20,16 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('/docs/{version}/{page?}', ShowDocumentationController::class)
+Route::get('/docs/{version}/{lang}/{page?}', ShowDocumentationController::class)
     ->where('page', '(.*)')
-    ->where('version', '[0-9]+');
+    ->where('version', '[0-9]+')
+    ->where('lang', '[a-z]{2}')
+    ->name('versionedDocs');
 
 // Forward unversioned requests to the latest version
 Route::get('/docs/{page?}', function ($page = null) {
     $version = session('viewing_docs_version', '1');
+    $lang = session('viewing_docs_lang', 'en');
 
     $referer = request()->header('referer');
 
@@ -38,5 +42,28 @@ Route::get('/docs/{page?}', function ($page = null) {
         $version = Str::before(ltrim(Str::after($referer, url('/docs/')), '/'), '/');
     }
 
-    return redirect("/docs/{$version}/{$page}");
+    return redirect("/docs/{$version}/{$lang}/{$page}");
 })->name('docs')->where('page', '.*');
+
+Route::post('/lang/{lang}', function ($lang) {
+
+    session(['viewing_docs_lang' => $lang]);
+
+    $referer = request()->header('referer');
+    
+    if(! $referer) {
+        return redirect('/');
+    }
+
+    $previousRequest = request()->create($referer);
+    $previousRoute = Route::getRoutes()->match($previousRequest);
+    $previousRouteParameters = $previousRoute->parameters();
+
+    if(isset($previousRouteParameters['lang'])) {
+        $previousRouteParameters['lang'] = $lang;
+
+        return redirect()->route($previousRoute->getName(), $previousRouteParameters);
+    }
+
+    return back();
+})->name('lang');
