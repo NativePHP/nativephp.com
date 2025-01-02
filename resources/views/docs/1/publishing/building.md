@@ -7,6 +7,13 @@ order: 100
 Building your app is the process of compiling your application into a production-ready state. When building, NativePHP
 attempts to sign and notarize your application. Once signed, your app is ready to be distributed.
 
+## Securing
+
+Before you prepare a distributable build, please make sure you've been through the
+[Security guide](/docs/digging-deeper/security).
+
+## Building
+
 The build process compiles your app for one platform at a time. It compiles your application along with the
 Electron/Tauri runtime into a single executable.
 

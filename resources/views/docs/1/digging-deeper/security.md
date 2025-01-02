@@ -52,20 +52,43 @@ All of these can be done simply by using the provided Storage filesystems detail
 ### The web servers
 
 NativePHP works by spinning up web servers on each side of the runtime environment: one on the PHP side to execute your
-application and another on the Electron side, to interact with Electron's native environment hooks for the operating
-system. It then bridges the gap between the two by making _authenticated and encrypted_ HTTP calls between the two
-using a pre-shared, dynamic key that is regenerated every time your application starts.
+application and another on the runtime side, to interact with the runtime's native environment hooks for the operating
+system. It then bridges the gap between the two by making _authenticated_ HTTP calls between the two using a pre-shared,
+dynamic key that is regenerated every time your application starts.
 
-This prevents any third-party software from snooping/sniffing the connection and 'tinkering' with either your
-application or the Electron environment. This means that your application's front-end will only be accessible through
-your Electron application shell and the Electron APIs will only respond to your application.
+This goes some way to preventing third-party software from snooping/sniffing the connection and 'tinkering' with either
+your application or the runtime environment. It also ensures that the runtime APIs built _for your application_ will
+respond **only** to your application.
 
 **You MUST NOT bypass this security measure!** If you do, your application will be open to attack from very basic HTTP
-calls, which it is trivial for any installed application to make, or even for your user to be coerced into making via a
-web browser (e.g. from a phishing attack).
+calls. It is trivial for any installed application to make such calls, or even for your user to be coerced into making
+them via a web browser (e.g. from a phishing attack).
 
 By default, Laravel's built-in CSRF and CORS protections will go some way to preventing many of these kinds of attacks
 but you should do all you can to prevent unwanted attack vectors from being made available.
+
+#### Prevent regular browser access
+
+When you're ready, you should add the `PreventRegularBrowserAccess` middleware to your application's global middleware
+stack, **especially before building your application for production release**.
+
+**This is NOT done for you.**
+
+This ensures that only requests coming from the web view shell that booted your application can make requests into your
+application.
+
+Append the middleware in your `bootstrap/app.php` file:
+
+```php
+use Native\Laravel\Http\Middleware\PreventRegularBrowserAccess;
+ 
+return Application::configure(basePath: dirname(__DIR__))
+    // ...
+    ->withMiddleware(function (Middleware $middleware) {
+         $middleware->append(PreventRegularBrowserAccess::class);
+    })
+    // ...
+```
 
 ## Protecting your users and their data
 
