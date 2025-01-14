@@ -1,5 +1,5 @@
 <div class="flex items-center justify-center bg-teal-500 p-2 text-center text-sm text-white text-balance">
-    <a href="https://github.com/orgs/NativePHP/discussions/278" onclick="fathom.trackEvent('alert_click');">
-        Windows support is here! 🔥 Read the full announcement &rightarrow;
+    <a href="/newsletter" onclick="fathom.trackEvent('alert_click');">
+        📲&nbsp;&nbsp;Excited for NativePHP for iOS and Android? Sign up for the newsletter &rightarrow;
     </a>
 </div>

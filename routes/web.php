@@ -15,6 +15,8 @@ use Illuminate\Support\Str;
 |
 */
 
+Route::redirect('/newsletter', 'https://simonhamp.mailcoach.app/nativephp');
+
 Route::get('/', function () {
     return view('welcome');
 });
