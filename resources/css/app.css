@@ -12,59 +12,62 @@
 }
 
 
-
-nav > ul > li {
-    @apply mb-2.5;
-}
-nav > ul > li > a {
-    @apply font-semibold;
-    @apply no-underline px-3 py-1.5 mb-1.5;
-    @apply border rounded dark:border-white/20;
-}
-nav > ul > li.active > a  {
-    @apply text-[#00aaa6];
-    @apply border-[#00aaa6] dark:border-[#00aaa6]/90;
-}
-nav >ul > li:hover > a {
-    @apply text-[#00aaa6];
-    /*@apply border-[#00aaa6] dark:border-[#00aaa6]/90;*/
-}
-nav > ul > li.active > a svg  {
-    @apply text-[#00aaa6];
-}
-
-/*nav .active > a {*/
-/*    @apply bg-gray-50 border*/
-/*}*/
-
-nav ul li ul li.exact-active a  {
-    @apply text-[#00aaa6];
-}
-nav ul li ul li:hover {
-    /*@apply text-[#00aaa6];*/
-    @apply border-[#00aaa6] dark:border-[#00aaa6]/90;
-}
-
-
-
+/* Whole menu */
 nav ul {
     @apply text-sm list-none;
 }
 
-nav ul li ul li {
-    @apply font-normal;
-    @apply py-1.5;
-    @apply border-l pl-3 dark:border-white/10;
-    @apply ml-3;
+/* Categories */
+nav > ul > li {
+    @apply mb-3;
+
+    & > a {
+        @apply font-semibold;
+        @apply no-underline px-3 py-1.5 mb-1.5;
+        @apply border rounded-lg dark:border-white/15;
+    }
 }
 
-nav ul li ul {
+nav > ul > li.active > a {
+    @apply text-[#00aaa6];
+    /*@apply border-[#00aaa6] dark:border-[#00aaa6]/90;*/
+
+    & > svg {
+        @apply text-[#00aaa6];
+    }
+}
+
+nav > ul > li:hover > a {
+    @apply text-[#00aaa6];
+    /*@apply border-[#00aaa6] dark:border-[#00aaa6]/90;*/
+}
+
+/* Sub menus */
+nav > ul > li > ul {
     @apply mb-6;
-}
 
-nav ul li.active ul li.active{
-    /*@apply border-l-[#00aaa6] dark:border-[#00aaa6]/90;*/
-    /*@apply font-medium*/
+    & > li {
+        @apply font-normal;
+
+        a {
+            @apply w-full block;
+            @apply py-1.5;
+            @apply border-l pl-3 dark:border-white/10;
+            @apply ml-3;
+        }
+
+        &.exact-active a {
+            @apply text-[#00aaa6];
+            @apply border-[#00aaa6] dark:border-[#00aaa6]/90;
+            /*@apply font-medium*/
+        }
+
+        &:hover a {
+            /*@apply text-[#00aaa6];*/
+            @apply border-[#00aaa6] dark:border-[#00aaa6]/90;
+        }
+
+    }
 }
 
 .prose h1 {
@@ -83,7 +86,7 @@ nav ul li.active ul li.active{
     @apply text-base;
 }
 
-.prose pre  {
+.prose pre {
     @apply p-6 shadow-lg rounded-xl;
 }
 
@@ -149,13 +152,16 @@ nav ul li.active ul li.active{
     nav ul {
         @apply text-base;
     }
+
     nav ul li ul {
         @apply mb-0;
         @apply pl-2;
     }
+
     nav ul li ul li {
         @apply mb-4;
     }
+
     nav ul li ul li a {
         @apply w-full;
         @apply flex flex-1;
@@ -190,6 +196,7 @@ nav ul li.active ul li.active{
 .DocSearch-Button {
     @apply border border-solid border-gray-400/50 dark:border-white/10 dark:bg-black/10 flex items-center w-full rounded;
 }
+
 .DocSearch-Button:hover {
     box-shadow: none;
     @apply text-gray-400 border-gray-400/70 bg-transparent dark:border-white/20;
@@ -230,3 +237,4 @@ nav ul li.active ul li.active{
 .DocSearch-Input {
     @apply focus-visible:outline-none;
 }
+

@@ -1,20 +1,17 @@
-<footer class="text-gray-600 dark:text-gray-400 justify-end p-12 md:px-0max-w-prose mx-auto">
-    <div class="text-sm text-center md:text-xs space-y-4">
-
+<footer class="my-16 space-y-12 text-gray-600 dark:text-gray-400 justify-end p-12 md:px-0 max-w-prose mx-auto">
+    <div class="text-sm text-center leading-6 space-y-1">
         <p>
             © {{ date('Y') }} NativePHP.
         </p>
         <p>
-            NativePHP is a copyright of and maintained by <a href="https://twitter.com/marcelpociot">Marcel Pociot</a>
+            NativePHP is a copyright of and maintained by<br> <a href="https://twitter.com/marcelpociot">Marcel Pociot</a>
             and <a href="https://twitter.com/simonhamp">Simon Hamp</a>.
         </p>
         <p>
             Logo by <a href="https://twitter.com/caneco" target="_blank">Caneco</a>.
         </p>
     </div>
-
-
-    <div class="flex items-center justify-center space-x-6 mt-12">
+    <div class="flex items-center justify-center space-x-6">
         <a href="https://www.linkedin.com/company/nativephp/" title="NativePHP on LinkedIn">
             <x-icons.linkedin class="size-5 text-black dark:text-white hover:text-[#00aaa6]" />
         </a>
@@ -35,5 +32,4 @@
             <x-icons.github class="size-5  dark:fill-white hover:fill-[#00aaa6]" />
         </a>
     </div>
-
 </footer>

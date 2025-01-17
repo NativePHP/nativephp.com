@@ -54,15 +54,16 @@
                     </x-flex-list-of-links>
 
                     <x-separator class="mt-8 -mr-4 -ml-4"/>
-                    <div class="mt-8 text-center">
-                        <a href="{{ $editUrl }}" target="_blank" rel="noopener noreferrer" class="text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300">
+                    <div class="mt-4 text-center">
+                        <x-link-subtle href="{{ $editUrl }}" target="_blank" rel="noopener">
                             Edit this page on GitHub
-                        </a>
+                        </x-link-subtle>
                     </div>
+                    <x-footer/>
+
                 </div>
             </div>
 
-            <x-footer/>
         </div>
     </main>
 
