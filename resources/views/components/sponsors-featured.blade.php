@@ -5,5 +5,5 @@
 </a>
 
 <a href="https://laradevs.com/?ref=nativephp" title="Laradevs sponsor">
-    <x-sponsors.laradir class="block {{ $height }} {{ $sameHeight ? 'py-[5%] m-auto':''  }} max-w-full"/>
+    <x-sponsors.laradir class="text-black dark:text-white block {{ $height }} {{ $sameHeight ? 'py-[5%] m-auto':''  }} max-w-full"/>
 </a>

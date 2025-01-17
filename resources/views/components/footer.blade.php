@@ -1,4 +1,4 @@
-<footer class="justify-end p-12 md:px-0max-w-prose mx-auto">
+<footer class="text-gray-600 dark:text-gray-400 justify-end p-12 md:px-0max-w-prose mx-auto">
     <div class="text-sm text-center md:text-xs space-y-4">
 
         <p>

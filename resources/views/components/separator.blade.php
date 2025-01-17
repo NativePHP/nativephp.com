@@ -1,1 +1,1 @@
-<hr {{ $attributes->class(['dark:border-gray-500']) }}>
+<hr {{ $attributes->class(['dark:border-gray-700']) }}>
