@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Str;
 use Illuminate\View\View;
 use InvalidArgumentException;
-use Spatie\Menu\Link;
+use Spatie\Menu\Html;
 use Spatie\Menu\Menu;
 use Spatie\YamlFrontMatter\YamlFrontMatter;
 use Symfony\Component\Finder\Finder;
@@ -39,9 +39,10 @@ class ShowDocumentationController extends Controller
         }
 
         try {
-            $pageProperties = Cache::remember("docs_{$version}_{$page}", now()->addDay(), function () use ($version, $page) {
-                return $this->getPageProperties($version, $page);
-            });
+            $pageProperties = Cache::remember("docs_{$version}_{$page}", now()->addDay(),
+                function () use ($version, $page) {
+                    return $this->getPageProperties($version, $page);
+                });
         } catch (InvalidArgumentException $e) {
             return $this->redirectToFirstNavigationPage($navigation, $page);
         }
@@ -77,11 +78,33 @@ class ShowDocumentationController extends Controller
             if (array_key_exists('path', $nav)) {
                 $menu->link($nav['path'], $nav['title']);
             } elseif (array_key_exists('children', $nav)) {
-                $menu->submenu(Link::to($nav['children'][0]['path'], $nav['title']), function (Menu $submenu) use ($nav) {
-                    foreach ($nav['children'] as $child) {
-                        $submenu->link($child['path'], $child['title']);
-                    }
-                });
+                $menu->setItemParentAttribute('x-data', '{ open: $el.classList.contains(\'active\') }');
+
+                $header = Html::raw('
+                    <a href="'.$nav['children'][0]['path'].'" class="flex items-center gap-2 justify-between" x-on:click.prevent="open = !open">
+                        <span>'.$nav['title'].'</span>
+                        <span class="text-gray-400 dark:text-gray-600">
+                            <svg x-show="open" x-cloak class="size-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                            </svg>
+                            <svg x-show="!open" x-cloak class="size-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"></path>
+                            </svg>
+                        </span>
+                    </a>
+                    ');
+
+                $submenu = Menu::new()
+                    ->setAttributes([
+                        'x-show' => 'open',
+                        'x-collapse' => '',
+                        'x-cloak' => '',
+                    ]);
+                foreach ($nav['children'] as $child) {
+                    $submenu->link($child['path'], $child['title']);
+                }
+
+                $menu->submenu($header, $submenu);
             }
         })
             ->setActive(\request()->path())
@@ -254,7 +277,7 @@ class ShowDocumentationController extends Controller
             ->filter(function ($nav) {
                 return array_key_exists('path', $nav) || array_key_exists('children', $nav);
             })
-            ->map(function ($nav) {
+            ->flatMap(function ($nav) {
                 if (array_key_exists('path', $nav)) {
                     return $nav;
                 }
@@ -264,14 +287,14 @@ class ShowDocumentationController extends Controller
 
                 return null;
             })
-            ->flatten(1)
             ->first();
 
         if (is_null($firstNavigationPath) && ! is_null($page)) {
             return $this->redirectToFirstNavigationPage($navigation);
         }
 
-        return is_string($firstNavigationPath) ? redirect($firstNavigationPath, 301) : redirect($firstNavigationPath['path'], 301);
+        return is_string($firstNavigationPath) ? redirect($firstNavigationPath,
+            301) : redirect($firstNavigationPath['path'], 301);
     }
 
     protected function getMarkdownView($view, array $data = [], array $mergeData = []): View

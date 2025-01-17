@@ -29,7 +29,7 @@
                         </ul>
                     @endif
 
-                    <div class="mt-8 prose dark:prose-invert">
+                    <div class="mt-8 prose dark:prose-invert prose-headings:text-gray-800 dark:prose-headings:text-gray-50">
                         {!! $content !!}
                     </div>
 

@@ -11,43 +11,59 @@
     backdrop-filter: blur(20px);
 }
 
-nav a {
-    @apply no-underline;
+
+nav > ul > li {
+    @apply mb-2.5;
 }
-nav .active > a {
+nav > ul > li > a {
+    @apply font-semibold;
+    @apply no-underline px-3 py-1.5 mb-1.5;
+    @apply border rounded dark:border-white/20;
+}
+nav > ul > li.active > a  {
+    @apply text-[#00aaa6];
+    @apply border-[#00aaa6] dark:border-[#00aaa6]/90;
+}
+nav >ul > li:hover > a {
+    @apply text-[#00aaa6];
+    /*@apply border-[#00aaa6] dark:border-[#00aaa6]/90;*/
+}
+nav > ul > li.active > a svg  {
     @apply text-[#00aaa6];
 }
 
-/*nav .active {*/
-/*    @apply bg-gray-50;*/
+/*nav .active > a {*/
+/*    @apply bg-gray-50 border*/
 /*}*/
-
-
 
 nav ul li ul li.exact-active a  {
     @apply text-[#00aaa6];
 }
-
-nav a:hover {
-    @apply text-gray-400;
+nav ul li ul li:hover {
+    /*@apply text-[#00aaa6];*/
+    @apply border-[#00aaa6] dark:border-[#00aaa6]/90;
 }
+
+
 
 nav ul {
     @apply text-sm list-none;
 }
 
-nav ul li {
-    @apply font-bold;
-}
-
 nav ul li ul li {
     @apply font-normal;
-    @apply my-3;
+    @apply py-1.5;
+    @apply border-l pl-3 dark:border-white/10;
+    @apply ml-3;
 }
 
 nav ul li ul {
     @apply mb-6;
-    @apply pl-4;
+}
+
+nav ul li.active ul li.active{
+    /*@apply border-l-[#00aaa6] dark:border-[#00aaa6]/90;*/
+    /*@apply font-medium*/
 }
 
 .prose h1 {
@@ -71,7 +87,7 @@ nav ul li ul {
 }
 
 .prose pre code {
-    @apply text-white;
+    @apply text-gray-50;
 }
 
 .prose code {
