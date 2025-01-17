@@ -1,8 +1,15 @@
 <div class="
-hidden lg:fixed lg:block -mx-3 overflow-y-auto max-h-[calc(100%-134px)] py-8 lg:max-w-[240px] lg:w-full
- border-r border-[#00aaa6] border-opacity-10 dark:border-0
- dark:text-gray-200
-  pl-4
+    hidden lg:block
+    fixed z-20 inset-0
+{{--  With banner: 6.5rem  --}}
+{{--  Without banner: 4.3rem  --}}
+    top-[6.5rem] left-[max(0px,calc(50%-45rem))] right-auto
+    w-[19rem]
+    pt-6 pb-10
+    pl-8 pr-6
+    overflow-y-auto
+    border-r border-[#00aaa6] border-opacity-10 dark:border-gray-800
+    dark:text-gray-200
  ">
     <nav class="flex flex-col flex-1">
         {!! $navigation !!}
