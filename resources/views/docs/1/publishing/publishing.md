@@ -2,7 +2,7 @@
 title: Publishing
 order: 200
 ---
-# Publishing Your App
+## Publishing Your App
 
 Publishing your app is similar to building, but in addition NativePHP will upload the build artifacts to your chosen
 [updater provider](/docs/publishing/updating) automatically.

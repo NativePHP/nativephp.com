@@ -7,9 +7,9 @@
 
             <div class="overflow-hidden lg:ml-[240px] max-w-prose w-full py-8 sm:px-8">
 
-                <div class="text-5xl font-bold tracking-tight mb-4 text-[#00aaa6]">
+                <h1 class="text-5xl font-bold tracking-tight mb-4 text-[#00aaa6]">
                     {{$title}}
-                </div>
+                </h1>
 
                 <x-alert-beta/>
 

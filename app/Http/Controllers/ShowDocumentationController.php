@@ -200,13 +200,14 @@ class ShowDocumentationController extends Controller
     protected function extractTableOfContents(string $document): array
     {
         // Remove code blocks which might contain headers.
-        $document = preg_replace('(```[a-z]*\n[\s\S]*?\n```)', '', $document);
+        $document = preg_replace('/```[a-z]*\s(.*?)```/s', '', $document);
 
         return collect(explode(PHP_EOL, $document))
             ->reject(function (string $line) {
                 // Only search for level 2 and 3 headings.
                 return ! Str::startsWith($line, '## ') && ! Str::startsWith($line, '### ');
             })
+
             ->map(function (string $line) {
                 return [
                     'level' => strlen(trim(Str::before($line, '# '))) + 1,

@@ -2,7 +2,7 @@
 title: System
 order: 800
 ---
-# The System
+## The System
 
 One of the main advantages of building a native application is having more direct access to system resources, such as
 peripherals connected to the physical device and APIs that aren't typically accessible inside a browser's sandbox. 

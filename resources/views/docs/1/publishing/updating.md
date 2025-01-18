@@ -2,7 +2,7 @@
 title: Updating
 order: 300
 ---
-# The Updater
+## The Updater
 NativePHP ships with a built-in auto-update tool, which allows your users to update your application without needing to
 manually download and install new releases.
 

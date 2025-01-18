@@ -3,7 +3,7 @@ title: Application Lifecycle
 order: 1
 ---
 
-# NativePHP Application Lifecycle
+## NativePHP Application Lifecycle
 
 When your NativePHP application starts - whether it's in development or production - it performs a series of steps to get your application up and running.
 

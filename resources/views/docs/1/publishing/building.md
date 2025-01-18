@@ -2,7 +2,7 @@
 title: Building
 order: 100
 ---
-# Building Your App
+## Building Your App
 
 Building your app is the process of compiling your application into a production-ready state. When building, NativePHP
 attempts to sign and notarize your application. Once signed, your app is ready to be distributed.
