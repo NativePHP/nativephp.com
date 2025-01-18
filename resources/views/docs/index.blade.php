@@ -9,13 +9,15 @@
             lg:pl-[19.5rem]
 {{--            overflow-hidden lg:ml-[240px] max-w-prose w-full py-8 sm:px-8--}}
             ">
-                <div class="max-w-3xl mx-auto pt-10 xl:max-w-none xl:ml-0 xl:mr-[15.5rem] xl:pr-16">
+                <div class="max-w-3xl mx-auto pt-4 sm:pt-6 xl:max-w-none xl:ml-0 xl:mr-[15.5rem] xl:pr-16">
 
                     <x-sidebar-right :tableOfContents="$tableOfContents"/>
 
-                    <div class="text-5xl font-bold tracking-tight mb-4 text-[#00aaa6]">
+                    <div class="text-4xl font-semibold mb-4 text-[#00aaa6]">
                         {{$title}}
                     </div>
+
+                    <x-separator class="mt-3 -mr-4 -ml-4"/>
 
                     <x-alert-beta/>
 
@@ -29,7 +31,7 @@
                         </ul>
                     @endif
 
-                    <div class="mt-8 prose dark:prose-invert prose-headings:scroll-mt-32 prose-headings:text-gray-800 dark:prose-headings:text-gray-50">
+                    <div class="mt-8 prose dark:prose-invert prose-headings:scroll-mt-20 sm:prose-headings:scroll-mt-32 prose-headings:text-gray-800 dark:prose-headings:text-gray-50">
                         {!! $content !!}
                     </div>
 
