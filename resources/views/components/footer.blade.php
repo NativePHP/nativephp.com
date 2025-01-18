@@ -1,4 +1,4 @@
-<footer class="my-16 space-y-12 text-gray-600 dark:text-gray-400 justify-end p-12 md:px-0 max-w-prose mx-auto">
+<footer class="my-16 space-y-12 text-gray-600 dark:text-gray-400 justify-end md:px-0 max-w-prose mx-auto">
     <div class="text-sm text-center leading-6 space-y-1">
         <p>
             © {{ date('Y') }} NativePHP.
