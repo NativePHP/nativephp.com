@@ -93,14 +93,24 @@ class ShowDocumentationController extends Controller
         $pageProperties['nextPage'] = null;
         $pageProperties['previousPage'] = null;
 
-        foreach ($navigation as $section) {
+        foreach ($navigation as $i => $section) {
             foreach ($section['children'] as $key => $child) {
                 if ($child['path'] === '/'.$pageProperties['pagePath']) {
                     if (isset($section['children'][$key + 1])) {
                         $pageProperties['nextPage'] = $section['children'][$key + 1];
                     }
+                    elseif(isset($navigation[$i + 1])) {
+                        $navigation[$i + 1]['children'][0]['title'] = $navigation[$i + 1]['title'].': '.$navigation[$i + 1]['children'][0]['title'];
+                        $pageProperties['nextPage'] = $navigation[$i + 1]['children'][0];
+                    }
+
                     if (isset($section['children'][$key - 1])) {
                         $pageProperties['previousPage'] = $section['children'][$key - 1];
+                    }
+                    elseif(isset($navigation[$i - 1])) {
+                        $lastChild = count($navigation[$i - 1]['children'])-1;
+                        $navigation[$i - 1]['children'][$lastChild]['title'] = $navigation[$i - 1]['title'].': '.$navigation[$i - 1]['children'][$lastChild]['title'];
+                        $pageProperties['previousPage'] = $navigation[$i - 1]['children'][$lastChild];
                     }
                 }
             }
