@@ -26,8 +26,8 @@ class HeadingRenderer implements NodeRendererInterface
             $element->setContents(
                 new HtmlElement(
                     'a',
-                    ['href' => "#{$id}", 'class' => 'mr-2 no-underline', 'style' => 'border-bottom: 0 !important;'],
-                    new HtmlElement('div', ['class' => 'inline font-bold text-indigo-600'], '#'),
+                    ['href' => "#{$id}", 'class' => 'mr-2 no-underline font-medium', 'style' => 'border-bottom: 0 !important;'],
+                    new HtmlElement('span', ['class' => ' text-gray-600 dark:text-gray-400 hover:text-[#00aaa6]'], '#'),
                 ).
                 $element->getContents()
             );

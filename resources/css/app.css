@@ -11,51 +11,71 @@
     backdrop-filter: blur(20px);
 }
 
-nav a {
-    @apply no-underline;
-}
-nav .active > a {
-    @apply text-[#00aaa6];
-}
 
-/*nav .active {*/
-/*    @apply bg-gray-50;*/
-/*}*/
-
-
-
-nav ul li ul li.exact-active a  {
-    @apply text-[#00aaa6];
-}
-
-nav a:hover {
-    @apply text-gray-400;
-}
-
+/* Whole menu */
 nav ul {
-    @apply text-sm list-none;
+    @apply text-xl md:text-sm list-none;
 }
 
-nav ul li {
-    @apply font-bold;
+/* Categories */
+nav > ul > li {
+    @apply mb-3;
+
+    & > a {
+        @apply font-semibold;
+        @apply no-underline px-3 py-1.5 mb-1.5;
+        @apply border rounded-lg dark:border-white/15;
+    }
 }
 
-nav ul li ul li {
-    @apply font-normal;
-    @apply my-3;
+nav > ul > li.active > a {
+    @apply text-[#00aaa6];
+    /*@apply border-[#00aaa6] dark:border-[#00aaa6]/90;*/
+
+    & > svg {
+        @apply text-[#00aaa6];
+    }
 }
 
-nav ul li ul {
+nav > ul > li:hover > a {
+    @apply text-[#00aaa6];
+    /*@apply border-[#00aaa6] dark:border-[#00aaa6]/90;*/
+}
+
+/* Sub menus */
+nav > ul > li > ul {
     @apply mb-6;
-    @apply pl-4;
+
+    & > li {
+        @apply font-normal;
+
+        a {
+            @apply w-full block;
+            @apply py-1.5;
+            @apply border-l pl-3 dark:border-white/10;
+            @apply ml-3;
+        }
+
+        &.exact-active a {
+            @apply text-[#00aaa6];
+            @apply border-[#00aaa6] dark:border-[#00aaa6]/90;
+            /*@apply font-medium*/
+        }
+
+        &:hover a {
+            /*@apply text-[#00aaa6];*/
+            @apply border-[#00aaa6] dark:border-[#00aaa6]/90;
+        }
+
+    }
 }
 
 .prose h1 {
-    @apply text-3xl;
+    @apply text-2xl;
 }
 
 .prose h2 {
-    @apply text-2xl;
+    @apply text-xl;
 }
 
 .prose h3 {
@@ -66,12 +86,12 @@ nav ul li ul {
     @apply text-base;
 }
 
-.prose pre  {
+.prose pre {
     @apply p-6 shadow-lg rounded-xl;
 }
 
 .prose pre code {
-    @apply text-white;
+    @apply text-gray-50;
 }
 
 .prose code {
@@ -79,11 +99,11 @@ nav ul li ul {
 }
 
 .prose a {
-    @apply text-indigo-700;
+    @apply text-indigo-700 dark:text-indigo-300;
 }
 
 .prose a:hover {
-    @apply text-indigo-600 no-underline;
+    @apply text-indigo-600 no-underline dark:text-indigo-300;
 }
 
 .prose img {
@@ -128,41 +148,13 @@ nav ul li ul {
     @apply mr-4;
 }
 
-@media (max-width: 1024px) {
-    nav ul {
-        @apply text-base;
-    }
-    nav ul li ul {
-        @apply mb-0;
-        @apply pl-2;
-    }
-    nav ul li ul li {
-        @apply mb-4;
-    }
-    nav ul li ul li a {
-        @apply w-full;
-        @apply flex flex-1;
-    }
-}
 
-@media (prefers-color-scheme: dark) {
-    nav a:hover {
-        @apply text-gray-300;
-    }
 
-    .prose a {
-        @apply text-indigo-300;
-    }
-
-    .prose a:hover {
-        @apply text-indigo-300 no-underline;
-    }
-}
 
 
 :root {
     --docsearch-container-background: rgba(0, 0, 0, 0.5);
-    --docsearch-primary-color: #06b6d4;
+    --docsearch-primary-color: #00aaa6;
 }
 
 [id=docsearch] {
@@ -173,6 +165,7 @@ nav ul li ul {
 .DocSearch-Button {
     @apply border border-solid border-gray-400/50 dark:border-white/10 dark:bg-black/10 flex items-center w-full rounded;
 }
+
 .DocSearch-Button:hover {
     box-shadow: none;
     @apply text-gray-400 border-gray-400/70 bg-transparent dark:border-white/20;
@@ -213,3 +206,4 @@ nav ul li ul {
 .DocSearch-Input {
     @apply focus-visible:outline-none;
 }
+
