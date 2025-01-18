@@ -237,6 +237,7 @@ class ShowDocumentationController extends Controller
                     'anchor' => Str::slug(Str::replace('`', 'code', $title)),
                 ];
             })
+            ->values()
             ->toArray();
     }
 
