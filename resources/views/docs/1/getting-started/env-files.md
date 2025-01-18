@@ -3,7 +3,7 @@ title: Environment Files
 order: 400
 ---
 
-# Environment Files
+## Environment Files
 
 When NativePHP bundles your application, it will copy your entire application directory into the bundle, including your
 `.env` file.

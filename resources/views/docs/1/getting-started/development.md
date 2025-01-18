@@ -3,7 +3,7 @@ title: Development
 order: 300
 ---
 
-# Development
+## Development
 
 ```shell
 php artisan native:serve
@@ -18,7 +18,7 @@ application to see changes.
 
 This is known as 'running a dev build'.
 
-## What does the `native:serve` command do?
+### What does the `native:serve` command do?
 
 The `native:serve` command runs the Electron/Tauri 'debug build' commands, which build your application with various
 debug options set to help make debugging easier, such as allowing you to show the Dev Tools in the embedded web view.
@@ -59,7 +59,7 @@ Now changes you make to files in your source code will cause a hot reload in you
 
 Which files trigger reloads will depend on your Vite configuration.
 
-## `composer native:dev`
+### `composer native:dev`
 
 You may find the `native:dev` script convenient. By default, it is setup to run both `native:serve` and `npm run dev`
 concurrently in a single command:

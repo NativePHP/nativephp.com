@@ -3,7 +3,7 @@ title: Debugging
 order: 350
 ---
 
-# When things go wrong
+## When things go wrong
 
 Building native applications is a complex task with many moving parts. There will be errors, crashes and lots of
 head-scratching.
@@ -16,7 +16,7 @@ maintained by many developers outside the NativePHP team.**
 
 This means that while some issues can be solved within NativePHP it's also very likely that the problem lies elsewhere.
 
-## The layers
+### The layers
 
 - Your application, built on Laravel, using your local installations of PHP & Node.
 - NativePHP's development tools (`native:serve` and `native:build`) manage the Electron/Tauri build processes - this is

@@ -12,10 +12,10 @@
                 <div class="max-w-3xl mx-auto pt-4 sm:pt-6 xl:max-w-none xl:ml-0 xl:mr-[15.5rem] xl:pr-16">
 
                     <x-sidebar-right :tableOfContents="$tableOfContents"/>
-
-                    <div class="text-4xl font-semibold mb-4 text-[#00aaa6]">
+                    
+                    <h1 class="text-4xl font-semibold mb-4 text-[#00aaa6]">
                         {{$title}}
-                    </div>
+                    </h1>
 
                     <x-separator class="mt-3 -mr-4 -ml-4"/>
 

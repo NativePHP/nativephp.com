@@ -2,7 +2,7 @@
 title: Sponsoring
 order: 002
 ---
-# Support NativePHP
+## Support NativePHP
 
 NativePHP is wholly dependent on the dedication of its maintainers and contributors, who volunteer their free time to
 ensure its continued development and improvement. As we prioritize our paid client work to sustain ourselves, your

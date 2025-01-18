@@ -3,7 +3,7 @@ title: Introduction
 order: 001
 ---
 
-# Hello, NativePHP!
+## Hello, NativePHP!
 
 NativePHP is a new framework for rapidly building rich, native desktop applications using PHP. If you're already a PHP
 developer, you'll feel right at home. If you're new to PHP, we think you'll find NativePHP easy to pick up and use.

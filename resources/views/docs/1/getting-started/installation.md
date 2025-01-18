@@ -3,14 +3,14 @@ title: Installation
 order: 100
 ---
 
-# Requirements
+## Requirements
 
 1. PHP 8.1+
 2. Laravel 10 or higher
 3. Node 20+
 4. Windows 10+ / macOS 12+ / Linux
 
-## PHP & Node
+### PHP & Node
 
 The best development experience for NativePHP is to have PHP and Node running on your development machine directly.
 
@@ -20,7 +20,7 @@ If you're using Mac or Windows, the most painless way to get PHP and Node up and
 Please note that, whilst it's possible to develop and run your application from a virtualized environment or container,
 you may encounter more unexpected issues and have more manual steps to create working builds.
 
-## Laravel
+### Laravel
 
 NativePHP is built to work best with Laravel. You can install it into an existing Laravel application, or
 [start a new one](https://laravel.com/docs/installation).

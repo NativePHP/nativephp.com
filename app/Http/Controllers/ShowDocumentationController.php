@@ -116,14 +116,22 @@ class ShowDocumentationController extends Controller
         $pageProperties['nextPage'] = null;
         $pageProperties['previousPage'] = null;
 
-        foreach ($navigation as $section) {
+        foreach ($navigation as $i => $section) {
             foreach ($section['children'] as $key => $child) {
                 if ($child['path'] === '/'.$pageProperties['pagePath']) {
                     if (isset($section['children'][$key + 1])) {
                         $pageProperties['nextPage'] = $section['children'][$key + 1];
+                    } elseif (isset($navigation[$i + 1])) {
+                        $navigation[$i + 1]['children'][0]['title'] = $navigation[$i + 1]['title'].': '.$navigation[$i + 1]['children'][0]['title'];
+                        $pageProperties['nextPage'] = $navigation[$i + 1]['children'][0];
                     }
+
                     if (isset($section['children'][$key - 1])) {
                         $pageProperties['previousPage'] = $section['children'][$key - 1];
+                    } elseif (isset($navigation[$i - 1])) {
+                        $lastChild = count($navigation[$i - 1]['children']) - 1;
+                        $navigation[$i - 1]['children'][$lastChild]['title'] = $navigation[$i - 1]['title'].': '.$navigation[$i - 1]['children'][$lastChild]['title'];
+                        $pageProperties['previousPage'] = $navigation[$i - 1]['children'][$lastChild];
                     }
                 }
             }
@@ -223,13 +231,14 @@ class ShowDocumentationController extends Controller
     protected function extractTableOfContents(string $document): array
     {
         // Remove code blocks which might contain headers.
-        $document = preg_replace('(```[a-z]*\n[\s\S]*?\n```)', '', $document);
+        $document = preg_replace('/```[a-z]*\s(.*?)```/s', '', $document);
 
         return collect(explode(PHP_EOL, $document))
             ->reject(function (string $line) {
                 // Only search for level 2 and 3 headings.
                 return ! Str::startsWith($line, '## ') && ! Str::startsWith($line, '### ');
             })
+
             ->map(function (string $line) {
                 return [
                     'level' => strlen(trim(Str::before($line, '# '))) + 1,

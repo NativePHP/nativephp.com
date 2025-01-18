@@ -2,7 +2,6 @@
 title: Screens
 order: 850
 ---
-# Screens
 
 The `Screen` facade lets you get information about the screens currently connected to the computer.
 
