@@ -50,8 +50,8 @@ return [
          * The default values to be used by the twitter cards generator.
          */
         'defaults' => [
-            //'card'        => 'summary',
-            //'site'        => '@laravelphp',
+            // 'card'        => 'summary',
+            // 'site'        => '@laravelphp',
         ],
     ],
     'json-ld' => [
