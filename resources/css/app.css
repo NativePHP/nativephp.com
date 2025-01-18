@@ -154,7 +154,7 @@ nav > ul > li > ul {
 
 :root {
     --docsearch-container-background: rgba(0, 0, 0, 0.5);
-    --docsearch-primary-color: #06b6d4;
+    --docsearch-primary-color: #00aaa6;
 }
 
 [id=docsearch] {
