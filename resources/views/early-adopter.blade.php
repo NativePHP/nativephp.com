@@ -1,5 +1,10 @@
-<x-layout :backgroundPattern="true">
+@php
+    use Artesaos\SEOTools\Facades\SEOTools;
+    SEOTools::setTitle('Early Adopter Program');
+    SEOTools::setDescription('Access NativePHP on iOS and Android by becoming an Early Adopter.');
+@endphp
 
+<x-layout :backgroundPattern="true">
     <!-- Catch Phrase and CTA Section -->
     <div class="px-6 py-16 sm:py-28 sm:px-6 lg:px-8">
         <div class="mx-auto max-w-3xl text-center">
