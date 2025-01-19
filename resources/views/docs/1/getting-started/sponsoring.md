@@ -26,6 +26,16 @@ goes a long way in defraying the expenses of working for free to keep this proje
 
 Together, we can continue to grow NativePHP and ensure it remains a valuable tool for the community. 
 
+## Early Adopter of iOS & Android
+
+If you are more interested in NativePHP for Mobile, you can become an early adopter. We are already working on NativePHP for iOS and could use your support to speed up the development process.
+
+By giving a one-time fee of $250 or more, you will be granted early access to the first release of NativePHP for iOS and participate in the development process by providing feedback and feature requests on a private Discord channel.
+
+[Become an early adopter](https://github.com/sponsors/simonhamp) 
+
+If you wanna learn more, there is a  [dedicated page here](/early-adopter)
+
 ## Corporate Partners
 
 If your organization is using NativePHP, we strongly encourage you to consider a Corporate Sponsorship. This level of

@@ -11,6 +11,16 @@
     backdrop-filter: blur(20px);
 }
 
+.background-pattern {
+    background-image: url('../assets/background-pattern.svg');
+}
+
+@media(prefers-color-scheme: dark) {
+    .background-pattern {
+        background-image: url('../assets/background-pattern-dark.svg');
+    }
+}
+
 
 /* Whole menu */
 nav ul {
