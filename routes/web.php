@@ -17,9 +17,8 @@ use Illuminate\Support\Str;
 
 Route::redirect('/newsletter', 'https://simonhamp.mailcoach.app/nativephp');
 
-Route::get('/', function () {
-    return view('welcome');
-});
+Route::view('/', 'welcome')->name('welcome');
+Route::view('early-adopter', 'early-adopter')->name('early-adopter');
 
 Route::get('/docs/{version}/{page?}', ShowDocumentationController::class)
     ->where('page', '(.*)')
