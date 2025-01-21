@@ -9,7 +9,7 @@
                 class="font-bold italic font-mono flex-inline px-1 mx-0.5 text-base bg-orange-200 dark:bg-orange-900
                     rounded inline-block"
             >
-                alpha
+                beta
             </span>
             development
         </p>
@@ -20,7 +20,7 @@
                             bg-orange-200 hover:bg-orange-300
                             dark:bg-orange-900 dark:hover:bg-orange-500 dark:text-orange-100
                             " target="_blank">
-            Let's get to beta!
+            Let's get to v1!
             <x-heroicon-o-rocket-launch class="ml-2 size-5 group-hover:hidden"/>
             <x-heroicon-s-rocket-launch class="hidden ml-2 size-5 group-hover:block"/>
         </a>
