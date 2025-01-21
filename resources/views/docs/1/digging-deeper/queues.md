@@ -15,12 +15,64 @@ Jobs live in the SQLite [database](/docs/digging-deeper/databases) that your app
 migration will have been created and migrated for you.
 
 ## Processing Jobs / Working the Queue
-When your application boots up, NativePHP starts a single queue worker, ready to process any jobs you send its way.
+By default, NativePHP will boot up a single queue worker which will consume jobs from the `default` queue.
 
-There's nothing more required.
+If you wish to modify the configuration of this worker or run more workers, see [Configuring workers](#configuring-workers).
 
-In the context of your user's device, it's very rare that you would need multiple queues or many workers, as your
-application is likely to only be used by one user at a time.
+### Configuring workers
+Once you publish the NativePHP config file using `php artisan vendor:publish`, you will find a `queue_workers` key in 
+`config/nativephp.php`. Here are some acceptable values to get you started:
+
+```php
+'queue_workers' => [
+    'one' => [],
+    'two' => [],
+    'three' => [
+        'queues' => ['high'],
+        'memory_limit' => 1024,
+        'timeout' => 600,
+    ],
+    'four' => [
+        'queues' => ['high'],
+    ],
+    'five' => [
+        'memory_limit' => 1024,
+    ],
+],
+```
+
+Each item in the array will be spun up as a persistent [Child Process](/docs/digging-deeper/child-processes), with the key
+name you provide being used as both the process's and the worker's alias.
+
+You may configure which queues a worker is able to process jobs from, its memory limit and its timeout.
+
+If you do not provide values for any of these settings, the following sensible defaults will be used:
+
+```php
+'queues' => ['default'],
+'memory_limit' => 128,
+'timeout' => 60,
+```
+
+### Managing workers
+
+The handy `QueueWorker::up()` and `QueueWorker::down()` methods available on `Facades\QueueWorker` can be used to start
+and stop workers, should you need to.
+
+```php
+use Native\DTOs\QueueConfig;
+use Native\Laravel\Facades\QueueWorker;
+
+$queueConfig = new QueueConfig(alias: 'manual', queuesToConsume: ['default'], memoryLimit: 1024, timeout: 600);
+
+QueueWorker::up($queueConfig);
+
+// Alternatively, if you already have the worker config in your config/nativephp.php file, you may simply use its alias:
+QueueWorker::up(alias: 'manual');
+
+// Later...
+QueueWorker::down(alias: 'manual');
+```
 
 ## When to Queue
 Given that your database and application typically exist on the same machine (i.e. there's no network involved),
