@@ -4,7 +4,7 @@
 </a>
 
 <a href="https://discord.gg/X62tWNStZK" title="Go to discord server">
-    <x-icons.discord  class="size-5 dark:fill-white hover:fill-[#00aaa6]" />
+    <x-icons.discord  class="size-5 text-black dark:text-white hover:text-[#00aaa6]" />
 </a>
 
 <a href="https://opencollective.com/nativephp" title="NativePHP on Open Collective">

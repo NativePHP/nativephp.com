@@ -11,8 +11,8 @@
             Logo by <a href="https://twitter.com/caneco" target="_blank">Caneco</a>.
         </p>
     </div>
-    
+
     <div class="flex items-center justify-center space-x-6">
-      <x-social-networks-all/>
+        <x-social-networks-all/>
     </div>
 </footer>

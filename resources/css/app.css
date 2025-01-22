@@ -11,6 +11,16 @@
     backdrop-filter: blur(20px);
 }
 
+.background-pattern {
+    background-image: url('../assets/background-pattern.svg');
+}
+
+@media(prefers-color-scheme: dark) {
+    .background-pattern {
+        background-image: url('../assets/background-pattern-dark.svg');
+    }
+}
+
 
 /* Whole menu */
 nav ul {
@@ -49,7 +59,7 @@ nav > ul > li > ul {
     & > li {
         @apply font-normal;
 
-        a {
+        & a {
             @apply w-full block;
             @apply py-1.5;
             @apply border-l pl-3 dark:border-white/10;
@@ -177,7 +187,7 @@ nav > ul > li > ul {
 }
 
 .DocSearch-Button-Placeholder {
-    @apply dark:text-white/60 pr-56 text-xs;
+    @apply dark:text-white/60 pr-44 text-xs;
 }
 
 .DocSearch-Button-Keys {
