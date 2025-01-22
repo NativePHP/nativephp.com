@@ -11,7 +11,6 @@
             >
                 beta
             </span>
-            development
         </p>
 
         <a href="/docs/getting-started/status"
