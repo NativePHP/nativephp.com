@@ -2,6 +2,7 @@
     <x-slot name="sidebarLeft">
         {!! $navigation !!}
     </x-slot>
+
     <x-slot name="sidebarRight">
         <x-toc-and-sponsors :tableOfContents="$tableOfContents"/>
     </x-slot>
@@ -49,11 +50,11 @@
     </x-flex-list-of-links>
 
     <x-separator class="mt-8 -mr-4 -ml-4"/>
+
     <div class="mt-4 text-center">
         <x-link-subtle href="{{ $editUrl }}" target="_blank" rel="noopener">
             Edit this page on GitHub
         </x-link-subtle>
     </div>
-
 
 </x-layout-three-columns>
