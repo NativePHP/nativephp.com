@@ -25,7 +25,11 @@ border-b border-gray-100 dark:border-0
         </a>
 
         <div class="flex-1 md:col-span-2 lg:mx-16 xl:mx-32">
-            <div id="docsearch"></div>
+            <div id="docsearch"
+            x-on:click="if (window.innerWidth < 640) window.scrollTo({ top: 0, behavior: 'instant' });"
+            >
+
+            </div>
         </div>
 
         <div class="hidden lg:flex items-center justify-end space-x-5">
