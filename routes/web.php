@@ -16,6 +16,7 @@ use Illuminate\Support\Str;
 */
 
 Route::redirect('/newsletter', 'https://simonhamp.mailcoach.app/nativephp');
+Route::redirect('/sponsor', '/docs/1/getting-started/sponsoring');
 
 Route::view('/', 'welcome')->name('welcome');
 Route::view('ios', 'early-adopter')->name('early-adopter');
