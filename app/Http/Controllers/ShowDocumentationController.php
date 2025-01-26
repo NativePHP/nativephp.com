@@ -33,6 +33,7 @@ class ShowDocumentationController extends Controller
         $navigation = Cache::remember("docs_nav_{$version}", now()->addDay(), function () use ($version) {
             return $this->getNavigation($version);
         });
+        // dd($version, $navigation, $page);
 
         if (is_null($page)) {
             return $this->redirectToFirstNavigationPage($navigation);

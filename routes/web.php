@@ -23,7 +23,7 @@ Route::view('ios', 'early-adopter')->name('early-adopter');
 
 Route::get('/docs/{version}/{page?}', ShowDocumentationController::class)
     ->where('page', '(.*)')
-    ->where('version', '[0-9]+');
+    ->where('version', '[a-z0-9-]+');
 
 // Forward unversioned requests to the latest version
 Route::get('/docs/{page?}', function ($page = null) {
