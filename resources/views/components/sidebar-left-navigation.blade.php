@@ -12,7 +12,7 @@
     dark:text-gray-200
  ">
     <nav class="flex flex-col flex-1 relative">
-        <x-docs-switcher/>
+        <x-platform-switcher/>
 
         {!! $slot !!}
     </nav>
@@ -29,7 +29,7 @@
      class="fixed top-12 left-0 z-40 w-full h-screen pt-10 pb-16 overflow-y-auto bg-white dark:bg-gray-700 mt-2 px-4 border-b border-[#00aaa6] border-opacity-50 dark:border-opacity-90"
 >
 
-    <x-docs-switcher/>
+    <x-platform-switcher/>
 
 
     {!! $slot !!}

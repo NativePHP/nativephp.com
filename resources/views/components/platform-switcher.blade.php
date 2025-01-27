@@ -1,6 +1,6 @@
 @php
-    $isMobile = request()->is('docs/mobile-v1*');
-    $href= $isMobile ? '/docs/1' : '/docs/mobile-v1';
+    $isMobile = request()->is('docs/mobile/*');
+    $href= $isMobile ? '/docs/desktop/1' : '/docs/mobile/1';
 @endphp
 
     <div {{ $attributes->class(['mb-6 p-3 text-sm space-y-2.5 rounded-md

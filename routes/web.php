@@ -21,9 +21,14 @@ Route::redirect('/sponsor', '/docs/1/getting-started/sponsoring');
 Route::view('/', 'welcome')->name('welcome');
 Route::view('ios', 'early-adopter')->name('early-adopter');
 
-Route::get('/docs/{version}/{page?}', ShowDocumentationController::class)
+Route::redirect('/docs/{version}/{page?}', '/docs/desktop/{version}/{page?}')
     ->where('page', '(.*)')
-    ->where('version', '[a-z0-9-]+');
+    ->where('version', '[0-9]+');
+
+Route::get('/docs/{platform}/{version}/{page?}', ShowDocumentationController::class)
+    ->where('page', '(.*)')
+    ->where('platform', '[a-z]+')
+    ->where('version', '[0-9]+');
 
 // Forward unversioned requests to the latest version
 Route::get('/docs/{page?}', function ($page = null) {
