@@ -189,7 +189,7 @@ ChildProcess::stop('tail');
 This will attempt to stop the process gracefully. The [`ProcessExited`](#codeprocessexitedcode) event will be
 dispatched if the process exits.
 
-Note that [persistent processes](/docs/1/digging-deeper/child-process#persistent-processes) will be permanently stopped and will only be restarted when the `start` method is called again. If you want to restart a persistent process, use the `restart` method instead.
+Note that [persistent processes](/docs/desktop/1/digging-deeper/child-process#persistent-processes) will be permanently stopped and will only be restarted when the `start` method is called again. If you want to restart a persistent process, use the `restart` method instead.
 
 ## Restarting a Child Process
 
@@ -271,11 +271,11 @@ A Child Process may send output via any of the following interfaces:
 -   A custom interface, e.g. a network socket.
 -   Broadcasting a Custom Event
 
-`STDOUT`, `STDERR` & [Custom Events](/docs/1/digging-deeper/broadcasting#custom-events) are dispatched using
+`STDOUT`, `STDERR` & [Custom Events](/docs/desktop/1/digging-deeper/broadcasting#custom-events) are dispatched using
 Laravel's event system.
 
 You may listen to these events by registering a listener in your app service provider, or on the front end
-using the [Native helper](/docs/1/digging-deeper/broadcasting#listening-with-javascript).
+using the [Native helper](/docs/desktop/1/digging-deeper/broadcasting#listening-with-javascript).
 
 Please see the [Events](#events) section for a full list of events.
 

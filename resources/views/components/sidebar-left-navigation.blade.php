@@ -11,7 +11,9 @@
     border-r border-[#00aaa6] border-opacity-10 dark:border-gray-800
     dark:text-gray-200
  ">
-    <nav class="flex flex-col flex-1">
+    <nav class="flex flex-col flex-1 relative">
+        <x-platform-switcher/>
+
         {!! $slot !!}
     </nav>
 </div>
@@ -24,7 +26,10 @@
      x-transition:leave="transition ease-in duration-150"
      x-transition:leave-start="translate-y-0 opacity-100"
      x-transition:leave-end="translate-y-1 opacity-0"
-     class="fixed top-12 left-0 z-40 w-full h-screen pt-10 pb-16 overflow-y-auto bg-white dark:bg-gray-700 mt-2 px-4 border-b border-[#00aaa6] border-opacity-50 dark:border-opacity-90">
+     class="fixed top-12 left-0 z-40 w-full h-screen pt-10 pb-16 overflow-y-auto bg-white dark:bg-gray-700 mt-2 px-4 border-b border-[#00aaa6] border-opacity-50 dark:border-opacity-90"
+>
+
+    <x-platform-switcher/>
 
 
     {!! $slot !!}
