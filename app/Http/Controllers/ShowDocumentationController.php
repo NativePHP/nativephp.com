@@ -47,7 +47,7 @@ class ShowDocumentationController extends Controller
             return $this->redirectToFirstNavigationPage($navigation, $page);
         }
 
-        SEOTools::setTitle($pageProperties['title']);
+        SEOTools::setTitle($pageProperties['title']. ' - NativePHP '. $platform. ' v'. $version);
         SEOTools::setDescription(Arr::exists($pageProperties, 'description') ? $pageProperties['description'] : '');
 
         return view('docs.index')->with($pageProperties);
