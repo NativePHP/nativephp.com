@@ -24,6 +24,12 @@
                     Get early access now!
                 </a>
             </div>
+
+            <p class="mx-auto mt-6 max-w-xl text-pretty text-sm/8 text-gray-400 dark:text-gray-400">
+                Not ready to join the EAP?<br>
+                <a href="/newsletter" class="underline">Sign up for the newsletter</a> to keep up with the
+                latest developments.
+            </p>
         </div>
     </div>
 
