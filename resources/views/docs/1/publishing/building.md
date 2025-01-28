@@ -2,6 +2,7 @@
 title: Building
 order: 100
 ---
+
 ## Building Your App
 
 Building your app is the process of compiling your application into a production-ready state. When building, NativePHP
@@ -69,6 +70,7 @@ apt-get -y install wine32
 ```
 
 ## Code signing
+
 Both macOS and Windows require your app to be signed before it can be distributed to your users.
 
 NativePHP makes this as easy for you as it can, but each platform does have slightly different requirements.
@@ -92,6 +94,9 @@ NATIVEPHP_APPLE_TEAM_ID=8XCUU22SN2
 
 These can be added to your `.env` file as they will be stripped out when your app is built.
 
+Without proper notarization your app will only run on the development machine. Other Macs will show a "app is damaged and can't be opened" warning.
+This is a security feature in macOS that prevents running unsigned or improperly notarized applications. Make sure to complete the notarization process to avoid this issue.
+
 ## First run
 
 When your application runs for the first time, a number of things occur.
@@ -99,8 +104,8 @@ When your application runs for the first time, a number of things occur.
 NativePHP will:
 
 1. Create the `appdata` folder - where this is created depends which platform you're developing on. It is named
-  according to your `nativephp.app_id` [config](/docs/getting-started/configuration) value (which is based on the
-  `NATIVEPHP_APP_ID` env variable).
+   according to your `nativephp.app_id` [config](/docs/getting-started/configuration) value (which is based on the
+   `NATIVEPHP_APP_ID` env variable).
 2. Creating the `{appdata}/database/database.sqlite` SQLite database - your user's copy of your app's database.
 3. Migrate this database.
 
