@@ -12,14 +12,14 @@
 }
 
 .background-pattern {
-    background-image: url('../assets/background-pattern.svg');
+    background-image: url('../assets/bg.svg');
 }
 
-@media(prefers-color-scheme: dark) {
-    .background-pattern {
-        background-image: url('../assets/background-pattern-dark.svg');
-    }
-}
+/*@media(prefers-color-scheme: dark) {*/
+/*    .background-pattern {*/
+/*        background-image: url('../assets/background-pattern-dark.svg');*/
+/*    }*/
+/*}*/
 
 
 /* Whole menu */
