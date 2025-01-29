@@ -82,3 +82,14 @@ NativePHP uses the `local` disk by default. If you would like to use a different
 
 Remember, you can set the filesystem disk your application uses by default in your `config/filesystems.php` file or by
 adding a `FILESYSTEM_DISK` variable to your `.env` file.
+
+### Symlinks
+
+In traditional web servers, symlinking directories is a common practice - for example, it's a convenient way to expose parts of your filesystem through the public directory.
+
+However, in a NativePHP app, this approach is less applicable. The entire application is already accessible to the end user, and symlinks can cause unexpected issues during the packaging process due to differences in how Unix-like and Windows systems handle symbolic links.
+
+We recommend avoiding symlinks within your NativePHP app. Instead, consider either:
+
+-   Placing files directly in their intended locations
+-   Using Laravel's Storage facade to mount directories outside your application
