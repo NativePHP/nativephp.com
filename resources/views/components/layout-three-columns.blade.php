@@ -1,7 +1,7 @@
 <x-layout :hasMenu="! empty($sidebarLeft)">
     <main class="overflow-hidden lg:flex lg:flex-1 lg:flex-col">
 
-        <div class="w-full max-w-8xl mx-auto px-4 sm:px-6 md:px-8">
+        <div class="max-w-8xl mx-auto px-4 sm:px-6 md:px-8">
             <main class="overflow-hidden lg:flex lg:flex-1 lg:flex-col">
 
                 @if(!empty($sidebarLeft))
