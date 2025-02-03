@@ -13,15 +13,20 @@
             </h2>
             <p class="mx-auto mt-6 max-w-xl text-pretty text-lg/8 text-gray-600 dark:text-gray-400">
                 Development of NativePHP for iOS has already started<br>and you can get access right now!<br><br>
-                Join the <b>Early Access Program</b> by<br>becoming a sponsor at $250 (one-off) or above.
+                Join the <b>Early Access Program</b> by<br>purchasing a license <strike>$250</strike>
+                <b>$200</b>.
             </p>
+
+            <p class="font-bold mt-8 text-3xl">Laracon EU exclusive 20% off!</p>
+            <p class="text-sm text-gray-500">Until midnight UTC 2025-02-06</p>
+
             <div class="mt-10 flex flex-col sm:flex-row  items-center justify-center gap-6">
-                <a href="https://github.com/sponsors/simonhamp?frequency=one-time"
+                <a href="https://checkout.anystack.sh/nativephp-ios"
                    target="_blank"
                    class="rounded-md bg-teal-500 px-8 py-4 text-2xl font-semibold text-white shadow-sm
                    hover:bg-teal-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2
                    focus-visible:outline-teal-600">
-                    Get early access now!
+                    Join the Early Access Program!
                 </a>
             </div>
 
@@ -40,7 +45,7 @@
                 <h2 class="text-center">Why Join the Early Access Program?</h2>
                 <p>
                     Up to now, NativePHP has focused on Windows, Mac, and Linux. But we believe that breaking the mobile
-                    frontier is what makes the project truly compelling... and cross-platform.
+                    frontier is what makes the project truly compelling... and truly cross-platform.
                 </p>
                 <p>
                     With <strong>significant progress</strong> already made towards enabling
@@ -83,7 +88,6 @@
                 <p class="mt-2 text-pretty text-4xl font-semibold tracking-tight text-gray-900 dark:text-gray-100 sm:text-5xl lg:text-balance">
                     Program Benefits
                 </p>
-                {{--                <p class="mt-6 text-lg/8 text-gray-600">Quis tellus eget adipiscing convallis sit sit eget aliquet quis. Suspendisse eget egestas a elementum pulvinar et feugiat blandit at. In mi viverra elit nunc.</p>--}}
             </div>
 
             <div class="mx-auto mt-16 max-w-xl gap-8 grid">
@@ -108,8 +112,8 @@
                     </h3>
                     <div class="mt-4 flex flex-auto flex-col text-base/7 text-gray-600 dark:text-gray-400">
                         <p class="flex-auto">
-                            Decide the direction of the project and what gets worked on next. Plus have a direct
-                            line of with the creators of NativePHP and other EAP members.
+                            Decide the direction of the project and what gets implemented next. Plus a direct
+                            line to the creators of NativePHP and other EAP members.
                         </p>
                     </div>
                 </div>
@@ -122,7 +126,7 @@
                     <div class="mt-4 flex flex-auto flex-col text-base/7 text-gray-600 dark:text-gray-400">
                         <p class="flex-auto">
                             The NativePHP ecosystem is about to explode! There will be premium tools and
-                            packages, starter kits and more. As an EAP member, you'll get you exclusive discounts
+                            packages, starter kits and more. As an EAP member, you'll get exclusive discounts
                             not available to anyone else.
                         </p>
                     </div>
@@ -137,14 +141,14 @@
                         <p>
                             All EAP members will be immortalized across the NativePHP ecosystem, showing the
                             rest of the community the valuable part you've played in supporting this project's
-                            creation and and ongoing development.
+                            creation and ongoing development.
                         </p>
                     </div>
                 </div>
             </div>
 
             <div class="mt-20 flex flex-col sm:flex-row  items-center justify-center gap-6">
-                <a href="https://github.com/sponsors/simonhamp?frequency=one-time"
+                <a href="https://checkout.anystack.sh/nativephp-ios"
                    target="_blank"
                    class="rounded-md bg-teal-500 px-8 py-4 text-2xl font-semibold text-white shadow-sm
                    hover:bg-teal-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2
