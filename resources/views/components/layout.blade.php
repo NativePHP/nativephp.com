@@ -25,7 +25,7 @@
     <!-- / Fathom -->
 </head>
 <body class="min-h-screen font-sans antialiased bg-white dark:bg-gray-900 dark:text-white
-@isset($backgroundPattern) background-pattern @endisset
+@isset($backgroundPattern) background-pattern bg-fixed @endisset
 "
       x-data="{ showDocsNavigation: false }"
 >
