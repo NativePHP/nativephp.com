@@ -30,18 +30,18 @@ keeping download & install size small.
 ### Configuration
 
 You do not need to do anything special to configure your application to use SQLite. NativePHP will automatically:
-- Switch to using SQLite when building your application
-- Create a database file for you in the `appdata` directory on the user's system
-- Configure your application to use that database file
-- Run your migrations each time your app starts, as needed
+- Switch to using SQLite when building your application.
+- Create a database file for you in the `appdata` directory on the user's system.
+- Configure your application to use that database file.
+- Run your migrations each time your app starts, as needed.
 
 ## Development
 
-Remember that in [development](/docs/getting-started/development) your application's database is always going to be
-the SQLite database created in the [`appdata`](/docs/getting-started/debugging#appdata) folder for your application.
+In [development](/docs/getting-started/development), your application uses a database called `nativephp.sqlite`
+which is created in the build directory.
 
-This means that even if you've got different config in your `.env` file, your application will not be connecting to any
-other database when it is running within the Electron/Tauri environment.
+NativePHP forces your application to use this database when it is running within the Electron/Tauri environment so that
+it doesn't modify any other SQLite databases you may already be using.
 
 ## Migrations
 
@@ -53,7 +53,7 @@ upon foreign key constraints, [you need to enable SQLite support for them](https
 **It's important to test your migrations on prod builds before releasing updates!** You don't want to accidentally
 delete your user's data when they update your app.
 
-### Running migrations
+### In production
 
 In production builds of your app, NativePHP will check to see if the app version has changed and attempt to migrate
 the user's copy of your database in their `appdata` folder.

@@ -10,7 +10,7 @@ We've put together a basic [roadmap](https://github.com/orgs/NativePHP/projects/
 current _estimated_ development timeline.
 
 ## Current Status
-NativePHP is currently in the `beta` stage.
+NativePHP for desktop is currently in `beta`.
 
 We need your help with testing and bug-hunting, so we want you to _build_ apps with NativePHP.
 

@@ -31,7 +31,8 @@ NativePHP is built to work best with Laravel. You can install it into an existin
 composer require nativephp/electron
 ```
 
-The Tauri runtime is coming soon.
+This package contains all the classes, commands, and interfaces that your application will need to work with the
+Electron runtime.
 
 ## Run the NativePHP installer
 

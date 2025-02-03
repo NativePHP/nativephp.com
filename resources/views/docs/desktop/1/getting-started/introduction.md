@@ -20,27 +20,24 @@ And they said PHP was dead.
 
 Strictly speaking, NativePHP is a combination of elements:
 
-1. A collection of easy-to-use classes - abstractions - to enable you to interact with a variety of host operating
-system features.
-2. A set of tools to enable building and bundling your native application using either the Electron or Tauri browser
-environment.
-3. A static PHP runtime that allows your app to run on any user's system with zero effort on their part.
+1. A collection of easy-to-use classes to enable you to interact with a variety of host operating system features.
+2. A set of tools to enable building and bundling your native application.
+3. A static PHP runtime that allows your app to run on any user's device with zero effort on their part.
 
 ## What NativePHP isn't
 
-NativePHP is **not an especially opinionated way to build native apps**. Right now, **we only support a Laravel driver**,
-but we'd love for it to work whatever PHP framework you're using - and even if you're not using a framework at all.
-Can you help? Please consider [contributing](https://github.com/NativePHP/laravel/blob/main/CONTRIBUTING.md).
+NativePHP is **not a completely new framework that you need to learn**. It builds on top of the incredible affordances
+and ecosystem that Laravel provides. Before using NativePHP, you'll want to be familiar with building web applications
+using Laravel.
 
 NativePHP is **not a GUI framework**. We don't want to tell you how to build your app. You can choose whatever UI toolset
-makes you and your team feel most productive.
-
-Building a React front-end? No problem. Vue? Sure. Livewire or Inertia? Doesn't matter! Plain old HTML and CSS?
-You got it. Tailwind? Bootstrap? Material UI? Whatever you want.
+makes you and your team feel most productive. Building a React front-end? No problem. Vue? Sure. Livewire or Inertia?
+Doesn't matter! Plain old HTML and CSS? You got it. Tailwind, Bootstrap, Material UI: whatever you want.
 
 NativePHP is **not some new, custom fork of PHP**. This is the good new PHP you know and love.
 
-It's also not an extension that you need to figure out and install into PHP.
+It's also not an extension that you need to figure out and install into PHP. You're just a `composer require` away from
+awesome.
 
 ## What's in the box?
 
@@ -69,7 +66,7 @@ that puts cowboy hats on every smiley-face emoji it sees.
 Go read the docs! We've tried to make them as comprehensive as possible, but if you find something missing, please
 feel free to [contribute](https://github.com/nativephp/nativephp.com).
 
-This site and all the NativePHP repositories are open source and available on [GitHub](https://github.com/nativephp).
+This site and all the NativePHP for desktop repositories are open source and available on [GitHub](https://github.com/nativephp).
 
 Ready to jump in? [Let's get started](installation).
 

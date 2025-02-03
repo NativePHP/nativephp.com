@@ -20,42 +20,42 @@ use Symfony\Component\Finder\SplFileInfo;
 
 class ShowDocumentationController extends Controller
 {
-    public function __invoke(Request $request, string $version, ?string $page = null)
+    public function __invoke(Request $request, string $platform, string $version, ?string $page = null)
     {
         if (config('app.env') === 'local') {
             Cache::flush();
         }
 
-        abort_unless(is_dir(resource_path('views/docs/'.$version)), 404);
+        abort_unless(is_dir(resource_path('views/docs/'.$platform.'/'.$version)), 404);
 
         session(['viewing_docs_version' => $version]);
+        session(['viewing_docs_platform' => $platform]);
 
-        $navigation = Cache::remember("docs_nav_{$version}", now()->addDay(), function () use ($version) {
-            return $this->getNavigation($version);
-        });
+        $navigation = Cache::remember("docs_nav_{$platform}_{$version}", now()->addDay(),
+            fn () => $this->getNavigation($platform, $version)
+        );
 
         if (is_null($page)) {
             return $this->redirectToFirstNavigationPage($navigation);
         }
 
         try {
-            $pageProperties = Cache::remember("docs_{$version}_{$page}", now()->addDay(),
-                function () use ($version, $page) {
-                    return $this->getPageProperties($version, $page);
-                });
+            $pageProperties = Cache::remember("docs_{$platform}_{$version}_{$page}", now()->addDay(),
+                fn () => $this->getPageProperties($platform, $version, $page)
+            );
         } catch (InvalidArgumentException $e) {
             return $this->redirectToFirstNavigationPage($navigation, $page);
         }
 
-        SEOTools::setTitle($pageProperties['title']);
+        SEOTools::setTitle($pageProperties['title'].' - NativePHP '.$platform.' v'.$version);
         SEOTools::setDescription(Arr::exists($pageProperties, 'description') ? $pageProperties['description'] : '');
 
         return view('docs.index')->with($pageProperties);
     }
 
-    protected function getPageProperties($version, $page = null): array
+    protected function getPageProperties($platform, $version, $page = null): array
     {
-        $markdownFileName = $version.'.'.($page ?? 'index');
+        $markdownFileName = $platform.'.'.$version.'.'.($page ?? 'index');
 
         $content = $this->getMarkdownView("docs.{$markdownFileName}", [
             'user' => auth()->user(),
@@ -64,16 +64,17 @@ class ShowDocumentationController extends Controller
         $document = YamlFrontMatter::parse($content);
         $pageProperties = $document->matter();
 
-        $versionProperties = YamlFrontMatter::parseFile(resource_path("views/docs/{$version}/_index.md"));
+        $versionProperties = YamlFrontMatter::parseFile(resource_path("views/docs/{$platform}/{$version}/_index.md"));
         $pageProperties = array_merge($pageProperties, $versionProperties->matter());
 
+        $pageProperties['platform'] = $platform;
         $pageProperties['version'] = $version;
         $pageProperties['pagePath'] = request()->path();
 
-        $pageProperties['content'] = CommonMark::convertToHtml($document->body(), $version);
+        $pageProperties['content'] = CommonMark::convertToHtml($document->body());
         $pageProperties['tableOfContents'] = $this->extractTableOfContents($document->body());
 
-        $navigation = $this->getNavigation($version);
+        $navigation = $this->getNavigation($platform, $version);
         $pageProperties['navigation'] = Menu::build($navigation, function (Menu $menu, $nav) {
             if (array_key_exists('path', $nav)) {
                 $menu->link($nav['path'], $nav['title']);
@@ -110,7 +111,7 @@ class ShowDocumentationController extends Controller
             ->setActive(\request()->path())
             ->__toString();
 
-        $pageProperties['editUrl'] = "https://github.com/NativePHP/nativephp.com/tree/main/resources/views/docs/{$version}/{$page}.md";
+        $pageProperties['editUrl'] = "https://github.com/NativePHP/nativephp.com/tree/main/resources/views/docs/{$platform}/{$version}/{$page}.md";
 
         // Find the next & previous page in the navigation
         $pageProperties['nextPage'] = null;
@@ -149,10 +150,10 @@ class ShowDocumentationController extends Controller
         return $pageProperties;
     }
 
-    protected function getNavigation(string $version): array
+    protected function getNavigation(string $platform, string $version): array
     {
         $basePath = resource_path('views');
-        $path = "$basePath/docs/$version";
+        $path = "$basePath/docs/$platform/$version";
 
         $mainNavigation = (new Finder)
             ->files()
@@ -238,7 +239,6 @@ class ShowDocumentationController extends Controller
                 // Only search for level 2 and 3 headings.
                 return ! Str::startsWith($line, '## ') && ! Str::startsWith($line, '### ');
             })
-
             ->map(function (string $line) {
                 return [
                     'level' => strlen(trim(Str::before($line, '# '))) + 1,
@@ -259,9 +259,9 @@ class ShowDocumentationController extends Controller
         return $matches[1] ?? '';
     }
 
-    protected function markdownViewExists($version, $page): bool
+    protected function markdownViewExists($platform, $version, $page): bool
     {
-        $markdownFileName = $version.'.'.($page ?? 'index');
+        $markdownFileName = $platform.'.'.$version.'.'.($page ?? 'index');
 
         try {
             $this->getMarkdownView("docs.{$markdownFileName}", [
