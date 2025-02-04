@@ -12,7 +12,9 @@ Apple's tooling for building iOS apps requires that you compile your application
 1. PHP 8.3+
 2. Laravel 10 or higher
 3. An Apple Silicon Mac running macOS 12+ with Xcode 16+
-4. An active [Apple Developer account]()
+4. An active [Apple Developer account](https://developer.apple.com/)
+5. [A NativePHP for iOS license](https://checkout.anystack.sh/nativephp-ios)
+6. _Optional_ iOS device
 
 You don't _need_ a physical iOS device to compile your application and test it for iOS, as NativePHP for mobile supports
 the iOS Simulator. However, we highly recommend that you test your application on a real device before submitting to the
@@ -34,7 +36,7 @@ To make NativePHP for mobile a reality has taken a lot of work and will continue
 it's not open source and you are not free to distribute or modify its source code.
 
 Before you begin, you will need to purchase a license.
-Licenses can be obtained via [Anystack](https://nativephp.anystack.sh).
+Licenses can be obtained via [Anystack](https://checkout.anystack.sh/nativephp-ios).
 
 Instructions on how to prepare your application to use this private package are made available to you after purchase.
 
