@@ -11,14 +11,12 @@
                 <span class="underline decoration-purple-500 underline-offset-4">Android</span>
                 is coming!
             </h2>
-            <p class="mx-auto mt-6 max-w-xl text-pretty text-lg/8 text-gray-600 dark:text-gray-400">
-                Development of NativePHP for iOS has already started<br>and you can get access right now!<br><br>
-                Join the <b>Early Access Program</b> by<br>purchasing a license <strike>$250</strike>
-                <b>$200</b>.
+            <p class="mx-auto mt-6 max-w-xl text-pretty text-lg/8 text-gray-600 dark:text-gray-400 text-balance">
+                Development of NativePHP for iOS has already started and you can get access right now!<br><br>
+                Join the <b>Early Access Program</b> by purchasing a license.
             </p>
 
-            <p class="font-bold mt-8 text-3xl">Laracon EU exclusive 20% off!</p>
-            <p class="text-sm text-gray-500">Until midnight UTC 2025-02-06</p>
+            <p class="font-bold mt-8 text-3xl">Annual license &mdash; $250</p>
 
             <div class="mt-10 flex flex-col sm:flex-row  items-center justify-center gap-6">
                 <a href="https://checkout.anystack.sh/nativephp-ios"
