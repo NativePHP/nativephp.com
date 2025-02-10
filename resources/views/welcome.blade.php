@@ -5,7 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <title>NativePHP | Baking Delicious Native Apps</title>
-
+    {!! OpenGraph::generate() !!}
+    {!! Twitter::generate() !!}
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link
