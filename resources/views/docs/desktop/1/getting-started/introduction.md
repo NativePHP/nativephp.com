@@ -61,6 +61,8 @@ that puts cowboy hats on every smiley-face emoji it sees.
 
 (You should totally build that last one.)
 
+Need some inspiration? [Check out our repository of awesome projects](https://github.com/NativePHP/awesome-nativephp) created by people like you!
+
 ## What's next?
 
 Go read the docs! We've tried to make them as comprehensive as possible, but if you find something missing, please
