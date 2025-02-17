@@ -38,16 +38,30 @@ it's not open source and you are not free to distribute or modify its source cod
 Before you begin, you will need to purchase a license.
 Licenses can be obtained via [Anystack](https://checkout.anystack.sh/nativephp-ios).
 
-Instructions on how to prepare your application to use this private package are made available to you after purchase.
+Once you have your license, you will need to add the following to your `composer.json`:
+
+```json
+"repositories": [
+    {
+        "type": "composer",
+        "url": "https://nativephp-ios.composer.sh"
+    }
+],
+```
 
 ## Install NativePHP for iOS
 
 ```shell
 composer require nativephp/ios
 ```
-
 This package contains all the libraries, classes, commands, and interfaces that your application will need to work with
 iOS.
+
+If this is the first time you're installing the package, you will be prompted to authenticate.
+
+Your username is the email address you registered with Anystack. 
+
+Your password is your license key.
 
 ## Run the NativePHP installer
 
