@@ -14,7 +14,18 @@ Whatever your path, we think you're going to be productive quickly.
 NativePHP is taking the world by storm, enabling PHP developers to create true cross-platform, native apps
 using the tools and technologies they already know: HTML, CSS, Javascript, and, of course, PHP.
 
-And they said PHP was dead.
+## Why PHP?
+
+**PHP is great.** It's a mature language that has been honed for 30 years in one of the most ruthless environments:
+the web.
+
+Despite the odds, it remains one of the most used languages worldwide and continues to grow in usage every day.
+
+Its shared-nothing approach to memory safety makes it an unexpectedly productive candidate for building native
+applications.
+
+Its focus on HTTP as a paradigm for building applications lends itself towards using the incredibly
+accessible web technologies to build rich UIs that can feel at home on any platform. 
 
 ## What exactly is NativePHP?
 
