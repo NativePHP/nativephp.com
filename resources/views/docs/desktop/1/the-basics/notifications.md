@@ -64,7 +64,7 @@ Notification::title('Hello from NativePHP')
 ### Notification Reference
 
 You can use the `reference()` method to set an event identifier and track which notification triggered a certain event. 
-This reference will be sent along with any event triggered by the notification. By default, the unique ID is generated as the reference.
+This reference will be sent along with any event triggered by the notification. By default, a unique ID is generated as the reference.
 
 ```php
 Notification::title('Hello from NativePHP')
