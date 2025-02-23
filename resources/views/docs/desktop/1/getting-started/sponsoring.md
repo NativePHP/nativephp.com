@@ -26,10 +26,10 @@ goes a long way in defraying the expenses of working for free to keep this proje
 
 Together, we can continue to grow NativePHP and ensure it remains a valuable tool for the community. 
 
-## Early Access Program
+## NativePHP for mobile
 
-If you're interested in NativePHP for mobile, you can get access right now via the [Early Access Program](/ios). We are
-already working on NativePHP for iOS and your support will help us speed up development.
+If you're interested in NativePHP for mobile, you can get access right now via the [Early Access Program](/mobile).
+NativePHP is already working on iOS and Android is in active development. Your support will help us continue.
 
 ## Corporate Partners
 

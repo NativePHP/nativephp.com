@@ -19,7 +19,8 @@ Route::redirect('/newsletter', 'https://simonhamp.mailcoach.app/nativephp');
 Route::redirect('/sponsor', '/docs/1/getting-started/sponsoring');
 
 Route::view('/', 'welcome')->name('welcome');
-Route::view('ios', 'early-adopter')->name('early-adopter');
+Route::view('mobile', 'early-adopter')->name('early-adopter');
+Route::redirect('ios', 'mobile');
 
 Route::redirect('/docs/{version}/{page?}', '/docs/desktop/{version}/{page?}')
     ->where('page', '(.*)')

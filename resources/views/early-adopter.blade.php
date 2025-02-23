@@ -12,7 +12,8 @@
                 is coming!
             </h2>
             <p class="mx-auto mt-6 max-w-xl text-pretty text-lg/8 text-gray-600 dark:text-gray-400 text-balance">
-                Development of NativePHP for iOS has already started and you can get access right now!<br><br>
+                Development of NativePHP for mobile has already started and you can get access
+                and start building apps right now!<br><br>
                 Join the <b>Early Access Program</b> by purchasing a license.
             </p>
 
@@ -47,7 +48,7 @@
                 </p>
                 <p>
                     With <strong>significant progress</strong> already made towards enabling
-                    <strong>NativePHP on iOS</strong>, we are excited about the possibilities that lie ahead.
+                    <strong>NativePHP for mobile</strong>, we are excited about the possibilities that lie ahead.
                 </p>
                 <p>
                     However, to make this vision a reality for both iOS and Android, we need your support.
