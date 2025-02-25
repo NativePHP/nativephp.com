@@ -124,6 +124,34 @@ Notification::title('Hello from NativePHP')
 ### `NotificationClicked`
 The `Native\Laravel\Events\Notifications\NotificationClicked` event is dispatched when a user clicks on a notification.
 
+Example usage:
+```php
+Event::listen(NotificationClicked::class, function (NotificationClicked $event) {
+    $reference = $event->reference; // The unique reference to the clicked notification
+});
+```
+
+The reference can be used to track which notification was clicked:
+```php
+// Get recent posts
+$posts = Post::query()->where('created_at', '>', now()->subMinute())->get();
+
+// Generate notifications for recent posts
+$posts->each(function(Post $post) {
+    Notification::title('New post: ' . $post->title)
+                ->reference($post->id)
+                ->event(\App\Events\PostNotificationClicked::class)
+                ->show();
+});
+
+// Handle the click on a notification and redirect to the respective post
+Event::listen(\App\Events\PostNotificationClicked::class, function (\App\Events\PostNotificationClicked $event) {
+    $post = Post::findOrFail($event->reference);
+
+    Window::open()->url($post->url);
+});
+```
+
 ### `NotificationClosed`
 The `Native\Laravel\Events\Notifications\NotificationClosed` event is dispatched when a user closes a notification.
 
@@ -132,5 +160,31 @@ The `Native\Laravel\Events\Notifications\NotificationReply` event is dispatched 
 
 ### `NotificationActionClicked`
 The `Native\Laravel\Events\Notifications\NotificationActionClicked` event is dispatched when a user clicks an action button on a notification.
-
 The `$index` references to the order of the buttons. The first button added has an index of `0`. 
+
+Example usage:
+```php
+Event::listen(NotificationActionClicked::class, function (NotificationActionClicked $event) {
+    $reference = $event->reference; // The unique reference to the clicked notification
+    $index = $event->index; // The index of the action button
+});
+```
+
+The `$index` is used to understand which button was clicked: 
+```php
+Notification::title('Two buttons from NativePHP')
+    ->addAction('Accept')  // <-- This will be $index = 0
+    ->addAction('Decline') // <-- This will be $index = 1
+    ->show();
+
+// Handle the click on a button
+Event::listen(NotificationActionClicked::class, function (NotificationActionClicked $event) {
+    if ($event->index === 0) {
+        // The logic for accepting here
+    } elseif ($event->index === 1) {
+        // The logic for declining here
+    } else {
+        throw new RuntimeException('Unhandled action button');
+    }
+});
+```
