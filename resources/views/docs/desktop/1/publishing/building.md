@@ -25,6 +25,25 @@ your app to provide automatic updates.
 You should build your application for each platform you intend to support and test it on each platform _before_
 publishing to make sure that everything works as expected.
 
+### Running commands before and after builds
+Many applications rely on a tool such as [Vite](https://vitejs.dev/) or [Webpack](https://webpack.js.org/) to compile their CSS and JS assets before a production build.
+
+To facilitate this, NativePHP provides two hooks that you can use to run commands before and after the build process.
+
+To utilise these hooks, add the following to your `config/nativephp.php` file:
+
+```php
+'prebuild' => [
+    'npm run build:js', // Run a command before the build
+    'npm run build:css', // Run another command before the build
+],
+'postbuild' => [
+    'npm run release', // Run a command after the build
+],
+```
+
+These commands will be run in the root of your project directory and you can specify as many as required.
+
 ## Versioning
 
 For every build you create, you should change the version of your application in your app's `config/nativephp.php` file.
