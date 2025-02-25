@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -11,7 +12,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        $this->registerSharedViewVariables();
     }
 
     /**
@@ -20,5 +21,13 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         //
+    }
+
+    private function registerSharedViewVariables(): void
+    {
+        View::share('discordLink', 'https://discord.gg/X62tWNStZK');
+        View::share('bskyLink', 'https://bsky.app/profile/nativephp.bsky.social');
+        View::share('openCollectiveLink', 'https://opencollective.com/nativephp');
+        View::share('githubLink', 'https://github.com/NativePHP');
     }
 }
