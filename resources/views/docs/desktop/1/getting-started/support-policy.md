@@ -18,14 +18,18 @@ Our support policy reflects our commitment to maintaining high standards of qual
 ### PHP Versions
 | NativePHP Version | Supported PHP Versions |
 |-------------------|------------------------|
-| 1.0.0 and earlier | 8.2, 8.3, 8.4          |
+| ^1.0              | 8.3, 8.4               |
+
+[PHP: Supported Versions](https://www.php.net/supported-versions.php)
 
 NativePHP provides methods of bundling your own static PHP binaries. Support is not provided for these.
 
 ### Laravel Versions
 | NativePHP Version | Supported PHP Versions |
 |-------------------|------------------------|
-| 1.0.0 and earlier | 11.x, 12.x             |
+| ^1.0              | 11.x, 12.x             |
+
+[Laravel: Support Policy](https://laravel.com/docs/master/releases#support-policy)
 
 ## Requesting Support
 Support can be obtained by opening an issue on the [NativePHP/laravel]({{ $githubLink }}/laravel/issues) repository or by joining the [Discord]({{ $discordLink }}).

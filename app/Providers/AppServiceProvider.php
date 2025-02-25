@@ -23,7 +23,7 @@ class AppServiceProvider extends ServiceProvider
         //
     }
 
-    private function registerSharedViewVariables()
+    private function registerSharedViewVariables(): void
     {
         View::share('discordLink', 'https://discord.gg/X62tWNStZK');
         View::share('bskyLink', 'https://bsky.app/profile/nativephp.bsky.social');
