@@ -63,7 +63,7 @@ Notification::title('Hello from NativePHP')
 
 You can access the `$reference` property of a notification after it has been created:
 
-```
+```php
 $notification = Notification::title('Hello from NativePHP')->show();
 
 $notification->reference;
