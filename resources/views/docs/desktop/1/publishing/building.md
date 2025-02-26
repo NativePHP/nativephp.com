@@ -34,8 +34,8 @@ To utilise these hooks, add the following to your `config/nativephp.php` file:
 
 ```php
 'prebuild' => [
-    'npm run build:js', // Run a command before the build
-    'npm run build:css', // Run another command before the build
+    'npm run build', // Run a command before the build
+    'php artisan optimize', // Run another command before the build
 ],
 'postbuild' => [
     'npm run release', // Run a command after the build
