@@ -10,6 +10,7 @@ NativePHP allows you to send system notifications using an elegant PHP API. Thes
 When used sparingly, notifications can be a great way to inform the user about events that are occurring in your application and to bring their attention back to it, especially if further input from them is required.
 
 Notifications are sent using the `Notification` facade.
+
 ```php
 use Native\Laravel\Facades\Notification;
 ```
@@ -40,15 +41,12 @@ Notification::title('Hello from NativePHP')
     ->show();
 ```
 
-### Notification Reference
+### Notification References
 
-To keep track of different notifications, each notification gets a reference once created. You can manually set a reference using the `reference()` method. 
-By default, a unique ID is generated as the reference. Once the notification is shown, the reference is stored in the notification class.
+To keep track of different notifications, you may use the notification's `$reference` property.
 
-```
-$notification = Notification::title('Hello from NativePHP')->show();
-$notification->reference; // <-- This property contains the reference
-```
+By default, a unique reference is generated for you, but you may manually set a reference by [chaining the `reference()`](#notification-reference) method when creating
+the notification.
 
 ## Configuring Notifications
 
@@ -63,13 +61,42 @@ Notification::title('Hello from NativePHP')
 
 ### Notification Reference
 
-You can use the `reference()` method to set an event identifier and track which notification triggered a certain event. 
-This reference will be sent along with any event triggered by the notification. By default, a unique ID is generated as the reference.
+You can access the `$reference` property of a notification after it has been created:
+
+```
+$notification = Notification::title('Hello from NativePHP')->show();
+
+$notification->reference;
+```
+
+You may chain the `reference()` method to set a custom reference when creating a notification:
 
 ```php
 Notification::title('Hello from NativePHP')
     ->reference(Str::uuid())
     ->show();
+```
+
+The reference will be sent along with any event triggered by the notification and can be used to track which specific notification was clicked:
+
+```php
+use App\Events\PostNotificationClicked;
+use App\Models\Post;
+
+Post::recentlyCreated()
+    ->get()
+    ->each(function(Post $post) {
+        Notification::title('New post: ' . $post->title)
+            ->reference($post->id)
+            ->event(PostNotificationClicked::class)
+            ->show();
+    });
+
+Event::listen(PostNotificationClicked::class, function (PostNotificationClicked $event) {
+    $post = Post::findOrFail($event->reference);
+
+    Window::open()->url($post->url);
+});
 ```
 
 ### Notification Message
@@ -119,38 +146,31 @@ Notification::title('Hello from NativePHP')
     ->show();
 ```
 
+When an action button is clicked, it will trigger the [`NotificationActionClicked`](#codenotificationactionclickedcode) event.
+
+This event contains an `$index` property, which refers to the index of the action button that was clicked. Action button indexes start at `0`:
+
+```php
+use Native\Laravel\Events\Notifications\NotificationActionClicked;
+
+Notification::title('Do you accept?')
+    ->addAction('Accept')  // This action will be $index = 0
+    ->addAction('Decline') // This action will be $index = 1
+    ->show();
+
+Event::listen(NotificationActionClicked::class, function (NotificationActionClicked $event) {
+    if ($event->index === 0) {
+        // 'Accept' clicked
+    } elseif ($event->index === 1) {
+        // 'Decline' clicked
+    }
+});
+```
+
 ## Events
 
 ### `NotificationClicked`
 The `Native\Laravel\Events\Notifications\NotificationClicked` event is dispatched when a user clicks on a notification.
-
-Example usage:
-```php
-Event::listen(NotificationClicked::class, function (NotificationClicked $event) {
-    $reference = $event->reference; // The unique reference to the clicked notification
-});
-```
-
-The reference can be used to track which notification was clicked:
-```php
-// Get recent posts
-$posts = Post::query()->where('created_at', '>', now()->subMinute())->get();
-
-// Generate notifications for recent posts
-$posts->each(function(Post $post) {
-    Notification::title('New post: ' . $post->title)
-                ->reference($post->id)
-                ->event(\App\Events\PostNotificationClicked::class)
-                ->show();
-});
-
-// Handle the click on a notification and redirect to the respective post
-Event::listen(\App\Events\PostNotificationClicked::class, function (\App\Events\PostNotificationClicked $event) {
-    $post = Post::findOrFail($event->reference);
-
-    Window::open()->url($post->url);
-});
-```
 
 ### `NotificationClosed`
 The `Native\Laravel\Events\Notifications\NotificationClosed` event is dispatched when a user closes a notification.
@@ -160,31 +180,3 @@ The `Native\Laravel\Events\Notifications\NotificationReply` event is dispatched 
 
 ### `NotificationActionClicked`
 The `Native\Laravel\Events\Notifications\NotificationActionClicked` event is dispatched when a user clicks an action button on a notification.
-The `$index` references to the order of the buttons. The first button added has an index of `0`. 
-
-Example usage:
-```php
-Event::listen(NotificationActionClicked::class, function (NotificationActionClicked $event) {
-    $reference = $event->reference; // The unique reference to the clicked notification
-    $index = $event->index; // The index of the action button
-});
-```
-
-The `$index` is used to understand which button was clicked: 
-```php
-Notification::title('Two buttons from NativePHP')
-    ->addAction('Accept')  // <-- This will be $index = 0
-    ->addAction('Decline') // <-- This will be $index = 1
-    ->show();
-
-// Handle the click on a button
-Event::listen(NotificationActionClicked::class, function (NotificationActionClicked $event) {
-    if ($event->index === 0) {
-        // The logic for accepting here
-    } elseif ($event->index === 1) {
-        // The logic for declining here
-    } else {
-        throw new RuntimeException('Unhandled action button');
-    }
-});
-```
