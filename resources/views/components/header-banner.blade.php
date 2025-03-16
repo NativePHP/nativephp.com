@@ -3,7 +3,7 @@
     class="sticky top-0 z-50 border-b border-gray-100 bg-gray-50/85 text-white dark:border-0 dark:bg-gray-800/85"
 >
     <div class="hidden lg:block">
-        <x-alert />
+        <x-eap-banner />
     </div>
 
     <div
@@ -97,5 +97,5 @@
     </div>
 </div>
 <div class="block lg:hidden">
-    <x-alert />
+    <x-eap-banner />
 </div>

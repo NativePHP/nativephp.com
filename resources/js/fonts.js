@@ -1,1 +1,1 @@
-import '@fontsource/poppins'
+import '@fontsource/poppins/latin.css'
