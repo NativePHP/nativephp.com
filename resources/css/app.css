@@ -8,21 +8,6 @@
     }
 }
 
-/* Look cool on safari */
-.blur-background {
-    backdrop-filter: blur(20px);
-}
-
-.background-pattern {
-    background-image: url('../assets/bg.svg');
-}
-
-/*@media(prefers-color-scheme: dark) {*/
-/*    .background-pattern {*/
-/*        background-image: url('../assets/background-pattern-dark.svg');*/
-/*    }*/
-/*}*/
-
 /* Whole menu */
 nav ul {
     @apply list-none text-xl md:text-sm;

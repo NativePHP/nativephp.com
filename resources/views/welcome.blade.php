@@ -1,68 +1,69 @@
-<!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-
-    <title>NativePHP | Baking Delicious Native Apps</title>
-    {!! OpenGraph::generate() !!}
-    {!! Twitter::generate() !!}
-    <!-- Fonts -->
-    <link rel="preconnect" href="https://fonts.bunny.net">
-    <link
-        href="https://fonts.bunny.net/css?family=be-vietnam-pro:700|inter:400,500,600|rubik:400,700"
-        rel="stylesheet"
-    />
-    <link rel="icon" href="/favicon.svg" type="image/svg+xml">
-    @vite(["resources/css/app.css", "resources/js/app.js"])
-
-    <!-- Fathom - beautiful, simple website analytics -->
-    <script src="https://cdn.usefathom.com/script.js" data-site="HALHTNZU" defer></script>
-    <!-- / Fathom -->
-</head>
-<body class="background-pattern w-full h-screen text-slate-900 bg-gray-50 dark:bg-gray-900 dark:text-white">
-<x-alert/>
-
-<main id="app" class="flex flex-col items-center min-h-screen">
-    <header class="flex flex-col items-center flex-1 gap-12 text-center md:py-12">
-        <img src="{{ asset('logo.svg') }}" class="px-12 lg:h-32 dark:hidden mt-24">
-        <img src="{{ asset('logo-dark.svg') }}" class="hidden px-12 lg:h-32 dark:block mt-24">
-        <h1 class="sr-only">NativePHP</h1>
-        <h3 class="px-6 mt-12 text-lg leading-tight lg:text-2xl md:text-xl">
-            NativePHP is a new way to build native applications,
-            <br class="hidden sm:block">
-            using the tools you already know.
-        </h3>
-        <div class="flex flex-col items-center mt-6 sm:flex-row sm:space-x-6">
-            <a href="/docs/" class="w-full px-12 py-4 text-lg font-bold text-gray-900 bg-white border rounded-lg sm:w-auto focus:outline-none">
-                Get started
-            </a>
-            <a href="https://github.com/nativephp/laravel" target="_blank" class="w-full px-12 py-4 mt-3 text-lg font-bold text-gray-900 border rounded-lg dark:text-white sm:w-auto focus:outline-none sm:mt-0 bg-gray-50 dark:bg-gray-900">
-                Source code
-            </a>
-        </div>
-
-        <div class="mt-6 px-12">
-            <h2 class="text-2xl font-bold">Featured Sponsors</h2>
-
-            <div class="flex flex-col sm:flex-row gap-16 items-center justify-center py-8">
-                <x-sponsors-featured/>
+<x-layout title="Baking Delicious Native Apps">
+    <main
+        id="app"
+        class="flex min-h-screen flex-col items-center"
+    >
+        <header
+            class="flex flex-1 flex-col items-center gap-12 text-center md:py-12"
+        >
+            <img
+                src="{{ asset('logo.svg') }}"
+                class="mt-24 px-12 lg:h-32 dark:hidden"
+            />
+            <img
+                src="{{ asset('logo-dark.svg') }}"
+                class="mt-24 hidden px-12 lg:h-32 dark:block"
+            />
+            <h1 class="sr-only">NativePHP</h1>
+            <h3 class="mt-12 px-6 text-lg leading-tight md:text-xl lg:text-2xl">
+                NativePHP is a new way to build native applications,
+                <br class="hidden sm:block" />
+                using the tools you already know.
+            </h3>
+            <div
+                class="mt-6 flex flex-col items-center sm:flex-row sm:space-x-6"
+            >
+                <a
+                    href="/docs/"
+                    class="w-full rounded-lg border bg-white px-12 py-4 text-lg font-bold text-gray-900 focus:outline-none sm:w-auto"
+                >
+                    Get started
+                </a>
+                <a
+                    href="https://github.com/nativephp/laravel"
+                    target="_blank"
+                    class="mt-3 w-full rounded-lg border bg-gray-50 px-12 py-4 text-lg font-bold text-gray-900 focus:outline-none sm:mt-0 sm:w-auto dark:bg-gray-900 dark:text-white"
+                >
+                    Source code
+                </a>
             </div>
 
-            <h2 class="text-2xl font-bold py-8">Corporate Sponsors</h2>
+            <div class="mt-6 px-12">
+                <h2 class="text-2xl font-bold">Featured Sponsors</h2>
 
-            <div class="flex flex-col sm:flex-row sm:flex-wrap gap-x-16 gap-y-8 items-center justify-center">
-                <x-sponsors-corporate/>
+                <div
+                    class="flex flex-col items-center justify-center gap-16 py-8 sm:flex-row"
+                >
+                    <x-sponsors-featured />
+                </div>
+
+                <h2 class="py-8 text-2xl font-bold">Corporate Sponsors</h2>
+
+                <div
+                    class="flex flex-col items-center justify-center gap-x-16 gap-y-8 sm:flex-row sm:flex-wrap"
+                >
+                    <x-sponsors-corporate />
+                </div>
+
+                <a
+                    href="/docs/getting-started/sponsoring"
+                    class="mt-6 inline-block rounded border bg-white px-4 py-1.5 text-xs font-semibold text-black"
+                >
+                    Want your logo here?
+                </a>
             </div>
+        </header>
 
-            <a href="/docs/getting-started/sponsoring" class="inline-block px-4 py-1.5 text-xs font-semibold text-black bg-white border rounded mt-6">
-                Want your logo here?
-            </a>
-        </div>
-    </header>
-
-    <x-footer/>
-</main>
-
-</body>
-</html>
+        <x-footer />
+    </main>
+</x-layout>
