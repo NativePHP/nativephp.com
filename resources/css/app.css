@@ -2,8 +2,10 @@
 @tailwind components;
 @tailwind utilities;
 
-[x-cloak] {
-    display: none;
+@layer base {
+    html {
+        -webkit-tap-highlight-color: transparent;
+    }
 }
 
 /* Look cool on safari */
@@ -21,10 +23,9 @@
 /*    }*/
 /*}*/
 
-
 /* Whole menu */
 nav ul {
-    @apply text-xl md:text-sm list-none;
+    @apply list-none text-xl md:text-sm;
 }
 
 /* Categories */
@@ -33,8 +34,8 @@ nav > ul > li {
 
     & > a {
         @apply font-semibold;
-        @apply no-underline px-3 py-1.5 mb-1.5;
-        @apply border rounded-lg dark:border-white/15;
+        @apply mb-1.5 px-3 py-1.5 no-underline;
+        @apply rounded-lg border dark:border-white/15;
     }
 }
 
@@ -60,7 +61,7 @@ nav > ul > li > ul {
         @apply font-normal;
 
         & a {
-            @apply w-full block;
+            @apply block w-full;
             @apply py-1.5;
             @apply border-l pl-3 dark:border-white/10;
             @apply ml-3;
@@ -76,7 +77,6 @@ nav > ul > li > ul {
             /*@apply text-[#00aaa6];*/
             @apply border-[#00aaa6] dark:border-[#00aaa6]/90;
         }
-
     }
 }
 
@@ -97,7 +97,7 @@ nav > ul > li > ul {
 }
 
 .prose pre {
-    @apply p-6 shadow-lg rounded-xl;
+    @apply rounded-xl p-6 shadow-lg;
 }
 
 .prose pre code {
@@ -117,7 +117,7 @@ nav > ul > li > ul {
 }
 
 .prose img {
-    @apply shadow-md rounded-xl;
+    @apply rounded-xl shadow-md;
 }
 
 .prose img.no-format {
@@ -129,7 +129,7 @@ nav > ul > li > ul {
  overflow-x-auto is recommended.
 */
 .prose pre {
-    @apply p-0 my-4 overflow-x-auto bg-transparent rounded-md;
+    @apply my-4 overflow-x-auto rounded-md bg-transparent p-0;
 }
 
 /*
@@ -139,7 +139,7 @@ nav > ul > li > ul {
  colors extend edge to edge.
 */
 .prose pre code.torchlight {
-    @apply block py-4 min-w-max;
+    @apply block min-w-max py-4;
 }
 
 /*
@@ -158,27 +158,23 @@ nav > ul > li > ul {
     @apply mr-4;
 }
 
-
-
-
-
 :root {
     --docsearch-container-background: rgba(0, 0, 0, 0.5);
     --docsearch-primary-color: #00aaa6;
 }
 
-[id=docsearch] {
+[id='docsearch'] {
     width: 100%;
     @apply md:w-auto;
 }
 
 .DocSearch-Button {
-    @apply border border-solid border-gray-400/50 dark:border-white/10 dark:bg-black/10 flex items-center w-full rounded;
+    @apply flex w-full items-center rounded border border-solid border-gray-400/50 dark:border-white/10 dark:bg-black/10;
 }
 
 .DocSearch-Button:hover {
     box-shadow: none;
-    @apply text-gray-400 border-gray-400/70 bg-transparent dark:border-white/20;
+    @apply border-gray-400/70 bg-transparent text-gray-400 dark:border-white/20;
 }
 
 .DocSearch-Button .DocSearch-Search-Icon {
@@ -187,7 +183,7 @@ nav > ul > li > ul {
 }
 
 .DocSearch-Button-Placeholder {
-    @apply dark:text-white/60 pr-44 text-xs;
+    @apply pr-44 text-xs dark:text-white/60;
 }
 
 .DocSearch-Button-Keys {
@@ -202,7 +198,7 @@ nav > ul > li > ul {
     box-shadow: none;
     width: auto;
 
-    @apply font-sans mr-0.5;
+    @apply mr-0.5 font-sans;
 }
 
 .DocSearch-Modal {
@@ -216,4 +212,3 @@ nav > ul > li > ul {
 .DocSearch-Input {
     @apply focus-visible:outline-none;
 }
-
