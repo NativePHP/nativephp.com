@@ -13,6 +13,56 @@
                 <div
                     class="absolute -right-32 -top-20 size-60 rounded-full bg-white/60 blur-[100px]"
                 ></div>
+
+                {{-- Star --}}
+                <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 40 40"
+                    fill="none"
+                    class="absolute -right-10 -top-10 size-10"
+                    x-init="
+                        () => {
+                            motion.animate(
+                                $el,
+                                {
+                                    rotate: [180, 0],
+                                    scale: [0, 1],
+                                    opacity: [0, 1],
+                                },
+                                {
+                                    duration: 1,
+                                    ease: motion.anticipate,
+                                },
+                            )
+                        }
+                    "
+                >
+                    <path
+                        d="M25.66 17.636L40 20L25.66 22.364C23.968 22.644 22.64 23.968 22.364 25.66L20 40L17.636 25.66C17.356 23.968 16.032 22.64 14.34 22.364L0 20L14.34 17.636C16.032 17.356 17.36 16.032 17.636 14.34L20 0L22.364 14.34C22.644 16.032 23.968 17.36 25.66 17.636Z"
+                        fill="#E8E4F8"
+                    />
+                </svg>
+
+                {{-- Glass shape --}}
+                <div
+                    class="absolute -left-[4.5rem] top-[5.6rem] size-10 rounded-bl-xl rounded-br-3xl rounded-tl-3xl rounded-tr-xl bg-[#5A31FF]/10 ring-1 ring-white/50 backdrop-blur-sm"
+                    x-init="
+                        () => {
+                            motion.animate(
+                                $el,
+                                {
+                                    rotate: [-90, 0],
+                                    scale: [0, 1],
+                                    opacity: [0, 1],
+                                },
+                                {
+                                    duration: 1.5,
+                                    ease: motion.anticipate,
+                                },
+                            )
+                        }
+                    "
+                ></div>
             </h1>
             <h1 class="text-8xl font-extrabold">PHP Apps</h1>
 
@@ -96,7 +146,7 @@
 
                 {{-- Blur --}}
                 <div
-                    class="z-30 size-20 self-center justify-self-center bg-white opacity-0 blur-xl transition duration-300 ease-in-out [grid-area:1/-1] group-hover:opacity-10"
+                    class="z-30 size-20 self-center justify-self-center bg-[#9d91f1] opacity-0 blur-xl transition duration-300 ease-in-out [grid-area:1/-1] group-hover:opacity-15"
                 ></div>
 
                 {{-- Shape --}}
@@ -141,12 +191,52 @@
                 </div>
             </div>
         </div>
-
         <a
             href="/docs/getting-started/sponsoring"
-            class="mt-6 inline-block rounded border bg-white px-4 py-1.5 text-xs font-semibold text-black"
+            class="group flex flex-wrap items-center justify-center gap-x-5 gap-y-3 rounded-3xl bg-gray-100 px-8 py-8 transition duration-200 ease-in-out hover:ring-1 hover:ring-black/60 md:justify-between md:px-12 md:py-10"
         >
-            Want your logo here?
+            <div
+                class="inline-flex shrink-0 flex-col-reverse items-center gap-x-5 gap-y-3 md:flex-row"
+            >
+                <div class="space-y-2 text-2xl font-medium md:text-3xl">
+                    <span>Want</span>
+                    <span>your logo</span>
+                    <span>here?</span>
+                </div>
+                {{-- Arrow --}}
+                <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    class="w-12 -rotate-45 transition duration-300 ease-out will-change-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5 md:w-20 md:rotate-0"
+                >
+                    <path
+                        fill="#c2f3ff"
+                        d="M12 22c5.5228 0 10 -4.4772 10 -10 0 -5.52285 -4.4772 -10 -10 -10C6.47715 2 2 6.47715 2 12c0 5.5228 4.47715 10 10 10Z"
+                        stroke-width="1"
+                    ></path>
+                    <path
+                        stroke="#191919"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        d="M14.499 2.49707h7v7"
+                        stroke-width="1"
+                    ></path>
+                    <path
+                        stroke="#191919"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        d="M21.499 2.49707 5.49902 18.4971"
+                        stroke-width="1"
+                    ></path>
+                </svg>
+            </div>
+            <div
+                class="text-center font-light text-black/70 md:max-w-xs md:text-left md:text-lg"
+            >
+                Become a sponsor and get your logo on our README on GitHub with
+                a link to your site.
+            </div>
         </a>
     </section>
 </x-layout>

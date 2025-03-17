@@ -16,7 +16,7 @@
         <div class="size-1.5 rotate-45 bg-black/10"></div>
     </div>
     <div
-        class="flex flex-wrap items-center justify-between gap-5 text-sm text-gray-500"
+        class="flex flex-wrap items-center justify-between gap-x-5 gap-y-3 text-sm text-gray-500"
     >
         <div>
             Logo by
