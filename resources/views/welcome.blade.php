@@ -1,11 +1,44 @@
 <x-layout title="Baking Delicious Native Apps">
     {{-- Hero --}}
-    <section class="px-5 pt-10">
+    <section class="mt-10 px-5">
         {{-- Header --}}
-        <header class="grid place-items-center gap-0.5 uppercase">
+        <header
+            class="relative isolate grid place-items-center gap-0.5 uppercase"
+        >
             <h1 class="text-8xl font-extrabold">Build</h1>
-            <h1 class="text-8xl font-extrabold text-[#9D91F1]">Native</h1>
+            <h1 class="relative isolate text-8xl font-extrabold text-[#9D91F1]">
+                Native
+
+                {{-- Blurred circle --}}
+                <div
+                    class="absolute -right-32 -top-20 size-60 rounded-full bg-white/60 blur-[100px]"
+                ></div>
+            </h1>
             <h1 class="text-8xl font-extrabold">PHP Apps</h1>
+
+            {{-- Shiny line --}}
+            <div
+                class="absolute right-1/2 top-32 z-20 translate-x-1/2 rotate-[50deg]"
+            >
+                <div
+                    x-init="
+                        () => {
+                            motion.animate(
+                                $el,
+                                {
+                                    y: [-30, 0],
+                                    opacity: [0, 0, 1],
+                                },
+                                {
+                                    duration: 1.2,
+                                    ease: motion.easeOut,
+                                },
+                            )
+                        }
+                    "
+                    class="h-2.5 w-[26rem] bg-gradient-to-r from-transparent to-white/50 ring-1 ring-white/50"
+                ></div>
+            </div>
         </header>
 
         {{-- Description --}}
@@ -40,11 +73,14 @@
                 href="/docs/"
                 class="group isolate z-0 grid place-items-center leading-snug text-white"
             >
+                {{-- Label --}}
                 <div
                     class="z-10 grid place-items-center gap-1.5 self-center justify-self-center [grid-area:1/-1]"
                 >
                     <div>Get</div>
                     <div>Started</div>
+
+                    {{-- Arrow --}}
                     <svg
                         xmlns="http://www.w3.org/2000/svg"
                         viewBox="0 0 15 11"
@@ -57,9 +93,16 @@
                         />
                     </svg>
                 </div>
+
+                {{-- Blur --}}
+                <div
+                    class="z-30 size-20 self-center justify-self-center bg-white opacity-0 blur-xl transition duration-300 ease-in-out [grid-area:1/-1] group-hover:opacity-10"
+                ></div>
+
+                {{-- Shape --}}
                 <svg
                     xmlns="http://www.w3.org/2000/svg"
-                    class="size-32 self-center justify-self-center text-black transition duration-300 ease-in-out will-change-transform [grid-area:1/-1] group-hover:rotate-12 group-hover:text-zinc-900"
+                    class="size-32 self-center justify-self-center text-black transition duration-500 ease-in-out will-change-transform [grid-area:1/-1] group-hover:rotate-6 group-hover:text-zinc-900"
                     viewBox="0 0 133 133"
                     fill="none"
                 >
@@ -71,39 +114,39 @@
             </a>
         </div>
     </section>
-    <main
-        id="app"
-        class="flex min-h-screen flex-col items-center"
-    >
-        <header
-            class="flex flex-1 flex-col items-center gap-12 text-center md:py-12"
-        >
-            <div class="mt-6 px-12">
-                <h2 class="text-2xl font-bold">Featured Sponsors</h2>
 
+    {{-- Sponsors --}}
+    <section class="mx-auto mt-20 max-w-5xl px-5">
+        <div class="divide-y divide-[#242A2E]/20 *:py-8">
+            {{-- Featured sponsors --}}
+            <div
+                class="flex flex-col items-center justify-between gap-10 md:flex-row md:items-start"
+            >
+                <h2 class="shrink-0 text-xl font-medium">Featured Sponsors</h2>
                 <div
-                    class="flex flex-col items-center justify-center gap-16 py-8 sm:flex-row"
+                    class="flex grow flex-wrap items-center justify-center gap-5 md:justify-end"
                 >
                     <x-sponsors-featured />
                 </div>
-
-                <h2 class="py-8 text-2xl font-bold">Corporate Sponsors</h2>
-
+            </div>
+            {{-- Corporate sponsors --}}
+            <div
+                class="flex flex-col items-center justify-between gap-10 md:flex-row md:items-start"
+            >
+                <h2 class="shrink-0 text-xl font-medium">Corporate Sponsors</h2>
                 <div
-                    class="flex flex-col items-center justify-center gap-x-16 gap-y-8 sm:flex-row sm:flex-wrap"
+                    class="flex grow flex-wrap items-center justify-center gap-5 md:justify-end"
                 >
                     <x-sponsors-corporate />
                 </div>
-
-                <a
-                    href="/docs/getting-started/sponsoring"
-                    class="mt-6 inline-block rounded border bg-white px-4 py-1.5 text-xs font-semibold text-black"
-                >
-                    Want your logo here?
-                </a>
             </div>
-        </header>
+        </div>
 
-        <x-footer />
-    </main>
+        <a
+            href="/docs/getting-started/sponsoring"
+            class="mt-6 inline-block rounded border bg-white px-4 py-1.5 text-xs font-semibold text-black"
+        >
+            Want your logo here?
+        </a>
+    </section>
 </x-layout>

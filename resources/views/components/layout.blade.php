@@ -55,10 +55,11 @@
     <body
         x-cloak
         x-data="{ showDocsNavigation: false }"
-        class="font-poppins min-h-screen antialiased dark:bg-gray-900 dark:text-white"
+        class="min-h-screen font-poppins antialiased selection:bg-black selection:text-[#d2ea72] dark:bg-gray-900 dark:text-white"
     >
         <x-header-banner :hasMenu="$hasMenu ?? false" />
         {{ $slot }}
+        <x-footer />
         <script src="https://cdn.jsdelivr.net/npm/@docsearch/js@3"></script>
         <script type="text/javascript">
             docsearch({
