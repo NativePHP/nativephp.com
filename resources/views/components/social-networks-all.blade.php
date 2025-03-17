@@ -1,24 +1,59 @@
-
-<a href="https://bsky.app/profile/nativephp.bsky.social" title="Bluesky">
-    <x-icons.bluesky  class="size-5 text-black dark:text-white hover:text-[#00aaa6]" />
+<a
+    href="https://bsky.app/profile/nativephp.bsky.social"
+    title="Bluesky"
+    class="group inline-grid size-10 place-items-center rounded-xl bg-gray-100 transition duration-200 hover:bg-gray-200/70"
+>
+    <x-icons.bluesky
+        class="size-[1.1rem] text-black transition duration-200 group-hover:text-[#9d91f1] dark:text-white"
+    />
 </a>
 
-<a href="https://discord.gg/X62tWNStZK" title="Go to discord server">
-    <x-icons.discord  class="size-5 text-black dark:text-white hover:text-[#00aaa6]" />
+<a
+    href="https://discord.gg/X62tWNStZK"
+    title="Go to discord server"
+    class="group inline-grid size-10 place-items-center rounded-xl bg-gray-100 transition duration-200 hover:bg-gray-200/70"
+>
+    <x-icons.discord
+        class="size-[1.1rem] text-black transition duration-200 group-hover:text-[#9d91f1] dark:text-white"
+    />
 </a>
 
-<a href="https://opencollective.com/nativephp" title="NativePHP on Open Collective">
-    <x-icons.opencollective class="size-5 text-black dark:invert hover:text-[#00aaa6] hover:invert-0" />
+<a
+    href="https://opencollective.com/nativephp"
+    title="NativePHP on Open Collective"
+    class="group inline-grid size-10 place-items-center rounded-xl bg-gray-100 transition duration-200 hover:bg-gray-200/70"
+>
+    <x-icons.opencollective
+        class="size-[1.1rem] text-black transition duration-200 hover:invert-0 group-hover:text-[#9d91f1] dark:invert"
+    />
 </a>
 
-<a href="https://github.com/nativephp" title="Source code of NativePHP">
-    <x-icons.github class="size-5  dark:fill-white hover:fill-[#00aaa6]" />
+<a
+    href="https://github.com/nativephp"
+    title="Source code of NativePHP"
+    class="group inline-grid size-10 place-items-center rounded-xl bg-gray-100 transition duration-200 hover:bg-gray-200/70"
+>
+    <x-icons.github
+        class="size-[1.1rem] transition duration-200 group-hover:fill-[#9d91f1] dark:fill-white"
+    />
 </a>
 
-<a href="https://pinkary.com/@nativephp" title="NativePHP on Pinkary">
-    <x-icons.pinkary class="size-5 text-black dark:invert hover:text-[#00aaa6] hover:invert-0" />
+<a
+    href="https://pinkary.com/@nativephp"
+    title="NativePHP on Pinkary"
+    class="group inline-grid size-10 place-items-center rounded-xl bg-gray-100 transition duration-200 hover:bg-gray-200/70"
+>
+    <x-icons.pinkary
+        class="size-[1.1rem] text-black transition duration-200 hover:invert-0 group-hover:text-[#9d91f1] dark:invert"
+    />
 </a>
 
-<a href="https://www.linkedin.com/company/nativephp/" title="NativePHP on LinkedIn">
-    <x-icons.linkedin class="size-5 text-black dark:text-white hover:text-[#00aaa6]" />
+<a
+    href="https://www.linkedin.com/company/nativephp/"
+    title="NativePHP on LinkedIn"
+    class="group inline-grid size-10 place-items-center rounded-xl bg-gray-100 transition duration-200 hover:bg-gray-200/70"
+>
+    <x-icons.linkedin
+        class="size-[1.1rem] text-black transition duration-200 group-hover:text-[#9d91f1] dark:text-white"
+    />
 </a>

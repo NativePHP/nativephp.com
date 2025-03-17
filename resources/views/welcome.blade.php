@@ -85,7 +85,7 @@
                         xmlns="http://www.w3.org/2000/svg"
                         viewBox="0 0 15 11"
                         fill="none"
-                        class="mt-1 w-5 transition duration-300 ease-in-out will-change-transform group-hover:translate-x-0.5"
+                        class="mt-1 w-5 transition duration-300 ease-out will-change-transform group-hover:translate-x-0.5"
                     >
                         <path
                             d="M1 4.8C0.613401 4.8 0.3 5.1134 0.3 5.5C0.3 5.8866 0.613401 6.2 1 6.2L1 4.8ZM14.495 5.99498C14.7683 5.72161 14.7683 5.27839 14.495 5.00503L10.0402 0.550253C9.76684 0.276886 9.32362 0.276886 9.05025 0.550253C8.77689 0.823621 8.77689 1.26684 9.05025 1.5402L13.0101 5.5L9.05025 9.4598C8.77689 9.73317 8.77689 10.1764 9.05025 10.4497C9.32362 10.7231 9.76683 10.7231 10.0402 10.4497L14.495 5.99498ZM1 6.2L14 6.2L14 4.8L1 4.8L1 6.2Z"
@@ -102,7 +102,7 @@
                 {{-- Shape --}}
                 <svg
                     xmlns="http://www.w3.org/2000/svg"
-                    class="size-32 self-center justify-self-center text-black transition duration-500 ease-in-out will-change-transform [grid-area:1/-1] group-hover:rotate-6 group-hover:text-zinc-900"
+                    class="size-32 self-center justify-self-center text-black transition duration-500 ease-out will-change-transform [grid-area:1/-1] group-hover:rotate-6 group-hover:text-zinc-900"
                     viewBox="0 0 133 133"
                     fill="none"
                 >
