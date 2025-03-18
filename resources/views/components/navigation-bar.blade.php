@@ -64,7 +64,7 @@
                     <button
                         type="button"
                         @click="showDocsNavigation = !showDocsNavigation"
-                        class="p-2 focus:outline-none focus:ring-0"
+                        class="block p-2 focus:outline-none focus:ring-0 lg:hidden"
                     >
                         <div x-show="!showDocsNavigation">
                             <x-icons.menu
@@ -75,6 +75,16 @@
                             <x-icons.close class="h-6 w-6 text-gray-600" />
                         </div>
                     </button>
+                    <a
+                        href="/docs/"
+                        @class([
+                            'hidden transition duration-200 lg:block',
+                            'font-medium' => request()->is('docs*'),
+                            'opacity-60 hover:opacity-100' => ! request()->is('docs*'),
+                        ])
+                    >
+                        Docs
+                    </a>
                 @else
                     <a
                         href="/docs/"
