@@ -425,6 +425,210 @@
         </div>
     </section>
 
+    {{-- Collaborations --}}
+    <div class="mx-auto mt-20 max-w-5xl px-5">
+        <h2
+            x-init="
+                () => {
+                    motion.inView($el, (element) => {
+                        motion.animate(
+                            $el,
+                            {
+                                opacity: [0, 1],
+                                y: [-10, 0],
+                            },
+                            {
+                                duration: 0.7,
+                                ease: motion.circOut,
+                            },
+                        )
+                    })
+                }
+            "
+            class="text-center text-xl font-medium capitalize"
+        >
+            A collaborative project of:
+        </h2>
+
+        <div
+            class="mt-32 flex items-center justify-center gap-5 rounded-2xl bg-gradient-to-r from-[#FDF6ED] to-[#F1F5FF] text-center"
+        >
+            {{-- Simon card --}}
+            <div class="-mt-[6.3rem] flex items-center md:gap-5">
+                <div class="relative flex flex-col items-center">
+                    {{-- Shape --}}
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        class="w-5"
+                        viewBox="0 0 24 23"
+                        fill="none"
+                    >
+                        <path
+                            d="M21.5037 9.50367H18.5162C17.8899 9.50367 17.5764 8.74661 18.0192 8.30376L20.1041 6.21886C20.8478 5.47515 20.9216 4.27314 20.2335 3.47741C19.4666 2.59031 18.1233 2.55376 17.3093 3.36846L15.1969 5.48078C14.7541 5.92362 13.997 5.61012 13.997 4.9838V1.99633C13.997 0.894132 13.1036 0 12.0007 0C10.8985 0 10.0044 0.893429 10.0044 1.99633V4.9838C10.0044 5.61012 9.24731 5.92362 8.80446 5.48078L6.69214 3.36846C5.91259 2.58891 4.64872 2.58891 3.86916 3.36846C3.08961 4.14801 3.08961 5.41189 3.86916 6.19144L5.98148 8.30376C6.42433 8.74661 6.11082 9.50367 5.48451 9.50367H2.49633C1.39413 9.50367 0.5 10.3971 0.5 11.5C0.5 12.6022 1.39343 13.4963 2.49633 13.4963H5.4838C6.11012 13.4963 6.42362 14.2534 5.98078 14.6962L3.86846 16.8086C3.08891 17.5881 3.08891 18.852 3.86846 19.6315C4.64801 20.4111 5.91189 20.4111 6.69144 19.6315L8.80376 17.5192C9.24661 17.0764 10.0037 17.3899 10.0037 18.0162V21.0037C10.0037 22.1059 10.8971 23 12 23C13.1022 23 13.9963 22.1066 13.9963 21.0037V18.0162C13.9963 17.3899 14.7534 17.0764 15.1962 17.5192L17.3086 19.6315C18.0881 20.4111 19.352 20.4111 20.1315 19.6315C20.9111 18.852 20.9111 17.5881 20.1315 16.8086L18.0192 14.6962C17.5764 14.2534 17.8899 13.4963 18.5162 13.4963H21.5037C22.6059 13.4963 23.5 12.6029 23.5 11.5C23.5 10.3978 22.6066 9.50367 21.5037 9.50367Z"
+                            fill="#FFCABA"
+                        />
+                    </svg>
+
+                    {{-- Name --}}
+                    <h3 class="pt-2 text-xl leading-relaxed">
+                        Simon
+                        <br />
+                        Hamp
+                    </h3>
+
+                    {{-- Title --}}
+                    <div class="flex flex-col items-center">
+                        <div class="text-2xl font-light">~</div>
+                        <h5 class="text-sm text-gray-600">
+                            Developer & Artisan — LaraDevs
+                        </h5>
+                    </div>
+
+                    {{-- Dashed line --}}
+                    <div class="absolute -right-9 top-2 hidden md:block">
+                        <div class="relative flex items-end text-gray-400">
+                            {{-- Line --}}
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                class="h-8"
+                                viewBox="0 0 133 37"
+                                fill="none"
+                            >
+                                <path
+                                    x-init="
+                                        () => {
+                                            motion.animate(
+                                                $el,
+                                                {
+                                                    strokeDashoffset: [20, 0],
+                                                },
+                                                {
+                                                    duration: 1.5,
+                                                    repeat: Infinity,
+                                                    repeatType: 'loop',
+                                                    ease: 'linear',
+                                                },
+                                            )
+                                        }
+                                    "
+                                    d="M0 1H49.5166C52.9323 1 56.1117 2.74339 57.9482 5.62334L74.0518 30.8767C75.8883 33.7566 79.0677 35.5 82.4834 35.5H132.5"
+                                    stroke="currentColor"
+                                    stroke-width="1.2"
+                                    stroke-dasharray="5 5"
+                                />
+                            </svg>
+
+                            {{-- Arrow --}}
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                class="relative top-0.5 size-2 rotate-90"
+                                viewBox="0 0 24 24"
+                            >
+                                <path
+                                    fill="currentColor"
+                                    d="M12 1.67a2.91 2.91 0 0 0-2.492 1.403L1.398 16.61a2.914 2.914 0 0 0 2.484 4.385h16.225a2.914 2.914 0 0 0 2.503-4.371L14.494 3.078A2.92 2.92 0 0 0 12 1.67"
+                                />
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+
+                {{-- Image --}}
+                <img
+                    src="{{ Vite::asset('resources/images/simonhamp_faded.webp') }}"
+                    alt="Simon Hamp"
+                    class="-ml-14 -mr-16 -mt-5 w-64"
+                />
+            </div>
+            {{-- Marcel card --}}
+            <div class="-mt-[6.3rem] flex items-center md:gap-5">
+                {{-- Image --}}
+                <img
+                    src="{{ Vite::asset('resources/images/marcelpaciot_faded.webp') }}"
+                    alt="Marcel Paciot"
+                    class="-ml-16 -mr-14 -mt-5 w-64"
+                />
+
+                <div class="relative flex flex-col items-center">
+                    {{-- Shape --}}
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        class="w-5"
+                        viewBox="0 0 24 23"
+                        fill="none"
+                    >
+                        <path
+                            d="M12.8747 12.3751C27.0405 26.5408 -3.04242 26.5408 11.1233 12.3751C-3.04242 26.5408 -3.04242 -3.54205 11.1233 10.6237C-3.04242 -3.54205 27.0405 -3.54205 12.8747 10.6237C27.0405 -3.54205 27.0405 26.5408 12.8747 12.3751Z"
+                            fill="#CBDAFF"
+                        />
+                    </svg>
+
+                    {{-- Name --}}
+                    <h3 class="pt-2 text-xl leading-relaxed">
+                        Marcel
+                        <br />
+                        Paciot
+                    </h3>
+
+                    {{-- Title --}}
+                    <div class="flex flex-col items-center">
+                        <div class="text-2xl font-light">~</div>
+                        <h5 class="text-sm text-gray-600">
+                            CEO & Cofounder — BeyondCode
+                        </h5>
+                    </div>
+
+                    {{-- Dashed line --}}
+                    <div class="absolute -left-9 top-2 hidden md:block">
+                        <div class="relative flex items-end text-gray-400">
+                            {{-- Arrow --}}
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                class="relative top-0.5 size-2 -rotate-90"
+                                viewBox="0 0 24 24"
+                            >
+                                <path
+                                    fill="currentColor"
+                                    d="M12 1.67a2.91 2.91 0 0 0-2.492 1.403L1.398 16.61a2.914 2.914 0 0 0 2.484 4.385h16.225a2.914 2.914 0 0 0 2.503-4.371L14.494 3.078A2.92 2.92 0 0 0 12 1.67"
+                                />
+                            </svg>
+                            {{-- Line --}}
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                class="h-8"
+                                viewBox="0 0 133 37"
+                                fill="none"
+                            >
+                                <path
+                                    x-init="
+                                        () => {
+                                            motion.animate(
+                                                $el,
+                                                {
+                                                    strokeDashoffset: [20, 0],
+                                                },
+                                                {
+                                                    duration: 1.5,
+                                                    repeat: Infinity,
+                                                    repeatType: 'loop',
+                                                    ease: 'linear',
+                                                },
+                                            )
+                                        }
+                                    "
+                                    d="M132.5 1H82.9834C79.5677 1 76.3883 2.74339 74.5518 5.62334L58.4482 30.8767C56.6117 33.7566 53.4323 35.5 50.0166 35.5H0"
+                                    stroke="currentColor"
+                                    stroke-width="1.2"
+                                    stroke-dasharray="5 5"
+                                />
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     {{-- Sponsors --}}
     <section class="mx-auto mt-20 max-w-5xl px-5">
         <div class="divide-y divide-[#242A2E]/20 *:py-8">
