@@ -1,13 +1,15 @@
 <x-layout title="Baking Delicious Native Apps">
     {{-- Hero --}}
-    <section class="mt-10 px-5">
+    <section class="mt-14 px-5">
         {{-- Header --}}
-        <header
-            class="relative isolate grid place-items-center gap-0.5 uppercase"
-        >
-            <h1 class="text-8xl font-extrabold">Build</h1>
-            <h1 class="relative isolate text-8xl font-extrabold text-[#9D91F1]">
-                Native
+        <header class="relative isolate grid place-items-center gap-0.5">
+            <h1 class="text-7xl font-extrabold uppercase md:text-8xl">Build</h1>
+            <div class="relative isolate">
+                <h1
+                    class="text-7xl font-extrabold uppercase text-[#9D91F1] md:text-8xl"
+                >
+                    Native
+                </h1>
 
                 {{-- Blurred circle --}}
                 <div
@@ -63,8 +65,113 @@
                         }
                     "
                 ></div>
+
+                {{-- Video introduction --}}
+                <div
+                    x-init="
+                        () => {
+                            motion.animate(
+                                $el,
+                                {
+                                    x: [10, 0],
+                                },
+                                {
+                                    duration: 1.5,
+                                    ease: motion.circOut,
+                                },
+                            )
+                        }
+                    "
+                    class="group absolute -right-[19rem] -top-[5.7rem] hidden items-end gap-1 text-right text-sm lg:flex"
+                >
+                    <div class="relative -top-1.5 -mr-6 flex items-end gap-1">
+                        {{-- Black circle --}}
+                        <div
+                            x-init="
+                                () => {
+                                    motion.animate(
+                                        $el,
+                                        {
+                                            scale: [0, 1],
+                                        },
+                                        {
+                                            duration: 1,
+                                            ease: motion.backOut,
+                                        },
+                                    )
+                                }
+                            "
+                            class="-mb-1.5 size-1 rounded-full bg-white ring-[3px] ring-black"
+                        ></div>
+                        {{-- Line --}}
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="94"
+                            height="41"
+                            viewBox="0 0 94 41"
+                            fill="none"
+                        >
+                            <path
+                                x-init="
+                                    () => {
+                                        motion.animate(
+                                            $el,
+                                            {
+                                                strokeDashoffset: [0, 20],
+                                            },
+                                            {
+                                                duration: 1.2,
+                                                ease: motion.easeOut,
+                                            },
+                                        )
+                                    }
+                                "
+                                d="M94 0.5H47.3449C41.942 0.5 36.7691 2.68588 33.0033 6.56012L0.5 40"
+                                stroke="black"
+                                stroke-dasharray="5 5"
+                            />
+                        </svg>
+                        {{-- Play button --}}
+                        <a
+                            href="https://www.youtube.com/watch?v=CsM66a0koAM"
+                            target="_blank"
+                            class="relative -top-5 grid size-10 place-items-center rounded-full bg-black/30 ring-1 ring-white/10 backdrop-blur transition duration-300 ease-in-out will-change-transform group-hover:scale-110"
+                        >
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                class="size-4"
+                                viewBox="0 0 17 22"
+                                fill="none"
+                            >
+                                <path
+                                    fill-rule="evenodd"
+                                    clip-rule="evenodd"
+                                    d="M3.69143 0.285087C2.05005 -0.569218 0 0.584286 0 2.57588V19.4241C0 21.4158 2.05005 22.5692 3.69143 21.7149C5.89832 20.5663 9.15122 18.7792 11.8609 16.9047C13.2129 15.9695 14.4582 14.9932 15.3743 14.0457C15.8326 13.5718 16.228 13.0853 16.5129 12.5954C16.7949 12.1104 17 11.5686 17 11C17 10.4314 16.7949 9.88956 16.5129 9.40462C16.228 8.91473 15.8326 8.42821 15.3743 7.95433C14.4582 7.00681 13.2129 6.03045 11.8609 5.09525C9.15122 3.22087 5.89832 1.43373 3.69143 0.285087Z"
+                                    fill="white"
+                                />
+                            </svg>
+                        </a>
+                    </div>
+                    <div>
+                        <h4 class="font-medium">Video</h4>
+                        <h4 class="font-normal text-gray-600">Introduction</h4>
+                        {{-- Image --}}
+                        <a
+                            href="https://www.youtube.com/watch?v=CsM66a0koAM"
+                            target="_blank"
+                        >
+                            <img
+                                src="{{ Vite::asset('resources/images/simon2025laraconeu.webp') }}"
+                                alt="Laracon EU 2025 : Simon Hamp // Building Mobile Apps with PHP"
+                                class="mt-2 w-40 rounded-xl"
+                            />
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <h1 class="text-7xl font-extrabold uppercase md:text-8xl">
+                PHP Apps
             </h1>
-            <h1 class="text-8xl font-extrabold">PHP Apps</h1>
 
             {{-- Shiny line --}}
             <div
@@ -90,6 +197,39 @@
                 ></div>
             </div>
         </header>
+
+        <div class="grid place-items-center pt-3 lg:hidden">
+            {{-- Image --}}
+            <a
+                href="https://www.youtube.com/watch?v=CsM66a0koAM"
+                target="_blank"
+                class="group relative"
+            >
+                {{-- Play button --}}
+                <div
+                    class="absolute right-1/2 top-1/2 grid size-16 -translate-y-1/2 translate-x-1/2 place-items-center rounded-full bg-white/10 ring-1 ring-white/10 backdrop-blur transition duration-300 ease-in-out will-change-transform group-hover:scale-110"
+                >
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        class="size-8"
+                        viewBox="0 0 17 22"
+                        fill="none"
+                    >
+                        <path
+                            fill-rule="evenodd"
+                            clip-rule="evenodd"
+                            d="M3.69143 0.285087C2.05005 -0.569218 0 0.584286 0 2.57588V19.4241C0 21.4158 2.05005 22.5692 3.69143 21.7149C5.89832 20.5663 9.15122 18.7792 11.8609 16.9047C13.2129 15.9695 14.4582 14.9932 15.3743 14.0457C15.8326 13.5718 16.228 13.0853 16.5129 12.5954C16.7949 12.1104 17 11.5686 17 11C17 10.4314 16.7949 9.88956 16.5129 9.40462C16.228 8.91473 15.8326 8.42821 15.3743 7.95433C14.4582 7.00681 13.2129 6.03045 11.8609 5.09525C9.15122 3.22087 5.89832 1.43373 3.69143 0.285087Z"
+                            fill="white"
+                        />
+                    </svg>
+                </div>
+                <img
+                    src="{{ Vite::asset('resources/images/simon2025laraconeu.webp') }}"
+                    alt="Laracon EU 2025 : Simon Hamp // Building Mobile Apps with PHP"
+                    class="aspect-video h-60 rounded-xl"
+                />
+            </a>
+        </div>
 
         {{-- Description --}}
         <h3
