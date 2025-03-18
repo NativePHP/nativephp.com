@@ -1,19 +1,55 @@
 <x-layout title="Baking Delicious Native Apps">
     {{-- Hero --}}
-    <section class="mt-14 px-5">
+    <section class="mt-10 px-5 md:mt-14">
         {{-- Header --}}
-        <header class="relative isolate grid place-items-center gap-0.5">
-            <h1 class="text-7xl font-extrabold uppercase md:text-8xl">Build</h1>
+        <header
+            class="relative isolate grid place-items-center gap-0.5 text-center"
+        >
+            <h1
+                x-init="
+                    () => {
+                        motion.animate(
+                            $el,
+                            {
+                                opacity: [0, 1],
+                                x: [-10, 0],
+                            },
+                            {
+                                duration: 1,
+                                ease: motion.easeOut,
+                            },
+                        )
+                    }
+                "
+                class="truncate text-7xl font-extrabold uppercase md:text-8xl"
+            >
+                Build
+            </h1>
             <div class="relative isolate">
                 <h1
-                    class="text-7xl font-extrabold uppercase text-[#9D91F1] md:text-8xl"
+                    x-init="
+                        () => {
+                            motion.animate(
+                                $el,
+                                {
+                                    opacity: [0, 1],
+                                    x: [10, 0],
+                                },
+                                {
+                                    duration: 1,
+                                    ease: motion.easeOut,
+                                },
+                            )
+                        }
+                    "
+                    class="truncate text-7xl font-extrabold uppercase text-[#9D91F1] md:text-8xl"
                 >
                     Native
                 </h1>
 
                 {{-- Blurred circle --}}
                 <div
-                    class="absolute -right-32 -top-20 size-60 rounded-full bg-white/60 blur-[100px]"
+                    class="absolute -top-20 size-48 rounded-full bg-white/60 blur-[100px] md:-right-32 md:size-60"
                 ></div>
 
                 {{-- Star --}}
@@ -47,7 +83,7 @@
 
                 {{-- Glass shape --}}
                 <div
-                    class="absolute -left-[4.5rem] top-[5.6rem] size-10 rounded-bl-xl rounded-br-3xl rounded-tl-3xl rounded-tr-xl bg-[#5A31FF]/10 ring-1 ring-white/50 backdrop-blur-sm"
+                    class="absolute -left-[3.5rem] top-[4.5rem] size-8 rounded-bl-xl rounded-br-3xl rounded-tl-3xl rounded-tr-xl bg-[#5A31FF]/10 ring-1 ring-white/50 backdrop-blur-sm md:-left-[4.5rem] md:top-[5.6rem] md:size-10"
                     x-init="
                         () => {
                             motion.animate(
@@ -169,7 +205,24 @@
                     </div>
                 </div>
             </div>
-            <h1 class="text-7xl font-extrabold uppercase md:text-8xl">
+            <h1
+                x-init="
+                    () => {
+                        motion.animate(
+                            $el,
+                            {
+                                opacity: [0, 1],
+                                x: [-10, 0],
+                            },
+                            {
+                                duration: 1,
+                                ease: motion.easeOut,
+                            },
+                        )
+                    }
+                "
+                class="truncate text-7xl font-extrabold uppercase md:text-8xl"
+            >
                 PHP Apps
             </h1>
 
@@ -198,8 +251,8 @@
             </div>
         </header>
 
-        <div class="grid place-items-center pt-3 lg:hidden">
-            {{-- Image --}}
+        {{-- Simon talk for mobile --}}
+        <div class="grid place-items-center pt-4 lg:hidden">
             <a
                 href="https://www.youtube.com/watch?v=CsM66a0koAM"
                 target="_blank"
@@ -223,16 +276,32 @@
                         />
                     </svg>
                 </div>
+                {{-- Image --}}
                 <img
                     src="{{ Vite::asset('resources/images/simon2025laraconeu.webp') }}"
                     alt="Laracon EU 2025 : Simon Hamp // Building Mobile Apps with PHP"
-                    class="aspect-video h-60 rounded-xl"
+                    class="w-full max-w-80 rounded-xl"
                 />
             </a>
         </div>
 
         {{-- Description --}}
         <h3
+            x-init="
+                () => {
+                    motion.animate(
+                        $el,
+                        {
+                            opacity: [0, 1],
+                            y: [10, 0],
+                        },
+                        {
+                            duration: 1,
+                            ease: motion.easeOut,
+                        },
+                    )
+                }
+            "
             class="mx-auto max-w-4xl pt-5 text-center text-lg/relaxed text-gray-600 md:text-xl/relaxed"
         >
             Bring your
@@ -260,8 +329,23 @@
         {{-- Button --}}
         <div class="grid place-items-center pt-5">
             <a
+                x-init="
+                    () => {
+                        motion.animate(
+                            $el,
+                            {
+                                scale: [0, 1],
+                                opacity: [0, 1],
+                            },
+                            {
+                                duration: 0.8,
+                                ease: motion.backOut,
+                            },
+                        )
+                    }
+                "
                 href="/docs/"
-                class="group isolate z-0 grid place-items-center leading-snug text-white"
+                class="group isolate z-0 grid place-items-center leading-snug text-white will-change-transform"
             >
                 {{-- Label --}}
                 <div
@@ -338,7 +422,7 @@
             <div
                 class="inline-flex shrink-0 flex-col-reverse items-center gap-x-5 gap-y-3 md:flex-row"
             >
-                <div class="space-y-2 text-2xl font-medium md:text-3xl">
+                <div class="space-y-2 text-2xl font-medium">
                     <span>Want</span>
                     <span>your logo</span>
                     <span>here?</span>
@@ -348,10 +432,10 @@
                     xmlns="http://www.w3.org/2000/svg"
                     fill="none"
                     viewBox="0 0 24 24"
-                    class="w-12 -rotate-45 transition duration-300 ease-out will-change-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5 md:w-20 md:rotate-0"
+                    class="w-12 -rotate-45 transition duration-300 ease-out will-change-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5 md:w-16 md:rotate-0"
                 >
                     <path
-                        fill="#c2f3ff"
+                        fill="#e8e4f8"
                         d="M12 22c5.5228 0 10 -4.4772 10 -10 0 -5.52285 -4.4772 -10 -10 -10C6.47715 2 2 6.47715 2 12c0 5.5228 4.47715 10 10 10Z"
                         stroke-width="1"
                     ></path>

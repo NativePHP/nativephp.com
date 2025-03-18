@@ -55,7 +55,7 @@
     <body
         x-cloak
         x-data="{ showDocsNavigation: false }"
-        class="min-h-screen font-poppins antialiased selection:bg-black selection:text-[#d2ea72] dark:bg-gray-900 dark:text-white"
+        class="min-h-screen overflow-x-clip font-poppins antialiased selection:bg-black selection:text-[#d2ea72] dark:bg-gray-900 dark:text-white"
     >
         <x-header-banner :hasMenu="$hasMenu ?? false" />
         {{ $slot }}
