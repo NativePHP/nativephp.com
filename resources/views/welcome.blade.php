@@ -451,10 +451,12 @@
         </h2>
 
         <div
-            class="mt-32 flex items-center justify-center gap-5 rounded-2xl bg-gradient-to-r from-[#FDF6ED] to-[#F1F5FF] text-center"
+            class="mt-10 flex flex-col items-center justify-center gap-5 rounded-2xl bg-gradient-to-br from-[#FDF6ED] to-[#F1F5FF] text-center sm:mt-32 sm:flex-row sm:bg-gradient-to-r"
         >
             {{-- Simon card --}}
-            <div class="-mt-[6.3rem] flex items-center md:gap-5">
+            <div
+                class="flex flex-col-reverse items-center gap-5 px-2 pt-2 min-[400px]:flex-row sm:-mt-[6.3rem] sm:gap-0 sm:px-0 sm:pt-0 md:gap-5"
+            >
                 <div class="relative flex flex-col items-center">
                     {{-- Shape --}}
                     <svg
@@ -537,16 +539,18 @@
                 <img
                     src="{{ Vite::asset('resources/images/simonhamp_faded.webp') }}"
                     alt="Simon Hamp"
-                    class="-ml-14 -mr-16 -mt-5 w-64"
+                    class="-ml-10 -mr-10 -mt-5 w-52 sm:-ml-14 sm:-mr-16 sm:w-64"
                 />
             </div>
             {{-- Marcel card --}}
-            <div class="-mt-[6.3rem] flex items-center md:gap-5">
+            <div
+                class="flex flex-col items-center gap-5 px-2 pb-5 pt-2 min-[400px]:flex-row min-[400px]:pb-0 sm:-mt-[6.3rem] sm:gap-0 sm:px-0 sm:pt-0 md:gap-5"
+            >
                 {{-- Image --}}
                 <img
                     src="{{ Vite::asset('resources/images/marcelpaciot_faded.webp') }}"
                     alt="Marcel Paciot"
-                    class="-ml-16 -mr-14 -mt-5 w-64"
+                    class="-ml-10 -mr-10 -mt-5 w-52 sm:-ml-16 sm:-mr-14 sm:w-64"
                 />
 
                 <div class="relative flex flex-col items-center">
