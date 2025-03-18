@@ -173,7 +173,7 @@
                         <a
                             href="https://www.youtube.com/watch?v=CsM66a0koAM"
                             target="_blank"
-                            class="relative -top-5 grid size-10 place-items-center rounded-full bg-black/30 ring-1 ring-white/10 backdrop-blur transition duration-300 ease-in-out will-change-transform group-hover:scale-110"
+                            class="relative -top-5 grid size-10 place-items-center rounded-full bg-black/30 text-white ring-1 ring-white/10 backdrop-blur transition duration-300 ease-in-out will-change-transform group-hover:scale-110 group-hover:text-[#d4fd7d]"
                         >
                             <svg
                                 xmlns="http://www.w3.org/2000/svg"
@@ -185,7 +185,7 @@
                                     fill-rule="evenodd"
                                     clip-rule="evenodd"
                                     d="M3.69143 0.285087C2.05005 -0.569218 0 0.584286 0 2.57588V19.4241C0 21.4158 2.05005 22.5692 3.69143 21.7149C5.89832 20.5663 9.15122 18.7792 11.8609 16.9047C13.2129 15.9695 14.4582 14.9932 15.3743 14.0457C15.8326 13.5718 16.228 13.0853 16.5129 12.5954C16.7949 12.1104 17 11.5686 17 11C17 10.4314 16.7949 9.88956 16.5129 9.40462C16.228 8.91473 15.8326 8.42821 15.3743 7.95433C14.4582 7.00681 13.2129 6.03045 11.8609 5.09525C9.15122 3.22087 5.89832 1.43373 3.69143 0.285087Z"
-                                    fill="white"
+                                    fill="currentColor"
                                 />
                             </svg>
                         </a>
@@ -262,7 +262,7 @@
             >
                 {{-- Play button --}}
                 <div
-                    class="absolute right-1/2 top-1/2 grid size-16 -translate-y-1/2 translate-x-1/2 place-items-center rounded-full bg-white/10 ring-1 ring-white/10 backdrop-blur transition duration-300 ease-in-out will-change-transform group-hover:scale-110"
+                    class="absolute right-1/2 top-1/2 grid size-16 -translate-y-1/2 translate-x-1/2 place-items-center rounded-full bg-white/10 text-white ring-1 ring-white/10 backdrop-blur transition duration-300 ease-in-out will-change-transform group-hover:scale-110 group-hover:text-[#d4fd7d]"
                 >
                     <svg
                         xmlns="http://www.w3.org/2000/svg"
@@ -274,7 +274,7 @@
                             fill-rule="evenodd"
                             clip-rule="evenodd"
                             d="M3.69143 0.285087C2.05005 -0.569218 0 0.584286 0 2.57588V19.4241C0 21.4158 2.05005 22.5692 3.69143 21.7149C5.89832 20.5663 9.15122 18.7792 11.8609 16.9047C13.2129 15.9695 14.4582 14.9932 15.3743 14.0457C15.8326 13.5718 16.228 13.0853 16.5129 12.5954C16.7949 12.1104 17 11.5686 17 11C17 10.4314 16.7949 9.88956 16.5129 9.40462C16.228 8.91473 15.8326 8.42821 15.3743 7.95433C14.4582 7.00681 13.2129 6.03045 11.8609 5.09525C9.15122 3.22087 5.89832 1.43373 3.69143 0.285087Z"
-                            fill="white"
+                            fill="currentColor"
                         />
                     </svg>
                 </div>
@@ -445,7 +445,7 @@
                     })
                 }
             "
-            class="text-center text-xl font-medium capitalize"
+            class="text-center text-xl font-medium capitalize opacity-0"
         >
             A collaborative project of:
         </h2>
@@ -668,7 +668,7 @@
                     })
                 }
             "
-            class="mt-10 text-center text-xl font-medium capitalize"
+            class="mt-10 text-center text-xl font-medium capitalize opacity-0"
         >
             + Many community contributors:
         </h2>
@@ -693,13 +693,13 @@
                     })
                 }
             "
-            class="flex items-center justify-center gap-2 pt-4"
+            class="flex flex-wrap items-center justify-center gap-1.5 pt-4"
         >
             <a
                 x-ref="contributor"
                 href="https://github.com/milwad-dev"
                 target="_blank"
-                class="group grid size-12 place-items-center overflow-hidden rounded-full"
+                class="group grid size-12 place-items-center overflow-hidden rounded-full opacity-0"
             >
                 <img
                     src="https://avatars.githubusercontent.com/u/98118400?v=4"
@@ -712,7 +712,7 @@
                 x-ref="contributor"
                 href="https://github.com/SRWieZ"
                 target="_blank"
-                class="group grid size-12 place-items-center overflow-hidden rounded-full"
+                class="group grid size-12 place-items-center overflow-hidden rounded-full opacity-0"
             >
                 <img
                     src="https://avatars.githubusercontent.com/u/1408020?v=4"
@@ -725,7 +725,7 @@
                 x-ref="contributor"
                 href="https://github.com/XbNz"
                 target="_blank"
-                class="group grid size-12 place-items-center overflow-hidden rounded-full"
+                class="group grid size-12 place-items-center overflow-hidden rounded-full opacity-0"
             >
                 <img
                     src="https://avatars.githubusercontent.com/u/12668624?v=4"
@@ -738,7 +738,7 @@
                 x-ref="contributor"
                 href="https://github.com/nexxai"
                 target="_blank"
-                class="group grid size-12 place-items-center overflow-hidden rounded-full"
+                class="group grid size-12 place-items-center overflow-hidden rounded-full opacity-0"
             >
                 <img
                     src="https://avatars.githubusercontent.com/u/4316564?v=4"
@@ -751,7 +751,7 @@
                 x-ref="contributor"
                 href="https://github.com/Mombuyish"
                 target="_blank"
-                class="group grid size-12 place-items-center overflow-hidden rounded-full"
+                class="group grid size-12 place-items-center overflow-hidden rounded-full opacity-0"
             >
                 <img
                     src="https://avatars.githubusercontent.com/u/8007787?v=4"
@@ -764,7 +764,7 @@
                 x-ref="contributor"
                 href="https://github.com/gwleuverink"
                 target="_blank"
-                class="group grid size-12 place-items-center overflow-hidden rounded-full"
+                class="group grid size-12 place-items-center overflow-hidden rounded-full opacity-0"
             >
                 <img
                     src="https://avatars.githubusercontent.com/u/17123491?v=4"
@@ -777,7 +777,7 @@
                 x-ref="contributor"
                 href="https://github.com/NativePHP/laravel/graphs/contributors"
                 target="_blank"
-                class="group grid size-12 place-items-center overflow-hidden rounded-full border-[1px] border-dashed border-emerald-600 bg-emerald-100 font-medium transition duration-300 ease-out hover:bg-emerald-200/70"
+                class="group grid size-12 place-items-center overflow-hidden rounded-full border-[1px] border-dashed border-emerald-600 bg-emerald-100 font-medium opacity-0 transition duration-300 ease-out hover:bg-emerald-200/70"
             >
                 +27
             </a>
@@ -809,7 +809,7 @@
                             })
                         }
                     "
-                    class="shrink-0 text-xl font-medium"
+                    class="shrink-0 text-xl font-medium opacity-0"
                 >
                     Featured Sponsors
                 </h2>
@@ -859,7 +859,7 @@
                             })
                         }
                     "
-                    class="shrink-0 text-xl font-medium"
+                    class="shrink-0 text-xl font-medium opacity-0"
                 >
                     Corporate Sponsors
                 </h2>
@@ -888,52 +888,79 @@
                 </div>
             </div>
         </div>
-        <a
-            href="/docs/getting-started/sponsoring"
-            class="group flex flex-wrap items-center justify-center gap-x-5 gap-y-3 rounded-3xl bg-gray-100 px-8 py-8 transition duration-200 ease-in-out hover:ring-1 hover:ring-black/60 md:justify-between md:px-12 md:py-10"
+        <div
+            x-init="
+                () => {
+                    motion.inView(
+                        $el,
+                        (element) => {
+                            motion.animate(
+                                $el,
+                                {
+                                    opacity: [0, 1],
+                                    x: [-50, 0],
+                                },
+                                {
+                                    duration: 0.7,
+                                    ease: motion.circOut,
+                                },
+                            )
+                        },
+                        {
+                            amount: 0.5,
+                        },
+                    )
+                }
+            "
+            class="opacity-0 will-change-transform"
         >
-            <div
-                class="inline-flex shrink-0 flex-col-reverse items-center gap-x-5 gap-y-3 md:flex-row"
+            <a
+                href="/docs/getting-started/sponsoring"
+                class="group flex flex-wrap items-center justify-center gap-x-5 gap-y-3 rounded-3xl bg-gray-100 px-8 py-8 transition duration-200 ease-in-out hover:ring-1 hover:ring-black/60 md:justify-between md:px-12 md:py-10"
             >
-                <div class="space-y-2 text-2xl font-medium">
-                    <span>Want</span>
-                    <span>your logo</span>
-                    <span>here?</span>
-                </div>
-                {{-- Arrow --}}
-                <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    class="w-12 -rotate-45 transition duration-300 ease-out will-change-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5 md:w-16 md:rotate-0"
+                <div
+                    class="inline-flex shrink-0 flex-col-reverse items-center gap-x-5 gap-y-3 md:flex-row"
                 >
-                    <path
-                        fill="#e8e4f8"
-                        d="M12 22c5.5228 0 10 -4.4772 10 -10 0 -5.52285 -4.4772 -10 -10 -10C6.47715 2 2 6.47715 2 12c0 5.5228 4.47715 10 10 10Z"
-                        stroke-width="1"
-                    ></path>
-                    <path
-                        stroke="#191919"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        d="M14.499 2.49707h7v7"
-                        stroke-width="1"
-                    ></path>
-                    <path
-                        stroke="#191919"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        d="M21.499 2.49707 5.49902 18.4971"
-                        stroke-width="1"
-                    ></path>
-                </svg>
-            </div>
-            <div
-                class="text-center font-light text-black/70 md:max-w-xs md:text-left md:text-lg"
-            >
-                Become a sponsor and get your logo on our README on GitHub with
-                a link to your site.
-            </div>
-        </a>
+                    <div class="space-y-2 text-2xl font-medium">
+                        <span>Want</span>
+                        <span>your logo</span>
+                        <span>here?</span>
+                    </div>
+                    {{-- Arrow --}}
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        class="w-12 -rotate-45 transition duration-300 ease-out will-change-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5 md:w-16 md:rotate-0"
+                    >
+                        <path
+                            fill="#e8e4f8"
+                            d="M12 22c5.5228 0 10 -4.4772 10 -10 0 -5.52285 -4.4772 -10 -10 -10C6.47715 2 2 6.47715 2 12c0 5.5228 4.47715 10 10 10Z"
+                            stroke-width="1"
+                        ></path>
+                        <path
+                            stroke="#191919"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            d="M14.499 2.49707h7v7"
+                            stroke-width="1"
+                        ></path>
+                        <path
+                            stroke="#191919"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            d="M21.499 2.49707 5.49902 18.4971"
+                            stroke-width="1"
+                        ></path>
+                    </svg>
+                </div>
+                <div
+                    class="text-center font-light text-black/70 md:max-w-xs md:text-left md:text-lg"
+                >
+                    Become a sponsor and get your logo on our README on GitHub
+                    with a link to your site.
+                </div>
+            </a>
+        </div>
     </section>
 </x-layout>
