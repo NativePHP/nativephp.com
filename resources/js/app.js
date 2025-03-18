@@ -20,6 +20,7 @@ import {
     circInOut,
     anticipate,
     spring,
+    stagger,
 } from 'motion'
 
 // GSAP
@@ -43,6 +44,7 @@ window.motion = {
     circInOut: circInOut,
     anticipate: anticipate,
     spring: spring,
+    stagger: stagger,
 }
 
 // Alpine
@@ -51,7 +53,7 @@ window.Alpine = Alpine
 Alpine.data('codeBlock', codeBlock)
 Alpine.magic('refAll', (el) => {
     return (refName) => {
-        return Array.from(document.querySelectorAll(`[x-ref="${refName}"]`))
+        return Array.from(el.querySelectorAll(`[x-ref="${refName}"]`))
     }
 })
 

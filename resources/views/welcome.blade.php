@@ -432,8 +432,47 @@
             <div
                 class="flex flex-col items-center justify-between gap-10 md:flex-row md:items-start"
             >
-                <h2 class="shrink-0 text-xl font-medium">Featured Sponsors</h2>
+                <h2
+                    x-init="
+                        () => {
+                            motion.inView($el, (element) => {
+                                motion.animate(
+                                    $el,
+                                    {
+                                        opacity: [0, 1],
+                                        x: [-10, 0],
+                                    },
+                                    {
+                                        duration: 0.7,
+                                        ease: motion.circOut,
+                                    },
+                                )
+                            })
+                        }
+                    "
+                    class="shrink-0 text-xl font-medium"
+                >
+                    Featured Sponsors
+                </h2>
                 <div
+                    x-init="
+                        () => {
+                            motion.inView($el, (element) => {
+                                motion.animate(
+                                    $refAll('sponsor'),
+                                    {
+                                        scale: [0, 1],
+                                        opacity: [0, 1],
+                                    },
+                                    {
+                                        duration: 0.7,
+                                        ease: motion.backOut,
+                                        delay: motion.stagger(0.1),
+                                    },
+                                )
+                            })
+                        }
+                    "
                     class="flex grow flex-wrap items-center justify-center gap-5 md:justify-end"
                 >
                     <x-sponsors-featured />
@@ -443,8 +482,47 @@
             <div
                 class="flex flex-col items-center justify-between gap-10 md:flex-row md:items-start"
             >
-                <h2 class="shrink-0 text-xl font-medium">Corporate Sponsors</h2>
+                <h2
+                    x-init="
+                        () => {
+                            motion.inView($el, (element) => {
+                                motion.animate(
+                                    $el,
+                                    {
+                                        opacity: [0, 1],
+                                        x: [-10, 0],
+                                    },
+                                    {
+                                        duration: 0.7,
+                                        ease: motion.circOut,
+                                    },
+                                )
+                            })
+                        }
+                    "
+                    class="shrink-0 text-xl font-medium"
+                >
+                    Corporate Sponsors
+                </h2>
                 <div
+                    x-init="
+                        () => {
+                            motion.inView($el, (element) => {
+                                motion.animate(
+                                    $refAll('sponsor'),
+                                    {
+                                        scale: [0, 1],
+                                        opacity: [0, 1],
+                                    },
+                                    {
+                                        duration: 0.7,
+                                        ease: motion.backOut,
+                                        delay: motion.stagger(0.1),
+                                    },
+                                )
+                            })
+                        }
+                    "
                     class="flex grow flex-wrap items-center justify-center gap-5 md:justify-end"
                 >
                     <x-sponsors-corporate />
