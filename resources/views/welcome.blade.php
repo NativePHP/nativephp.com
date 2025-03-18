@@ -21,7 +21,7 @@
                         )
                     }
                 "
-                class="truncate text-7xl font-extrabold uppercase md:text-8xl"
+                class="truncate text-6xl font-extrabold uppercase min-[400px]:text-7xl md:text-8xl"
             >
                 Build
             </h1>
@@ -42,7 +42,7 @@
                             )
                         }
                     "
-                    class="truncate text-7xl font-extrabold uppercase text-[#9D91F1] md:text-8xl"
+                    class="truncate text-6xl font-extrabold uppercase text-[#9D91F1] min-[400px]:text-7xl md:text-8xl"
                 >
                     Native
                 </h1>
@@ -57,7 +57,7 @@
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 40 40"
                     fill="none"
-                    class="absolute -right-10 -top-10 size-10"
+                    class="absolute -right-10 -top-10 size-8 md:size-10"
                     x-init="
                         () => {
                             motion.animate(
@@ -83,7 +83,7 @@
 
                 {{-- Glass shape --}}
                 <div
-                    class="absolute -left-[3.5rem] top-[4.5rem] size-8 rounded-bl-xl rounded-br-3xl rounded-tl-3xl rounded-tr-xl bg-[#5A31FF]/10 ring-1 ring-white/50 backdrop-blur-sm md:-left-[4.5rem] md:top-[5.6rem] md:size-10"
+                    class="absolute -left-[3rem] top-[4rem] size-6 rounded-bl-xl rounded-br-3xl rounded-tl-3xl rounded-tr-xl bg-[#5A31FF]/10 ring-1 ring-white/50 backdrop-blur-sm min-[400px]:-left-[3.5rem] min-[400px]:top-[4.5rem] min-[400px]:size-8 md:-left-[4.5rem] md:top-[5.6rem] md:size-10"
                     x-init="
                         () => {
                             motion.animate(
@@ -156,8 +156,10 @@
                                                 strokeDashoffset: [0, 20],
                                             },
                                             {
-                                                duration: 1.2,
-                                                ease: motion.easeOut,
+                                                duration: 1.5,
+                                                repeat: Infinity,
+                                                repeatType: 'loop',
+                                                ease: 'linear',
                                             },
                                         )
                                     }
@@ -221,7 +223,7 @@
                         )
                     }
                 "
-                class="truncate text-7xl font-extrabold uppercase md:text-8xl"
+                class="truncate text-6xl font-extrabold uppercase min-[400px]:text-7xl md:text-8xl"
             >
                 PHP Apps
             </h1>
@@ -308,7 +310,7 @@
             <a
                 href="https://www.php.net"
                 target="_blank"
-                class="inline-block font-medium text-cyan-500 transition duration-200 will-change-transform hover:-translate-y-0.5"
+                class="inline-block font-medium text-[#7a8bd7] transition duration-200 will-change-transform hover:-translate-y-0.5"
             >
                 PHP
             </a>
