@@ -3,8 +3,9 @@
     <section class="mt-10 px-5 md:mt-14">
         {{-- Header --}}
         <header
-            class="relative isolate grid place-items-center gap-0.5 text-center"
+            class="group/header relative isolate grid place-items-center gap-0.5 text-center"
         >
+            {{-- Build --}}
             <h1
                 x-init="
                     () => {
@@ -25,6 +26,7 @@
             >
                 Build
             </h1>
+            {{-- Native --}}
             <div class="relative isolate">
                 <h1
                     x-init="
@@ -207,6 +209,7 @@
                     </div>
                 </div>
             </div>
+            {{-- PHP Apps --}}
             <h1
                 x-init="
                     () => {
@@ -230,7 +233,7 @@
 
             {{-- Shiny line --}}
             <div
-                class="absolute right-1/2 top-32 z-20 translate-x-1/2 rotate-[50deg]"
+                class="absolute left-1/2 top-32 z-20 -translate-x-1/2 rotate-[50deg] transition duration-500 ease-out will-change-transform group-hover/header:translate-x-[-55%]"
             >
                 <div
                     x-init="
@@ -455,7 +458,24 @@
         >
             {{-- Simon card --}}
             <div
-                class="group/simon flex flex-col-reverse items-center gap-5 px-2 pt-2 min-[400px]:flex-row sm:-mt-[6.3rem] sm:gap-0 sm:px-0 sm:pt-0 md:gap-5"
+                x-init="
+                    () => {
+                        motion.inView($el, (element) => {
+                            motion.animate(
+                                $el,
+                                {
+                                    opacity: [0, 1],
+                                    x: [20, 0],
+                                },
+                                {
+                                    duration: 0.7,
+                                    ease: motion.circOut,
+                                },
+                            )
+                        })
+                    }
+                "
+                class="group/simon flex flex-col-reverse items-center gap-5 px-2 pt-2 opacity-0 min-[400px]:flex-row sm:-mt-[6.3rem] sm:gap-0 sm:px-0 sm:pt-0 md:gap-5"
             >
                 <div class="relative flex flex-col items-center">
                     {{-- Shape --}}
@@ -553,7 +573,24 @@
             </div>
             {{-- Marcel card --}}
             <div
-                class="group/marcel flex flex-col items-center gap-5 px-2 pb-5 pt-2 min-[400px]:flex-row min-[400px]:pb-0 sm:-mt-[6.3rem] sm:gap-0 sm:px-0 sm:pt-0 md:gap-5"
+                x-init="
+                    () => {
+                        motion.inView($el, (element) => {
+                            motion.animate(
+                                $el,
+                                {
+                                    opacity: [0, 1],
+                                    x: [-20, 0],
+                                },
+                                {
+                                    duration: 0.7,
+                                    ease: motion.circOut,
+                                },
+                            )
+                        })
+                    }
+                "
+                class="group/marcel flex flex-col items-center gap-5 px-2 pb-5 pt-2 opacity-0 min-[400px]:flex-row min-[400px]:pb-0 sm:-mt-[6.3rem] sm:gap-0 sm:px-0 sm:pt-0 md:gap-5"
             >
                 {{-- Image --}}
                 <img
