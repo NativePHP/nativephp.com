@@ -1,19 +1,19 @@
 <footer class="mx-auto max-w-5xl px-5 pb-5 pt-20">
-    <div class="flex flex-wrap items-center justify-between gap-5">
+    <div class="flex flex-wrap items-center justify-between gap-6">
         <a
             href="/"
             class="transition duration-200 will-change-transform hover:scale-[1.02]"
         >
             <x-logo class="h-5" />
         </a>
-        <div class="flex items-center justify-center gap-2.5">
+        <div class="flex flex-wrap items-center justify-center gap-2.5">
             <x-social-networks-all />
         </div>
     </div>
     <div class="flex items-center pb-3 pt-5">
-        <div class="size-1.5 rotate-45 bg-black/10"></div>
-        <div class="h-0.5 w-full bg-black/10"></div>
-        <div class="size-1.5 rotate-45 bg-black/10"></div>
+        <div class="size-1.5 rotate-45 bg-gray-200/90"></div>
+        <div class="h-0.5 w-full bg-gray-200/90"></div>
+        <div class="size-1.5 rotate-45 bg-gray-200/90"></div>
     </div>
     <div
         class="flex flex-wrap items-center justify-between gap-x-5 gap-y-3 text-sm text-gray-500"

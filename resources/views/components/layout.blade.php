@@ -57,7 +57,7 @@
         x-data="{ showDocsNavigation: false }"
         class="min-h-screen overflow-x-clip font-poppins antialiased selection:bg-black selection:text-[#b4a9ff] dark:bg-gray-900 dark:text-white"
     >
-        <x-header-banner :hasMenu="$hasMenu ?? false" />
+        <x-navigation-bar :hasMenu="$hasMenu ?? false" />
         {{ $slot }}
         <x-footer />
         <script src="https://cdn.jsdelivr.net/npm/@docsearch/js@3"></script>
