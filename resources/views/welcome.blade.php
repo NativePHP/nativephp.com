@@ -834,6 +834,81 @@
         </div>
     </div>
 
+    {{-- Marcel talk --}}
+    <section class="mx-auto mt-20 max-w-5xl px-5">
+        <div class="flex flex-wrap items-center justify-between gap-5">
+            <div class="lg:max-w-96">
+                <div
+                    class="inline rounded-full px-3 py-1 text-xs font-medium uppercase ring-1 ring-black"
+                >
+                    Laracon US Talk
+                </div>
+                <h3
+                    x-init="
+                        () => {
+                            motion.inView($el, (element) => {
+                                motion.animate(
+                                    $el,
+                                    {
+                                        opacity: [0, 1],
+                                        x: [-10, 0],
+                                    },
+                                    {
+                                        duration: 0.7,
+                                        ease: motion.circOut,
+                                    },
+                                )
+                            })
+                        }
+                    "
+                    class="pt-2 text-xl font-medium capitalize opacity-0"
+                >
+                    Want to learn more about the project?
+                </h3>
+
+                <p
+                    x-init="
+                        () => {
+                            motion.inView($el, (element) => {
+                                motion.animate(
+                                    $el,
+                                    {
+                                        opacity: [0, 1],
+                                        x: [10, 0],
+                                    },
+                                    {
+                                        duration: 0.7,
+                                        ease: motion.circOut,
+                                    },
+                                )
+                            })
+                        }
+                    "
+                    class="pt-2 text-gray-500 opacity-0"
+                >
+                    Pociot demonstrates how "NativePHP" streamlines development
+                    processes, allowing developers to build desktop applications
+                    using minimal abstractions and in the PHP language they
+                    know. Through practical examples and thought-provoking
+                    insights, this talk empowers developers to embrace
+                    simplicity, and leverage the true power of PHP in creating
+                    efficient and maintainable desktop applications.
+                </p>
+            </div>
+            <iframe
+                width="560"
+                height="315"
+                src="https://www.youtube.com/embed/iG7VscBFnqo?si=AcavmLM7l_oczik7"
+                title="YouTube video player"
+                frameborder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                referrerpolicy="strict-origin-when-cross-origin"
+                allowfullscreen
+                class="rounded-xl ring-1 ring-black/10"
+            ></iframe>
+        </div>
+    </section>
+
     {{-- Sponsors --}}
     <section class="mx-auto mt-20 max-w-5xl px-5">
         <div class="divide-y divide-[#242A2E]/20 *:py-8">
