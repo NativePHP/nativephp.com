@@ -111,6 +111,7 @@
                             motion.animate(
                                 $el,
                                 {
+                                    y: [-10, 0],
                                     x: [10, 0],
                                 },
                                 {
@@ -454,7 +455,7 @@
         </h2>
 
         <div
-            class="mt-10 flex flex-col items-center justify-center gap-5 rounded-2xl bg-gradient-to-br from-[#FFF0DC] to-[#E8EEFF] text-center sm:mt-32 sm:flex-row sm:bg-gradient-to-r"
+            class="mt-5 flex flex-col items-center justify-center gap-5 rounded-2xl bg-gradient-to-br from-[#FFF0DC] to-[#E8EEFF] text-center min-[400px]:mt-10 sm:mt-32 sm:flex-row sm:bg-gradient-to-r"
         >
             {{-- Simon card --}}
             <div
@@ -475,13 +476,13 @@
                         })
                     }
                 "
-                class="group/simon flex flex-col-reverse items-center gap-5 px-2 pt-2 opacity-0 min-[400px]:flex-row sm:-mt-[6.3rem] sm:gap-0 sm:px-0 sm:pt-0 md:gap-5"
+                class="group/simon flex flex-col-reverse items-center px-2 pt-2 opacity-0 min-[400px]:flex-row min-[400px]:gap-5 sm:-mt-[6.3rem] sm:gap-0 sm:px-0 sm:pt-0 md:gap-5"
             >
                 <div class="relative flex flex-col items-center">
                     {{-- Shape --}}
                     <svg
                         xmlns="http://www.w3.org/2000/svg"
-                        class="w-5 text-[#FFCABA] transition duration-500 ease-in-out will-change-transform group-hover/simon:rotate-90 group-hover/simon:text-orange-300"
+                        class="hidden w-5 text-[#FFCABA] transition duration-500 ease-in-out will-change-transform group-hover/simon:rotate-90 group-hover/simon:text-orange-300 min-[400px]:block"
                         viewBox="0 0 24 23"
                         fill="none"
                     >
@@ -499,8 +500,14 @@
                     </h3>
 
                     {{-- Title --}}
-                    <div class="flex flex-col items-center">
-                        <div class="text-2xl font-light">~</div>
+                    <div
+                        class="flex flex-col items-center pt-2 min-[400px]:pt-0"
+                    >
+                        <div
+                            class="hidden text-2xl font-light min-[400px]:block"
+                        >
+                            ~
+                        </div>
                         <h5 class="text-sm text-gray-600">
                             Developer & Artisan —
                             <a
@@ -590,7 +597,7 @@
                         })
                     }
                 "
-                class="group/marcel flex flex-col items-center gap-5 px-2 pb-5 pt-2 opacity-0 min-[400px]:flex-row min-[400px]:pb-0 sm:-mt-[6.3rem] sm:gap-0 sm:px-0 sm:pt-0 md:gap-5"
+                class="group/marcel flex flex-col items-center px-2 pb-5 pt-2 opacity-0 min-[400px]:flex-row min-[400px]:gap-5 min-[400px]:pb-0 sm:-mt-[6.3rem] sm:gap-0 sm:px-0 sm:pt-0 md:gap-5"
             >
                 {{-- Image --}}
                 <img
@@ -603,7 +610,7 @@
                     {{-- Shape --}}
                     <svg
                         xmlns="http://www.w3.org/2000/svg"
-                        class="w-5 text-[#CBDAFF] transition duration-500 ease-in-out will-change-transform group-hover/marcel:-rotate-90 group-hover/marcel:text-blue-300"
+                        class="hidden w-5 text-[#CBDAFF] transition duration-500 ease-in-out will-change-transform group-hover/marcel:-rotate-90 group-hover/marcel:text-blue-300 min-[400px]:block"
                         viewBox="0 0 24 23"
                         fill="none"
                     >
@@ -621,8 +628,14 @@
                     </h3>
 
                     {{-- Title --}}
-                    <div class="flex flex-col items-center">
-                        <div class="text-2xl font-light">~</div>
+                    <div
+                        class="flex flex-col items-center pt-2 min-[400px]:pt-0"
+                    >
+                        <div
+                            class="hidden text-2xl font-light min-[400px]:block"
+                        >
+                            ~
+                        </div>
                         <h5 class="text-sm text-gray-600">
                             CEO & Cofounder —
                             <a
