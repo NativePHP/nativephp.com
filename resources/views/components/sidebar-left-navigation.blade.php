@@ -1,12 +1,12 @@
-<div
-    class="{{-- With banner: 6.5rem --}} {{-- Without banner: 4.3rem --}} fixed inset-0 left-[max(0px,calc(50%-45rem))] right-auto top-[6.5rem] z-20 hidden w-[19rem] overflow-y-auto border-r border-[#00aaa6] border-opacity-10 pb-10 pl-8 pr-6 pt-6 lg:block dark:border-gray-800 dark:text-gray-200"
+<aside
+    class="sticky top-20 hidden max-h-[calc(100dvh-8rem)] w-[20rem] shrink-0 overflow-auto pr-5 pt-4 lg:block"
 >
-    <nav class="relative flex flex-1 flex-col">
+    <nav class="relative flex flex-1 flex-col pb-5">
         <x-platform-switcher />
 
         {!! $slot !!}
     </nav>
-</div>
+</aside>
 
 <nav
     x-show="showDocsNavigation"
