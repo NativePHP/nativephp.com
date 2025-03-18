@@ -167,15 +167,22 @@ nav > ul > li > ul {
     @apply text-gray-500 dark:text-white/60;
 }
 
+@media (max-width: 768px) {
+    .DocSearch-Button-Keys,
+    .DocSearch-Button-Placeholder {
+        display: block;
+    }
+}
+
 .DocSearch-Button-Placeholder {
-    @apply pr-20 text-sm dark:text-white/60;
+    @apply hidden pr-20 text-sm min-[500px]:block dark:text-white/60;
 }
 
 .DocSearch-Button-Keys {
     display: flex;
     min-width: auto;
 
-    @apply mt-1 text-sm leading-none;
+    @apply ml-1 mt-1 text-sm leading-none;
 }
 
 .DocSearch-Button-Key {
