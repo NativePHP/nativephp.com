@@ -649,6 +649,139 @@
                 </div>
             </div>
         </div>
+
+        <h2
+            x-init="
+                () => {
+                    motion.inView($el, (element) => {
+                        motion.animate(
+                            $el,
+                            {
+                                opacity: [0, 1],
+                                y: [10, 0],
+                            },
+                            {
+                                duration: 0.7,
+                                ease: motion.circOut,
+                            },
+                        )
+                    })
+                }
+            "
+            class="mt-10 text-center text-xl font-medium capitalize"
+        >
+            + Many community contributors:
+        </h2>
+
+        {{-- List --}}
+        <div
+            x-init="
+                () => {
+                    motion.inView($el, (element) => {
+                        motion.animate(
+                            $refAll('contributor'),
+                            {
+                                y: [10, 0],
+                                opacity: [0, 1],
+                            },
+                            {
+                                duration: 0.7,
+                                ease: motion.backOut,
+                                delay: motion.stagger(0.1),
+                            },
+                        )
+                    })
+                }
+            "
+            class="flex items-center justify-center gap-2 pt-4"
+        >
+            <a
+                x-ref="contributor"
+                href="https://github.com/milwad-dev"
+                target="_blank"
+                class="group grid size-12 place-items-center overflow-hidden rounded-full"
+            >
+                <img
+                    src="https://avatars.githubusercontent.com/u/98118400?v=4"
+                    alt="Milwad Khosravi"
+                    class="h-full w-full object-cover transition duration-300 ease-out will-change-transform group-hover:scale-125"
+                    loading="lazy"
+                />
+            </a>
+            <a
+                x-ref="contributor"
+                href="https://github.com/SRWieZ"
+                target="_blank"
+                class="group grid size-12 place-items-center overflow-hidden rounded-full"
+            >
+                <img
+                    src="https://avatars.githubusercontent.com/u/1408020?v=4"
+                    alt="Eser DENIZ"
+                    class="h-full w-full object-cover transition duration-300 ease-out will-change-transform group-hover:scale-125"
+                    loading="lazy"
+                />
+            </a>
+            <a
+                x-ref="contributor"
+                href="https://github.com/XbNz"
+                target="_blank"
+                class="group grid size-12 place-items-center overflow-hidden rounded-full"
+            >
+                <img
+                    src="https://avatars.githubusercontent.com/u/12668624?v=4"
+                    alt="A G"
+                    class="h-full w-full object-cover transition duration-300 ease-out will-change-transform group-hover:scale-125"
+                    loading="lazy"
+                />
+            </a>
+            <a
+                x-ref="contributor"
+                href="https://github.com/nexxai"
+                target="_blank"
+                class="group grid size-12 place-items-center overflow-hidden rounded-full"
+            >
+                <img
+                    src="https://avatars.githubusercontent.com/u/4316564?v=4"
+                    alt="JT Smith"
+                    class="h-full w-full object-cover transition duration-300 ease-out will-change-transform group-hover:scale-125"
+                    loading="lazy"
+                />
+            </a>
+            <a
+                x-ref="contributor"
+                href="https://github.com/Mombuyish"
+                target="_blank"
+                class="group grid size-12 place-items-center overflow-hidden rounded-full"
+            >
+                <img
+                    src="https://avatars.githubusercontent.com/u/8007787?v=4"
+                    alt="Yish"
+                    class="h-full w-full object-cover transition duration-300 ease-out will-change-transform group-hover:scale-125"
+                    loading="lazy"
+                />
+            </a>
+            <a
+                x-ref="contributor"
+                href="https://github.com/gwleuverink"
+                target="_blank"
+                class="group grid size-12 place-items-center overflow-hidden rounded-full"
+            >
+                <img
+                    src="https://avatars.githubusercontent.com/u/17123491?v=4"
+                    alt="Willem Leuverink"
+                    class="h-full w-full object-cover transition duration-300 ease-out will-change-transform group-hover:scale-125"
+                    loading="lazy"
+                />
+            </a>
+            <a
+                x-ref="contributor"
+                href="https://github.com/NativePHP/laravel/graphs/contributors"
+                target="_blank"
+                class="group grid size-12 place-items-center overflow-hidden rounded-full border-[1px] border-dashed border-emerald-600 bg-emerald-100 font-medium transition duration-300 ease-out hover:bg-emerald-200/70"
+            >
+                +27
+            </a>
+        </div>
     </div>
 
     {{-- Sponsors --}}
