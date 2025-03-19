@@ -3,12 +3,44 @@
     <section class="mt-10 px-5 md:mt-14">
         <header class="relative z-10 grid place-items-center text-center">
             {{-- Tagline --}}
-            <h1 class="text-3xl font-extrabold sm:text-4xl">
+            <h1
+                x-init="
+                    () => {
+                        motion.animate(
+                            $el,
+                            {
+                                opacity: [0, 1],
+                                y: [-10, 0],
+                            },
+                            {
+                                duration: 0.7,
+                                ease: motion.easeOut,
+                            },
+                        )
+                    }
+                "
+                class="text-3xl font-extrabold sm:text-4xl"
+            >
                 NativePHP For Mobile
             </h1>
 
             {{-- Description --}}
             <h3
+                x-init="
+                    () => {
+                        motion.animate(
+                            $el,
+                            {
+                                opacity: [0, 1],
+                                y: [10, 0],
+                            },
+                            {
+                                duration: 0.7,
+                                ease: motion.easeOut,
+                            },
+                        )
+                    }
+                "
                 class="mx-auto max-w-xl pt-4 text-base/relaxed text-gray-600 sm:text-lg/relaxed"
             >
                 Development of NativePHP for mobile has already started and you
@@ -19,7 +51,24 @@
         {{-- Cards --}}
         <div class="flex flex-wrap items-center justify-center gap-6 pt-10">
             {{-- iOS --}}
-            <div class="relative">
+            <div
+                x-init="
+                    () => {
+                        motion.animate(
+                            $el,
+                            {
+                                opacity: [0, 1],
+                                x: [-10, 0],
+                            },
+                            {
+                                duration: 0.7,
+                                ease: motion.easeOut,
+                            },
+                        )
+                    }
+                "
+                class="relative"
+            >
                 <div
                     class="relative isolate z-10 flex w-full max-w-xs flex-col items-center overflow-hidden rounded-2xl bg-[#EBECF6] p-6 text-center ring-4 ring-inset ring-white/60"
                 >
@@ -57,7 +106,24 @@
             </div>
 
             {{-- Android --}}
-            <div class="relative">
+            <div
+                x-init="
+                    () => {
+                        motion.animate(
+                            $el,
+                            {
+                                opacity: [0, 1],
+                                x: [10, 0],
+                            },
+                            {
+                                duration: 0.7,
+                                ease: motion.easeOut,
+                            },
+                        )
+                    }
+                "
+                class="relative"
+            >
                 <div
                     class="relative isolate z-10 flex w-full max-w-xs flex-col items-center overflow-hidden rounded-2xl bg-[#F6F1EB] p-6 text-center ring-4 ring-inset ring-white/60"
                 >
