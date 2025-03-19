@@ -1,7 +1,7 @@
 <a
     href="/mobile"
     onclick="fathom.trackEvent('alert_click');"
-    class="group flex items-center justify-center gap-2 bg-gradient-to-r from-[#352F5B] to-[#6056AA] px-5 py-2.5 text-center"
+    class="group relative z-30 flex items-center justify-center gap-2 bg-gradient-to-r from-[#352F5B] to-[#6056AA] px-5 py-2.5 text-center"
 >
     <style>
         @keyframes shine {
