@@ -45,7 +45,7 @@
                         })
                     }
                 "
-                class="mx-auto max-w-xl pt-4 text-base/relaxed text-gray-600 sm:text-lg/relaxed"
+                class="mx-auto max-w-xl pt-4 text-base/relaxed text-gray-600 sm:text-lg/relaxed dark:text-gray-400"
             >
                 Development of NativePHP for mobile has already started and you
                 can get access and start building apps right now!
@@ -76,14 +76,14 @@
                 class="relative"
             >
                 <div
-                    class="relative isolate z-10 flex w-full max-w-xs flex-col items-center overflow-hidden rounded-2xl bg-[#EBECF6] p-8 text-center ring-4 ring-inset ring-white/60"
+                    class="relative isolate z-10 flex w-full max-w-xs flex-col items-center overflow-hidden rounded-2xl bg-[#EBECF6] p-8 text-center ring-4 ring-inset ring-white/60 dark:bg-black/50 dark:ring-white/5"
                 >
                     {{-- Subtitle --}}
                     <h6 class="text-sm text-gray-500">Available on</h6>
                     {{-- Title --}}
                     <h2 class="pt-1 text-4xl font-semibold">iOS</h2>
                     {{-- Text --}}
-                    <h4 class="pt-2.5 text-sm">
+                    <h4 class="pt-2.5 text-sm dark:text-gray-400">
                         Join the Early Access Program to start developing iOS
                         apps.
                     </h4>
@@ -92,22 +92,22 @@
                         <img
                             src="{{ Vite::asset('resources/images/mobile/ios_phone_mockup.webp') }}"
                             alt=""
-                            class="-mb-[10.5rem] w-40"
+                            class="-mb-[10.5rem] w-40 dark:mix-blend-hard-light"
                         />
                     </div>
                     {{-- White blurred circle --}}
                     <div
-                        class="absolute -top-5 right-1/2 -z-10 h-40 w-14 translate-x-1/2 rounded-full bg-white blur-2xl"
+                        class="absolute -top-5 right-1/2 -z-10 h-40 w-14 translate-x-1/2 rounded-full bg-white blur-2xl dark:bg-[#3a3f67]"
                     ></div>
                     {{-- Blue blurred circle --}}
                     <div
-                        class="absolute bottom-0 right-1/2 -z-10 h-52 w-72 translate-x-1/2 rounded-full bg-[#9CA8D9]/40 blur-2xl"
+                        class="absolute bottom-0 right-1/2 -z-10 h-52 w-72 translate-x-1/2 rounded-full bg-[#9CA8D9]/40 blur-2xl dark:bg-blue-800/40"
                     ></div>
                 </div>
 
                 {{-- Blurred circle --}}
                 <div
-                    class="absolute -top-1/2 left-0 -z-20 h-60 w-full rounded-full bg-[#DDE2F3] blur-[100px]"
+                    class="absolute -top-1/2 left-0 -z-20 h-60 w-full rounded-full bg-[#DDE2F3] blur-[100px] dark:bg-[#444892]/80"
                 ></div>
             </div>
 
@@ -133,14 +133,14 @@
                 class="relative"
             >
                 <div
-                    class="relative isolate z-10 flex w-full max-w-xs flex-col items-center overflow-hidden rounded-2xl bg-[#F6F1EB] p-8 text-center ring-4 ring-inset ring-white/60"
+                    class="relative isolate z-10 flex w-full max-w-xs flex-col items-center overflow-hidden rounded-2xl bg-[#F6F1EB] p-8 text-center ring-4 ring-inset ring-white/60 dark:bg-black/50 dark:ring-white/5"
                 >
                     {{-- Subtitle --}}
                     <h6 class="text-sm text-gray-500">Coming soon for</h6>
                     {{-- Title --}}
                     <h2 class="pt-1 text-4xl font-semibold">Android</h2>
                     {{-- Text --}}
-                    <h4 class="pt-2.5 text-sm">
+                    <h4 class="pt-2.5 text-sm dark:text-gray-400">
                         We're at hard work to make this possible, stay tuned!
                     </h4>
                     {{-- Mockup --}}
@@ -153,17 +153,17 @@
                     </div>
                     {{-- White blurred circle --}}
                     <div
-                        class="absolute -top-5 right-1/2 -z-10 h-40 w-14 translate-x-1/2 rounded-full bg-white blur-2xl"
+                        class="absolute -top-5 right-1/2 -z-10 h-40 w-14 translate-x-1/2 rounded-full bg-white blur-2xl dark:bg-[#3a3f67]"
                     ></div>
                     {{-- Center blurred circle --}}
                     <div
-                        class="absolute bottom-0 right-1/2 -z-10 h-52 w-72 translate-x-1/2 rounded-full bg-[#E0D7CE] blur-2xl"
+                        class="absolute bottom-0 right-1/2 -z-10 h-52 w-72 translate-x-1/2 rounded-full bg-[#E0D7CE] blur-2xl dark:bg-slate-700/40"
                     ></div>
                 </div>
 
                 {{-- Blurred circle --}}
                 <div
-                    class="absolute -top-1/2 left-0 -z-20 h-60 w-full rounded-full bg-[#FBF2E7] blur-[100px]"
+                    class="absolute -top-1/2 left-0 -z-20 h-60 w-full rounded-full bg-[#FBF2E7] blur-[100px] dark:bg-slate-500/30"
                 ></div>
             </div>
         </div>
@@ -420,21 +420,25 @@
                 {{-- Box --}}
                 <div
                     x-ref="box"
-                    class="mt-3 grid h-52 w-72 place-items-center rounded-xl bg-gray-900 p-5 opacity-0"
+                    class="mt-3 grid h-52 w-72 place-items-center rounded-xl bg-[#f4f1ee] p-5 opacity-0 dark:bg-gray-900/40"
                 >
                     <div class="flex flex-col items-center gap-5 text-center">
                         {{-- Checkmark --}}
                         <div
                             x-ref="checkmark"
-                            class="grid size-7 place-items-center rounded-full bg-emerald-400 text-black opacity-0 ring-[9px] ring-emerald-400/30"
+                            class="relative grid size-7 place-items-center rounded-full bg-emerald-400 text-black opacity-0 ring-[9px] ring-emerald-400/20"
                         >
                             <x-icons.checkmark class="size-6" />
+
+                            <div
+                                class="absolute right-1/2 top-1/2 hidden size-24 -translate-y-1/2 translate-x-1/2 rounded-full bg-emerald-400/20 blur-2xl dark:block"
+                            ></div>
                         </div>
                         {{-- Success message --}}
-                        <div class="space-y-1 text-white">
+                        <div class="space-y-1 dark:text-white">
                             <div
                                 x-ref="success_title"
-                                class="font-mediumopacity-0 text-sm"
+                                class="text-sm font-medium opacity-0"
                             >
                                 Payment successful!
                             </div>
@@ -464,10 +468,10 @@
                     {{-- Terminal --}}
                     <div
                         x-ref="terminal"
-                        class="-mb-12 -mr-12 h-52 w-72 overflow-hidden rounded-xl bg-white opacity-0"
+                        class="-mb-12 -mr-12 h-52 w-72 overflow-hidden rounded-xl bg-white opacity-0 dark:bg-gray-900"
                     >
                         <div
-                            class="flex items-center gap-1 bg-gray-100 px-3 py-3.5"
+                            class="flex items-center gap-1 bg-gray-100 px-3 py-3.5 dark:bg-gray-800"
                         >
                             <div
                                 class="size-1.5 rounded-full bg-rose-400"
@@ -602,7 +606,7 @@
                         })
                     }
                 "
-                class="rounded-2xl bg-gray-100 p-7 opacity-0"
+                class="rounded-2xl bg-gray-100 p-7 opacity-0 dark:bg-gray-900/40"
             >
                 {{-- Name --}}
                 <h4 class="text-2xl font-semibold">Pro</h4>
@@ -620,7 +624,9 @@
                     <x-icons.warning class="size-5 shrink-0" />
                     <h6 class="text-zinc-500">
                         The price will bump to
-                        <span class="font-medium text-black">$100</span>
+                        <span class="font-medium text-black dark:text-white">
+                            $100
+                        </span>
                         after EAP ends.
                     </h6>
                 </div>
@@ -628,7 +634,7 @@
                 {{-- Button --}}
                 <a
                     href="#"
-                    class="my-5 block w-full rounded-2xl bg-zinc-200 py-4 text-center text-sm font-medium transition duration-200 ease-in-out hover:bg-zinc-800 hover:text-white"
+                    class="my-5 block w-full rounded-2xl bg-gray-900/30 bg-zinc-200 py-4 text-center text-sm font-medium transition duration-200 ease-in-out hover:bg-zinc-800 hover:text-white dark:bg-gray-900 dark:hover:bg-slate-700/40"
                 >
                     Get started
                 </a>
@@ -638,7 +644,9 @@
                     <div class="flex items-center gap-2">
                         <x-icons.desktop-computer class="size-5 shrink-0" />
                         <div class="text-zinc-500">
-                            <span class="font-medium text-black">
+                            <span
+                                class="font-medium text-black dark:text-white"
+                            >
                                 Unlimited
                             </span>
                             app builds
@@ -647,14 +655,22 @@
                     <div class="flex items-center gap-2">
                         <x-icons.upload-box class="size-5 shrink-0" />
                         <div class="text-zinc-500">
-                            <span class="font-medium text-black">1</span>
+                            <span
+                                class="font-medium text-black dark:text-white"
+                            >
+                                1
+                            </span>
                             store releases
                         </div>
                     </div>
                     <div class="flex items-center gap-2">
                         <x-icons.user-single class="size-5 shrink-0" />
                         <div class="text-zinc-500">
-                            <span class="font-medium text-black">1</span>
+                            <span
+                                class="font-medium text-black dark:text-white"
+                            >
+                                1
+                            </span>
                             developer seats
                         </div>
                     </div>
@@ -667,7 +683,7 @@
                 <div class="space-y-2.5 text-sm">
                     <div class="flex items-center gap-2">
                         <div
-                            class="grid size-7 place-items-center rounded-xl bg-[#D4FD7D]"
+                            class="grid size-7 place-items-center rounded-xl bg-[#D4FD7D] dark:bg-[#d68ffe] dark:text-black"
                         >
                             <x-icons.checkmark class="size-5 shrink-0" />
                         </div>
@@ -675,33 +691,41 @@
                     </div>
                     <div class="flex items-center gap-2">
                         <div
-                            class="grid size-7 place-items-center rounded-xl bg-zinc-200"
+                            class="grid size-7 place-items-center rounded-xl bg-zinc-200 dark:bg-gray-700/50"
                         >
-                            <x-icons.xmark class="size-2.5 shrink-0" />
+                            <x-icons.xmark
+                                class="size-2.5 shrink-0 dark:opacity-70"
+                            />
                         </div>
                         <div>Repo access</div>
                     </div>
                     <div class="flex items-center gap-2">
                         <div
-                            class="grid size-7 place-items-center rounded-xl bg-zinc-200"
+                            class="grid size-7 place-items-center rounded-xl bg-zinc-200 dark:bg-gray-700/50"
                         >
-                            <x-icons.xmark class="size-2.5 shrink-0" />
+                            <x-icons.xmark
+                                class="size-2.5 shrink-0 dark:opacity-70"
+                            />
                         </div>
                         <div>Vote for mobile features</div>
                     </div>
                     <div class="flex items-center gap-2">
                         <div
-                            class="grid size-7 place-items-center rounded-xl bg-zinc-200"
+                            class="grid size-7 place-items-center rounded-xl bg-zinc-200 dark:bg-gray-700/50"
                         >
-                            <x-icons.xmark class="size-2.5 shrink-0" />
+                            <x-icons.xmark
+                                class="size-2.5 shrink-0 dark:opacity-70"
+                            />
                         </div>
                         <div>Business hours support (GMT)</div>
                     </div>
                     <div class="flex items-center gap-2">
                         <div
-                            class="grid size-7 place-items-center rounded-xl bg-zinc-200"
+                            class="grid size-7 place-items-center rounded-xl bg-zinc-200 dark:bg-gray-700/50"
                         >
-                            <x-icons.xmark class="size-2.5 shrink-0" />
+                            <x-icons.xmark
+                                class="size-2.5 shrink-0 dark:opacity-70"
+                            />
                         </div>
                         <div>Your name in NativePHP's history</div>
                     </div>
@@ -725,7 +749,7 @@
                         })
                     }
                 "
-                class="rounded-2xl bg-gray-100 p-7 opacity-0"
+                class="rounded-2xl bg-gray-100 p-7 opacity-0 dark:bg-gray-900/40"
             >
                 {{-- Name --}}
                 <h4 class="text-2xl font-semibold">Teams</h4>
@@ -743,7 +767,9 @@
                     <x-icons.warning class="size-5 shrink-0" />
                     <h6 class="text-zinc-500">
                         The price will bump to
-                        <span class="font-medium text-black">$1000</span>
+                        <span class="font-medium text-black dark:text-white">
+                            $1000
+                        </span>
                         after EAP ends.
                     </h6>
                 </div>
@@ -751,7 +777,7 @@
                 {{-- Button --}}
                 <a
                     href="#"
-                    class="my-5 block w-full rounded-2xl bg-zinc-200 py-4 text-center text-sm font-medium transition duration-200 ease-in-out hover:bg-zinc-800 hover:text-white"
+                    class="my-5 block w-full rounded-2xl bg-gray-900/30 bg-zinc-200 py-4 text-center text-sm font-medium transition duration-200 ease-in-out hover:bg-zinc-800 hover:text-white dark:bg-gray-900 dark:hover:bg-slate-700/40"
                 >
                     Get started
                 </a>
@@ -761,7 +787,9 @@
                     <div class="flex items-center gap-2">
                         <x-icons.desktop-computer class="size-5 shrink-0" />
                         <div class="text-zinc-500">
-                            <span class="font-medium text-black">
+                            <span
+                                class="font-medium text-black dark:text-white"
+                            >
                                 Unlimited
                             </span>
                             app builds
@@ -770,7 +798,9 @@
                     <div class="flex items-center gap-2">
                         <x-icons.upload-box class="size-5 shrink-0" />
                         <div class="text-zinc-500">
-                            <span class="font-medium text-black">
+                            <span
+                                class="font-medium text-black dark:text-white"
+                            >
                                 Unlimited
                             </span>
                             store releases
@@ -779,7 +809,11 @@
                     <div class="flex items-center gap-2">
                         <x-icons.user-single class="size-5 shrink-0" />
                         <div class="text-zinc-500">
-                            <span class="font-medium text-black">10</span>
+                            <span
+                                class="font-medium text-black dark:text-white"
+                            >
+                                10
+                            </span>
                             developer seats
                         </div>
                     </div>
@@ -792,7 +826,7 @@
                 <div class="space-y-2.5 text-sm">
                     <div class="flex items-center gap-2">
                         <div
-                            class="grid size-7 place-items-center rounded-xl bg-[#D4FD7D]"
+                            class="grid size-7 place-items-center rounded-xl bg-[#D4FD7D] dark:bg-[#d68ffe] dark:text-black"
                         >
                             <x-icons.checkmark class="size-5 shrink-0" />
                         </div>
@@ -800,33 +834,41 @@
                     </div>
                     <div class="flex items-center gap-2">
                         <div
-                            class="grid size-7 place-items-center rounded-xl bg-zinc-200"
+                            class="grid size-7 place-items-center rounded-xl bg-zinc-200 dark:bg-gray-700/50"
                         >
-                            <x-icons.xmark class="size-2.5 shrink-0" />
+                            <x-icons.xmark
+                                class="size-2.5 shrink-0 dark:opacity-70"
+                            />
                         </div>
                         <div>Repo access</div>
                     </div>
                     <div class="flex items-center gap-2">
                         <div
-                            class="grid size-7 place-items-center rounded-xl bg-zinc-200"
+                            class="grid size-7 place-items-center rounded-xl bg-zinc-200 dark:bg-gray-700/50"
                         >
-                            <x-icons.xmark class="size-2.5 shrink-0" />
+                            <x-icons.xmark
+                                class="size-2.5 shrink-0 dark:opacity-70"
+                            />
                         </div>
                         <div>Vote for mobile features</div>
                     </div>
                     <div class="flex items-center gap-2">
                         <div
-                            class="grid size-7 place-items-center rounded-xl bg-zinc-200"
+                            class="grid size-7 place-items-center rounded-xl bg-zinc-200 dark:bg-gray-700/50"
                         >
-                            <x-icons.xmark class="size-2.5 shrink-0" />
+                            <x-icons.xmark
+                                class="size-2.5 shrink-0 dark:opacity-70"
+                            />
                         </div>
                         <div>Business hours support (GMT)</div>
                     </div>
                     <div class="flex items-center gap-2">
                         <div
-                            class="grid size-7 place-items-center rounded-xl bg-zinc-200"
+                            class="grid size-7 place-items-center rounded-xl bg-zinc-200 dark:bg-gray-700/50"
                         >
-                            <x-icons.xmark class="size-2.5 shrink-0" />
+                            <x-icons.xmark
+                                class="size-2.5 shrink-0 dark:opacity-70"
+                            />
                         </div>
                         <div>Your name in NativePHP's history</div>
                     </div>
@@ -850,11 +892,11 @@
                         })
                     }
                 "
-                class="relative rounded-2xl bg-gray-100 p-7 opacity-0 ring-1 ring-black"
+                class="relative rounded-2xl bg-gray-100 p-7 opacity-0 ring-1 ring-black dark:bg-black dark:ring-white/20"
             >
                 {{-- Popular badge --}}
                 <div
-                    class="absolute -right-3 -top-5 rounded-xl bg-gradient-to-tr from-[#6886FF] to-[#B8C1FF] px-5 py-2 text-sm text-white"
+                    class="absolute -right-3 -top-5 rounded-xl bg-gradient-to-tr from-[#6886FF] to-[#B8C1FF] px-5 py-2 text-sm text-white dark:from-[#c0b4ff] dark:to-[#7d6fc3]"
                 >
                     Most Popular
                 </div>
@@ -875,7 +917,9 @@
                     <x-icons.warning class="size-5 shrink-0" />
                     <h6 class="text-zinc-500">
                         The price will bump to
-                        <span class="font-medium text-black">$2500</span>
+                        <span class="font-medium text-black dark:text-white">
+                            $2500
+                        </span>
                         after EAP ends.
                     </h6>
                 </div>
@@ -883,7 +927,7 @@
                 {{-- Button --}}
                 <a
                     href="#"
-                    class="my-5 block w-full rounded-2xl bg-zinc-800 py-4 text-center text-sm font-medium text-white transition duration-200 ease-in-out hover:bg-zinc-900"
+                    class="my-5 block w-full rounded-2xl bg-zinc-800 py-4 text-center text-sm font-medium text-white transition duration-200 ease-in-out hover:bg-zinc-900 dark:bg-[#c2b5fe] dark:text-black dark:hover:bg-[#ab9bfc]"
                 >
                     Get started
                 </a>
@@ -893,7 +937,9 @@
                     <div class="flex items-center gap-2">
                         <x-icons.desktop-computer class="size-5 shrink-0" />
                         <div class="text-zinc-500">
-                            <span class="font-medium text-black">
+                            <span
+                                class="font-medium text-black dark:text-white"
+                            >
                                 Unlimited
                             </span>
                             app builds
@@ -902,7 +948,9 @@
                     <div class="flex items-center gap-2">
                         <x-icons.upload-box class="size-5 shrink-0" />
                         <div class="text-zinc-500">
-                            <span class="font-medium text-black">
+                            <span
+                                class="font-medium text-black dark:text-white"
+                            >
                                 Unlimited
                             </span>
                             store releases
@@ -911,7 +959,9 @@
                     <div class="flex items-center gap-2">
                         <x-icons.user-single class="size-5 shrink-0" />
                         <div class="text-zinc-500">
-                            <span class="font-medium text-black">
+                            <span
+                                class="font-medium text-black dark:text-white"
+                            >
                                 Unlimited
                             </span>
                             developer seats
@@ -926,7 +976,7 @@
                 <div class="space-y-2.5 text-sm">
                     <div class="flex items-center gap-2">
                         <div
-                            class="grid size-7 place-items-center rounded-xl bg-[#D4FD7D]"
+                            class="grid size-7 place-items-center rounded-xl bg-[#D4FD7D] dark:bg-[#d68ffe] dark:text-black"
                         >
                             <x-icons.checkmark class="size-5 shrink-0" />
                         </div>
@@ -934,7 +984,7 @@
                     </div>
                     <div class="flex items-center gap-2">
                         <div
-                            class="grid size-7 place-items-center rounded-xl bg-[#D4FD7D]"
+                            class="grid size-7 place-items-center rounded-xl bg-[#D4FD7D] dark:bg-[#d68ffe] dark:text-black"
                         >
                             <x-icons.checkmark class="size-5 shrink-0" />
                         </div>
@@ -942,7 +992,7 @@
                     </div>
                     <div class="flex items-center gap-2">
                         <div
-                            class="grid size-7 place-items-center rounded-xl bg-[#D4FD7D]"
+                            class="grid size-7 place-items-center rounded-xl bg-[#D4FD7D] dark:bg-[#d68ffe] dark:text-black"
                         >
                             <x-icons.checkmark class="size-5 shrink-0" />
                         </div>
@@ -950,7 +1000,7 @@
                     </div>
                     <div class="flex items-center gap-2">
                         <div
-                            class="grid size-7 place-items-center rounded-xl bg-[#D4FD7D]"
+                            class="grid size-7 place-items-center rounded-xl bg-[#D4FD7D] dark:bg-[#d68ffe] dark:text-black"
                         >
                             <x-icons.checkmark class="size-5 shrink-0" />
                         </div>
@@ -960,7 +1010,7 @@
                     </div>
                     <div class="flex items-center gap-2">
                         <div
-                            class="grid size-7 place-items-center rounded-xl bg-[#D4FD7D]"
+                            class="grid size-7 place-items-center rounded-xl bg-[#D4FD7D] dark:bg-[#d68ffe] dark:text-black"
                         >
                             <x-icons.checkmark class="size-5 shrink-0" />
                         </div>
@@ -995,7 +1045,7 @@
                         })
                     }
                 "
-                class="flex items-center gap-2 rounded-bl-md rounded-br-xl rounded-tl-xl rounded-tr-xl bg-gray-100 py-2 pl-4 pr-5 text-2xl text-gray-800 opacity-0"
+                class="flex items-center gap-2 rounded-bl-md rounded-br-xl rounded-tl-xl rounded-tr-xl bg-gray-100 py-2 pl-4 pr-5 text-2xl text-gray-800 opacity-0 dark:bg-gray-900 dark:text-white"
             >
                 <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -1030,7 +1080,7 @@
                         })
                     }
                 "
-                class="mx-auto max-w-xl pt-2 text-base/relaxed text-gray-600 opacity-0"
+                class="mx-auto max-w-xl pt-2 text-base/relaxed text-gray-600 opacity-0 dark:text-white/50"
             >
                 Read what the people say about NativePHP
             </h3>
@@ -1223,9 +1273,9 @@
                     )
                 }
             "
-            class="prose mx-auto max-w-2xl opacity-0"
+            class="prose mx-auto max-w-2xl opacity-0 dark:text-gray-400"
         >
-            <h2 class="">Why Join the Early Access Program?</h2>
+            <h2 class="dark:text-white">Why Join the Early Access Program?</h2>
             <p>
                 Up to now, NativePHP has focused on Windows, Mac, and Linux. But
                 we believe that breaking the mobile frontier is what makes the
@@ -1233,9 +1283,9 @@
             </p>
             <p>
                 With
-                <strong>significant progress</strong>
+                <strong class="dark:text-white">significant progress</strong>
                 already made towards enabling
-                <strong>NativePHP for mobile</strong>
+                <strong class="dark:text-white">NativePHP for mobile</strong>
                 , we are excited about the possibilities that lie ahead.
             </p>
             <p>
@@ -1262,7 +1312,9 @@
             </p>
             <p class="italic">We can't wait to see what you build!</p>
             <p>
-                <span class="font-bold italic">Simon &amp; Marcel</span>
+                <span class="font-bold italic dark:text-white">
+                    Simon &amp; Marcel
+                </span>
                 <br />
                 <span class="text-[#636EC9]">Creators of NativePHP</span>
             </p>

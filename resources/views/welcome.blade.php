@@ -524,7 +524,7 @@
                             <a
                                 href="https://laradevs.com/?ref=nativephp"
                                 _target="blank"
-                                class="transition duration-200 hover:text-black hover:text-white"
+                                class="transition duration-200 hover:text-black dark:hover:text-white"
                             >
                                 LaraDevs
                             </a>
@@ -652,7 +652,7 @@
                             <a
                                 href="https://beyondco.de/?utm_source=nativephp&utm_medium=logo&utm_campaign=nativephp"
                                 _target="blank"
-                                class="transition duration-200 hover:text-black hover:text-white"
+                                class="transition duration-200 hover:text-black dark:hover:text-white"
                             >
                                 BeyondCode
                             </a>
@@ -850,7 +850,7 @@
         <div class="flex flex-wrap items-center justify-between gap-5">
             <div class="lg:max-w-96">
                 <div
-                    class="inline rounded-full px-3 py-1 text-xs font-medium uppercase ring-1 ring-black"
+                    class="inline rounded-full px-3 py-1 text-xs font-medium uppercase ring-1 ring-black dark:ring-white/15"
                 >
                     Laracon US Talk
                 </div>
