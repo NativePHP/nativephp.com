@@ -8,8 +8,8 @@
                 scrolled = window.scrollY > 20
             })
         "
-        :class="scrolled ? 'ring-gray-200/80 translate-y-3 bg-white/50' : 'ring-transparent'"
-        class="2xl:max-w-8xl mx-auto flex w-full max-w-5xl items-center justify-between gap-5 rounded-2xl px-5 py-4 ring-1 backdrop-blur transition duration-200 ease-out xl:max-w-7xl dark:bg-gray-800/85"
+        :class="scrolled ? 'ring-gray-200/80 dark:ring-gray-800/50 translate-y-3 bg-white/50 dark:bg-white/5' : 'ring-transparent dark:bg-transparent'"
+        class="2xl:max-w-8xl mx-auto flex w-full max-w-5xl items-center justify-between gap-5 rounded-2xl px-5 py-4 ring-1 backdrop-blur-md transition duration-200 ease-out xl:max-w-7xl"
     >
         {{-- Logo --}}
         <div class="flex items-center gap-3">
@@ -18,7 +18,7 @@
                 <span class="sr-only">NativePHP</span>
             </a>
             <div
-                class="hidden rounded-full bg-gray-200/60 px-2 py-1 text-xs text-gray-600 lg:block"
+                class="hidden rounded-full bg-gray-200/60 px-2 py-1 text-xs text-gray-600 lg:block dark:bg-[#1f2032] dark:text-white/50"
             >
                 1.0.0-beta.2
             </div>

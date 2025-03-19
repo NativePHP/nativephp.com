@@ -55,7 +55,7 @@
     <body
         x-cloak
         x-data="{ showDocsNavigation: false }"
-        class="min-h-screen overflow-x-clip font-poppins antialiased selection:bg-black selection:text-[#b4a9ff] dark:bg-gray-900 dark:text-white"
+        class="min-h-screen overflow-x-clip font-poppins antialiased selection:bg-black selection:text-[#b4a9ff] dark:bg-[#050714] dark:text-white"
     >
         <x-navigation-bar :hasMenu="$hasMenu ?? false" />
         {{ $slot }}

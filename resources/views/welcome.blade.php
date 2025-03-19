@@ -3,7 +3,7 @@
     <section class="mt-10 px-5 md:mt-14">
         {{-- Header --}}
         <header
-            class="group/header relative isolate grid place-items-center gap-0.5 text-center"
+            class="group/header relative isolate grid place-items-center gap-0.5 text-center dark:text-white/90"
         >
             {{-- Build --}}
             <h1
@@ -27,7 +27,7 @@
                 Build
             </h1>
             {{-- Native --}}
-            <div class="relative isolate">
+            <div class="relative">
                 <h1
                     x-init="
                         () => {
@@ -51,7 +51,7 @@
 
                 {{-- Blurred circle --}}
                 <div
-                    class="absolute -top-20 size-48 rounded-full bg-white/60 blur-[100px] md:-right-32 md:size-60"
+                    class="absolute -top-20 -z-50 size-48 rounded-full bg-white/60 blur-[100px] md:-right-32 md:size-60 dark:-top-80 dark:right-1/2 dark:size-80 dark:translate-x-1/2 dark:bg-[#444892]/80"
                 ></div>
 
                 {{-- Star --}}
@@ -59,7 +59,7 @@
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 40 40"
                     fill="none"
-                    class="absolute -right-10 -top-10 size-8 md:size-10"
+                    class="absolute -right-10 -top-10 size-8 md:size-10 dark:size-5"
                     x-init="
                         () => {
                             motion.animate(
@@ -85,7 +85,7 @@
 
                 {{-- Glass shape --}}
                 <div
-                    class="absolute -left-[3rem] top-[4rem] size-6 rounded-bl-xl rounded-br-3xl rounded-tl-3xl rounded-tr-xl bg-[#5A31FF]/10 ring-1 ring-white/50 backdrop-blur-sm min-[400px]:-left-[3.5rem] min-[400px]:top-[4.5rem] min-[400px]:size-8 md:-left-[4.5rem] md:top-[5.6rem] md:size-10"
+                    class="absolute -left-[3rem] top-[4rem] size-6 rounded-bl-xl rounded-br-3xl rounded-tl-3xl rounded-tr-xl bg-[#5A31FF]/10 ring-1 ring-white/50 backdrop-blur-sm min-[400px]:-left-[3.5rem] min-[400px]:top-[4.5rem] min-[400px]:size-8 md:-left-[4.5rem] md:top-[5.6rem] md:size-10 dark:hidden dark:ring-gray-700/50"
                     x-init="
                         () => {
                             motion.animate(
@@ -140,7 +140,7 @@
                                     )
                                 }
                             "
-                            class="-mb-1.5 size-1 rounded-full bg-white ring-[3px] ring-black"
+                            class="-mb-1.5 size-1 rounded-full bg-white ring-[3px] ring-black dark:bg-black/50 dark:ring-white"
                         ></div>
                         {{-- Line --}}
                         <svg
@@ -168,7 +168,7 @@
                                     }
                                 "
                                 d="M94 0.5H47.3449C41.942 0.5 36.7691 2.68588 33.0033 6.56012L0.5 40"
-                                stroke="black"
+                                stroke="currentColor"
                                 stroke-dasharray="5 5"
                             />
                         </svg>
@@ -176,7 +176,7 @@
                         <a
                             href="https://www.youtube.com/watch?v=CsM66a0koAM"
                             target="_blank"
-                            class="relative -top-5 grid size-10 place-items-center rounded-full bg-black/30 text-white ring-1 ring-white/10 backdrop-blur transition duration-300 ease-in-out will-change-transform group-hover:scale-110 group-hover:text-[#d4fd7d]"
+                            class="relative -top-5 grid size-10 place-items-center rounded-full bg-black/30 text-white ring-1 ring-white/10 backdrop-blur transition duration-300 ease-in-out will-change-transform group-hover:scale-110 group-hover:text-[#d4fd7d] dark:group-hover:text-[#9c90f0]"
                         >
                             <svg
                                 xmlns="http://www.w3.org/2000/svg"
@@ -195,7 +195,11 @@
                     </div>
                     <div>
                         <h4 class="font-medium">Video</h4>
-                        <h4 class="font-normal text-gray-600">Introduction</h4>
+                        <h4
+                            class="font-normal text-gray-600 dark:text-white/40"
+                        >
+                            Introduction
+                        </h4>
                         {{-- Image --}}
                         <a
                             href="https://www.youtube.com/watch?v=CsM66a0koAM"
@@ -252,7 +256,7 @@
                             )
                         }
                     "
-                    class="h-2.5 w-[26rem] bg-gradient-to-r from-transparent to-white/50 ring-1 ring-white/50"
+                    class="h-2.5 w-[26rem] bg-gradient-to-r from-transparent to-white/50 ring-1 ring-white/50 dark:hidden"
                 ></div>
             </div>
         </header>
@@ -308,13 +312,13 @@
                     )
                 }
             "
-            class="mx-auto max-w-4xl pt-5 text-center text-lg/relaxed text-gray-600 md:text-xl/relaxed"
+            class="mx-auto max-w-4xl pt-5 text-center text-lg/relaxed text-gray-600 md:text-xl/relaxed dark:text-zinc-400"
         >
             Bring your
             <a
                 href="https://www.php.net"
                 target="_blank"
-                class="inline-block font-medium text-[#7a8bd7] transition duration-200 will-change-transform hover:-translate-y-0.5"
+                class="inline-block font-medium text-[#7a8bd7] transition duration-200 will-change-transform hover:-translate-y-0.5 dark:text-[#92a6ff]"
             >
                 PHP
             </a>
@@ -327,7 +331,9 @@
                 Laravel
             </a>
             skills to the world of
-            <span class="text-black">desktop & mobile apps</span>
+            <span class="text-black dark:text-white">
+                desktop & mobile apps
+            </span>
             . You can build cross-platform applications effortlessly—no extra
             tools, just the stack you love.
         </h3>
@@ -415,7 +421,7 @@
                 >
                     <svg
                         xmlns="http://www.w3.org/2000/svg"
-                        class="size-32 text-black transition duration-500 ease-out will-change-transform group-hover:scale-110 group-hover:text-zinc-900"
+                        class="size-32 text-black transition duration-500 ease-out will-change-transform group-hover:scale-110 group-hover:text-zinc-900 dark:text-[#181a25] dark:group-hover:text-black"
                         viewBox="0 0 133 133"
                         fill="none"
                     >
@@ -425,6 +431,11 @@
                         />
                     </svg>
                 </div>
+
+                {{-- Blur --}}
+                <div
+                    class="size-20 self-center justify-self-center bg-indigo-400/70 blur-3xl [grid-area:1/-1]"
+                ></div>
             </a>
         </div>
     </section>
@@ -455,7 +466,7 @@
         </h2>
 
         <div
-            class="mt-5 flex flex-col items-center justify-center gap-5 rounded-2xl bg-gradient-to-br from-[#FFF0DC] to-[#E8EEFF] text-center min-[400px]:mt-10 sm:mt-32 sm:flex-row sm:bg-gradient-to-r"
+            class="mt-5 flex flex-col items-center justify-center gap-5 rounded-2xl bg-gradient-to-br from-[#FFF0DC] to-[#E8EEFF] text-center min-[400px]:mt-10 sm:mt-32 sm:flex-row sm:bg-gradient-to-r dark:from-blue-900/10 dark:to-[#4c407f]/25"
         >
             {{-- Simon card --}}
             <div
@@ -482,7 +493,7 @@
                     {{-- Shape --}}
                     <svg
                         xmlns="http://www.w3.org/2000/svg"
-                        class="hidden w-5 text-[#FFCABA] transition duration-500 ease-in-out will-change-transform group-hover/simon:rotate-90 group-hover/simon:text-orange-300 min-[400px]:block"
+                        class="hidden w-5 text-[#FFCABA] transition duration-500 ease-in-out will-change-transform group-hover/simon:rotate-90 group-hover/simon:text-orange-300 min-[400px]:block dark:text-orange-300 dark:group-hover/simon:text-orange-400"
                         viewBox="0 0 24 23"
                         fill="none"
                     >
@@ -508,12 +519,12 @@
                         >
                             ~
                         </div>
-                        <h5 class="text-sm text-gray-600">
+                        <h5 class="text-sm text-gray-600 dark:text-white/50">
                             Developer & Artisan —
                             <a
                                 href="https://laradevs.com/?ref=nativephp"
                                 _target="blank"
-                                class="transition duration-200 hover:text-black"
+                                class="transition duration-200 hover:text-black hover:text-white"
                             >
                                 LaraDevs
                             </a>
@@ -523,7 +534,7 @@
                     {{-- Dashed line --}}
                     <div class="absolute -right-9 top-2 hidden md:block">
                         <div
-                            class="relative flex items-end text-gray-400 transition duration-500 ease-in-out group-hover/simon:text-black"
+                            class="relative flex items-end text-gray-400 transition duration-500 ease-in-out group-hover/simon:text-black dark:group-hover/simon:text-white"
                         >
                             {{-- Line --}}
                             <svg
@@ -610,7 +621,7 @@
                     {{-- Shape --}}
                     <svg
                         xmlns="http://www.w3.org/2000/svg"
-                        class="hidden w-5 text-[#CBDAFF] transition duration-500 ease-in-out will-change-transform group-hover/marcel:-rotate-90 group-hover/marcel:text-blue-300 min-[400px]:block"
+                        class="hidden w-5 text-[#CBDAFF] transition duration-500 ease-in-out will-change-transform group-hover/marcel:-rotate-90 group-hover/marcel:text-blue-300 min-[400px]:block dark:text-rose-300 dark:group-hover/marcel:text-rose-400"
                         viewBox="0 0 24 23"
                         fill="none"
                     >
@@ -636,12 +647,12 @@
                         >
                             ~
                         </div>
-                        <h5 class="text-sm text-gray-600">
+                        <h5 class="text-sm text-gray-600 dark:text-white/50">
                             CEO & Cofounder —
                             <a
                                 href="https://beyondco.de/?utm_source=nativephp&utm_medium=logo&utm_campaign=nativephp"
                                 _target="blank"
-                                class="transition duration-200 hover:text-black"
+                                class="transition duration-200 hover:text-black hover:text-white"
                             >
                                 BeyondCode
                             </a>
@@ -651,7 +662,7 @@
                     {{-- Dashed line --}}
                     <div class="absolute -left-9 top-2 hidden md:block">
                         <div
-                            class="relative flex items-end text-gray-400 transition duration-500 ease-in-out group-hover/marcel:text-black"
+                            class="relative flex items-end text-gray-400 transition duration-500 ease-in-out group-hover/marcel:text-black dark:group-hover/marcel:text-white"
                         >
                             {{-- Arrow --}}
                             <svg
@@ -1043,7 +1054,7 @@
         >
             <a
                 href="/docs/getting-started/sponsoring"
-                class="group flex flex-wrap items-center justify-center gap-x-5 gap-y-3 rounded-3xl bg-gray-100 px-8 py-8 transition duration-200 ease-in-out hover:ring-1 hover:ring-black/60 md:justify-between md:px-12 md:py-10"
+                class="group flex flex-wrap items-center justify-center gap-x-5 gap-y-3 rounded-3xl bg-gray-100 px-8 py-8 transition duration-200 ease-in-out hover:ring-1 hover:ring-black/60 md:justify-between md:px-12 md:py-10 dark:bg-[#181a25]/80 dark:hover:bg-[#181a25]/70 dark:hover:ring-white/15"
             >
                 <div
                     class="inline-flex shrink-0 flex-col-reverse items-center gap-x-5 gap-y-3 md:flex-row"
@@ -1061,19 +1072,20 @@
                         class="w-12 -rotate-45 transition duration-300 ease-out will-change-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5 md:w-16 md:rotate-0"
                     >
                         <path
-                            fill="#e8e4f8"
+                            class="text-[#e8e4f8] dark:text-[#31416e]/30"
+                            fill="currentColor"
                             d="M12 22c5.5228 0 10 -4.4772 10 -10 0 -5.52285 -4.4772 -10 -10 -10C6.47715 2 2 6.47715 2 12c0 5.5228 4.47715 10 10 10Z"
                             stroke-width="1"
                         ></path>
                         <path
-                            stroke="#191919"
+                            stroke="currentColor"
                             stroke-linecap="round"
                             stroke-linejoin="round"
                             d="M14.499 2.49707h7v7"
                             stroke-width="1"
                         ></path>
                         <path
-                            stroke="#191919"
+                            stroke="currentColor"
                             stroke-linecap="round"
                             stroke-linejoin="round"
                             d="M21.499 2.49707 5.49902 18.4971"
@@ -1082,7 +1094,7 @@
                     </svg>
                 </div>
                 <div
-                    class="text-center font-light text-black/70 md:max-w-xs md:text-left md:text-lg"
+                    class="text-center font-light text-black/70 md:max-w-xs md:text-left md:text-lg dark:text-gray-500"
                 >
                     Become a sponsor and get your logo on our README on GitHub
                     with a link to your site.

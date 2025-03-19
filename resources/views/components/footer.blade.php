@@ -11,9 +11,9 @@
         </div>
     </div>
     <div class="flex items-center pb-3 pt-5">
-        <div class="size-1.5 rotate-45 bg-gray-200/90"></div>
-        <div class="h-0.5 w-full bg-gray-200/90"></div>
-        <div class="size-1.5 rotate-45 bg-gray-200/90"></div>
+        <div class="size-1.5 rotate-45 bg-gray-200/90 dark:bg-[#242734]"></div>
+        <div class="h-0.5 w-full bg-gray-200/90 dark:bg-[#242734]"></div>
+        <div class="size-1.5 rotate-45 bg-gray-200/90 dark:bg-[#242734]"></div>
     </div>
     <div
         class="flex flex-wrap items-center justify-between gap-x-5 gap-y-3 text-sm text-gray-500"
