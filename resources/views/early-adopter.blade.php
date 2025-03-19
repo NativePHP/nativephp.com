@@ -258,9 +258,9 @@
                                     scale: [0, 1],
                                 },
                                 {
-                                    duration: 0.9,
+                                    duration: 0.8,
                                     ease: motion.backOut,
-                                    at: '-0.5',
+                                    at: '-0.8',
                                 },
                             ],
                             [
@@ -331,9 +331,9 @@
                                     scale: [0, 1],
                                 },
                                 {
-                                    duration: 0.9,
+                                    duration: 0.8,
                                     ease: motion.backOut,
-                                    at: '-0.5',
+                                    at: '-0.8',
                                 },
                             ],
                             [
@@ -398,9 +398,9 @@
                                     scale: [0, 1],
                                 },
                                 {
-                                    duration: 0.9,
+                                    duration: 0.8,
                                     ease: motion.backOut,
-                                    at: '-0.5',
+                                    at: '-0.8',
                                 },
                             ],
                         ])
