@@ -29,7 +29,7 @@
         title="Laradevs sponsor"
         class="inline-grid h-32 w-60 shrink-0 place-items-center rounded-2xl bg-gray-100 p-5 transition duration-200 hover:scale-105 hover:bg-gray-200/70 hover:ring-1 hover:ring-black/60"
     >
-        <x-sponsors.laradir
+        <x-sponsors.logos.laradevs
             class="block h-auto max-h-10 max-w-full text-black dark:text-white"
         />
     </a>

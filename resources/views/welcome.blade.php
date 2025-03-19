@@ -961,7 +961,7 @@
                     "
                     class="flex grow flex-wrap items-center justify-center gap-5 md:justify-end"
                 >
-                    <x-sponsors-featured />
+                    <x-sponsors.lists.home.featured-sponsors />
                 </div>
             </div>
             {{-- Corporate sponsors --}}
@@ -1011,7 +1011,7 @@
                     "
                     class="flex grow flex-wrap items-center justify-center gap-5 md:justify-end"
                 >
-                    <x-sponsors-corporate />
+                    <x-sponsors.lists.home.corporate-sponsors />
                 </div>
             </div>
         </div>
