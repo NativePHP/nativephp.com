@@ -861,7 +861,7 @@
                             })
                         }
                     "
-                    class="pt-2 text-xl font-medium capitalize opacity-0"
+                    class="pt-3 text-xl font-medium capitalize opacity-0"
                 >
                     Want to learn more about the project?
                 </h3>
@@ -884,15 +884,17 @@
                             })
                         }
                     "
-                    class="pt-2 text-gray-500 opacity-0"
+                    class="pt-2 text-sm/relaxed text-gray-500 opacity-0"
                 >
                     Pociot demonstrates how "NativePHP" streamlines development
                     processes, allowing developers to build desktop applications
                     using minimal abstractions and in the PHP language they
-                    know. Through practical examples and thought-provoking
-                    insights, this talk empowers developers to embrace
-                    simplicity, and leverage the true power of PHP in creating
-                    efficient and maintainable desktop applications.
+                    know.
+                    <br />
+                    Through practical examples and thought-provoking insights,
+                    this talk empowers developers to embrace simplicity, and
+                    leverage the true power of PHP in creating efficient and
+                    maintainable desktop applications.
                 </p>
             </div>
             <iframe

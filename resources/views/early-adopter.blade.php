@@ -340,7 +340,7 @@
                                 $refs.bashline1,
                                 { clipPath: ['inset(0 100% 0 0)', 'inset(0 0% 0 0)'] },
                                 {
-                                    duration: 1.2,
+                                    duration: 1.5,
                                     ease: 'steps(16)',
                                     at: '-0.3',
                                 },
@@ -395,7 +395,7 @@
                     })
                 }
             "
-            class="flex flex-wrap items-center justify-center gap-10 pt-7"
+            class="flex flex-wrap items-center justify-center gap-x-10 gap-y-5 pt-7"
         >
             {{-- Slide 1 --}}
             <div x-ref="slide1">
@@ -408,7 +408,7 @@
                 {{-- Box --}}
                 <div
                     x-ref="box"
-                    class="mt-3 grid h-44 w-64 place-items-center rounded-xl bg-gray-900 p-5 opacity-0"
+                    class="mt-3 grid h-52 w-72 place-items-center rounded-xl bg-gray-900 p-5 opacity-0"
                 >
                     <div class="flex flex-col items-center gap-5 text-center">
                         {{-- Checkmark --}}
@@ -458,12 +458,12 @@
                 {{-- Box --}}
                 <div
                     x-ref="box"
-                    class="relative isolate z-0 mt-3 grid h-44 w-64 place-items-center overflow-hidden rounded-xl opacity-0"
+                    class="relative isolate z-0 mt-3 grid h-52 w-72 place-items-center overflow-hidden rounded-xl opacity-0"
                 >
                     {{-- Terminal --}}
                     <div
                         x-ref="terminal"
-                        class="-mb-12 -mr-12 h-44 w-64 overflow-hidden rounded-xl bg-white opacity-0"
+                        class="-mb-12 -mr-12 h-52 w-72 overflow-hidden rounded-xl bg-white opacity-0"
                     >
                         <div
                             class="flex items-center gap-1 bg-gray-100 px-3 py-3.5"
@@ -513,7 +513,7 @@
                 {{-- Box --}}
                 <div
                     x-ref="box"
-                    class="relative isolate z-0 mt-3 grid h-44 w-64 place-items-center overflow-hidden rounded-xl opacity-0"
+                    class="relative isolate z-0 mt-3 grid h-52 w-72 place-items-center overflow-hidden rounded-xl opacity-0"
                 >
                     {{-- Background image --}}
                     <img
