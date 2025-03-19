@@ -1045,7 +1045,7 @@
                         })
                     }
                 "
-                class="flex items-center gap-2 rounded-bl-md rounded-br-xl rounded-tl-xl rounded-tr-xl bg-gray-100 py-2 pl-4 pr-5 text-2xl text-gray-800 opacity-0 dark:bg-gray-900 dark:text-white"
+                class="flex items-center gap-2 rounded-bl-md rounded-br-xl rounded-tl-xl rounded-tr-xl bg-gray-100 py-2 pl-4 pr-5 text-xl text-gray-800 opacity-0 dark:bg-gray-900 dark:text-white"
             >
                 <svg
                     xmlns="http://www.w3.org/2000/svg"

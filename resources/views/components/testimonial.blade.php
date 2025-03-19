@@ -7,22 +7,26 @@
 ])
 
 @php
-    // Define color palettes with light and dark variants using Tailwind classes
-    $colorPalettes = [
-        ['bg' => 'bg-cyan-100 dark:bg-cyan-900/20', 'text' => 'text-cyan-800 dark:text-cyan-200'],
-        ['bg' => 'bg-amber-100 dark:bg-amber-900/20', 'text' => 'text-amber-800 dark:text-amber-200'],
-        ['bg' => 'bg-red-100 dark:bg-red-900/20', 'text' => 'text-red-800 dark:text-red-200'],
-        ['bg' => 'bg-emerald-100 dark:bg-emerald-900/20', 'text' => 'text-emerald-800 dark:text-emerald-200'],
-        ['bg' => 'bg-blue-100 dark:bg-blue-900/20', 'text' => 'text-blue-800 dark:text-blue-200'],
-        ['bg' => 'bg-purple-100 dark:bg-purple-900/20', 'text' => 'text-purple-800 dark:text-purple-200'],
-        ['bg' => 'bg-orange-100 dark:bg-orange-900/20', 'text' => 'text-orange-800 dark:text-orange-200'],
-        ['bg' => 'bg-teal-100 dark:bg-teal-900/20', 'text' => 'text-teal-800 dark:text-teal-200'],
-        ['bg' => 'bg-slate-100 dark:bg-slate-800/40', 'text' => 'text-slate-800 dark:text-slate-200'],
-        ['bg' => 'bg-violet-100 dark:bg-violet-900/20', 'text' => 'text-violet-800 dark:text-violet-200'],
+    // Define color palettes for light mode only
+    $lightColorPalettes = [
+        ['bg' => 'bg-cyan-100', 'text' => 'text-cyan-800'],
+        ['bg' => 'bg-amber-100', 'text' => 'text-amber-800'],
+        ['bg' => 'bg-red-100', 'text' => 'text-red-800'],
+        ['bg' => 'bg-emerald-100', 'text' => 'text-emerald-800'],
+        ['bg' => 'bg-blue-100', 'text' => 'text-blue-800'],
+        ['bg' => 'bg-purple-100', 'text' => 'text-purple-800'],
+        ['bg' => 'bg-orange-100', 'text' => 'text-orange-800'],
+        ['bg' => 'bg-teal-100', 'text' => 'text-teal-800'],
+        ['bg' => 'bg-slate-100', 'text' => 'text-slate-800'],
+        ['bg' => 'bg-violet-100', 'text' => 'text-violet-800'],
     ];
 
-    // Select a random color palette
-    $randomPalette = $colorPalettes[array_rand($colorPalettes)];
+    // Select a random light color palette
+    $randomLightPalette = $lightColorPalettes[array_rand($lightColorPalettes)];
+
+    // Define a single consistent dark mode color palette
+    $darkBg = 'dark:bg-indigo-900/20';
+    $darkText = 'dark:text-indigo-200';
 @endphp
 
 <div
@@ -31,7 +35,7 @@
 >
     {{-- Highlight --}}
     <div
-        class="{{ $randomPalette['bg'] }} {{ $randomPalette['text'] }} rounded-xl p-4 text-center font-medium transition-colors"
+        class="{{ $randomLightPalette['bg'] }} {{ $darkBg }} {{ $randomLightPalette['text'] }} {{ $darkText }} rounded-xl p-4 text-center font-medium transition-colors"
     >
         "{{ $quote }}"
     </div>
