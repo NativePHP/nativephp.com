@@ -1054,7 +1054,7 @@
         >
             <a
                 href="/docs/getting-started/sponsoring"
-                class="group flex flex-wrap items-center justify-center gap-x-5 gap-y-3 rounded-3xl bg-gray-100 px-8 py-8 transition duration-200 ease-in-out hover:ring-1 hover:ring-black/60 md:justify-between md:px-12 md:py-10 dark:bg-[#181a25]/80 dark:hover:bg-[#181a25]/70 dark:hover:ring-white/15"
+                class="group flex flex-wrap items-center justify-center gap-x-5 gap-y-3 rounded-3xl bg-gray-100 px-8 py-8 transition duration-200 ease-in-out hover:ring-1 hover:ring-black/60 md:justify-between md:px-12 md:py-10 dark:bg-gray-900/40 dark:hover:bg-[#181a25]/70 dark:hover:ring-white/15"
             >
                 <div
                     class="inline-flex shrink-0 flex-col-reverse items-center gap-x-5 gap-y-3 md:flex-row"
