@@ -5,7 +5,7 @@
     <a
         href="https://beyondco.de/?utm_source=nativephp&utm_medium=logo&utm_campaign=nativephp"
         title="BeyondCode sponsor"
-        class="inline-grid h-32 w-60 shrink-0 place-items-center rounded-2xl bg-gray-100 p-5 transition duration-200 hover:scale-105 hover:bg-gray-200/70 hover:ring-1 hover:ring-black/60 dark:bg-gray-900/40 dark:hover:bg-[#181a25]/70 dark:hover:ring-white/15"
+        class="inline-grid h-32 w-60 shrink-0 place-items-center rounded-2xl bg-gray-100 p-5 transition duration-200 hover:scale-105 hover:bg-gray-200/70 hover:ring-1 hover:ring-black/60 dark:bg-gray-900/40 dark:hover:bg-gray-900/60 dark:hover:ring-white/15"
     >
         <img
             src="/img/sponsors/beyondcode.png"
@@ -27,7 +27,7 @@
     <a
         href="https://laradevs.com/?ref=nativephp"
         title="Laradevs sponsor"
-        class="inline-grid h-32 w-60 shrink-0 place-items-center rounded-2xl bg-gray-100 p-5 transition duration-200 hover:scale-105 hover:bg-gray-200/70 hover:ring-1 hover:ring-black/60 dark:bg-gray-900/40 dark:hover:bg-[#181a25]/70 dark:hover:ring-white/15"
+        class="inline-grid h-32 w-60 shrink-0 place-items-center rounded-2xl bg-gray-100 p-5 transition duration-200 hover:scale-105 hover:bg-gray-200/70 hover:ring-1 hover:ring-black/60 dark:bg-gray-900/40 dark:hover:bg-gray-900/60 dark:hover:ring-white/15"
     >
         <x-sponsors.logos.laradevs
             class="block h-auto max-h-10 max-w-full text-black dark:text-white"
