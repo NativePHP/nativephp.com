@@ -3,6 +3,7 @@ import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import './bootstrap'
 import Alpine from 'alpinejs'
+import collapse from '@alpinejs/collapse'
 import codeBlock from './alpine/codeBlock.js'
 import.meta.glob(['../images/**', '../svg/**'])
 import {
@@ -57,4 +58,5 @@ Alpine.magic('refAll', (el) => {
     }
 })
 
+Alpine.plugin(collapse)
 Alpine.start()

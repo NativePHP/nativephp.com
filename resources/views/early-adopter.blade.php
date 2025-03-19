@@ -2,7 +2,7 @@
     {{-- Hero --}}
     <section class="mt-10 px-5 md:mt-14">
         <header class="relative z-10 grid place-items-center text-center">
-            {{-- Tagline --}}
+            {{-- Header --}}
             <h1
                 x-init="
                     () => {
@@ -164,7 +164,7 @@
     {{-- Quick instructions --}}
     <section class="mt-20 px-5">
         <header class="relative z-10 grid place-items-center text-center">
-            {{-- Tagline --}}
+            {{-- Header --}}
             <h2
                 x-init="
                     () => {
@@ -527,9 +527,105 @@
         </div>
     </section>
 
+    {{-- FAQ --}}
+    <section class="mx-auto mt-24 max-w-5xl px-5">
+        {{-- Header --}}
+        <h2
+            x-init="
+                () => {
+                    motion.animate(
+                        $el,
+                        {
+                            opacity: [0, 1],
+                            y: [-10, 0],
+                        },
+                        {
+                            duration: 0.7,
+                            ease: motion.easeOut,
+                        },
+                    )
+                }
+            "
+            class="text-center text-3xl font-semibold opacity-0"
+        >
+            Frequently Asked Questions
+        </h2>
+
+        {{-- List --}}
+        <div
+            x-init="
+                () => {
+                    motion.animate(
+                        $el,
+                        {
+                            opacity: [0, 1],
+                            x: [-10, 0],
+                        },
+                        {
+                            duration: 0.7,
+                            ease: motion.easeOut,
+                        },
+                    )
+                }
+            "
+            class="mx-auto flex w-full max-w-2xl flex-col items-center gap-4 pt-10 opacity-0 [counter-reset:css-counter_0]"
+        >
+            <x-faq-card
+                question="Can I create both iOS and Android apps with one license?"
+            >
+                <p>
+                    Yes, a single license will let you build apps for both iOS
+                    and Android as soon as Android support is released. Stay
+                    tuned!
+                </p>
+            </x-faq-card>
+            <x-faq-card question="Can I upgrade or downgrade my license later?">
+                <p>
+                    Of course! You can easily upgrade or downgrade your license
+                    at any time. Just let us know, and we'll handle the rest.
+                </p>
+            </x-faq-card>
+            <x-faq-card question="Will my apps built with NativePHP be secure?">
+                <p>
+                    Definitely. NativePHP includes built-in protection against
+                    tampering and ensures your apps remain secure and reliable.
+                </p>
+            </x-faq-card>
+            <x-faq-card question="Can I try NativePHP before purchasing?">
+                <p>
+                    Sure thing! You can join our Early Access Program for iOS to
+                    see what NativePHP can do before buying a license.
+                </p>
+            </x-faq-card>
+            <x-faq-card question="Can I use NativePHP for commercial projects?">
+                <p>
+                    Absolutely! You can use NativePHP for any project, including
+                    commercial ones. We can't wait to see what you build!
+                </p>
+            </x-faq-card>
+        </div>
+    </section>
+
     {{-- Why join the program --}}
     <section class="mx-auto mt-20 max-w-5xl px-5">
-        <div class="prose mx-auto max-w-2xl">
+        <div
+            x-init="
+                () => {
+                    motion.animate(
+                        $el,
+                        {
+                            opacity: [0, 1],
+                            x: [-10, 0],
+                        },
+                        {
+                            duration: 0.7,
+                            ease: motion.easeOut,
+                        },
+                    )
+                }
+            "
+            class="prose mx-auto max-w-2xl opacity-0"
+        >
             <h2 class="">Why Join the Early Access Program?</h2>
             <p>
                 Up to now, NativePHP has focused on Windows, Mac, and Linux. But
