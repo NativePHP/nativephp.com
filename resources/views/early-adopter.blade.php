@@ -6,17 +6,19 @@
             <h1
                 x-init="
                     () => {
-                        motion.animate(
-                            $el,
-                            {
-                                opacity: [0, 1],
-                                y: [-10, 0],
-                            },
-                            {
-                                duration: 0.7,
-                                ease: motion.easeOut,
-                            },
-                        )
+                        motion.inView($el, (element) => {
+                            motion.animate(
+                                $el,
+                                {
+                                    opacity: [0, 1],
+                                    y: [-10, 0],
+                                },
+                                {
+                                    duration: 0.7,
+                                    ease: motion.easeOut,
+                                },
+                            )
+                        })
                     }
                 "
                 class="text-3xl font-extrabold sm:text-4xl"
@@ -28,17 +30,19 @@
             <h3
                 x-init="
                     () => {
-                        motion.animate(
-                            $el,
-                            {
-                                opacity: [0, 1],
-                                y: [10, 0],
-                            },
-                            {
-                                duration: 0.7,
-                                ease: motion.easeOut,
-                            },
-                        )
+                        motion.inView($el, (element) => {
+                            motion.animate(
+                                $el,
+                                {
+                                    opacity: [0, 1],
+                                    y: [10, 0],
+                                },
+                                {
+                                    duration: 0.7,
+                                    ease: motion.easeOut,
+                                },
+                            )
+                        })
                     }
                 "
                 class="mx-auto max-w-xl pt-4 text-base/relaxed text-gray-600 sm:text-lg/relaxed"
@@ -54,17 +58,19 @@
             <div
                 x-init="
                     () => {
-                        motion.animate(
-                            $el,
-                            {
-                                opacity: [0, 1],
-                                x: [-10, 0],
-                            },
-                            {
-                                duration: 0.7,
-                                ease: motion.easeOut,
-                            },
-                        )
+                        motion.inView($el, (element) => {
+                            motion.animate(
+                                $el,
+                                {
+                                    opacity: [0, 1],
+                                    x: [-10, 0],
+                                },
+                                {
+                                    duration: 0.7,
+                                    ease: motion.easeOut,
+                                },
+                            )
+                        })
                     }
                 "
                 class="relative"
@@ -109,17 +115,19 @@
             <div
                 x-init="
                     () => {
-                        motion.animate(
-                            $el,
-                            {
-                                opacity: [0, 1],
-                                x: [10, 0],
-                            },
-                            {
-                                duration: 0.7,
-                                ease: motion.easeOut,
-                            },
-                        )
+                        motion.inView($el, (element) => {
+                            motion.animate(
+                                $el,
+                                {
+                                    opacity: [0, 1],
+                                    x: [10, 0],
+                                },
+                                {
+                                    duration: 0.7,
+                                    ease: motion.easeOut,
+                                },
+                            )
+                        })
                     }
                 "
                 class="relative"
@@ -168,20 +176,22 @@
             <h2
                 x-init="
                     () => {
-                        motion.animate(
-                            $el,
-                            {
-                                opacity: [0, 1],
-                                x: [-10, 0],
-                            },
-                            {
-                                duration: 0.7,
-                                ease: motion.easeOut,
-                            },
-                        )
+                        motion.inView($el, (element) => {
+                            motion.animate(
+                                $el,
+                                {
+                                    opacity: [0, 1],
+                                    x: [-10, 0],
+                                },
+                                {
+                                    duration: 0.7,
+                                    ease: motion.easeOut,
+                                },
+                            )
+                        })
                     }
                 "
-                class="text-3xl font-semibold"
+                class="text-3xl font-semibold opacity-0"
             >
                 Quick instructions
             </h2>
@@ -190,20 +200,22 @@
             <h3
                 x-init="
                     () => {
-                        motion.animate(
-                            $el,
-                            {
-                                opacity: [0, 1],
-                                x: [10, 0],
-                            },
-                            {
-                                duration: 0.7,
-                                ease: motion.easeOut,
-                            },
-                        )
+                        motion.inView($el, (element) => {
+                            motion.animate(
+                                $el,
+                                {
+                                    opacity: [0, 1],
+                                    x: [10, 0],
+                                },
+                                {
+                                    duration: 0.7,
+                                    ease: motion.easeOut,
+                                },
+                            )
+                        })
                     }
                 "
-                class="mx-auto max-w-xl pt-2 text-base/relaxed text-gray-600"
+                class="mx-auto max-w-xl pt-2 text-base/relaxed text-gray-600 opacity-0"
             >
                 Get your app up and running in minutes.
             </h3>
@@ -533,17 +545,19 @@
         <h2
             x-init="
                 () => {
-                    motion.animate(
-                        $el,
-                        {
-                            opacity: [0, 1],
-                            y: [-10, 0],
-                        },
-                        {
-                            duration: 0.7,
-                            ease: motion.easeOut,
-                        },
-                    )
+                    motion.inView($el, (element) => {
+                        motion.animate(
+                            $el,
+                            {
+                                opacity: [0, 1],
+                                y: [-10, 0],
+                            },
+                            {
+                                duration: 0.7,
+                                ease: motion.easeOut,
+                            },
+                        )
+                    })
                 }
             "
             class="text-center text-3xl font-semibold opacity-0"
@@ -555,15 +569,23 @@
         <div
             x-init="
                 () => {
-                    motion.animate(
+                    motion.inView(
                         $el,
-                        {
-                            opacity: [0, 1],
-                            x: [-10, 0],
+                        (element) => {
+                            motion.animate(
+                                $el,
+                                {
+                                    opacity: [0, 1],
+                                    x: [-10, 0],
+                                },
+                                {
+                                    duration: 0.7,
+                                    ease: motion.easeOut,
+                                },
+                            )
                         },
                         {
-                            duration: 0.7,
-                            ease: motion.easeOut,
+                            amount: 0.2,
                         },
                     )
                 }
@@ -611,15 +633,23 @@
         <div
             x-init="
                 () => {
-                    motion.animate(
+                    motion.inView(
                         $el,
-                        {
-                            opacity: [0, 1],
-                            x: [-10, 0],
+                        (element) => {
+                            motion.animate(
+                                $el,
+                                {
+                                    opacity: [0, 1],
+                                    x: [-10, 0],
+                                },
+                                {
+                                    duration: 0.7,
+                                    ease: motion.easeOut,
+                                },
+                            )
                         },
                         {
-                            duration: 0.7,
-                            ease: motion.easeOut,
+                            amount: 0.2,
                         },
                     )
                 }
