@@ -892,11 +892,11 @@
                         })
                     }
                 "
-                class="relative rounded-2xl bg-gray-100 p-7 opacity-0 ring-1 ring-black dark:bg-black dark:ring-white/20"
+                class="relative rounded-2xl bg-gray-100 p-7 opacity-0 ring-1 ring-black dark:bg-black/50 dark:ring-white/20"
             >
                 {{-- Popular badge --}}
                 <div
-                    class="absolute -right-3 -top-5 rounded-xl bg-gradient-to-tr from-[#6886FF] to-[#B8C1FF] px-5 py-2 text-sm text-white dark:from-[#c0b4ff] dark:to-[#7d6fc3]"
+                    class="absolute -right-3 -top-5 rounded-xl bg-gradient-to-tr from-[#6886FF] to-[#B8C1FF] px-5 py-2 text-sm text-white dark:from-gray-900 dark:to-black dark:ring-1 dark:ring-white/10"
                 >
                     Most Popular
                 </div>
@@ -927,7 +927,7 @@
                 {{-- Button --}}
                 <a
                     href="#"
-                    class="my-5 block w-full rounded-2xl bg-zinc-800 py-4 text-center text-sm font-medium text-white transition duration-200 ease-in-out hover:bg-zinc-900 dark:bg-[#c2b5fe] dark:text-black dark:hover:bg-[#ab9bfc]"
+                    class="my-5 block w-full rounded-2xl bg-zinc-800 py-4 text-center text-sm font-medium text-white transition duration-200 ease-in-out hover:bg-zinc-900 dark:bg-[#d68ffe] dark:text-black dark:hover:bg-[#e1acff]"
                 >
                     Get started
                 </a>
