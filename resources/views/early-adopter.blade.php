@@ -529,7 +529,7 @@
     </section>
 
     {{-- Pricing --}}
-    <section class="mx-auto mt-24 max-w-5xl px-5">
+    <section class="mx-auto mt-24 max-w-6xl px-5">
         <header class="relative z-10 grid place-items-center text-center">
             {{-- Header --}}
             <h2
