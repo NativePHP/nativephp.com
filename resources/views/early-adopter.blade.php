@@ -428,18 +428,7 @@
                             x-ref="checkmark"
                             class="grid size-7 place-items-center rounded-full bg-emerald-400 text-black opacity-0 ring-[9px] ring-emerald-400/30"
                         >
-                            <svg
-                                viewBox="0 0 16 16"
-                                fill="none"
-                                xmlns="http://www.w3.org/2000/svg"
-                                class="size-6"
-                            >
-                                <path
-                                    d="M12.466666666666665 4.800013333333333c-0.26666666666666666 -0.26666666666666666 -0.6666666666666666 -0.26666666666666666 -0.9333333333333332 0L6.533333333333333 9.799999999999999l-2.0666666666666664 -2.0666666666666664c-0.26666666666666666 -0.26666666666666666 -0.6666666666666666 -0.26666666666666666 -0.9333333333333332 0 -0.26666666666666666 0.26666666666666666 -0.26666666666666666 0.6666666666666666 0 0.9333333333333332l2.533333333333333 2.533333333333333c0.13333333333333333 0.13333333333333333 0.26666666666666666 0.19999999999999998 0.4666666666666666 0.19999999999999998 0.19999999999999998 0 0.3333333333333333 -0.06666666666666667 0.4666666666666666 -0.19999999999999998l5.466666666666666 -5.466653333333333c0.26666666666666666 -0.26666666666666666 0.26666666666666666 -0.6666666666666666 0 -0.9333333333333332Z"
-                                    fill="currentColor"
-                                    stroke-width="0.6667"
-                                ></path>
-                            </svg>
+                            <x-icons.checkmark class="size-6" />
                         </div>
                         {{-- Success message --}}
                         <div class="space-y-1 text-white">
@@ -534,6 +523,451 @@
                         class="absolute inset-0 -z-10 h-full w-full object-cover"
                         loading="lazy"
                     />
+                </div>
+            </div>
+        </div>
+    </section>
+
+    {{-- Pricing --}}
+    <section class="mx-auto mt-24 max-w-5xl px-5">
+        <header class="relative z-10 grid place-items-center text-center">
+            {{-- Header --}}
+            <h2
+                x-init="
+                    () => {
+                        motion.inView($el, (element) => {
+                            motion.animate(
+                                $el,
+                                {
+                                    opacity: [0, 1],
+                                    x: [-10, 0],
+                                },
+                                {
+                                    duration: 0.7,
+                                    ease: motion.easeOut,
+                                },
+                            )
+                        })
+                    }
+                "
+                class="text-3xl font-semibold opacity-0"
+            >
+                Purchase a license
+            </h2>
+
+            {{-- Description --}}
+            <h3
+                x-init="
+                    () => {
+                        motion.inView($el, (element) => {
+                            motion.animate(
+                                $el,
+                                {
+                                    opacity: [0, 1],
+                                    x: [10, 0],
+                                },
+                                {
+                                    duration: 0.7,
+                                    ease: motion.easeOut,
+                                },
+                            )
+                        })
+                    }
+                "
+                class="mx-auto max-w-xl pt-2 text-base/relaxed text-gray-600 opacity-0"
+            >
+                Start your journey to become a mobile developer
+            </h3>
+        </header>
+
+        {{-- Plans --}}
+        <div
+            class="grid grid-cols-[repeat(auto-fill,minmax(19rem,1fr))] items-start gap-x-6 gap-y-8 pt-10"
+        >
+            <div
+                x-init="
+                    () => {
+                        motion.inView($el, (element) => {
+                            motion.animate(
+                                $el,
+                                {
+                                    opacity: [0, 1],
+                                    y: [10, 0],
+                                },
+                                {
+                                    duration: 0.7,
+                                    ease: motion.easeOut,
+                                },
+                            )
+                        })
+                    }
+                "
+                class="rounded-2xl bg-gray-100 p-7 opacity-0"
+            >
+                {{-- Name --}}
+                <h4 class="text-2xl font-semibold">Pro</h4>
+
+                {{-- Price --}}
+                <div class="flex items-start gap-1.5 pt-5">
+                    <div class="text-5xl font-semibold">
+                        ${{ number_format(50) }}
+                    </div>
+                    <div class="self-end pb-1.5 text-zinc-500">per year</div>
+                </div>
+
+                {{-- Warning --}}
+                <div class="flex items-center gap-3 pt-3 text-sm">
+                    <x-icons.warning class="size-5 shrink-0" />
+                    <h6 class="text-zinc-500">
+                        The price will bump to
+                        <span class="font-medium text-black">$100</span>
+                        after EAP ends.
+                    </h6>
+                </div>
+
+                {{-- Button --}}
+                <a
+                    href="#"
+                    class="my-5 block w-full rounded-2xl bg-zinc-200 py-4 text-center text-sm font-medium transition duration-200 ease-in-out hover:bg-zinc-800 hover:text-white"
+                >
+                    Get started
+                </a>
+
+                {{-- Features --}}
+                <div class="space-y-3 text-sm">
+                    <div class="flex items-center gap-2">
+                        <x-icons.desktop-computer class="size-5 shrink-0" />
+                        <div class="text-zinc-500">
+                            <span class="font-medium text-black">
+                                Unlimited
+                            </span>
+                            app builds
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <x-icons.upload-box class="size-5 shrink-0" />
+                        <div class="text-zinc-500">
+                            <span class="font-medium text-black">1</span>
+                            store releases
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <x-icons.user-single class="size-5 shrink-0" />
+                        <div class="text-zinc-500">
+                            <span class="font-medium text-black">1</span>
+                            developer seats
+                        </div>
+                    </div>
+                </div>
+
+                {{-- Divider --}}
+                <div class="my-5 h-px w-full rounded-full bg-black/15"></div>
+
+                {{-- Perks --}}
+                <div class="space-y-2.5 text-sm">
+                    <div class="flex items-center gap-2">
+                        <div
+                            class="grid size-7 place-items-center rounded-xl bg-[#D4FD7D]"
+                        >
+                            <x-icons.checkmark class="size-5 shrink-0" />
+                        </div>
+                        <div class="font-medium">Community Discord channel</div>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <div
+                            class="grid size-7 place-items-center rounded-xl bg-zinc-200"
+                        >
+                            <x-icons.xmark class="size-2.5 shrink-0" />
+                        </div>
+                        <div>Repo access</div>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <div
+                            class="grid size-7 place-items-center rounded-xl bg-zinc-200"
+                        >
+                            <x-icons.xmark class="size-2.5 shrink-0" />
+                        </div>
+                        <div>Vote for mobile features</div>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <div
+                            class="grid size-7 place-items-center rounded-xl bg-zinc-200"
+                        >
+                            <x-icons.xmark class="size-2.5 shrink-0" />
+                        </div>
+                        <div>Business hours support (GMT)</div>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <div
+                            class="grid size-7 place-items-center rounded-xl bg-zinc-200"
+                        >
+                            <x-icons.xmark class="size-2.5 shrink-0" />
+                        </div>
+                        <div>Your name in NativePHP's history</div>
+                    </div>
+                </div>
+            </div>
+            <div
+                x-init="
+                    () => {
+                        motion.inView($el, (element) => {
+                            motion.animate(
+                                $el,
+                                {
+                                    opacity: [0, 1],
+                                    y: [10, 0],
+                                },
+                                {
+                                    duration: 0.7,
+                                    ease: motion.easeOut,
+                                },
+                            )
+                        })
+                    }
+                "
+                class="rounded-2xl bg-gray-100 p-7 opacity-0"
+            >
+                {{-- Name --}}
+                <h4 class="text-2xl font-semibold">Teams</h4>
+
+                {{-- Price --}}
+                <div class="flex items-start gap-1.5 pt-5">
+                    <div class="text-5xl font-semibold">
+                        ${{ number_format(150) }}
+                    </div>
+                    <div class="self-end pb-1.5 text-zinc-500">per year</div>
+                </div>
+
+                {{-- Warning --}}
+                <div class="flex items-center gap-3 pt-3 text-sm">
+                    <x-icons.warning class="size-5 shrink-0" />
+                    <h6 class="text-zinc-500">
+                        The price will bump to
+                        <span class="font-medium text-black">$1000</span>
+                        after EAP ends.
+                    </h6>
+                </div>
+
+                {{-- Button --}}
+                <a
+                    href="#"
+                    class="my-5 block w-full rounded-2xl bg-zinc-200 py-4 text-center text-sm font-medium transition duration-200 ease-in-out hover:bg-zinc-800 hover:text-white"
+                >
+                    Get started
+                </a>
+
+                {{-- Features --}}
+                <div class="space-y-3 text-sm">
+                    <div class="flex items-center gap-2">
+                        <x-icons.desktop-computer class="size-5 shrink-0" />
+                        <div class="text-zinc-500">
+                            <span class="font-medium text-black">
+                                Unlimited
+                            </span>
+                            app builds
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <x-icons.upload-box class="size-5 shrink-0" />
+                        <div class="text-zinc-500">
+                            <span class="font-medium text-black">
+                                Unlimited
+                            </span>
+                            store releases
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <x-icons.user-single class="size-5 shrink-0" />
+                        <div class="text-zinc-500">
+                            <span class="font-medium text-black">10</span>
+                            developer seats
+                        </div>
+                    </div>
+                </div>
+
+                {{-- Divider --}}
+                <div class="my-5 h-px w-full rounded-full bg-black/15"></div>
+
+                {{-- Perks --}}
+                <div class="space-y-2.5 text-sm">
+                    <div class="flex items-center gap-2">
+                        <div
+                            class="grid size-7 place-items-center rounded-xl bg-[#D4FD7D]"
+                        >
+                            <x-icons.checkmark class="size-5 shrink-0" />
+                        </div>
+                        <div class="font-medium">Community Discord channel</div>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <div
+                            class="grid size-7 place-items-center rounded-xl bg-zinc-200"
+                        >
+                            <x-icons.xmark class="size-2.5 shrink-0" />
+                        </div>
+                        <div>Repo access</div>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <div
+                            class="grid size-7 place-items-center rounded-xl bg-zinc-200"
+                        >
+                            <x-icons.xmark class="size-2.5 shrink-0" />
+                        </div>
+                        <div>Vote for mobile features</div>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <div
+                            class="grid size-7 place-items-center rounded-xl bg-zinc-200"
+                        >
+                            <x-icons.xmark class="size-2.5 shrink-0" />
+                        </div>
+                        <div>Business hours support (GMT)</div>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <div
+                            class="grid size-7 place-items-center rounded-xl bg-zinc-200"
+                        >
+                            <x-icons.xmark class="size-2.5 shrink-0" />
+                        </div>
+                        <div>Your name in NativePHP's history</div>
+                    </div>
+                </div>
+            </div>
+            <div
+                x-init="
+                    () => {
+                        motion.inView($el, (element) => {
+                            motion.animate(
+                                $el,
+                                {
+                                    opacity: [0, 1],
+                                    y: [10, 0],
+                                },
+                                {
+                                    duration: 0.7,
+                                    ease: motion.easeOut,
+                                },
+                            )
+                        })
+                    }
+                "
+                class="relative rounded-2xl bg-gray-100 p-7 opacity-0 ring-1 ring-black"
+            >
+                {{-- Popular badge --}}
+                <div
+                    class="absolute -right-3 -top-5 rounded-xl bg-gradient-to-tr from-[#6886FF] to-[#B8C1FF] px-5 py-2 text-sm text-white"
+                >
+                    Most Popular
+                </div>
+
+                {{-- Name --}}
+                <h4 class="text-2xl font-semibold">Max</h4>
+
+                {{-- Price --}}
+                <div class="flex items-start gap-1.5 pt-5">
+                    <div class="text-5xl font-semibold">
+                        ${{ number_format(250) }}
+                    </div>
+                    <div class="self-end pb-1.5 text-zinc-500">per year</div>
+                </div>
+
+                {{-- Warning --}}
+                <div class="flex items-center gap-3 pt-3 text-sm">
+                    <x-icons.warning class="size-5 shrink-0" />
+                    <h6 class="text-zinc-500">
+                        The price will bump to
+                        <span class="font-medium text-black">$2500</span>
+                        after EAP ends.
+                    </h6>
+                </div>
+
+                {{-- Button --}}
+                <a
+                    href="#"
+                    class="my-5 block w-full rounded-2xl bg-zinc-800 py-4 text-center text-sm font-medium text-white transition duration-200 ease-in-out hover:bg-zinc-900"
+                >
+                    Get started
+                </a>
+
+                {{-- Features --}}
+                <div class="space-y-3 text-sm">
+                    <div class="flex items-center gap-2">
+                        <x-icons.desktop-computer class="size-5 shrink-0" />
+                        <div class="text-zinc-500">
+                            <span class="font-medium text-black">
+                                Unlimited
+                            </span>
+                            app builds
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <x-icons.upload-box class="size-5 shrink-0" />
+                        <div class="text-zinc-500">
+                            <span class="font-medium text-black">
+                                Unlimited
+                            </span>
+                            store releases
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <x-icons.user-single class="size-5 shrink-0" />
+                        <div class="text-zinc-500">
+                            <span class="font-medium text-black">
+                                Unlimited
+                            </span>
+                            developer seats
+                        </div>
+                    </div>
+                </div>
+
+                {{-- Divider --}}
+                <div class="my-5 h-px w-full rounded-full bg-black/15"></div>
+
+                {{-- Perks --}}
+                <div class="space-y-2.5 text-sm">
+                    <div class="flex items-center gap-2">
+                        <div
+                            class="grid size-7 place-items-center rounded-xl bg-[#D4FD7D]"
+                        >
+                            <x-icons.checkmark class="size-5 shrink-0" />
+                        </div>
+                        <div class="font-medium">Community Discord channel</div>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <div
+                            class="grid size-7 place-items-center rounded-xl bg-[#D4FD7D]"
+                        >
+                            <x-icons.checkmark class="size-5 shrink-0" />
+                        </div>
+                        <div class="font-medium">Repo access</div>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <div
+                            class="grid size-7 place-items-center rounded-xl bg-[#D4FD7D]"
+                        >
+                            <x-icons.checkmark class="size-5 shrink-0" />
+                        </div>
+                        <div class="font-medium">Vote for mobile features</div>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <div
+                            class="grid size-7 place-items-center rounded-xl bg-[#D4FD7D]"
+                        >
+                            <x-icons.checkmark class="size-5 shrink-0" />
+                        </div>
+                        <div class="font-medium">
+                            Business hours support (GMT)
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <div
+                            class="grid size-7 place-items-center rounded-xl bg-[#D4FD7D]"
+                        >
+                            <x-icons.checkmark class="size-5 shrink-0" />
+                        </div>
+                        <div class="font-medium">
+                            Your name in NativePHP's history
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
