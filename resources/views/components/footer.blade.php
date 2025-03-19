@@ -1,4 +1,4 @@
-<footer class="mx-auto max-w-5xl px-5 pb-5 pt-20">
+<footer class="2xl:max-w-8xl mx-auto max-w-5xl px-5 pb-5 pt-20 xl:max-w-7xl">
     <div class="flex flex-wrap items-center justify-between gap-6">
         <a
             href="/"

@@ -9,7 +9,7 @@
             })
         "
         :class="scrolled ? 'ring-gray-200/80 translate-y-3 bg-white/50' : 'ring-transparent'"
-        class="mx-auto flex w-full max-w-5xl items-center justify-between gap-5 rounded-2xl px-5 py-4 ring-1 backdrop-blur transition duration-200 ease-out dark:bg-gray-800/85"
+        class="2xl:max-w-8xl mx-auto flex w-full max-w-5xl items-center justify-between gap-5 rounded-2xl px-5 py-4 ring-1 backdrop-blur transition duration-200 ease-out xl:max-w-7xl dark:bg-gray-800/85"
     >
         {{-- Logo --}}
         <div class="flex items-center gap-3">
