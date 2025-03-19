@@ -25,7 +25,10 @@
     $randomPalette = $colorPalettes[array_rand($colorPalettes)];
 @endphp
 
-<div class="mt-5 inline-block rounded-2xl p-6 ring-1 ring-black/10">
+<div
+    x-ref="testimonial"
+    class="mt-5 inline-block rounded-2xl p-6 ring-1 ring-black/10"
+>
     {{-- Highlight --}}
     <div
         class="{{ $randomPalette['text'] }} rounded-xl p-4 text-center"

@@ -1037,7 +1037,27 @@
         </header>
 
         {{-- List --}}
-        <div class="columns-1 pt-5 sm:columns-2 lg:columns-3">
+        <div
+            x-init="
+                () => {
+                    motion.inView($el, (element) => {
+                        motion.animate(
+                            $refAll('testimonial'),
+                            {
+                                scale: [0, 1],
+                                opacity: [0, 1],
+                            },
+                            {
+                                duration: 0.7,
+                                ease: motion.circOut,
+                                delay: motion.stagger(0.1),
+                            },
+                        )
+                    })
+                }
+            "
+            class="columns-1 pt-2 sm:columns-2 lg:columns-3"
+        >
             <x-testimonial
                 quote="I have been enjoying NativePHP a lot!"
                 author="John Doe"
