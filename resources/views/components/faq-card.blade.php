@@ -6,7 +6,7 @@
     x-data="{ open: false }"
     x-on:click="open = !open"
     class="group/faq-card grid w-full cursor-pointer select-none grid-cols-[1.8rem,1fr,2.5rem] gap-x-3 rounded-2xl px-5 py-5 ring-1 transition-all duration-200 [counter-increment:css-counter_1]"
-    :class="{ 'ring-gray-200 hover:bg-gray-100': !open, 'ring-black/10 bg-gray-100': open }"
+    :class="{ 'ring-gray-200 hover:bg-gray-100 dark:ring-white/20 dark:hover:bg-gray-900/50': !open, 'ring-black/10 bg-gray-100 dark:ring-white/20 dark:bg-gray-900/50': open }"
 >
     {{-- Number --}}
     <div
@@ -22,7 +22,7 @@
     <div>
         <div
             class="grid size-9 shrink-0 place-items-center rounded-full transition duration-300"
-            :class="{ 'group-hover/faq-card:bg-gray-200 bg-gray-100 text-[#767981]': !open, 'bg-gray-200 ': open }"
+            :class="{ 'group-hover/faq-card:bg-gray-200 dark:group-hover/faq-card:bg-gray-900/70 bg-gray-100 dark:bg-gray-900/70 dark:text-gray-400 text-[#767981]': !open, 'bg-gray-900/70 ': open }"
         >
             <div
                 class="transition-transform duration-300 will-change-transform"
@@ -60,7 +60,7 @@
     <div
         x-show="open"
         x-collapse
-        class="col-start-2 text-gray-600"
+        class="col-start-2 text-gray-600 dark:text-gray-500"
     >
         {!! $slot !!}
     </div>
