@@ -634,7 +634,7 @@
                 {{-- Button --}}
                 <a
                     href="#"
-                    class="my-5 block w-full rounded-2xl bg-gray-900/30 bg-zinc-200 py-4 text-center text-sm font-medium transition duration-200 ease-in-out hover:bg-zinc-800 hover:text-white dark:bg-gray-900 dark:hover:bg-slate-700/40"
+                    class="my-5 block w-full rounded-2xl bg-zinc-200 py-4 text-center text-sm font-medium transition duration-200 ease-in-out hover:bg-zinc-800 hover:text-white dark:bg-gray-900 dark:hover:bg-slate-700/40"
                 >
                     Get started
                 </a>
@@ -777,7 +777,7 @@
                 {{-- Button --}}
                 <a
                     href="#"
-                    class="my-5 block w-full rounded-2xl bg-gray-900/30 bg-zinc-200 py-4 text-center text-sm font-medium transition duration-200 ease-in-out hover:bg-zinc-800 hover:text-white dark:bg-gray-900 dark:hover:bg-slate-700/40"
+                    class="my-5 block w-full rounded-2xl bg-zinc-200 py-4 text-center text-sm font-medium transition duration-200 ease-in-out hover:bg-zinc-800 hover:text-white dark:bg-gray-900 dark:hover:bg-slate-700/40"
                 >
                     Get started
                 </a>

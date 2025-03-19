@@ -51,7 +51,7 @@
 
                 {{-- Blurred circle --}}
                 <div
-                    class="absolute -top-20 -z-50 size-48 rounded-full bg-white/60 blur-[100px] md:-right-32 md:size-60 dark:-top-80 dark:right-1/2 dark:size-80 dark:translate-x-1/2 dark:bg-[#444892]/80"
+                    class="absolute -top-20 size-48 rounded-full bg-white/60 blur-[100px] md:-right-32 md:size-60 dark:-top-80 dark:right-1/2 dark:-z-50 dark:size-80 dark:translate-x-1/2 dark:bg-[#444892]/80"
                 ></div>
 
                 {{-- Star --}}
@@ -434,7 +434,7 @@
 
                 {{-- Blur --}}
                 <div
-                    class="size-20 self-center justify-self-center bg-indigo-400/70 blur-3xl [grid-area:1/-1]"
+                    class="hidden size-20 self-center justify-self-center bg-indigo-400/70 blur-3xl [grid-area:1/-1] dark:block"
                 ></div>
             </a>
         </div>
@@ -760,7 +760,7 @@
                 x-ref="contributor"
                 href="https://github.com/milwad-dev"
                 target="_blank"
-                class="group grid size-12 place-items-center overflow-hidden rounded-full opacity-0"
+                class="group grid size-12 place-items-center overflow-hidden rounded-full opacity-0 dark:ring-1 dark:ring-white/10"
             >
                 <img
                     src="https://avatars.githubusercontent.com/u/98118400?v=4"
@@ -773,7 +773,7 @@
                 x-ref="contributor"
                 href="https://github.com/SRWieZ"
                 target="_blank"
-                class="group grid size-12 place-items-center overflow-hidden rounded-full opacity-0"
+                class="group grid size-12 place-items-center overflow-hidden rounded-full opacity-0 dark:ring-1 dark:ring-white/10"
             >
                 <img
                     src="https://avatars.githubusercontent.com/u/1408020?v=4"
@@ -786,7 +786,7 @@
                 x-ref="contributor"
                 href="https://github.com/XbNz"
                 target="_blank"
-                class="group grid size-12 place-items-center overflow-hidden rounded-full opacity-0"
+                class="group grid size-12 place-items-center overflow-hidden rounded-full opacity-0 dark:ring-1 dark:ring-white/10"
             >
                 <img
                     src="https://avatars.githubusercontent.com/u/12668624?v=4"
@@ -799,7 +799,7 @@
                 x-ref="contributor"
                 href="https://github.com/nexxai"
                 target="_blank"
-                class="group grid size-12 place-items-center overflow-hidden rounded-full opacity-0"
+                class="group grid size-12 place-items-center overflow-hidden rounded-full opacity-0 dark:ring-1 dark:ring-white/10"
             >
                 <img
                     src="https://avatars.githubusercontent.com/u/4316564?v=4"
@@ -812,7 +812,7 @@
                 x-ref="contributor"
                 href="https://github.com/Mombuyish"
                 target="_blank"
-                class="group grid size-12 place-items-center overflow-hidden rounded-full opacity-0"
+                class="group grid size-12 place-items-center overflow-hidden rounded-full opacity-0 dark:ring-1 dark:ring-white/10"
             >
                 <img
                     src="https://avatars.githubusercontent.com/u/8007787?v=4"
@@ -825,7 +825,7 @@
                 x-ref="contributor"
                 href="https://github.com/gwleuverink"
                 target="_blank"
-                class="group grid size-12 place-items-center overflow-hidden rounded-full opacity-0"
+                class="group grid size-12 place-items-center overflow-hidden rounded-full opacity-0 dark:ring-1 dark:ring-white/10"
             >
                 <img
                     src="https://avatars.githubusercontent.com/u/17123491?v=4"
@@ -838,7 +838,7 @@
                 x-ref="contributor"
                 href="https://github.com/NativePHP/laravel/graphs/contributors"
                 target="_blank"
-                class="group grid size-12 place-items-center overflow-hidden rounded-full border-[1px] border-dashed border-emerald-600 bg-emerald-100 font-medium opacity-0 transition duration-300 ease-out hover:bg-emerald-200/70"
+                class="group grid size-12 place-items-center overflow-hidden rounded-full border-[1px] border-dashed border-indigo-500 bg-indigo-100 text-sm font-medium opacity-0 transition duration-300 ease-out hover:bg-indigo-200/70 dark:bg-indigo-500/20 dark:hover:bg-indigo-500/30"
             >
                 +27
             </a>
@@ -850,7 +850,7 @@
         <div class="flex flex-wrap items-center justify-between gap-5">
             <div class="lg:max-w-96">
                 <div
-                    class="inline rounded-full px-3 py-1 text-xs font-medium uppercase ring-1 ring-black dark:ring-white/15"
+                    class="inline rounded-full px-3 py-1 text-sm font-medium uppercase ring-1 ring-black dark:ring-white/15"
                 >
                     Laracon US Talk
                 </div>
@@ -895,17 +895,12 @@
                             })
                         }
                     "
-                    class="pt-2 text-sm/relaxed text-gray-500 opacity-0"
+                    class="pt-2 leading-relaxed text-gray-500 opacity-0"
                 >
                     Pociot demonstrates how "NativePHP" streamlines development
                     processes, allowing developers to build desktop applications
                     using minimal abstractions and in the PHP language they
                     know.
-                    <br />
-                    Through practical examples and thought-provoking insights,
-                    this talk empowers developers to embrace simplicity, and
-                    leverage the true power of PHP in creating efficient and
-                    maintainable desktop applications.
                 </p>
             </div>
             <iframe

@@ -22,7 +22,7 @@
     <div>
         <div
             class="grid size-9 shrink-0 place-items-center rounded-full transition duration-300"
-            :class="{ 'group-hover/faq-card:bg-gray-200 dark:group-hover/faq-card:bg-gray-900/70 bg-gray-100 dark:bg-gray-900/70 dark:text-gray-400 text-[#767981]': !open, 'bg-gray-900/70 ': open }"
+            :class="{ 'group-hover/faq-card:bg-gray-200 dark:group-hover/faq-card:bg-gray-900/70 bg-gray-100 dark:bg-gray-900/70 dark:text-gray-400 text-[#767981]': !open, 'dark:bg-gray-900/70 bg-gray-200': open }"
         >
             <div
                 class="transition-transform duration-300 will-change-transform"
