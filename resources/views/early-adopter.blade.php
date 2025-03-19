@@ -205,7 +205,7 @@
                 "
                 class="mx-auto max-w-xl pt-2 text-base/relaxed text-gray-600"
             >
-                It's just as easy you think it'd be
+                Get your app up and running in minutes.
             </h3>
         </header>
 
@@ -524,6 +524,53 @@
                     />
                 </div>
             </div>
+        </div>
+    </section>
+
+    {{-- Why join the program --}}
+    <section class="mx-auto mt-20 max-w-5xl px-5">
+        <div class="prose mx-auto max-w-2xl">
+            <h2 class="">Why Join the Early Access Program?</h2>
+            <p>
+                Up to now, NativePHP has focused on Windows, Mac, and Linux. But
+                we believe that breaking the mobile frontier is what makes the
+                project truly compelling... and truly cross-platform.
+            </p>
+            <p>
+                With
+                <strong>significant progress</strong>
+                already made towards enabling
+                <strong>NativePHP for mobile</strong>
+                , we are excited about the possibilities that lie ahead.
+            </p>
+            <p>
+                However, to make this vision a reality for both iOS and Android,
+                we need your support.
+            </p>
+            <p>
+                As an EAP member, you will be supporting the continued
+                development of all of NativePHP, but especially of NativePHP for
+                mobile.
+            </p>
+            <p>
+                You'll have the opportunity to influence the direction of the
+                project and provide critical feedback right from an early stage.
+            </p>
+            <p>
+                You'll get exclusive access to all the latest features first and
+                special treatment for the life of the NativePHP project, a
+                project we plan to be working on for a long time to come!
+            </p>
+            <p>
+                Please join us on this exciting journey to expand NativePHP onto
+                mobile platforms.
+            </p>
+            <p class="italic">We can't wait to see what you build!</p>
+            <p>
+                <span class="font-bold italic">Simon &amp; Marcel</span>
+                <br />
+                <span class="text-[#636EC9]">Creators of NativePHP</span>
+            </p>
         </div>
     </section>
 </x-layout>
