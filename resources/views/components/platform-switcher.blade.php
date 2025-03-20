@@ -6,7 +6,7 @@
 
 <div
     {{ $attributes }}
-    class="mx-1 mb-3 rounded-xl bg-zinc-100/80 transition duration-300 ease-in-out dark:bg-gray-900/40"
+    class="mx-1 mb-3 rounded-xl bg-zinc-100/80 transition-all duration-300 ease-in-out dark:bg-gray-900/40"
     :class="{
         'pb-4 pl-4 pr-5 pt-5' : !scrolled,
         'pb-2 pl-2 pr-3 pt-3' : scrolled
