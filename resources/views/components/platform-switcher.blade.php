@@ -38,10 +38,11 @@
         <a
             href="{{ $desktopHref }}"
             @class([
-                'grid w-1/2 place-items-center rounded-xl p-2.5 transition duration-300 ease-in-out',
+                'flex w-1/2 items-center justify-center gap-x-1.5 gap-y-1 rounded-xl transition duration-300 ease-in-out',
                 'bg-white dark:bg-gray-900' => ! $isMobile,
                 'hover:bg-zinc-200/50 dark:text-gray-500 dark:hover:bg-gray-900/80 dark:hover:text-white' => $isMobile,
             ])
+            :class="{ 'flex-col p-2.5': !scrolled, 'flex-row p-2': scrolled }"
         >
             <div
                 @class([
@@ -51,7 +52,7 @@
             >
                 <x-icons.laptop-code class="size-5 shrink-0" />
             </div>
-            <div class="pt-1">Desktop</div>
+            <div>Desktop</div>
         </a>
 
         {{-- Center icon --}}
@@ -70,10 +71,11 @@
         <a
             href="{{ $mobileHref }}"
             @class([
-                'grid w-1/2 place-items-center rounded-xl p-2.5 transition duration-300 ease-in-out',
+                'flex w-1/2 items-center justify-center gap-x-1.5 gap-y-1 rounded-xl transition duration-300 ease-in-out',
                 'bg-white dark:bg-gray-900' => $isMobile,
                 'hover:bg-zinc-200/50 dark:text-gray-500 dark:hover:bg-gray-900/80 dark:hover:text-white' => ! $isMobile,
             ])
+            :class="{ 'flex-col p-2.5': !scrolled, 'flex-row p-2': scrolled }"
         >
             <div
                 @class([
@@ -83,7 +85,7 @@
             >
                 <x-icons.device-mobile-phone class="size-5 shrink-0" />
             </div>
-            <div class="pt-1">Mobile</div>
+            <div>Mobile</div>
         </a>
     </div>
 </div>

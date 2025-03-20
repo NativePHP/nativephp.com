@@ -57,7 +57,7 @@
         x-data="{ showDocsNavigation: false, scrolled: false }"
         x-init="
             window.addEventListener('scroll', () => {
-                scrolled = window.scrollY > 20
+                scrolled = window.scrollY > 50
             })
         "
         class="min-h-screen overflow-x-clip font-poppins antialiased selection:bg-black selection:text-[#b4a9ff] dark:bg-[#050714] dark:text-white"
