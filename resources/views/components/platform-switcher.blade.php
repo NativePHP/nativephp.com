@@ -6,22 +6,34 @@
 
 <div
     {{ $attributes }}
-    class="mx-1 mb-3 rounded-xl bg-zinc-100/80 pb-4 pl-4 pr-5 pt-5 transition duration-300 ease-in-out dark:bg-gray-900/40"
+    class="mx-1 mb-3 rounded-xl bg-zinc-100/80 transition duration-300 ease-in-out dark:bg-gray-900/40"
+    :class="{
+        'pb-4 pl-4 pr-5 pt-5' : !scrolled,
+        'pb-2 pl-2 pr-3 pt-3' : scrolled
+    }"
 >
-    {{-- Title --}}
-    <div class="text-sm">Choose your platform</div>
-    {{-- Description --}}
-    <div class="pt-1 text-xs text-gray-500">
-        Switch between mobile and desktop documentation.
+    <div
+        x-show="!scrolled"
+        x-collapse
+        class="space-y-1"
+    >
+        {{-- Title --}}
+        <div class="text-sm">Choose your platform</div>
+        {{-- Description --}}
+        <div class="pb-1 text-xs text-gray-500">
+            Switch between mobile and desktop documentation.
+        </div>
+        {{-- Separator --}}
+        <div
+            class="h-px w-full rounded-full bg-current opacity-5 dark:opacity-20"
+        ></div>
     </div>
 
-    {{-- Separator --}}
-    <div
-        class="my-2.5 h-px w-full rounded-full bg-current opacity-5 dark:opacity-20"
-    ></div>
-
     {{-- Switcher --}}
-    <div class="flex items-center gap-3 text-xs">
+    <div
+        class="flex items-center gap-3 text-xs"
+        :class="{ 'mt-2.5': !scrolled }"
+    >
         {{-- Desktop --}}
         <a
             href="{{ $desktopHref }}"
