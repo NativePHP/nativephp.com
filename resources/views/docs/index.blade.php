@@ -7,7 +7,7 @@
         <x-toc-and-sponsors :tableOfContents="$tableOfContents" />
     </x-slot>
 
-    <h1 class="mb-4 text-4xl font-semibold text-[#00aaa6]">
+    <h1 class="mb-4 text-4xl font-semibold">
         {{ $title }}
     </h1>
 
@@ -15,17 +15,33 @@
 
     <x-alert-beta />
 
-    @if (count($tableOfContents) > 0)
-        <ul class="mt-8 block space-y-2 xl:hidden">
-            @foreach ($tableOfContents as $item)
-                <li
-                    class="@if($item['level'] == 2) font-bold text-gray-800 dark:text-gray-200 @else before:content-['→'] @endif @if($item['level'] == 3) ml-6 @endif before:text-[#00aaa6]"
-                >
-                    <a href="#{{ $item['anchor'] }}">{{ $item['title'] }}</a>
-                </li>
-            @endforeach
-        </ul>
-    @endif
+    {{-- Table of contents --}}
+    <div class="xl:hidden">
+        <h3 class="inline-flex items-center gap-1.5 pt-5 text-sm opacity-50">
+            {{-- Icon --}}
+            <x-icons.stacked-lines class="size-[18px]" />
+            {{-- Label --}}
+            <div>On this page</div>
+        </h3>
+        @if (count($tableOfContents) > 0)
+            <div
+                class="mt-2 flex flex-col space-y-2 border-l text-xs dark:border-l-white/15"
+            >
+                @foreach ($tableOfContents as $item)
+                    <a
+                        href="#{{ $item['anchor'] }}"
+                        @class([
+                            'transition duration-300 ease-in-out will-change-transform hover:translate-x-0.5 hover:text-[#9d91f1] hover:opacity-100 dark:text-white/80',
+                            'pb-1 pl-3' => $item['level'] == 2,
+                            'py-1 pl-6' => $item['level'] == 3,
+                        ])
+                    >
+                        {{ $item['title'] }}
+                    </a>
+                @endforeach
+            </div>
+        @endif
+    </div>
 
     <div
         class="prose mt-8 dark:prose-invert prose-headings:scroll-mt-20 prose-headings:text-gray-800 sm:prose-headings:scroll-mt-32 dark:prose-headings:text-gray-50"
