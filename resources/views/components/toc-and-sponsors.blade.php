@@ -1,4 +1,6 @@
+{{-- On this page --}}
 <h3 class="inline-flex items-center gap-1.5 text-sm opacity-50">
+    {{-- Icon --}}
     <svg
         xmlns="http://www.w3.org/2000/svg"
         class="size-[18px]"
@@ -19,8 +21,12 @@
             />
         </g>
     </svg>
-    On this page
+
+    {{-- Label --}}
+    <div>On this page</div>
 </h3>
+
+{{-- Table of contents --}}
 @if (count($tableOfContents) > 0)
     <div
         class="mt-2 flex flex-col space-y-2 border-l text-xs dark:border-l-white/15"
@@ -40,12 +46,30 @@
     </div>
 @endif
 
-<x-sidebar-title class="mt-8">Featured sponsors</x-sidebar-title>
-<div class="mt-4 flex w-3/4 flex-col gap-4 pl-3">
-    <x-sponsors.lists.docs.featured-sponsors />
-</div>
+{{-- Featured sponsors --}}
+<h3
+    class="mt-5 inline-flex items-center gap-1.5 border-t pt-5 text-sm opacity-50 dark:border-t-white/15"
+>
+    {{-- Icon --}}
+    <x-icons.star-circle class="size-[18px]" />
 
-<x-sidebar-title class="mt-8">Corporate sponsors</x-sidebar-title>
-<div class="mt-4 flex w-3/4 flex-col gap-6 pl-3">
-    <x-sponsors.lists.docs.corporate-sponsors />
-</div>
+    {{-- Label --}}
+    <div>Featured sponsors</div>
+</h3>
+
+{{-- List --}}
+<div class="space-y-3 pt-3"><x-sponsors.lists.docs.featured-sponsors /></div>
+
+{{-- Corporate sponsors --}}
+<h3
+    class="mt-5 inline-flex items-center gap-1.5 border-t pt-5 text-sm opacity-50 dark:border-t-white/15"
+>
+    {{-- Icon --}}
+    <x-icons.briefcase class="size-[18px]" />
+
+    {{-- Label --}}
+    <div>Corporate sponsors</div>
+</h3>
+
+{{-- List --}}
+<div class="space-y-3 pt-3"><x-sponsors.lists.docs.corporate-sponsors /></div>
