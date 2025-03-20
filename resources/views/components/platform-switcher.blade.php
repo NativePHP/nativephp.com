@@ -15,13 +15,15 @@
     <div
         x-show="!scrolled"
         x-collapse
-        class="space-y-1"
+        class="space-y-1.5"
     >
-        {{-- Title --}}
-        <div class="text-sm">Choose your platform</div>
-        {{-- Description --}}
-        <div class="pb-1 text-xs text-gray-500">
-            Switch between mobile and desktop documentation.
+        <div class="space-y-1 pl-1">
+            {{-- Title --}}
+            <div class="text-sm">Choose your platform</div>
+            {{-- Description --}}
+            <div class="text-xs text-gray-500">
+                Switch between mobile and desktop documentation.
+            </div>
         </div>
         {{-- Separator --}}
         <div
@@ -50,7 +52,7 @@
                     'bg-blue-50 text-blue-500 dark:bg-black/20 dark:text-blue-400' => ! $isMobile,
                 ])
             >
-                <x-icons.laptop-code class="size-5 shrink-0" />
+                <x-icons.pc class="size-6 shrink-0" />
             </div>
             <div>Desktop</div>
         </a>
