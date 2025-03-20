@@ -49,7 +49,9 @@
                     <div
                         class="flex items-center justify-start gap-1.5 text-gray-500"
                     >
-                        <x-icons.right-arrow class="size-3 -scale-x-100" />
+                        <x-icons.right-arrow
+                            class="size-3 shrink-0 -scale-x-100"
+                        />
                         <div class="text-sm">Previous</div>
                     </div>
                     <div class="pt-1">{{ $previousPage['title'] }}</div>
@@ -64,7 +66,7 @@
                         class="flex items-center justify-end gap-1.5 text-gray-500"
                     >
                         <div class="text-sm">Next</div>
-                        <x-icons.right-arrow class="size-3" />
+                        <x-icons.right-arrow class="size-3 shrink-0" />
                     </div>
                     <div class="pt-1">{{ $nextPage['title'] }}</div>
                 </div>
@@ -72,7 +74,7 @@
         @endif
     </x-flex-list-of-links>
 
-    <div class="pt-10">
+    <div class="pt-8">
         <x-link-subtle
             href="{{ $editUrl }}"
             target="_blank"
