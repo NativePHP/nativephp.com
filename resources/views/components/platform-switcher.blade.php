@@ -27,7 +27,7 @@
         </div>
         {{-- Separator --}}
         <div
-            class="h-px w-full rounded-full bg-current opacity-5 dark:opacity-20"
+            class="h-px w-full rounded-full bg-current opacity-5 dark:opacity-15"
         ></div>
     </div>
 

@@ -22,14 +22,16 @@
     On this page
 </h3>
 @if (count($tableOfContents) > 0)
-    <div class="mt-2 flex flex-col space-y-2 border-l text-xs">
+    <div
+        class="mt-2 flex flex-col space-y-2 border-l text-xs dark:border-l-white/15"
+    >
         @foreach ($tableOfContents as $item)
             <a
                 href="#{{ $item['anchor'] }}"
                 @class([
-                    'transition duration-300 ease-in-out will-change-transform hover:translate-x-0.5 hover:text-[#9d91f1] hover:opacity-100 dark:text-white',
+                    'transition duration-300 ease-in-out will-change-transform hover:translate-x-0.5 hover:text-[#9d91f1] hover:opacity-100 dark:text-white/80',
                     'pb-1 pl-3' => $item['level'] == 2,
-                    'py-1 pl-4' => $item['level'] == 3,
+                    'py-1 pl-6' => $item['level'] == 3,
                 ])
             >
                 {{ $item['title'] }}
