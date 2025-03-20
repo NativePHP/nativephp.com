@@ -45,34 +45,34 @@
     >
         @if ($previousPage !== null)
             <x-link-button href="{{ $previousPage['path'] }}">
-                <span class="md:hidden">Previous page:</span>
-                <span
-                    aria-hidden="true"
-                    class="hidden sm:inline"
-                >
-                    &larr;
-                </span>
-                <span>{{ $previousPage['title'] }}</span>
+                <div class="self-center justify-self-start">
+                    <div
+                        class="flex items-center justify-start gap-1.5 text-gray-500"
+                    >
+                        <x-icons.right-arrow class="size-3 -scale-x-100" />
+                        <div class="text-sm">Previous</div>
+                    </div>
+                    <div class="pt-1">{{ $previousPage['title'] }}</div>
+                </div>
             </x-link-button>
         @endif
 
         @if ($nextPage !== null)
             <x-link-button href="{{ $nextPage['path'] }}">
-                <span class="md:hidden">Next page:</span>
-                <span>{{ $nextPage['title'] }}</span>
-                <span
-                    aria-hidden="true"
-                    class="hidden sm:inline"
-                >
-                    &rarr;
-                </span>
+                <div class="self-center justify-self-end">
+                    <div
+                        class="flex items-center justify-end gap-1.5 text-gray-500"
+                    >
+                        <div class="text-sm">Next</div>
+                        <x-icons.right-arrow class="size-3" />
+                    </div>
+                    <div class="pt-1">{{ $nextPage['title'] }}</div>
+                </div>
             </x-link-button>
         @endif
     </x-flex-list-of-links>
 
-    <x-separator class="-ml-4 -mr-4 mt-8" />
-
-    <div class="mt-4 text-center">
+    <div class="pt-10">
         <x-link-subtle
             href="{{ $editUrl }}"
             target="_blank"
