@@ -31,7 +31,7 @@
                     <a
                         href="#{{ $item['anchor'] }}"
                         @class([
-                            'transition duration-300 ease-in-out will-change-transform hover:translate-x-0.5 hover:text-[#9d91f1] hover:opacity-100 dark:text-white/80',
+                            'transition duration-300 ease-in-out will-change-transform hover:translate-x-0.5 hover:text-violet-400 hover:opacity-100 dark:text-white/80',
                             'pb-1 pl-3' => $item['level'] == 2,
                             'py-1 pl-6' => $item['level'] == 3,
                         ])

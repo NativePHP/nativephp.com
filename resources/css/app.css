@@ -25,17 +25,19 @@ nav > ul > li {
 }
 
 nav > ul > li.active > a {
-    @apply text-[#00aaa6];
-    /*@apply border-[#00aaa6] dark:border-[#00aaa6]/90;*/
+    @apply text-black dark:text-white;
 
     & > svg {
-        @apply text-[#00aaa6];
+        @apply text-violet-400;
     }
 }
 
+nav > ul > li > a {
+    @apply transition duration-200 will-change-transform;
+}
+
 nav > ul > li:hover > a {
-    @apply text-[#00aaa6];
-    /*@apply border-[#00aaa6] dark:border-[#00aaa6]/90;*/
+    @apply translate-x-0.5;
 }
 
 /* Sub menus */
@@ -46,21 +48,15 @@ nav > ul > li > ul {
         @apply font-normal;
 
         & a {
-            @apply block w-full;
-            @apply py-1.5;
-            @apply border-l pl-3 dark:border-white/10;
-            @apply ml-3;
+            @apply ml-3 block w-full border-l py-1.5 pl-3 transition-all duration-200 dark:border-white/10;
         }
 
         &.exact-active a {
-            @apply text-[#00aaa6];
-            @apply border-[#00aaa6] dark:border-[#00aaa6]/90;
-            /*@apply font-medium*/
+            @apply border-violet-400 text-violet-400 dark:border-violet-400/90;
         }
 
         &:hover a {
-            /*@apply text-[#00aaa6];*/
-            @apply border-[#00aaa6] dark:border-[#00aaa6]/90;
+            @apply border-violet-400 dark:border-violet-400/90;
         }
     }
 }
