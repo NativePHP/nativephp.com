@@ -244,7 +244,7 @@
                         })
                     }
                 "
-                class="mx-auto max-w-xl pt-2 text-base/relaxed text-gray-600 opacity-0"
+                class="mx-auto max-w-xl pt-2 text-base/relaxed text-gray-600 opacity-0 dark:text-gray-400"
             >
                 Get your app up and running in minutes.
             </p>
@@ -452,7 +452,9 @@
                     Step 1
                 </h3>
                 {{-- Step description --}}
-                <p class="pt-0.5 text-sm text-gray-500 opacity-0">
+                <p
+                    class="pt-0.5 text-sm text-gray-500 opacity-0 dark:text-gray-400"
+                >
                     Buy a license.
                 </p>
                 {{-- Box --}}
@@ -507,7 +509,9 @@
                     Step 2
                 </h3>
                 {{-- Step description --}}
-                <p class="pt-0.5 text-sm text-gray-500 opacity-0">
+                <p
+                    class="pt-0.5 text-sm text-gray-500 opacity-0 dark:text-gray-400"
+                >
                     Install the private Composer package.
                 </p>
                 {{-- Box --}}
@@ -578,7 +582,9 @@
                     Step 3
                 </h3>
                 {{-- Step description --}}
-                <p class="pt-0.5 text-sm text-gray-500 opacity-0">
+                <p
+                    class="pt-0.5 text-sm text-gray-500 opacity-0 dark:text-gray-400"
+                >
                     Start your app.
                 </p>
                 {{-- Box --}}
