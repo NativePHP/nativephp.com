@@ -7,7 +7,6 @@
         {{-- Header --}}
         <header
             class="group/header relative isolate grid place-items-center gap-0.5 text-center dark:text-white/90"
-            role="banner"
         >
             {{-- Build --}}
             <h1
@@ -30,10 +29,11 @@
                 class="truncate text-6xl font-extrabold uppercase min-[400px]:text-7xl md:text-8xl"
             >
                 Build
+                <span class="sr-only">for Desktop and Mobile</span>
             </h1>
             {{-- Native --}}
             <div class="relative">
-                <h2
+                <h1
                     x-init="
                         () => {
                             motion.animate(
@@ -50,9 +50,10 @@
                         }
                     "
                     class="truncate text-6xl font-extrabold uppercase text-violet-400 min-[400px]:text-7xl md:text-8xl"
+                    aria-hidden="true"
                 >
                     Native
-                </h2>
+                </h1>
 
                 {{-- Blurred circle --}}
                 <div
@@ -186,9 +187,9 @@
                         <a
                             href="https://www.youtube.com/watch?v=CsM66a0koAM"
                             target="_blank"
+                            rel="noopener"
                             class="relative -top-5 grid size-10 place-items-center rounded-full bg-black/30 text-white ring-1 ring-white/10 backdrop-blur transition duration-300 ease-in-out will-change-transform group-hover:scale-110 group-hover:text-[#d4fd7d] dark:group-hover:text-[#9c90f0]"
-                            aria-label="Watch introduction video on YouTube"
-                            title="Watch introduction video on YouTube"
+                            aria-label="Watch NativePHP introduction video on YouTube"
                         >
                             <svg
                                 xmlns="http://www.w3.org/2000/svg"
@@ -218,20 +219,22 @@
                         <a
                             href="https://www.youtube.com/watch?v=CsM66a0koAM"
                             target="_blank"
+                            rel="noopener"
                             aria-label="Watch Simon Hamp's Laracon EU talk about building mobile apps with PHP"
-                            title="Laracon EU 2025: Simon Hamp - Building Mobile Apps with PHP"
                         >
                             <img
                                 src="{{ Vite::asset('resources/images/simon2025laraconeu.webp') }}"
-                                alt="Laracon EU 2025: Simon Hamp - Building Mobile Apps with PHP"
+                                alt="Simon Hamp presenting at Laracon EU 2025 on building mobile apps with PHP"
                                 class="mt-2 w-40 rounded-xl"
+                                width="160"
+                                height="90"
                             />
                         </a>
                     </div>
                 </div>
             </div>
             {{-- PHP Apps --}}
-            <h2
+            <h1
                 x-init="
                     () => {
                         motion.animate(
@@ -248,9 +251,10 @@
                     }
                 "
                 class="truncate text-6xl font-extrabold uppercase min-[400px]:text-7xl md:text-8xl"
+                aria-hidden="true"
             >
                 PHP Apps
-            </h2>
+            </h1>
 
             {{-- Shiny line --}}
             <div
@@ -283,9 +287,9 @@
             <a
                 href="https://www.youtube.com/watch?v=CsM66a0koAM"
                 target="_blank"
+                rel="noopener"
                 class="group relative"
                 aria-label="Watch Simon Hamp's talk on building mobile apps with PHP"
-                title="Watch introduction video on YouTube"
             >
                 {{-- Play button --}}
                 <div
@@ -311,14 +315,16 @@
                 {{-- Image --}}
                 <img
                     src="{{ Vite::asset('resources/images/simon2025laraconeu.webp') }}"
-                    alt="Laracon EU 2025: Simon Hamp - Building Mobile Apps with PHP"
+                    alt="Simon Hamp presenting at Laracon EU 2025 on building mobile apps with PHP"
                     class="w-full max-w-80 rounded-xl"
+                    width="320"
+                    height="180"
                 />
             </a>
         </div>
 
         {{-- Description --}}
-        <h3
+        <p
             x-init="
                 () => {
                     motion.animate(
@@ -335,14 +341,15 @@
                 }
             "
             class="mx-auto max-w-4xl pt-5 text-center text-lg/relaxed text-gray-600 md:text-xl/relaxed dark:text-zinc-400"
+            aria-describedby="hero-title"
         >
             Bring your
             <a
                 href="https://www.php.net"
                 target="_blank"
+                rel="noopener"
                 class="inline-block font-medium text-[#7a8bd7] transition duration-200 will-change-transform hover:-translate-y-0.5 dark:text-[#92a6ff]"
-                aria-label="Learn more about PHP"
-                title="Visit PHP official website"
+                aria-label="Learn more about PHP programming language"
             >
                 PHP
             </a>
@@ -350,9 +357,9 @@
             <a
                 href="https://laravel.com"
                 target="_blank"
+                rel="noopener"
                 class="inline-block font-medium text-[#F53003] transition duration-200 will-change-transform hover:-translate-y-0.5"
-                aria-label="Learn more about Laravel"
-                title="Visit Laravel official website"
+                aria-label="Learn more about Laravel framework"
             >
                 Laravel
             </a>
@@ -362,9 +369,9 @@
             </span>
             . You can build cross-platform applications effortlessly—no extra
             tools, just the stack you love.
-        </h3>
+        </p>
 
-        {{-- Button --}}
+        {{-- Call to Action Button --}}
         <div class="grid place-items-center pt-5">
             <a
                 x-init="
@@ -418,6 +425,7 @@
                             viewBox="0 0 15 11"
                             fill="none"
                             class="mt-1 w-5 text-[#DBDAE8] transition duration-300 ease-out group-hover:text-violet-400"
+                            aria-hidden="true"
                         >
                             <path
                                 d="M1 4.8C0.613401 4.8 0.3 5.1134 0.3 5.5C0.3 5.8866 0.613401 6.2 1 6.2L1 4.8ZM14.495 5.99498C14.7683 5.72161 14.7683 5.27839 14.495 5.00503L10.0402 0.550253C9.76684 0.276886 9.32362 0.276886 9.05025 0.550253C8.77689 0.823621 8.77689 1.26684 9.05025 1.5402L13.0101 5.5L9.05025 9.4598C8.77689 9.73317 8.77689 10.1764 9.05025 10.4497C9.32362 10.7231 9.76683 10.7231 10.0402 10.4497L14.495 5.99498ZM1 6.2L14 6.2L14 4.8L1 4.8L1 6.2Z"
@@ -453,6 +461,7 @@
                         class="size-32 text-black transition duration-500 ease-out will-change-transform group-hover:scale-110 group-hover:text-zinc-900 dark:text-[#181a25] dark:group-hover:text-black"
                         viewBox="0 0 133 133"
                         fill="none"
+                        aria-hidden="true"
                     >
                         <path
                             d="M133 66.5028C133 58.2246 128.093 50.5844 119.798 44.4237C121.305 34.2085 119.374 25.3317 113.518 19.4759C107.663 13.6202 98.7915 11.689 88.5707 13.1967C82.4213 4.9071 74.7811 0 66.5028 0C58.2246 0 50.5844 4.9071 44.4237 13.2023C34.2085 11.6946 25.3317 13.6258 19.4759 19.4816C13.6202 25.3374 11.689 34.2086 13.1967 44.4293C4.9071 50.5787 0 58.2246 0 66.5028C0 74.7811 4.9071 82.4213 13.2023 88.582C11.6946 98.7971 13.6258 107.674 19.4816 113.53C25.3374 119.385 34.2086 121.317 44.4293 119.809C50.5844 128.099 58.2302 133.011 66.5085 133.011C74.7867 133.011 82.4269 128.104 88.5876 119.809C98.8027 121.317 107.68 119.385 113.535 113.53C119.391 107.674 121.322 98.8027 119.815 88.582C128.104 82.4269 133.017 74.7811 133.017 66.5028H133Z"
@@ -501,8 +510,6 @@
 
         <div
             class="mt-5 flex flex-col items-center justify-center gap-5 rounded-2xl bg-gradient-to-br from-[#FFF0DC] to-[#E8EEFF] text-center min-[400px]:mt-10 sm:mt-32 sm:flex-row sm:bg-gradient-to-r dark:from-blue-900/10 dark:to-[#4c407f]/25"
-            role="region"
-            aria-label="Project collaborators"
         >
             {{-- Simon card --}}
             <div
@@ -557,18 +564,18 @@
                         >
                             ~
                         </div>
-                        <h4 class="text-sm text-gray-600 dark:text-white/50">
+                        <p class="text-sm text-gray-600 dark:text-white/50">
                             Developer & Artisan —
                             <a
                                 href="https://laradevs.com/?ref=nativephp"
                                 target="_blank"
+                                rel="noopener"
                                 class="transition duration-200 hover:text-black dark:hover:text-white"
-                                aria-label="Visit LaraDevs website"
-                                title="Visit LaraDevs"
+                                aria-label="Visit LaraDevs website - Simon Hamp's company"
                             >
                                 LaraDevs
                             </a>
-                        </h4>
+                        </p>
                     </div>
 
                     {{-- Dashed line --}}
@@ -628,8 +635,10 @@
                 {{-- Image --}}
                 <img
                     src="{{ Vite::asset('resources/images/simonhamp_faded.webp') }}"
-                    alt="Simon Hamp - Project Collaborator"
+                    alt="Simon Hamp - Creator of NativePHP and founder of LaraDevs"
                     class="pointer-events-none -ml-10 -mr-10 -mt-5 w-52 transition duration-500 ease-in-out will-change-transform group-hover/simon:-translate-x-1 group-hover/simon:-translate-y-1 group-hover/simon:scale-[1.06] sm:-ml-14 sm:-mr-16 sm:w-64"
+                    width="256"
+                    height="256"
                 />
             </div>
             {{-- Marcel card --}}
@@ -656,8 +665,10 @@
                 {{-- Image --}}
                 <img
                     src="{{ Vite::asset('resources/images/marcelpaciot_faded.webp') }}"
-                    alt="Marcel Paciot - Project Collaborator"
+                    alt="Marcel Pociot - Creator of NativePHP and CEO of BeyondCode"
                     class="pointer-events-none -ml-10 -mr-10 -mt-5 w-52 transition duration-500 ease-in-out will-change-transform group-hover/marcel:-translate-y-1 group-hover/marcel:translate-x-1 group-hover/marcel:scale-[1.06] sm:-ml-16 sm:-mr-14 sm:w-64"
+                    width="256"
+                    height="256"
                 />
 
                 <div class="relative flex flex-col items-center">
@@ -679,7 +690,7 @@
                     <h3 class="pt-2 text-xl leading-relaxed">
                         Marcel
                         <br />
-                        Paciot
+                        Pociot
                     </h3>
 
                     {{-- Title --}}
@@ -692,18 +703,18 @@
                         >
                             ~
                         </div>
-                        <h4 class="text-sm text-gray-600 dark:text-white/50">
+                        <p class="text-sm text-gray-600 dark:text-white/50">
                             CEO & Cofounder —
                             <a
                                 href="https://beyondco.de/?utm_source=nativephp&utm_medium=logo&utm_campaign=nativephp"
                                 target="_blank"
+                                rel="noopener"
                                 class="transition duration-200 hover:text-black dark:hover:text-white"
-                                aria-label="Visit BeyondCode website"
-                                title="Visit BeyondCode"
+                                aria-label="Visit BeyondCode website - Marcel Pociot's company"
                             >
                                 BeyondCode
                             </a>
-                        </h4>
+                        </p>
                     </div>
 
                     {{-- Dashed line --}}
@@ -784,7 +795,7 @@
             + Many community contributors:
         </h3>
 
-        {{-- List --}}
+        {{-- Contributors List --}}
         <div
             x-init="
                 () => {
@@ -805,106 +816,117 @@
                 }
             "
             class="flex flex-wrap items-center justify-center gap-1.5 pt-4"
-            role="list"
-            aria-label="Community contributors"
+            aria-label="Community contributors to the NativePHP project"
         >
             <a
                 x-ref="contributor"
                 href="https://github.com/milwad-dev"
                 target="_blank"
+                rel="noopener"
                 class="group grid size-12 place-items-center overflow-hidden rounded-full opacity-0 dark:ring-1 dark:ring-white/10"
-                aria-label="View Milwad Khosravi's GitHub profile"
-                title="Milwad Khosravi"
+                aria-label="View Milwad Khosravi's GitHub profile - NativePHP contributor"
             >
                 <img
                     src="https://avatars.githubusercontent.com/u/98118400?v=4"
-                    alt="Milwad Khosravi"
+                    alt="Milwad Khosravi - NativePHP contributor"
                     class="h-full w-full object-cover transition duration-300 ease-out will-change-transform group-hover:scale-125"
                     loading="lazy"
+                    width="48"
+                    height="48"
                 />
             </a>
             <a
                 x-ref="contributor"
                 href="https://github.com/SRWieZ"
                 target="_blank"
+                rel="noopener"
                 class="group grid size-12 place-items-center overflow-hidden rounded-full opacity-0 dark:ring-1 dark:ring-white/10"
-                aria-label="View Eser DENIZ's GitHub profile"
-                title="Eser DENIZ"
+                aria-label="View Eser DENIZ's GitHub profile - NativePHP contributor"
             >
                 <img
                     src="https://avatars.githubusercontent.com/u/1408020?v=4"
-                    alt="Eser DENIZ"
+                    alt="Eser DENIZ - NativePHP contributor"
                     class="h-full w-full object-cover transition duration-300 ease-out will-change-transform group-hover:scale-125"
                     loading="lazy"
+                    width="48"
+                    height="48"
                 />
             </a>
             <a
                 x-ref="contributor"
                 href="https://github.com/XbNz"
                 target="_blank"
+                rel="noopener"
                 class="group grid size-12 place-items-center overflow-hidden rounded-full opacity-0 dark:ring-1 dark:ring-white/10"
-                aria-label="View A G's GitHub profile"
-                title="A G"
+                aria-label="View A G's GitHub profile - NativePHP contributor"
             >
                 <img
                     src="https://avatars.githubusercontent.com/u/12668624?v=4"
-                    alt="A G"
+                    alt="A G - NativePHP contributor"
                     class="h-full w-full object-cover transition duration-300 ease-out will-change-transform group-hover:scale-125"
                     loading="lazy"
+                    width="48"
+                    height="48"
                 />
             </a>
             <a
                 x-ref="contributor"
                 href="https://github.com/nexxai"
                 target="_blank"
+                rel="noopener"
                 class="group grid size-12 place-items-center overflow-hidden rounded-full opacity-0 dark:ring-1 dark:ring-white/10"
-                aria-label="View JT Smith's GitHub profile"
-                title="JT Smith"
+                aria-label="View JT Smith's GitHub profile - NativePHP contributor"
             >
                 <img
                     src="https://avatars.githubusercontent.com/u/4316564?v=4"
-                    alt="JT Smith"
+                    alt="JT Smith - NativePHP contributor"
                     class="h-full w-full object-cover transition duration-300 ease-out will-change-transform group-hover:scale-125"
                     loading="lazy"
+                    width="48"
+                    height="48"
                 />
             </a>
             <a
                 x-ref="contributor"
                 href="https://github.com/Mombuyish"
                 target="_blank"
+                rel="noopener"
                 class="group grid size-12 place-items-center overflow-hidden rounded-full opacity-0 dark:ring-1 dark:ring-white/10"
-                aria-label="View Yish's GitHub profile"
-                title="Yish"
+                aria-label="View Yish's GitHub profile - NativePHP contributor"
             >
                 <img
                     src="https://avatars.githubusercontent.com/u/8007787?v=4"
-                    alt="Yish"
+                    alt="Yish - NativePHP contributor"
                     class="h-full w-full object-cover transition duration-300 ease-out will-change-transform group-hover:scale-125"
                     loading="lazy"
+                    width="48"
+                    height="48"
                 />
             </a>
             <a
                 x-ref="contributor"
                 href="https://github.com/gwleuverink"
                 target="_blank"
+                rel="noopener"
                 class="group grid size-12 place-items-center overflow-hidden rounded-full opacity-0 dark:ring-1 dark:ring-white/10"
-                aria-label="View Willem Leuverink's GitHub profile"
-                title="Willem Leuverink"
+                aria-label="View Willem Leuverink's GitHub profile - NativePHP contributor"
             >
                 <img
                     src="https://avatars.githubusercontent.com/u/17123491?v=4"
-                    alt="Willem Leuverink"
+                    alt="Willem Leuverink - NativePHP contributor"
                     class="h-full w-full object-cover transition duration-300 ease-out will-change-transform group-hover:scale-125"
                     loading="lazy"
+                    width="48"
+                    height="48"
                 />
             </a>
             <a
                 x-ref="contributor"
                 href="https://github.com/NativePHP/laravel/graphs/contributors"
                 target="_blank"
+                rel="noopener"
                 class="group grid size-12 place-items-center overflow-hidden rounded-full border-[1px] border-dashed border-indigo-500 bg-indigo-100 text-sm font-medium opacity-0 transition duration-300 ease-out hover:bg-indigo-200/70 dark:bg-indigo-500/20 dark:hover:bg-indigo-500/30"
-                aria-label="View all 27 additional contributors on GitHub"
-                title="View all additional contributors"
+                aria-label="View all 27 additional contributors to the NativePHP project on GitHub"
             >
                 +27
             </a>
@@ -983,6 +1005,7 @@
                 referrerpolicy="strict-origin-when-cross-origin"
                 allowfullscreen
                 class="rounded-xl ring-1 ring-black/10"
+                loading="lazy"
             ></iframe>
         </div>
     </section>
@@ -996,7 +1019,7 @@
             id="sponsors-title"
             class="sr-only"
         >
-            Sponsors
+            NativePHP Sponsors
         </h2>
         <div class="divide-y divide-[#242A2E]/20 *:py-8">
             {{-- Featured sponsors --}}
@@ -1047,8 +1070,7 @@
                         }
                     "
                     class="flex grow flex-wrap items-center justify-center gap-5 md:justify-end"
-                    role="list"
-                    aria-label="Featured sponsors"
+                    aria-label="Featured sponsors of the NativePHP project"
                 >
                     <x-sponsors.lists.home.featured-sponsors />
                 </div>
@@ -1101,8 +1123,7 @@
                         }
                     "
                     class="flex grow flex-wrap items-center justify-center gap-5 md:justify-end"
-                    role="list"
-                    aria-label="Corporate sponsors"
+                    aria-label="Corporate sponsors of the NativePHP project"
                 >
                     <x-sponsors.lists.home.corporate-sponsors />
                 </div>
