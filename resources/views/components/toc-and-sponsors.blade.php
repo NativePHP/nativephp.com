@@ -1,5 +1,5 @@
 {{-- On this page --}}
-<h3 class="inline-flex items-center gap-1.5 text-sm opacity-50">
+<h3 class="inline-flex items-center gap-1.5 text-sm opacity-60">
     {{-- Icon --}}
     <x-icons.stacked-lines class="size-[18px]" />
 
@@ -37,7 +37,7 @@
 </a>
 
 {{-- Featured sponsors --}}
-<h3 class="inline-flex items-center gap-1.5 pt-3.5 text-sm opacity-50">
+<h3 class="inline-flex items-center gap-1.5 pt-3.5 text-sm opacity-60">
     {{-- Icon --}}
     <x-icons.star-circle class="size-[18px]" />
 
@@ -50,7 +50,7 @@
 
 {{-- Corporate sponsors --}}
 <h3
-    class="mt-5 inline-flex items-center gap-1.5 border-t border-t-black/20 pt-3.5 text-sm opacity-50 dark:border-t-white/15"
+    class="mt-5 inline-flex items-center gap-1.5 border-t border-t-black/20 pt-3.5 text-sm opacity-60 dark:border-t-white/15"
 >
     {{-- Icon --}}
     <x-icons.briefcase class="size-[18px]" />

@@ -63,7 +63,7 @@
             <x-link-button href="{{ $previousPage['path'] }}">
                 <div class="self-center justify-self-start">
                     <div
-                        class="flex items-center justify-start gap-1.5 text-gray-500"
+                        class="flex items-center justify-start gap-1.5 opacity-60"
                     >
                         <x-icons.right-arrow
                             class="size-3 shrink-0 -scale-x-100"
@@ -79,7 +79,7 @@
             <x-link-button href="{{ $nextPage['path'] }}">
                 <div class="self-center justify-self-end">
                     <div
-                        class="flex items-center justify-end gap-1.5 text-gray-500"
+                        class="flex items-center justify-end gap-1.5 opacity-60"
                     >
                         <div class="text-sm">Next</div>
                         <x-icons.right-arrow class="size-3 shrink-0" />

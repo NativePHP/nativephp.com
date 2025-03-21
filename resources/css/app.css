@@ -156,6 +156,10 @@ nav > ul > li > ul {
     @apply bg-gray-100 ring-gray-300 dark:bg-black/50 dark:ring-gray-700/70;
 }
 
+.DocSearch-Button:hover .DocSearch-Button-Placeholder {
+    @apply text-black dark:text-white;
+}
+
 .DocSearch-Button .DocSearch-Search-Icon {
     height: 0.87rem;
     @apply text-gray-500 dark:text-white/60;
@@ -169,7 +173,7 @@ nav > ul > li > ul {
 }
 
 .DocSearch-Button-Placeholder {
-    @apply hidden pr-20 text-sm min-[500px]:block dark:text-white/60;
+    @apply hidden pr-20 text-sm text-black/60 min-[500px]:block dark:text-white/60;
 }
 
 .DocSearch-Button-Keys {
