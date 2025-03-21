@@ -1,6 +1,4 @@
 import './fonts'
-import { gsap } from 'gsap'
-import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import './bootstrap'
 import Alpine from 'alpinejs'
 import collapse from '@alpinejs/collapse'
@@ -23,11 +21,6 @@ import {
     spring,
     stagger,
 } from 'motion'
-
-// GSAP
-gsap.registerPlugin(ScrollTrigger)
-window.ScrollTrigger = ScrollTrigger
-window.gsap = gsap
 
 // Motion
 window.motion = {
