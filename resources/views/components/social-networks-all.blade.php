@@ -1,7 +1,4 @@
-<div
-    x-ref="socialLink"
-    class="opacity-0"
->
+<div>
     <a
         href="https://bsky.app/profile/nativephp.bsky.social"
         title="Bluesky"
@@ -13,10 +10,7 @@
     </a>
 </div>
 
-<div
-    x-ref="socialLink"
-    class="opacity-0"
->
+<div>
     <a
         href="https://discord.gg/X62tWNStZK"
         title="Go to discord server"
@@ -28,10 +22,7 @@
     </a>
 </div>
 
-<div
-    x-ref="socialLink"
-    class="opacity-0"
->
+<div>
     <a
         href="https://opencollective.com/nativephp"
         title="NativePHP on Open Collective"
@@ -43,10 +34,7 @@
     </a>
 </div>
 
-<div
-    x-ref="socialLink"
-    class="opacity-0"
->
+<div>
     <a
         href="https://github.com/nativephp"
         title="Source code of NativePHP"
@@ -58,10 +46,7 @@
     </a>
 </div>
 
-<div
-    x-ref="socialLink"
-    class="opacity-0"
->
+<div>
     <a
         href="https://pinkary.com/@nativephp"
         title="NativePHP on Pinkary"
@@ -73,10 +58,7 @@
     </a>
 </div>
 
-<div
-    x-ref="socialLink"
-    class="opacity-0"
->
+<div>
     <a
         href="https://www.linkedin.com/company/nativephp/"
         title="NativePHP on LinkedIn"

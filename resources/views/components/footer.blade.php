@@ -44,7 +44,7 @@
                 () => {
                     motion.inView($el, (element) => {
                         motion.animate(
-                            $refAll('socialLink'),
+                            Array.from($el.children),
                             {
                                 y: [10, 0],
                                 opacity: [0, 1],
@@ -58,7 +58,7 @@
                     })
                 }
             "
-            class="flex flex-wrap items-center justify-center gap-2.5"
+            class="flex flex-wrap items-center justify-center gap-2.5 *:opacity-0"
             aria-label="Social networks"
         >
             <x-social-networks-all />
