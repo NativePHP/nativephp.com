@@ -38,7 +38,7 @@
 
     {{-- Copyright --}}
     <section
-        class="flex flex-wrap items-center justify-between gap-x-5 gap-y-3 text-sm text-gray-400/80"
+        class="flex flex-wrap items-center justify-between gap-x-5 gap-y-3 text-sm text-gray-500 dark:text-gray-400/80"
         aria-label="Credits and copyright information"
     >
         <div>
