@@ -1,12 +1,17 @@
 <x-layout title="Baking Delicious Native Apps">
     {{-- Hero --}}
-    <section class="mt-10 px-5 md:mt-14">
+    <section
+        class="mt-10 px-5 md:mt-14"
+        aria-labelledby="hero-title"
+    >
         {{-- Header --}}
         <header
             class="group/header relative isolate grid place-items-center gap-0.5 text-center dark:text-white/90"
+            role="banner"
         >
             {{-- Build --}}
             <h1
+                id="hero-title"
                 x-init="
                     () => {
                         motion.animate(
@@ -28,7 +33,7 @@
             </h1>
             {{-- Native --}}
             <div class="relative">
-                <h1
+                <h2
                     x-init="
                         () => {
                             motion.animate(
@@ -47,11 +52,12 @@
                     class="truncate text-6xl font-extrabold uppercase text-violet-400 min-[400px]:text-7xl md:text-8xl"
                 >
                     Native
-                </h1>
+                </h2>
 
                 {{-- Blurred circle --}}
                 <div
                     class="absolute -top-20 size-48 rounded-full bg-white/60 blur-[100px] md:-right-32 md:size-60 dark:-top-80 dark:right-1/2 dark:-z-50 dark:size-80 dark:translate-x-1/2 dark:bg-[#444892]/80"
+                    aria-hidden="true"
                 ></div>
 
                 {{-- Star --}}
@@ -76,6 +82,7 @@
                             )
                         }
                     "
+                    aria-hidden="true"
                 >
                     <path
                         d="M25.66 17.636L40 20L25.66 22.364C23.968 22.644 22.64 23.968 22.364 25.66L20 40L17.636 25.66C17.356 23.968 16.032 22.64 14.34 22.364L0 20L14.34 17.636C16.032 17.356 17.36 16.032 17.636 14.34L20 0L22.364 14.34C22.644 16.032 23.968 17.36 25.66 17.636Z"
@@ -102,6 +109,7 @@
                             )
                         }
                     "
+                    aria-hidden="true"
                 ></div>
 
                 {{-- Video introduction --}}
@@ -141,6 +149,7 @@
                                 }
                             "
                             class="-mb-1.5 size-1 rounded-full bg-white ring-[3px] ring-black dark:bg-black/50 dark:ring-white"
+                            aria-hidden="true"
                         ></div>
                         {{-- Line --}}
                         <svg
@@ -149,6 +158,7 @@
                             height="41"
                             viewBox="0 0 94 41"
                             fill="none"
+                            aria-hidden="true"
                         >
                             <path
                                 x-init="
@@ -177,12 +187,15 @@
                             href="https://www.youtube.com/watch?v=CsM66a0koAM"
                             target="_blank"
                             class="relative -top-5 grid size-10 place-items-center rounded-full bg-black/30 text-white ring-1 ring-white/10 backdrop-blur transition duration-300 ease-in-out will-change-transform group-hover:scale-110 group-hover:text-[#d4fd7d] dark:group-hover:text-[#9c90f0]"
+                            aria-label="Watch introduction video on YouTube"
+                            title="Watch introduction video on YouTube"
                         >
                             <svg
                                 xmlns="http://www.w3.org/2000/svg"
                                 class="size-4"
                                 viewBox="0 0 17 22"
                                 fill="none"
+                                aria-hidden="true"
                             >
                                 <path
                                     fill-rule="evenodd"
@@ -191,10 +204,11 @@
                                     fill="currentColor"
                                 />
                             </svg>
+                            <span class="sr-only">Play introduction video</span>
                         </a>
                     </div>
                     <div>
-                        <h4 class="font-medium">Video</h4>
+                        <h3 class="font-medium">Video</h3>
                         <h4
                             class="font-normal text-gray-600 dark:text-white/40"
                         >
@@ -204,10 +218,12 @@
                         <a
                             href="https://www.youtube.com/watch?v=CsM66a0koAM"
                             target="_blank"
+                            aria-label="Watch Simon Hamp's Laracon EU talk about building mobile apps with PHP"
+                            title="Laracon EU 2025: Simon Hamp - Building Mobile Apps with PHP"
                         >
                             <img
                                 src="{{ Vite::asset('resources/images/simon2025laraconeu.webp') }}"
-                                alt="Laracon EU 2025 : Simon Hamp // Building Mobile Apps with PHP"
+                                alt="Laracon EU 2025: Simon Hamp - Building Mobile Apps with PHP"
                                 class="mt-2 w-40 rounded-xl"
                             />
                         </a>
@@ -215,7 +231,7 @@
                 </div>
             </div>
             {{-- PHP Apps --}}
-            <h1
+            <h2
                 x-init="
                     () => {
                         motion.animate(
@@ -234,11 +250,12 @@
                 class="truncate text-6xl font-extrabold uppercase min-[400px]:text-7xl md:text-8xl"
             >
                 PHP Apps
-            </h1>
+            </h2>
 
             {{-- Shiny line --}}
             <div
                 class="absolute left-1/2 top-32 z-20 -translate-x-1/2 rotate-[50deg] transition duration-500 ease-out will-change-transform group-hover/header:translate-x-[-55%]"
+                aria-hidden="true"
             >
                 <div
                     x-init="
@@ -267,16 +284,20 @@
                 href="https://www.youtube.com/watch?v=CsM66a0koAM"
                 target="_blank"
                 class="group relative"
+                aria-label="Watch Simon Hamp's talk on building mobile apps with PHP"
+                title="Watch introduction video on YouTube"
             >
                 {{-- Play button --}}
                 <div
                     class="absolute right-1/2 top-1/2 grid size-16 -translate-y-1/2 translate-x-1/2 place-items-center rounded-full bg-white/10 text-white ring-1 ring-white/10 backdrop-blur transition duration-300 ease-in-out will-change-transform group-hover:scale-110 group-hover:text-[#d4fd7d]"
+                    aria-hidden="true"
                 >
                     <svg
                         xmlns="http://www.w3.org/2000/svg"
                         class="size-8"
                         viewBox="0 0 17 22"
                         fill="none"
+                        aria-hidden="true"
                     >
                         <path
                             fill-rule="evenodd"
@@ -285,11 +306,12 @@
                             fill="currentColor"
                         />
                     </svg>
+                    <span class="sr-only">Play video</span>
                 </div>
                 {{-- Image --}}
                 <img
                     src="{{ Vite::asset('resources/images/simon2025laraconeu.webp') }}"
-                    alt="Laracon EU 2025 : Simon Hamp // Building Mobile Apps with PHP"
+                    alt="Laracon EU 2025: Simon Hamp - Building Mobile Apps with PHP"
                     class="w-full max-w-80 rounded-xl"
                 />
             </a>
@@ -319,6 +341,8 @@
                 href="https://www.php.net"
                 target="_blank"
                 class="inline-block font-medium text-[#7a8bd7] transition duration-200 will-change-transform hover:-translate-y-0.5 dark:text-[#92a6ff]"
+                aria-label="Learn more about PHP"
+                title="Visit PHP official website"
             >
                 PHP
             </a>
@@ -327,6 +351,8 @@
                 href="https://laravel.com"
                 target="_blank"
                 class="inline-block font-medium text-[#F53003] transition duration-200 will-change-transform hover:-translate-y-0.5"
+                aria-label="Learn more about Laravel"
+                title="Visit Laravel official website"
             >
                 Laravel
             </a>
@@ -358,6 +384,7 @@
                 "
                 href="/docs/"
                 class="group isolate z-0 grid place-items-center leading-snug text-white will-change-transform"
+                aria-label="Get started with NativePHP documentation"
             >
                 {{-- Label --}}
                 <div
@@ -384,6 +411,7 @@
                                 )
                             }
                         "
+                        aria-hidden="true"
                     >
                         <svg
                             xmlns="http://www.w3.org/2000/svg"
@@ -418,6 +446,7 @@
                         }
                     "
                     class="self-center justify-self-center [grid-area:1/-1]"
+                    aria-hidden="true"
                 >
                     <svg
                         xmlns="http://www.w3.org/2000/svg"
@@ -435,14 +464,19 @@
                 {{-- Blur --}}
                 <div
                     class="hidden size-20 self-center justify-self-center bg-indigo-400/70 blur-3xl [grid-area:1/-1] dark:block"
+                    aria-hidden="true"
                 ></div>
             </a>
         </div>
     </section>
 
     {{-- Collaborations --}}
-    <div class="mx-auto mt-20 max-w-5xl px-5">
+    <section
+        class="mx-auto mt-20 max-w-5xl px-5"
+        aria-labelledby="collaborations-title"
+    >
         <h2
+            id="collaborations-title"
             x-init="
                 () => {
                     motion.inView($el, (element) => {
@@ -467,6 +501,8 @@
 
         <div
             class="mt-5 flex flex-col items-center justify-center gap-5 rounded-2xl bg-gradient-to-br from-[#FFF0DC] to-[#E8EEFF] text-center min-[400px]:mt-10 sm:mt-32 sm:flex-row sm:bg-gradient-to-r dark:from-blue-900/10 dark:to-[#4c407f]/25"
+            role="region"
+            aria-label="Project collaborators"
         >
             {{-- Simon card --}}
             <div
@@ -496,6 +532,7 @@
                         class="hidden w-5 text-[#FFCABA] transition duration-500 ease-in-out will-change-transform group-hover/simon:rotate-90 group-hover/simon:text-orange-300 min-[400px]:block dark:text-orange-300 dark:group-hover/simon:text-orange-400"
                         viewBox="0 0 24 23"
                         fill="none"
+                        aria-hidden="true"
                     >
                         <path
                             d="M21.5037 9.50367H18.5162C17.8899 9.50367 17.5764 8.74661 18.0192 8.30376L20.1041 6.21886C20.8478 5.47515 20.9216 4.27314 20.2335 3.47741C19.4666 2.59031 18.1233 2.55376 17.3093 3.36846L15.1969 5.48078C14.7541 5.92362 13.997 5.61012 13.997 4.9838V1.99633C13.997 0.894132 13.1036 0 12.0007 0C10.8985 0 10.0044 0.893429 10.0044 1.99633V4.9838C10.0044 5.61012 9.24731 5.92362 8.80446 5.48078L6.69214 3.36846C5.91259 2.58891 4.64872 2.58891 3.86916 3.36846C3.08961 4.14801 3.08961 5.41189 3.86916 6.19144L5.98148 8.30376C6.42433 8.74661 6.11082 9.50367 5.48451 9.50367H2.49633C1.39413 9.50367 0.5 10.3971 0.5 11.5C0.5 12.6022 1.39343 13.4963 2.49633 13.4963H5.4838C6.11012 13.4963 6.42362 14.2534 5.98078 14.6962L3.86846 16.8086C3.08891 17.5881 3.08891 18.852 3.86846 19.6315C4.64801 20.4111 5.91189 20.4111 6.69144 19.6315L8.80376 17.5192C9.24661 17.0764 10.0037 17.3899 10.0037 18.0162V21.0037C10.0037 22.1059 10.8971 23 12 23C13.1022 23 13.9963 22.1066 13.9963 21.0037V18.0162C13.9963 17.3899 14.7534 17.0764 15.1962 17.5192L17.3086 19.6315C18.0881 20.4111 19.352 20.4111 20.1315 19.6315C20.9111 18.852 20.9111 17.5881 20.1315 16.8086L18.0192 14.6962C17.5764 14.2534 17.8899 13.4963 18.5162 13.4963H21.5037C22.6059 13.4963 23.5 12.6029 23.5 11.5C23.5 10.3978 22.6066 9.50367 21.5037 9.50367Z"
@@ -516,23 +553,29 @@
                     >
                         <div
                             class="hidden text-2xl font-light min-[400px]:block"
+                            aria-hidden="true"
                         >
                             ~
                         </div>
-                        <h5 class="text-sm text-gray-600 dark:text-white/50">
+                        <h4 class="text-sm text-gray-600 dark:text-white/50">
                             Developer & Artisan —
                             <a
                                 href="https://laradevs.com/?ref=nativephp"
-                                _target="blank"
+                                target="_blank"
                                 class="transition duration-200 hover:text-black dark:hover:text-white"
+                                aria-label="Visit LaraDevs website"
+                                title="Visit LaraDevs"
                             >
                                 LaraDevs
                             </a>
-                        </h5>
+                        </h4>
                     </div>
 
                     {{-- Dashed line --}}
-                    <div class="absolute -right-9 top-2 hidden md:block">
+                    <div
+                        class="absolute -right-9 top-2 hidden md:block"
+                        aria-hidden="true"
+                    >
                         <div
                             class="relative flex items-end text-gray-400 transition duration-500 ease-in-out group-hover/simon:text-black dark:group-hover/simon:text-white"
                         >
@@ -585,7 +628,7 @@
                 {{-- Image --}}
                 <img
                     src="{{ Vite::asset('resources/images/simonhamp_faded.webp') }}"
-                    alt="Simon Hamp"
+                    alt="Simon Hamp - Project Collaborator"
                     class="pointer-events-none -ml-10 -mr-10 -mt-5 w-52 transition duration-500 ease-in-out will-change-transform group-hover/simon:-translate-x-1 group-hover/simon:-translate-y-1 group-hover/simon:scale-[1.06] sm:-ml-14 sm:-mr-16 sm:w-64"
                 />
             </div>
@@ -613,7 +656,7 @@
                 {{-- Image --}}
                 <img
                     src="{{ Vite::asset('resources/images/marcelpaciot_faded.webp') }}"
-                    alt="Marcel Paciot"
+                    alt="Marcel Paciot - Project Collaborator"
                     class="pointer-events-none -ml-10 -mr-10 -mt-5 w-52 transition duration-500 ease-in-out will-change-transform group-hover/marcel:-translate-y-1 group-hover/marcel:translate-x-1 group-hover/marcel:scale-[1.06] sm:-ml-16 sm:-mr-14 sm:w-64"
                 />
 
@@ -624,6 +667,7 @@
                         class="hidden w-5 text-[#CBDAFF] transition duration-500 ease-in-out will-change-transform group-hover/marcel:-rotate-90 group-hover/marcel:text-blue-300 min-[400px]:block dark:text-rose-300 dark:group-hover/marcel:text-rose-400"
                         viewBox="0 0 24 23"
                         fill="none"
+                        aria-hidden="true"
                     >
                         <path
                             d="M12.8747 12.3751C27.0405 26.5408 -3.04242 26.5408 11.1233 12.3751C-3.04242 26.5408 -3.04242 -3.54205 11.1233 10.6237C-3.04242 -3.54205 27.0405 -3.54205 12.8747 10.6237C27.0405 -3.54205 27.0405 26.5408 12.8747 12.3751Z"
@@ -644,23 +688,29 @@
                     >
                         <div
                             class="hidden text-2xl font-light min-[400px]:block"
+                            aria-hidden="true"
                         >
                             ~
                         </div>
-                        <h5 class="text-sm text-gray-600 dark:text-white/50">
+                        <h4 class="text-sm text-gray-600 dark:text-white/50">
                             CEO & Cofounder —
                             <a
                                 href="https://beyondco.de/?utm_source=nativephp&utm_medium=logo&utm_campaign=nativephp"
-                                _target="blank"
+                                target="_blank"
                                 class="transition duration-200 hover:text-black dark:hover:text-white"
+                                aria-label="Visit BeyondCode website"
+                                title="Visit BeyondCode"
                             >
                                 BeyondCode
                             </a>
-                        </h5>
+                        </h4>
                     </div>
 
                     {{-- Dashed line --}}
-                    <div class="absolute -left-9 top-2 hidden md:block">
+                    <div
+                        class="absolute -left-9 top-2 hidden md:block"
+                        aria-hidden="true"
+                    >
                         <div
                             class="relative flex items-end text-gray-400 transition duration-500 ease-in-out group-hover/marcel:text-black dark:group-hover/marcel:text-white"
                         >
@@ -711,7 +761,7 @@
             </div>
         </div>
 
-        <h2
+        <h3
             x-init="
                 () => {
                     motion.inView($el, (element) => {
@@ -732,7 +782,7 @@
             class="mt-10 text-center text-xl font-medium capitalize opacity-0"
         >
             + Many community contributors:
-        </h2>
+        </h3>
 
         {{-- List --}}
         <div
@@ -755,12 +805,16 @@
                 }
             "
             class="flex flex-wrap items-center justify-center gap-1.5 pt-4"
+            role="list"
+            aria-label="Community contributors"
         >
             <a
                 x-ref="contributor"
                 href="https://github.com/milwad-dev"
                 target="_blank"
                 class="group grid size-12 place-items-center overflow-hidden rounded-full opacity-0 dark:ring-1 dark:ring-white/10"
+                aria-label="View Milwad Khosravi's GitHub profile"
+                title="Milwad Khosravi"
             >
                 <img
                     src="https://avatars.githubusercontent.com/u/98118400?v=4"
@@ -774,6 +828,8 @@
                 href="https://github.com/SRWieZ"
                 target="_blank"
                 class="group grid size-12 place-items-center overflow-hidden rounded-full opacity-0 dark:ring-1 dark:ring-white/10"
+                aria-label="View Eser DENIZ's GitHub profile"
+                title="Eser DENIZ"
             >
                 <img
                     src="https://avatars.githubusercontent.com/u/1408020?v=4"
@@ -787,6 +843,8 @@
                 href="https://github.com/XbNz"
                 target="_blank"
                 class="group grid size-12 place-items-center overflow-hidden rounded-full opacity-0 dark:ring-1 dark:ring-white/10"
+                aria-label="View A G's GitHub profile"
+                title="A G"
             >
                 <img
                     src="https://avatars.githubusercontent.com/u/12668624?v=4"
@@ -800,6 +858,8 @@
                 href="https://github.com/nexxai"
                 target="_blank"
                 class="group grid size-12 place-items-center overflow-hidden rounded-full opacity-0 dark:ring-1 dark:ring-white/10"
+                aria-label="View JT Smith's GitHub profile"
+                title="JT Smith"
             >
                 <img
                     src="https://avatars.githubusercontent.com/u/4316564?v=4"
@@ -813,6 +873,8 @@
                 href="https://github.com/Mombuyish"
                 target="_blank"
                 class="group grid size-12 place-items-center overflow-hidden rounded-full opacity-0 dark:ring-1 dark:ring-white/10"
+                aria-label="View Yish's GitHub profile"
+                title="Yish"
             >
                 <img
                     src="https://avatars.githubusercontent.com/u/8007787?v=4"
@@ -826,6 +888,8 @@
                 href="https://github.com/gwleuverink"
                 target="_blank"
                 class="group grid size-12 place-items-center overflow-hidden rounded-full opacity-0 dark:ring-1 dark:ring-white/10"
+                aria-label="View Willem Leuverink's GitHub profile"
+                title="Willem Leuverink"
             >
                 <img
                     src="https://avatars.githubusercontent.com/u/17123491?v=4"
@@ -839,14 +903,19 @@
                 href="https://github.com/NativePHP/laravel/graphs/contributors"
                 target="_blank"
                 class="group grid size-12 place-items-center overflow-hidden rounded-full border-[1px] border-dashed border-indigo-500 bg-indigo-100 text-sm font-medium opacity-0 transition duration-300 ease-out hover:bg-indigo-200/70 dark:bg-indigo-500/20 dark:hover:bg-indigo-500/30"
+                aria-label="View all 27 additional contributors on GitHub"
+                title="View all additional contributors"
             >
                 +27
             </a>
         </div>
-    </div>
+    </section>
 
     {{-- Marcel talk --}}
-    <section class="mx-auto mt-20 max-w-5xl px-5">
+    <section
+        class="mx-auto mt-20 max-w-5xl px-5"
+        aria-labelledby="laracon-talk-title"
+    >
         <div class="flex flex-wrap items-center justify-between gap-5">
             <div class="lg:max-w-96">
                 <div
@@ -854,7 +923,8 @@
                 >
                     Laracon US Talk
                 </div>
-                <h3
+                <h2
+                    id="laracon-talk-title"
                     x-init="
                         () => {
                             motion.inView($el, (element) => {
@@ -875,7 +945,7 @@
                     class="pt-3 text-xl font-medium capitalize opacity-0"
                 >
                     Want to learn more about the project?
-                </h3>
+                </h2>
 
                 <p
                     x-init="
@@ -907,7 +977,7 @@
                 width="560"
                 height="315"
                 src="https://www.youtube.com/embed/iG7VscBFnqo?si=AcavmLM7l_oczik7"
-                title="YouTube video player"
+                title="Marcel Pociot at Laracon US - Building Desktop Applications with PHP"
                 frameborder="0"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                 referrerpolicy="strict-origin-when-cross-origin"
@@ -918,13 +988,24 @@
     </section>
 
     {{-- Sponsors --}}
-    <section class="mx-auto mt-20 max-w-5xl px-5">
+    <section
+        class="mx-auto mt-20 max-w-5xl px-5"
+        aria-labelledby="sponsors-title"
+    >
+        <h2
+            id="sponsors-title"
+            class="sr-only"
+        >
+            Sponsors
+        </h2>
         <div class="divide-y divide-[#242A2E]/20 *:py-8">
             {{-- Featured sponsors --}}
             <div
                 class="flex flex-col items-center justify-between gap-10 md:flex-row md:items-start"
+                aria-labelledby="featured-sponsors-title"
             >
-                <h2
+                <h3
+                    id="featured-sponsors-title"
                     x-init="
                         () => {
                             motion.inView($el, (element) => {
@@ -945,7 +1026,7 @@
                     class="shrink-0 text-xl font-medium opacity-0"
                 >
                     Featured Sponsors
-                </h2>
+                </h3>
                 <div
                     x-init="
                         () => {
@@ -966,6 +1047,8 @@
                         }
                     "
                     class="flex grow flex-wrap items-center justify-center gap-5 md:justify-end"
+                    role="list"
+                    aria-label="Featured sponsors"
                 >
                     <x-sponsors.lists.home.featured-sponsors />
                 </div>
@@ -973,8 +1056,10 @@
             {{-- Corporate sponsors --}}
             <div
                 class="flex flex-col items-center justify-between gap-10 md:flex-row md:items-start"
+                aria-labelledby="corporate-sponsors-title"
             >
-                <h2
+                <h3
+                    id="corporate-sponsors-title"
                     x-init="
                         () => {
                             motion.inView($el, (element) => {
@@ -995,7 +1080,7 @@
                     class="shrink-0 text-xl font-medium opacity-0"
                 >
                     Corporate Sponsors
-                </h2>
+                </h3>
                 <div
                     x-init="
                         () => {
@@ -1016,6 +1101,8 @@
                         }
                     "
                     class="flex grow flex-wrap items-center justify-center gap-5 md:justify-end"
+                    role="list"
+                    aria-label="Corporate sponsors"
                 >
                     <x-sponsors.lists.home.corporate-sponsors />
                 </div>
@@ -1050,6 +1137,7 @@
             <a
                 href="/docs/getting-started/sponsoring"
                 class="group flex flex-wrap items-center justify-center gap-x-5 gap-y-3 rounded-3xl bg-gray-100 px-8 py-8 transition duration-200 ease-in-out hover:ring-1 hover:ring-black/60 md:justify-between md:px-12 md:py-10 dark:bg-gray-900/40 dark:hover:bg-gray-900/60 dark:hover:ring-white/15"
+                aria-label="Learn about sponsoring the NativePHP project"
             >
                 <div
                     class="inline-flex shrink-0 flex-col-reverse items-center gap-x-5 gap-y-3 md:flex-row"
@@ -1065,6 +1153,7 @@
                         fill="none"
                         viewBox="0 0 24 24"
                         class="w-12 -rotate-45 transition duration-300 ease-out will-change-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5 md:w-16 md:rotate-0"
+                        aria-hidden="true"
                     >
                         <path
                             class="text-[#e8e4f8] dark:text-[#31416e]/30"
