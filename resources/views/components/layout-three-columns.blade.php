@@ -10,7 +10,7 @@
             </x-sidebar-left-navigation>
         @endif
 
-        <div class="flex w-full min-w-0 grow px-2 pt-2 lg:pl-5">
+        <div class="flex w-full min-w-0 grow px-2 pt-2">
             {{-- Content --}}
             <article class="flex w-full min-w-0 grow flex-col">
                 {{ $slot }}
