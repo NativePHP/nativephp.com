@@ -19,8 +19,8 @@ nav > ul > li {
 
     & > a {
         @apply font-semibold;
-        @apply mb-1.5 px-3 py-1.5 no-underline;
-        @apply rounded-lg border dark:border-white/15;
+        @apply mb-1.5 px-3 py-2.5 no-underline;
+        @apply rounded-xl border dark:border-white/15;
     }
 }
 
@@ -37,7 +37,7 @@ nav > ul > li > a {
 }
 
 nav > ul > li:hover > a {
-    @apply translate-x-0.5;
+    @apply translate-x-0.5 bg-gray-50 dark:bg-gray-900/50;
 }
 
 /* Sub menus */
