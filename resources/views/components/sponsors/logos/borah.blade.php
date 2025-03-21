@@ -1,1 +1,4 @@
-<img src="/img/sponsors/borah.png" class="block h-14 w-auto max-w-full">
+<img
+    {{ $attributes }}
+    src="/img/sponsors/borah.png"
+/>

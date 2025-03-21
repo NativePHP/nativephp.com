@@ -29,7 +29,7 @@
 
 {{-- Featured sponsors --}}
 <h3
-    class="mt-5 inline-flex items-center gap-1.5 border-t pt-5 text-sm opacity-50 dark:border-t-white/15"
+    class="mt-5 inline-flex items-center gap-1.5 border-t border-t-black/20 pt-3.5 text-sm opacity-50 dark:border-t-white/15"
 >
     {{-- Icon --}}
     <x-icons.star-circle class="size-[18px]" />
@@ -39,11 +39,11 @@
 </h3>
 
 {{-- List --}}
-<div class="space-y-3 pt-3"><x-sponsors.lists.docs.featured-sponsors /></div>
+<div class="space-y-3 pt-2.5"><x-sponsors.lists.docs.featured-sponsors /></div>
 
 {{-- Corporate sponsors --}}
 <h3
-    class="mt-5 inline-flex items-center gap-1.5 border-t pt-5 text-sm opacity-50 dark:border-t-white/15"
+    class="mt-5 inline-flex items-center gap-1.5 border-t border-t-black/20 pt-3.5 text-sm opacity-50 dark:border-t-white/15"
 >
     {{-- Icon --}}
     <x-icons.briefcase class="size-[18px]" />
@@ -53,4 +53,4 @@
 </h3>
 
 {{-- List --}}
-<div class="space-y-3 pt-3"><x-sponsors.lists.docs.corporate-sponsors /></div>
+<div class="space-y-3 pt-2.5"><x-sponsors.lists.docs.corporate-sponsors /></div>
