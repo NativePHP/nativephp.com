@@ -7,11 +7,11 @@
         <x-toc-and-sponsors :tableOfContents="$tableOfContents" />
     </x-slot>
 
-    <h1 class="mb-4 text-4xl font-semibold">
+    <h1 class="text-4xl font-semibold">
         {{ $title }}
     </h1>
 
-    <x-separator class="-ml-4 -mr-4 mt-3" />
+    <x-separator class="mt-4" />
 
     <x-alert-beta />
 
@@ -49,7 +49,7 @@
         {!! $content !!}
     </div>
 
-    <x-separator class="-ml-4 -mr-4 mt-8" />
+    <x-separator class="mt-8" />
 
     @php
         $linkAlign = $previousPage === null ? 'right' : 'between';
@@ -57,7 +57,7 @@
 
     <x-flex-list-of-links
         align="{{$linkAlign}}"
-        class="mt-8"
+        class="mt-5"
     >
         @if ($previousPage !== null)
             <x-link-button href="{{ $previousPage['path'] }}">
