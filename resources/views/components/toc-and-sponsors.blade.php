@@ -28,9 +28,7 @@
 @endif
 
 {{-- Featured sponsors --}}
-<h3
-    class="mt-5 inline-flex items-center gap-1.5 border-t border-t-black/20 pt-3.5 text-sm opacity-50 dark:border-t-white/15"
->
+<h3 class="mt-5 inline-flex items-center gap-1.5 pt-3.5 text-sm opacity-50">
     {{-- Icon --}}
     <x-icons.star-circle class="size-[18px]" />
 
