@@ -24,7 +24,7 @@
                 class="hidden rounded-full bg-gray-200/60 px-2 py-1 text-xs text-gray-600 lg:block dark:bg-[#1f2032] dark:text-white/50"
                 aria-label="Version information"
             >
-                1.0.0-beta.2
+                {{ $electronGitHubVersion }}
             </div>
         </div>
 

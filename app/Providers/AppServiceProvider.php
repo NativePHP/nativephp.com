@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Support\GitHub;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 
@@ -12,7 +13,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        $this->registerSharedViewVariables();
+        //
     }
 
     /**
@@ -20,11 +21,12 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        $this->registerSharedViewVariables();
     }
 
     private function registerSharedViewVariables(): void
     {
+        View::share('electronGitHubVersion', GitHub::electron()->latestVersion());
         View::share('discordLink', 'https://discord.gg/X62tWNStZK');
         View::share('bskyLink', 'https://bsky.app/profile/nativephp.bsky.social');
         View::share('openCollectiveLink', 'https://opencollective.com/nativephp');
