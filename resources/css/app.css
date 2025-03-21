@@ -42,8 +42,6 @@ nav > ul > li:hover > a {
 
 /* Sub menus */
 nav > ul > li > ul {
-    @apply mb-6;
-
     & > li {
         @apply font-normal;
 
