@@ -32,7 +32,7 @@ Be sure to share your findings through the [forum](https://github.com/orgs/nativ
 [raising issues](https://github.com/nativephp/laravel/issues/new/choose)/reporting bugs, and on
 [Discord](https://discord.gg/X62tWNStZK).
 
-<aside class="relative z-0 mt-5 overflow-hidden rounded-2xl bg-emerald-100/80 px-5 ring-1 ring-black/5 dark:bg-gray-900/40">
+<aside class="relative z-0 mt-5 overflow-hidden rounded-2xl bg-pink-50 px-5 ring-1 ring-black/5 dark:bg-pink-600/10">
 
 #### Can you sponsor?
 

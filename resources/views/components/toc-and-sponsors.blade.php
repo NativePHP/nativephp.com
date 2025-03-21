@@ -27,8 +27,17 @@
     </div>
 @endif
 
+{{-- Sponsor us --}}
+<a
+    href="https://github.com/nativephp/laravel?sponsor=1"
+    class="mt-5 grid w-40 place-items-center gap-2 rounded-xl bg-pink-100 px-5 pb-3 pt-3.5 text-center transition duration-300 ease-in-out hover:bg-pink-200/80 dark:bg-pink-600/10 dark:hover:bg-pink-600/15"
+>
+    <x-icons.love-baloons class="w-9" />
+    <div class="text-sm font-medium dark:font-normal">Sponsor us on GitHub</div>
+</a>
+
 {{-- Featured sponsors --}}
-<h3 class="mt-5 inline-flex items-center gap-1.5 pt-3.5 text-sm opacity-50">
+<h3 class="inline-flex items-center gap-1.5 pt-3.5 text-sm opacity-50">
     {{-- Icon --}}
     <x-icons.star-circle class="size-[18px]" />
 
