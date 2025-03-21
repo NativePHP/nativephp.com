@@ -211,7 +211,7 @@
                     <div>
                         <h3 class="font-medium">Video</h3>
                         <h4
-                            class="font-normal text-gray-600 dark:text-white/40"
+                            class="font-normal text-gray-600 dark:text-white/50"
                         >
                             Introduction
                         </h4>
