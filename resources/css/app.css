@@ -46,11 +46,11 @@ nav > ul > li > ul {
         @apply font-normal;
 
         & a {
-            @apply ml-3 block w-full border-l py-1.5 pl-3 transition-all duration-200 dark:border-white/10;
+            @apply ml-3 block w-full border-l-[1.5px] py-1.5 pl-3 transition-all duration-200 dark:border-white/10;
         }
 
         &.exact-active a {
-            @apply border-violet-400 text-violet-400 dark:border-violet-400/90;
+            @apply border-violet-400 font-medium text-violet-800/80 dark:border-violet-400/90 dark:text-white;
         }
 
         &:hover a {
@@ -139,7 +139,7 @@ nav > ul > li > ul {
 
 :root {
     --docsearch-container-background: rgba(0, 0, 0, 0.5);
-    --docsearch-primary-color: #00aaa6;
+    --docsearch-primary-color: #a78bfa;
 }
 
 [id='docsearch'] {

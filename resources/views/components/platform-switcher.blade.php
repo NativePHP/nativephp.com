@@ -21,7 +21,7 @@
             {{-- Title --}}
             <div class="text-sm">Choose your platform</div>
             {{-- Description --}}
-            <div class="text-xs text-gray-500">
+            <div class="text-xs opacity-60">
                 Switch between mobile and desktop documentation.
             </div>
         </div>
@@ -42,7 +42,7 @@
             @class([
                 'flex w-1/2 items-center justify-center gap-x-1.5 gap-y-1 rounded-xl transition duration-300 ease-in-out',
                 'bg-white dark:bg-gray-900' => ! $isMobile,
-                'hover:bg-zinc-200/50 dark:text-gray-500 dark:hover:bg-gray-900/80 dark:hover:text-white' => $isMobile,
+                'hover:bg-zinc-200/50 dark:text-gray-400/80 dark:hover:bg-gray-900/80 dark:hover:text-white' => $isMobile,
             ])
             :class="{ 'flex-col p-2.5': !scrolled, 'flex-row p-2': scrolled }"
         >
@@ -60,7 +60,7 @@
         {{-- Center icon --}}
         <svg
             xmlns="http://www.w3.org/2000/svg"
-            class="size-6 dark:text-gray-500"
+            class="size-6 dark:text-gray-400/80"
             viewBox="0 0 256 256"
         >
             <path
@@ -75,7 +75,7 @@
             @class([
                 'flex w-1/2 items-center justify-center gap-x-1.5 gap-y-1 rounded-xl transition duration-300 ease-in-out',
                 'bg-white dark:bg-gray-900' => $isMobile,
-                'hover:bg-zinc-200/50 dark:text-gray-500 dark:hover:bg-gray-900/80 dark:hover:text-white' => ! $isMobile,
+                'hover:bg-zinc-200/50 dark:text-gray-400/80 dark:hover:bg-gray-900/80 dark:hover:text-white' => ! $isMobile,
             ])
             :class="{ 'flex-col p-2.5': !scrolled, 'flex-row p-2': scrolled }"
         >
