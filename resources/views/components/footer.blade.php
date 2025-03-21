@@ -4,21 +4,60 @@
 >
     <div class="flex flex-wrap items-center justify-between gap-6">
         {{-- Logo --}}
-        <a
-            href="/"
-            class="transition duration-200 will-change-transform hover:scale-[1.02]"
-            aria-label="NativePHP homepage"
+        <div
+            x-init="
+                () => {
+                    motion.inView($el, (element) => {
+                        motion.animate(
+                            $el,
+                            {
+                                opacity: [0, 1],
+                                x: [-10, 0],
+                            },
+                            {
+                                duration: 0.7,
+                                ease: motion.circOut,
+                            },
+                        )
+                    })
+                }
+            "
+            class="opacity-0"
         >
-            <x-logo
-                class="h-5"
-                aria-hidden="true"
-                alt="NativePHP Logo"
-            />
-            <span class="sr-only">NativePHP homepage</span>
-        </a>
+            <a
+                href="/"
+                class="transition duration-200 will-change-transform hover:scale-[1.02]"
+                aria-label="NativePHP homepage"
+            >
+                <x-logo
+                    class="h-5"
+                    aria-hidden="true"
+                    alt="NativePHP Logo"
+                />
+                <span class="sr-only">NativePHP homepage</span>
+            </a>
+        </div>
 
         {{-- Social links --}}
         <nav
+            x-init="
+                () => {
+                    motion.inView($el, (element) => {
+                        motion.animate(
+                            $refAll('socialLink'),
+                            {
+                                y: [10, 0],
+                                opacity: [0, 1],
+                            },
+                            {
+                                duration: 0.7,
+                                ease: motion.backOut,
+                                delay: motion.stagger(0.1),
+                            },
+                        )
+                    })
+                }
+            "
             class="flex flex-wrap items-center justify-center gap-2.5"
             aria-label="Social networks"
         >
@@ -41,7 +80,26 @@
         class="flex flex-wrap items-center justify-between gap-x-5 gap-y-3 text-sm text-gray-500 dark:text-gray-400/80"
         aria-label="Credits and copyright information"
     >
-        <div>
+        <div
+            x-init="
+                () => {
+                    motion.inView($el, (element) => {
+                        motion.animate(
+                            $el,
+                            {
+                                opacity: [0, 1],
+                                x: [-10, 0],
+                            },
+                            {
+                                duration: 0.7,
+                                ease: motion.circOut,
+                            },
+                        )
+                    })
+                }
+            "
+            class="opacity-0"
+        >
             <span>Logo by</span>
             <a
                 href="https://twitter.com/caneco"
@@ -54,7 +112,26 @@
             </a>
             <span>.</span>
         </div>
-        <div>
+        <div
+            x-init="
+                () => {
+                    motion.inView($el, (element) => {
+                        motion.animate(
+                            $el,
+                            {
+                                opacity: [0, 1],
+                                x: [10, 0],
+                            },
+                            {
+                                duration: 0.7,
+                                ease: motion.circOut,
+                            },
+                        )
+                    })
+                }
+            "
+            class="opacity-0"
+        >
             <span>© {{ date('Y') }} Maintained by</span>
             <a
                 href="https://twitter.com/marcelpociot"
