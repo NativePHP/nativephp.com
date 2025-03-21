@@ -38,7 +38,7 @@
 
     {{-- Copyright --}}
     <section
-        class="flex flex-wrap items-center justify-between gap-x-5 gap-y-3 text-sm text-gray-500"
+        class="flex flex-wrap items-center justify-between gap-x-5 gap-y-3 text-sm text-gray-400/80"
         aria-label="Credits and copyright information"
     >
         <div>
@@ -46,7 +46,7 @@
             <a
                 href="https://twitter.com/caneco"
                 target="_blank"
-                class="transition duration-200 hover:text-black"
+                class="transition duration-200 hover:text-black dark:hover:text-white"
                 aria-label="Caneco's Twitter profile"
                 rel="noopener noreferrer"
             >
@@ -59,7 +59,7 @@
             <a
                 href="https://twitter.com/marcelpociot"
                 target="_blank"
-                class="transition duration-200 hover:text-black"
+                class="transition duration-200 hover:text-black dark:hover:text-white"
                 aria-label="Marcel Pociot's Twitter profile"
                 rel="noopener noreferrer"
             >
@@ -69,7 +69,7 @@
             <a
                 href="https://twitter.com/simonhamp"
                 target="_blank"
-                class="transition duration-200 hover:text-black"
+                class="transition duration-200 hover:text-black dark:hover:text-white"
                 aria-label="Simon Hamp's Twitter profile"
                 rel="noopener noreferrer"
             >
