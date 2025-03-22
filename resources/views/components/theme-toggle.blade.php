@@ -93,8 +93,12 @@
                     '0'
                 document.querySelector('.theme-selector-sunshine').style.opacity =
                     '0'
+                document.querySelector('.theme-selector-moon').style.transform =
+                    'translate(0%, -50%) translate(12px, 0px)'
             } else {
                 document.querySelector('.theme-selector-moon').style.opacity = '0'
+                document.querySelector('.theme-selector-moon').style.transform =
+                    'translate(0%, -50%) translate(12px, 0px) rotate(70deg) scale(0.6, 0.6)'
                 document.querySelector('.theme-selector-mini-star').style.opacity =
                     '0'
                 document.querySelector('.theme-selector-micro-star').style.opacity =
