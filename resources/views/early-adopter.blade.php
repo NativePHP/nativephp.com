@@ -338,7 +338,7 @@
                                     {
                                         duration: 0.7,
                                         ease: motion.circOut,
-                                        at: 0.5,
+                                        at: 0.2,
                                     },
                                 ],
                                 [
@@ -405,7 +405,7 @@
                                     {
                                         duration: 0.7,
                                         ease: motion.circOut,
-                                        at: 1,
+                                        at: 0.35,
                                     },
                                 ],
                                 [
@@ -663,28 +663,29 @@
 
         {{-- Pricing Plans --}}
         <div
-            class="grid grid-cols-[repeat(auto-fill,minmax(19rem,1fr))] items-start gap-x-6 gap-y-8 pt-10"
+            x-init="
+                () => {
+                    motion.inView($el, (element) => {
+                        motion.animate(
+                            Array.from($el.children),
+                            {
+                                y: [10, 0],
+                                opacity: [0, 1],
+                            },
+                            {
+                                duration: 0.7,
+                                ease: motion.circOut,
+                                delay: motion.stagger(0.1),
+                            },
+                        )
+                    })
+                }
+            "
+            class="mt-10 grid grid-cols-[repeat(auto-fill,minmax(19rem,1fr))] items-start gap-x-6 gap-y-8"
             aria-label="Pricing plans"
         >
             {{-- Pro Plan --}}
             <div
-                x-init="
-                    () => {
-                        motion.inView($el, (element) => {
-                            motion.animate(
-                                $el,
-                                {
-                                    opacity: [0, 1],
-                                    y: [10, 0],
-                                },
-                                {
-                                    duration: 0.7,
-                                    ease: motion.easeOut,
-                                },
-                            )
-                        })
-                    }
-                "
                 class="rounded-2xl bg-gray-100 p-7 opacity-0 dark:bg-gray-900/40"
                 aria-labelledby="pro-plan-heading"
             >
@@ -852,23 +853,6 @@
 
             {{-- Teams Plan --}}
             <div
-                x-init="
-                    () => {
-                        motion.inView($el, (element) => {
-                            motion.animate(
-                                $el,
-                                {
-                                    opacity: [0, 1],
-                                    y: [10, 0],
-                                },
-                                {
-                                    duration: 0.7,
-                                    ease: motion.easeOut,
-                                },
-                            )
-                        })
-                    }
-                "
                 class="rounded-2xl bg-gray-100 p-7 opacity-0 dark:bg-gray-900/40"
                 aria-labelledby="teams-plan-heading"
             >
@@ -1036,23 +1020,6 @@
 
             {{-- Max Plan - Most Popular --}}
             <div
-                x-init="
-                    () => {
-                        motion.inView($el, (element) => {
-                            motion.animate(
-                                $el,
-                                {
-                                    opacity: [0, 1],
-                                    y: [10, 0],
-                                },
-                                {
-                                    duration: 0.7,
-                                    ease: motion.easeOut,
-                                },
-                            )
-                        })
-                    }
-                "
                 class="relative rounded-2xl bg-gray-100 p-7 opacity-0 ring-1 ring-black dark:bg-black/50 dark:ring-white/20"
                 aria-labelledby="max-plan-heading"
             >

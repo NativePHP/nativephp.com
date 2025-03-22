@@ -960,7 +960,24 @@
         <div class="flex flex-wrap items-center justify-between gap-5">
             <div class="lg:max-w-96">
                 <div
-                    class="inline rounded-full px-3 py-1 text-sm font-medium uppercase ring-1 ring-black dark:ring-white/15"
+                    x-init="
+                        () => {
+                            motion.inView($el, (element) => {
+                                motion.animate(
+                                    $el,
+                                    {
+                                        opacity: [0, 1],
+                                        x: [10, 0],
+                                    },
+                                    {
+                                        duration: 0.7,
+                                        ease: motion.circOut,
+                                    },
+                                )
+                            })
+                        }
+                    "
+                    class="inline-block rounded-full px-3 py-1 text-sm font-medium uppercase ring-1 ring-black dark:ring-white/15"
                 >
                     Laracon US Talk
                 </div>
