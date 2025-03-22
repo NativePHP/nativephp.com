@@ -277,7 +277,7 @@
 
             {{-- Shiny line --}}
             <div
-                class="absolute left-1/2 top-32 z-20 -translate-x-1/2 rotate-[50deg] transition duration-500 ease-out will-change-transform group-hover/header:translate-x-[-55%]"
+                class="absolute left-1/2 top-32 z-20 -translate-x-1/2 rotate-[50deg] transition duration-500 ease-out will-change-transform group-hover/header:translate-x-[-55%] group-hover/header:opacity-0"
                 aria-hidden="true"
             >
                 <div
