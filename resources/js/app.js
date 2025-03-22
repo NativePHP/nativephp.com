@@ -2,6 +2,7 @@ import './fonts'
 import './bootstrap'
 import Alpine from 'alpinejs'
 import collapse from '@alpinejs/collapse'
+import persist from '@alpinejs/persist'
 import codeBlock from './alpine/codeBlock.js'
 import.meta.glob(['../images/**', '../svg/**'])
 import {
@@ -20,6 +21,7 @@ import {
     anticipate,
     spring,
     stagger,
+    cubicBezier,
 } from 'motion'
 
 // Motion
@@ -39,6 +41,7 @@ window.motion = {
     anticipate: anticipate,
     spring: spring,
     stagger: stagger,
+    cubicBezier: cubicBezier,
 }
 
 // Alpine
@@ -52,4 +55,5 @@ Alpine.magic('refAll', (el) => {
 })
 
 Alpine.plugin(collapse)
+Alpine.plugin(persist)
 Alpine.start()

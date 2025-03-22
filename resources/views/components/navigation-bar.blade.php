@@ -8,8 +8,9 @@
         :class="scrolled ? 'ring-gray-200/80 dark:ring-gray-800/50 translate-y-3 bg-white/50 dark:bg-white/5' : 'ring-transparent dark:bg-transparent'"
         class="2xl:max-w-8xl mx-auto flex w-full max-w-5xl items-center justify-between gap-5 rounded-2xl px-5 py-4 ring-1 backdrop-blur-md transition duration-200 ease-out xl:max-w-7xl"
     >
-        {{-- Logo --}}
+        {{-- Left side --}}
         <div class="flex items-center gap-3">
+            {{-- Logo --}}
             <a
                 href="/"
                 aria-label="NativePHP Homepage"
@@ -17,6 +18,8 @@
                 <x-logo class="h-5 sm:h-6" />
                 <span class="sr-only">NativePHP</span>
             </a>
+
+            {{-- Version badge --}}
             <div
                 class="hidden rounded-full bg-gray-200/60 px-2 py-1 text-xs text-gray-600 lg:block dark:bg-[#1f2032] dark:text-white/50"
                 aria-label="Version information"
@@ -25,6 +28,7 @@
             </div>
         </div>
 
+        {{-- Right side --}}
         <div class="flex items-center gap-3">
             {{-- Doc search --}}
             <div>
@@ -34,11 +38,16 @@
                     aria-label="Search documentation"
                 ></div>
             </div>
+
             {{-- Desktop menu --}}
             <div
                 class="flex items-center gap-3.5 text-sm"
                 aria-label="Primary navigation"
             >
+                {{-- Theme toggle --}}
+                <x-theme-toggle />
+
+                {{-- Link --}}
                 <a
                     href="/"
                     @class([
@@ -50,10 +59,14 @@
                 >
                     Home
                 </a>
+
+                {{-- Decorative circle --}}
                 <div
                     class="hidden size-[3px] rotate-45 rounded-sm bg-gray-400 lg:block"
                     aria-hidden="true"
                 ></div>
+
+                {{-- Link --}}
                 <a
                     href="{{ route('early-adopter') }}"
                     @class([
@@ -65,6 +78,7 @@
                 >
                     Mobile
                 </a>
+                {{-- Decorative circle --}}
                 <div
                     class="hidden size-[3px] rotate-45 rounded-sm bg-gray-400 lg:block"
                     aria-hidden="true"

@@ -1,5 +1,13 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+<html
+    lang="{{ str_replace('_', '-', app()->getLocale()) }}"
+    x-data="{
+        darkMode: $persist(
+            window.matchMedia('(prefers-color-scheme: dark)').matches,
+        ),
+    }"
+    x-bind:class="{ 'dark': darkMode === true }"
+>
     <head>
         <meta
             http-equiv="Content-Security-Policy"

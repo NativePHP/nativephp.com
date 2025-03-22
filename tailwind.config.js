@@ -2,6 +2,8 @@
 const { fontFamily } = require('tailwindcss/defaultTheme')
 
 export default {
+    darkMode: 'selector',
+
     content: [
         './resources/**/*.{js,blade.php}',
         './vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php',

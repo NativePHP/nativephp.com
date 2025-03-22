@@ -7,6 +7,7 @@
     },
     "devDependencies": {
         "@alpinejs/collapse": "^3.14.9",
+        "@alpinejs/persist": "^3.14.9",
         "@fontsource/poppins": "^5.2.5",
         "@tailwindcss/typography": "^0.5.16",
         "alpinejs": "^3.14.9",
