@@ -67,54 +67,71 @@
         </div>
 
         {{-- Newsletter --}}
-        <a
-            href="/newsletter"
-            class="group relative z-0 flex items-center gap-6 overflow-hidden rounded-2xl bg-cyan-50/50 py-5 pl-6 pr-7 ring-1 ring-black/5 transition duration-300 ease-in-out hover:bg-cyan-50 hover:ring-black/10 md:max-w-lg dark:bg-gray-900/40 dark:hover:bg-gray-900"
-        >
-            {{-- Decorative circle --}}
-            <div
-                class="absolute left-3 top-1/2 -z-10 size-16 -translate-y-1/2 rounded-full bg-cyan-400/60 blur-2xl dark:block"
-                aria-hidden="true"
-            ></div>
-
-            {{-- Content --}}
-            <div class="flex items-center gap-5 text-sm">
-                <div class="flex flex-col items-center gap-2.5">
-                    {{-- Icon --}}
-                    <x-icons.email-document class="size-7 shrink-0" />
-                    {{-- Title --}}
-                    <h2 class="font-medium">Newsletter</h2>
-                </div>
-
-                {{-- Message --}}
-                <p class="leading-relaxed opacity-50">
-                    Get the latest NativePHP updates and news delivered to your
-                    inbox.
-                </p>
-            </div>
-
-            {{-- Right arrow --}}
-            <x-icons.right-arrow
-                x-init="
-                    () => {
+        <div
+            x-init="
+                () => {
+                    motion.inView($el, (element) => {
                         motion.animate(
                             $el,
                             {
-                                x: [0, 10],
+                                opacity: [0, 1],
+                                x: [10, 0],
                             },
                             {
-                                repeat: Infinity,
-                                repeatType: 'reverse',
-                                type: 'spring',
-                                stiffness: 100,
-                                damping: 20
+                                duration: 0.7,
+                                ease: motion.circOut,
                             },
                         )
-                    }
-                "
-                class="size-4 shrink-0"
-            />
-        </a>
+                    })
+                }
+            "
+        >
+            <a
+                href="/newsletter"
+                class="group relative z-0 flex items-center gap-6 overflow-hidden rounded-2xl bg-cyan-50/50 py-5 pl-6 pr-7 ring-1 ring-black/5 transition duration-300 ease-in-out hover:bg-cyan-50 hover:ring-black/10 md:max-w-lg dark:bg-gray-900/40 dark:hover:bg-gray-900"
+            >
+                {{-- Decorative circle --}}
+                <div
+                    class="absolute left-3 top-1/2 -z-10 size-16 -translate-y-1/2 rounded-full bg-cyan-400/60 blur-2xl dark:block"
+                    aria-hidden="true"
+                ></div>
+                {{-- Content --}}
+                <div class="flex items-center gap-5 text-sm">
+                    <div class="flex flex-col items-center gap-2.5">
+                        {{-- Icon --}}
+                        <x-icons.email-document class="size-7 shrink-0" />
+                        {{-- Title --}}
+                        <h2 class="font-medium">Newsletter</h2>
+                    </div>
+                    {{-- Message --}}
+                    <p class="leading-relaxed opacity-50">
+                        Get the latest NativePHP updates and news delivered to
+                        your inbox.
+                    </p>
+                </div>
+                {{-- Right arrow --}}
+                <x-icons.right-arrow
+                    x-init="
+                        () => {
+                            motion.animate(
+                                $el,
+                                {
+                                    x: [0, 10],
+                                },
+                                {
+                                    repeat: Infinity,
+                                    repeatType: 'reverse',
+                                    type: 'spring',
+                                    stiffness: 100,
+                                    damping: 20
+                                },
+                            )
+                        }
+                    "
+                    class="size-4 shrink-0"
+                />
+            </a>
+        </div>
     </div>
 
     {{-- Divider --}}

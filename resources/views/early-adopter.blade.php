@@ -1399,28 +1399,23 @@
         <div
             x-init="
                 () => {
-                    motion.inView(
-                        $el,
-                        (element) => {
-                            motion.animate(
-                                $el,
-                                {
-                                    opacity: [0, 1],
-                                    x: [-10, 0],
-                                },
-                                {
-                                    duration: 0.7,
-                                    ease: motion.easeOut,
-                                },
-                            )
-                        },
-                        {
-                            amount: 0.2,
-                        },
-                    )
+                    motion.inView($el, (element) => {
+                        motion.animate(
+                            Array.from($el.children),
+                            {
+                                x: [-50, 0],
+                                opacity: [0, 1],
+                            },
+                            {
+                                duration: 0.7,
+                                ease: motion.circOut,
+                                delay: motion.stagger(0.1),
+                            },
+                        )
+                    })
                 }
             "
-            class="mx-auto flex w-full max-w-2xl flex-col items-center gap-4 pt-10 opacity-0 [counter-reset:css-counter_0]"
+            class="mx-auto flex w-full max-w-2xl flex-col items-center gap-4 pt-10 [counter-reset:css-counter_0]"
             aria-labelledby="faq-heading"
         >
             <x-faq-card
