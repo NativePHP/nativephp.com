@@ -62,17 +62,12 @@
                 ></div>
 
                 {{-- Star --}}
-                <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 40 40"
-                    fill="none"
-                    class="absolute -right-10 -top-10 size-8 md:size-10 dark:size-5"
+                <div
                     x-init="
                         () => {
                             motion.animate(
                                 $el,
                                 {
-                                    rotate: [180, 0],
                                     scale: [0, 1],
                                     opacity: [0, 1],
                                 },
@@ -83,13 +78,37 @@
                             )
                         }
                     "
-                    aria-hidden="true"
+                    class="absolute -right-10 -top-10"
                 >
-                    <path
-                        d="M25.66 17.636L40 20L25.66 22.364C23.968 22.644 22.64 23.968 22.364 25.66L20 40L17.636 25.66C17.356 23.968 16.032 22.64 14.34 22.364L0 20L14.34 17.636C16.032 17.356 17.36 16.032 17.636 14.34L20 0L22.364 14.34C22.644 16.032 23.968 17.36 25.66 17.636Z"
-                        fill="#E8E4F8"
-                    />
-                </svg>
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 40 40"
+                        fill="none"
+                        class="size-8 dark:size-6"
+                        aria-hidden="true"
+                        x-init="
+                            () => {
+                                motion.animate(
+                                    $el,
+                                    {
+                                        rotate: [0, -180],
+                                    },
+                                    {
+                                        duration: 1.5,
+                                        repeat: Infinity,
+                                        repeatType: 'loop',
+                                        ease: 'linear',
+                                    },
+                                )
+                            }
+                        "
+                    >
+                        <path
+                            d="M25.66 17.636L40 20L25.66 22.364C23.968 22.644 22.64 23.968 22.364 25.66L20 40L17.636 25.66C17.356 23.968 16.032 22.64 14.34 22.364L0 20L14.34 17.636C16.032 17.356 17.36 16.032 17.636 14.34L20 0L22.364 14.34C22.644 16.032 23.968 17.36 25.66 17.636Z"
+                            fill="#E4DFFB"
+                        />
+                    </svg>
+                </div>
 
                 {{-- Glass shape --}}
                 <div
