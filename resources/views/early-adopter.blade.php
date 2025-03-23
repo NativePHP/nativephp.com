@@ -105,7 +105,7 @@
                         <img
                             src="{{ Vite::asset('resources/images/mobile/ios_phone_mockup.webp') }}"
                             alt="iOS phone mockup displaying a NativePHP application"
-                            class="-mb-[10.5rem] w-40 dark:mix-blend-hard-light"
+                            class="-mb-[11rem] w-40 dark:mix-blend-hard-light"
                         />
                     </div>
                     {{-- White blurred circle - Decorative --}}
@@ -122,7 +122,7 @@
 
                 {{-- Blurred circle - Decorative --}}
                 <div
-                    class="absolute -top-1/2 left-0 -z-20 h-60 w-full rounded-full bg-[#DDE2F3] blur-[100px] dark:bg-[#444892]/80"
+                    class="absolute -top-1/2 left-0 -z-20 h-60 w-full rounded-full bg-[#DDE2F3] blur-[100px] dark:bg-[#444892]/50"
                     aria-hidden="true"
                 ></div>
             </div>
@@ -170,7 +170,7 @@
                         <img
                             src="{{ Vite::asset('resources/images/mobile/android_phone_mockup.webp') }}"
                             alt="Android phone mockup displaying a NativePHP application"
-                            class="-mb-[10.5rem] w-40"
+                            class="-mb-[10.7rem] w-40"
                         />
                     </div>
                     {{-- White blurred circle - Decorative --}}
@@ -180,14 +180,14 @@
                     ></div>
                     {{-- Center blurred circle - Decorative --}}
                     <div
-                        class="absolute bottom-0 right-1/2 -z-10 h-52 w-72 translate-x-1/2 rounded-full bg-[#E0D7CE] blur-2xl dark:bg-slate-700/40"
+                        class="absolute bottom-0 right-1/2 -z-10 h-52 w-72 translate-x-1/2 rounded-full bg-[#E0D7CE] blur-2xl dark:bg-slate-700/50"
                         aria-hidden="true"
                     ></div>
                 </div>
 
                 {{-- Blurred circle - Decorative --}}
                 <div
-                    class="absolute -top-1/2 left-0 -z-20 h-60 w-full rounded-full bg-[#FBF2E7] blur-[100px] dark:bg-slate-500/30"
+                    class="absolute -top-1/2 left-0 -z-20 h-60 w-full rounded-full bg-[#FBF2E7] blur-[100px] dark:bg-slate-500/40"
                     aria-hidden="true"
                 ></div>
             </div>
