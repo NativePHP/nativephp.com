@@ -44,9 +44,6 @@
                 class="flex items-center gap-3.5 text-sm"
                 aria-label="Primary navigation"
             >
-                {{-- Theme toggle --}}
-                <x-theme-toggle />
-
                 {{-- Link --}}
                 <a
                     href="/"
@@ -62,7 +59,7 @@
 
                 {{-- Decorative circle --}}
                 <div
-                    class="hidden size-[3px] rotate-45 rounded-sm bg-gray-400 lg:block"
+                    class="hidden size-[3px] rotate-45 rounded-sm bg-gray-400 transition duration-200 lg:block dark:opacity-60"
                     aria-hidden="true"
                 ></div>
 
@@ -80,7 +77,7 @@
                 </a>
                 {{-- Decorative circle --}}
                 <div
-                    class="hidden size-[3px] rotate-45 rounded-sm bg-gray-400 lg:block"
+                    class="hidden size-[3px] rotate-45 rounded-sm bg-gray-400 transition duration-200 lg:block dark:opacity-60"
                     aria-hidden="true"
                 ></div>
                 @if ($hasMenu)
@@ -129,6 +126,9 @@
                         Docs
                     </a>
                 @endif
+
+                {{-- Theme toggle --}}
+                <x-theme-toggle />
             </div>
         </div>
     </div>
