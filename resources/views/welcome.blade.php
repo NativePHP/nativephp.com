@@ -228,12 +228,12 @@
                         </a>
                     </div>
                     <div>
-                        <h3 class="font-medium">Video</h3>
-                        <h4
+                        <div class="font-medium">Video</div>
+                        <div
                             class="font-normal text-gray-600 dark:text-white/50"
                         >
                             Introduction
-                        </h4>
+                        </div>
                         {{-- Image --}}
                         <a
                             href="https://www.youtube.com/watch?v=CsM66a0koAM"
