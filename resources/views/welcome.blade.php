@@ -1023,7 +1023,7 @@
                             })
                         }
                     "
-                    class="pt-2 leading-relaxed text-gray-500 opacity-0"
+                    class="pt-2 leading-relaxed text-gray-500 opacity-0 dark:text-gray-400"
                 >
                     Pociot demonstrates how "NativePHP" streamlines development
                     processes, allowing developers to build desktop applications
@@ -1235,7 +1235,7 @@
                     </svg>
                 </div>
                 <div
-                    class="text-center font-light text-black/70 md:max-w-xs md:text-left md:text-lg dark:text-gray-500"
+                    class="text-center font-light opacity-50 md:max-w-xs md:text-left md:text-lg"
                 >
                     Become a sponsor and get your logo on our README on GitHub
                     with a link to your site.

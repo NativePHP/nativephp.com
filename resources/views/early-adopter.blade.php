@@ -1498,7 +1498,7 @@
                     Simon &amp; Marcel
                 </span>
                 <br />
-                <span class="text-[#636EC9]">Creators of NativePHP</span>
+                <span class="text-indigo-400">Creators of NativePHP</span>
             </p>
         </article>
     </section>
