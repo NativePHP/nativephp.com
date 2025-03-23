@@ -2,6 +2,12 @@
     class="2xl:max-w-8xl mx-auto max-w-5xl px-5 pb-5 pt-20 xl:max-w-7xl"
     aria-labelledby="footer-heading"
 >
+    <h2
+        id="footer-heading"
+        class="sr-only"
+    >
+        Footer
+    </h2>
     <div class="flex flex-wrap items-center justify-between gap-x-6 gap-y-4">
         {{-- Left side --}}
         <div class="flex flex-col gap-6">
