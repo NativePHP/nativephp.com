@@ -29,7 +29,7 @@
                 class="truncate text-6xl font-extrabold uppercase min-[400px]:text-7xl md:text-8xl"
             >
                 Build
-                <span class="sr-only">for Desktop and Mobile</span>
+                <span class="sr-only">Native PHP Apps</span>
             </h1>
             {{-- Native --}}
             <div class="relative">
