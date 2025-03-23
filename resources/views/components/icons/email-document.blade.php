@@ -3,6 +3,7 @@
     xmlns="http://www.w3.org/2000/svg"
     fill="none"
     viewBox="0 0 24 24"
+    overflow="visible"
 >
     <path
         fill="#66e1ff"
@@ -20,11 +21,13 @@
         stroke-width="1"
     ></path>
     <path
+        class="transition duration-300 will-change-transform group-hover:-translate-y-px"
         fill="#e3e3e3"
         d="M19.5 1.5v12.67l-3.77 2.51 -0.23 -0.18h-7l-0.23 0.18 -3.77 -2.51V1.5c0 -0.26522 0.10536 -0.51957 0.29289 -0.707107C4.98043 0.605357 5.23478 0.5 5.5 0.5h13c0.2652 0 0.5196 0.105357 0.7071 0.292893 0.1875 0.187537 0.2929 0.441887 0.2929 0.707107Z"
         stroke-width="1"
     ></path>
     <path
+        class="transition duration-300 will-change-transform group-hover:-translate-y-px"
         fill="#ffffff"
         d="M18.5 0.5h-13c-0.26522 0 -0.51957 0.105357 -0.70711 0.292893C4.60536 0.98043 4.5 1.23478 4.5 1.5v12.67l0.484 0.322L18.893 0.582C18.769 0.52814 18.6352 0.500234 18.5 0.5Z"
         stroke-width="1"
@@ -58,6 +61,7 @@
         stroke-width="1"
     ></path>
     <path
+        class="transition duration-300 will-change-transform group-hover:-translate-y-px"
         stroke="#191919"
         stroke-linecap="round"
         stroke-linejoin="round"
@@ -65,6 +69,7 @@
         stroke-width="1"
     ></path>
     <path
+        class="transition duration-300 will-change-transform group-hover:-translate-y-px"
         stroke="#191919"
         stroke-linecap="round"
         stroke-linejoin="round"
@@ -72,6 +77,7 @@
         stroke-width="1"
     ></path>
     <path
+        class="transition duration-300 will-change-transform group-hover:-translate-y-px"
         stroke="#191919"
         stroke-linecap="round"
         stroke-linejoin="round"
@@ -79,6 +85,7 @@
         stroke-width="1"
     ></path>
     <path
+        class="transition duration-300 will-change-transform group-hover:-translate-y-px"
         stroke="#191919"
         stroke-linecap="round"
         stroke-linejoin="round"
@@ -86,6 +93,7 @@
         stroke-width="1"
     ></path>
     <path
+        class="transition duration-300 will-change-transform group-hover:-translate-y-px"
         stroke="#191919"
         stroke-linecap="round"
         stroke-linejoin="round"

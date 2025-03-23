@@ -101,20 +101,30 @@
                     class="absolute left-3 top-1/2 -z-10 size-16 -translate-y-1/2 rounded-full bg-cyan-400/60 blur-2xl dark:block"
                     aria-hidden="true"
                 ></div>
+
                 {{-- Content --}}
                 <div class="flex items-center gap-5 text-sm">
-                    <div class="flex flex-col items-center gap-2.5">
+                    <div class="flex flex-col items-center gap-2">
                         {{-- Icon --}}
                         <x-icons.email-document class="size-7 shrink-0" />
+
                         {{-- Title --}}
-                        <h2 class="font-medium">Newsletter</h2>
+                        <h2
+                            class="transition duration-300 will-change-transform group-hover:scale-105"
+                        >
+                            Newsletter
+                        </h2>
                     </div>
+
                     {{-- Message --}}
-                    <p class="leading-relaxed opacity-50">
+                    <p
+                        class="leading-relaxed opacity-50 transition duration-300 will-change-transform group-hover:translate-x-0.5"
+                    >
                         Get the latest NativePHP updates and news delivered to
                         your inbox.
                     </p>
                 </div>
+
                 {{-- Right arrow --}}
                 <x-icons.right-arrow
                     x-init="
