@@ -527,8 +527,10 @@
             A collaborative project of:
         </h2>
 
+        {{-- Cards --}}
         <div
             class="mt-5 flex flex-col items-center justify-center gap-5 rounded-2xl bg-gradient-to-br from-[#FFF0DC] to-[#E8EEFF] text-center min-[400px]:mt-10 sm:mt-32 sm:flex-row sm:bg-gradient-to-r dark:from-blue-900/10 dark:to-[#4c407f]/25"
+            x-data="{ hoverSimon: false, hoverMarcel: false }"
         >
             {{-- Simon card --}}
             <div
@@ -550,6 +552,8 @@
                     }
                 "
                 class="group/simon flex flex-col-reverse items-center px-2 pt-2 opacity-0 min-[400px]:flex-row min-[400px]:gap-5 sm:-mt-[6.3rem] sm:gap-0 sm:px-0 sm:pt-0 md:gap-5"
+                x-on:mouseenter="hoverSimon = true"
+                x-on:mouseleave="hoverSimon = false"
             >
                 <div class="relative flex flex-col items-center">
                     {{-- Shape --}}
@@ -658,6 +662,7 @@
                     class="pointer-events-none -ml-10 -mr-10 -mt-5 w-52 transition duration-500 ease-in-out will-change-transform group-hover/simon:-translate-x-1 group-hover/simon:-translate-y-1 group-hover/simon:scale-[1.06] sm:-ml-14 sm:-mr-16 sm:w-64"
                     width="256"
                     height="256"
+                    :class="{'grayscale-[70%]': hoverMarcel}"
                 />
             </div>
             {{-- Marcel card --}}
@@ -680,6 +685,8 @@
                     }
                 "
                 class="group/marcel flex flex-col items-center px-2 pb-5 pt-2 opacity-0 min-[400px]:flex-row min-[400px]:gap-5 min-[400px]:pb-0 sm:-mt-[6.3rem] sm:gap-0 sm:px-0 sm:pt-0 md:gap-5"
+                x-on:mouseenter="hoverMarcel = true"
+                x-on:mouseleave="hoverMarcel = false"
             >
                 {{-- Image --}}
                 <img
@@ -688,6 +695,7 @@
                     class="pointer-events-none -ml-10 -mr-10 -mt-5 w-52 transition duration-500 ease-in-out will-change-transform group-hover/marcel:-translate-y-1 group-hover/marcel:translate-x-1 group-hover/marcel:scale-[1.06] sm:-ml-16 sm:-mr-14 sm:w-64"
                     width="256"
                     height="256"
+                    :class="{'grayscale-[70%]': hoverSimon}"
                 />
 
                 <div class="relative flex flex-col items-center">
