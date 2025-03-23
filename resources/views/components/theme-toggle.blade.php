@@ -120,16 +120,25 @@
             })
         },
     }"
+    role="button"
+    aria-label="Toggle between light and dark mode"
+    x-bind:aria-pressed="darkMode ? 'true' : 'false'"
+    tabindex="0"
 >
+    <span class="sr-only">Toggle theme</span>
+
     {{-- Moon --}}
     <div
         class="theme-selector-moon absolute right-1/2 top-1/2 -translate-y-1/2 translate-x-1/2"
+        aria-hidden="true"
     >
         <div class="-scale-x-100 transition duration-300">
             <svg
                 xmlns="http://www.w3.org/2000/svg"
                 class="size-[22px]"
                 viewBox="0 0 16 16"
+                aria-hidden="true"
+                focusable="false"
             >
                 <path
                     fill="currentColor"
@@ -139,12 +148,17 @@
         </div>
     </div>
     {{-- Mini star --}}
-    <div class="theme-selector-mini-star absolute left-[.6rem] top-[.6rem]">
+    <div
+        class="theme-selector-mini-star absolute left-[.6rem] top-[.6rem]"
+        aria-hidden="true"
+    >
         <div class="transition duration-300">
             <svg
                 xmlns="http://www.w3.org/2000/svg"
                 class="size-[7px]"
                 viewBox="0 0 256 256"
+                aria-hidden="true"
+                focusable="false"
             >
                 <path
                     fill="currentColor"
@@ -154,12 +168,17 @@
         </div>
     </div>
     {{-- Micro star --}}
-    <div class="theme-selector-micro-star absolute left-[1rem] top-[1rem]">
+    <div
+        class="theme-selector-micro-star absolute left-[1rem] top-[1rem]"
+        aria-hidden="true"
+    >
         <div class="transition duration-300">
             <svg
                 xmlns="http://www.w3.org/2000/svg"
                 class="size-[5px]"
                 viewBox="0 0 256 256"
+                aria-hidden="true"
+                focusable="false"
             >
                 <path
                     fill="currentColor"
@@ -169,7 +188,10 @@
         </div>
     </div>
     {{-- Sun ball --}}
-    <div class="absolute right-1/2 top-1/2 -translate-y-1/2 translate-x-1/2">
+    <div
+        class="absolute right-1/2 top-1/2 -translate-y-1/2 translate-x-1/2"
+        aria-hidden="true"
+    >
         <div class="theme-selector-sunball">
             <div
                 class="size-3.5 rounded-full bg-current transition duration-300"
@@ -177,7 +199,10 @@
         </div>
     </div>
     {{-- sunShine --}}
-    <div class="theme-selector-sunshine absolute inset-0 grid h-full w-full">
+    <div
+        class="theme-selector-sunshine absolute inset-0 grid h-full w-full"
+        aria-hidden="true"
+    >
         <div class="relative h-full w-full">
             {{-- Top --}}
             <div
