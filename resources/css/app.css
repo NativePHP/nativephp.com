@@ -173,7 +173,7 @@ nav > ul > li > ul {
 }
 
 .DocSearch-Button-Placeholder {
-    @apply hidden pr-20 text-sm text-black/60 min-[500px]:block dark:text-white/60;
+    @apply hidden pr-20 text-sm text-black/60 min-[520px]:block dark:text-white/60;
 }
 
 .DocSearch-Button-Keys {
