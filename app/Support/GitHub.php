@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Http;
 class GitHub
 {
     public const PACKAGE_ELECTRON = 'nativephp/electron';
+
     public const PACKAGE_LARAVEL = 'nativephp/laravel';
 
     public function __construct(
