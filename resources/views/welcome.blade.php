@@ -149,7 +149,7 @@
                             )
                         }
                     "
-                    class="group absolute -right-[19rem] -top-[5.7rem] hidden items-end gap-1 text-right text-sm lg:flex"
+                    class="group absolute -right-[19rem] -top-[5.7rem] hidden items-end gap-1 text-left text-sm lg:flex"
                 >
                     <div class="relative -top-1.5 -mr-6 flex items-end gap-1">
                         {{-- Black circle --}}
@@ -232,7 +232,7 @@
                         <div
                             class="font-normal text-gray-600 dark:text-white/50"
                         >
-                            Introduction
+                            NativePHP for mobile
                         </div>
                         {{-- Image --}}
                         <a
@@ -383,10 +383,9 @@
                 Laravel
             </a>
             skills to the world of
-            <span class="text-black dark:text-white">
-                desktop & mobile apps
-            </span>
-            . You can build cross-platform applications effortlessly—no extra
+            <span class="text-black dark:text-white">desktop & mobile apps</span>.
+            <br class="hidden md:block">
+            Build cross-platform applications effortlessly—no extra
             tools, just the stack you love.
         </p>
 
@@ -524,7 +523,7 @@
             "
             class="text-center text-xl font-medium capitalize opacity-0"
         >
-            A collaborative project of:
+            A collaboration between:
         </h2>
 
         {{-- Cards --}}
@@ -691,7 +690,7 @@
                 {{-- Image --}}
                 <img
                     src="{{ Vite::asset('resources/images/marcelpaciot_faded.webp') }}"
-                    alt="Marcel Pociot - Creator of NativePHP and CEO of BeyondCode"
+                    alt="Marcel Pociot - Creator of NativePHP and CTO of BeyondCode"
                     class="pointer-events-none -ml-10 -mr-10 -mt-5 w-52 transition duration-500 ease-in-out will-change-transform group-hover/marcel:-translate-y-1 group-hover/marcel:translate-x-1 group-hover/marcel:scale-[1.06] sm:-ml-16 sm:-mr-14 sm:w-64"
                     width="256"
                     height="256"
@@ -731,7 +730,7 @@
                             ~
                         </div>
                         <p class="text-sm text-gray-600 dark:text-white/50">
-                            CEO & Cofounder —
+                            CTO & Cofounder —
                             <a
                                 href="https://beyondco.de/?utm_source=nativephp&utm_medium=logo&utm_campaign=nativephp"
                                 target="_blank"
@@ -1010,7 +1009,7 @@
                     "
                     class="pt-3 text-xl font-medium capitalize opacity-0"
                 >
-                    Want to learn more about the project?
+                    Where did this come from?
                 </h2>
 
                 <p
@@ -1033,10 +1032,9 @@
                     "
                     class="pt-2 leading-relaxed text-gray-500 opacity-0 dark:text-gray-400"
                 >
-                    Pociot demonstrates how "NativePHP" streamlines development
-                    processes, allowing developers to build desktop applications
-                    using minimal abstractions and in the PHP language they
-                    know.
+                    Watch Marcel's original NativePHP talk from Laracon US 2023 in Nashville.
+                    Minds were blown as he demonstrated how to use Laravel to build
+                    cross-platform desktop applications.
                 </p>
             </div>
             <iframe
