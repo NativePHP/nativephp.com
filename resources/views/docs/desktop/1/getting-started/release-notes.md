@@ -4,10 +4,10 @@ order: 1100
 ---
 
 @forelse (\App\Support\GitHub::electron()->releases() as $release)
-## {{ $release['name'] }}
-Released: {{ \Carbon\Carbon::parse($release['published_at'])->format('F j, Y') }}**
+## {{ $release->name }}
+**Released: {{ \Carbon\Carbon::parse($release->published_at)->format('F j, Y') }}**
 
-{{ str_replace('#', '##', $release['body']) }}
+{{ $release->getBodyForMarkdown() }}
 ---
 @empty
 ## We couldn't show you the latest release notes at this time.
