@@ -2,6 +2,7 @@
 
 namespace App\Support;
 
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 
@@ -38,6 +39,17 @@ class GitHub
         return $version['name'] ?? 'Unknown';
     }
 
+    public function releases(): Collection
+    {
+        return Cache::remember(
+            $this->getCacheKey('releases'),
+            now()->addHour(),
+            function () {
+                return $this->fetchReleases();
+            }
+        );
+    }
+
     private function fetchLatestVersion()
     {
         // Make a request to GitHub
@@ -54,5 +66,18 @@ class GitHub
     private function getCacheKey(string $string): string
     {
         return sprintf('%s-%s', $this->package, $string);
+    }
+
+    private function fetchReleases(): ?Collection
+    {
+        // Make a request to GitHub
+        $response = Http::get('https://api.github.com/repos/'.$this->package.'/releases');
+
+        // Check if the request was successful
+        if ($response->failed()) {
+            return null;
+        }
+
+        return collect($response->json());
     }
 }
