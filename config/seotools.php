@@ -43,7 +43,7 @@ return [
             'type' => false,
             'site_name' => false,
             'images' => [
-                '/img/og.png',
+                '/img/og.jpg',
             ],
         ],
     ],
