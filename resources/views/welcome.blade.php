@@ -846,23 +846,6 @@
         >
             <a
                 x-ref="contributor"
-                href="https://github.com/milwad-dev"
-                target="_blank"
-                rel="noopener"
-                class="group grid size-12 place-items-center overflow-hidden rounded-full opacity-0 dark:ring-1 dark:ring-white/10"
-                aria-label="View Milwad Khosravi's GitHub profile - NativePHP contributor"
-            >
-                <img
-                    src="https://avatars.githubusercontent.com/u/98118400?v=4"
-                    alt="Milwad Khosravi - NativePHP contributor"
-                    class="h-full w-full object-cover transition duration-300 ease-out will-change-transform group-hover:scale-125"
-                    loading="lazy"
-                    width="48"
-                    height="48"
-                />
-            </a>
-            <a
-                x-ref="contributor"
                 href="https://github.com/SRWieZ"
                 target="_blank"
                 rel="noopener"
@@ -897,40 +880,6 @@
             </a>
             <a
                 x-ref="contributor"
-                href="https://github.com/nexxai"
-                target="_blank"
-                rel="noopener"
-                class="group grid size-12 place-items-center overflow-hidden rounded-full opacity-0 dark:ring-1 dark:ring-white/10"
-                aria-label="View JT Smith's GitHub profile - NativePHP contributor"
-            >
-                <img
-                    src="https://avatars.githubusercontent.com/u/4316564?v=4"
-                    alt="JT Smith - NativePHP contributor"
-                    class="h-full w-full object-cover transition duration-300 ease-out will-change-transform group-hover:scale-125"
-                    loading="lazy"
-                    width="48"
-                    height="48"
-                />
-            </a>
-            <a
-                x-ref="contributor"
-                href="https://github.com/Mombuyish"
-                target="_blank"
-                rel="noopener"
-                class="group grid size-12 place-items-center overflow-hidden rounded-full opacity-0 dark:ring-1 dark:ring-white/10"
-                aria-label="View Yish's GitHub profile - NativePHP contributor"
-            >
-                <img
-                    src="https://avatars.githubusercontent.com/u/8007787?v=4"
-                    alt="Yish - NativePHP contributor"
-                    class="h-full w-full object-cover transition duration-300 ease-out will-change-transform group-hover:scale-125"
-                    loading="lazy"
-                    width="48"
-                    height="48"
-                />
-            </a>
-            <a
-                x-ref="contributor"
                 href="https://github.com/gwleuverink"
                 target="_blank"
                 rel="noopener"
@@ -948,13 +897,30 @@
             </a>
             <a
                 x-ref="contributor"
+                href="https://github.com/PeteBishwhip"
+                target="_blank"
+                rel="noopener"
+                class="group grid size-12 place-items-center overflow-hidden rounded-full opacity-0 dark:ring-1 dark:ring-white/10"
+                aria-label="View Peter Bishop's GitHub profile - NativePHP contributor"
+            >
+                <img
+                    src="https://avatars.githubusercontent.com/u/9081809?v=4"
+                    alt="Peter Bishop - NativePHP contributor"
+                    class="h-full w-full object-cover transition duration-300 ease-out will-change-transform group-hover:scale-125"
+                    loading="lazy"
+                    width="48"
+                    height="48"
+                />
+            </a>
+            <a
+                x-ref="contributor"
                 href="https://github.com/NativePHP/laravel/graphs/contributors"
                 target="_blank"
                 rel="noopener"
                 class="group grid size-12 place-items-center overflow-hidden rounded-full border-[1px] border-dashed border-indigo-500 bg-indigo-100 text-sm font-medium opacity-0 transition duration-300 ease-out hover:bg-indigo-200/70 dark:bg-indigo-500/20 dark:hover:bg-indigo-500/30"
-                aria-label="View all 27 additional contributors to the NativePHP project on GitHub"
+                aria-label="View all additional contributors to the NativePHP project on GitHub"
             >
-                +27
+                40+
             </a>
         </div>
     </section>
