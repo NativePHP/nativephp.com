@@ -1,24 +1,28 @@
-import defaultTheme from "tailwindcss/defaultTheme";
-
 /** @type {import('tailwindcss').Config} */
+const { fontFamily } = require('tailwindcss/defaultTheme')
+
 export default {
+    darkMode: 'selector',
+
     content: [
-        "./vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php",
-        "./storage/framework/views/*.php",
-        "./resources/views/**/*.blade.php",
-        "./app/**/*.php",
-        // "./app/Extensions/**/*.php",
+        './resources/**/*.{js,blade.php}',
+        './vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php',
+        './storage/framework/views/*.php',
+        './app/**/*.php',
     ],
 
     safelist: ['inline', 'text-red-600', 'mr-2', 'font-bold', 'no-underline'],
 
     theme: {
+        extend: {
+            fontFamily: {
+                poppins: "'Poppins', Verdana, sans-serif",
+            },
+        },
         container: {
             center: true,
         },
     },
 
-    plugins: [
-        require('@tailwindcss/typography'),
-    ],
-};
+    plugins: [require('@tailwindcss/typography')],
+}

@@ -1,0 +1,16 @@
+{
+    "plugins": ["prettier-plugin-blade", "prettier-plugin-tailwindcss"],
+    "overrides": [
+        {
+            "files": ["*.blade.php"],
+            "options": {
+                "parser": "blade"
+            }
+        }
+    ],
+    "tailwindConfig": "./tailwind.config.js",
+    "singleQuote": true,
+    "semi": false,
+    "trailingComma": "all",
+    "singleAttributePerLine": true
+}

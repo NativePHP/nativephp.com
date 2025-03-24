@@ -1,26 +1,63 @@
+{{-- On this page --}}
+<h3 class="inline-flex items-center gap-1.5 text-sm opacity-60">
+    {{-- Icon --}}
+    <x-icons.stacked-lines class="size-[18px]" />
 
-    <x-sidebar-title>On this page</x-sidebar-title>
-    @if (count($tableOfContents) > 0)
-        <ul class="mt-4 space-y-2 text-sm">
-            @foreach($tableOfContents as $item)
-                <li class="hover:text-[#00aaa6] text-gray-700 dark:text-gray-300
+    {{-- Label --}}
+    <div>On this page</div>
+</h3>
 
-                @if($item['level'] == 2) font-semibold leading-6 @endif
-                @if($item['level'] == 3) ml-4 leading-4 pb-0.5 @endif
-                @if($item['level'] == 3 && ($tableOfContents[$loop->index+1]['level']??0) == 2) pb-2 @endif
-                ">
-                    <a href="#{{ $item['anchor'] }}">{{ $item['title'] }}</a>
-                </li>
-            @endforeach
-        </ul>
-    @endif
-
-    <x-sidebar-title class="mt-8">Featured sponsors</x-sidebar-title>
-    <div class="mt-4 flex flex-col gap-4 w-3/4 pl-3">
-        <x-sponsors-featured height="h-12" :same-height="false"/>
+{{-- Table of contents --}}
+@if (count($tableOfContents) > 0)
+    <div
+        class="mt-2 flex flex-col space-y-2 border-l text-xs dark:border-l-white/15"
+    >
+        @foreach ($tableOfContents as $item)
+            <a
+                href="#{{ $item['anchor'] }}"
+                @class([
+                    'transition duration-300 ease-in-out will-change-transform hover:translate-x-0.5 hover:text-violet-400 hover:opacity-100 dark:text-white/80',
+                    'pb-1 pl-3' => $item['level'] == 2,
+                    'py-1 pl-6' => $item['level'] == 3,
+                ])
+            >
+                {{ $item['title'] }}
+            </a>
+        @endforeach
     </div>
+@endif
 
-    <x-sidebar-title class="mt-8">Corporate sponsors</x-sidebar-title>
-    <div class="mt-4 flex flex-col gap-6 w-3/4 pl-3">
-        <x-sponsors-corporate height="h-8"/>
-    </div>
+{{-- Sponsor us --}}
+<a
+    href="https://github.com/nativephp/laravel?sponsor=1"
+    class="mt-5 grid w-40 place-items-center gap-2 rounded-xl bg-pink-100 px-5 pb-3 pt-3.5 text-center transition duration-300 ease-in-out hover:bg-pink-200/80 dark:bg-pink-600/10 dark:hover:bg-pink-600/15"
+>
+    <x-icons.love-baloons class="w-9" />
+    <div class="text-sm font-medium dark:font-normal">Sponsor us on GitHub</div>
+</a>
+
+{{-- Featured sponsors --}}
+<h3 class="inline-flex items-center gap-1.5 pt-3.5 text-sm opacity-60">
+    {{-- Icon --}}
+    <x-icons.star-circle class="size-[18px]" />
+
+    {{-- Label --}}
+    <div>Featured sponsors</div>
+</h3>
+
+{{-- List --}}
+<div class="space-y-3 pt-2.5"><x-sponsors.lists.docs.featured-sponsors /></div>
+
+{{-- Corporate sponsors --}}
+<h3
+    class="mt-5 inline-flex items-center gap-1.5 border-t border-t-black/20 pt-3.5 text-sm opacity-60 dark:border-t-white/15"
+>
+    {{-- Icon --}}
+    <x-icons.briefcase class="size-[18px]" />
+
+    {{-- Label --}}
+    <div>Corporate sponsors</div>
+</h3>
+
+{{-- List --}}
+<div class="space-y-3 pt-2.5"><x-sponsors.lists.docs.corporate-sponsors /></div>

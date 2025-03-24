@@ -1,19 +1,55 @@
+# php unit
 /.phpunit.cache
+.phpunit.result.cache
+
+# auth
+auth.json
+
+# node_modules
 /node_modules
-/public/build
+
+# public
 /public/hot
 /public/storage
+/public/build
+/public/sitemap.xml
+
+# storage
 /storage/*.key
+
+# vendor
 /vendor
-.env
-.env.backup
-.env.production
-.phpunit.result.cache
-Homestead.json
-Homestead.yaml
-auth.json
-npm-debug.log
-yarn-error.log
+
+# ide
 /.fleet
 /.idea
 /.vscode
+_ide_helper*
+.phpstorm.meta.php
+
+# .env
+.env*
+
+# cache
+*.cache
+
+# homestead
+Homestead.json
+Homestead.yaml
+
+# docker
+docker-compose.override.yml
+
+# package managers
+npm-debug.log
+yarn-error.log
+
+# logs
+worker.log
+
+# windows
+*:Zone.Identifier
+Thumbs.db
+
+# mac
+.DS_Store
