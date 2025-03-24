@@ -2,6 +2,7 @@
 
 namespace App\Support;
 
+use App\Support\GitHub\Release;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
@@ -31,9 +32,7 @@ class GitHub
         $version = Cache::remember(
             $this->getCacheKey('latest-version'),
             now()->addHour(),
-            function () {
-                return $this->fetchLatestVersion();
-            }
+            fn () => $this->fetchLatestVersion()
         );
 
         return $version['name'] ?? 'Unknown';
@@ -44,9 +43,7 @@ class GitHub
         return Cache::remember(
             $this->getCacheKey('releases'),
             now()->addHour(),
-            function () {
-                return $this->fetchReleases();
-            }
+            fn () => $this->fetchReleases()
         );
     }
 
@@ -75,9 +72,9 @@ class GitHub
 
         // Check if the request was successful
         if ($response->failed()) {
-            return null;
+            return collect();
         }
 
-        return collect($response->json());
+        return collect($response->json())->map(fn (array $release) => new Release($release));
     }
 }
