@@ -1269,7 +1269,7 @@
         >
             <a
                 href="/docs/getting-started/sponsoring"
-                class="group flex flex-wrap items-center justify-center gap-x-5 gap-y-3 rounded-3xl bg-gray-100 px-8 py-8 transition duration-200 ease-in-out hover:ring-1 hover:ring-black/60 md:justify-between md:px-12 md:py-10 dark:bg-gray-900/40 dark:hover:bg-gray-900/60 dark:hover:ring-white/15"
+                class="dark:bg-mirage dark:hover:ring-cloud dark:hover:bg-haiti group flex flex-wrap items-center justify-center gap-x-5 gap-y-3 rounded-3xl bg-gray-100 px-8 py-8 transition duration-200 ease-in-out hover:ring-1 hover:ring-black/60 md:justify-between md:px-12 md:py-10"
                 aria-label="Learn about sponsoring the NativePHP project"
             >
                 <div
