@@ -8,6 +8,47 @@
     }
 }
 
+/* Scrollbar width */
+::-webkit-scrollbar {
+    height: 8px;
+    width: 8px;
+}
+
+/* Scrollbar track */
+::-webkit-scrollbar-track {
+    background: transparent;
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: transparent;
+}
+
+/* Scrollbar thumb (the draggable part) */
+::-webkit-scrollbar-thumb {
+    border-radius: 999px;
+}
+
+/* Light Theme */
+::-webkit-scrollbar-thumb {
+    @apply bg-gray-300/80;
+}
+
+/* Scrollbar thumb on hover */
+::-webkit-scrollbar-thumb:hover {
+    @apply bg-gray-300;
+}
+
+/* Dark Theme */
+.dark ::-webkit-scrollbar-thumb {
+    @apply bg-cloud/60;
+}
+
+/* Scrollbar thumb on hover */
+.dark ::-webkit-scrollbar-thumb:hover {
+    @apply bg-cloud;
+}
+
 /* Whole menu */
 nav ul {
     @apply list-none text-sm;
