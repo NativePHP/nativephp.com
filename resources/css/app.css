@@ -139,7 +139,7 @@ nav > ul > li > ul {
 
 :root {
     --docsearch-container-background: rgba(0, 0, 0, 0.5);
-    --docsearch-primary-color: #a78bfa;
+    --docsearch-primary-color: #987af1;
 }
 
 [id='docsearch'] {
@@ -201,4 +201,8 @@ nav > ul > li > ul {
 
 .DocSearch-Input {
     @apply focus-visible:outline-none;
+}
+
+.DocSearch-Form {
+    @apply rounded-lg;
 }
