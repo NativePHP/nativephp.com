@@ -368,9 +368,9 @@
                 <img
                     src="{{ Vite::asset('resources/images/simon2025laraconeu.webp') }}"
                     alt="Simon Hamp presenting at Laracon EU 2025 on building mobile apps with PHP"
-                    class="w-full max-w-96 rounded-xl"
-                    width="384"
-                    height="216"
+                    class="w-full max-w-[505px] rounded-xl"
+                    width="505"
+                    height="284"
                     loading="lazy"
                 />
             </a>
@@ -967,9 +967,11 @@
         class="mx-auto mt-20 max-w-5xl px-5"
         aria-labelledby="laracon-talk-title"
     >
-        <div class="flex flex-wrap items-center justify-between gap-5">
+        <div
+            class="flex flex-col items-center gap-5 lg:flex-row lg:justify-between"
+        >
             {{-- Left side --}}
-            <div class="lg:max-w-96">
+            <div class="text-center lg:max-w-96">
                 <div
                     x-init="
                         () => {
@@ -1011,7 +1013,7 @@
                             })
                         }
                     "
-                    class="pt-3 text-xl font-medium capitalize opacity-0"
+                    class="pt-2.5 text-xl font-medium capitalize opacity-0"
                 >
                     Where did this come from?
                 </h2>
@@ -1034,7 +1036,7 @@
                             })
                         }
                     "
-                    class="pt-2 leading-relaxed text-gray-500 opacity-0 dark:text-gray-400"
+                    class="pt-1.5 leading-relaxed text-gray-500 opacity-0 dark:text-gray-400"
                 >
                     Watch Marcel's original NativePHP talk from Laracon US 2023
                     in Nashville. Minds were blown as he demonstrated how to use
@@ -1093,9 +1095,9 @@
                     <img
                         src="{{ Vite::asset('resources/images/marcel2023laraconus.webp') }}"
                         alt="Marcel Pociot at Laracon US - Building Desktop Applications with PHP"
-                        class="w-full max-w-[505px] rounded-xl"
+                        class="w-full max-w-[505px] rounded-xl ring-1 ring-black/10"
                         width="505"
-                        height="282"
+                        height="284"
                         loading="lazy"
                     />
                 </a>
