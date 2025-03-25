@@ -31,7 +31,7 @@
 
 <div
     x-ref="testimonial"
-    class="dark:bg-mirage mt-5 inline-block rounded-2xl p-6 ring-1 ring-black/10 dark:ring-white/10"
+    class="mt-5 inline-block rounded-2xl p-6 ring-1 ring-black/10 dark:bg-mirage dark:ring-white/10"
 >
     {{-- Highlight --}}
     <div

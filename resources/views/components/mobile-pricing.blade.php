@@ -78,7 +78,7 @@
     >
         {{-- Mini Plan --}}
         <div
-            class="dark:bg-mirage rounded-2xl bg-gray-100 p-7 opacity-0"
+            class="rounded-2xl bg-gray-100 p-7 opacity-0 dark:bg-mirage"
             aria-labelledby="pro-plan-heading"
         >
             {{-- Plan Name --}}
@@ -241,7 +241,7 @@
 
         {{-- Pro Plan --}}
         <div
-            class="dark:bg-mirage rounded-2xl bg-gray-100 p-7 opacity-0"
+            class="rounded-2xl bg-gray-100 p-7 opacity-0 dark:bg-mirage"
             aria-labelledby="teams-plan-heading"
         >
             {{-- Plan Name --}}

@@ -6,7 +6,7 @@
 
 <div
     {{ $attributes }}
-    class="dark:bg-mirage mx-1 mb-3 rounded-xl bg-zinc-100/80 transition-all duration-300 ease-in-out"
+    class="mx-1 mb-3 rounded-xl bg-zinc-100/80 transition-all duration-300 ease-in-out dark:bg-mirage"
     :class="{
         'pb-4 pl-4 pr-5 pt-5' : !scrolled,
         'pb-2 pl-2 pr-3 pt-3' : scrolled
@@ -49,7 +49,7 @@
             <div
                 @class([
                     'grid h-9 w-10 place-items-center rounded-lg',
-                    'dark:bg-haiti bg-blue-50 text-blue-500 dark:text-blue-400' => ! $isMobile,
+                    'bg-blue-50 text-blue-500 dark:bg-haiti dark:text-blue-400' => ! $isMobile,
                 ])
             >
                 <x-icons.pc class="size-6 shrink-0" />
@@ -82,7 +82,7 @@
             <div
                 @class([
                     'grid h-9 w-10 place-items-center rounded-lg',
-                    'dark:bg-haiti bg-blue-50 text-blue-500 dark:text-blue-400' => $isMobile,
+                    'bg-blue-50 text-blue-500 dark:bg-haiti dark:text-blue-400' => $isMobile,
                 ])
             >
                 <x-icons.device-mobile-phone class="size-5 shrink-0" />
