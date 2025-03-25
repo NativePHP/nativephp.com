@@ -247,6 +247,7 @@
                                 class="mt-2 w-40 rounded-xl"
                                 width="160"
                                 height="90"
+                                loading="lazy"
                             />
                         </a>
                     </div>
@@ -338,6 +339,7 @@
                     class="w-full max-w-80 rounded-xl"
                     width="320"
                     height="180"
+                    loading="lazy"
                 />
             </a>
         </div>
@@ -383,10 +385,13 @@
                 Laravel
             </a>
             skills to the world of
-            <span class="text-black dark:text-white">desktop & mobile apps</span>.
-            <br class="hidden md:block">
-            Build cross-platform applications effortlessly—no extra
-            tools, just the stack you love.
+            <span class="text-black dark:text-white">
+                desktop & mobile apps
+            </span>
+            .
+            <br class="hidden md:block" />
+            Build cross-platform applications effortlessly—no extra tools, just
+            the stack you love.
         </p>
 
         {{-- Call to Action Button --}}
@@ -998,9 +1003,9 @@
                     "
                     class="pt-2 leading-relaxed text-gray-500 opacity-0 dark:text-gray-400"
                 >
-                    Watch Marcel's original NativePHP talk from Laracon US 2023 in Nashville.
-                    Minds were blown as he demonstrated how to use Laravel to build
-                    cross-platform desktop applications.
+                    Watch Marcel's original NativePHP talk from Laracon US 2023
+                    in Nashville. Minds were blown as he demonstrated how to use
+                    Laravel to build cross-platform desktop applications.
                 </p>
             </div>
             <iframe
