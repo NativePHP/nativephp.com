@@ -96,7 +96,7 @@
         >
             <a
                 href="/newsletter"
-                class="dark:bg-mirage dark:hover:ring-cloud dark:hover:bg-haiti group relative z-0 flex items-center gap-6 overflow-hidden rounded-2xl bg-cyan-50/50 py-5 pl-6 pr-7 ring-1 ring-black/5 transition duration-300 ease-in-out hover:bg-cyan-50 hover:ring-black/10 md:max-w-lg"
+                class="group relative z-0 flex items-center gap-6 overflow-hidden rounded-2xl bg-cyan-50/50 py-5 pl-6 pr-7 ring-1 ring-black/5 transition duration-300 ease-in-out hover:bg-cyan-50 hover:ring-black/10 md:max-w-lg dark:bg-mirage dark:hover:bg-haiti dark:hover:ring-cloud"
             >
                 {{-- Decorative circle --}}
                 <div

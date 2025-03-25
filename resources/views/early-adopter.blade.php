@@ -462,7 +462,7 @@
                 {{-- Box --}}
                 <div
                     x-ref="box"
-                    class="dark:bg-mirage mt-3 grid h-52 w-72 place-items-center rounded-xl bg-[#f4f1ee] p-5 opacity-0"
+                    class="mt-3 grid h-52 w-72 place-items-center rounded-xl bg-[#f4f1ee] p-5 opacity-0 dark:bg-mirage"
                     aria-label="Purchase confirmation visualization"
                 >
                     <div class="flex flex-col items-center gap-5 text-center">
