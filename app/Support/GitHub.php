@@ -29,13 +29,13 @@ class GitHub
 
     public function latestVersion()
     {
-        $version = Cache::remember(
+        $release = Cache::remember(
             $this->getCacheKey('latest-version'),
             now()->addHour(),
             fn () => $this->fetchLatestVersion()
         );
 
-        return $version['name'] ?? 'Unknown';
+        return $release?->name ?? 'Unknown';
     }
 
     public function releases(): Collection
@@ -44,10 +44,10 @@ class GitHub
             $this->getCacheKey('releases'),
             now()->addHour(),
             fn () => $this->fetchReleases()
-        );
+        ) ?? collect();
     }
 
-    private function fetchLatestVersion()
+    private function fetchLatestVersion(): ?Release
     {
         // Make a request to GitHub
         $response = Http::get('https://api.github.com/repos/'.$this->package.'/releases/latest');
@@ -57,7 +57,7 @@ class GitHub
             return null;
         }
 
-        return $response->json();
+        return new Release($response->json());
     }
 
     private function getCacheKey(string $string): string
