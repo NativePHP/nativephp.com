@@ -29,7 +29,7 @@
         </div>
 
         {{-- Right side --}}
-        <div class="flex items-center gap-3">
+        <div class="flex items-center gap-3.5">
             {{-- Doc search --}}
             <div>
                 <div
