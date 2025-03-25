@@ -21,7 +21,7 @@
 
             {{-- Version badge --}}
             <div
-                class="hidden rounded-full bg-gray-200/60 px-2 py-1 text-xs text-gray-600 lg:block dark:bg-[#1f2032] dark:text-white/50"
+                class="hidden rounded-full bg-gray-200/60 px-2 py-1 text-xs text-gray-600 lg:block dark:bg-[#16182b] dark:text-[#747ee6] dark:ring-1 dark:ring-cloud"
                 aria-label="Version information"
             >
                 {{ $electronGitHubVersion }}
