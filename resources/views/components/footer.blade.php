@@ -1,5 +1,5 @@
 <footer
-    class="2xl:max-w-8xl mx-auto max-w-5xl px-5 pb-5 pt-20 xl:max-w-7xl"
+    class="mx-auto max-w-5xl px-5 pb-5 pt-20 xl:max-w-7xl 2xl:max-w-[90rem]"
     aria-labelledby="footer-heading"
 >
     <h2

@@ -6,7 +6,7 @@
 >
     <div
         :class="scrolled ? 'ring-gray-200/80 dark:ring-gray-800/50 translate-y-3 bg-white/50 dark:bg-white/5' : 'ring-transparent dark:bg-transparent'"
-        class="2xl:max-w-8xl mx-auto flex w-full max-w-5xl items-center justify-between gap-5 rounded-2xl px-5 py-4 ring-1 backdrop-blur-md transition duration-200 ease-out xl:max-w-7xl"
+        class="mx-auto flex w-full max-w-5xl items-center justify-between gap-5 rounded-2xl px-5 py-4 ring-1 backdrop-blur-md transition duration-200 ease-out xl:max-w-7xl 2xl:max-w-[90rem]"
     >
         {{-- Left side --}}
         <div class="flex items-center gap-3">
