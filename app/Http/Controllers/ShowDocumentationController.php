@@ -85,10 +85,7 @@ class ShowDocumentationController extends Controller
                     <a href="'.$nav['children'][0]['path'].'" class="flex items-center gap-2 justify-between" x-on:click.prevent="open = !open">
                         <span>'.$nav['title'].'</span>
                         <span class="text-gray-400 dark:text-gray-600">
-                            <svg x-show="open" x-cloak class="size-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-                            </svg>
-                            <svg x-show="!open" x-cloak class="size-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <svg class="size-3 transition duration-300 will-change-transform ease-in-out" :class="{\'rotate-180\': open,}" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"></path>
                             </svg>
                         </span>
@@ -99,7 +96,6 @@ class ShowDocumentationController extends Controller
                     ->setAttributes([
                         'x-show' => 'open',
                         'x-collapse' => '',
-                        'x-cloak' => '',
                     ]);
                 foreach ($nav['children'] as $child) {
                     $submenu->link($child['path'], $child['title']);

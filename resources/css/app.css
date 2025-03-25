@@ -2,29 +2,15 @@
 @tailwind components;
 @tailwind utilities;
 
-[x-cloak] {
-    display: none;
+@layer base {
+    html {
+        -webkit-tap-highlight-color: transparent;
+    }
 }
-
-/* Look cool on safari */
-.blur-background {
-    backdrop-filter: blur(20px);
-}
-
-.background-pattern {
-    background-image: url('../assets/bg.svg');
-}
-
-/*@media(prefers-color-scheme: dark) {*/
-/*    .background-pattern {*/
-/*        background-image: url('../assets/background-pattern-dark.svg');*/
-/*    }*/
-/*}*/
-
 
 /* Whole menu */
 nav ul {
-    @apply text-xl md:text-sm list-none;
+    @apply list-none text-xl md:text-sm;
 }
 
 /* Categories */
@@ -33,50 +19,43 @@ nav > ul > li {
 
     & > a {
         @apply font-semibold;
-        @apply no-underline px-3 py-1.5 mb-1.5;
-        @apply border rounded-lg dark:border-white/15;
+        @apply mb-1.5 px-3 py-2.5 no-underline;
+        @apply rounded-xl border dark:border-white/15;
     }
 }
 
 nav > ul > li.active > a {
-    @apply text-[#00aaa6];
-    /*@apply border-[#00aaa6] dark:border-[#00aaa6]/90;*/
+    @apply text-black dark:text-white;
 
     & > svg {
-        @apply text-[#00aaa6];
+        @apply text-violet-400;
     }
 }
 
+nav > ul > li > a {
+    @apply transition duration-200 will-change-transform;
+}
+
 nav > ul > li:hover > a {
-    @apply text-[#00aaa6];
-    /*@apply border-[#00aaa6] dark:border-[#00aaa6]/90;*/
+    @apply translate-x-0.5 bg-gray-50 dark:bg-gray-900/50;
 }
 
 /* Sub menus */
 nav > ul > li > ul {
-    @apply mb-6;
-
     & > li {
         @apply font-normal;
 
         & a {
-            @apply w-full block;
-            @apply py-1.5;
-            @apply border-l pl-3 dark:border-white/10;
-            @apply ml-3;
+            @apply ml-3 block w-full border-l-[1.5px] py-1.5 pl-3 transition-all duration-200 dark:border-white/10;
         }
 
         &.exact-active a {
-            @apply text-[#00aaa6];
-            @apply border-[#00aaa6] dark:border-[#00aaa6]/90;
-            /*@apply font-medium*/
+            @apply border-violet-400 font-medium text-violet-800/80 dark:border-violet-400/90 dark:text-white;
         }
 
         &:hover a {
-            /*@apply text-[#00aaa6];*/
-            @apply border-[#00aaa6] dark:border-[#00aaa6]/90;
+            @apply border-violet-400 dark:border-violet-400/90;
         }
-
     }
 }
 
@@ -97,7 +76,7 @@ nav > ul > li > ul {
 }
 
 .prose pre {
-    @apply p-6 shadow-lg rounded-xl;
+    @apply rounded-xl p-6 shadow-lg;
 }
 
 .prose pre code {
@@ -117,7 +96,7 @@ nav > ul > li > ul {
 }
 
 .prose img {
-    @apply shadow-md rounded-xl;
+    @apply rounded-xl shadow-md;
 }
 
 .prose img.no-format {
@@ -129,7 +108,7 @@ nav > ul > li > ul {
  overflow-x-auto is recommended.
 */
 .prose pre {
-    @apply p-0 my-4 overflow-x-auto bg-transparent rounded-md;
+    @apply my-4 overflow-x-auto rounded-md bg-transparent p-0;
 }
 
 /*
@@ -139,7 +118,7 @@ nav > ul > li > ul {
  colors extend edge to edge.
 */
 .prose pre code.torchlight {
-    @apply block py-4 min-w-max;
+    @apply block min-w-max py-4;
 }
 
 /*
@@ -158,27 +137,27 @@ nav > ul > li > ul {
     @apply mr-4;
 }
 
-
-
-
-
 :root {
     --docsearch-container-background: rgba(0, 0, 0, 0.5);
-    --docsearch-primary-color: #00aaa6;
+    --docsearch-primary-color: #a78bfa;
 }
 
-[id=docsearch] {
+[id='docsearch'] {
     width: 100%;
     @apply md:w-auto;
 }
 
 .DocSearch-Button {
-    @apply border border-solid border-gray-400/50 dark:border-white/10 dark:bg-black/10 flex items-center w-full rounded;
+    @apply m-0 flex items-center rounded-lg bg-gray-50 font-normal ring-1 ring-gray-700/40 transition duration-300 ease-out dark:bg-black/30;
 }
 
 .DocSearch-Button:hover {
     box-shadow: none;
-    @apply text-gray-400 border-gray-400/70 bg-transparent dark:border-white/20;
+    @apply bg-gray-100 ring-gray-300 dark:bg-black/50 dark:ring-gray-700/70;
+}
+
+.DocSearch-Button:hover .DocSearch-Button-Placeholder {
+    @apply text-black dark:text-white;
 }
 
 .DocSearch-Button .DocSearch-Search-Icon {
@@ -186,15 +165,22 @@ nav > ul > li > ul {
     @apply text-gray-500 dark:text-white/60;
 }
 
+@media (max-width: 768px) {
+    .DocSearch-Button-Keys,
+    .DocSearch-Button-Placeholder {
+        display: block;
+    }
+}
+
 .DocSearch-Button-Placeholder {
-    @apply dark:text-white/60 pr-44 text-xs;
+    @apply hidden pr-20 text-sm text-black/60 min-[520px]:block dark:text-white/60;
 }
 
 .DocSearch-Button-Keys {
     display: flex;
     min-width: auto;
 
-    @apply mt-1 text-xs leading-none;
+    @apply ml-1 mt-1 text-sm leading-none;
 }
 
 .DocSearch-Button-Key {
@@ -202,7 +188,7 @@ nav > ul > li > ul {
     box-shadow: none;
     width: auto;
 
-    @apply font-sans mr-0.5;
+    @apply mr-0.5 font-sans;
 }
 
 .DocSearch-Modal {
@@ -216,4 +202,3 @@ nav > ul > li > ul {
 .DocSearch-Input {
     @apply focus-visible:outline-none;
 }
-

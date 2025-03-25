@@ -1,31 +1,27 @@
 <x-layout :hasMenu="! empty($sidebarLeft)">
-    <main class="overflow-hidden lg:flex lg:flex-1 lg:flex-col">
+    {{-- Main container --}}
+    <main
+        class="2xl:max-w-8xl mx-auto flex w-full max-w-5xl grow px-4 pt-1 xl:max-w-7xl"
+    >
+        {{-- Left sidebar --}}
+        @if (! empty($sidebarLeft))
+            <x-sidebar-left-navigation>
+                {{ $sidebarLeft }}
+            </x-sidebar-left-navigation>
+        @endif
 
-        <div class="max-w-8xl mx-auto px-4 sm:px-6 md:px-8">
-            <main class="overflow-hidden lg:flex lg:flex-1 lg:flex-col">
+        <div class="flex w-full min-w-0 grow px-2 pt-2">
+            {{-- Content --}}
+            <article class="flex w-full min-w-0 grow flex-col">
+                {{ $slot }}
+            </article>
 
-                @if(!empty($sidebarLeft))
-                    <x-sidebar-left-navigation>
-                        {{ $sidebarLeft }}
-                    </x-sidebar-left-navigation>
-                @endif
-
-
-                <div class="lg:pl-[19.5rem]">
-                    <div class="max-w-3xl mx-auto pt-4 sm:pt-6 xl:max-w-none xl:ml-0 xl:mr-[15.5rem] xl:pr-16">
-
-                        @if(!empty($sidebarRight))
-                            <x-sidebar-right>
-                                {{ $sidebarRight }}
-                            </x-sidebar-right>
-                        @endif
-
-                        {{ $slot }}
-
-                        <x-footer/>
-                    </div>
-                </div>
-            </main>
+            {{-- Right sidebar --}}
+            @if (! empty($sidebarRight))
+                <x-sidebar-right>
+                    {{ $sidebarRight }}
+                </x-sidebar-right>
+            @endif
         </div>
     </main>
 </x-layout>
