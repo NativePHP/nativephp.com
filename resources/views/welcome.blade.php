@@ -892,7 +892,7 @@
                 <img
                     src="https://avatars.githubusercontent.com/u/1408020?v=4"
                     alt="Eser DENIZ - NativePHP contributor"
-                    class="h-full w-full object-cover transition duration-300 ease-out will-change-transform group-hover:scale-125"
+                    class="h-full w-full object-cover transition duration-300 ease-out will-change-transform group-hover:scale-110"
                     loading="lazy"
                     width="48"
                     height="48"
@@ -909,7 +909,7 @@
                 <img
                     src="https://avatars.githubusercontent.com/u/12668624?v=4"
                     alt="A G - NativePHP contributor"
-                    class="h-full w-full object-cover transition duration-300 ease-out will-change-transform group-hover:scale-125"
+                    class="h-full w-full object-cover transition duration-300 ease-out will-change-transform group-hover:scale-110"
                     loading="lazy"
                     width="48"
                     height="48"
@@ -926,7 +926,7 @@
                 <img
                     src="https://avatars.githubusercontent.com/u/17123491?v=4"
                     alt="Willem Leuverink - NativePHP contributor"
-                    class="h-full w-full object-cover transition duration-300 ease-out will-change-transform group-hover:scale-125"
+                    class="h-full w-full object-cover transition duration-300 ease-out will-change-transform group-hover:scale-110"
                     loading="lazy"
                     width="48"
                     height="48"
@@ -943,7 +943,7 @@
                 <img
                     src="https://avatars.githubusercontent.com/u/9081809?v=4"
                     alt="Peter Bishop - NativePHP contributor"
-                    class="h-full w-full object-cover transition duration-300 ease-out will-change-transform group-hover:scale-125"
+                    class="h-full w-full object-cover transition duration-300 ease-out will-change-transform group-hover:scale-110"
                     loading="lazy"
                     width="48"
                     height="48"
@@ -954,10 +954,57 @@
                 href="https://github.com/NativePHP/laravel/graphs/contributors"
                 target="_blank"
                 rel="noopener"
-                class="group grid size-12 place-items-center overflow-hidden rounded-full border-[1px] border-dashed border-indigo-500 bg-indigo-100 text-sm font-medium opacity-0 transition duration-300 ease-out hover:bg-indigo-200/70 dark:bg-indigo-500/20 dark:hover:bg-indigo-500/30"
+                class="group relative z-0 grid size-12 place-items-center overflow-hidden rounded-full opacity-0"
                 aria-label="View all additional contributors to the NativePHP project on GitHub"
             >
-                40+
+                <div
+                    class="z-10 self-center justify-self-center truncate text-center text-sm font-medium [grid-area:1/-1]"
+                >
+                    40+
+                </div>
+                <svg
+                    class="-z-10 h-full w-full self-center justify-self-center [grid-area:1/-1]"
+                    viewBox="0 0 63 64"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                >
+                    <rect
+                        class="text-[#C4FEE8] transition duration-300 ease-out group-hover:text-[#aeffe0] dark:text-emerald-500/30 dark:group-hover:text-emerald-500/30"
+                        x="0.75"
+                        y="1.25"
+                        width="61.5"
+                        height="61.5"
+                        rx="30.75"
+                        fill="currentColor"
+                    />
+                    <rect
+                        x-init="
+                            () => {
+                                motion.animate(
+                                    $el,
+                                    {
+                                        rotate: [0, 180],
+                                    },
+                                    {
+                                        duration: 6,
+                                        repeat: Infinity,
+                                        repeatType: 'loop',
+                                        ease: 'linear',
+                                    },
+                                )
+                            }
+                        "
+                        class="origin-center text-[#8CDDBF] dark:opacity-50"
+                        x="0.75"
+                        y="1.25"
+                        width="61.5"
+                        height="61.5"
+                        rx="30.75"
+                        stroke="currentColor"
+                        stroke-width="1.5"
+                        stroke-dasharray="7 7"
+                    />
+                </svg>
             </a>
         </div>
     </section>
@@ -1095,7 +1142,7 @@
                     <img
                         src="{{ Vite::asset('resources/images/marcel2023laraconus.webp') }}"
                         alt="Marcel Pociot at Laracon US - Building Desktop Applications with PHP"
-                        class="w-full max-w-[505px] rounded-xl ring-1 ring-black/10"
+                        class="w-full max-w-[505px] rounded-2xl ring-1 ring-black/10"
                         width="505"
                         height="284"
                         loading="lazy"
