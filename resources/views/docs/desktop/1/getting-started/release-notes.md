@@ -3,7 +3,7 @@ title: Release Notes
 order: 1100
 ---
 
-@forelse (\App\Support\GitHub::electron()->releases() as $release)
+@forelse (\App\Support\GitHub::electron()->releases()->take(10) as $release)
 ## {{ $release->name }}
 **Released: {{ \Carbon\Carbon::parse($release->published_at)->format('F j, Y') }}**
 
