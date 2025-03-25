@@ -1136,7 +1136,7 @@
         <div class="divide-y divide-[#242A2E]/20 *:py-8">
             {{-- Featured sponsors --}}
             <div
-                class="flex flex-col items-center justify-between gap-10 md:flex-row md:items-start"
+                class="flex flex-col items-center justify-between gap-x-10 gap-y-5 md:flex-row md:items-start"
                 aria-labelledby="featured-sponsors-title"
             >
                 <h3
@@ -1189,7 +1189,7 @@
             </div>
             {{-- Corporate sponsors --}}
             <div
-                class="flex flex-col items-center justify-between gap-10 md:flex-row md:items-start"
+                class="flex flex-col items-center justify-between gap-x-10 gap-y-5 md:flex-row md:items-start"
                 aria-labelledby="corporate-sponsors-title"
             >
                 <h3
