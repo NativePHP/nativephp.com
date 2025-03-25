@@ -12,7 +12,7 @@
 
         <div class="flex w-full min-w-0 grow px-2 pt-2">
             {{-- Content --}}
-            <article class="flex w-full min-w-0 grow flex-col">
+            <article class="flex w-full min-w-0 grow flex-col px-5">
                 {{ $slot }}
             </article>
 

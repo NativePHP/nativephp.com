@@ -1,11 +1,11 @@
 <div
-    class="relative z-0 mt-5 flex items-center gap-6 overflow-hidden rounded-2xl bg-yellow-50/50 px-6 py-5 ring-1 ring-black/5 dark:bg-gray-900/40"
+    class="relative z-0 mt-5 flex items-center gap-6 overflow-hidden rounded-2xl bg-yellow-50/50 px-6 py-5 ring-1 ring-black/5 dark:bg-mirage"
     role="alert"
     aria-labelledby="beta-alert-title"
     aria-describedby="beta-alert-description"
 >
     <div
-        class="absolute left-0 top-1/2 -z-10 size-16 -translate-y-1/2 rounded-full bg-yellow-400/50 blur-2xl dark:block"
+        class="absolute left-0 top-1/2 -z-10 size-16 -translate-y-1/2 rounded-full bg-yellow-400/60 blur-2xl dark:block"
         aria-hidden="true"
     ></div>
 

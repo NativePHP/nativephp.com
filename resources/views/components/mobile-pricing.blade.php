@@ -7,22 +7,22 @@
         <h2
             id="pricing-heading"
             x-init="
-                    () => {
-                        motion.inView($el, (element) => {
-                            motion.animate(
-                                $el,
-                                {
-                                    opacity: [0, 1],
-                                    x: [-10, 0],
-                                },
-                                {
-                                    duration: 0.7,
-                                    ease: motion.easeOut,
-                                },
-                            )
-                        })
-                    }
-                "
+                () => {
+                    motion.inView($el, (element) => {
+                        motion.animate(
+                            $el,
+                            {
+                                opacity: [0, 1],
+                                x: [-10, 0],
+                            },
+                            {
+                                duration: 0.7,
+                                ease: motion.easeOut,
+                            },
+                        )
+                    })
+                }
+            "
             class="text-3xl font-semibold opacity-0"
         >
             Purchase a license
@@ -31,22 +31,22 @@
         {{-- Section Description --}}
         <p
             x-init="
-                    () => {
-                        motion.inView($el, (element) => {
-                            motion.animate(
-                                $el,
-                                {
-                                    opacity: [0, 1],
-                                    x: [10, 0],
-                                },
-                                {
-                                    duration: 0.7,
-                                    ease: motion.easeOut,
-                                },
-                            )
-                        })
-                    }
-                "
+                () => {
+                    motion.inView($el, (element) => {
+                        motion.animate(
+                            $el,
+                            {
+                                opacity: [0, 1],
+                                x: [10, 0],
+                            },
+                            {
+                                duration: 0.7,
+                                ease: motion.easeOut,
+                            },
+                        )
+                    })
+                }
+            "
             class="mx-auto max-w-xl pt-2 text-base/relaxed text-gray-600 opacity-0"
         >
             Start your journey to become a mobile developer
@@ -56,29 +56,29 @@
     {{-- Pricing Plans --}}
     <div
         x-init="
-                () => {
-                    motion.inView($el, (element) => {
-                        motion.animate(
-                            Array.from($el.children),
-                            {
-                                y: [10, 0],
-                                opacity: [0, 1],
-                            },
-                            {
-                                duration: 0.7,
-                                ease: motion.circOut,
-                                delay: motion.stagger(0.1),
-                            },
-                        )
-                    })
-                }
-            "
+            () => {
+                motion.inView($el, (element) => {
+                    motion.animate(
+                        Array.from($el.children),
+                        {
+                            y: [10, 0],
+                            opacity: [0, 1],
+                        },
+                        {
+                            duration: 0.7,
+                            ease: motion.circOut,
+                            delay: motion.stagger(0.1),
+                        },
+                    )
+                })
+            }
+        "
         class="mt-10 grid grid-cols-[repeat(auto-fill,minmax(19rem,1fr))] items-start gap-x-6 gap-y-8"
         aria-label="Pricing plans"
     >
         {{-- Mini Plan --}}
         <div
-            class="rounded-2xl bg-gray-100 p-7 opacity-0 dark:bg-gray-900/40"
+            class="rounded-2xl bg-gray-100 p-7 opacity-0 dark:bg-mirage"
             aria-labelledby="pro-plan-heading"
         >
             {{-- Plan Name --}}
@@ -102,7 +102,7 @@
 
             {{-- Warning --}}
             <div
-                class="flex items-center gap-3 pt-3 text-sm"
+                class="flex items-center gap-2 pt-3 text-sm"
                 aria-label="Price warning"
             >
                 <x-icons.warning
@@ -112,8 +112,8 @@
                 <p class="text-zinc-500">
                     Increases to
                     <span class="font-medium text-black dark:text-white">
-                            $100
-                        </span>
+                        $100
+                    </span>
                     after the EAP.
                 </p>
             </div>
@@ -121,7 +121,7 @@
             {{-- Button --}}
             <a
                 href="https://checkout.anystack.sh/nativephp-ios/9e6a5f7c-1e71-4a1e-9cfa-33bb3c0ebb5d"
-                class="my-5 block w-full rounded-2xl bg-zinc-200 py-4 text-center text-sm font-medium transition duration-200 ease-in-out hover:bg-zinc-800 hover:text-white dark:bg-gray-900 dark:hover:bg-slate-700/40"
+                class="my-5 block w-full rounded-2xl bg-zinc-200 py-4 text-center text-sm font-medium transition duration-200 ease-in-out hover:bg-zinc-800 hover:text-white dark:bg-slate-700/30 dark:hover:bg-slate-700/40"
                 aria-label="Get started with Mini plan"
             >
                 Get started
@@ -139,11 +139,9 @@
                     />
                     <div class="text-zinc-500">
                         Build
-                        <span
-                            class="font-medium text-black dark:text-white"
-                        >
-                                unlimited
-                            </span>
+                        <span class="font-medium text-black dark:text-white">
+                            unlimited
+                        </span>
                         apps
                     </div>
                 </div>
@@ -154,11 +152,9 @@
                     />
                     <div class="text-zinc-500">
                         Release
-                        <span
-                            class="font-medium text-black dark:text-white"
-                        >
-                                1
-                            </span>
+                        <span class="font-medium text-black dark:text-white">
+                            1
+                        </span>
                         production app
                     </div>
                 </div>
@@ -168,11 +164,9 @@
                         aria-hidden="true"
                     />
                     <div class="text-zinc-500">
-                            <span
-                                class="font-medium text-black dark:text-white"
-                            >
-                                1
-                            </span>
+                        <span class="font-medium text-black dark:text-white">
+                            1
+                        </span>
                         developer seat
                     </div>
                 </div>
@@ -191,7 +185,7 @@
             >
                 <div class="flex items-center gap-2">
                     <div
-                        class="grid size-7 place-items-center rounded-xl bg-[#D4FD7D] dark:bg-[#d68ffe] dark:text-black"
+                        class="grid size-7 shrink-0 place-items-center rounded-xl bg-[#D4FD7D] dark:bg-[#d68ffe] dark:text-black"
                         aria-hidden="true"
                     >
                         <x-icons.checkmark class="size-5 shrink-0" />
@@ -200,16 +194,18 @@
                 </div>
                 <div class="flex items-center gap-2">
                     <div
-                        class="grid size-7 place-items-center rounded-xl bg-[#D4FD7D] dark:bg-[#d68ffe] dark:text-black"
+                        class="grid size-7 shrink-0 place-items-center rounded-xl bg-[#D4FD7D] dark:bg-[#d68ffe] dark:text-black"
                         aria-hidden="true"
                     >
                         <x-icons.checkmark class="size-5 shrink-0" />
                     </div>
-                    <div class="font-medium">Your name in NativePHP's history</div>
+                    <div class="font-medium">
+                        Your name in NativePHP's history
+                    </div>
                 </div>
                 <div class="flex items-center gap-2">
                     <div
-                        class="grid size-7 place-items-center rounded-xl bg-zinc-200 dark:bg-gray-700/50"
+                        class="grid size-7 shrink-0 place-items-center rounded-xl bg-zinc-200 dark:bg-gray-700/50"
                         aria-hidden="true"
                     >
                         <x-icons.xmark
@@ -220,7 +216,7 @@
                 </div>
                 <div class="flex items-center gap-2">
                     <div
-                        class="grid size-7 place-items-center rounded-xl bg-zinc-200 dark:bg-gray-700/50"
+                        class="grid size-7 shrink-0 place-items-center rounded-xl bg-zinc-200 dark:bg-gray-700/50"
                         aria-hidden="true"
                     >
                         <x-icons.xmark
@@ -231,7 +227,7 @@
                 </div>
                 <div class="flex items-center gap-2">
                     <div
-                        class="grid size-7 place-items-center rounded-xl bg-zinc-200 dark:bg-gray-700/50"
+                        class="grid size-7 shrink-0 place-items-center rounded-xl bg-zinc-200 dark:bg-gray-700/50"
                         aria-hidden="true"
                     >
                         <x-icons.xmark
@@ -245,7 +241,7 @@
 
         {{-- Pro Plan --}}
         <div
-            class="rounded-2xl bg-gray-100 p-7 opacity-0 dark:bg-gray-900/40"
+            class="rounded-2xl bg-gray-100 p-7 opacity-0 dark:bg-mirage"
             aria-labelledby="teams-plan-heading"
         >
             {{-- Plan Name --}}
@@ -269,7 +265,7 @@
 
             {{-- Warning --}}
             <div
-                class="flex items-center gap-3 pt-3 text-sm"
+                class="flex items-center gap-2 pt-3 text-sm"
                 aria-label="Price warning"
             >
                 <x-icons.warning
@@ -279,8 +275,8 @@
                 <p class="text-zinc-500">
                     Increases to
                     <span class="font-medium text-black dark:text-white">
-                            $750
-                        </span>
+                        $750
+                    </span>
                     after the EAP.
                 </p>
             </div>
@@ -288,7 +284,7 @@
             {{-- Button --}}
             <a
                 href="https://checkout.anystack.sh/nativephp-ios/9e02463f-0602-496c-ab33-073b899badae"
-                class="my-5 block w-full rounded-2xl bg-zinc-200 py-4 text-center text-sm font-medium transition duration-200 ease-in-out hover:bg-zinc-800 hover:text-white dark:bg-gray-900 dark:hover:bg-slate-700/40"
+                class="my-5 block w-full rounded-2xl bg-zinc-200 py-4 text-center text-sm font-medium transition duration-200 ease-in-out hover:bg-zinc-800 hover:text-white dark:bg-slate-700/30 dark:hover:bg-slate-700/40"
                 aria-label="Get started with Pro plan"
             >
                 Get started
@@ -306,11 +302,9 @@
                     />
                     <div class="text-zinc-500">
                         Build
-                        <span
-                            class="font-medium text-black dark:text-white"
-                        >
-                                unlimited
-                            </span>
+                        <span class="font-medium text-black dark:text-white">
+                            unlimited
+                        </span>
                         apps
                     </div>
                 </div>
@@ -321,11 +315,9 @@
                     />
                     <div class="text-zinc-500">
                         Release
-                        <span
-                            class="font-medium text-black dark:text-white"
-                        >
-                                10
-                            </span>
+                        <span class="font-medium text-black dark:text-white">
+                            10
+                        </span>
                         production apps
                     </div>
                 </div>
@@ -335,11 +327,9 @@
                         aria-hidden="true"
                     />
                     <div class="text-zinc-500">
-                            <span
-                                class="font-medium text-black dark:text-white"
-                            >
-                                10
-                            </span>
+                        <span class="font-medium text-black dark:text-white">
+                            10
+                        </span>
                         developer seats
                     </div>
                 </div>
@@ -358,7 +348,7 @@
             >
                 <div class="flex items-center gap-2">
                     <div
-                        class="grid size-7 place-items-center rounded-xl bg-[#D4FD7D] dark:bg-[#d68ffe] dark:text-black"
+                        class="grid size-7 shrink-0 place-items-center rounded-xl bg-[#D4FD7D] dark:bg-[#d68ffe] dark:text-black"
                         aria-hidden="true"
                     >
                         <x-icons.checkmark class="size-5 shrink-0" />
@@ -367,16 +357,18 @@
                 </div>
                 <div class="flex items-center gap-2">
                     <div
-                        class="grid size-7 place-items-center rounded-xl bg-[#D4FD7D] dark:bg-[#d68ffe] dark:text-black"
+                        class="grid size-7 shrink-0 place-items-center rounded-xl bg-[#D4FD7D] dark:bg-[#d68ffe] dark:text-black"
                         aria-hidden="true"
                     >
                         <x-icons.checkmark class="size-5 shrink-0" />
                     </div>
-                    <div class="font-medium">Your name in NativePHP's history</div>
+                    <div class="font-medium">
+                        Your name in NativePHP's history
+                    </div>
                 </div>
                 <div class="flex items-center gap-2">
                     <div
-                        class="grid size-7 place-items-center rounded-xl bg-zinc-200 dark:bg-gray-700/50"
+                        class="grid size-7 shrink-0 place-items-center rounded-xl bg-zinc-200 dark:bg-gray-700/50"
                         aria-hidden="true"
                     >
                         <x-icons.xmark
@@ -387,7 +379,7 @@
                 </div>
                 <div class="flex items-center gap-2">
                     <div
-                        class="grid size-7 place-items-center rounded-xl bg-zinc-200 dark:bg-gray-700/50"
+                        class="grid size-7 shrink-0 place-items-center rounded-xl bg-zinc-200 dark:bg-gray-700/50"
                         aria-hidden="true"
                     >
                         <x-icons.xmark
@@ -398,7 +390,7 @@
                 </div>
                 <div class="flex items-center gap-2">
                     <div
-                        class="grid size-7 place-items-center rounded-xl bg-zinc-200 dark:bg-gray-700/50"
+                        class="grid size-7 shrink-0 place-items-center rounded-xl bg-zinc-200 dark:bg-gray-700/50"
                         aria-hidden="true"
                     >
                         <x-icons.xmark
@@ -444,7 +436,7 @@
 
             {{-- Warning --}}
             <div
-                class="flex items-center gap-3 pt-3 text-sm"
+                class="flex items-center gap-2 pt-3 text-sm"
                 aria-label="Price warning"
             >
                 <x-icons.warning
@@ -454,8 +446,8 @@
                 <p class="text-zinc-500">
                     Increases to
                     <span class="font-medium text-black dark:text-white">
-                            $2,500
-                        </span>
+                        $2,500
+                    </span>
                     after the EAP.
                 </p>
             </div>
@@ -481,11 +473,9 @@
                     />
                     <div class="text-zinc-500">
                         Build
-                        <span
-                            class="font-medium text-black dark:text-white"
-                        >
-                                unlimited
-                            </span>
+                        <span class="font-medium text-black dark:text-white">
+                            unlimited
+                        </span>
                         apps
                     </div>
                 </div>
@@ -496,11 +486,9 @@
                     />
                     <div class="text-zinc-500">
                         Release
-                        <span
-                            class="font-medium text-black dark:text-white"
-                        >
-                                unlimited
-                            </span>
+                        <span class="font-medium text-black dark:text-white">
+                            unlimited
+                        </span>
                         production apps
                     </div>
                 </div>
@@ -510,11 +498,9 @@
                         aria-hidden="true"
                     />
                     <div class="text-zinc-500">
-                            <span
-                                class="font-medium text-black dark:text-white"
-                            >
-                                Unlimited
-                            </span>
+                        <span class="font-medium text-black dark:text-white">
+                            Unlimited
+                        </span>
                         developer seats
                     </div>
                 </div>
@@ -533,16 +519,18 @@
             >
                 <div class="flex items-center gap-2">
                     <div
-                        class="grid size-7 place-items-center rounded-xl bg-[#D4FD7D] dark:bg-[#d68ffe] dark:text-black"
+                        class="grid size-7 shrink-0 place-items-center rounded-xl bg-[#D4FD7D] dark:bg-[#d68ffe] dark:text-black"
                         aria-hidden="true"
                     >
                         <x-icons.checkmark class="size-5 shrink-0" />
                     </div>
-                    <div class="font-medium">Exclusive access to private Discord channels</div>
+                    <div class="font-medium">
+                        Exclusive access to private Discord channels
+                    </div>
                 </div>
                 <div class="flex items-center gap-2">
                     <div
-                        class="grid size-7 place-items-center rounded-xl bg-[#D4FD7D] dark:bg-[#d68ffe] dark:text-black"
+                        class="grid size-7 shrink-0 place-items-center rounded-xl bg-[#D4FD7D] dark:bg-[#d68ffe] dark:text-black"
                         aria-hidden="true"
                     >
                         <x-icons.checkmark class="size-5 shrink-0" />
@@ -551,7 +539,7 @@
                 </div>
                 <div class="flex items-center gap-2">
                     <div
-                        class="grid size-7 place-items-center rounded-xl bg-[#D4FD7D] dark:bg-[#d68ffe] dark:text-black"
+                        class="grid size-7 shrink-0 place-items-center rounded-xl bg-[#D4FD7D] dark:bg-[#d68ffe] dark:text-black"
                         aria-hidden="true"
                     >
                         <x-icons.checkmark class="size-5 shrink-0" />
@@ -560,18 +548,16 @@
                 </div>
                 <div class="flex items-center gap-2">
                     <div
-                        class="grid size-7 place-items-center rounded-xl bg-[#D4FD7D] dark:bg-[#d68ffe] dark:text-black"
+                        class="grid size-7 shrink-0 place-items-center rounded-xl bg-[#D4FD7D] dark:bg-[#d68ffe] dark:text-black"
                         aria-hidden="true"
                     >
                         <x-icons.checkmark class="size-5 shrink-0" />
                     </div>
-                    <div class="font-medium">
-                        Business hours support (GMT)
-                    </div>
+                    <div class="font-medium">Business hours support (GMT)</div>
                 </div>
                 <div class="flex items-center gap-2">
                     <div
-                        class="grid size-7 place-items-center rounded-xl bg-[#D4FD7D] dark:bg-[#d68ffe] dark:text-black"
+                        class="grid size-7 shrink-0 place-items-center rounded-xl bg-[#D4FD7D] dark:bg-[#d68ffe] dark:text-black"
                         aria-hidden="true"
                     >
                         <x-icons.checkmark class="size-5 shrink-0" />

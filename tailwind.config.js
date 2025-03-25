@@ -15,6 +15,11 @@ export default {
 
     theme: {
         extend: {
+            colors: {
+                mirage: '#141624',
+                haiti: '#16182C',
+                cloud: '#2b2e53',
+            },
             fontFamily: {
                 poppins: "'Poppins', Verdana, sans-serif",
             },

@@ -26,7 +26,10 @@ class AppServiceProvider extends ServiceProvider
 
     private function registerSharedViewVariables(): void
     {
-        View::share('electronGitHubVersion', GitHub::electron()->latestVersion());
+        View::share('electronGitHubVersion', app()->environment('production')
+            ? GitHub::electron()->latestVersion()
+            : 'dev'
+        );
         View::share('discordLink', 'https://discord.gg/X62tWNStZK');
         View::share('bskyLink', 'https://bsky.app/profile/nativephp.bsky.social');
         View::share('openCollectiveLink', 'https://opencollective.com/nativephp');

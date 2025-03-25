@@ -210,20 +210,26 @@
                             class="relative -top-5 grid size-10 place-items-center rounded-full bg-black/30 text-white ring-1 ring-white/10 backdrop-blur transition duration-300 ease-in-out will-change-transform group-hover:scale-110 group-hover:text-[#d4fd7d] dark:group-hover:text-[#9c90f0]"
                             aria-label="Watch NativePHP introduction video on YouTube"
                         >
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
+                            <x-icons.play-button
+                                x-init="
+                                    () => {
+                                        motion.animate(
+                                            $el,
+                                            {
+                                                x: [-1, 1],
+                                            },
+                                            {
+                                                duration: 0.6,
+                                                repeat: Infinity,
+                                                repeatType: 'mirror',
+                                                ease: motion.easeInOut,
+                                            },
+                                        )
+                                    }
+                                "
                                 class="size-4"
-                                viewBox="0 0 17 22"
-                                fill="none"
                                 aria-hidden="true"
-                            >
-                                <path
-                                    fill-rule="evenodd"
-                                    clip-rule="evenodd"
-                                    d="M3.69143 0.285087C2.05005 -0.569218 0 0.584286 0 2.57588V19.4241C0 21.4158 2.05005 22.5692 3.69143 21.7149C5.89832 20.5663 9.15122 18.7792 11.8609 16.9047C13.2129 15.9695 14.4582 14.9932 15.3743 14.0457C15.8326 13.5718 16.228 13.0853 16.5129 12.5954C16.7949 12.1104 17 11.5686 17 11C17 10.4314 16.7949 9.88956 16.5129 9.40462C16.228 8.91473 15.8326 8.42821 15.3743 7.95433C14.4582 7.00681 13.2129 6.03045 11.8609 5.09525C9.15122 3.22087 5.89832 1.43373 3.69143 0.285087Z"
-                                    fill="currentColor"
-                                />
-                            </svg>
+                            />
                             <span class="sr-only">Play introduction video</span>
                         </a>
                     </div>
@@ -247,6 +253,7 @@
                                 class="mt-2 w-40 rounded-xl"
                                 width="160"
                                 height="90"
+                                loading="lazy"
                             />
                         </a>
                     </div>
@@ -315,29 +322,36 @@
                     class="absolute right-1/2 top-1/2 grid size-16 -translate-y-1/2 translate-x-1/2 place-items-center rounded-full bg-white/10 text-white ring-1 ring-white/10 backdrop-blur transition duration-300 ease-in-out will-change-transform group-hover:scale-110 group-hover:text-[#d4fd7d]"
                     aria-hidden="true"
                 >
-                    <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        class="size-8"
-                        viewBox="0 0 17 22"
-                        fill="none"
+                    <x-icons.play-button
+                        x-init="
+                            () => {
+                                motion.animate(
+                                    $el,
+                                    {
+                                        x: [0, 3],
+                                    },
+                                    {
+                                        duration: 0.6,
+                                        repeat: Infinity,
+                                        repeatType: 'mirror',
+                                        ease: motion.easeInOut,
+                                    },
+                                )
+                            }
+                        "
+                        class="size-7"
                         aria-hidden="true"
-                    >
-                        <path
-                            fill-rule="evenodd"
-                            clip-rule="evenodd"
-                            d="M3.69143 0.285087C2.05005 -0.569218 0 0.584286 0 2.57588V19.4241C0 21.4158 2.05005 22.5692 3.69143 21.7149C5.89832 20.5663 9.15122 18.7792 11.8609 16.9047C13.2129 15.9695 14.4582 14.9932 15.3743 14.0457C15.8326 13.5718 16.228 13.0853 16.5129 12.5954C16.7949 12.1104 17 11.5686 17 11C17 10.4314 16.7949 9.88956 16.5129 9.40462C16.228 8.91473 15.8326 8.42821 15.3743 7.95433C14.4582 7.00681 13.2129 6.03045 11.8609 5.09525C9.15122 3.22087 5.89832 1.43373 3.69143 0.285087Z"
-                            fill="currentColor"
-                        />
-                    </svg>
+                    />
                     <span class="sr-only">Play video</span>
                 </div>
                 {{-- Image --}}
                 <img
                     src="{{ Vite::asset('resources/images/simon2025laraconeu.webp') }}"
                     alt="Simon Hamp presenting at Laracon EU 2025 on building mobile apps with PHP"
-                    class="w-full max-w-80 rounded-xl"
-                    width="320"
-                    height="180"
+                    class="w-full max-w-[505px] rounded-xl"
+                    width="505"
+                    height="284"
+                    loading="lazy"
                 />
             </a>
         </div>
@@ -383,10 +397,13 @@
                 Laravel
             </a>
             skills to the world of
-            <span class="text-black dark:text-white">desktop & mobile apps</span>.
-            <br class="hidden md:block">
-            Build cross-platform applications effortlessly—no extra
-            tools, just the stack you love.
+            <span class="text-black dark:text-white">
+                desktop & mobile apps
+            </span>
+            .
+            <br class="hidden md:block" />
+            Build cross-platform applications effortlessly—no extra tools, just
+            the stack you love.
         </p>
 
         {{-- Call to Action Button --}}
@@ -855,7 +872,7 @@
                 <img
                     src="https://avatars.githubusercontent.com/u/1408020?v=4"
                     alt="Eser DENIZ - NativePHP contributor"
-                    class="h-full w-full object-cover transition duration-300 ease-out will-change-transform group-hover:scale-125"
+                    class="h-full w-full object-cover transition duration-300 ease-out will-change-transform group-hover:scale-110"
                     loading="lazy"
                     width="48"
                     height="48"
@@ -872,7 +889,7 @@
                 <img
                     src="https://avatars.githubusercontent.com/u/12668624?v=4"
                     alt="A G - NativePHP contributor"
-                    class="h-full w-full object-cover transition duration-300 ease-out will-change-transform group-hover:scale-125"
+                    class="h-full w-full object-cover transition duration-300 ease-out will-change-transform group-hover:scale-110"
                     loading="lazy"
                     width="48"
                     height="48"
@@ -889,7 +906,7 @@
                 <img
                     src="https://avatars.githubusercontent.com/u/17123491?v=4"
                     alt="Willem Leuverink - NativePHP contributor"
-                    class="h-full w-full object-cover transition duration-300 ease-out will-change-transform group-hover:scale-125"
+                    class="h-full w-full object-cover transition duration-300 ease-out will-change-transform group-hover:scale-110"
                     loading="lazy"
                     width="48"
                     height="48"
@@ -906,7 +923,7 @@
                 <img
                     src="https://avatars.githubusercontent.com/u/9081809?v=4"
                     alt="Peter Bishop - NativePHP contributor"
-                    class="h-full w-full object-cover transition duration-300 ease-out will-change-transform group-hover:scale-125"
+                    class="h-full w-full object-cover transition duration-300 ease-out will-change-transform group-hover:scale-110"
                     loading="lazy"
                     width="48"
                     height="48"
@@ -917,10 +934,57 @@
                 href="https://github.com/NativePHP/laravel/graphs/contributors"
                 target="_blank"
                 rel="noopener"
-                class="group grid size-12 place-items-center overflow-hidden rounded-full border-[1px] border-dashed border-indigo-500 bg-indigo-100 text-sm font-medium opacity-0 transition duration-300 ease-out hover:bg-indigo-200/70 dark:bg-indigo-500/20 dark:hover:bg-indigo-500/30"
+                class="group relative z-0 grid size-12 place-items-center overflow-hidden rounded-full opacity-0"
                 aria-label="View all additional contributors to the NativePHP project on GitHub"
             >
-                40+
+                <div
+                    class="z-10 self-center justify-self-center truncate text-center text-sm font-medium [grid-area:1/-1]"
+                >
+                    40+
+                </div>
+                <svg
+                    class="-z-10 h-full w-full self-center justify-self-center [grid-area:1/-1]"
+                    viewBox="0 0 63 64"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                >
+                    <rect
+                        class="text-[#C4FEE8] transition duration-300 ease-out group-hover:text-[#aeffe0] dark:text-emerald-500/30 dark:group-hover:text-emerald-500/30"
+                        x="0.75"
+                        y="1.25"
+                        width="61.5"
+                        height="61.5"
+                        rx="30.75"
+                        fill="currentColor"
+                    />
+                    <rect
+                        x-init="
+                            () => {
+                                motion.animate(
+                                    $el,
+                                    {
+                                        rotate: [0, 180],
+                                    },
+                                    {
+                                        duration: 6,
+                                        repeat: Infinity,
+                                        repeatType: 'loop',
+                                        ease: 'linear',
+                                    },
+                                )
+                            }
+                        "
+                        class="origin-center text-[#8CDDBF] dark:opacity-50"
+                        x="0.75"
+                        y="1.25"
+                        width="61.5"
+                        height="61.5"
+                        rx="30.75"
+                        stroke="currentColor"
+                        stroke-width="1.5"
+                        stroke-dasharray="7 7"
+                    />
+                </svg>
             </a>
         </div>
     </section>
@@ -930,8 +994,11 @@
         class="mx-auto mt-20 max-w-5xl px-5"
         aria-labelledby="laracon-talk-title"
     >
-        <div class="flex flex-wrap items-center justify-between gap-5">
-            <div class="lg:max-w-96">
+        <div
+            class="flex flex-col items-center gap-5 lg:flex-row lg:justify-between"
+        >
+            {{-- Left side --}}
+            <div class="text-center lg:max-w-96 lg:text-left">
                 <div
                     x-init="
                         () => {
@@ -973,7 +1040,7 @@
                             })
                         }
                     "
-                    class="pt-3 text-xl font-medium capitalize opacity-0"
+                    class="pt-2.5 text-xl font-medium capitalize opacity-0"
                 >
                     Where did this come from?
                 </h2>
@@ -996,25 +1063,62 @@
                             })
                         }
                     "
-                    class="pt-2 leading-relaxed text-gray-500 opacity-0 dark:text-gray-400"
+                    class="pt-1.5 leading-relaxed text-gray-500 opacity-0 dark:text-gray-400"
                 >
-                    Watch Marcel's original NativePHP talk from Laracon US 2023 in Nashville.
-                    Minds were blown as he demonstrated how to use Laravel to build
-                    cross-platform desktop applications.
+                    Watch Marcel's original NativePHP talk from Laracon US 2023
+                    in Nashville. Minds were blown as he demonstrated how to use
+                    Laravel to build cross-platform desktop applications.
                 </p>
             </div>
-            <iframe
-                width="560"
-                height="315"
-                src="https://www.youtube.com/embed/iG7VscBFnqo?si=AcavmLM7l_oczik7"
-                title="Marcel Pociot at Laracon US - Building Desktop Applications with PHP"
-                frameborder="0"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                referrerpolicy="strict-origin-when-cross-origin"
-                allowfullscreen
-                class="rounded-xl ring-1 ring-black/10"
-                loading="lazy"
-            ></iframe>
+
+            {{-- Right side --}}
+            <div class="grid place-items-center">
+                <a
+                    href="https://www.youtube.com/watch?v=iG7VscBFnqo"
+                    target="_blank"
+                    rel="noopener"
+                    class="group relative"
+                    title="Marcel Pociot at Laracon US - Building Desktop Applications with PHP"
+                    aria-label="Watch Marcel Pociot's talk at Laracon US 2023"
+                >
+                    {{-- Play button --}}
+                    <div
+                        class="absolute right-1/2 top-1/2 grid size-16 -translate-y-1/2 translate-x-1/2 place-items-center rounded-full bg-white/10 text-white ring-1 ring-white/10 backdrop-blur transition duration-300 ease-in-out will-change-transform group-hover:scale-110 group-hover:text-[#d4fd7d]"
+                        aria-hidden="true"
+                    >
+                        <x-icons.play-button
+                            x-init="
+                                () => {
+                                    motion.animate(
+                                        $el,
+                                        {
+                                            x: [0, 3],
+                                        },
+                                        {
+                                            duration: 0.6,
+                                            repeat: Infinity,
+                                            repeatType: 'mirror',
+                                            ease: motion.easeInOut,
+                                        },
+                                    )
+                                }
+                            "
+                            class="size-7"
+                            aria-hidden="true"
+                        />
+                        <span class="sr-only">Play video</span>
+                    </div>
+                    {{-- Image --}}
+                    <img
+                        src="{{ Vite::asset('resources/images/marcel2023laraconus.webp') }}"
+                        alt="Marcel Pociot at Laracon US - Building Desktop Applications with PHP"
+                        class="w-full max-w-[505px] rounded-2xl ring-1 ring-black/10"
+                        width="505"
+                        height="284"
+                        loading="lazy"
+                    />
+                </a>
+            </div>
         </div>
     </section>
 
@@ -1032,7 +1136,7 @@
         <div class="divide-y divide-[#242A2E]/20 *:py-8">
             {{-- Featured sponsors --}}
             <div
-                class="flex flex-col items-center justify-between gap-10 md:flex-row md:items-start"
+                class="flex flex-col items-center justify-between gap-x-10 gap-y-5 md:flex-row md:items-start"
                 aria-labelledby="featured-sponsors-title"
             >
                 <h3
@@ -1085,7 +1189,7 @@
             </div>
             {{-- Corporate sponsors --}}
             <div
-                class="flex flex-col items-center justify-between gap-10 md:flex-row md:items-start"
+                class="flex flex-col items-center justify-between gap-x-10 gap-y-5 md:flex-row md:items-start"
                 aria-labelledby="corporate-sponsors-title"
             >
                 <h3
@@ -1165,7 +1269,7 @@
         >
             <a
                 href="/docs/getting-started/sponsoring"
-                class="group flex flex-wrap items-center justify-center gap-x-5 gap-y-3 rounded-3xl bg-gray-100 px-8 py-8 transition duration-200 ease-in-out hover:ring-1 hover:ring-black/60 md:justify-between md:px-12 md:py-10 dark:bg-gray-900/40 dark:hover:bg-gray-900/60 dark:hover:ring-white/15"
+                class="group flex flex-wrap items-center justify-center gap-x-5 gap-y-3 rounded-3xl bg-gray-100 px-8 py-8 transition duration-200 ease-in-out hover:ring-1 hover:ring-black/60 md:justify-between md:px-12 md:py-10 dark:bg-mirage dark:hover:bg-haiti dark:hover:ring-cloud"
                 aria-label="Learn about sponsoring the NativePHP project"
             >
                 <div

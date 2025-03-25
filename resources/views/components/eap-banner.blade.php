@@ -15,23 +15,27 @@
     </style>
     {{-- Text --}}
     <div
-        class="bg-clip-text tracking-tight text-transparent"
-        style="
-            background-image: linear-gradient(
-                90deg,
-                #8d89b5 0%,
-                white 35%,
-                #8d89b5 70%
-            );
-            background-size: 200% 100%;
-            animation: shine 2s linear infinite;
-        "
+        class="transition duration-200 ease-in-out will-change-transform group-hover:-translate-x-1"
     >
-        Join our Mobile Early Access Program
+        <div
+            class="bg-clip-text tracking-tight text-transparent"
+            style="
+                background-image: linear-gradient(
+                    90deg,
+                    #8d89b5 0%,
+                    white 35%,
+                    #8d89b5 70%
+                );
+                background-size: 200% 100%;
+                animation: shine 2s linear infinite;
+            "
+        >
+            Join our Mobile Early Access Program
+        </div>
     </div>
 
     {{-- Arrow --}}
     <x-icons.right-arrow
-        class="size-3 shrink-0 text-white transition duration-300 ease-in-out will-change-transform group-hover:translate-x-1"
+        class="size-3 shrink-0 text-white transition duration-200 ease-in-out will-change-transform group-hover:translate-x-1"
     />
 </a>

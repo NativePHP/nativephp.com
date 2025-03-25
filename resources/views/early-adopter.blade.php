@@ -51,8 +51,10 @@
                 "
                 class="mx-auto max-w-xl pt-4 text-base/relaxed text-gray-600 sm:text-lg/relaxed dark:text-gray-400"
             >
-                This changes everything! Now you can use the tools you already know
-                to build rich, native, <em>mobile</em> apps... right now!
+                This changes everything! Now you can use the tools you already
+                know to build rich, native,
+                <em>mobile</em>
+                apps... right now!
             </h2>
         </header>
 
@@ -460,7 +462,7 @@
                 {{-- Box --}}
                 <div
                     x-ref="box"
-                    class="mt-3 grid h-52 w-72 place-items-center rounded-xl bg-[#f4f1ee] p-5 opacity-0 dark:bg-gray-900/40"
+                    class="mt-3 grid h-52 w-72 place-items-center rounded-xl bg-[#f4f1ee] p-5 opacity-0 dark:bg-mirage"
                     aria-label="Purchase confirmation visualization"
                 >
                     <div class="flex flex-col items-center gap-5 text-center">
@@ -609,7 +611,7 @@
     <x-mobile-pricing />
 
     {{-- Testimonials Section --}}
-    {{--  <x-testimonials />  --}}
+    {{-- <x-testimonials /> --}}
 
     {{-- FAQ Section --}}
     <section
@@ -664,14 +666,13 @@
             class="mx-auto flex w-full max-w-2xl flex-col items-center gap-4 pt-10 [counter-reset:css-counter_0]"
             aria-labelledby="faq-heading"
         >
-            <x-faq-card
-                question="Why isn't this open source and free?"
-            >
+            <x-faq-card question="Why isn't this open source and free?">
                 <p>
-                    We want to build an amazing tool and make it sustainable. A lot
-                    of NativePHP is already fully open source. With NativePHP for mobile,
-                    we need to take a different path to ensure that the entire project
-                    continues to get the support it deserves.
+                    We want to build an amazing tool and make it sustainable. A
+                    lot of NativePHP is already fully open source. With
+                    NativePHP for mobile, we need to take a different path to
+                    ensure that the entire project continues to get the support
+                    it deserves.
                 </p>
             </x-faq-card>
 
@@ -681,39 +682,36 @@
                 <p>
                     Yes, a single license will let you build apps for both iOS
                     and Android. iOS support is available right now and Android
-                    support is in development and will be included once released.
-                    Stay tuned!
+                    support is in development and will be included once
+                    released. Stay tuned!
                 </p>
             </x-faq-card>
 
-            <x-faq-card
-                question="When will Android support be ready?"
-            >
+            <x-faq-card question="When will Android support be ready?">
                 <p>
-                    Android support is in active development. We anticipate it being
-                    available within the next few weeks.
-                    <a href="https://nativephp.com.test/newsletter" class="underline" onclick="event.stopPropagation()">
+                    Android support is in active development. We anticipate it
+                    being available within the next few weeks.
+                    <a
+                        href="https://nativephp.com.test/newsletter"
+                        class="underline"
+                        onclick="event.stopPropagation()"
+                    >
                         Sign up to the newsletter
                     </a>
                     to know the moment it's ready!
                 </p>
             </x-faq-card>
 
-            <x-faq-card
-                question="When will the EAP end?"
-            >
-                <p>
-                    The EAP will end when Android support is released.
-                </p>
+            <x-faq-card question="When will the EAP end?">
+                <p>The EAP will end when Android support is released.</p>
             </x-faq-card>
 
-            <x-faq-card
-                question="Which price will my license renew at?"
-            >
+            <x-faq-card question="Which price will my license renew at?">
                 <p>
-                    Your license will renew at the price you originally paid,
-                    as long as you renew before it expires. If you renew after it expires,
-                    then you will have to pay the prices available at that time.
+                    Your license will renew at the price you originally paid, as
+                    long as you renew before it expires. If you renew after it
+                    expires, then you will have to pay the prices available at
+                    that time.
                 </p>
             </x-faq-card>
 
@@ -721,30 +719,30 @@
                 question="Can I still build apps if I choose not to renew my license?"
             >
                 <p>
-                    Yes. Renewing your license entitles you to receive the latest package
-                    updates but isn't required to build and release apps.
+                    Yes. Renewing your license entitles you to receive the
+                    latest package updates but isn't required to build and
+                    release apps.
                 </p>
             </x-faq-card>
 
             <x-faq-card question="Can I upgrade or downgrade my license later?">
-                <p>
-                    That's not currently possible.
-                </p>
+                <p>That's not currently possible.</p>
             </x-faq-card>
             <x-faq-card question="Will my apps built with NativePHP be secure?">
                 <p>
-                    Definitely. NativePHP for mobile apps are just like other iOS and
-                    Android apps - they're as secure as you make them.
+                    Definitely. NativePHP for mobile apps are just like other
+                    iOS and Android apps - they're as secure as you make them.
                 </p>
             </x-faq-card>
-{{--            <x-faq-card question="Can I try NativePHP before purchasing?">--}}
-{{--                <p>--}}
-{{--                </p>--}}
-{{--            </x-faq-card>--}}
+            {{-- <x-faq-card question="Can I try NativePHP before purchasing?"> --}}
+            {{-- <p> --}}
+            {{-- </p> --}}
+            {{-- </x-faq-card> --}}
             <x-faq-card question="Can I use NativePHP for commercial projects?">
                 <p>
-                    Absolutely! You can use NativePHP for any kind of project, including
-                    commercial ones. We can't wait to see what you build!
+                    Absolutely! You can use NativePHP for any kind of project,
+                    including commercial ones. We can't wait to see what you
+                    build!
                 </p>
             </x-faq-card>
         </div>
@@ -788,15 +786,17 @@
                 Why Join the Early Access Program?
             </h2>
             <p>
-                From the beginning, NativePHP has been focused on Windows, Mac, and Linux. Until now!
+                From the beginning, NativePHP has been focused on Windows, Mac,
+                and Linux. Until now!
             </p>
             <p>
                 We believe that breaking the mobile frontier is what makes this
                 project truly compelling... and truly cross-platform.
             </p>
             <p>
-                With <strong class="dark:text-white">NativePHP for mobile</strong>,
-                we are excited about the possibilities that lie ahead.
+                With
+                <strong class="dark:text-white">NativePHP for mobile</strong>
+                , we are excited about the possibilities that lie ahead.
             </p>
             <p>
                 However, to make this vision a reality for both iOS and Android,
@@ -813,8 +813,8 @@
             </p>
             <p>
                 You'll get exclusive access to all the latest features first and
-                special perks for the life of the NativePHP project... a
-                project we plan to be working on for a long time to come!
+                special perks for the life of the NativePHP project... a project
+                we plan to be working on for a long time to come!
             </p>
             <p>
                 Please join us on this exciting journey to expand NativePHP onto
