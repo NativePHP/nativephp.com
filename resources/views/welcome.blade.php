@@ -998,7 +998,7 @@
             class="flex flex-col items-center gap-5 lg:flex-row lg:justify-between"
         >
             {{-- Left side --}}
-            <div class="text-center lg:max-w-96">
+            <div class="text-center lg:max-w-96 lg:text-left">
                 <div
                     x-init="
                         () => {
