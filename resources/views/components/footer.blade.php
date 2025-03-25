@@ -8,9 +8,11 @@
     >
         Footer
     </h2>
-    <div class="flex flex-wrap items-center justify-between gap-x-6 gap-y-4">
+    <div
+        class="flex flex-col flex-wrap items-center gap-x-6 gap-y-4 md:flex-row md:justify-between"
+    >
         {{-- Left side --}}
-        <div class="flex flex-col gap-6">
+        <div class="flex flex-col items-center gap-6 md:items-start">
             {{-- Logo --}}
             <div
                 x-init="
@@ -162,7 +164,7 @@
 
     {{-- Copyright --}}
     <section
-        class="flex flex-wrap items-center justify-between gap-x-5 gap-y-3 text-sm text-gray-500 dark:text-gray-400/80"
+        class="flex flex-col flex-wrap items-center gap-x-5 gap-y-3 text-center text-sm text-gray-500 md:flex-row md:justify-between md:text-left dark:text-gray-400/80"
         aria-label="Credits and copyright information"
     >
         <div
@@ -183,14 +185,14 @@
                     })
                 }
             "
-            class="flex flex-wrap items-center gap-2 opacity-0"
+            class="flex flex-col flex-wrap items-center gap-2 opacity-0 md:flex-row"
         >
             <div class="flex gap-1">
                 <div>Website designed by</div>
                 <a
                     href="https://twitter.com/HassanZahirnia"
                     target="_blank"
-                    class="transition duration-200 hover:text-black dark:hover:text-white"
+                    class="font-medium text-black/80 transition duration-200 hover:text-black dark:text-white/80 dark:hover:text-white"
                     aria-label="Hassan's Twitter profile"
                     rel="noopener noreferrer"
                 >
@@ -198,14 +200,14 @@
                 </a>
             </div>
             <div
-                class="hidden h-3 w-0.5 bg-gray-300 min-[438px]:block dark:bg-[#242734]"
+                class="hidden h-3 w-0.5 bg-gray-300 md:block dark:bg-[#242734]"
             ></div>
             <div class="flex gap-1">
                 <div>Logo by</div>
                 <a
                     href="https://twitter.com/caneco"
                     target="_blank"
-                    class="transition duration-200 hover:text-black dark:hover:text-white"
+                    class="font-medium text-black/80 transition duration-200 hover:text-black dark:text-white/80 dark:hover:text-white"
                     aria-label="Caneco's Twitter profile"
                     rel="noopener noreferrer"
                 >
@@ -237,7 +239,7 @@
             <a
                 href="https://twitter.com/marcelpociot"
                 target="_blank"
-                class="transition duration-200 hover:text-black dark:hover:text-white"
+                class="font-medium text-black/80 transition duration-200 hover:text-black dark:text-white/80 dark:hover:text-white"
                 aria-label="Marcel Pociot's Twitter profile"
                 rel="noopener noreferrer"
             >
@@ -247,13 +249,12 @@
             <a
                 href="https://twitter.com/simonhamp"
                 target="_blank"
-                class="transition duration-200 hover:text-black dark:hover:text-white"
+                class="font-medium text-black/80 transition duration-200 hover:text-black dark:text-white/80 dark:hover:text-white"
                 aria-label="Simon Hamp's Twitter profile"
                 rel="noopener noreferrer"
             >
                 Simon Hamp
             </a>
-            <span>.</span>
         </div>
     </section>
 </footer>
