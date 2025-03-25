@@ -78,7 +78,7 @@
     >
         {{-- Mini Plan --}}
         <div
-            class="rounded-2xl bg-gray-100 p-7 opacity-0 dark:bg-gray-900/40"
+            class="dark:bg-mirage rounded-2xl bg-gray-100 p-7 opacity-0"
             aria-labelledby="pro-plan-heading"
         >
             {{-- Plan Name --}}
@@ -121,7 +121,7 @@
             {{-- Button --}}
             <a
                 href="https://checkout.anystack.sh/nativephp-ios/9e6a5f7c-1e71-4a1e-9cfa-33bb3c0ebb5d"
-                class="my-5 block w-full rounded-2xl bg-zinc-200 py-4 text-center text-sm font-medium transition duration-200 ease-in-out hover:bg-zinc-800 hover:text-white dark:bg-gray-900 dark:hover:bg-slate-700/40"
+                class="my-5 block w-full rounded-2xl bg-zinc-200 py-4 text-center text-sm font-medium transition duration-200 ease-in-out hover:bg-zinc-800 hover:text-white dark:bg-slate-700/30 dark:hover:bg-slate-700/40"
                 aria-label="Get started with Mini plan"
             >
                 Get started
@@ -185,7 +185,7 @@
             >
                 <div class="flex items-center gap-2">
                     <div
-                        class="grid size-7 place-items-center rounded-xl bg-[#D4FD7D] dark:bg-[#d68ffe] dark:text-black"
+                        class="grid size-7 shrink-0 place-items-center rounded-xl bg-[#D4FD7D] dark:bg-[#d68ffe] dark:text-black"
                         aria-hidden="true"
                     >
                         <x-icons.checkmark class="size-5 shrink-0" />
@@ -194,7 +194,7 @@
                 </div>
                 <div class="flex items-center gap-2">
                     <div
-                        class="grid size-7 place-items-center rounded-xl bg-[#D4FD7D] dark:bg-[#d68ffe] dark:text-black"
+                        class="grid size-7 shrink-0 place-items-center rounded-xl bg-[#D4FD7D] dark:bg-[#d68ffe] dark:text-black"
                         aria-hidden="true"
                     >
                         <x-icons.checkmark class="size-5 shrink-0" />
@@ -205,7 +205,7 @@
                 </div>
                 <div class="flex items-center gap-2">
                     <div
-                        class="grid size-7 place-items-center rounded-xl bg-zinc-200 dark:bg-gray-700/50"
+                        class="grid size-7 shrink-0 place-items-center rounded-xl bg-zinc-200 dark:bg-gray-700/50"
                         aria-hidden="true"
                     >
                         <x-icons.xmark
@@ -216,7 +216,7 @@
                 </div>
                 <div class="flex items-center gap-2">
                     <div
-                        class="grid size-7 place-items-center rounded-xl bg-zinc-200 dark:bg-gray-700/50"
+                        class="grid size-7 shrink-0 place-items-center rounded-xl bg-zinc-200 dark:bg-gray-700/50"
                         aria-hidden="true"
                     >
                         <x-icons.xmark
@@ -227,7 +227,7 @@
                 </div>
                 <div class="flex items-center gap-2">
                     <div
-                        class="grid size-7 place-items-center rounded-xl bg-zinc-200 dark:bg-gray-700/50"
+                        class="grid size-7 shrink-0 place-items-center rounded-xl bg-zinc-200 dark:bg-gray-700/50"
                         aria-hidden="true"
                     >
                         <x-icons.xmark
@@ -241,7 +241,7 @@
 
         {{-- Pro Plan --}}
         <div
-            class="rounded-2xl bg-gray-100 p-7 opacity-0 dark:bg-gray-900/40"
+            class="dark:bg-mirage rounded-2xl bg-gray-100 p-7 opacity-0"
             aria-labelledby="teams-plan-heading"
         >
             {{-- Plan Name --}}
@@ -284,7 +284,7 @@
             {{-- Button --}}
             <a
                 href="https://checkout.anystack.sh/nativephp-ios/9e02463f-0602-496c-ab33-073b899badae"
-                class="my-5 block w-full rounded-2xl bg-zinc-200 py-4 text-center text-sm font-medium transition duration-200 ease-in-out hover:bg-zinc-800 hover:text-white dark:bg-gray-900 dark:hover:bg-slate-700/40"
+                class="my-5 block w-full rounded-2xl bg-zinc-200 py-4 text-center text-sm font-medium transition duration-200 ease-in-out hover:bg-zinc-800 hover:text-white dark:bg-slate-700/30 dark:hover:bg-slate-700/40"
                 aria-label="Get started with Pro plan"
             >
                 Get started
@@ -348,7 +348,7 @@
             >
                 <div class="flex items-center gap-2">
                     <div
-                        class="grid size-7 place-items-center rounded-xl bg-[#D4FD7D] dark:bg-[#d68ffe] dark:text-black"
+                        class="grid size-7 shrink-0 place-items-center rounded-xl bg-[#D4FD7D] dark:bg-[#d68ffe] dark:text-black"
                         aria-hidden="true"
                     >
                         <x-icons.checkmark class="size-5 shrink-0" />
@@ -357,7 +357,7 @@
                 </div>
                 <div class="flex items-center gap-2">
                     <div
-                        class="grid size-7 place-items-center rounded-xl bg-[#D4FD7D] dark:bg-[#d68ffe] dark:text-black"
+                        class="grid size-7 shrink-0 place-items-center rounded-xl bg-[#D4FD7D] dark:bg-[#d68ffe] dark:text-black"
                         aria-hidden="true"
                     >
                         <x-icons.checkmark class="size-5 shrink-0" />
@@ -368,7 +368,7 @@
                 </div>
                 <div class="flex items-center gap-2">
                     <div
-                        class="grid size-7 place-items-center rounded-xl bg-zinc-200 dark:bg-gray-700/50"
+                        class="grid size-7 shrink-0 place-items-center rounded-xl bg-zinc-200 dark:bg-gray-700/50"
                         aria-hidden="true"
                     >
                         <x-icons.xmark
@@ -379,7 +379,7 @@
                 </div>
                 <div class="flex items-center gap-2">
                     <div
-                        class="grid size-7 place-items-center rounded-xl bg-zinc-200 dark:bg-gray-700/50"
+                        class="grid size-7 shrink-0 place-items-center rounded-xl bg-zinc-200 dark:bg-gray-700/50"
                         aria-hidden="true"
                     >
                         <x-icons.xmark
@@ -390,7 +390,7 @@
                 </div>
                 <div class="flex items-center gap-2">
                     <div
-                        class="grid size-7 place-items-center rounded-xl bg-zinc-200 dark:bg-gray-700/50"
+                        class="grid size-7 shrink-0 place-items-center rounded-xl bg-zinc-200 dark:bg-gray-700/50"
                         aria-hidden="true"
                     >
                         <x-icons.xmark
@@ -519,7 +519,7 @@
             >
                 <div class="flex items-center gap-2">
                     <div
-                        class="grid size-7 place-items-center rounded-xl bg-[#D4FD7D] dark:bg-[#d68ffe] dark:text-black"
+                        class="grid size-7 shrink-0 place-items-center rounded-xl bg-[#D4FD7D] dark:bg-[#d68ffe] dark:text-black"
                         aria-hidden="true"
                     >
                         <x-icons.checkmark class="size-5 shrink-0" />
@@ -530,7 +530,7 @@
                 </div>
                 <div class="flex items-center gap-2">
                     <div
-                        class="grid size-7 place-items-center rounded-xl bg-[#D4FD7D] dark:bg-[#d68ffe] dark:text-black"
+                        class="grid size-7 shrink-0 place-items-center rounded-xl bg-[#D4FD7D] dark:bg-[#d68ffe] dark:text-black"
                         aria-hidden="true"
                     >
                         <x-icons.checkmark class="size-5 shrink-0" />
@@ -539,7 +539,7 @@
                 </div>
                 <div class="flex items-center gap-2">
                     <div
-                        class="grid size-7 place-items-center rounded-xl bg-[#D4FD7D] dark:bg-[#d68ffe] dark:text-black"
+                        class="grid size-7 shrink-0 place-items-center rounded-xl bg-[#D4FD7D] dark:bg-[#d68ffe] dark:text-black"
                         aria-hidden="true"
                     >
                         <x-icons.checkmark class="size-5 shrink-0" />
@@ -548,7 +548,7 @@
                 </div>
                 <div class="flex items-center gap-2">
                     <div
-                        class="grid size-7 place-items-center rounded-xl bg-[#D4FD7D] dark:bg-[#d68ffe] dark:text-black"
+                        class="grid size-7 shrink-0 place-items-center rounded-xl bg-[#D4FD7D] dark:bg-[#d68ffe] dark:text-black"
                         aria-hidden="true"
                     >
                         <x-icons.checkmark class="size-5 shrink-0" />
@@ -557,7 +557,7 @@
                 </div>
                 <div class="flex items-center gap-2">
                     <div
-                        class="grid size-7 place-items-center rounded-xl bg-[#D4FD7D] dark:bg-[#d68ffe] dark:text-black"
+                        class="grid size-7 shrink-0 place-items-center rounded-xl bg-[#D4FD7D] dark:bg-[#d68ffe] dark:text-black"
                         aria-hidden="true"
                     >
                         <x-icons.checkmark class="size-5 shrink-0" />
