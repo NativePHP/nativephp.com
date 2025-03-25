@@ -10,7 +10,7 @@ NativePHP allows you to trigger many native dialogs.
 Dialogs are created using the `Dialog` facade.
 
 ```php
-use Native\Laravel\Dialog;
+use Native\Ios\Facades\Dialog;
 ```
 
 ### The Share Dialog
@@ -31,7 +31,7 @@ $buttons = [
     'Cancel'
 ];
 
-Dialog::share('Title', 'Message', $buttons, fn ($selected) => {
+Dialog::alert('Title', 'Message', $buttons, fn ($selected) => {
     echo "You selected {$buttons[$selected]}";
 });
 ```

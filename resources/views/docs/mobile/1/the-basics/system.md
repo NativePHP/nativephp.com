@@ -22,12 +22,12 @@ about whether a particular feature is specific to iOS or Android.
 Most of the system-related features are available through the `System` facade.
 
 ```php
-use Native\Laravel\Facades\System;
+use Native\Ios\Facades\System;
 ```
 
 ## Camera
 
-You may request the native camera interface to take a photograph by calling:
+You may request the native camera interface to take a photograph by calling the `camera` method:
 
 ```php
 $imageData = System::camera()
@@ -49,6 +49,40 @@ decline, triggering the camera API will silently fail.**
 ## Microphone
 
 **COMING SOON**
+
+## Vibration
+
+You may vibrate the user's device by calling the `vibrate` method:
+
+```php
+System::vibrate()
+```
+
+## Push Notifications
+
+NativePHP makes it dead simple to enrol your user's device in push notifications from your app.
+
+Simply use the `enrolForPushNotifications` method to trigger enrolment. If this is the first time that your app tries
+to enrol this device for push notifications, the user will be presented with a native alert, allowing them to opt-in.
+
+Then use the `getPushNotificationsToken` method to retrieve the token. If enrolment was unsuccessful for some reason,
+this method will return `null`.
+
+```php
+System::enrolForPushNotifications();
+
+// Later...
+
+if ($token = System::getPushNotificationsToken()) {
+    // Do something with the token...
+}
+```
+
+Once you have the token, you may use it from your server-based applications to trigger Push Notifications directly to
+your user's device.
+
+Find out more about what's required to use Push Notifications in
+[Apple's Developer docs](https://developer.apple.com/notifications/).
 
 ## Accelerometer
 
@@ -115,7 +149,7 @@ For devices that support some form of biometric identification, you can use this
 of your application.
 
 ```php
-if (System::canPromptBiometricID() && System::promptBiometricID('access your Contacts')) {
+if (System::promptForBiometricID()) {
     // Do your super secret activity here
 }
 ```
@@ -123,15 +157,16 @@ if (System::canPromptBiometricID() && System::promptBiometricID('access your Con
 Using this, you can gate certain parts of your app, allowing you to offer an extra layer of protection for your user's
 data.
 
-**Note: Biometric identification only gives you greater *confidence* that the person using your app is someone who has
-the capacity to unlock the device your app is installed on. It does not allow you to *identify* that user or prove that
-they are willingly taking this action.**
+**Note: Despite the name, Biometric identification only gives you *greater confidence* that the person using your app
+is *someone* who has the capacity to unlock the device your app is installed on. It does not allow you to *identify*
+that user or prove that they are willingly taking this action.**
 
 ## Time Zones
 
 **COMING SOON**
 
-PHP and your Laravel application will be configured to work with the time zone that the device is configured to use.
+PHP and your Laravel application are configured to work with the time zone that the device reports it is currently
+operating in.
 
 This means that, for the most part, any dates and times your show will already be in the appropriate time zone for the
 user without having to ask your users to manually select their current time zone.
