@@ -1,5 +1,5 @@
 <aside
-    class="sticky top-20 hidden max-h-[calc(100dvh-8rem)] w-[19rem] shrink-0 overflow-auto pr-5 pt-4 lg:block"
+    class="sticky top-20 hidden max-h-[calc(100dvh-8rem)] w-[18rem] shrink-0 overflow-y-auto overflow-x-hidden pr-3 pt-4 lg:block"
 >
     <nav class="relative flex flex-1 flex-col pb-5">
         <x-platform-switcher />
