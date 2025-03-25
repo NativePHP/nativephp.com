@@ -26,6 +26,7 @@ namespace App\Support\GitHub;
 class Release
 {
     private bool $withUserLinks = true;
+
     private bool $convertLinks = true;
 
     public function __construct(
