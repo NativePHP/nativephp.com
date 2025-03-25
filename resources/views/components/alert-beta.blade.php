@@ -5,7 +5,7 @@
     aria-describedby="beta-alert-description"
 >
     <div
-        class="absolute left-0 top-1/2 -z-10 size-16 -translate-y-1/2 rounded-full bg-yellow-400/50 blur-2xl dark:block"
+        class="absolute left-0 top-1/2 -z-10 size-16 -translate-y-1/2 rounded-full bg-yellow-400/60 blur-2xl dark:block"
         aria-hidden="true"
     ></div>
 
