@@ -210,7 +210,7 @@
                             class="relative -top-5 grid size-10 place-items-center rounded-full bg-black/30 text-white ring-1 ring-white/10 backdrop-blur transition duration-300 ease-in-out will-change-transform group-hover:scale-110 group-hover:text-[#d4fd7d] dark:group-hover:text-[#9c90f0]"
                             aria-label="Watch NativePHP introduction video on YouTube"
                         >
-                            <svg
+                            <x-icons.play-button
                                 x-init="
                                     () => {
                                         motion.animate(
@@ -227,19 +227,9 @@
                                         )
                                     }
                                 "
-                                xmlns="http://www.w3.org/2000/svg"
                                 class="size-4"
-                                viewBox="0 0 17 22"
-                                fill="none"
                                 aria-hidden="true"
-                            >
-                                <path
-                                    fill-rule="evenodd"
-                                    clip-rule="evenodd"
-                                    d="M3.69143 0.285087C2.05005 -0.569218 0 0.584286 0 2.57588V19.4241C0 21.4158 2.05005 22.5692 3.69143 21.7149C5.89832 20.5663 9.15122 18.7792 11.8609 16.9047C13.2129 15.9695 14.4582 14.9932 15.3743 14.0457C15.8326 13.5718 16.228 13.0853 16.5129 12.5954C16.7949 12.1104 17 11.5686 17 11C17 10.4314 16.7949 9.88956 16.5129 9.40462C16.228 8.91473 15.8326 8.42821 15.3743 7.95433C14.4582 7.00681 13.2129 6.03045 11.8609 5.09525C9.15122 3.22087 5.89832 1.43373 3.69143 0.285087Z"
-                                    fill="currentColor"
-                                />
-                            </svg>
+                            />
                             <span class="sr-only">Play introduction video</span>
                         </a>
                     </div>
@@ -332,7 +322,7 @@
                     class="absolute right-1/2 top-1/2 grid size-16 -translate-y-1/2 translate-x-1/2 place-items-center rounded-full bg-white/10 text-white ring-1 ring-white/10 backdrop-blur transition duration-300 ease-in-out will-change-transform group-hover:scale-110 group-hover:text-[#d4fd7d]"
                     aria-hidden="true"
                 >
-                    <svg
+                    <x-icons.play-button
                         x-init="
                             () => {
                                 motion.animate(
@@ -349,19 +339,9 @@
                                 )
                             }
                         "
-                        xmlns="http://www.w3.org/2000/svg"
                         class="size-7"
-                        viewBox="0 0 17 22"
-                        fill="none"
                         aria-hidden="true"
-                    >
-                        <path
-                            fill-rule="evenodd"
-                            clip-rule="evenodd"
-                            d="M3.69143 0.285087C2.05005 -0.569218 0 0.584286 0 2.57588V19.4241C0 21.4158 2.05005 22.5692 3.69143 21.7149C5.89832 20.5663 9.15122 18.7792 11.8609 16.9047C13.2129 15.9695 14.4582 14.9932 15.3743 14.0457C15.8326 13.5718 16.228 13.0853 16.5129 12.5954C16.7949 12.1104 17 11.5686 17 11C17 10.4314 16.7949 9.88956 16.5129 9.40462C16.228 8.91473 15.8326 8.42821 15.3743 7.95433C14.4582 7.00681 13.2129 6.03045 11.8609 5.09525C9.15122 3.22087 5.89832 1.43373 3.69143 0.285087Z"
-                            fill="currentColor"
-                        />
-                    </svg>
+                    />
                     <span class="sr-only">Play video</span>
                 </div>
                 {{-- Image --}}
@@ -1106,7 +1086,7 @@
                         class="absolute right-1/2 top-1/2 grid size-16 -translate-y-1/2 translate-x-1/2 place-items-center rounded-full bg-white/10 text-white ring-1 ring-white/10 backdrop-blur transition duration-300 ease-in-out will-change-transform group-hover:scale-110 group-hover:text-[#d4fd7d]"
                         aria-hidden="true"
                     >
-                        <svg
+                        <x-icons.play-button
                             x-init="
                                 () => {
                                     motion.animate(
@@ -1123,19 +1103,9 @@
                                     )
                                 }
                             "
-                            xmlns="http://www.w3.org/2000/svg"
                             class="size-7"
-                            viewBox="0 0 17 22"
-                            fill="none"
                             aria-hidden="true"
-                        >
-                            <path
-                                fill-rule="evenodd"
-                                clip-rule="evenodd"
-                                d="M3.69143 0.285087C2.05005 -0.569218 0 0.584286 0 2.57588V19.4241C0 21.4158 2.05005 22.5692 3.69143 21.7149C5.89832 20.5663 9.15122 18.7792 11.8609 16.9047C13.2129 15.9695 14.4582 14.9932 15.3743 14.0457C15.8326 13.5718 16.228 13.0853 16.5129 12.5954C16.7949 12.1104 17 11.5686 17 11C17 10.4314 16.7949 9.88956 16.5129 9.40462C16.228 8.91473 15.8326 8.42821 15.3743 7.95433C14.4582 7.00681 13.2129 6.03045 11.8609 5.09525C9.15122 3.22087 5.89832 1.43373 3.69143 0.285087Z"
-                                fill="currentColor"
-                            />
-                        </svg>
+                        />
                         <span class="sr-only">Play video</span>
                     </div>
                     {{-- Image --}}
