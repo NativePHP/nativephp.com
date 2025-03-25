@@ -10,7 +10,7 @@
 
 /* Whole menu */
 nav ul {
-    @apply list-none text-xl md:text-sm;
+    @apply list-none text-sm;
 }
 
 /* Categories */
