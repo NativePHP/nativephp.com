@@ -317,8 +317,24 @@
                     aria-hidden="true"
                 >
                     <svg
+                        x-init="
+                            () => {
+                                motion.animate(
+                                    $el,
+                                    {
+                                        x: [0, 3],
+                                    },
+                                    {
+                                        duration: 0.6,
+                                        repeat: Infinity,
+                                        repeatType: 'mirror',
+                                        ease: motion.easeInOut,
+                                    },
+                                )
+                            }
+                        "
                         xmlns="http://www.w3.org/2000/svg"
-                        class="size-8"
+                        class="size-7"
                         viewBox="0 0 17 22"
                         fill="none"
                         aria-hidden="true"
@@ -336,9 +352,9 @@
                 <img
                     src="{{ Vite::asset('resources/images/simon2025laraconeu.webp') }}"
                     alt="Simon Hamp presenting at Laracon EU 2025 on building mobile apps with PHP"
-                    class="w-full max-w-80 rounded-xl"
-                    width="320"
-                    height="180"
+                    class="w-full max-w-96 rounded-xl"
+                    width="384"
+                    height="216"
                     loading="lazy"
                 />
             </a>
