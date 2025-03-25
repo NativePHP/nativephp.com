@@ -16,7 +16,7 @@
     x-transition:leave="transition duration-150 ease-in"
     x-transition:leave-start="translate-y-0 opacity-100"
     x-transition:leave-end="translate-y-1 opacity-0"
-    class="fixed left-0 top-20 z-40 h-screen w-full overflow-y-auto border-b border-[#00aaa6] border-opacity-50 bg-white px-4 pb-16 pt-10 dark:border-opacity-90 dark:bg-gray-700"
+    class="dark:bg-mirage fixed left-0 top-20 z-40 h-screen w-full overflow-y-auto bg-white px-4 pb-16 pt-10"
 >
     <x-platform-switcher />
 
