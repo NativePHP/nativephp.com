@@ -10,7 +10,7 @@
         rel="sponsored"
     >
         <img
-            src="/img/sponsors/beyondcode.png"
+            src="/img/sponsors/beyondcode.webp"
             class="block h-auto max-h-10 max-w-full dark:hidden"
             loading="lazy"
             alt="BeyondCode logo - PHP development tools and packages"
@@ -18,7 +18,7 @@
             height="40"
         />
         <img
-            src="/img/sponsors/beyondcode-dark.png"
+            src="/img/sponsors/beyondcode-dark.webp"
             class="hidden h-auto max-h-10 max-w-full dark:block"
             loading="lazy"
             alt="BeyondCode logo - PHP development tools and packages"

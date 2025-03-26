@@ -6,7 +6,7 @@
     rel="noopener sponsored"
 >
     <img
-        src="/img/sponsors/beyondcode.png"
+        src="/img/sponsors/beyondcode.webp"
         alt="BeyondCode company logo - featured sponsor"
         class="block h-auto max-h-8 max-w-full dark:hidden"
         loading="lazy"
@@ -14,7 +14,7 @@
         height="32"
     />
     <img
-        src="/img/sponsors/beyondcode-dark.png"
+        src="/img/sponsors/beyondcode-dark.webp"
         alt="BeyondCode company logo - featured sponsor"
         class="hidden h-auto max-h-8 max-w-full dark:block"
         loading="lazy"
