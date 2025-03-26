@@ -14,12 +14,16 @@
             class="block h-auto max-h-10 max-w-full dark:hidden"
             loading="lazy"
             alt="BeyondCode logo - PHP development tools and packages"
+            width="160"
+            height="40"
         />
         <img
             src="/img/sponsors/beyondcode-dark.png"
             class="hidden h-auto max-h-10 max-w-full dark:block"
             loading="lazy"
             alt="BeyondCode logo - PHP development tools and packages"
+            width="160"
+            height="40"
         />
         <span class="sr-only">BeyondCode</span>
     </a>
