@@ -25,9 +25,9 @@ Our support policy reflects our commitment to maintaining high standards of qual
 NativePHP provides methods of bundling your own static PHP binaries. Support is not provided for these.
 
 ### Laravel Versions
-| NativePHP Version | Supported PHP Versions |
-|-------------------|------------------------|
-| ^1.0              | 11.x, 12.x             |
+| NativePHP Version | Supported Laravel Versions |
+|-------------------|----------------------------|
+| ^1.0              | 11.x, 12.x                 |
 
 [Laravel: Support Policy](https://laravel.com/docs/master/releases#support-policy)
 
