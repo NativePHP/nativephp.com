@@ -34,14 +34,11 @@
 }
 
 .DocSearch-Button-Placeholder {
-    @apply hidden pr-20 text-sm text-black/60 min-[520px]:block dark:text-white/60;
+    @apply hidden pl-1 pr-1 text-sm text-black/60 min-[400px]:block min-[520px]:pr-20 dark:text-white/60;
 }
 
 .DocSearch-Button-Keys {
-    display: flex;
-    min-width: auto;
-
-    @apply ml-1 mt-1 text-sm leading-none;
+    @apply ml-1 mt-1 hidden min-w-[auto] text-sm leading-none min-[520px]:flex;
 }
 
 .DocSearch-Button-Key {
