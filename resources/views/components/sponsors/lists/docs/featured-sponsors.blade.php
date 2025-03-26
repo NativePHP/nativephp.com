@@ -10,12 +10,16 @@
         alt="BeyondCode company logo - featured sponsor"
         class="block h-auto max-h-8 max-w-full dark:hidden"
         loading="lazy"
+        width="128"
+        height="32"
     />
     <img
         src="/img/sponsors/beyondcode-dark.png"
         alt="BeyondCode company logo - featured sponsor"
         class="hidden h-auto max-h-8 max-w-full dark:block"
         loading="lazy"
+        width="128"
+        height="32"
     />
     <span class="sr-only">BeyondCode</span>
 </a>
