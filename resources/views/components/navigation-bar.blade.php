@@ -15,7 +15,7 @@
                 href="/"
                 aria-label="NativePHP Homepage"
             >
-                <x-logo class="h-5 sm:h-6" />
+                <x-logo class="h-4 min-[400px]:h-5 sm:h-6" />
                 <span class="sr-only">NativePHP</span>
             </a>
 
@@ -84,7 +84,7 @@
                     <button
                         type="button"
                         @click="showDocsNavigation = !showDocsNavigation"
-                        class="block p-2 focus:outline-none focus:ring-0 lg:hidden"
+                        class="-m-2 block p-2 focus:outline-none focus:ring-0 lg:hidden"
                         aria-expanded="false"
                         aria-controls="docs-navigation"
                         aria-label="Toggle documentation menu"
