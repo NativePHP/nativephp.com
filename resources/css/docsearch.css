@@ -1,0 +1,69 @@
+:root {
+    --docsearch-container-background: rgba(0, 0, 0, 0.5);
+    --docsearch-primary-color: #987af1;
+}
+
+[id='docsearch'] {
+    width: 100%;
+    @apply md:w-auto;
+}
+
+.DocSearch-Button {
+    @apply m-0 flex items-center rounded-lg bg-gray-50 font-normal ring-1 ring-gray-700/40 transition duration-300 ease-out dark:bg-black/30;
+}
+
+.DocSearch-Button:hover {
+    box-shadow: none;
+    @apply bg-gray-100 ring-gray-300 dark:bg-black/50 dark:ring-gray-700/70;
+}
+
+.DocSearch-Button:hover .DocSearch-Button-Placeholder {
+    @apply text-black dark:text-white;
+}
+
+.DocSearch-Button .DocSearch-Search-Icon {
+    height: 0.87rem;
+    @apply text-gray-500 dark:text-white/60;
+}
+
+@media (max-width: 768px) {
+    .DocSearch-Button-Keys,
+    .DocSearch-Button-Placeholder {
+        display: block;
+    }
+}
+
+.DocSearch-Button-Placeholder {
+    @apply hidden pr-20 text-sm text-black/60 min-[520px]:block dark:text-white/60;
+}
+
+.DocSearch-Button-Keys {
+    display: flex;
+    min-width: auto;
+
+    @apply ml-1 mt-1 text-sm leading-none;
+}
+
+.DocSearch-Button-Key {
+    background: none;
+    box-shadow: none;
+    width: auto;
+
+    @apply mr-0.5 font-sans;
+}
+
+.DocSearch-Modal {
+    @apply text-black;
+}
+
+.DocSearch-Screen-Icon {
+    display: none;
+}
+
+.DocSearch-Input {
+    @apply focus-visible:outline-none;
+}
+
+.DocSearch-Form {
+    @apply rounded-lg;
+}
