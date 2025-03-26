@@ -52,7 +52,13 @@ class Release
         // Convert any URLs to Markdown links
         if ($this->convertLinks) {
             $body = preg_replace(
-                '/(https?:\/\/[^\s]+)/',
+                '/https?:\/\/[^\s]+\/pull\/(\d+)/',
+                '[#$1]($0)',
+                $body
+            );
+
+            $body = preg_replace(
+                '/(https?:\/\/(?![^\s]+\/pull\/\d+)[^\s]+)/',
                 '[$1]($1)',
                 $body
             );
@@ -67,7 +73,7 @@ class Release
             );
         }
 
-        return str_replace('#', '##', $body);
+        return preg_replace('/^#/m', '##', $body);
     }
 
     public function withoutUserLinks(bool $withoutUserLinks = true): static
