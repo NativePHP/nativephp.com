@@ -62,7 +62,7 @@
     rel="noopener"
 >
     <x-sponsors.logos.borah
-        class="block h-auto max-h-8 max-w-full fill-[#042340] dark:fill-white"
+        class="block h-auto max-h-8 max-w-full dark:brightness-125"
         alt="Borah Digital Labs logo"
     />
     <span class="sr-only">Borah Digital Labs</span>
