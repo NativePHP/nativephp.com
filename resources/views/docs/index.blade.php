@@ -90,7 +90,7 @@
         @endif
     </x-flex-list-of-links>
 
-    <div class="pt-8">
+    <div class="pt-5 text-center sm:text-left">
         <x-link-subtle
             href="{{ $editUrl }}"
             target="_blank"
