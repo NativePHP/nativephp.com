@@ -1,9 +1,9 @@
 ---
-title: App
-order: 100
+title: Application
+order: 250
 ---
 
-## App Operations
+## Application
 
 The `App` facade allows you to perform basic operations with the Electron app.
 
@@ -34,7 +34,8 @@ focuses on the application's first window.
 App::focus();
 ```
 
-### Hide the app (only macOS)
+### Hide the app
+_Only available on macOS_
 
 The `hide` method will hide all application windows without minimizing them. This method is only available on macOS.
 
@@ -42,7 +43,8 @@ The `hide` method will hide all application windows without minimizing them. Thi
 App::hide();
 ```
 
-### Check if the app is hidden (only macOS)
+### Check if the app is hidden
+_Only available on macOS_
 
 To check if the app is hidden, use the `isHidden` method. This method is only available on macOS.
 
@@ -53,15 +55,16 @@ otherwise.
 $isHidden = App::isHidden();
 ```
 
-### App Version
+### Current Version
 
-To get the app version, use the `version` method:
+To get the current app version, use the `version` method. The version is defined in the `config/nativephp.php` file.
 
 ```php
 $version = App::version();
 ```
 
-### App Badge Count (only macOS and Linux)
+### App Badge Count
+_Only available on macOS and Linux_
 
 You can set the app's badge count.
 On macOS, it shows on the dock icon. On Linux, it only works for Unity launcher.
@@ -84,7 +87,8 @@ To get the badge count, use the `badgeCount` method without any arguments:
 $badgeCount = App::badgeCount();
 ``` 
 
-### Recent documents list (only macOS and Windows)
+### Recent documents list
+_Only available on macOS and Windows_
 
 The recent documents list is a list of files that the user has recently opened. This list is available on macOS and
 Windows.
@@ -101,7 +105,8 @@ To clear the recent documents list, use the `clearRecentDocuments` method:
 App::clearRecentDocuments();
 ```
 
-### Set open at login (only macOS and Windows)
+### Open at login
+_Only available on macOS and Windows_
 
 To enable 'open at login', use the `openAtLogin` method:
 
