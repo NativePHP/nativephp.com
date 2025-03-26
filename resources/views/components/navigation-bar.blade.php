@@ -6,7 +6,7 @@
 >
     <div
         :class="scrolled ? 'ring-gray-200/80 dark:ring-gray-800/50 translate-y-3 bg-white/50 dark:bg-white/5' : 'ring-transparent dark:bg-transparent'"
-        class="2xl:max-w-8xl mx-auto flex w-full max-w-5xl items-center justify-between gap-5 rounded-2xl px-5 py-4 ring-1 backdrop-blur-md transition duration-200 ease-out xl:max-w-7xl"
+        class="mx-auto flex w-full max-w-5xl items-center justify-between gap-5 rounded-2xl px-5 py-4 ring-1 backdrop-blur-md transition duration-200 ease-out xl:max-w-7xl 2xl:max-w-[90rem]"
     >
         {{-- Left side --}}
         <div class="flex items-center gap-3">
@@ -15,13 +15,13 @@
                 href="/"
                 aria-label="NativePHP Homepage"
             >
-                <x-logo class="h-5 sm:h-6" />
+                <x-logo class="h-4 min-[400px]:h-5 sm:h-6" />
                 <span class="sr-only">NativePHP</span>
             </a>
 
             {{-- Version badge --}}
             <div
-                class="hidden rounded-full bg-gray-200/60 px-2 py-1 text-xs text-gray-600 lg:block dark:bg-[#1f2032] dark:text-white/50"
+                class="hidden rounded-full bg-gray-200/60 px-2 py-1 text-xs text-gray-600 lg:block dark:bg-[#16182b] dark:text-[#747ee6] dark:ring-1 dark:ring-cloud"
                 aria-label="Version information"
             >
                 {{ $electronGitHubVersion }}
@@ -84,7 +84,7 @@
                     <button
                         type="button"
                         @click="showDocsNavigation = !showDocsNavigation"
-                        class="block p-2 focus:outline-none focus:ring-0 lg:hidden"
+                        class="-m-2 block p-2 focus:outline-none focus:ring-0 lg:hidden"
                         aria-expanded="false"
                         aria-controls="docs-navigation"
                         aria-label="Toggle documentation menu"

@@ -44,7 +44,7 @@
     </div>
 
     <div
-        class="prose mt-8 dark:prose-invert prose-headings:scroll-mt-20 prose-headings:text-gray-800 sm:prose-headings:scroll-mt-32 dark:prose-headings:text-gray-50"
+        class="prose mt-8 max-w-none dark:prose-invert prose-headings:scroll-mt-20 prose-headings:text-gray-800 sm:prose-headings:scroll-mt-32 dark:prose-headings:text-gray-50"
     >
         {!! $content !!}
     </div>
@@ -90,7 +90,7 @@
         @endif
     </x-flex-list-of-links>
 
-    <div class="pt-8">
+    <div class="pt-5 text-center sm:text-left">
         <x-link-subtle
             href="{{ $editUrl }}"
             target="_blank"

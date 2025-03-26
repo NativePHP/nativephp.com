@@ -545,7 +545,7 @@
 
         {{-- Cards --}}
         <div
-            class="mt-5 flex flex-col items-center justify-center gap-5 rounded-2xl bg-gradient-to-br from-[#FFF0DC] to-[#E8EEFF] text-center min-[400px]:mt-10 sm:mt-32 sm:flex-row sm:bg-gradient-to-r dark:from-blue-900/10 dark:to-[#4c407f]/25"
+            class="mt-5 flex flex-col items-center justify-center gap-5 rounded-2xl bg-gradient-to-br from-[#FFF0DC] to-[#E8EEFF] text-center min-[500px]:mt-10 sm:mt-32 sm:flex-row sm:bg-gradient-to-r dark:from-blue-900/10 dark:to-[#4c407f]/25"
             x-data="{ hoverSimon: false, hoverMarcel: false }"
         >
             {{-- Simon card --}}
@@ -567,7 +567,7 @@
                         })
                     }
                 "
-                class="group/simon flex flex-col-reverse items-center px-2 pt-2 opacity-0 min-[400px]:flex-row min-[400px]:gap-5 sm:-mt-[6.3rem] sm:gap-0 sm:px-0 sm:pt-0 md:gap-5"
+                class="group/simon flex flex-col-reverse items-center px-2 pt-2 opacity-0 min-[500px]:flex-row min-[500px]:gap-5 sm:-mt-[6.3rem] sm:gap-0 sm:px-0 sm:pt-0 md:gap-5"
                 x-on:mouseenter="hoverSimon = true"
                 x-on:mouseleave="hoverSimon = false"
             >
@@ -575,7 +575,7 @@
                     {{-- Shape --}}
                     <svg
                         xmlns="http://www.w3.org/2000/svg"
-                        class="hidden w-5 text-[#FFCABA] transition duration-500 ease-in-out will-change-transform group-hover/simon:rotate-90 group-hover/simon:text-orange-300 min-[400px]:block dark:text-orange-300 dark:group-hover/simon:text-orange-400"
+                        class="hidden w-5 text-[#FFCABA] transition duration-500 ease-in-out will-change-transform group-hover/simon:rotate-90 group-hover/simon:text-orange-300 min-[500px]:block dark:text-orange-300 dark:group-hover/simon:text-orange-400"
                         viewBox="0 0 24 23"
                         fill="none"
                         aria-hidden="true"
@@ -595,10 +595,10 @@
 
                     {{-- Title --}}
                     <div
-                        class="flex flex-col items-center pt-2 min-[400px]:pt-0"
+                        class="flex flex-col items-center pt-2 min-[500px]:pt-0"
                     >
                         <div
-                            class="hidden text-2xl font-light min-[400px]:block"
+                            class="hidden text-2xl font-light min-[500px]:block"
                             aria-hidden="true"
                         >
                             ~
@@ -700,7 +700,7 @@
                         })
                     }
                 "
-                class="group/marcel flex flex-col items-center px-2 pb-5 pt-2 opacity-0 min-[400px]:flex-row min-[400px]:gap-5 min-[400px]:pb-0 sm:-mt-[6.3rem] sm:gap-0 sm:px-0 sm:pt-0 md:gap-5"
+                class="group/marcel flex flex-col items-center px-2 pb-5 pt-2 opacity-0 min-[500px]:flex-row min-[500px]:gap-5 min-[500px]:pb-0 sm:-mt-[6.3rem] sm:gap-0 sm:px-0 sm:pt-0 md:gap-5"
                 x-on:mouseenter="hoverMarcel = true"
                 x-on:mouseleave="hoverMarcel = false"
             >
@@ -718,7 +718,7 @@
                     {{-- Shape --}}
                     <svg
                         xmlns="http://www.w3.org/2000/svg"
-                        class="hidden w-5 text-[#CBDAFF] transition duration-500 ease-in-out will-change-transform group-hover/marcel:-rotate-90 group-hover/marcel:text-blue-300 min-[400px]:block dark:text-rose-300 dark:group-hover/marcel:text-rose-400"
+                        class="hidden w-5 text-[#CBDAFF] transition duration-500 ease-in-out will-change-transform group-hover/marcel:-rotate-90 group-hover/marcel:text-blue-300 min-[500px]:block dark:text-rose-300 dark:group-hover/marcel:text-rose-400"
                         viewBox="0 0 24 23"
                         fill="none"
                         aria-hidden="true"
@@ -738,10 +738,10 @@
 
                     {{-- Title --}}
                     <div
-                        class="flex flex-col items-center pt-2 min-[400px]:pt-0"
+                        class="flex flex-col items-center pt-2 min-[500px]:pt-0"
                     >
                         <div
-                            class="hidden text-2xl font-light min-[400px]:block"
+                            class="hidden text-2xl font-light min-[500px]:block"
                             aria-hidden="true"
                         >
                             ~

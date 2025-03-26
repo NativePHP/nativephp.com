@@ -39,10 +39,6 @@
         {!! SEOMeta::generate() !!}
         {!! OpenGraph::generate() !!}
         {!! Twitter::generate() !!}
-        <link
-            rel="stylesheet"
-            href="https://cdn.jsdelivr.net/npm/@docsearch/css@3"
-        />
 
         <!-- Fathom - beautiful, simple website analytics -->
         <script
@@ -73,17 +69,7 @@
         <x-navigation-bar :hasMenu="$hasMenu ?? false" />
         {{ $slot }}
         <x-footer />
-        <script src="https://cdn.jsdelivr.net/npm/@docsearch/js@3"></script>
-        <script type="text/javascript">
-            docsearch({
-                appId: 'ZNII9QZ8WI',
-                apiKey: '9be495a1aaf367b47c873d30a8e7ccf5',
-                indexName: 'nativephp',
-                insights: true,
-                container: '#docsearch',
-                debug: false,
-            })
-        </script>
         @vite('resources/js/app.js')
+        @vite('resources/css/docsearch.css')
     </body>
 </html>

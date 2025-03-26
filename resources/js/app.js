@@ -4,6 +4,8 @@ import Alpine from 'alpinejs'
 import collapse from '@alpinejs/collapse'
 import persist from '@alpinejs/persist'
 import codeBlock from './alpine/codeBlock.js'
+import docsearch from '@docsearch/js'
+import '@docsearch/css'
 import.meta.glob(['../images/**', '../svg/**'])
 import {
     animate,
@@ -57,3 +59,13 @@ Alpine.magic('refAll', (el) => {
 Alpine.plugin(collapse)
 Alpine.plugin(persist)
 Alpine.start()
+
+// Docsearch
+docsearch({
+    appId: 'ZNII9QZ8WI',
+    apiKey: '9be495a1aaf367b47c873d30a8e7ccf5',
+    indexName: 'nativephp',
+    insights: true,
+    container: '#docsearch',
+    debug: false,
+})
