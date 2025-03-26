@@ -190,7 +190,7 @@
             <div class="flex gap-1">
                 <div>Website designed by</div>
                 <a
-                    href="https://twitter.com/HassanZahirnia"
+                    href="https://x.com/HassanZahirnia"
                     target="_blank"
                     class="font-medium text-black/80 transition duration-200 hover:text-black dark:text-white/80 dark:hover:text-white"
                     aria-label="Hassan's Twitter profile"
@@ -205,7 +205,7 @@
             <div class="flex gap-1">
                 <div>Logo by</div>
                 <a
-                    href="https://twitter.com/caneco"
+                    href="https://x.com/caneco"
                     target="_blank"
                     class="font-medium text-black/80 transition duration-200 hover:text-black dark:text-white/80 dark:hover:text-white"
                     aria-label="Caneco's Twitter profile"
@@ -237,7 +237,7 @@
         >
             <span>© {{ date('Y') }} Maintained by</span>
             <a
-                href="https://twitter.com/marcelpociot"
+                href="https://x.com/marcelpociot"
                 target="_blank"
                 class="font-medium text-black/80 transition duration-200 hover:text-black dark:text-white/80 dark:hover:text-white"
                 aria-label="Marcel Pociot's Twitter profile"
@@ -247,7 +247,7 @@
             </a>
             <span>and</span>
             <a
-                href="https://twitter.com/simonhamp"
+                href="https://x.com/simonhamp"
                 target="_blank"
                 class="font-medium text-black/80 transition duration-200 hover:text-black dark:text-white/80 dark:hover:text-white"
                 aria-label="Simon Hamp's Twitter profile"
