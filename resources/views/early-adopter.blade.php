@@ -748,7 +748,11 @@
             <x-faq-card question="Can I get an invoice?">
                 <p>
                     You sure can! Once you've completed your purchase, simply
-                    <a href="https://zenvoice.io/p/67a61665e7a3400c73fb75af">
+                    <a
+                        href="https://zenvoice.io/p/67a61665e7a3400c73fb75af"
+                        onclick="event.stopPropagation()"
+                        class="underline"
+                    >
                         follow the instructions here
                     </a>
                     to generate your invoice.
