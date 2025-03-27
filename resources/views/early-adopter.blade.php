@@ -663,7 +663,7 @@
                     })
                 }
             "
-            class="mx-auto flex w-full max-w-2xl flex-col items-center gap-4 pt-10 [counter-reset:css-counter_0]"
+            class="mx-auto flex w-full max-w-2xl flex-col items-center gap-4 pt-10"
             aria-labelledby="faq-heading"
         >
             <x-faq-card question="Why isn't this open source and free?">
@@ -743,6 +743,15 @@
                     Absolutely! You can use NativePHP for any kind of project,
                     including commercial ones. We can't wait to see what you
                     build!
+                </p>
+            </x-faq-card>
+            <x-faq-card question="Can get an invoice?">
+                <p>
+                    You sure can! Once you've completed your purchase, simply
+                    <a href="https://zenvoice.io/p/67a61665e7a3400c73fb75af">
+                        follow the instructions here
+                    </a>
+                    to generate your invoice.
                 </p>
             </x-faq-card>
         </div>
