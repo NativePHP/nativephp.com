@@ -692,7 +692,7 @@
                     Android support is in active development. We anticipate it
                     being available within the next few weeks.
                     <a
-                        href="https://nativephp.com.test/newsletter"
+                        href="https://nativephp.com/newsletter"
                         class="underline"
                         onclick="event.stopPropagation()"
                     >
