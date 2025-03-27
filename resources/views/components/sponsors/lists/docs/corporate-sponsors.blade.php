@@ -54,6 +54,7 @@
     <span class="sr-only">KaasHosting</span>
 </a>
 
+{{--
 <a
     href="https://borah.digital/"
     class="inline-grid h-16 w-full shrink-0 place-items-center rounded-2xl bg-gray-100 px-5 transition duration-200 will-change-transform hover:bg-gray-200/70 hover:ring-1 hover:ring-black/60 dark:bg-mirage dark:hover:bg-haiti dark:hover:ring-cloud"
@@ -67,3 +68,4 @@
     />
     <span class="sr-only">Borah Digital Labs</span>
 </a>
+--}}

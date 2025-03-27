@@ -75,6 +75,7 @@
     </a>
 </div>
 
+{{--
 <div
     x-ref="sponsor"
     class="opacity-0"
@@ -94,3 +95,4 @@
         <span class="sr-only">Borah Digital Labs</span>
     </a>
 </div>
+--}}
