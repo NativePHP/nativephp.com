@@ -238,7 +238,7 @@ class ShowDocumentationController extends Controller
             ->map(function (string $line) {
                 return [
                     'level' => strlen(trim(Str::before($line, '# '))) + 1,
-                    'title' => $title = trim(Str::after($line, '# ')),
+                    'title' => $title = htmlspecialchars_decode(trim(Str::after($line, '# '))),
                     'anchor' => Str::slug(Str::replace('`', 'code', $title)),
                 ];
             })
