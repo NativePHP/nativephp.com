@@ -13,6 +13,8 @@ class GitHub
 
     public const PACKAGE_LARAVEL = 'nativephp/laravel';
 
+    public const PACKAGE_PHP_BIN = 'nativephp/php-bin';
+
     public function __construct(
         private string $package
     ) {}
@@ -25,6 +27,11 @@ class GitHub
     public static function laravel(): static
     {
         return new static(static::PACKAGE_LARAVEL);
+    }
+
+    public static function phpBin(): static
+    {
+        return new static(static::PACKAGE_PHP_BIN);
     }
 
     public function latestVersion()
