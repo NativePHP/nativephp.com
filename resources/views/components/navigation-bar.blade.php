@@ -24,7 +24,9 @@
                 class="hidden rounded-full bg-gray-200/60 px-2 py-1 text-xs text-gray-600 lg:block dark:bg-[#16182b] dark:text-[#747ee6] dark:ring-1 dark:ring-cloud"
                 aria-label="Version information"
             >
-                {{ $electronGitHubVersion }}
+                <a href="/docs/desktop/1/getting-started/releasenotes">
+                    {{ $electronGitHubVersion }}
+                </a>
             </div>
         </div>
 
