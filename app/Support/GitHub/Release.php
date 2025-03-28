@@ -73,7 +73,7 @@ class Release
             );
         }
 
-        return preg_replace('/^#/m', '##', $body);
+        return preg_replace('/^#/m', '###', $body);
     }
 
     public function withoutUserLinks(bool $withoutUserLinks = true): static
