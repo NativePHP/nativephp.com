@@ -2,6 +2,8 @@
 
 namespace App\Support;
 
+use App\Support\GitHub\Release;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 
@@ -27,18 +29,25 @@ class GitHub
 
     public function latestVersion()
     {
-        $version = Cache::remember(
+        $release = Cache::remember(
             $this->getCacheKey('latest-version'),
             now()->addHour(),
-            function () {
-                return $this->fetchLatestVersion();
-            }
+            fn () => $this->fetchLatestVersion()
         );
 
-        return $version['name'] ?? 'Unknown';
+        return $release?->name ?? 'Unknown';
     }
 
-    private function fetchLatestVersion()
+    public function releases(): Collection
+    {
+        return Cache::remember(
+            $this->getCacheKey('releases'),
+            now()->addHour(),
+            fn () => $this->fetchReleases()
+        ) ?? collect();
+    }
+
+    private function fetchLatestVersion(): ?Release
     {
         // Make a request to GitHub
         $response = Http::get('https://api.github.com/repos/'.$this->package.'/releases/latest');
@@ -48,11 +57,24 @@ class GitHub
             return null;
         }
 
-        return $response->json();
+        return new Release($response->json());
     }
 
     private function getCacheKey(string $string): string
     {
         return sprintf('%s-%s', $this->package, $string);
+    }
+
+    private function fetchReleases(): ?Collection
+    {
+        // Make a request to GitHub
+        $response = Http::get('https://api.github.com/repos/'.$this->package.'/releases');
+
+        // Check if the request was successful
+        if ($response->failed()) {
+            return collect();
+        }
+
+        return collect($response->json())->map(fn (array $release) => new Release($release));
     }
 }
