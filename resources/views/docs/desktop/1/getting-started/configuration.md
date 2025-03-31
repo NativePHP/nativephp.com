@@ -40,6 +40,11 @@ return [
      * The author of your application.
      */
     'author' => env('NATIVEPHP_APP_AUTHOR'),
+    
+    /**
+     * The copyright notice for your application.
+     */
+    'copyright' => env('NATIVEPHP_APP_COPYRIGHT'),
 
     /**
      * The default service provider for your application. This provider
