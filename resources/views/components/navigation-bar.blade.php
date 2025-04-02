@@ -148,9 +148,62 @@
                 {{-- Link --}}
                 <a
                     href="https://github.com/nativephp/laravel?sponsor=1"
-                    @class(['hidden opacity-60 transition duration-200 hover:opacity-100 lg:block'])
+                    class="group relative hidden from-[#ddb0f3] to-violet-500 bg-clip-text font-medium text-current lg:block dark:bg-gradient-to-tr dark:from-violet-500 dark:to-white/80 dark:text-transparent"
                 >
                     Sponsor
+
+                    {{-- Heart --}}
+                    <div
+                        class="absolute -top-2.5 right-1/2 translate-x-1/2 translate-y-5 scale-0 opacity-0 transition duration-300 ease-in-out will-change-transform group-hover:translate-y-0 group-hover:scale-100 group-hover:opacity-100"
+                    >
+                        <x-icons.heart class="size-2.5 text-violet-400" />
+                    </div>
+
+                    {{-- Line --}}
+                    <div
+                        x-init="
+                            () => {
+                                motion.animate(
+                                    $el,
+                                    {
+                                        x: [-5, 50],
+                                        scaleX: [1, 2.5, 1],
+                                        opacity: [0, 1, 1, 1, 0],
+                                    },
+                                    {
+                                        duration: 1.8,
+                                        repeat: Infinity,
+                                        repeatType: 'reverse',
+                                        ease: motion.easeInOut,
+                                    },
+                                )
+                            }
+                        "
+                        class="absolute -bottom-1 left-0 h-0.5 w-2 origin-left rounded-full bg-violet-500 will-change-transform"
+                    ></div>
+
+                    {{-- Blurry line --}}
+                    <div
+                        x-init="
+                            () => {
+                                motion.animate(
+                                    $el,
+                                    {
+                                        x: [-5, 50],
+                                        scaleX: [1, 2.5, 1],
+                                        opacity: [0, 1, 1, 1, 0],
+                                    },
+                                    {
+                                        duration: 1.8,
+                                        repeat: Infinity,
+                                        repeatType: 'reverse',
+                                        ease: motion.easeInOut,
+                                    },
+                                )
+                            }
+                        "
+                        class="absolute -bottom-1.5 left-0 h-8 w-2 origin-left rounded-full bg-gradient-to-t from-violet-500 to-transparent blur will-change-transform dark:blur-sm"
+                    ></div>
                 </a>
 
                 {{-- Theme toggle --}}
