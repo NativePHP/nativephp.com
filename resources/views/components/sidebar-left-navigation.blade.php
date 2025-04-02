@@ -1,5 +1,5 @@
 <aside
-    class="sticky top-20 hidden w-[18rem] shrink-0 overflow-y-auto overflow-x-hidden pr-3 pt-4 lg:block"
+    class="sticky top-20 hidden max-h-[calc(100dvh-7rem)] w-[18rem] shrink-0 overflow-y-auto overflow-x-hidden pr-3 pt-4 lg:block"
 >
     <div class="relative flex flex-1 flex-col pb-5">
         <x-platform-switcher />
