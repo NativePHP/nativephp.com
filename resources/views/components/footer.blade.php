@@ -197,7 +197,7 @@
                 >
                     Hassan Zahirnia
                     <div
-                        class="absolute -bottom-0.5 left-0 h-px w-full origin-right scale-x-0 bg-black transition duration-300 ease-out will-change-transform group-hover:origin-left group-hover:scale-x-100"
+                        class="absolute -bottom-0.5 left-0 h-px w-full origin-right scale-x-0 bg-current transition duration-300 ease-out will-change-transform group-hover:origin-left group-hover:scale-x-100"
                     ></div>
                 </a>
             </div>
@@ -215,7 +215,7 @@
                 >
                     Caneco
                     <div
-                        class="absolute -bottom-0.5 left-0 h-px w-full origin-right scale-x-0 bg-black transition duration-300 ease-out will-change-transform group-hover:origin-left group-hover:scale-x-100"
+                        class="absolute -bottom-0.5 left-0 h-px w-full origin-right scale-x-0 bg-current transition duration-300 ease-out will-change-transform group-hover:origin-left group-hover:scale-x-100"
                     ></div>
                 </a>
             </div>
@@ -250,7 +250,7 @@
             >
                 Marcel Pociot
                 <div
-                    class="absolute -bottom-0.5 left-0 h-px w-full origin-right scale-x-0 bg-black transition duration-300 ease-out will-change-transform group-hover:origin-left group-hover:scale-x-100"
+                    class="absolute -bottom-0.5 left-0 h-px w-full origin-right scale-x-0 bg-current transition duration-300 ease-out will-change-transform group-hover:origin-left group-hover:scale-x-100"
                 ></div>
             </a>
             <span>and</span>
@@ -263,7 +263,7 @@
             >
                 Simon Hamp
                 <div
-                    class="absolute -bottom-0.5 left-0 h-px w-full origin-right scale-x-0 bg-black transition duration-300 ease-out will-change-transform group-hover:origin-left group-hover:scale-x-100"
+                    class="absolute -bottom-0.5 left-0 h-px w-full origin-right scale-x-0 bg-current transition duration-300 ease-out will-change-transform group-hover:origin-left group-hover:scale-x-100"
                 ></div>
             </a>
         </div>
