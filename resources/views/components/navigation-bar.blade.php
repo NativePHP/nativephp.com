@@ -268,7 +268,7 @@
                                 )
                             }
                         "
-                        class="absolute -bottom-1 left-0 h-0.5 w-2 origin-left rounded-full bg-violet-500 will-change-transform"
+                        class="absolute -bottom-1 left-0 h-0.5 w-2 origin-left rounded-full bg-violet-400 will-change-transform dark:bg-violet-500"
                         aria-hidden="true"
                     ></div>
 
@@ -292,7 +292,7 @@
                                 )
                             }
                         "
-                        class="absolute -bottom-1.5 left-0 h-8 w-2 origin-left rounded-full bg-gradient-to-t from-violet-500 to-transparent blur will-change-transform dark:blur-sm"
+                        class="absolute -bottom-1.5 left-0 h-8 w-2 origin-left rounded-full bg-gradient-to-t from-violet-500 to-transparent blur-[9px] will-change-transform dark:blur-sm"
                         aria-hidden="true"
                     ></div>
                 </a>
