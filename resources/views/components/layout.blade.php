@@ -58,7 +58,18 @@
     </head>
     <body
         x-cloak
-        x-data="{ showDocsNavigation: false, scrolled: false }"
+        x-data="{
+            showDocsNavigation: false,
+            scrolled: window.scrollY > 50,
+            width: window.innerWidth,
+            get showPlatformSwitcherHeader() {
+                return ! this.scrolled && this.width >= 1024
+            },
+        }"
+        x-resize="
+            width = $width
+            if (width >= 1024) showDocsNavigation = false
+        "
         x-init="
             window.addEventListener('scroll', () => {
                 scrolled = window.scrollY > 50

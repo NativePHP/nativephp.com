@@ -8,12 +8,12 @@
     {{ $attributes }}
     class="mx-1 mb-3 rounded-xl bg-zinc-100/80 transition-all duration-300 ease-in-out dark:bg-mirage"
     :class="{
-        'pb-4 pl-4 pr-5 pt-5' : !scrolled,
-        'pb-2 pl-2 pr-3 pt-3' : scrolled
+        'pb-4 pl-4 pr-5 pt-5' : showPlatformSwitcherHeader,
+        'pb-2 pl-2 pr-3 pt-3' : !showPlatformSwitcherHeader
     }"
 >
     <div
-        x-show="!scrolled"
+        x-show="showPlatformSwitcherHeader"
         x-collapse
         class="space-y-1.5"
     >
@@ -34,7 +34,7 @@
     {{-- Switcher --}}
     <div
         class="flex items-center gap-3 text-xs"
-        :class="{ 'mt-2.5': !scrolled }"
+        :class="{ 'mt-2.5': showPlatformSwitcherHeader }"
     >
         {{-- Desktop --}}
         <a
@@ -44,7 +44,7 @@
                 'bg-white dark:bg-slate-700/30' => ! $isMobile,
                 'hover:bg-zinc-200/50 dark:text-gray-400/80 dark:hover:bg-gray-900/80 dark:hover:text-white' => $isMobile,
             ])
-            :class="{ 'flex-col p-2.5': !scrolled, 'flex-row p-2': scrolled }"
+            :class="{ 'flex-col p-2.5': showPlatformSwitcherHeader, 'flex-row p-2': !showPlatformSwitcherHeader }"
         >
             <div
                 @class([
@@ -77,7 +77,7 @@
                 'bg-white dark:bg-slate-700/30' => $isMobile,
                 'hover:bg-zinc-200/50 dark:text-gray-400/80 dark:hover:bg-gray-900/80 dark:hover:text-white' => ! $isMobile,
             ])
-            :class="{ 'flex-col p-2.5': !scrolled, 'flex-row p-2': scrolled }"
+            :class="{ 'flex-col p-2.5': showPlatformSwitcherHeader, 'flex-row p-2': !showPlatformSwitcherHeader }"
         >
             <div
                 @class([
