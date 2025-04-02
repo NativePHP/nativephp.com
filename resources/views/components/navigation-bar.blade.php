@@ -159,7 +159,7 @@
                                         scale: 1,
                                     },
                                     {
-                                        duration: 0.3,
+                                        duration: 0.25,
                                         ease: motion.backOut,
                                     },
                                 )
@@ -173,7 +173,7 @@
                                         rotate: -20,
                                     },
                                     {
-                                        duration: 0.3,
+                                        duration: 0.25,
                                         ease: motion.backOut,
                                         delay: 0.05,
                                     },
@@ -182,13 +182,13 @@
                                     $refs.sponsorHeart3,
                                     {
                                         y: -16,
-                                        x: 8,
+                                        x: 7,
                                         opacity: 1,
                                         scale: 1,
                                         rotate: 20,
                                     },
                                     {
-                                        duration: 0.3,
+                                        duration: 0.25,
                                         ease: motion.backOut,
                                         delay: 0.1,
                                     },
@@ -205,7 +205,7 @@
                                             rotate: 0,
                                         },
                                         {
-                                            duration: 0.3,
+                                            duration: 0.25,
                                             ease: motion.backIn,
                                         },
                                     )
