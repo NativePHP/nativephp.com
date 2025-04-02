@@ -214,13 +214,18 @@
                     "
                     href="https://github.com/nativephp/laravel?sponsor=1"
                     class="relative hidden from-[#ddb0f3] to-violet-500 bg-clip-text font-medium text-current lg:block dark:bg-gradient-to-tr dark:from-violet-500 dark:to-white/80 dark:text-transparent"
+                    aria-label="Sponsor NativePHP on GitHub"
+                    title="Support NativePHP development by becoming a sponsor"
+                    rel="noopener"
                 >
                     Sponsor
+                    <span class="sr-only">NativePHP on GitHub</span>
 
                     {{-- Heart 1 --}}
                     <div
                         x-ref="sponsorHeart1"
                         class="absolute right-1/2 top-0 origin-center scale-0 opacity-0"
+                        aria-hidden="true"
                     >
                         <x-icons.heart class="size-[9px] text-violet-400" />
                     </div>
@@ -229,6 +234,7 @@
                     <div
                         x-ref="sponsorHeart2"
                         class="absolute left-1/2 top-0 origin-center scale-0 opacity-0"
+                        aria-hidden="true"
                     >
                         <x-icons.heart class="size-[7px] text-violet-400" />
                     </div>
@@ -237,6 +243,7 @@
                     <div
                         x-ref="sponsorHeart3"
                         class="absolute right-1/2 top-0 origin-center scale-0 opacity-0"
+                        aria-hidden="true"
                     >
                         <x-icons.heart class="size-[5px] text-violet-400" />
                     </div>
@@ -262,6 +269,7 @@
                             }
                         "
                         class="absolute -bottom-1 left-0 h-0.5 w-2 origin-left rounded-full bg-violet-500 will-change-transform"
+                        aria-hidden="true"
                     ></div>
 
                     {{-- Blurry line --}}
@@ -285,6 +293,7 @@
                             }
                         "
                         class="absolute -bottom-1.5 left-0 h-8 w-2 origin-left rounded-full bg-gradient-to-t from-violet-500 to-transparent blur will-change-transform dark:blur-sm"
+                        aria-hidden="true"
                     ></div>
                 </a>
 
