@@ -85,11 +85,13 @@
                 >
                     Mobile
                 </a>
+
                 {{-- Decorative circle --}}
                 <div
                     class="hidden size-[3px] rotate-45 rounded-sm bg-gray-400 transition duration-200 lg:block dark:opacity-60"
                     aria-hidden="true"
                 ></div>
+
                 @if ($hasMenu)
                     <button
                         type="button"
@@ -136,6 +138,20 @@
                         Docs
                     </a>
                 @endif
+
+                {{-- Decorative circle --}}
+                <div
+                    class="hidden size-[3px] rotate-45 rounded-sm bg-gray-400 transition duration-200 lg:block dark:opacity-60"
+                    aria-hidden="true"
+                ></div>
+
+                {{-- Link --}}
+                <a
+                    href="https://github.com/nativephp/laravel?sponsor=1"
+                    @class(['hidden opacity-60 transition duration-200 hover:opacity-100 lg:block'])
+                >
+                    Sponsor
+                </a>
 
                 {{-- Theme toggle --}}
                 <x-theme-toggle />
