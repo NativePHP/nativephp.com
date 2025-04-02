@@ -1,11 +1,11 @@
 <aside
     class="sticky top-20 hidden w-[18rem] shrink-0 overflow-y-auto overflow-x-hidden pr-3 pt-4 lg:block"
 >
-    <nav class="relative flex flex-1 flex-col pb-5">
+    <div class="relative flex flex-1 flex-col pb-5">
         <x-platform-switcher />
 
-        {!! $slot !!}
-    </nav>
+        <nav class="docs-navigation">{!! $slot !!}</nav>
+    </div>
 </aside>
 
 <div
@@ -18,11 +18,13 @@
     x-transition:leave-end="translate-y-1 opacity-0"
     class="fixed inset-0 z-40 h-screen w-screen overflow-y-auto bg-white dark:bg-mirage"
 >
-    <nav class="px-5 pt-24">
+    <div class="px-5 pt-24">
         <x-platform-switcher />
-        {!! $slot !!}
+
+        <nav class="docs-navigation">{!! $slot !!}</nav>
+
         <div class="my-16 flex items-center justify-center space-x-6">
             <x-social-networks-all />
         </div>
-    </nav>
+    </div>
 </div>

@@ -50,12 +50,12 @@
 }
 
 /* Whole menu */
-nav ul {
+nav.docs-navigation ul {
     @apply list-none text-sm;
 }
 
 /* Categories */
-nav > ul > li {
+nav.docs-navigation > ul > li {
     @apply mb-3;
 
     & > a {
@@ -65,7 +65,7 @@ nav > ul > li {
     }
 }
 
-nav > ul > li.active > a {
+nav.docs-navigation > ul > li.active > a {
     @apply text-black dark:text-white;
 
     & > svg {
@@ -73,16 +73,16 @@ nav > ul > li.active > a {
     }
 }
 
-nav > ul > li > a {
+nav.docs-navigation > ul > li > a {
     @apply transition duration-200 will-change-transform;
 }
 
-nav > ul > li:hover > a {
+nav.docs-navigation > ul > li:hover > a {
     @apply translate-x-0.5 bg-gray-50 dark:bg-gray-900/50;
 }
 
 /* Sub menus */
-nav > ul > li > ul {
+nav.docs-navigation > ul > li > ul {
     & > li {
         @apply font-normal;
 
