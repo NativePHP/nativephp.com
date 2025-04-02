@@ -75,6 +75,13 @@
                 scrolled = window.scrollY > 50
             })
         "
+        x-effect="
+            if (showDocsNavigation) {
+                document.body.style.overflow = 'hidden'
+            } else {
+                document.body.style.overflow = ''
+            }
+        "
         class="min-h-screen overflow-x-clip font-poppins antialiased selection:bg-black selection:text-[#b4a9ff] dark:bg-[#050714] dark:text-white"
     >
         <x-navigation-bar :hasMenu="$hasMenu ?? false" />
