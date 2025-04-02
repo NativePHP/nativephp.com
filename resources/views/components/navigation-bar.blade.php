@@ -147,16 +147,98 @@
 
                 {{-- Link --}}
                 <a
+                    x-init="
+                        () => {
+                            motion.hover($el, (element) => {
+                                motion.animate(
+                                    $refs.sponsorHeart1,
+                                    {
+                                        y: -8,
+                                        x: 6,
+                                        opacity: 1,
+                                        scale: 1,
+                                    },
+                                    {
+                                        duration: 0.3,
+                                        ease: motion.backOut,
+                                    },
+                                )
+                                motion.animate(
+                                    $refs.sponsorHeart2,
+                                    {
+                                        y: -15,
+                                        x: -9,
+                                        opacity: 1,
+                                        scale: 1,
+                                        rotate: -20,
+                                    },
+                                    {
+                                        duration: 0.3,
+                                        ease: motion.backOut,
+                                        delay: 0.05,
+                                    },
+                                )
+                                motion.animate(
+                                    $refs.sponsorHeart3,
+                                    {
+                                        y: -16,
+                                        x: 8,
+                                        opacity: 1,
+                                        scale: 1,
+                                        rotate: 20,
+                                    },
+                                    {
+                                        duration: 0.3,
+                                        ease: motion.backOut,
+                                        delay: 0.1,
+                                    },
+                                )
+
+                                return () =>
+                                    motion.animate(
+                                        [$refs.sponsorHeart1, $refs.sponsorHeart2, $refs.sponsorHeart3],
+                                        {
+                                            y: 0,
+                                            x: 0,
+                                            opacity: 0,
+                                            scale: 0,
+                                            rotate: 0,
+                                        },
+                                        {
+                                            duration: 0.3,
+                                            ease: motion.backIn,
+                                        },
+                                    )
+                            })
+                        }
+                    "
                     href="https://github.com/nativephp/laravel?sponsor=1"
-                    class="group relative hidden from-[#ddb0f3] to-violet-500 bg-clip-text font-medium text-current lg:block dark:bg-gradient-to-tr dark:from-violet-500 dark:to-white/80 dark:text-transparent"
+                    class="relative hidden from-[#ddb0f3] to-violet-500 bg-clip-text font-medium text-current lg:block dark:bg-gradient-to-tr dark:from-violet-500 dark:to-white/80 dark:text-transparent"
                 >
                     Sponsor
 
-                    {{-- Heart --}}
+                    {{-- Heart 1 --}}
                     <div
-                        class="absolute -top-2.5 right-1/2 translate-x-1/2 translate-y-5 scale-0 opacity-0 transition duration-300 ease-in-out will-change-transform group-hover:translate-y-0 group-hover:scale-100 group-hover:opacity-100"
+                        x-ref="sponsorHeart1"
+                        class="absolute right-1/2 top-0 origin-center scale-0 opacity-0"
                     >
-                        <x-icons.heart class="size-2.5 text-violet-400" />
+                        <x-icons.heart class="size-[9px] text-violet-400" />
+                    </div>
+
+                    {{-- Heart 2 --}}
+                    <div
+                        x-ref="sponsorHeart2"
+                        class="absolute left-1/2 top-0 origin-center scale-0 opacity-0"
+                    >
+                        <x-icons.heart class="size-[7px] text-violet-400" />
+                    </div>
+
+                    {{-- Heart 3 --}}
+                    <div
+                        x-ref="sponsorHeart3"
+                        class="absolute right-1/2 top-0 origin-center scale-0 opacity-0"
+                    >
+                        <x-icons.heart class="size-[5px] text-violet-400" />
                     </div>
 
                     {{-- Line --}}
