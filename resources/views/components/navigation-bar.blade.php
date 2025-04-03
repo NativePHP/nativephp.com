@@ -212,11 +212,10 @@
                             })
                         }
                     "
-                    href="https://github.com/nativephp/laravel?sponsor=1"
+                    href="/docs/1/getting-started/sponsoring"
                     class="relative hidden from-[#ddb0f3] to-violet-500 bg-clip-text font-medium text-current lg:block dark:bg-gradient-to-tr dark:from-violet-500 dark:to-white/80 dark:text-transparent"
                     aria-label="Sponsor NativePHP on GitHub"
                     title="Support NativePHP development by becoming a sponsor"
-                    rel="noopener"
                 >
                     Sponsor
                     <span class="sr-only">NativePHP on GitHub</span>
