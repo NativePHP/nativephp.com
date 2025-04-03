@@ -10,7 +10,7 @@
 {{-- Table of contents --}}
 @if (count($tableOfContents) > 0)
     <div
-        class="mt-4 flex min-h-44 flex-col space-y-2 overflow-y-auto overflow-x-hidden border-l text-xs dark:border-l-white/15"
+        class="mt-4 flex min-h-20 flex-col space-y-2 overflow-y-auto overflow-x-hidden border-l text-xs dark:border-l-white/15"
     >
         @foreach ($tableOfContents as $item)
             <a
