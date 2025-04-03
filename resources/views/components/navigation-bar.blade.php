@@ -213,7 +213,7 @@
                         }
                     "
                     href="/docs/1/getting-started/sponsoring"
-                    class="relative hidden from-[#ddb0f3] to-violet-500 bg-clip-text font-medium text-current lg:block dark:bg-gradient-to-tr dark:from-violet-500 dark:to-white/80 dark:text-transparent"
+                    class="relative hidden bg-gradient-to-tr from-violet-600 to-violet-300 bg-clip-text font-medium text-transparent lg:block dark:from-violet-500 dark:to-white/80"
                     aria-label="Sponsor NativePHP"
                     title="Support NativePHP development"
                 >
