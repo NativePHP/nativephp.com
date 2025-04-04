@@ -218,7 +218,10 @@ Menu::label('Click me!')
     ->event(MyCustomMenuItemEvent::class)
 ```
 
-Your custom event class should extend the default `Native\Laravel\Events\Menu\MenuItemClicked` class.
+Your custom event class should extend the default `Native\Laravel\Events\Menu\MenuItemClicked` class and include `$item` and `$combo` in its constructor:
+```php
+public function __construct(public array $item, public array $combo = []) {}
+```
 
 If you do not provide a custom event to fire, the default event will be used. By default, this event is
 [broadcast](/docs/digging-deeper/broadcasting) across your app so you can listen for it either in your Laravel back-end,
