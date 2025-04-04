@@ -5,9 +5,9 @@ order: 100
 
 ## Requirements
 
-1. PHP 8.1+
-2. Laravel 10 or higher
-3. Node 20+
+1. PHP 8.3+
+2. Laravel 11 or higher
+3. Node 22+
 4. Windows 10+ / macOS 12+ / Linux
 
 ### PHP & Node
