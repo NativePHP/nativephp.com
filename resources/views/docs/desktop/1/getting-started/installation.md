@@ -34,8 +34,6 @@ composer require nativephp/electron
 This package contains all the classes, commands, and interfaces that your application will need to work with the
 Electron runtime.
 
-**Note**: If this fails, try setting the `minimum-stability` in your composer.json to "dev". NativePHP is in beta at this point in time.
-
 ## Run the NativePHP installer
 
 ```shell
