@@ -2,10 +2,11 @@
 title: System
 order: 800
 ---
+
 ## The System
 
 One of the main advantages of building a native application is having more direct access to system resources, such as
-peripherals connected to the physical device and APIs that aren't typically accessible inside a browser's sandbox. 
+peripherals connected to the physical device and APIs that aren't typically accessible inside a browser's sandbox.
 
 NativePHP makes it trivial to access these resources and APIs.
 
@@ -19,6 +20,7 @@ While some features are platform-specific, NativePHP gracefully handles this for
 about whether something is Linux-, Mac-, or Windows-only.
 
 Most of the system-related features are available through the `System` facade.
+
 ```php
 use Native\Laravel\Facades\System;
 ```
@@ -123,7 +125,8 @@ You can also print directly to PDF:
 System::printToPDF('<html>...');
 ```
 
-This returns the PDF data in a `base64_encoded` binary string. So be sure to `base64_decode` it before storing it to disk:
+This returns the PDF data in a `base64_encoded` binary string. So be sure to `base64_decode` it before storing it to
+disk:
 
 ```php
 use Illuminate\Support\Facades\Storage;
@@ -160,3 +163,25 @@ $timezone = System::timezone();
 
 // $timezone => 'Europe/London'
 ```
+
+## Theme
+
+NativePHP allows you to detect the current theme of the user's operating system. This is useful for applications that
+want to adapt their UI to match the user's preferences.
+You can use the `System::theme()` method to get the current theme of the user's operating system.
+
+```php
+$theme = System::theme();
+// $theme => SystemThemesEnum::LIGHT, SystemThemesEnum::DARK or SystemThemesEnum::SYSTEM
+```
+
+You can also set the theme of your application using the `System::theme()` method. This will change the theme of your
+application to the specified value. The available options are `SystemThemesEnum::LIGHT`, `SystemThemesEnum::DARK` and
+`SystemThemesEnum::SYSTEM`.
+
+```php
+System::theme(SystemThemesEnum::DARK);
+```
+
+Setting the theme to `SystemThemesEnum::SYSTEM` will remove the override and everything will be reset to the OS default.
+By default themeSource is `SystemThemesEnum::SYSTEM`.
