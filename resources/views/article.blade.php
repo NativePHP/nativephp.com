@@ -4,7 +4,13 @@
         class="mx-auto mt-10 w-full max-w-3xl px-5 md:mt-14"
         aria-labelledby="article-title"
     >
-        <header class="grid place-items-center text-center">
+        <header class="relative grid place-items-center text-center">
+            {{-- Blurred circle - Decorative --}}
+            <div
+                class="absolute right-1/2 top-0 -z-30 h-60 w-60 translate-x-1/2 rounded-full blur-[150px] md:w-80 dark:bg-slate-500/50"
+                aria-hidden="true"
+            ></div>
+
             {{-- Back button --}}
             <div
                 x-init="
