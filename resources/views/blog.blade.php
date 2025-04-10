@@ -166,7 +166,7 @@
             >
                 <a
                     href="#"
-                    class="inline-block p-1.5 opacity-50 transition duration-200 hover:opacity-100"
+                    class="inline-block p-1.5 opacity-60 transition duration-200 hover:opacity-100"
                     aria-label="Go to previous page"
                     rel="prev"
                 >
