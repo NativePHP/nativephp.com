@@ -116,6 +116,34 @@
                 painstakingly!) crafted by the incredible
                 @HassanZahirnia
             </x-article-card>
+
+            {{-- Pagination --}}
+            <nav
+                class="-mt-2 flex items-center justify-between gap-5"
+                aria-label="Blog pagination"
+            >
+                {{-- Previous --}}
+                <a
+                    href="#"
+                    class="inline-block p-2 opacity-50 transition duration-200 hover:opacity-100"
+                    aria-label="Go to previous page"
+                    rel="prev"
+                >
+                    <span class="sr-only">Navigate to</span>
+                    Previous
+                </a>
+
+                {{-- Next --}}
+                <a
+                    href="#"
+                    class="inline-block p-2 opacity-80 transition duration-200 hover:opacity-100"
+                    aria-label="Go to next page"
+                    rel="next"
+                >
+                    <span class="sr-only">Navigate to</span>
+                    Next
+                </a>
+            </nav>
         </div>
     </section>
 </x-layout>
