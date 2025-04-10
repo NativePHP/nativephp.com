@@ -25,7 +25,7 @@
                         })
                     }
                 "
-                class="text-3xl font-extrabold sm:text-4xl"
+                class="text-3xl font-extrabold will-change-transform sm:text-4xl"
             >
                 Blog
             </h1>
@@ -49,7 +49,7 @@
                         })
                     }
                 "
-                class="mx-auto max-w-2xl pt-4 text-base/relaxed text-gray-600 sm:text-lg/relaxed dark:text-gray-400"
+                class="mx-auto max-w-2xl pt-4 text-base/relaxed text-gray-600 will-change-transform sm:text-lg/relaxed dark:text-gray-400"
             >
                 Welcome to our blog! Here, we share insights, updates, and
                 stories from our community. Stay tuned for the latest news and
@@ -84,10 +84,30 @@
         </h2>
 
         {{-- List --}}
-        <div class="mx-auto flex w-full max-w-xl flex-col gap-5">
+        <div
+            x-init="
+                () => {
+                    motion.inView($el, (element) => {
+                        motion.animate(
+                            Array.from($el.children),
+                            {
+                                x: [-50, 0],
+                                opacity: [0, 1],
+                            },
+                            {
+                                duration: 0.7,
+                                ease: motion.circOut,
+                                delay: motion.stagger(0.1),
+                            },
+                        )
+                    })
+                }
+            "
+            class="mx-auto flex w-full max-w-xl flex-col gap-5"
+        >
             <x-article-card
                 title="NativePHP for desktop v1 is finally here!"
-                url="#"
+                url="/article"
                 date="2025-04-09"
             >
                 🎉 WE DID IT! We finally got to v1. I almost don't believe it!
@@ -98,7 +118,7 @@
             </x-article-card>
             <x-article-card
                 title="Dropping Laravel 10 support"
-                url="#"
+                url="/article"
                 date="2025-04-4"
             >
                 Hey team, this is just a quick note about Laravel version
@@ -108,7 +128,7 @@
             </x-article-card>
             <x-article-card
                 title="NativePHP for mobile—Pricing update!"
-                url="#"
+                url="/article"
                 date="2025-03-27"
             >
                 Earlier this week I spoke at the Laravel Worldwide Meetup where
