@@ -54,9 +54,9 @@
                     aria-hidden="true"
                 ></div>
 
-                <span class="relative inline-flex items-center gap-1.5">
+                <span class="relative inline-flex items-center gap-1">
                     <x-icons.confetti
-                        class="size-4 rotate-12"
+                        class="-mt-px size-3.5"
                         aria-hidden="true"
                     />
                     <span class="font-normal">v1 is Here!</span>
