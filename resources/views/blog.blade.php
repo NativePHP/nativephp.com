@@ -71,43 +71,67 @@
     </section>
 
     {{-- Articles --}}
-    <section class="relative z-10 mt-10 px-5">
+    <section
+        class="relative z-10 mt-10 px-5"
+        aria-labelledby="blog-articles-heading"
+    >
+        {{-- Semantic heading for section (visually hidden) --}}
+        <h2
+            id="blog-articles-heading"
+            class="sr-only"
+        >
+            Blog Articles
+        </h2>
+
         {{-- List --}}
         <div class="mx-auto w-full max-w-xl">
             <a
                 href="#"
-                class="group block rounded-2xl bg-gray-200/40 p-7 transition duration-300 hover:bg-emerald-100/50 dark:bg-mirage/50 dark:hover:bg-emerald-500/10"
+                class="block"
+                aria-labelledby="article-title"
             >
-                {{-- Header --}}
-                <div class="flex items-start justify-between gap-10">
-                    {{-- Title --}}
-                    <h3
-                        class="line-clamp-4 max-w-xs text-xl font-semibold leading-relaxed"
-                    >
-                        NativePHP for desktop v1 is finally here!
-                    </h3>
+                <article
+                    class="group block rounded-2xl bg-gray-200/40 p-7 transition duration-300 hover:bg-emerald-100/50 dark:bg-mirage/50 dark:hover:bg-emerald-500/10"
+                >
+                    {{-- Header --}}
+                    <div class="flex items-start justify-between gap-10">
+                        {{-- Title --}}
+                        <h3
+                            id="article-title"
+                            class="line-clamp-4 max-w-xs text-xl font-semibold leading-relaxed"
+                        >
+                            NativePHP for desktop v1 is finally here!
+                        </h3>
 
-                    {{-- Arrow --}}
-                    <x-icons.right-arrow
-                        class="-ml-5 mt-2 size-3.5 shrink-0 transition duration-300 will-change-transform group-hover:translate-x-1"
-                    />
-                </div>
+                        {{-- Arrow --}}
+                        <x-icons.right-arrow
+                            class="-ml-5 mt-2 size-3.5 shrink-0 transition duration-300 will-change-transform group-hover:translate-x-1"
+                            aria-hidden="true"
+                        />
+                    </div>
 
-                <div class="flex items-end justify-between gap-10 pt-5">
-                    {{-- Date --}}
-                    <div class="shrink-0 text-sm opacity-50">April 9, 2025</div>
+                    <div class="flex items-end justify-between gap-10 pt-5">
+                        {{-- Date --}}
+                        <time
+                            datetime="2025-04-09"
+                            class="shrink-0 text-sm opacity-50"
+                        >
+                            April 9, 2025
+                        </time>
 
-                    {{-- Content --}}
-                    <p
-                        class="line-clamp-3 max-w-72 text-xs leading-relaxed opacity-80"
-                    >
-                        🎉 WE DID IT! We finally got to v1. I almost don't
-                        believe it! This is an awesome milestone. For a project
-                        that started as just an idea, to see it reach a truly
-                        stable place and support building powerful apps across
-                        all major platforms is just incredible.
-                    </p>
-                </div>
+                        {{-- Content --}}
+                        <p
+                            class="line-clamp-3 max-w-72 text-xs leading-relaxed opacity-80"
+                        >
+                            🎉 WE DID IT! We finally got to v1. I almost don't
+                            believe it! This is an awesome milestone. For a
+                            project that started as just an idea, to see it
+                            reach a truly stable place and support building
+                            powerful apps across all major platforms is just
+                            incredible.
+                        </p>
+                    </div>
+                </article>
             </a>
         </div>
     </section>
