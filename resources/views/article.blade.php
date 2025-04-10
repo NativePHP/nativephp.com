@@ -58,7 +58,7 @@
                         })
                     }
                 "
-                class="mt-10 text-3xl font-extrabold will-change-transform sm:text-4xl"
+                class="mt-8 text-3xl font-extrabold will-change-transform sm:text-4xl"
             >
                 NativePHP for desktop v1 is finally here!
             </h1>

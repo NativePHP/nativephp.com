@@ -53,7 +53,7 @@
 
         {{-- Blur decoration --}}
         <div
-            class="absolute -left-10 -top-10 -z-50 h-3/4 w-40 rounded-full bg-violet-50 opacity-0 blur-3xl transition duration-300 group-hover:opacity-100 dark:bg-white/10"
+            class="absolute -left-10 -top-10 -z-50 h-3/4 w-40 rounded-full bg-violet-50 opacity-0 blur-3xl transition duration-300 group-hover:opacity-100 dark:bg-white/15"
         ></div>
     </article>
 </a>
