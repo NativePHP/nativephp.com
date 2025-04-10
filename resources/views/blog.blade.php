@@ -58,13 +58,13 @@
 
             {{-- Blurred circle - Decorative --}}
             <div
-                class="absolute -top-1/2 right-0 -z-20 h-60 w-60 rounded-full bg-violet-300/70 blur-[150px] md:right-1/2 md:w-80 dark:bg-violet-500/20"
+                class="absolute -top-1/2 right-0 -z-20 h-60 w-60 rounded-full bg-violet-300/60 blur-[150px] md:right-1/2 md:w-80 dark:bg-violet-500/20"
                 aria-hidden="true"
             ></div>
 
             {{-- Blurred circle - Decorative --}}
             <div
-                class="absolute left-0 top-1/2 -z-30 h-60 w-60 rounded-full bg-orange-200/70 blur-[150px] md:left-1/2 md:w-80 dark:bg-slate-500/50"
+                class="absolute left-0 top-1/2 -z-30 h-60 w-60 rounded-full bg-orange-200/60 blur-[150px] md:left-1/2 md:w-80 dark:bg-slate-500/50"
                 aria-hidden="true"
             ></div>
         </header>
