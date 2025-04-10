@@ -125,7 +125,7 @@
                 {{-- Previous --}}
                 <a
                     href="#"
-                    class="inline-block p-2 opacity-50 transition duration-200 hover:opacity-100"
+                    class="inline-block p-1.5 opacity-50 transition duration-200 hover:opacity-100"
                     aria-label="Go to previous page"
                     rel="prev"
                 >
@@ -136,7 +136,7 @@
                 {{-- Next --}}
                 <a
                     href="#"
-                    class="inline-block p-2 opacity-80 transition duration-200 hover:opacity-100"
+                    class="inline-block p-1.5 opacity-80 transition duration-200 hover:opacity-100"
                     aria-label="Go to next page"
                     rel="next"
                 >
