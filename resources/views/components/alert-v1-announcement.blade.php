@@ -13,6 +13,7 @@
     {{-- Icon --}}
     <div
         class="grid size-10 place-items-center rounded-full bg-gray-200/50 backdrop-blur-sm dark:bg-black/30"
+        aria-hidden="true"
     >
         <x-icons.colored-confetti
             class="-mr-px size-[22px] shrink-0 mix-blend-multiply dark:hidden"
@@ -54,6 +55,7 @@
             }
         "
         class="absolute -left-3 top-2 -z-50 hidden size-0.5 rounded-full bg-white dark:block"
+        aria-hidden="true"
     ></div>
 
     {{-- Dot 11 --}}
@@ -82,6 +84,7 @@
             }
         "
         class="absolute -left-3 top-3.5 -z-50 hidden size-0.5 rounded-full bg-white dark:block"
+        aria-hidden="true"
     ></div>
 
     {{-- Dot 2 --}}
@@ -110,6 +113,7 @@
             }
         "
         class="absolute -left-3 top-5 -z-50 hidden size-0.5 rounded-full bg-white dark:block"
+        aria-hidden="true"
     ></div>
 
     {{-- Dot 22 --}}
@@ -138,6 +142,7 @@
             }
         "
         class="absolute -left-3 top-7 -z-50 hidden size-0.5 rounded-full bg-white dark:block"
+        aria-hidden="true"
     ></div>
 
     {{-- Dot 3 --}}
@@ -166,6 +171,7 @@
             }
         "
         class="absolute -left-3 top-10 -z-50 hidden size-0.5 rounded-full bg-white dark:block"
+        aria-hidden="true"
     ></div>
 
     {{-- Dot 33 --}}
@@ -194,6 +200,7 @@
             }
         "
         class="absolute -left-3 top-12 -z-50 hidden size-0.5 rounded-full bg-white dark:block"
+        aria-hidden="true"
     ></div>
 
     {{-- Dot 4 --}}
@@ -222,6 +229,7 @@
             }
         "
         class="absolute -left-3 top-14 -z-50 hidden size-0.5 rounded-full bg-white dark:block"
+        aria-hidden="true"
     ></div>
 
     {{-- Dot 44 --}}
@@ -250,5 +258,6 @@
             }
         "
         class="absolute -left-3 top-16 -z-50 hidden size-0.5 rounded-full bg-white dark:block"
+        aria-hidden="true"
     ></div>
 </div>
