@@ -58,14 +58,14 @@
                         })
                     }
                 "
-                class="mt-12 text-3xl font-extrabold will-change-transform sm:text-4xl"
+                class="mt-10 text-3xl font-extrabold will-change-transform sm:text-4xl"
             >
                 NativePHP for desktop v1 is finally here!
             </h1>
 
             {{-- Date --}}
             <div
-                class="inline-flex items-center gap-1.5 pt-5 opacity-60"
+                class="inline-flex items-center gap-1.5 pt-4 opacity-60"
                 aria-label="Publication date"
             >
                 <x-icons.date
@@ -83,10 +83,34 @@
 
         {{-- Divider --}}
         <div
-            class="my-5 h-px w-full rounded-full bg-current opacity-10"
-            role="separator"
+            x-init="
+                () => {
+                    motion.inView($el, (element) => {
+                        motion.animate(
+                            $el,
+                            {
+                                opacity: [0, 1],
+                                x: [5, 0],
+                            },
+                            {
+                                duration: 0.7,
+                                ease: motion.easeOut,
+                            },
+                        )
+                    })
+                }
+            "
+            class="flex items-center pb-3 pt-3.5 will-change-transform"
             aria-hidden="true"
-        ></div>
+        >
+            <div
+                class="size-1.5 rotate-45 bg-gray-200/90 dark:bg-[#242734]"
+            ></div>
+            <div class="h-0.5 w-full bg-gray-200/90 dark:bg-[#242734]"></div>
+            <div
+                class="size-1.5 rotate-45 bg-gray-200/90 dark:bg-[#242734]"
+            ></div>
+        </div>
 
         {{-- Content --}}
         <article
