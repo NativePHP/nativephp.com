@@ -1,67 +1,73 @@
 <x-layout title="Blog">
     {{-- Hero --}}
     <section
-        class="mx-auto mt-10 w-full max-w-4xl px-5 md:mt-14"
+        class="mx-auto mt-10 w-full max-w-3xl px-5 md:mt-14"
         aria-labelledby="hero-heading"
     >
-        {{-- Back button --}}
-        <div
-            x-init="
-                () => {
-                    motion.inView($el, (element) => {
-                        motion.animate(
-                            $el,
-                            {
-                                opacity: [0, 1],
-                                x: [5, 0],
-                            },
-                            {
-                                duration: 0.7,
-                                ease: motion.easeOut,
-                            },
-                        )
-                    })
-                }
-            "
-        >
-            <a
-                href="{{ route('blog') }}"
-                class="mb-3 inline-flex items-center gap-2 opacity-60 transition duration-200 will-change-transform hover:-translate-x-0.5 hover:opacity-100"
+        <header class="grid place-items-center text-center">
+            {{-- Back button --}}
+            <div
+                x-init="
+                    () => {
+                        motion.inView($el, (element) => {
+                            motion.animate(
+                                $el,
+                                {
+                                    opacity: [0, 1],
+                                    x: [5, 0],
+                                },
+                                {
+                                    duration: 0.7,
+                                    ease: motion.easeOut,
+                                },
+                            )
+                        })
+                    }
+                "
             >
-                <x-icons.right-arrow class="size-3 shrink-0 -scale-x-100" />
-                <div class="text-sm">Blog</div>
-            </a>
-        </div>
+                <a
+                    href="{{ route('blog') }}"
+                    class="inline-flex items-center gap-2 opacity-60 transition duration-200 will-change-transform hover:-translate-x-0.5 hover:opacity-100"
+                >
+                    <x-icons.right-arrow class="size-3 shrink-0 -scale-x-100" />
+                    <div class="text-sm">Blog</div>
+                </a>
+            </div>
 
-        {{-- Primary Heading --}}
-        <h1
-            id="hero-heading"
-            x-init="
-                () => {
-                    motion.inView($el, (element) => {
-                        motion.animate(
-                            $el,
-                            {
-                                opacity: [0, 1],
-                                x: [-5, 0],
-                            },
-                            {
-                                duration: 0.7,
-                                ease: motion.easeOut,
-                            },
-                        )
-                    })
-                }
-            "
-            class="text-3xl font-extrabold will-change-transform sm:text-4xl"
-        >
-            NativePHP for desktop v1 is finally here!
-        </h1>
+            {{-- Primary Heading --}}
+            <h1
+                id="hero-heading"
+                x-init="
+                    () => {
+                        motion.inView($el, (element) => {
+                            motion.animate(
+                                $el,
+                                {
+                                    opacity: [0, 1],
+                                    x: [-5, 0],
+                                },
+                                {
+                                    duration: 0.7,
+                                    ease: motion.easeOut,
+                                },
+                            )
+                        })
+                    }
+                "
+                class="mt-12 text-3xl font-extrabold will-change-transform sm:text-4xl"
+            >
+                NativePHP for desktop v1 is finally here!
+            </h1>
 
-        <div class="inline-flex items-center gap-2 pt-3">
-            <x-icons.date class="size-5 shrink-0" />
-            <div class="text-sm">April 9, 2025</div>
-        </div>
+            {{-- Date --}}
+            <div class="inline-flex items-center gap-1.5 pt-5 opacity-60">
+                <x-icons.date class="size-5 shrink-0" />
+                <div class="text-sm">April 9, 2025</div>
+            </div>
+        </header>
+
+        {{-- Divider --}}
+        <div class="my-5 h-px w-full rounded-full bg-current opacity-10"></div>
 
         {{-- Content --}}
         <article
@@ -82,7 +88,7 @@
                     })
                 }
             "
-            class="prose mt-2 text-gray-600 will-change-transform dark:text-gray-400"
+            class="prose mt-2 max-w-none text-gray-600 will-change-transform dark:text-gray-400"
         >
             Lorem ipsum dolor sit amet consectetur adipisicing elit. At quam a
             animi rem et dolor quis culpa quo tempore fuga? Culpa amet eveniet
