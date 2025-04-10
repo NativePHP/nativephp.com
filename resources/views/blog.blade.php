@@ -58,13 +58,13 @@
 
             {{-- Blurred circle - Decorative --}}
             <div
-                class="absolute -top-1/2 right-0 -z-20 h-60 w-60 rounded-full bg-emerald-200/35 blur-[100px] md:right-1/2 md:w-80 dark:bg-emerald-500/20"
+                class="absolute -top-1/2 right-0 -z-20 h-60 w-60 rounded-full bg-violet-300/70 blur-[150px] md:right-1/2 md:w-80 dark:bg-violet-500/20"
                 aria-hidden="true"
             ></div>
 
             {{-- Blurred circle - Decorative --}}
             <div
-                class="absolute left-0 top-1/2 -z-30 h-60 w-60 rounded-full bg-amber-100/70 blur-[100px] md:left-1/2 md:w-80 dark:bg-violet-500/20"
+                class="absolute left-0 top-1/2 -z-30 h-60 w-60 rounded-full bg-orange-200/70 blur-[150px] md:left-1/2 md:w-80 dark:bg-slate-500/50"
                 aria-hidden="true"
             ></div>
         </header>
@@ -72,7 +72,7 @@
 
     {{-- Articles --}}
     <section
-        class="relative z-10 mt-10 px-5"
+        class="relative z-10 mx-auto mt-10 w-full max-w-xl px-5"
         aria-labelledby="blog-articles-heading"
     >
         {{-- Semantic heading for section (visually hidden) --}}
@@ -103,7 +103,7 @@
                     })
                 }
             "
-            class="mx-auto flex w-full max-w-xl flex-col gap-5"
+            class="flex flex-col gap-5"
         >
             <x-article-card
                 title="NativePHP for desktop v1 is finally here!"
@@ -136,13 +136,34 @@
                 painstakingly!) crafted by the incredible
                 @HassanZahirnia
             </x-article-card>
+        </div>
 
-            {{-- Pagination --}}
-            <nav
-                class="-mt-2 flex items-center justify-between gap-5"
-                aria-label="Blog pagination"
+        {{-- Pagination --}}
+        <nav
+            class="flex items-center justify-between gap-5 pt-2.5"
+            aria-label="Blog pagination"
+        >
+            {{-- Previous --}}
+            <div
+                x-init="
+                    () => {
+                        motion.inView($el, (element) => {
+                            motion.animate(
+                                $el,
+                                {
+                                    opacity: [0, 1],
+                                    x: [-10, 0],
+                                },
+                                {
+                                    duration: 0.7,
+                                    ease: motion.easeOut,
+                                },
+                            )
+                        })
+                    }
+                "
+                class="will-change-transform"
             >
-                {{-- Previous --}}
                 <a
                     href="#"
                     class="inline-block p-1.5 opacity-50 transition duration-200 hover:opacity-100"
@@ -152,8 +173,29 @@
                     <span class="sr-only">Navigate to</span>
                     Previous
                 </a>
+            </div>
 
-                {{-- Next --}}
+            {{-- Next --}}
+            <div
+                x-init="
+                    () => {
+                        motion.inView($el, (element) => {
+                            motion.animate(
+                                $el,
+                                {
+                                    opacity: [0, 1],
+                                    x: [10, 0],
+                                },
+                                {
+                                    duration: 0.7,
+                                    ease: motion.easeOut,
+                                },
+                            )
+                        })
+                    }
+                "
+                class="will-change-transform"
+            >
                 <a
                     href="#"
                     class="inline-block p-1.5 opacity-80 transition duration-200 hover:opacity-100"
@@ -163,7 +205,7 @@
                     <span class="sr-only">Navigate to</span>
                     Next
                 </a>
-            </nav>
-        </div>
+            </div>
+        </nav>
     </section>
 </x-layout>

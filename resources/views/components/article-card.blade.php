@@ -10,7 +10,7 @@
     aria-labelledby="article-title-{{ Str::slug($title) }}"
 >
     <article
-        class="group block rounded-2xl bg-gray-200/40 p-7 transition duration-300 hover:bg-emerald-100/50 dark:bg-mirage/50 dark:hover:bg-emerald-500/10"
+        class="group relative z-0 block overflow-hidden rounded-2xl bg-gray-200/40 p-7 transition duration-300 hover:bg-violet-100 dark:bg-mirage/50 dark:hover:bg-violet-500/10"
     >
         {{-- Header --}}
         <div class="flex items-start justify-between gap-10">
@@ -50,5 +50,10 @@
                 {{ $slot }}
             </p>
         </div>
+
+        {{-- Blur decoration --}}
+        <div
+            class="absolute -left-10 -top-10 -z-50 h-3/4 w-40 rounded-full bg-violet-50 opacity-0 blur-3xl transition duration-300 group-hover:opacity-100 dark:bg-white/10"
+        ></div>
     </article>
 </a>
