@@ -84,55 +84,38 @@
         </h2>
 
         {{-- List --}}
-        <div class="mx-auto w-full max-w-xl">
-            <a
-                href="#"
-                class="block"
-                aria-labelledby="article-title"
+        <div class="mx-auto flex w-full max-w-xl flex-col gap-5">
+            <x-article-card
+                title="NativePHP for desktop v1 is finally here!"
+                url="#"
+                date="2025-04-09"
             >
-                <article
-                    class="group block rounded-2xl bg-gray-200/40 p-7 transition duration-300 hover:bg-emerald-100/50 dark:bg-mirage/50 dark:hover:bg-emerald-500/10"
-                >
-                    {{-- Header --}}
-                    <div class="flex items-start justify-between gap-10">
-                        {{-- Title --}}
-                        <h3
-                            id="article-title"
-                            class="line-clamp-4 max-w-xs text-xl font-semibold leading-relaxed"
-                        >
-                            NativePHP for desktop v1 is finally here!
-                        </h3>
-
-                        {{-- Arrow --}}
-                        <x-icons.right-arrow
-                            class="-ml-5 mt-2 size-3.5 shrink-0 transition duration-300 will-change-transform group-hover:translate-x-1"
-                            aria-hidden="true"
-                        />
-                    </div>
-
-                    <div class="flex items-end justify-between gap-10 pt-5">
-                        {{-- Date --}}
-                        <time
-                            datetime="2025-04-09"
-                            class="shrink-0 text-sm opacity-50"
-                        >
-                            April 9, 2025
-                        </time>
-
-                        {{-- Content --}}
-                        <p
-                            class="line-clamp-3 max-w-72 text-xs leading-relaxed opacity-80"
-                        >
-                            🎉 WE DID IT! We finally got to v1. I almost don't
-                            believe it! This is an awesome milestone. For a
-                            project that started as just an idea, to see it
-                            reach a truly stable place and support building
-                            powerful apps across all major platforms is just
-                            incredible.
-                        </p>
-                    </div>
-                </article>
-            </a>
+                🎉 WE DID IT! We finally got to v1. I almost don't believe it!
+                This is an awesome milestone. For a project that started as just
+                an idea, to see it reach a truly stable place and support
+                building powerful apps across all major platforms is just
+                incredible.
+            </x-article-card>
+            <x-article-card
+                title="Dropping Laravel 10 support"
+                url="#"
+                date="2025-04-4"
+            >
+                Hey team, this is just a quick note about Laravel version
+                support. Per our Support Policy matrix, we will be dropping
+                Laravel 10 support for NativePHP for desktop v1. Laravel 10
+                reached end of life back in February 2025.
+            </x-article-card>
+            <x-article-card
+                title="NativePHP for mobile—Pricing update!"
+                url="#"
+                date="2025-03-27"
+            >
+                Earlier this week I spoke at the Laravel Worldwide Meetup where
+                I unveiled: 🌐 A brand new nativephp.com, lovingly (and
+                painstakingly!) crafted by the incredible
+                @HassanZahirnia
+            </x-article-card>
         </div>
     </section>
 </x-layout>
