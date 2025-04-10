@@ -190,6 +190,25 @@
 
                 {{-- Link --}}
                 <a
+                    href="{{ route('blog') }}"
+                    @class([
+                        'hidden transition duration-200 lg:block',
+                        'font-medium' => request()->routeIs('blog*'),
+                        'opacity-60 hover:opacity-100' => ! request()->routeIs('blog*'),
+                    ])
+                    aria-current="{{ request()->routeIs('blog*') ? 'page' : 'false' }}"
+                >
+                    Blog
+                </a>
+
+                {{-- Decorative circle --}}
+                <div
+                    class="hidden size-[3px] rotate-45 rounded-sm bg-gray-400 transition duration-200 lg:block dark:opacity-60"
+                    aria-hidden="true"
+                ></div>
+
+                {{-- Link --}}
+                <a
                     x-init="
                         () => {
                             motion.hover($el, (element) => {
