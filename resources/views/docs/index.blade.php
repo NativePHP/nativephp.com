@@ -13,6 +13,8 @@
 
     <x-separator class="mt-4" />
 
+    <x-alert-v1-announcement />
+
     {{-- Table of contents --}}
     <div class="xl:hidden">
         <h3 class="inline-flex items-center gap-1.5 pt-5 text-sm opacity-50">
