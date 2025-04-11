@@ -33,7 +33,7 @@
                 class="group relative z-0 hidden items-center overflow-hidden rounded-full bg-gray-200 px-2.5 py-1.5 text-xs transition duration-200 will-change-transform hover:scale-x-105 lg:inline-flex dark:bg-slate-800"
                 target="_blank"
                 aria-label="Read about NativePHP version 1 release"
-                title="NativePHP version 1 announcement"
+                title="Read the NativePHP v1 announcement"
             >
                 <div
                     class="absolute inset-0 flex items-center [container-type:inline-size]"
@@ -59,7 +59,7 @@
                         class="-mt-px size-3.5"
                         aria-hidden="true"
                     />
-                    <span class="font-normal">v1 is Here!</span>
+                    <span class="font-normal">v1 is here!</span>
                     <span class="sr-only">
                         NativePHP version 1 has been released - click to learn
                         more
@@ -188,7 +188,7 @@
                     aria-hidden="true"
                 ></div>
 
-                {{-- Link --}}
+                {{-- Link
                 <a
                     href="{{ route('blog') }}"
                     @class([
@@ -201,11 +201,12 @@
                     Blog
                 </a>
 
-                {{-- Decorative circle --}}
+                {{-- Decorative circle -- }}
                 <div
                     class="hidden size-[3px] rotate-45 rounded-sm bg-gray-400 transition duration-200 lg:block dark:opacity-60"
                     aria-hidden="true"
                 ></div>
+                --}}
 
                 {{-- Link --}}
                 <a
