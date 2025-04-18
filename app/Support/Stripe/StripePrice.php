@@ -10,9 +10,7 @@ final class StripePrice
 {
     public array $plan;
 
-    public function __construct(public readonly Price $price)
-    {
-    }
+    public function __construct(public readonly Price $price) {}
 
     public static function from(Price $price): self
     {
