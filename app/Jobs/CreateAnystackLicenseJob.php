@@ -19,8 +19,8 @@ class CreateAnystackLicenseJob implements ShouldQueue
         public string $email,
         public string $productId,
         public string $policyId,
-        public string $firstName,
-        public string $lastName,
+        public ?string $firstName = null,
+        public ?string $lastName = null,
     ) {}
 
     public function handle(): void
