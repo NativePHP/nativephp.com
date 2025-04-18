@@ -14,7 +14,9 @@
         "laravel/tinker": "^2.8",
         "league/commonmark": "^2.4",
         "spatie/laravel-menu": "^4.1",
+        "spatie/laravel-stripe-webhooks": "^3.10",
         "spatie/yaml-front-matter": "^2.0",
+        "stripe/stripe-php": "^17.1",
         "torchlight/torchlight-commonmark": "^0.5.5"
     },
     "require-dev": {
