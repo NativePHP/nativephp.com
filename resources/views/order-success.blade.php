@@ -74,20 +74,44 @@
                 class="overflow-hidden rounded-xl bg-white p-6 shadow-lg dark:bg-mirage"
             >
                 <div class="flex flex-col items-center gap-5 text-center">
-
-                    <div x-ref="checkmark" class="relative grid size-10 place-items-center rounded-full bg-emerald-400 text-black opacity-0 ring-[9px] ring-emerald-400/20" aria-hidden="true" style="transform: none; opacity: 1;">
-                        <svg class="size-8" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M12.466666666666665 4.800013333333333c-0.26666666666666666 -0.26666666666666666 -0.6666666666666666 -0.26666666666666666 -0.9333333333333332 0L6.533333333333333 9.799999999999999l-2.0666666666666664 -2.0666666666666664c-0.26666666666666666 -0.26666666666666666 -0.6666666666666666 -0.26666666666666666 -0.9333333333333332 0 -0.26666666666666666 0.26666666666666666 -0.26666666666666666 0.6666666666666666 0 0.9333333333333332l2.533333333333333 2.533333333333333c0.13333333333333333 0.13333333333333333 0.26666666666666666 0.19999999999999998 0.4666666666666666 0.19999999999999998 0.19999999999999998 0 0.3333333333333333 -0.06666666666666667 0.4666666666666666 -0.19999999999999998l5.466666666666666 -5.466653333333333c0.26666666666666666 -0.26666666666666666 0.26666666666666666 -0.6666666666666666 0 -0.9333333333333332Z" fill="currentColor" stroke-width="0.6667"></path>
+                    <div
+                        x-ref="checkmark"
+                        class="relative grid size-10 place-items-center rounded-full bg-emerald-400 text-black opacity-0 ring-[9px] ring-emerald-400/20"
+                        aria-hidden="true"
+                        style="transform: none; opacity: 1"
+                    >
+                        <svg
+                            class="size-8"
+                            viewBox="0 0 16 16"
+                            fill="none"
+                            xmlns="http://www.w3.org/2000/svg"
+                        >
+                            <path
+                                d="M12.466666666666665 4.800013333333333c-0.26666666666666666 -0.26666666666666666 -0.6666666666666666 -0.26666666666666666 -0.9333333333333332 0L6.533333333333333 9.799999999999999l-2.0666666666666664 -2.0666666666666664c-0.26666666666666666 -0.26666666666666666 -0.6666666666666666 -0.26666666666666666 -0.9333333333333332 0 -0.26666666666666666 0.26666666666666666 -0.26666666666666666 0.6666666666666666 0 0.9333333333333332l2.533333333333333 2.533333333333333c0.13333333333333333 0.13333333333333333 0.26666666666666666 0.19999999999999998 0.4666666666666666 0.19999999999999998 0.19999999999999998 0 0.3333333333333333 -0.06666666666666667 0.4666666666666666 -0.19999999999999998l5.466666666666666 -5.466653333333333c0.26666666666666666 -0.26666666666666666 0.26666666666666666 -0.6666666666666666 0 -0.9333333333333332Z"
+                                fill="currentColor"
+                                stroke-width="0.6667"
+                            ></path>
                         </svg>
 
-                        <div class="absolute right-1/2 top-1/2 hidden size-24 -translate-y-1/2 translate-x-1/2 rounded-full bg-emerald-400/20 blur-2xl dark:block" aria-hidden="true"></div>
+                        <div
+                            class="absolute right-1/2 top-1/2 hidden size-24 -translate-y-1/2 translate-x-1/2 rounded-full bg-emerald-400/20 blur-2xl dark:block"
+                            aria-hidden="true"
+                        ></div>
                     </div>
 
                     <div class="space-y-1 dark:text-white">
-                        <div x-ref="success_title" class="text-xl font-medium opacity-0" style="transform: none; opacity: 1;">
+                        <div
+                            x-ref="success_title"
+                            class="text-xl font-medium opacity-0"
+                            style="transform: none; opacity: 1"
+                        >
                             Payment Successful!
                         </div>
-                        <div x-ref="success_subtitle" class="text-sm opacity-0" style="transform: none; opacity: 0.5;">
+                        <div
+                            x-ref="success_subtitle"
+                            class="text-sm opacity-0"
+                            style="transform: none; opacity: 0.5"
+                        >
                             You've purchased a license.
                         </div>
                     </div>
