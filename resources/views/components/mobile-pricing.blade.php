@@ -120,7 +120,7 @@
 
             {{-- Button --}}
             <a
-                href="https://checkout.anystack.sh/nativephp-ios/9e6a5f7c-1e71-4a1e-9cfa-33bb3c0ebb5d"
+                href="{{ config('subscriptions.plans.mini.stripe_payment_link') }}"
                 class="my-5 block w-full rounded-2xl bg-zinc-200 py-4 text-center text-sm font-medium transition duration-200 ease-in-out hover:bg-zinc-800 hover:text-white dark:bg-slate-700/30 dark:hover:bg-slate-700/40"
                 aria-label="Get started with Mini plan"
             >
@@ -283,7 +283,7 @@
 
             {{-- Button --}}
             <a
-                href="https://checkout.anystack.sh/nativephp-ios/9e02463f-0602-496c-ab33-073b899badae"
+                href="{{ config('subscriptions.plans.pro.stripe_payment_link') }}"
                 class="my-5 block w-full rounded-2xl bg-zinc-200 py-4 text-center text-sm font-medium transition duration-200 ease-in-out hover:bg-zinc-800 hover:text-white dark:bg-slate-700/30 dark:hover:bg-slate-700/40"
                 aria-label="Get started with Pro plan"
             >
@@ -454,7 +454,7 @@
 
             {{-- Button --}}
             <a
-                href="https://checkout.anystack.sh/nativephp-ios/9e1572bd-b404-4855-a91b-1b7c8baf29f0"
+                href="{{ config('subscriptions.plans.max.stripe_payment_link') }}"
                 class="my-5 block w-full rounded-2xl bg-zinc-800 py-4 text-center text-sm font-medium text-white transition duration-200 ease-in-out hover:bg-zinc-900 dark:bg-[#d68ffe] dark:text-black dark:hover:bg-[#e1acff]"
                 aria-label="Get started with Max plan"
             >
