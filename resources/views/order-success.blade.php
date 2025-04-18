@@ -264,7 +264,7 @@
 
                 <a
                     href="/docs/mobile/1/getting-started/installation"
-                    class="my-5 mt-10 block w-full rounded-2xl bg-zinc-800 py-4 text-center text-sm font-medium text-white transition duration-200 ease-in-out hover:bg-zinc-900 dark:bg-[#d68ffe] dark:text-black dark:hover:bg-[#e1acff]"
+                    class="mt-10 block w-full rounded-2xl bg-zinc-800 py-4 text-center text-sm font-medium text-white transition duration-200 ease-in-out hover:bg-zinc-900 dark:bg-[#d68ffe] dark:text-black dark:hover:bg-[#e1acff]"
                 >
                     <div class="flex items-center justify-center gap-2">
                         <svg
