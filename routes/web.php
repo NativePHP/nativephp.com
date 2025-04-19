@@ -50,3 +50,6 @@ Route::get('/docs/{page?}', function ($page = null) {
 
     return redirect("/docs/{$version}/{$page}");
 })->name('docs')->where('page', '.*');
+
+Route::get('/order/{checkoutSessionId}', App\Http\Controllers\OrderSuccessController::class)->name('order.success');
+Route::stripeWebhooks('stripe/webhook');
