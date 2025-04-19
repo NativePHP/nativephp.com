@@ -101,7 +101,7 @@ class HandleCustomerSubscriptionCreatedJobTest extends TestCase
     /**
      * Data provider for customer name tests
      */
-    public function customerNameProvider()
+    public static function customerNameProvider()
     {
         return [
             'Full name' => ['John Doe', 'John', 'Doe'],
