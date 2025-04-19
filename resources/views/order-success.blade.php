@@ -129,7 +129,7 @@
                                 copyToClipboard() {
                                     navigator.clipboard
                                         .writeText(
-                                            this.$root.querySelector('.copy-target').textContent.trim(),
+                                            this.$root.querySelector('.copy-license').textContent.trim(),
                                         )
                                         .then(() => (this.showMessage = true))
 
@@ -176,7 +176,7 @@
                             </div>
                             <pre
                                 class="mt-0 overflow-clip pt-0"
-                            ><code class="copy-target">{{ $licenseKey }}</code></pre>
+                            ><code class="copy-license">{{ $licenseKey }}</code></pre>
                         </div>
                         <p
                             class="mt-2 text-sm text-gray-600 dark:text-gray-400"
@@ -195,7 +195,7 @@
                                     copyToClipboard() {
                                         navigator.clipboard
                                             .writeText(
-                                                this.$root.querySelector('.copy-target').textContent.trim(),
+                                                this.$root.querySelector('.copy-email').textContent.trim(),
                                             )
                                             .then(() => (this.showMessage = true))
 
@@ -242,7 +242,7 @@
                                 </div>
                                 <pre
                                     class="mt-0 overflow-clip pt-0"
-                                ><code class="copy-target">{{ $email }}</code></pre>
+                                ><code class="copy-email">{{ $email }}</code></pre>
                             </div>
                         @endif
                     @else
@@ -274,7 +274,8 @@
                             <span class="font-medium dark:text-gray-300">
                                 check your email
                             </span>
-                            shortly for a copy of your license key.
+                            shortly for a copy of your license key. You can also
+                            try refreshing this page after a moment.
                         </p>
 
                         <p
