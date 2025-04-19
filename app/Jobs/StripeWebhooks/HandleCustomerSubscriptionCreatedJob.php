@@ -46,7 +46,7 @@ class HandleCustomerSubscriptionCreatedJob implements ShouldQueue
         $policyId = StripePrice::from($price)->getAnystackPolicyId();
 
         $nameParts = explode(' ', $customer->name ?? '', 2);
-        $firstName = $nameParts[0] ?? null;
+        $firstName = $nameParts[0] ?: null;
         $lastName = $nameParts[1] ?? null;
 
         dispatch(new CreateAnystackLicenseJob(
