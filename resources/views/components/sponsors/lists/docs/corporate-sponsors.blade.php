@@ -27,6 +27,15 @@
             'alt' => 'KaasHosting logo',
             'name' => 'KaasHosting',
         ],
+        [
+            'url' => 'https://www.quantumweb.co/',
+            'title' => 'Learn more about Quantumweb',
+            'label' => 'Visit Quantumweb website',
+            'component' => 'sponsors.logos.quantumweb',
+            'class' => 'block h-auto max-h-8 max-w-full fill-[#042340] dark:fill-white',
+            'alt' => 'Quantumweb logo',
+            'name' => 'Quantumweb',
+        ],
         // Uncomment these if you want to include the commented sponsors
         /*
                                     [
