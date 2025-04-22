@@ -1,5 +1,29 @@
 <div>
     <a
+        href="https://x.com/nativephp"
+        title="Twitter"
+        class="group inline-grid size-10 place-items-center rounded-xl bg-gray-100 transition duration-200 hover:bg-gray-200/70 dark:bg-mirage dark:hover:bg-haiti"
+    >
+        <x-icons.twitter
+            class="size-[1.1rem] text-black transition duration-200 group-hover:text-violet-400 dark:text-white"
+        />
+    </a>
+</div>
+
+<div>
+    <a
+        href="https://youtube.com/@NativePHPOfficial"
+        title="Youtube"
+        class="group inline-grid size-10 place-items-center rounded-xl bg-gray-100 transition duration-200 hover:bg-gray-200/70 dark:bg-mirage dark:hover:bg-haiti"
+    >
+        <x-icons.youtube
+            class="size-[1.4rem] text-black transition duration-200 group-hover:text-violet-400 dark:text-white"
+        />
+    </a>
+</div>
+
+<div>
+    <a
         href="https://bsky.app/profile/nativephp.bsky.social"
         title="Bluesky"
         class="group inline-grid size-10 place-items-center rounded-xl bg-gray-100 transition duration-200 hover:bg-gray-200/70 dark:bg-mirage dark:hover:bg-haiti"
