@@ -1,5 +1,4 @@
-<div wire:poll.2s="loadData">
-    {{-- TODO: CHeck changes from old order-success for wording and html structure --}}
+<div {{ ! $licenseKey ? 'wire:poll.2s=loadData' : '' }}>
     {{-- Hero Section --}}
     <section
         class="mt-10 px-5 md:mt-14"
