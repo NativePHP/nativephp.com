@@ -1,4 +1,4 @@
-<x-layout title="Thank You for Your Purchase">
+<div wire:poll.2s="loadData">
     {{-- Hero Section --}}
     <section
         class="mt-10 px-5 md:mt-14"
@@ -87,7 +87,7 @@
                             xmlns="http://www.w3.org/2000/svg"
                         >
                             <path
-                                d="M12.466666666666665 4.800013333333333c-0.26666666666666666 -0.26666666666666666 -0.6666666666666666 -0.26666666666666666 -0.9333333333333332 0L6.533333333333333 9.799999999999999l-2.0666666666666664 -2.0666666666666664c-0.26666666666666666 -0.26666666666666666 -0.6666666666666666 -0.26666666666666666 -0.9333333333333332 0 -0.26666666666666666 0.26666666666666666 -0.26666666666666666 0.6666666666666666 0 0.9333333333333332l2.533333333333333 2.533333333333333c0.13333333333333333 0.13333333333333333 0.26666666666666666 0.19999999999999998 0.4666666666666666 0.19999999999999998 0.19999999999999998 0 0.3333333333333333 -0.06666666666666667 0.4666666666666666 -0.19999999999999998l5.466666666666666 -5.466653333333333c0.26666666666666666 -0.26666666666666666 0.26666666666666666 -0.6666666666666666 0 -0.9333333333333332Z"
+                                d="M5.59 9.59L2.75 6.75L1.67 7.83L5.59 11.75L14.25 3.09L13.17 2L5.59 9.59Z"
                                 fill="currentColor"
                                 stroke-width="0.6667"
                             ></path>
@@ -138,25 +138,18 @@
                             }"
                         >
                             <div
-                                class="absolute right-2 top-3 flex items-center space-x-2"
+                                class="absolute right-2 top-2 z-10 rounded-md bg-white/80 p-1 text-gray-600 backdrop-blur-sm dark:bg-gray-700/80 dark:text-gray-300"
+                                x-show="showMessage"
+                                x-transition
+                                style="display: none"
                             >
-                                <div
-                                    x-show="showMessage"
-                                    x-transition
-                                    class="py-1 font-bold text-indigo-400 transition duration-300"
-                                    style="display: none"
-                                >
-                                    Copied!
-                                </div>
+                                Copied!
+                            </div>
+                            <div class="absolute right-2 top-2">
                                 <button
                                     type="button"
-                                    title="Copy to clipboard"
-                                    class="bg-gray-200 p-1 transition duration-300 dark:bg-gray-800"
-                                    @click.prevent="copyToClipboard"
-                                    :class="{
-                                        'text-black/50 hover:text-black/80 dark:text-white/20 dark:hover:text-white/60': !showMessage,
-                                        'text-indigo-400 hover:text-indigo-400': showMessage,
-                                    }"
+                                    class="rounded-md bg-white/80 p-1 text-gray-600 backdrop-blur-sm transition hover:bg-white/60 dark:bg-gray-700/80 dark:text-gray-300 dark:hover:bg-gray-700/60"
+                                    @click="copyToClipboard"
                                 >
                                     <svg
                                         xmlns="http://www.w3.org/2000/svg"
@@ -164,7 +157,7 @@
                                         viewBox="0 0 24 24"
                                         stroke-width="1.5"
                                         stroke="currentColor"
-                                        class="block size-5"
+                                        class="size-5"
                                     >
                                         <path
                                             stroke-linecap="round"
@@ -204,25 +197,18 @@
                                 }"
                             >
                                 <div
-                                    class="absolute right-2 top-3 flex items-center space-x-2"
+                                    class="absolute right-2 top-2 z-10 rounded-md bg-white/80 p-1 text-gray-600 backdrop-blur-sm dark:bg-gray-700/80 dark:text-gray-300"
+                                    x-show="showMessage"
+                                    x-transition
+                                    style="display: none"
                                 >
-                                    <div
-                                        x-show="showMessage"
-                                        x-transition
-                                        class="py-1 font-bold text-indigo-400 transition duration-300"
-                                        style="display: none"
-                                    >
-                                        Copied!
-                                    </div>
+                                    Copied!
+                                </div>
+                                <div class="absolute right-2 top-2">
                                     <button
                                         type="button"
-                                        title="Copy to clipboard"
-                                        class="bg-gray-200 p-1 transition duration-300 dark:bg-gray-800"
-                                        @click.prevent="copyToClipboard"
-                                        :class="{
-                                        'text-black/50 hover:text-black/80 dark:text-white/20 dark:hover:text-white/60': !showMessage,
-                                        'text-indigo-400 hover:text-indigo-400': showMessage,
-                                    }"
+                                        class="rounded-md bg-white/80 p-1 text-gray-600 backdrop-blur-sm transition hover:bg-white/60 dark:bg-gray-700/80 dark:text-gray-300 dark:hover:bg-gray-700/60"
+                                        @click="copyToClipboard"
                                     >
                                         <svg
                                             xmlns="http://www.w3.org/2000/svg"
@@ -230,7 +216,7 @@
                                             viewBox="0 0 24 24"
                                             stroke-width="1.5"
                                             stroke="currentColor"
-                                            class="block size-5"
+                                            class="size-5"
                                         >
                                             <path
                                                 stroke-linecap="round"
@@ -276,13 +262,6 @@
                             </span>
                             shortly for a copy of your license key. You can also
                             try refreshing this page after a moment.
-                        </p>
-
-                        <p
-                            class="mt-2 text-center text-gray-600 dark:text-gray-400"
-                        >
-                            Once you receive your license key, you can start
-                            building amazing mobile apps with NativePHP!
                         </p>
                     @endif
                 </div>
@@ -381,8 +360,8 @@
                     </div>
                     <h4 class="text-lg font-medium">Install the Package</h4>
                     <p class="mt-2 text-gray-600 dark:text-gray-400">
-                        When prompted by Composer, use your email address as the
-                        username and your license key as the password.
+                        Follow our step-by-step guide to install and set up
+                        NativePHP in your Laravel project.
                     </p>
                 </a>
 
@@ -417,8 +396,8 @@
                     </div>
                     <h4 class="text-lg font-medium">Join Our Community</h4>
                     <p class="mt-2 text-gray-600 dark:text-gray-400">
-                        Connect with other developers in our Discord community
-                        to share ideas and get help.
+                        Connect with other developers, get help, and share your
+                        experiences in our Discord community.
                     </p>
                 </a>
 
@@ -468,4 +447,4 @@
             </div>
         </div>
     </section>
-</x-layout>
+</div>
