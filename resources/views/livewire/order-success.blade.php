@@ -1,4 +1,5 @@
 <div wire:poll.2s="loadData">
+    {{-- TODO: CHeck changes from old order-success for wording and html structure --}}
     {{-- Hero Section --}}
     <section
         class="mt-10 px-5 md:mt-14"
@@ -87,7 +88,7 @@
                             xmlns="http://www.w3.org/2000/svg"
                         >
                             <path
-                                d="M5.59 9.59L2.75 6.75L1.67 7.83L5.59 11.75L14.25 3.09L13.17 2L5.59 9.59Z"
+                                d="M12.466666666666665 4.800013333333333c-0.26666666666666666 -0.26666666666666666 -0.6666666666666666 -0.26666666666666666 -0.9333333333333332 0L6.533333333333333 9.799999999999999l-2.0666666666666664 -2.0666666666666664c-0.26666666666666666 -0.26666666666666666 -0.6666666666666666 -0.26666666666666666 -0.9333333333333332 0 -0.26666666666666666 0.26666666666666666 -0.26666666666666666 0.6666666666666666 0 0.9333333333333332l2.533333333333333 2.533333333333333c0.13333333333333333 0.13333333333333333 0.26666666666666666 0.19999999999999998 0.4666666666666666 0.19999999999999998 0.19999999999999998 0 0.3333333333333333 -0.06666666666666667 0.4666666666666666 -0.19999999999999998l5.466666666666666 -5.466653333333333c0.26666666666666666 -0.26666666666666666 0.26666666666666666 -0.6666666666666666 0 -0.9333333333333332Z"
                                 fill="currentColor"
                                 stroke-width="0.6667"
                             ></path>
@@ -138,18 +139,25 @@
                             }"
                         >
                             <div
-                                class="absolute right-2 top-2 z-10 rounded-md bg-white/80 p-1 text-gray-600 backdrop-blur-sm dark:bg-gray-700/80 dark:text-gray-300"
-                                x-show="showMessage"
-                                x-transition
-                                style="display: none"
+                                class="absolute right-2 top-3 flex items-center space-x-2"
                             >
-                                Copied!
-                            </div>
-                            <div class="absolute right-2 top-2">
+                                <div
+                                    x-show="showMessage"
+                                    x-transition
+                                    class="py-1 font-bold text-indigo-400 transition duration-300"
+                                    style="display: none"
+                                >
+                                    Copied!
+                                </div>
                                 <button
                                     type="button"
-                                    class="rounded-md bg-white/80 p-1 text-gray-600 backdrop-blur-sm transition hover:bg-white/60 dark:bg-gray-700/80 dark:text-gray-300 dark:hover:bg-gray-700/60"
-                                    @click="copyToClipboard"
+                                    title="Copy to clipboard"
+                                    class="bg-gray-200 p-1 transition duration-300 dark:bg-gray-800"
+                                    @click.prevent="copyToClipboard"
+                                    :class="{
+                                        'text-black/50 hover:text-black/80 dark:text-white/20 dark:hover:text-white/60': !showMessage,
+                                        'text-indigo-400 hover:text-indigo-400': showMessage,
+                                    }"
                                 >
                                     <svg
                                         xmlns="http://www.w3.org/2000/svg"
@@ -157,7 +165,7 @@
                                         viewBox="0 0 24 24"
                                         stroke-width="1.5"
                                         stroke="currentColor"
-                                        class="size-5"
+                                        class="block size-5"
                                     >
                                         <path
                                             stroke-linecap="round"
@@ -176,7 +184,6 @@
                         >
                             Store this somewhere safe. You'll need it later.
                         </p>
-
                         @if ($email)
                             <p class="mt-6 text-gray-600 dark:text-gray-400">
                                 Email
@@ -191,24 +198,30 @@
                                                 this.$root.querySelector('.copy-email').textContent.trim(),
                                             )
                                             .then(() => (this.showMessage = true))
-
                                         setTimeout(() => (this.showMessage = false), 2000)
                                     },
                                 }"
                             >
                                 <div
-                                    class="absolute right-2 top-2 z-10 rounded-md bg-white/80 p-1 text-gray-600 backdrop-blur-sm dark:bg-gray-700/80 dark:text-gray-300"
-                                    x-show="showMessage"
-                                    x-transition
-                                    style="display: none"
+                                    class="absolute right-2 top-3 flex items-center space-x-2"
                                 >
-                                    Copied!
-                                </div>
-                                <div class="absolute right-2 top-2">
+                                    <div
+                                        x-show="showMessage"
+                                        x-transition
+                                        class="py-1 font-bold text-indigo-400 transition duration-300"
+                                        style="display: none"
+                                    >
+                                        Copied!
+                                    </div>
                                     <button
                                         type="button"
-                                        class="rounded-md bg-white/80 p-1 text-gray-600 backdrop-blur-sm transition hover:bg-white/60 dark:bg-gray-700/80 dark:text-gray-300 dark:hover:bg-gray-700/60"
-                                        @click="copyToClipboard"
+                                        title="Copy to clipboard"
+                                        class="bg-gray-200 p-1 transition duration-300 dark:bg-gray-800"
+                                        @click.prevent="copyToClipboard"
+                                        :class="{
+                                        'text-black/50 hover:text-black/80 dark:text-white/20 dark:hover:text-white/60': !showMessage,
+                                        'text-indigo-400 hover:text-indigo-400': showMessage,
+                                    }"
                                     >
                                         <svg
                                             xmlns="http://www.w3.org/2000/svg"
@@ -216,7 +229,7 @@
                                             viewBox="0 0 24 24"
                                             stroke-width="1.5"
                                             stroke="currentColor"
-                                            class="size-5"
+                                            class="block size-5"
                                         >
                                             <path
                                                 stroke-linecap="round"
@@ -252,7 +265,6 @@
                                 License registration in progress
                             </span>
                         </div>
-
                         <p
                             class="mt-6 text-center text-gray-600 dark:text-gray-400"
                         >
@@ -260,8 +272,15 @@
                             <span class="font-medium dark:text-gray-300">
                                 check your email
                             </span>
-                            shortly for a copy of your license key. You can also
-                            try refreshing this page after a moment.
+                            shortly for a copy of your license key. This page
+                            will also update if your license key is ready.
+                        </p>
+
+                        <p
+                            class="mt-2 text-center text-gray-600 dark:text-gray-400"
+                        >
+                            Once you receive your license key, you can start
+                            building amazing mobile apps with NativePHP!
                         </p>
                     @endif
                 </div>
