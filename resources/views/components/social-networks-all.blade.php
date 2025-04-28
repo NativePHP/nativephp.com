@@ -24,7 +24,7 @@
 
 <div>
     <a
-        href="https://bsky.app/profile/nativephp.bsky.social"
+        href="https://bsky.app/profile/nativephp.com"
         title="Bluesky"
         class="group inline-grid size-10 place-items-center rounded-xl bg-gray-100 transition duration-200 hover:bg-gray-200/70 dark:bg-mirage dark:hover:bg-haiti"
     >
