@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Account\AuthController;
 use App\Http\Controllers\ShowDocumentationController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -56,25 +57,39 @@ Route::get('/docs/{page?}', function ($page = null) {
 
 Route::get('/order/{checkoutSessionId}', App\Livewire\OrderSuccess::class)->name('order.success');
 
+// Support
 Route::prefix('/support')->group(function () {
     Route::get('/', function () {
         return view('support.index');
     })->name('support.index');
 
-    Route::prefix('/tickets')->group(function () {
-        Route::get('/', function () {
-            if (!Auth::check()) {
-                return redirect()->route('support.auth.login');
-            }
-
-            return view('support.tickets.index');
-        })->name('support.tickets');
-
-        Route::get('/login', function () {
-            if (Auth::check()) {
-                return redirect()->route('support.tickets');
-            }
-            return view('support.auth.login');
-        })->name('support.auth.login');
-    });
+    Route::prefix('/tickets')
+        ->middleware(['auth:web'])
+        ->group(function () {
+            Route::get('/', function () {
+                return view('support.tickets.index');
+            })->name('support.tickets');
+        });
 });
+
+// Account
+Route::prefix('/account')
+    ->middleware(['auth:web'])
+    ->group(function () {
+        Route::get('/', function () {
+            return view('account.index');
+        })->name('account.index');
+
+        Route::get('/login', [AuthController::class, 'login'])
+            ->middleware('guest')
+            ->withoutMiddleware(['auth:web'])
+            ->name('login');
+
+        Route::post('/login', [AuthController::class, 'processLogin'])
+            ->middleware('guest')
+            ->withoutMiddleware(['auth:web'])
+            ->name('login.process');
+
+        Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+
+    });

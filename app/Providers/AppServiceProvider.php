@@ -3,6 +3,9 @@
 namespace App\Providers;
 
 use App\Support\GitHub;
+use Illuminate\Cache\RateLimiting\Limit;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 
@@ -21,10 +24,11 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        $this->registerSharedViewVariables();
+        $this->registerSharedViewVariables()
+            ->registerRateLimiters();
     }
 
-    private function registerSharedViewVariables(): void
+    private function registerSharedViewVariables(): static
     {
         View::share('electronGitHubVersion', app()->environment('production')
             ? GitHub::electron()->latestVersion()
@@ -34,5 +38,14 @@ class AppServiceProvider extends ServiceProvider
         View::share('bskyLink', 'https://bsky.app/profile/nativephp.bsky.social');
         View::share('openCollectiveLink', 'https://opencollective.com/nativephp');
         View::share('githubLink', 'https://github.com/NativePHP');
+
+        return $this;
+    }
+
+    private function registerRateLimiters()
+    {
+        RateLimiter::for('login', function (Request $request) {
+            return Limit::perMinute(5)->by($request->input('email') . '|' . $request->ip());
+        });
     }
 }
