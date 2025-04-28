@@ -50,7 +50,7 @@
             </a>
 
             {{-- Support Tickets Box --}}
-            <a href="https://support.nativephp.com"
+            <a href="{{ route('support.tickets') }}"
                target="_blank"
                rel="noopener"
                class="group flex w-full flex-col items-center rounded-xl bg-gray-100/80 p-8 text-center transition duration-300 hover:-translate-y-1 hover:bg-gray-200/80 hover:shadow-lg dark:bg-gray-800/50 dark:hover:bg-gray-700/50 dark:hover:shadow-gray-900/30"

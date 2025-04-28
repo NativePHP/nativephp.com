@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ShowDocumentationController;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Str;
 
@@ -59,4 +60,21 @@ Route::prefix('/support')->group(function () {
     Route::get('/', function () {
         return view('support.index');
     })->name('support.index');
+
+    Route::prefix('/tickets')->group(function () {
+        Route::get('/', function () {
+            if (!Auth::check()) {
+                return redirect()->route('support.auth.login');
+            }
+
+            return view('support.tickets.index');
+        })->name('support.tickets');
+
+        Route::get('/login', function () {
+            if (Auth::check()) {
+                return redirect()->route('support.tickets');
+            }
+            return view('support.auth.login');
+        })->name('support.auth.login');
+    });
 });
