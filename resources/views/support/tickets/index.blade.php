@@ -17,8 +17,8 @@
                 Submit a new request
             </a>
         </div>
-        <div class="overflow-x-auto rounded-lg border border-gray-200 dark:border-gray-700 mb-10 pb-5">
-            <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700 mb-5">
+        <div class="overflow-x-auto rounded-lg border border-gray-200 dark:border-gray-700 mb-10">
+            <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
                 <thead class="bg-gray-50 dark:bg-gray-800">
                     <tr>
                         <th scope="col" class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">
@@ -46,7 +46,7 @@
                             </td>
                             <td class="whitespace-nowrap px-6 py-4 text-sm">
                             <span class="inline-flex rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-medium text-green-800 dark:bg-green-900/30 dark:text-green-300">
-                                {{ $ticket->status }}
+                                {{ $ticket->status->translated() }}
                             </span>
                             </td>
                             <td class="whitespace-nowrap px-6 py-4 text-right text-sm font-medium">
@@ -65,9 +65,11 @@
                 </tbody>
             </table>
 
-            <div class="px-5">
-            {{ $supportTickets->links() }}
-            </div>
+            @if ($supportTickets->hasPages())
+                <div class="p-5">
+                    {{ $supportTickets->links() }}
+                </div>
+            @endif
         </div>
         {{-- Additional Support Information --}}
         <div class="mt-20 rounded-xl bg-gradient-to-br from-[#FFF0DC] to-[#E8EEFF] p-8 dark:from-blue-900/10 dark:to-[#4c407f]/25">

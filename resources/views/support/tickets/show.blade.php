@@ -21,7 +21,7 @@
                 </div>
                 <p class="text-gray-700 dark:text-gray-300">
                     Ticket ID: <strong>#{{ $supportTicket->mask }}</strong><br>
-                    Status: <strong>{{ $supportTicket->status }}</strong><br>
+                    Status: <strong>{{ $supportTicket->status->translated() }}</strong><br>
                     Created At: <strong>{{ $supportTicket->created_at->format('d M Y, H:i') }}</strong><br>
                     Updated At: <strong>{{ $supportTicket->updated_at->format('d M Y, H:i') }}</strong>
                 </p>
