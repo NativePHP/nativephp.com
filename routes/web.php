@@ -54,3 +54,9 @@ Route::get('/docs/{page?}', function ($page = null) {
 })->name('docs')->where('page', '.*');
 
 Route::get('/order/{checkoutSessionId}', App\Livewire\OrderSuccess::class)->name('order.success');
+
+Route::prefix('/support')->group(function () {
+    Route::get('/', function () {
+        return view('support.index');
+    })->name('support.index');
+});
