@@ -37,78 +37,32 @@
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-200 dark:divide-gray-700 bg-white dark:bg-gray-900">
-                    <tr>
-                        <td class="whitespace-nowrap px-6 py-4 text-sm font-medium text-gray-900 dark:text-white">
-                            #TKT-1001
-                        </td>
-                        <td class="whitespace-nowrap px-6 py-4 text-sm text-gray-700 dark:text-gray-300">
-                            Installation issue on Windows 11
-                        </td>
-                        <td class="whitespace-nowrap px-6 py-4 text-sm">
+                    @forelse(auth()->user()->supportTickets as $ticket)
+                        <tr>
+                            <td class="whitespace-nowrap px-6 py-4 text-sm font-medium text-gray-900 dark:text-white">
+                                <a href="#" class="text-violet-600">#{{ $ticket->mask }}</a>
+                            </td>
+                            <td class="whitespace-nowrap px-6 py-4 text-sm text-gray-700 dark:text-gray-300">
+                                {{ $ticket->subject }}
+                            </td>
+                            <td class="whitespace-nowrap px-6 py-4 text-sm">
                             <span class="inline-flex rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-medium text-green-800 dark:bg-green-900/30 dark:text-green-300">
-                                Open
+                                {{ $ticket->status }}
                             </span>
-                        </td>
-                        <td class="whitespace-nowrap px-6 py-4 text-right text-sm font-medium">
-                            <a href="#" class="rounded-md bg-violet-600 px-3 py-1.5 text-xs font-medium text-white shadow-sm hover:bg-violet-700 dark:bg-violet-700 dark:hover:bg-violet-600 transition duration-200">
-                                View
-                            </a>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="whitespace-nowrap px-6 py-4 text-sm font-medium text-gray-900 dark:text-white">
-                            #TKT-1002
-                        </td>
-                        <td class="whitespace-nowrap px-6 py-4 text-sm text-gray-700 dark:text-gray-300">
-                            API integration with third-party service
-                        </td>
-                        <td class="whitespace-nowrap px-6 py-4 text-sm">
-                            <span class="inline-flex rounded-full bg-yellow-100 px-2.5 py-0.5 text-xs font-medium text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300">
-                                In Progress
-                            </span>
-                        </td>
-                        <td class="whitespace-nowrap px-6 py-4 text-right text-sm font-medium">
-                            <a href="#" class="rounded-md bg-violet-600 px-3 py-1.5 text-xs font-medium text-white shadow-sm hover:bg-violet-700 dark:bg-violet-700 dark:hover:bg-violet-600 transition duration-200">
-                                View
-                            </a>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="whitespace-nowrap px-6 py-4 text-sm font-medium text-gray-900 dark:text-white">
-                            #TKT-1003
-                        </td>
-                        <td class="whitespace-nowrap px-6 py-4 text-sm text-gray-700 dark:text-gray-300">
-                            Feature request: dark mode toggle
-                        </td>
-                        <td class="whitespace-nowrap px-6 py-4 text-sm">
-                            <span class="inline-flex rounded-full bg-blue-100 px-2.5 py-0.5 text-xs font-medium text-blue-800 dark:bg-blue-900/30 dark:text-blue-300">
-                                Responded
-                            </span>
-                        </td>
-                        <td class="whitespace-nowrap px-6 py-4 text-right text-sm font-medium">
-                            <a href="#" class="rounded-md bg-violet-600 px-3 py-1.5 text-xs font-medium text-white shadow-sm hover:bg-violet-700 dark:bg-violet-700 dark:hover:bg-violet-600 transition duration-200">
-                                View
-                            </a>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="whitespace-nowrap px-6 py-4 text-sm font-medium text-gray-900 dark:text-white">
-                            #TKT-1004
-                        </td>
-                        <td class="whitespace-nowrap px-6 py-4 text-sm text-gray-700 dark:text-gray-300">
-                            Database migration error
-                        </td>
-                        <td class="whitespace-nowrap px-6 py-4 text-sm">
-                            <span class="inline-flex rounded-full bg-gray-100 px-2.5 py-0.5 text-xs font-medium text-gray-800 dark:bg-gray-700 dark:text-gray-300">
-                                Closed
-                            </span>
-                        </td>
-                        <td class="whitespace-nowrap px-6 py-4 text-right text-sm font-medium">
-                            <a href="#" class="rounded-md bg-violet-600 px-3 py-1.5 text-xs font-medium text-white shadow-sm hover:bg-violet-700 dark:bg-violet-700 dark:hover:bg-violet-600 transition duration-200">
-                                View
-                            </a>
-                        </td>
-                    </tr>
+                            </td>
+                            <td class="whitespace-nowrap px-6 py-4 text-right text-sm font-medium">
+                                <a href="#" class="rounded-md bg-violet-600 px-3 py-1.5 text-xs font-medium text-white shadow-sm hover:bg-violet-700 dark:bg-violet-700 dark:hover:bg-violet-600 transition duration-200">
+                                    View
+                                </a>
+                            </td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="4" class="whitespace-nowrap px-6 py-4 text-sm font-medium text-gray-900 dark:text-white">
+                                No tickets found.
+                            </td>
+                        </tr>
+                    @endforelse
                 </tbody>
             </table>
         </div>

@@ -2,7 +2,6 @@
 
 use App\Http\Controllers\Account\AuthController;
 use App\Http\Controllers\ShowDocumentationController;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Str;
 
@@ -58,19 +57,26 @@ Route::get('/docs/{page?}', function ($page = null) {
 Route::get('/order/{checkoutSessionId}', App\Livewire\OrderSuccess::class)->name('order.success');
 
 // Support
-Route::prefix('/support')->group(function () {
-    Route::get('/', function () {
-        return view('support.index');
-    })->name('support.index');
+Route::prefix('/support')
+    ->middleware('auth:web')
+    ->group(function () {
+        Route::get('/', function () {
+            return view('support.index');
+        })
+            ->withoutMiddleware(['auth:web'])
+            ->name('support.index');
 
-    Route::prefix('/tickets')
-        ->middleware(['auth:web'])
-        ->group(function () {
-            Route::get('/', function () {
-                return view('support.tickets.index');
-            })->name('support.tickets');
-        });
-});
+        Route::prefix('/tickets')
+            ->group(function () {
+                Route::get('/', function () {
+                    return view('support.tickets.index');
+                })->name('support.tickets');
+
+                Route::get('/{ticketMask}', function ($ticketMask) {
+                    return view('support.tickets.show', ['ticket' => $ticketMask]);
+                })->name('support.tickets.show');
+            });
+    });
 
 // Account
 Route::prefix('/account')

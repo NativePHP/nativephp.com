@@ -14,10 +14,10 @@ class SupportTicketFactory extends Factory
     public function definition(): array
     {
         return [
-            'mask' => $this->faker->word(),
-            'subject' => $this->faker->word(),
-            'message' => $this->faker->word(),
-            'status' => $this->faker->word(),
+            'mask' => 'NATIVE-' . $this->faker->numberBetween(1000, 9999),
+            'subject' => $this->faker->sentence(),
+            'message' => $this->faker->paragraph(),
+            'status' => 'open',
             'created_at' => Carbon::now(),
             'updated_at' => Carbon::now(),
 
