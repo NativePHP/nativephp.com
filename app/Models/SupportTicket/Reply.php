@@ -4,6 +4,7 @@ namespace App\Models\SupportTicket;
 
 use App\Models\SupportTicket;
 use App\Models\User;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -24,6 +25,11 @@ class Reply extends Model
         'attachments' => 'array',
         'note' => 'boolean',
     ];
+
+    public function isFromUser(): Attribute
+    {
+        return Attribute::get(fn () => $this->user_id === auth()->user()->id);
+    }
 
     public function user(): BelongsTo
     {

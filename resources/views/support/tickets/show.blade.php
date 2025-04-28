@@ -1,18 +1,24 @@
 <x-layout-three-columns>
-    <x-slot name="title">
-        {{ $supportTicket->subject }}
-    </x-slot>
-
-    <x-slot name="header">
-        <h1 class="text-2xl font-semibold text-gray-900 dark:text-white">
-            {{ $supportTicket->subject }}
-        </h1>
-    </x-slot>
-
     <section class="mt-6">
         <div class="rounded-lg bg-white shadow dark:bg-gray-800">
             <div class="p-6">
-                <h2 class="mb-4 text-xl font-medium">Ticket Details</h2>
+                <div class="flex items-center justify-between mb-4">
+                    <h2 class="text-xl font-medium">#{{ $supportTicket->mask }} &raquo; {{ $supportTicket->subject }}</h2>
+                    <div class="flex items-center space-x-3">
+                        <button type="button" class="inline-flex items-center px-4 py-2 text-sm font-medium text-violet-700 bg-violet-100 border border-violet-200 rounded-lg hover:bg-violet-200 dark:bg-violet-900/30 dark:text-violet-300 dark:border-violet-800 dark:hover:bg-violet-900/50">
+                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"/>
+                            </svg>
+                            Reply
+                        </button>
+                        <button type="button" class="inline-flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600 dark:hover:bg-gray-700">
+                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                            </svg>
+                            Close Ticket
+                        </button>
+                    </div>
+                </div>
                 <p class="text-gray-700 dark:text-gray-300">
                     Ticket ID: <strong>#{{ $supportTicket->mask }}</strong><br>
                     Status: <strong>{{ $supportTicket->status }}</strong><br>
