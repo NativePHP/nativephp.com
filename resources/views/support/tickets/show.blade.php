@@ -26,11 +26,17 @@
         <div class="mt-6 rounded-lg bg-white shadow dark:bg-gray-800">
             <div class="p-6">
                 <h2 class="mb-4 text-xl font-medium">Messages</h2>
-                @foreach([] as $message)
-                    <div class="mb-4 p-4 border rounded-lg {{ $message->is_from_user ? 'bg-blue-100' : 'bg-green-100' }}">
-                        <p><strong>{{ $message->user->name }}:</strong></p>
-                        <p>{{ $message->content }}</p>
-                        <p class="text-sm text-gray-500">{{ $message->created_at->format('d M Y, H:i') }}</p>
+                @foreach($supportTicket->replies as $reply)
+                    <div class="flex flex-col w-full mb-6">
+                        <div class="relative w-full">
+                            <div class="{{ $reply->is_from_user ? 'bg-blue-100/50 dark:bg-blue-900/20' : 'bg-gray-100/70 dark:bg-gray-700/20' }} p-4 rounded-lg border {{ $reply->is_from_user ? 'border-blue-200/50 dark:border-blue-800/30' : 'border-gray-200/50 dark:border-gray-700/30' }}">
+                                <p class="font-medium text-gray-900 dark:text-gray-100">{{ $reply->user->name }}</p>
+                                <p class="mt-1 text-gray-800 dark:text-gray-200">{{ $reply->message }}</p>
+                            </div>
+                        </div>
+                        <div class="mt-1 {{ $reply->is_from_user ? 'text-right' : 'text-left' }}">
+                            <span class="text-xs text-gray-500 dark:text-gray-400">{{ $reply->created_at->format('d M Y, H:i') }}</span>
+                        </div>
                     </div>
                 @endforeach
             </div>

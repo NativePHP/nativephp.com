@@ -15,6 +15,11 @@ class SupportTicketSeeder extends Seeder
     {
         SupportTicket::factory()
             ->count(10)
+            ->has(
+                SupportTicket\Reply::factory()
+                    ->state(['user_id' => 1])
+                    ->count(5)
+            )
             ->create([
                 'user_id' => 1,
                 'status' => 'open',
