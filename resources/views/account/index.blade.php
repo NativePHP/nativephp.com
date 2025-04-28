@@ -5,7 +5,8 @@
         <header class="mb-10 text-center">
             <h1 class="text-4xl font-bold md:text-5xl dark:text-white/90">Account</h1>
             <p class="mx-auto mt-4 max-w-2xl text-lg text-gray-600 dark:text-white/60">
-                Manage your NativePHP Account
+                Manage your NativePHP Account.<br />
+                Not {{ auth()->user()->name }}? <a href="{{ route('logout') }}" class="text-violet-600 hover:text-violet-700 dark:text-violet-400 dark:hover:text-violet-300">Logout</a>.
             </p>
         </header>
 
@@ -25,8 +26,7 @@
                 <p class="mt-2 text-gray-600 dark:text-gray-400">View your license(s)</p>
             </a>
 
-            {{-- Discord Box --}}
-            <a href="#"
+            <a href="{{ route('support.tickets') }}"
                target="_blank"
                rel="noopener"
                class="group flex w-full flex-col items-center rounded-xl bg-gray-100/80 p-8 text-center transition duration-300 hover:-translate-y-1 hover:bg-gray-200/80 hover:shadow-lg dark:bg-gray-800/50 dark:hover:bg-gray-700/50 dark:hover:shadow-gray-900/30"
