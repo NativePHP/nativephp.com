@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Account\AuthController;
+use App\Http\Controllers\Account\Support\TicketController;
 use App\Http\Controllers\ShowDocumentationController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Str;
@@ -68,13 +69,10 @@ Route::prefix('/support')
 
         Route::prefix('/tickets')
             ->group(function () {
-                Route::get('/', function () {
-                    return view('support.tickets.index');
-                })->name('support.tickets');
+                Route::get('/', [TicketController::class, 'index'])->name('support.tickets');
 
-                Route::get('/{ticketMask}', function ($ticketMask) {
-                    return view('support.tickets.show', ['ticket' => $ticketMask]);
-                })->name('support.tickets.show');
+                Route::get('/{supportTicket}', [TicketController::class, 'show'])
+                    ->name('support.tickets.show');
             });
     });
 

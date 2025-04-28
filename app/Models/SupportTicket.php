@@ -19,6 +19,20 @@ class SupportTicket extends Model
         'status',
     ];
 
+    protected static function booted()
+    {
+        static::creating(function ($ticket) {
+            if (is_null($ticket->mask)) {
+
+            }
+        });
+    }
+
+    public function getRouteKeyName(): string
+    {
+        return 'mask';
+    }
+
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);

@@ -1,5 +1,4 @@
 <x-layout title="Tickets - NativePHP">
-    {{-- Support Grid Section --}}
     <section class="mx-auto mt-10 max-w-5xl px-5 md:mt-14">
         {{-- Header --}}
         <header class="mb-10 text-center">
@@ -18,8 +17,8 @@
                 Submit a new request
             </a>
         </div>
-        <div class="overflow-x-auto rounded-lg border border-gray-200 dark:border-gray-700 mb-10">
-            <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+        <div class="overflow-x-auto rounded-lg border border-gray-200 dark:border-gray-700 mb-10 pb-5">
+            <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700 mb-5">
                 <thead class="bg-gray-50 dark:bg-gray-800">
                     <tr>
                         <th scope="col" class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">
@@ -37,7 +36,7 @@
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-200 dark:divide-gray-700 bg-white dark:bg-gray-900">
-                    @forelse(auth()->user()->supportTickets as $ticket)
+                    @forelse($supportTickets as $ticket)
                         <tr>
                             <td class="whitespace-nowrap px-6 py-4 text-sm font-medium text-gray-900 dark:text-white">
                                 <a href="#" class="text-violet-600">#{{ $ticket->mask }}</a>
@@ -51,7 +50,7 @@
                             </span>
                             </td>
                             <td class="whitespace-nowrap px-6 py-4 text-right text-sm font-medium">
-                                <a href="#" class="rounded-md bg-violet-600 px-3 py-1.5 text-xs font-medium text-white shadow-sm hover:bg-violet-700 dark:bg-violet-700 dark:hover:bg-violet-600 transition duration-200">
+                                <a href="{{ route('support.tickets.show', $ticket) }}" class="rounded-md bg-violet-600 px-3 py-1.5 text-xs font-medium text-white shadow-sm hover:bg-violet-700 dark:bg-violet-700 dark:hover:bg-violet-600 transition duration-200">
                                     View
                                 </a>
                             </td>
@@ -65,6 +64,10 @@
                     @endforelse
                 </tbody>
             </table>
+
+            <div class="px-5">
+            {{ $supportTickets->links() }}
+            </div>
         </div>
         {{-- Additional Support Information --}}
         <div class="mt-20 rounded-xl bg-gradient-to-br from-[#FFF0DC] to-[#E8EEFF] p-8 dark:from-blue-900/10 dark:to-[#4c407f]/25">
