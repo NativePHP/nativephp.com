@@ -13,7 +13,7 @@ Apple's tooling for building iOS apps requires that you compile your application
 2. Laravel 10 or higher
 3. An Apple Silicon Mac running macOS 12+ with Xcode 16+
 4. An active [Apple Developer account](https://developer.apple.com/)
-5. [A NativePHP for iOS license](https://checkout.anystack.sh/nativephp-ios)
+5. [A NativePHP for mobile license](https://checkout.anystack.sh/nativephp)
 6. _Optional_ iOS device
 
 You don't _need_ a physical iOS device to compile your application and test it for iOS, as NativePHP for mobile supports
@@ -36,7 +36,7 @@ To make NativePHP for mobile a reality has taken a lot of work and will continue
 it's not open source and you are not free to distribute or modify its source code.
 
 Before you begin, you will need to purchase a license.
-Licenses can be obtained via [Anystack](https://checkout.anystack.sh/nativephp-ios).
+Licenses can be obtained via [Anystack](https://checkout.anystack.sh/nativephp).
 
 Once you have your license, you will need to add the following to your `composer.json`:
 
@@ -44,12 +44,12 @@ Once you have your license, you will need to add the following to your `composer
 "repositories": [
     {
         "type": "composer",
-        "url": "https://nativephp-ios.composer.sh"
+        "url": "https://nativephp.composer.sh"
     }
 ],
 ```
 
-## Install NativePHP for iOS
+## Install NativePHP for mobile
 
 ```shell
 composer require nativephp/ios
@@ -96,13 +96,10 @@ If you want to run your app on a real iOS device, you need to make sure the devi
 been added to your Apple Developer account as
 [a registered device](https://developer.apple.com/account/resources/devices/list).
 
-You will need to get the device's UDID. You can find this by connecting the device to your Mac and opening it in the
-Finder. Click on model name at the top until the UDID appears, then right-click on it to copy it.
-
-Then you can simply run, replacing `{UDID}` with your device's UDID:
+Then you can simply run and choose your device from the list of available devices:
 
 ```shell
-php artisan native:run {UDID}
+php artisan native:run
 ```
 
 Alternatively, you may open the `ios/NativePHP.xcodeproj` file in Xcode and run builds using Xcode's UI.
