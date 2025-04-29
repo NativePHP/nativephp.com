@@ -507,8 +507,9 @@
                     </div>
                     <h4 class="text-lg font-medium">Share Your Feedback</h4>
                     <p class="mt-2 text-gray-600 dark:text-gray-400">
-                        We're currently in beta and constantly improving. Let us
-                        know if you find any bugs as you build.
+                        We're currently in Early Access and constantly
+                        improving. Let us know if you find any bugs as you
+                        build.
                     </p>
                 </a>
             </div>
