@@ -39,7 +39,7 @@
                     @forelse($supportTickets as $ticket)
                         <tr>
                             <td class="whitespace-nowrap px-6 py-4 text-sm font-medium text-gray-900 dark:text-white">
-                                <a href="#" class="text-violet-600">#{{ $ticket->mask }}</a>
+                                <a href="{{ route('support.tickets.show', $ticket) }}" class="text-violet-600">#{{ $ticket->mask }}</a>
                             </td>
                             <td class="whitespace-nowrap px-6 py-4 text-sm text-gray-700 dark:text-gray-300">
                                 {{ $ticket->subject }}
