@@ -26,12 +26,14 @@ Dialog::share('Title', 'Description', 'URL');
 You may open a native alert dialog by using the `Dialog::alert()` method.
 
 ```php
-$buttons = [
-    'Ok',
-    'Cancel'
-];
+Dialog::alert('Title', 'Message');
+```
 
-Dialog::alert('Title', 'Message', $buttons, fn ($selected) => {
-    echo "You selected {$buttons[$selected]}";
-});
+### The Toast Dialog
+
+You may open a native toast dialog by using the `Dialog::toast()` method. There is not a toast dialog on iOS, 
+on iOS we will simply show an Alert Dialog with just an `OK` button.
+
+```php
+Dialog::toast('Message');
 ```

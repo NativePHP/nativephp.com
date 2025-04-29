@@ -5,11 +5,48 @@ order: 099
 
 ## Current Status
 
-NativePHP for mobile is `beta` software. We believe it's already robust enough to build useful applications that can be
-distributed to users, so we've made it available via an [Early Access Program](/ios).
+NativePHP for mobile v1 is here. While we're still in the process of adding more and more 
+native API's and other features we believe it's robust enough to build useful applications that can be
+distributed to users.
 
-The `beta` phase gives us the opportunity to work with the community to build more features and iron out issues.
+Presently, NativePHP for mobile offers the following "native" functionality:
 
-If you're in the Early Access Program, please be sure to share your findings by
-[raising issues](https://github.com/nativephp/ios/issues/new/choose)/reporting bugs, and on the `#early-access`
-[Discord](https://discord.gg/X62tWNStZK) channel.
+- Vibrate
+- Show Toasts
+- Show Alerts
+- Share
+- Camera
+- Flashlight
+- Biometric ID
+- Push Notifications
+- Deep Links
+- NFC
+
+We're working on adding more and more features, including:
+ - Secure Storage
+ - Microphone access
+ - Location
+ - Bluetooth
+ - SMS (Android only)
+ - File picker
+ - Video camera access
+ - Background tasks
+ - Geofencing
+ - Native image picker
+ - Calendar access
+ - Local notifications, scheduled notifications
+ - Clipboard API
+ - Contacts access
+ - App badges
+ - OTA Updates
+ - App review prompt
+ - Proximity sensor
+ - Gyroscope
+ - Accelerometer
+ - Screen brightness
+ - Haptic feedback
+ - Network info access
+ - Battery status 
+ - CPU information
+ - Ads
+

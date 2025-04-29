@@ -21,11 +21,22 @@ about whether a particular feature is specific to iOS or Android.
 
 Most of the system-related features are available through the `System` facade.
 
+## Synchronous vs. Asynchronous Methods
+
+It is important to understand the difference between synchronous and asynchronous methods. Some methods
+like `flashlight` and `vibrate` are synchronous, meaning that they will block the current thread until the
+operation is complete. Other methods like `camera` and `biometric` are asynchronous, meaning that they
+will return immediately and the operation will be performed in the background. When the operation is
+complete, the method will `broadcast an event` to your frontend via an injected javascript event.
+
+In order to receive these events, you must register a listener for the event. 
+
 ```php
 use Native\Ios\Facades\System;
 ```
 
-## Camera
+## Camera (Async)
+Event: `native:\Native\Events\Camera`
 
 You may request the native camera interface to take a photograph by calling the `camera` method:
 
@@ -33,22 +44,11 @@ You may request the native camera interface to take a photograph by calling the 
 $imageData = System::camera()
 ```
 
-If the user takes a photograph, the function will return a Base64-encoded string of JPEG data.
-
-If they cancel or there was a problem, it will return an empty string.
-
-If your app hasn't been granted permission to use the camera, this function will return `false`.
+When the user takes a photograph the event is fired with a payload array that contains one item: `photoPath` 
+which is a string containing the path to the photo.
 
 **Note: The first time your application asks to use the camera, the user will be prompted to grant permission. If they
 decline, triggering the camera API will silently fail.**
-
-### Video
-
-**COMING SOON**
-
-## Microphone
-
-**COMING SOON**
 
 ## Vibration
 
@@ -58,11 +58,13 @@ You may vibrate the user's device by calling the `vibrate` method:
 System::vibrate()
 ```
 
+_Coming Soon_ Options: `duration` and `intensity` 
+
 ## Push Notifications
 
-NativePHP makes it dead simple to enrol your user's device in push notifications from your app.
+Currently, NativePHP uses [Firebase Cloud Messaging](https://firebase.google.com/docs/cloud-messaging) to send push notifications to your users.
 
-Simply use the `enrolForPushNotifications` method to trigger enrolment. If this is the first time that your app tries
+Simply use the `enrollForPushNotifications` method to trigger enrolment. If this is the first time that your app tries
 to enrol this device for push notifications, the user will be presented with a native alert, allowing them to opt-in.
 
 Then use the `getPushNotificationsToken` method to retrieve the token. If enrolment was unsuccessful for some reason,
@@ -81,18 +83,11 @@ if ($token = System::getPushNotificationsToken()) {
 Once you have the token, you may use it from your server-based applications to trigger Push Notifications directly to
 your user's device.
 
-Find out more about what's required to use Push Notifications in
-[Apple's Developer docs](https://developer.apple.com/notifications/).
-
 ## Accelerometer
 
 **COMING SOON**
 
 ## GPS
-
-**COMING SOON**
-
-## NFC scanner
 
 **COMING SOON**
 
