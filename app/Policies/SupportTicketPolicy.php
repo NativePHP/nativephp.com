@@ -8,6 +8,11 @@ use Illuminate\Auth\Access\Response;
 
 class SupportTicketPolicy
 {
+    public function closeTicket(User $user, SupportTicket $supportTicket): bool
+    {
+        return $supportTicket->user_id == $user->id;
+    }
+
     /**
      * Determine whether the user can view any models.
      */

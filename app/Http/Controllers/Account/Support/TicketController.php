@@ -4,11 +4,25 @@ namespace App\Http\Controllers\Account\Support;
 
 use App\Http\Controllers\Controller;
 use App\Models\SupportTicket;
+use App\SupportTicket\Status;
 use Illuminate\Http\Request;
 
 class TicketController extends Controller
 {
     public static string $paginationLimit = '10';
+
+    public function closeTicket(SupportTicket $supportTicket)
+    {
+        $this->authorize('closeTicket', $supportTicket);
+
+        $supportTicket->update([
+            'status' => Status::CLOSED,
+        ]);
+
+        return redirect()
+            ->route('support.tickets.show', $supportTicket)
+            ->with('success', __('account.support_ticket.close_ticket.success'));
+    }
 
     public function index()
     {

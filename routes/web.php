@@ -73,6 +73,9 @@ Route::prefix('/support')
 
                 Route::get('/{supportTicket}', [TicketController::class, 'show'])
                     ->name('support.tickets.show');
+
+                Route::post('/{supportTicket}/close', [TicketController::class, 'closeTicket'])
+                    ->name('support.tickets.close');
             });
     });
 
