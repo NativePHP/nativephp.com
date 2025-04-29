@@ -45,7 +45,8 @@ In general, the app stores don't want apps to request permissions that they don'
 To enable some permissions your app needs you simply need to change their values in the permissions section.
 
 ```dotenv
-push_notifications
 biometric
+camera
 nfc
+push_notifications
 ```

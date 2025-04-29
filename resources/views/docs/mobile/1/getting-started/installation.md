@@ -19,6 +19,7 @@ order: 100
 1. [Android Studio Giraffe (or later)](https://developer.android.com/studio)
 2. The following environment variables set.
 3. You should be able to successfully run `java -v` and `adb devices` from the terminal.
+4. **Windows only**: You must have [7zip](https://www.7-zip.org/) installed.
 
 #### For macOS
 ```shell
