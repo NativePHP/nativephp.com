@@ -83,22 +83,6 @@ if ($token = System::getPushNotificationsToken()) {
 Once you have the token, you may use it from your server-based applications to trigger Push Notifications directly to
 your user's device.
 
-## Accelerometer
-
-**COMING SOON**
-
-## GPS
-
-**COMING SOON**
-
-## Wallet
-
-**COMING SOON**
-
-## Encryption / Decryption
-
-**COMING SOON**
-
 Almost every non-trivial application will require some concept of secure data storage and retrieval. For example, if
 you want to generate and store an API key to access a third-party service on behalf of your user.
 
