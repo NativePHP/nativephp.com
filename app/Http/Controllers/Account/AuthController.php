@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Account;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\LoginRequest;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 
 class AuthController extends Controller
 {
@@ -21,6 +22,15 @@ class AuthController extends Controller
         return redirect()->route('account.login');
     }
 
+    /**
+     * Process the login request.
+     *
+     * @TODO Implement additional brute-force protection with custom blocked IPs model.
+     *
+     * @param LoginRequest $request
+     * @throws \Illuminate\Validation\ValidationException
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function processLogin(LoginRequest $request)
     {
         $credentials = $request->only('email', 'password');
@@ -28,10 +38,15 @@ class AuthController extends Controller
         $attemptsPerHour = 5;
 
         if (\RateLimiter::tooManyAttempts($key, $attemptsPerHour)) {
+            $blockedUntil = Carbon::now()
+                ->addSeconds(\RateLimiter::availableIn($key))
+                ->diffInMinutes(Carbon::now());
+
             return back()
-                ->withInput($request->only('email'))
+                ->withInput($request->only(['email', 'remember']))
                 ->withErrors([
-                    'email' => 'Too many login attempts. Please try again later.',
+                    'email' => 'Too many login attempts. Please try again in '
+                        . $blockedUntil . ' minutes.',
                 ]);
         }
 
