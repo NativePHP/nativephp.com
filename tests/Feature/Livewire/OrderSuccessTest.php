@@ -2,12 +2,15 @@
 
 namespace Tests\Feature\Livewire;
 
+use App\Enums\Subscription;
 use App\Livewire\OrderSuccess;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Session;
 use Livewire\Livewire;
 use PHPUnit\Framework\Attributes\Test;
 use Stripe\Checkout\Session as CheckoutSession;
+use Stripe\Collection;
+use Stripe\LineItem;
 use Stripe\StripeClient;
 use Tests\TestCase;
 
@@ -95,6 +98,22 @@ class OrderSuccessTest extends TestCase
             ],
         ]);
 
+        $mockCheckoutSessionLineItems = Collection::constructFrom([
+            'object' => 'list',
+            'data' => [
+                LineItem::constructFrom([
+                    'id' => 'li_1RFKPpAyFo6rlwXqAHI9wA95',
+                    'object' => 'item',
+                    'description' => 'Early Access Program (Max)',
+                    'price' => [
+                        'id' => Subscription::Max->stripePriceId(),
+                        'object' => 'price',
+                        'product' => 'prod_S9Z5CgycbP7P4y',
+                    ],
+                ]),
+            ],
+        ]);
+
         $mockStripeClient = $this->createMock(StripeClient::class);
 
         $mockStripeClient->checkout = new class($mockCheckoutSession)
@@ -107,18 +126,26 @@ class OrderSuccessTest extends TestCase
             }
         };
 
-        $mockStripeClient->checkout->sessions = new class($mockCheckoutSession)
+        $mockStripeClient->checkout->sessions = new class($mockCheckoutSession, $mockCheckoutSessionLineItems)
         {
             private $mockCheckoutSession;
 
-            public function __construct($mockCheckoutSession)
+            private $mockCheckoutSessionLineItems;
+
+            public function __construct($mockCheckoutSession, $mockCheckoutSessionLineItems)
             {
                 $this->mockCheckoutSession = $mockCheckoutSession;
+                $this->mockCheckoutSessionLineItems = $mockCheckoutSessionLineItems;
             }
 
             public function retrieve()
             {
                 return $this->mockCheckoutSession;
+            }
+
+            public function allLineItems()
+            {
+                return $this->mockCheckoutSessionLineItems;
             }
         };
 

@@ -2,11 +2,11 @@
 
 namespace Tests\Feature\Jobs;
 
+use App\Enums\Subscription;
 use App\Jobs\CreateAnystackLicenseJob;
 use App\Jobs\StripeWebhooks\HandleCustomerSubscriptionCreatedJob;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Bus;
-use Illuminate\Support\Facades\Config;
 use Spatie\WebhookClient\Models\WebhookCall;
 use Stripe\Customer;
 use Stripe\StripeClient;
@@ -15,21 +15,6 @@ use Tests\TestCase;
 class HandleCustomerSubscriptionCreatedJobTest extends TestCase
 {
     use RefreshDatabase;
-
-    protected function setUp(): void
-    {
-        parent::setUp();
-
-        // Set up test configuration for Stripe prices
-        Config::set('subscriptions.plans', [
-            'test' => [
-                'name' => 'Test Plan',
-                'stripe_price_id' => 'price_1RFFxGAyFo6rlwXqt5B1eNEF',
-                'anystack_product_id' => 'test-product-id',
-                'anystack_policy_id' => 'test-policy-id',
-            ],
-        ]);
-    }
 
     /** @test */
     public function it_dispatches_the_create_anystack_license_job_with_correct_data()
@@ -57,10 +42,9 @@ class HandleCustomerSubscriptionCreatedJobTest extends TestCase
         $job->handle();
 
         // Assert that the CreateAnystackLicenseJob was dispatched with the correct parameters
-        Bus::assertDispatched(CreateAnystackLicenseJob::class, function ($job) {
+        Bus::assertDispatched(CreateAnystackLicenseJob::class, function (CreateAnystackLicenseJob $job) {
             return $job->email === 'test@example.com' &&
-                   $job->productId === 'test-product-id' &&
-                   $job->policyId === 'test-policy-id' &&
+                   $job->subscription === Subscription::Max &&
                    $job->firstName === 'John' &&
                    $job->lastName === 'Doe';
         });
@@ -195,7 +179,7 @@ class HandleCustomerSubscriptionCreatedJobTest extends TestCase
                                 'discounts' => [],
                                 'metadata' => [],
                                 'plan' => [
-                                    'id' => 'price_1RFFxGAyFo6rlwXqt5B1eNEF',
+                                    'id' => Subscription::Max->stripePriceId(),
                                     'object' => 'plan',
                                     'active' => true,
                                     'aggregate_usage' => null,
@@ -217,7 +201,7 @@ class HandleCustomerSubscriptionCreatedJobTest extends TestCase
                                     'usage_type' => 'licensed',
                                 ],
                                 'price' => [
-                                    'id' => 'price_1RFFxGAyFo6rlwXqt5B1eNEF',
+                                    'id' => Subscription::Max->stripePriceId(),
                                     'object' => 'price',
                                     'active' => true,
                                     'billing_scheme' => 'per_unit',
@@ -279,7 +263,7 @@ class HandleCustomerSubscriptionCreatedJobTest extends TestCase
                     'pending_setup_intent' => null,
                     'pending_update' => null,
                     'plan' => [
-                        'id' => 'price_1RFFxGAyFo6rlwXqt5B1eNEF',
+                        'id' => Subscription::Max->stripePriceId(),
                         'object' => 'plan',
                         'active' => true,
                         'aggregate_usage' => null,

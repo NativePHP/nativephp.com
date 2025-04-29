@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Jobs;
 
+use App\Enums\Subscription;
 use App\Jobs\CreateAnystackLicenseJob;
 use App\Notifications\LicenseKeyGenerated;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -46,8 +47,7 @@ class CreateAnystackLicenseJobTest extends TestCase
     {
         $job = new CreateAnystackLicenseJob(
             'test@example.com',
-            'product-123',
-            'policy-123',
+            Subscription::Max,
             'John',
             'Doe'
         );
@@ -64,11 +64,13 @@ class CreateAnystackLicenseJobTest extends TestCase
                    ];
         });
 
-        Http::assertSent(function ($request) {
-            return $request->url() === 'https://api.anystack.sh/v1/products/product-123/licenses' &&
+        $productId = Subscription::Max->anystackProductId();
+
+        Http::assertSent(function ($request) use ($productId) {
+            return $request->url() === "https://api.anystack.sh/v1/products/$productId/licenses" &&
                    $request->method() === 'POST' &&
                    $request->data() === [
-                       'policy_id' => 'policy-123',
+                       'policy_id' => Subscription::Max->anystackPolicyId(),
                        'contact_id' => 'contact-123',
                    ];
         });
@@ -79,8 +81,7 @@ class CreateAnystackLicenseJobTest extends TestCase
     {
         $job = new CreateAnystackLicenseJob(
             'test@example.com',
-            'product-123',
-            'policy-123',
+            Subscription::Max,
             'John',
             'Doe'
         );
@@ -95,8 +96,7 @@ class CreateAnystackLicenseJobTest extends TestCase
     {
         $job = new CreateAnystackLicenseJob(
             'test@example.com',
-            'product-123',
-            'policy-123',
+            Subscription::Max,
             'John',
             'Doe'
         );
@@ -108,6 +108,7 @@ class CreateAnystackLicenseJobTest extends TestCase
             function (LicenseKeyGenerated $notification, array $channels, object $notifiable) {
                 return $notifiable->routes['mail'] === 'test@example.com' &&
                         $notification->licenseKey === 'test-license-key-12345' &&
+                        $notification->subscription === Subscription::Max &&
                         $notification->firstName === 'John';
             }
         );
@@ -119,8 +120,7 @@ class CreateAnystackLicenseJobTest extends TestCase
         // Create and run the job with missing name components
         $job = new CreateAnystackLicenseJob(
             'test@example.com',
-            'product-123',
-            'policy-123'
+            Subscription::Max,
         );
 
         $job->handle();
@@ -140,6 +140,7 @@ class CreateAnystackLicenseJobTest extends TestCase
             function (LicenseKeyGenerated $notification, array $channels, object $notifiable) {
                 return $notifiable->routes['mail'] === 'test@example.com' &&
                        $notification->licenseKey === 'test-license-key-12345' &&
+                       $notification->subscription === Subscription::Max &&
                        $notification->firstName === null;
             }
         );
