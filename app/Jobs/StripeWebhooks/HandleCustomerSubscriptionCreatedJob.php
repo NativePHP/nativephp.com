@@ -3,7 +3,6 @@
 namespace App\Jobs\StripeWebhooks;
 
 use App\Jobs\CreateAnystackLicenseJob;
-use App\Support\Stripe\StripePrice;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -40,10 +39,7 @@ class HandleCustomerSubscriptionCreatedJob implements ShouldQueue
             return;
         }
 
-        $price = $stripeSubscription->items->first()?->price;
-
-        $productId = StripePrice::from($price)->getAnystackProductId();
-        $policyId = StripePrice::from($price)->getAnystackPolicyId();
+        $subscriptionPlan = \App\Enums\Subscription::fromStripeSubscription($stripeSubscription);
 
         $nameParts = explode(' ', $customer->name ?? '', 2);
         $firstName = $nameParts[0] ?: null;
@@ -51,8 +47,7 @@ class HandleCustomerSubscriptionCreatedJob implements ShouldQueue
 
         dispatch(new CreateAnystackLicenseJob(
             $email,
-            $productId,
-            $policyId,
+            $subscriptionPlan,
             $firstName,
             $lastName,
         ));

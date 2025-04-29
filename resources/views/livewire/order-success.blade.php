@@ -1,4 +1,4 @@
-<div {{ ! $licenseKey ? 'wire:poll.2s=loadData' : '' }}>
+<div {!! ! $licenseKey ? 'wire:poll.2s="loadData"' : '' !!}>
     {{-- Hero Section --}}
     <section
         class="mt-10 px-5 md:mt-14"
@@ -309,6 +309,55 @@
                         <span>View Installation Guide</span>
                     </div>
                 </a>
+
+                @if ($subscription === \App\Enums\Subscription::Max)
+                    <div
+                        class="mt-6 rounded-xl bg-indigo-50 p-4 dark:bg-indigo-900/20"
+                    >
+                        <div class="flex">
+                            <div class="flex-shrink-0">
+                                <svg
+                                    class="h-5 w-5 text-indigo-400"
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    viewBox="0 0 24 24"
+                                    fill="currentColor"
+                                    aria-hidden="true"
+                                >
+                                    <path
+                                        fill-rule="evenodd"
+                                        d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12zm8.706-1.442c1.146-.573 2.437.463 2.126 1.706l-.709 2.836.042-.02a.75.75 0 01.67 1.34l-.04.022c-1.147.573-2.438-.463-2.127-1.706l.71-2.836-.042.02a.75.75 0 11-.671-1.34l.041-.022zM12 9a.75.75 0 100-1.5.75.75 0 000 1.5z"
+                                        clip-rule="evenodd"
+                                    />
+                                </svg>
+                            </div>
+                            <div class="ml-3">
+                                <h3
+                                    class="text-sm font-medium text-indigo-800 dark:text-indigo-300"
+                                >
+                                    Repo Access
+                                </h3>
+                                <div
+                                    class="mt-2 text-sm text-indigo-700 dark:text-indigo-200"
+                                >
+                                    <p>
+                                        As a Max subscriber, you have access to
+                                        the NativePHP/mobile repository. To
+                                        access it, please log in to
+                                        <!-- display: inline -->
+                                        <a
+                                            href="https://auth.anystack.sh/?accountType=customer"
+                                            class="font-medium underline hover:text-indigo-600 dark:hover:text-indigo-100"
+                                            target="_blank"
+                                            >AnyStack.sh</a
+                                        >
+                                        using the same email address you used
+                                        for your purchase.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                @endif
             </div>
         </div>
 

@@ -2,6 +2,7 @@
 
 namespace App\Jobs;
 
+use App\Enums\Subscription;
 use App\Notifications\LicenseKeyGenerated;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -19,8 +20,7 @@ class CreateAnystackLicenseJob implements ShouldQueue
 
     public function __construct(
         public string $email,
-        public string $productId,
-        public string $policyId,
+        public Subscription $subscription,
         public ?string $firstName = null,
         public ?string $lastName = null,
     ) {}
@@ -36,6 +36,7 @@ class CreateAnystackLicenseJob implements ShouldQueue
         Notification::route('mail', $this->email)
             ->notify(new LicenseKeyGenerated(
                 $license['key'],
+                $this->subscription,
                 $this->firstName
             ));
     }
@@ -61,12 +62,12 @@ class CreateAnystackLicenseJob implements ShouldQueue
     private function createLicense(string $contactId): ?array
     {
         $data = [
-            'policy_id' => $this->policyId,
+            'policy_id' => $this->subscription->anystackPolicyId(),
             'contact_id' => $contactId,
         ];
 
         return $this->anystackClient()
-            ->post("https://api.anystack.sh/v1/products/{$this->productId}/licenses", $data)
+            ->post("https://api.anystack.sh/v1/products/{$this->subscription->anystackProductId()}/licenses", $data)
             ->throw()
             ->json('data');
     }

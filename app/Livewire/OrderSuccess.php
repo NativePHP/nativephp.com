@@ -2,6 +2,7 @@
 
 namespace App\Livewire;
 
+use App\Enums\Subscription;
 use Illuminate\Support\Facades\Cache;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Title;
@@ -16,6 +17,8 @@ class OrderSuccess extends Component
 
     public ?string $licenseKey = null;
 
+    public ?Subscription $subscription = null;
+
     public string $checkoutSessionId;
 
     public function mount(string $checkoutSessionId): void
@@ -29,6 +32,7 @@ class OrderSuccess extends Component
     {
         $this->email = $this->loadEmail();
         $this->licenseKey = $this->loadLicenseKey();
+        $this->subscription = $this->loadSubscription();
     }
 
     private function loadEmail(): ?string
@@ -64,5 +68,25 @@ class OrderSuccess extends Component
         }
 
         return $licenseKey;
+    }
+
+    private function loadSubscription(): ?Subscription
+    {
+        if ($subscription = session('subscription')) {
+            return Subscription::tryFrom($subscription);
+        }
+
+        $stripe = app(StripeClient::class);
+        $priceId = $stripe->checkout->sessions->allLineItems($this->checkoutSessionId)->first()?->price->id;
+
+        if (! $priceId) {
+            return null;
+        }
+
+        $subscription = Subscription::fromStripePriceId($priceId);
+
+        session()->put('subscription', $subscription->value);
+
+        return $subscription;
     }
 }

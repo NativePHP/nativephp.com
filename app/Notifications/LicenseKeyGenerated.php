@@ -2,6 +2,7 @@
 
 namespace App\Notifications;
 
+use App\Enums\Subscription;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
@@ -13,6 +14,7 @@ class LicenseKeyGenerated extends Notification implements ShouldQueue
 
     public function __construct(
         public string $licenseKey,
+        public ?Subscription $subscription = null,
         public ?string $firstName = null,
     ) {}
 
@@ -41,6 +43,7 @@ class LicenseKeyGenerated extends Notification implements ShouldQueue
             ->line('When prompted by Composer, use your email address as the username and this license key as the password.')
             ->action('View Installation Guide', url('/docs/mobile/1/getting-started/installation'))
             ->line("If you have any questions, please don't hesitate to reach out to our support team.")
+            ->lineIf($this->subscription === Subscription::Max, 'As a Max subscriber, you also have access to the NativePHP/mobile repository. To access it, please log in to [Anystack.sh](https://auth.anystack.sh/?accountType=customer) using the same email address you used for your purchase.')
             ->salutation("Happy coding!\n\nThe NativePHP Team")
             ->success();
     }
