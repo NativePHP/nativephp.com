@@ -24,8 +24,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        $this->registerSharedViewVariables()
-            ->registerRateLimiters();
+        $this->registerSharedViewVariables();
     }
 
     private function registerSharedViewVariables(): static
@@ -40,12 +39,5 @@ class AppServiceProvider extends ServiceProvider
         View::share('githubLink', 'https://github.com/NativePHP');
 
         return $this;
-    }
-
-    private function registerRateLimiters()
-    {
-        RateLimiter::for('login', function (Request $request) {
-            return Limit::perMinute(5)->by($request->input('email') . '|' . $request->ip());
-        });
     }
 }

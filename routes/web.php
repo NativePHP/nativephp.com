@@ -93,7 +93,7 @@ Route::prefix('/account')
             ->name('login');
 
         Route::post('/login', [AuthController::class, 'processLogin'])
-            ->middleware('guest')
+            ->middleware(['guest'])
             ->withoutMiddleware(['auth:web'])
             ->name('login.process');
 
