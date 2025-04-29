@@ -8,6 +8,21 @@
     }
 }
 
+@keyframes shine {
+    0% {
+        background-position: 200% 50%;
+    }
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
 /* Scrollbar width */
 ::-webkit-scrollbar {
     height: 8px;

@@ -5,9 +5,9 @@ order: 100
 
 ## Requirements
 
-1. PHP 8.1+
-2. Laravel 10 or higher
-3. Node 20+
+1. PHP 8.3+
+2. Laravel 11 or higher
+3. Node 22+
 4. Windows 10+ / macOS 12+ / Linux
 
 ### PHP & Node
@@ -33,8 +33,6 @@ composer require nativephp/electron
 
 This package contains all the classes, commands, and interfaces that your application will need to work with the
 Electron runtime.
-
-**Note**: If this fails, try setting the `minimum-stability` in your composer.json to "dev". NativePHP is in beta at this point in time.
 
 ## Run the NativePHP installer
 

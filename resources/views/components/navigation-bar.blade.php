@@ -27,15 +27,58 @@
                 <span class="sr-only">NativePHP</span>
             </a>
 
+            {{-- V1 Announcement --}}
+            <a
+                href="https://github.com/orgs/NativePHP/discussions/547"
+                class="group relative z-0 hidden items-center overflow-hidden rounded-full bg-gray-200 px-2.5 py-1.5 text-xs transition duration-200 will-change-transform hover:scale-x-105 lg:inline-flex dark:bg-slate-800"
+                target="_blank"
+                aria-label="Read about NativePHP version 1 release"
+                title="Read the NativePHP v1 announcement"
+            >
+                <div
+                    class="absolute inset-0 flex items-center [container-type:inline-size]"
+                    aria-hidden="true"
+                >
+                    <div
+                        class="absolute h-[100cqw] w-[100cqw] bg-[conic-gradient(from_0_at_50%_50%,rgba(167,139,250,0.75)_0deg,transparent_60deg,transparent_300deg,rgba(167,139,250,0.75)_360deg)] transition duration-300 [animation:spin_2.5s_linear_infinite]"
+                    ></div>
+                </div>
+
+                <div
+                    class="absolute inset-0.5 rounded-full bg-violet-50 dark:bg-slate-950"
+                    aria-hidden="true"
+                ></div>
+
+                <div
+                    class="absolute bottom-0 left-1/2 h-1/3 w-4/5 -translate-x-1/2 rounded-full bg-orange-300 opacity-50 blur-md transition-all duration-500 dark:bg-fuchsia-300/30 dark:group-hover:h-2/3 dark:group-hover:opacity-100"
+                    aria-hidden="true"
+                ></div>
+
+                <span class="relative inline-flex items-center gap-1">
+                    <x-icons.confetti
+                        class="-mt-px size-3.5"
+                        aria-hidden="true"
+                    />
+                    <span class="font-normal">v1 is here!</span>
+                    <span class="sr-only">
+                        NativePHP version 1 has been released - click to learn
+                        more
+                    </span>
+                </span>
+            </a>
+
+            {{-- 👇 Temporarily disabled in favor of the v1 announcement button --}}
             {{-- Version badge --}}
-            <div
+            {{--
+                <div
                 class="hidden rounded-full bg-gray-200/60 px-2 py-1 text-xs text-gray-600 lg:block dark:bg-[#16182b] dark:text-[#747ee6] dark:ring-1 dark:ring-cloud"
                 aria-label="Version information"
-            >
+                >
                 <a href="/docs/desktop/1/getting-started/releasenotes">
-                    {{ $electronGitHubVersion }}
+                {{ $electronGitHubVersion }}
                 </a>
-            </div>
+                </div>
+            --}}
         </div>
 
         {{-- Right side --}}
@@ -144,6 +187,26 @@
                     class="hidden size-[3px] rotate-45 rounded-sm bg-gray-400 transition duration-200 lg:block dark:opacity-60"
                     aria-hidden="true"
                 ></div>
+
+                {{-- Link
+                <a
+                    href="{{ route('blog') }}"
+                    @class([
+                        'hidden transition duration-200 lg:block',
+                        'font-medium' => request()->routeIs('blog*'),
+                        'opacity-60 hover:opacity-100' => ! request()->routeIs('blog*'),
+                    ])
+                    aria-current="{{ request()->routeIs('blog*') ? 'page' : 'false' }}"
+                >
+                    Blog
+                </a>
+
+                {{-- Decorative circle -- }}
+                <div
+                    class="hidden size-[3px] rotate-45 rounded-sm bg-gray-400 transition duration-200 lg:block dark:opacity-60"
+                    aria-hidden="true"
+                ></div>
+                --}}
 
                 {{-- Link --}}
                 <a

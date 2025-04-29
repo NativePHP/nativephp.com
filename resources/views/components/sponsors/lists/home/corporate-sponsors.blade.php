@@ -75,6 +75,26 @@
     </a>
 </div>
 
+<div
+    x-ref="sponsor"
+    class="opacity-0"
+>
+    <a
+        href="https://www.quantumweb.co/"
+        class="inline-grid h-16 w-60 shrink-0 place-items-center rounded-2xl bg-gray-100 p-5 transition duration-200 hover:bg-gray-200/70 hover:ring-1 hover:ring-black/60 dark:bg-mirage dark:hover:bg-haiti dark:hover:ring-cloud"
+        title="Learn more about Quantumweb"
+        aria-label="Visit Quantumweb website"
+        rel="noopener"
+    >
+        <x-sponsors.logos.quantumweb
+            class="block h-auto max-h-5 max-w-full fill-[#042340] dark:fill-white"
+            alt="Quantumweb logo"
+            loading="lazy"
+        />
+        <span class="sr-only">Quantumweb</span>
+    </a>
+</div>
+
 {{--
     <div
     x-ref="sponsor"

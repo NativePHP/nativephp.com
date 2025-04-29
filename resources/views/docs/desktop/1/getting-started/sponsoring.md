@@ -37,4 +37,4 @@ If your organization is using NativePHP, we strongly encourage you to consider a
 support will provide your team with the added benefits of increased levels of support, hands-on help directly from the
 maintainers of NativePHP and promotion of your brand as a supporter of cutting-edge open source work.
 
-For more details, please email [nativephp@simonhamp.me](mailto:nativephp@simonhamp.me?subject=Corporate%20Sponsorship). 
+For more details, please email [partners@nativephp.com](mailto:partners@nativephp.com?subject=Corporate%20Sponsorship). 

@@ -3,16 +3,6 @@
     onclick="fathom.trackEvent('alert_click');"
     class="group relative z-30 flex items-center justify-center gap-2 bg-gradient-to-r from-[#352F5B] to-[#6056AA] px-5 py-2.5 text-center"
 >
-    <style>
-        @keyframes shine {
-            0% {
-                background-position: 200% 50%;
-            }
-            100% {
-                background-position: 0% 50%;
-            }
-        }
-    </style>
     {{-- Text --}}
     <div
         class="transition duration-200 ease-in-out will-change-transform group-hover:-translate-x-1"

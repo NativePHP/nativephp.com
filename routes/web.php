@@ -19,6 +19,8 @@ Route::redirect('/newsletter', 'https://simonhamp.mailcoach.app/nativephp');
 Route::redirect('/sponsor', '/docs/1/getting-started/sponsoring');
 
 Route::view('/', 'welcome')->name('welcome');
+Route::view('/blog', 'blog')->name('blog');
+Route::view('/article', 'article')->name('article');
 Route::view('mobile', 'early-adopter')->name('early-adopter');
 Route::redirect('ios', 'mobile');
 

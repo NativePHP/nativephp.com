@@ -676,6 +676,14 @@
                 </p>
             </x-faq-card>
 
+            <x-faq-card question="Will there ever be a free & open source version?">
+                <p>
+                    Yes! Once we've hit sustainability and can afford to continue
+                    investing in this project indirectly, then a version of it will
+                    be fully open source and made available for free.
+                </p>
+            </x-faq-card>
+
             <x-faq-card
                 question="Can I create both iOS and Android apps with one license?"
             >
