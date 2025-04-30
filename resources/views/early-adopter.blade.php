@@ -556,7 +556,7 @@
                                 class="font-medium"
                                 aria-label="Composer install command"
                             >
-                                composer require nativephp/ios
+                                composer require nativephp/mobile
                             </div>
                         </div>
                     </div>
