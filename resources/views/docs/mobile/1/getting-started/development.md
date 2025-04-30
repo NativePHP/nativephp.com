@@ -6,13 +6,7 @@ order: 300
 
 ## The `nativephp` Directory
 
-After running:
-
-```bash
-php artisan native:install
-```
-
-you’ll see a new `nativephp` directory at the root of your Laravel project as well as a nativephp.php config file in your config folder in the Laravel root.
+After running: `php artisan native:install` you’ll see a new `nativephp` directory at the root of your Laravel project as well as a `nativephp.php` config file in your config folder in the Laravel root.
 
 This folder contains all the native project files that NativePHP generates for you.
 

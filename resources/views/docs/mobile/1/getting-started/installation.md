@@ -23,16 +23,18 @@ order: 100
 
 #### For macOS
 ```shell
-export JAVA_HOME=$(/usr/libexec/java_home -v 17)
+export JAVA_HOME=$(/usr/libexec/java_home -v 17) // This isn't required if JAVA_HOME is already set in the Windows Env Variables
 export ANDROID_SDK_ROOT=$HOME/Library/Android/sdk
 export PATH=$PATH:$JAVA_HOME/bin:$ANDROID_HOME/emulator:$ANDROID_HOME/tools:$ANDROID_HOME/tools/bin:$ANDROID_HOME/platform-tools
 ```
 
 #### For Windows
 ```shell
-set JAVA_HOME=C:\Program Files\Microsoft\jdk-17.0.8.7-hotspot
 set ANDROID_SDK_ROOT=C:\Users\yourname\AppData\Local\Android\Sdk
 set PATH=%PATH%;%JAVA_HOME%\bin;%ANDROID_SDK_ROOT%\platform-tools
+
+# This isn't required if JAVA_HOME is already set in the Windows Env Variables
+set JAVA_HOME=C:\Program Files\Microsoft\jdk-17.0.8.7-hotspot
 ```
 
 > **Note** You cannot build iOS apps on Windows or Linux
@@ -47,13 +49,14 @@ NativePHP for mobile is built to work with Laravel. You can install it into an e
 [start a new one](https://laravel.com/docs/installation). The most painless way to get PHP and Node up and running on your system is with
 [Laravel Herd](https://herd.laravel.com). It's fast and free!
 
-## Private package
+
+## Install NativePHP for mobile
 
 To make NativePHP for mobile a reality has taken a lot of work and will continue to require even more. For this reason,
 it's not open source, and you are not free to distribute or modify its source code.
 
 Before you begin, you will need to purchase a license.
-Licenses can be obtained via [Anystack](https://checkout.anystack.sh/nativephp-ios).
+Licenses can be obtained via [Anystack](https://checkout.anystack.sh/nativephp).
 
 Once you have your license, you will need to add the following to your `composer.json`:
 
@@ -66,8 +69,7 @@ Once you have your license, you will need to add the following to your `composer
 ],
 ```
 
-## Install NativePHP for mobile
-
+Then run:
 ```shell
 composer require nativephp/mobile
 ```
@@ -77,7 +79,7 @@ If this is the first time you're installing the package, you will be prompted to
 This package contains all the libraries, classes, commands, and interfaces that your application will need to work with
 iOS and Android.
 
-Before running the `install` command it is important to set the following variables in your `.env`:
+**Before** running the `install` command it is important to set the following variables in your `.env`:
 
 ```shell
 NATIVEPHP_APP_ID=com.nativephp.yourapp

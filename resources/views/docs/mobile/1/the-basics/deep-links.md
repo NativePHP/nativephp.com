@@ -10,7 +10,7 @@ NativePHP for Mobile supports both **deep linking** and **web-based linking** in
 There are two types of link integrations you can configure:
 
 - **Deep Links** (myapp://some/path)
-- **Universal Links (iOS)** and **App Links (Android)** (https://yourdomain.com/some/path)
+- **Universal Links (iOS)** and **App Links (Android)** (https://example.net/some/path)
 
 Each method has its use case, and NativePHP allows you to configure and handle both easily.
 
@@ -49,7 +49,7 @@ Universal Links and App Links allow real HTTPS URLs to open your app instead of 
 
 For example:
 ```dotenv
-https://bifrost.tech/property/456
+https://example.net/property/456
 ```
 
 When a user taps this link:
@@ -72,22 +72,22 @@ NativePHP for Mobile handles all of this for you.
 
 To enable Universal Links and App Links, you must define:
 
-- **Host**: The domain name (e.g., bifrost-tech.com)
+- **Host**: The domain name (e.g., example.net)
 
 These are configured in your .env:
 
 ```dotenv
-NATIVEPHP_DEEPLINK_HOST=bifrost-tech.com
+NATIVEPHP_DEEPLINK_HOST=example.net
 ```
 
 ## Handling Universal/App Links
 
 Once you've configured your deep link settings, you can handle the link in your app.
 
-Simply setup a route in your web.php file and the deeplink will redirect to your route.
+Simply set up a route in your web.php file and the deeplink will redirect to your route.
 
 ```dotenv
-https://bifrost-tech.com/profile/123
+https://example.net/profile/123
 ```
 
 ```php

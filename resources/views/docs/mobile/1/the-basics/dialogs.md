@@ -10,7 +10,7 @@ NativePHP allows you to trigger many native dialogs.
 Dialogs are created using the `Dialog` facade.
 
 ```php
-use Native\Ios\Facades\Dialog;
+use Native\Mobile\Facades\Dialog;
 ```
 
 ### The Share Dialog

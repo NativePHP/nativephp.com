@@ -22,7 +22,7 @@ Presently, NativePHP for mobile offers the following "native" functionality:
 - Deep Links
 - NFC
 
-We're working on adding more and more features, including:
+We're working on adding more and more features, including (in no particular order):
  - Secure Storage
  - Microphone access
  - Location

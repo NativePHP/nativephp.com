@@ -3,65 +3,77 @@ title: System
 order: 800
 ---
 
-## The System
+## Native System
 
-One of the main advantages of building a native application is having more direct access to system resources, such as
-device sensors and APIs that aren't typically accessible inside a browser's sandbox. 
+NativePHP allows you to trigger many native system functions.
 
-NativePHP makes it trivial to access these resources and APIs.
-
-One of the main challenges - particularly when writing cross-platform apps - is that each operating system has
-its own set of available APIs, along with their own idiosyncrasies.
-
-NativePHP smooths over as much of this as possible, to offer a simple and consistent set of interfaces regardless of
-the platform on which your app is running.
-
-While some features are platform-specific, NativePHP gracefully handles this for you so that you don't have to think
-about whether a particular feature is specific to iOS or Android.
-
-Most of the system-related features are available through the `System` facade.
-
-## Synchronous vs. Asynchronous Methods
-
-It is important to understand the difference between synchronous and asynchronous methods. Some methods
-like `flashlight` and `vibrate` are synchronous, meaning that they will block the current thread until the
-operation is complete. Other methods like `camera` and `biometric` are asynchronous, meaning that they
-will return immediately and the operation will be performed in the background. When the operation is
-complete, the method will `broadcast an event` to your frontend via an injected javascript event.
-
-In order to receive these events, you must register a listener for the event. 
+System functions are called using the `System` facade.
 
 ```php
-use Native\Ios\Facades\System;
+use Native\Mobile\Facades\System;
 ```
+---
 
-## Camera (Async)
-Event: `native:\Native\Events\Camera`
+# Synchronous Functions
+---
 
-You may request the native camera interface to take a photograph by calling the `camera` method:
-
-```php
-$imageData = System::camera()
-```
-
-When the user takes a photograph the event is fired with a payload array that contains one item: `photoPath` 
-which is a string containing the path to the photo.
-
-**Note: The first time your application asks to use the camera, the user will be prompted to grant permission. If they
-decline, triggering the camera API will silently fail.**
-
-## Vibration
+### Vibration
 
 You may vibrate the user's device by calling the `vibrate` method:
 
 ```php
 System::vibrate()
 ```
+---
+### Flashlight
 
-_Coming Soon_ Options: `duration` and `intensity` 
+You may toggle the device flashlight (on/off) by calling the `flashlight` method:
 
-## Push Notifications
+```php
+System::flashlight()
+```
+---
 
+# Asynchronous Functions
+---
+
+### Camera 
+```php
+Front End Event: `native:Native\Mobile\Events\Camera\PhotoTaken`
+Back End Event: `Native\Mobile\Events\Camera\PhotoTaken`
+```
+
+You may request the native camera interface to take a photograph by calling the `System::camera()` method:
+
+When the user takes a photograph the event is fired with a payload array that contains one item: `path` 
+which is a string containing the path to the photo.
+
+```php
+use Native\Mobile\Events\Camera\PhotoTaken;
+
+System::camera();
+
+// Later...
+#[On('native:' . PhotoTaken::class)]
+public function handlePhotoTaken($path)
+{
+    $data   = base64_encode(file_get_contents($path));
+    $mime   = mime_content_type($path);
+
+    $this->photoDataUrl = "data:$mime;base64,$data";
+}
+```
+
+**Note: The first time your application asks to use the camera, the user will be prompted to grant permission. If they
+decline, triggering the camera API will silently fail.**
+
+---
+
+### Push Notifications
+```php
+Front End Event: `native:Native\Mobile\Events\PushNotification\TokenGenerated`
+Back End Event: `Native\Mobile\Events\PushNotification\TokenGenerated`
+```
 Currently, NativePHP uses [Firebase Cloud Messaging](https://firebase.google.com/docs/cloud-messaging) to send push notifications to your users.
 
 Simply use the `enrollForPushNotifications` method to trigger enrolment. If this is the first time that your app tries
@@ -71,65 +83,45 @@ Then use the `getPushNotificationsToken` method to retrieve the token. If enrolm
 this method will return `null`.
 
 ```php
-System::enrolForPushNotifications();
+use Native\Mobile\Events\PushNotification\TokenGenerated;
+
+System::enrollForPushNotifications();
 
 // Later...
-
-if ($token = System::getPushNotificationsToken()) {
+#[On('native:' . TokenGenerated::class)]
+public function handlePushNotifications(string $token)
+{
     // Do something with the token...
 }
 ```
-
 Once you have the token, you may use it from your server-based applications to trigger Push Notifications directly to
 your user's device.
 
-Almost every non-trivial application will require some concept of secure data storage and retrieval. For example, if
-you want to generate and store an API key to access a third-party service on behalf of your user.
+> Learn more about [what to do with push tokens here](/docs/mobile/1/digging-deeper/push-notifications).
 
-You shouldn't ship these sorts of secrets _with_ your app, but rather generate them or ask your user for them at
-runtime.
+---
 
-But when your app is running on a user's device, you have
-[far less control and fewer guarantees](/docs/digging-deeper/security) over the safety of any secrets stored.
-
-On a traditional server-rendered application, this is a relatively simple problem to solve using server-side encryption
-with keys which are hidden from end users.
-
-For this to work on the user's device, you need to be able to generate and store an encryption key securely.
-
-NativePHP takes care of the key generation and storage for you, all that's left for you to do is encrypt, store and
-decrypt the secrets that you need to store on behalf of your user.
-
-NativePHP allows you to encrypt and decrypt data in your application easily:
-
+### Biometric ID
 ```php
-if (System::canEncrypt()) {
-    $encrypted = System::encrypt('secret_key_a79hiunfw86...');
-
-    // $encrypted => 'djEwJo+Huv+aeBgUoav5nIJWRQ=='
-}
+Front End Event: `native:Native\Mobile\Events\Biometric\Completed`
+Back End Event: `Native\Mobile\Events\Biometric\Completed`
 ```
-
-You can then safely store the encrypted string in a database or the filesystem.
-
-When you need to get the original value, you can decrypt it:
-
-```php
-if (System::canEncrypt()) {
-    $decrypted = System::decrypt('djEwJo+Huv+aeBgUoav5nIJWRQ==');
-
-    // $decrypted = 'secret_key_a79hiunfw86...'
-}
-```
-
-## Biometric ID
 
 For devices that support some form of biometric identification, you can use this to protect and unlock various parts
 of your application.
 
 ```php
-if (System::promptForBiometricID()) {
-    // Do your super secret activity here
+use Native\Mobile\Events\Biometric\Completed;
+
+System::promptForBiometricID()
+
+// Later...
+#[On('native:' . Completed::class)]
+public function handleBiometricAuth(boolean $success)
+{
+    if ($success) {
+        // Do your super secret activity here
+    }
 }
 ```
 
@@ -140,15 +132,3 @@ data.
 is *someone* who has the capacity to unlock the device your app is installed on. It does not allow you to *identify*
 that user or prove that they are willingly taking this action.**
 
-## Time Zones
-
-**COMING SOON**
-
-PHP and your Laravel application are configured to work with the time zone that the device reports it is currently
-operating in.
-
-This means that, for the most part, any dates and times your show will already be in the appropriate time zone for the
-user without having to ask your users to manually select their current time zone.
-
-Your app will also be responsive to changes in the system's time zone settings, e.g. in case the user moves between
-time zones.
