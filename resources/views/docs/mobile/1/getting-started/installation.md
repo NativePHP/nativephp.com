@@ -9,14 +9,14 @@ order: 100
 2. Laravel 10 or higher
 3. An Apple Silicon Mac running macOS 12+ with Xcode 16+
 4. An active [Apple Developer account](https://developer.apple.com/)
-5. [A NativePHP for mobile license](https://checkout.anystack.sh/nativephp)
+5. [A NativePHP for mobile license](https://checkout.anystack.sh/nativephp) 
 6. _Optional_ iOS device
 
 
 #### For iOS
 1. An Apple Mac (ideally Silicon) running macOS 12+ with Xcode 16+ 
 2. An active [Apple Developer account](https://developer.apple.com/)
-3. You can download Xcode from the Mac App Store.
+3. You can download Xcode from the Mac App Store
 
 #### For Android
 1. [Android Studio Giraffe (or later)](https://developer.android.com/studio)
@@ -77,7 +77,8 @@ Then run:
 composer require nativephp/mobile
 ```
 
-If this is the first time you're installing the package, you will be prompted to authenticate. Your username is the email address you registered with Anystack. Your password is your license key.
+If this is the first time you're installing the package, you will be prompted to authenticate. Your username is the
+email address you registered with Anystack. Your password is your license key.
 
 This package contains all the libraries, classes, commands, and interfaces that your application will need to work with
 iOS and Android.
@@ -110,26 +111,18 @@ Once you're ready:
 php artisan native:run
 ```
 
-This will start compiling your application and boot it in whichever device you select.
+This will start compiling your application and boot it on whichever device you select.
 
 ### Running on a real device
 
 #### For iOS
 If you want to run your app on a real mobile device, you need to make sure the device is in
-[Developer Mode](https://developer.apple.com/documentation/xcode/enabling-developer-mode-on-a-device) and that it's been added to your Apple Developer account as [a registered device](https://developer.apple.com/account/resources/devices/list).
-
-For iOS: You will need to get the device's UDID. You can find this by connecting the device to your Mac and opening it in the
-Finder. Click on model name at the top until the UDID appears, then right-click on it to copy it.
-
-Then you can simply run, replacing `{UDID}` with your device's UDID:
-
-```shell
-php artisan native:run
-```
-
-Alternatively, you may open the `ios/NativePHP.xcodeproj` file in Xcode and run builds using Xcode's UI.
+[Developer Mode](https://developer.apple.com/documentation/xcode/enabling-developer-mode-on-a-device)
+and that it's been added to your Apple Developer account as
+[a registered device](https://developer.apple.com/account/resources/devices/list).
 
 #### For Android
-On Android you need [enable developer options](https://developer.android.com/studio/debug/dev-options#enable) and have USB debugging (ADB) enabled.
+On Android you need to [enable developer options](https://developer.android.com/studio/debug/dev-options#enable)
+and have USB debugging (ADB) enabled.
 
 And that's it! You should now see your Laravel application running as a native app! 🎉
