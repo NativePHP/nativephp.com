@@ -155,7 +155,7 @@
                     class="relative isolate z-10 flex w-full max-w-xs flex-col items-center overflow-hidden rounded-2xl bg-[#F6F1EB] p-8 text-center ring-4 ring-inset ring-white/60 dark:bg-black/50 dark:ring-white/5"
                 >
                     {{-- Subtitle --}}
-                    <p class="text-sm text-gray-500">Coming soon for</p>
+                    <p class="text-sm text-gray-500">Available now for</p>
                     {{-- Title --}}
                     <h3
                         id="android-heading"
@@ -165,7 +165,7 @@
                     </h3>
                     {{-- Text --}}
                     <p class="pt-2.5 text-sm dark:text-gray-400">
-                        We're hard at work on Android support. Stay tuned!
+                        Sign up and build apps for Android today!
                     </p>
                     {{-- Mockup --}}
                     <div class="pt-10">
@@ -689,29 +689,18 @@
             >
                 <p>
                     Yes, a single license will let you build apps for both iOS
-                    and Android. iOS support is available right now and Android
-                    support is in development and will be included once
-                    released. Stay tuned!
+                    and Android.
                 </p>
             </x-faq-card>
 
             <x-faq-card question="When will Android support be ready?">
                 <p>
-                    Android support is in active development. We anticipate it
-                    being available within the next few weeks.
-                    <a
-                        href="https://nativephp.com/newsletter"
-                        class="underline"
-                        onclick="event.stopPropagation()"
-                    >
-                        Sign up to the newsletter
-                    </a>
-                    to know the moment it's ready!
+                   It's READY! Sign up and build apps for Android today!
                 </p>
             </x-faq-card>
 
             <x-faq-card question="When will the EAP end?">
-                <p>The EAP will end when Android support is released.</p>
+                <p>The EAP will end May 31, 2025.</p>
             </x-faq-card>
 
             <x-faq-card question="Which price will my license renew at?">
@@ -844,7 +833,7 @@
             <p class="italic">We can't wait to see what you build!</p>
             <p>
                 <span class="font-bold italic dark:text-white">
-                    Simon &amp; Marcel
+                    Simon Shane, &amp; Marcel
                 </span>
                 <br />
                 <span class="text-indigo-400">Creators of NativePHP</span>
