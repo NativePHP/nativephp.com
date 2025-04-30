@@ -7,8 +7,11 @@ order: 100
 
 1. PHP 8.3+
 2. Laravel 10 or higher
-3. [A NativePHP for mobile license](https://checkout.anystack.sh/nativephp-ios)
-6. _Optional_ iOS/Android device
+3. An Apple Silicon Mac running macOS 12+ with Xcode 16+
+4. An active [Apple Developer account](https://developer.apple.com/)
+5. [A NativePHP for mobile license](https://checkout.anystack.sh/nativephp)
+6. _Optional_ iOS device
+
 
 #### For iOS
 1. An Apple Mac (ideally Silicon) running macOS 12+ with Xcode 16+ 
@@ -121,7 +124,7 @@ Finder. Click on model name at the top until the UDID appears, then right-click 
 Then you can simply run, replacing `{UDID}` with your device's UDID:
 
 ```shell
-php artisan native:run {UDID}
+php artisan native:run
 ```
 
 Alternatively, you may open the `ios/NativePHP.xcodeproj` file in Xcode and run builds using Xcode's UI.
