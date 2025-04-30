@@ -3,14 +3,14 @@ title: Databases
 order: 200
 ---
 
-# Working with Databases
+## Working with Databases
 
 You'll almost certainly want your application to persist structured data. For this, NativePHP supports
 [SQLite](https://sqlite.org/), which works on both iOS and Android devices.
 
 You can interact with SQLite from PHP in whichever way you're used to.
 
-### Configuration
+## Configuration
 
 You do not need to do anything special to configure your application to use SQLite. NativePHP will automatically:
 - Switch to using SQLite when building your application.

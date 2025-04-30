@@ -5,35 +5,58 @@ order: 100
 
 ## Requirements
 
-Right now, NativePHP for mobile only supports building iOS applications. Android is in the works already and coming soon!
-
-Apple's tooling for building iOS apps requires that you compile your applications using macOS.
-
 1. PHP 8.3+
 2. Laravel 10 or higher
 3. An Apple Silicon Mac running macOS 12+ with Xcode 16+
 4. An active [Apple Developer account](https://developer.apple.com/)
-5. [A NativePHP for mobile license](https://checkout.anystack.sh/nativephp)
+5. [A NativePHP for mobile license](https://checkout.anystack.sh/nativephp) 
 6. _Optional_ iOS device
 
-You don't _need_ a physical iOS device to compile your application and test it for iOS, as NativePHP for mobile supports
-the iOS Simulator. However, we highly recommend that you test your application on a real device before submitting to the
-App Store.
 
-You can download Xcode from the Mac App Store.
+#### For iOS
+1. An Apple Mac (ideally Silicon) running macOS 12+ with Xcode 16+ 
+2. An active [Apple Developer account](https://developer.apple.com/)
+3. You can download Xcode from the Mac App Store
 
-The most painless way to get PHP and Node up and running on your system is with
+#### For Android
+1. [Android Studio Giraffe (or later)](https://developer.android.com/studio)
+2. The following environment variables set.
+3. You should be able to successfully run `java -v` and `adb devices` from the terminal.
+4. **Windows only**: You must have [7zip](https://www.7-zip.org/) installed.
+
+#### For macOS
+```shell
+export JAVA_HOME=$(/usr/libexec/java_home -v 17) // This isn't required if JAVA_HOME is already set in the Windows Env Variables
+export ANDROID_SDK_ROOT=$HOME/Library/Android/sdk
+export PATH=$PATH:$JAVA_HOME/bin:$ANDROID_HOME/emulator:$ANDROID_HOME/tools:$ANDROID_HOME/tools/bin:$ANDROID_HOME/platform-tools
+```
+
+#### For Windows
+```shell
+set ANDROID_SDK_ROOT=C:\Users\yourname\AppData\Local\Android\Sdk
+set PATH=%PATH%;%JAVA_HOME%\bin;%ANDROID_SDK_ROOT%\platform-tools
+
+# This isn't required if JAVA_HOME is already set in the Windows Env Variables
+set JAVA_HOME=C:\Program Files\Microsoft\jdk-17.0.8.7-hotspot
+```
+
+> **Note** You cannot build iOS apps on Windows or Linux
+
+You don't _need_ a physical iOS/Android device to compile your application and test it for your app, as NativePHP for mobile supports
+the iOS Simulator and Android emulators. However, we highly recommend that you test your application on a real device before submitting to the
+App/Google Play Store.
+
+## Laravel
+
+NativePHP for mobile is built to work with Laravel. You can install it into an existing Laravel application, or
+[start a new one](https://laravel.com/docs/installation). The most painless way to get PHP and Node up and running on your system is with
 [Laravel Herd](https://herd.laravel.com). It's fast and free!
 
-### Laravel
 
-NativePHP for mobile is built to work best with Laravel. You can install it into an existing Laravel application, or
-[start a new one](https://laravel.com/docs/installation).
-
-## Private package
+## Install NativePHP for mobile
 
 To make NativePHP for mobile a reality has taken a lot of work and will continue to require even more. For this reason,
-it's not open source and you are not free to distribute or modify its source code.
+it's not open source, and you are not free to distribute or modify its source code.
 
 Before you begin, you will need to purchase a license.
 Licenses can be obtained via [Anystack](https://checkout.anystack.sh/nativephp).
@@ -49,19 +72,24 @@ Once you have your license, you will need to add the following to your `composer
 ],
 ```
 
-## Install NativePHP for mobile
+Then run:
+```shell
+composer require nativephp/mobile
+```
+
+If this is the first time you're installing the package, you will be prompted to authenticate. Your username is the
+email address you registered with Anystack. Your password is your license key.
+
+This package contains all the libraries, classes, commands, and interfaces that your application will need to work with
+iOS and Android.
+
+**Before** running the `install` command it is important to set the following variables in your `.env`:
 
 ```shell
-composer require nativephp/ios
+NATIVEPHP_APP_ID=com.nativephp.yourapp
+NATIVEPHP_APP_VERSION="DEBUG"
+NATIVEPHP_APP_VERSION_CODE="1"
 ```
-This package contains all the libraries, classes, commands, and interfaces that your application will need to work with
-iOS.
-
-If this is the first time you're installing the package, you will be prompted to authenticate.
-
-Your username is the email address you registered with Anystack. 
-
-Your password is your license key.
 
 ## Run the NativePHP installer
 
@@ -70,11 +98,7 @@ php artisan native:install
 ```
 
 The NativePHP installer works similarly to NativePHP for desktop, taking care of setting up and configuring your Laravel
-application to work with iOS.
-
-After you've run this command, you'll see a new `ios` folder in the root of your Laravel project.
-
-We'll come back to this later.
+application to work with iOS and/or Android.
 
 ## Start your app
 
@@ -87,21 +111,18 @@ Once you're ready:
 php artisan native:run
 ```
 
-This will start compiling your application and boot it in the iOS Simulator by default.
+This will start compiling your application and boot it on whichever device you select.
 
 ### Running on a real device
 
-If you want to run your app on a real iOS device, you need to make sure the device is in
-[Developer Mode](https://developer.apple.com/documentation/xcode/enabling-developer-mode-on-a-device) and that it's
-been added to your Apple Developer account as
+#### For iOS
+If you want to run your app on a real mobile device, you need to make sure the device is in
+[Developer Mode](https://developer.apple.com/documentation/xcode/enabling-developer-mode-on-a-device)
+and that it's been added to your Apple Developer account as
 [a registered device](https://developer.apple.com/account/resources/devices/list).
 
-Then you can simply run and choose your device from the list of available devices:
-
-```shell
-php artisan native:run
-```
-
-Alternatively, you may open the `ios/NativePHP.xcodeproj` file in Xcode and run builds using Xcode's UI.
+#### For Android
+On Android you need to [enable developer options](https://developer.android.com/studio/debug/dev-options#enable)
+and have USB debugging (ADB) enabled.
 
 And that's it! You should now see your Laravel application running as a native app! 🎉

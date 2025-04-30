@@ -12,7 +12,7 @@ We've combined the statically compiling PHP as an embeddable C library with the 
 native APIs of each support platform, unlocking the power and convenience of Laravel for building performant, native
 _mobile_ applications using PHP.
 
-**It's never been this easy to build beautiful, local-first apps for iOS and Android (coming soon).**
+**It's never been this easy to build beautiful, local-first apps for iOS and Android.**
 
 ## Old tools, new tricks
 
