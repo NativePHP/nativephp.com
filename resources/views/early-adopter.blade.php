@@ -833,7 +833,7 @@
             <p class="italic">We can't wait to see what you build!</p>
             <p>
                 <span class="font-bold italic dark:text-white">
-                    Simon, Shane, &amp; Marcel
+                    Simon Shane, &amp; Marcel
                 </span>
                 <br />
                 <span class="text-indigo-400">Creators of NativePHP</span>
