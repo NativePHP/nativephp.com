@@ -51,8 +51,8 @@ class CreateAnystackLicenseJob implements ShouldQueue
             ->filter()
             ->all();
 
-        // TODO: It's unknown what will happen if an existing contact with
-        //  the same email address already exists.
+        // TODO: If an existing contact with the same email address already exists,
+        //  anystack will return a 422 validation error response.
         return $this->anystackClient()
             ->post('https://api.anystack.sh/v1/contacts', $data)
             ->throw()
