@@ -4,10 +4,11 @@ namespace Tests\Feature\Jobs;
 
 use App\Enums\Subscription;
 use App\Jobs\CreateAnystackLicenseJob;
-use App\Jobs\StripeWebhooks\HandleCustomerSubscriptionCreatedJob;
+use App\Jobs\CreateUserFromStripeCustomer;
+use App\Jobs\HandleCustomerSubscriptionCreatedJob;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Bus;
-use Spatie\WebhookClient\Models\WebhookCall;
+use Laravel\Cashier\Events\WebhookHandled;
 use Stripe\Customer;
 use Stripe\StripeClient;
 use Tests\TestCase;
@@ -19,29 +20,23 @@ class HandleCustomerSubscriptionCreatedJobTest extends TestCase
     /** @test */
     public function it_dispatches_the_create_anystack_license_job_with_correct_data()
     {
-        Bus::fake();
-
-        // Mock the Stripe client and customer response
         $mockCustomer = Customer::constructFrom([
+            'id' => 'cus_S9dhoV2rJK2Auy',
             'email' => 'test@example.com',
             'name' => 'John Doe',
         ]);
 
         $this->mockStripeClient($mockCustomer);
 
-        // Create a webhook call with the test payload
-        $webhookCall = WebhookCall::make()->forceFill([
-            'name' => 'stripe',
-            'url' => 'https://example.com/webhook',
-            'headers' => ['Stripe-Signature' => 'test'],
-            'payload' => $this->getTestWebhookPayload(),
-        ]);
+        dispatch_sync(new CreateUserFromStripeCustomer($mockCustomer));
 
-        // Run the job
+        Bus::fake();
+
+        $webhookCall = new WebhookHandled($this->getTestWebhookPayload());
+
         $job = new HandleCustomerSubscriptionCreatedJob($webhookCall);
         $job->handle();
 
-        // Assert that the CreateAnystackLicenseJob was dispatched with the correct parameters
         Bus::assertDispatched(CreateAnystackLicenseJob::class, function (CreateAnystackLicenseJob $job) {
             return $job->email === 'test@example.com' &&
                    $job->subscription === Subscription::Max &&
@@ -57,21 +52,19 @@ class HandleCustomerSubscriptionCreatedJobTest extends TestCase
      */
     public function it_extracts_customer_name_parts_correctly($fullName, $expectedFirstName, $expectedLastName)
     {
-        Bus::fake();
-
         $mockCustomer = Customer::constructFrom([
+            'id' => 'cus_S9dhoV2rJK2Auy',
             'email' => 'test@example.com',
             'name' => $fullName,
         ]);
 
         $this->mockStripeClient($mockCustomer);
 
-        $webhookCall = WebhookCall::make()->forceFill([
-            'name' => 'stripe',
-            'url' => 'https://example.com/webhook',
-            'headers' => ['Stripe-Signature' => 'test'],
-            'payload' => $this->getTestWebhookPayload(),
-        ]);
+        dispatch_sync(new CreateUserFromStripeCustomer($mockCustomer));
+
+        $webhookCall = new WebhookHandled($this->getTestWebhookPayload());
+
+        Bus::fake();
 
         $job = new HandleCustomerSubscriptionCreatedJob($webhookCall);
         $job->handle();
@@ -98,21 +91,19 @@ class HandleCustomerSubscriptionCreatedJobTest extends TestCase
     /** @test */
     public function it_fails_when_customer_has_no_email()
     {
-        Bus::fake();
-
         $mockCustomer = Customer::constructFrom([
-            'email' => null,
+            'id' => 'cus_S9dhoV2rJK2Auy',
+            'email' => '',
             'name' => 'John Doe',
         ]);
 
         $this->mockStripeClient($mockCustomer);
 
-        $webhookCall = WebhookCall::make()->forceFill([
-            'name' => 'stripe',
-            'url' => 'https://example.com/webhook',
-            'headers' => ['Stripe-Signature' => 'test'],
-            'payload' => $this->getTestWebhookPayload(),
-        ]);
+        dispatch_sync(new CreateUserFromStripeCustomer($mockCustomer));
+
+        Bus::fake();
+
+        $webhookCall = new WebhookHandled($this->getTestWebhookPayload());
 
         $job = new HandleCustomerSubscriptionCreatedJob($webhookCall);
         $job->handle();

@@ -1,23 +1,21 @@
 <?php
 
-namespace App\Jobs\StripeWebhooks;
+namespace App\Jobs;
 
-use App\Jobs\CreateAnystackLicenseJob;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use Spatie\WebhookClient\Models\WebhookCall;
-use Stripe\Event;
-use Stripe\StripeClient;
+use Laravel\Cashier\Cashier;
+use Laravel\Cashier\Events\WebhookHandled;
 use Stripe\Subscription;
 
 class HandleCustomerSubscriptionCreatedJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    public function __construct(public WebhookCall $webhook) {}
+    public function __construct(public WebhookHandled $webhook) {}
 
     public function handle(): void
     {
@@ -29,19 +27,17 @@ class HandleCustomerSubscriptionCreatedJob implements ShouldQueue
             return;
         }
 
-        $customer = app(StripeClient::class)
-            ->customers
-            ->retrieve($stripeSubscription->customer);
+        $user = Cashier::findBillable($stripeSubscription->customer);
 
-        if (! $customer || ! ($email = $customer->email)) {
-            $this->fail('Failed to retrieve customer information or customer has no email.');
+        if (! $user || ! ($email = $user->email)) {
+            $this->fail('Failed to find user from Stripe subscription customer.');
 
             return;
         }
 
         $subscriptionPlan = \App\Enums\Subscription::fromStripeSubscription($stripeSubscription);
 
-        $nameParts = explode(' ', $customer->name ?? '', 2);
+        $nameParts = explode(' ', $user->name ?? '', 2);
         $firstName = $nameParts[0] ?: null;
         $lastName = $nameParts[1] ?? null;
 
@@ -55,6 +51,6 @@ class HandleCustomerSubscriptionCreatedJob implements ShouldQueue
 
     protected function constructStripeSubscription(): ?Subscription
     {
-        return Event::constructFrom($this->webhook->payload)->data?->object;
+        return Subscription::constructFrom($this->webhook->payload['data']['object']);
     }
 }

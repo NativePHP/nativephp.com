@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Feature\Stripe;
+namespace Tests\Feature;
 
 use App\Http\Middleware\VerifyCsrfToken;
 use PHPUnit\Framework\Attributes\Test;
