@@ -137,7 +137,7 @@
                     })
                 }
             "
-            class="prose mt-2 max-w-none text-gray-600 will-change-transform dark:text-gray-400"
+            class="prose mt-2 max-w-none text-gray-600 will-change-transform dark:text-gray-400 dark:prose-headings:text-white"
             aria-labelledby="article-title"
         >
             Lorem ipsum dolor sit amet consectetur adipisicing elit. Pariatur
