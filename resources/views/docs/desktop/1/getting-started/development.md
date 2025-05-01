@@ -102,6 +102,8 @@ For more details, see the [Databases](/docs/digging-deeper/databases) section.
 The `native:serve` and `native:build` commands look for the following icon files when building your application:
 
 - `public/icon.png` - your main icon, used on the Desktop, Dock and app switcher.
+- `public/icon.ico` - if it exists, it is used as an icon file for Windows (optional).
+- `public/icon.icns` - if it exists, it is used as an icon file for macOS (optional).
 - `public/IconTemplate.png` - used in the Menu Bar on non-retina displays.
 - `public/IconTemplate@2x.png` - used in the Menu Bar on retina displays.
 
