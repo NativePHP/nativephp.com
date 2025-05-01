@@ -4,10 +4,10 @@ namespace App\Livewire;
 
 use App\Enums\Subscription;
 use Illuminate\Support\Facades\Cache;
+use Laravel\Cashier\Cashier;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Title;
 use Livewire\Component;
-use Stripe\StripeClient;
 
 #[Layout('components.layout')]
 #[Title('Thank You for Your Purchase')]
@@ -41,7 +41,7 @@ class OrderSuccess extends Component
             return $email;
         }
 
-        $stripe = app(StripeClient::class);
+        $stripe = Cashier::stripe();
         $checkoutSession = $stripe->checkout->sessions->retrieve($this->checkoutSessionId);
 
         if (! ($email = $checkoutSession?->customer_details?->email)) {
@@ -76,7 +76,7 @@ class OrderSuccess extends Component
             return Subscription::tryFrom($subscription);
         }
 
-        $stripe = app(StripeClient::class);
+        $stripe = Cashier::stripe();
         $priceId = $stripe->checkout->sessions->allLineItems($this->checkoutSessionId)->first()?->price->id;
 
         if (! $priceId) {
