@@ -120,7 +120,7 @@
 
             {{-- Button --}}
             <a
-                href="{{ config('subscriptions.plans.mini.stripe_payment_link') }}"
+                href="{{ \App\Enums\Subscription::Mini->stripePaymentLink() }}"
                 class="my-5 block w-full rounded-2xl bg-zinc-200 py-4 text-center text-sm font-medium transition duration-200 ease-in-out hover:bg-zinc-800 hover:text-white dark:bg-slate-700/30 dark:hover:bg-slate-700/40"
                 aria-label="Get started with Mini plan"
             >
@@ -283,7 +283,7 @@
 
             {{-- Button --}}
             <a
-                href="{{ config('subscriptions.plans.pro.stripe_payment_link') }}"
+                href="{{ \App\Enums\Subscription::Pro->stripePaymentLink() }}"
                 class="my-5 block w-full rounded-2xl bg-zinc-200 py-4 text-center text-sm font-medium transition duration-200 ease-in-out hover:bg-zinc-800 hover:text-white dark:bg-slate-700/30 dark:hover:bg-slate-700/40"
                 aria-label="Get started with Pro plan"
             >
@@ -454,7 +454,7 @@
 
             {{-- Button --}}
             <a
-                href="{{ config('subscriptions.plans.max.stripe_payment_link') }}"
+                href="{{ \App\Enums\Subscription::Max->stripePaymentLink() }}"
                 class="my-5 block w-full rounded-2xl bg-zinc-800 py-4 text-center text-sm font-medium text-white transition duration-200 ease-in-out hover:bg-zinc-900 dark:bg-[#d68ffe] dark:text-black dark:hover:bg-[#e1acff]"
                 aria-label="Get started with Max plan"
             >
