@@ -16,6 +16,8 @@
         "sentry/sentry-laravel": "^4.13",
         "spatie/laravel-menu": "^4.1",
         "spatie/yaml-front-matter": "^2.0",
+        "symfony/http-client": "^7.2",
+        "symfony/mailgun-mailer": "^7.1",
         "torchlight/torchlight-commonmark": "^0.5.5"
     },
     "require-dev": {
