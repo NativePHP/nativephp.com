@@ -61,8 +61,12 @@ class OrderSuccessTest extends TestCase
     #[Test]
     public function it_uses_session_data_when_available()
     {
-        Session::put('customer_email', 'session@example.com');
-        Session::put('license_key', 'session-license-key');
+        Cache::flush();
+
+        $checkoutSessionId = 'cs_test_123';
+
+        Session::put("$checkoutSessionId.email", 'session@example.com');
+        Session::put("$checkoutSessionId.license_key", 'session-license-key');
 
         Livewire::test(OrderSuccess::class, ['checkoutSessionId' => 'cs_test_123'])
             ->assertSet('email', 'session@example.com')

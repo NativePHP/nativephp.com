@@ -37,7 +37,7 @@ class OrderSuccess extends Component
 
     private function loadEmail(): ?string
     {
-        if ($email = session('customer_email')) {
+        if ($email = session($this->sessionKey('email'))) {
             return $email;
         }
 
@@ -48,14 +48,14 @@ class OrderSuccess extends Component
             return null;
         }
 
-        session()->put('customer_email', $email);
+        session()->put($this->sessionKey('email'), $email);
 
         return $email;
     }
 
     private function loadLicenseKey(): ?string
     {
-        if ($licenseKey = session('license_key')) {
+        if ($licenseKey = session($this->sessionKey('license_key'))) {
             return $licenseKey;
         }
 
@@ -64,7 +64,7 @@ class OrderSuccess extends Component
         }
 
         if ($licenseKey = Cache::get($this->email.'.license_key')) {
-            session()->put('license_key', $licenseKey);
+            session()->put($this->sessionKey('license_key'), $licenseKey);
         }
 
         return $licenseKey;
@@ -72,7 +72,7 @@ class OrderSuccess extends Component
 
     private function loadSubscription(): ?Subscription
     {
-        if ($subscription = session('subscription')) {
+        if ($subscription = session($this->sessionKey('subscription'))) {
             return Subscription::tryFrom($subscription);
         }
 
@@ -85,8 +85,13 @@ class OrderSuccess extends Component
 
         $subscription = Subscription::fromStripePriceId($priceId);
 
-        session()->put('subscription', $subscription->value);
+        session()->put($this->sessionKey('subscription'), $subscription->value);
 
         return $subscription;
+    }
+
+    private function sessionKey(string $key): string
+    {
+        return "{$this->checkoutSessionId}.{$key}";
     }
 }
