@@ -52,5 +52,3 @@ Route::get('/docs/{page?}', function ($page = null) {
 
     return redirect("/docs/{$version}/{$page}");
 })->name('docs')->where('page', '.*');
-
-Route::get('/order/{checkoutSessionId}', App\Livewire\OrderSuccess::class)->name('order.success');

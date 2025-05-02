@@ -54,7 +54,6 @@
                 display: none !important;
             }
         </style>
-        @livewireStyles
         @vite('resources/css/app.css')
     </head>
     <body
@@ -88,7 +87,6 @@
         <x-navigation-bar :hasMenu="$hasMenu ?? false" />
         {{ $slot }}
         <x-footer />
-        @livewireScriptConfig
         @vite('resources/js/app.js')
         @vite('resources/css/docsearch.css')
     </body>

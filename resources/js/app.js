@@ -1,13 +1,12 @@
 import './fonts'
 import './bootstrap'
-import {
-    Livewire,
-    Alpine,
-} from '../../vendor/livewire/livewire/dist/livewire.esm'
+import Alpine from 'alpinejs'
+import collapse from '@alpinejs/collapse'
+import resize from '@alpinejs/resize'
+import persist from '@alpinejs/persist'
 import codeBlock from './alpine/codeBlock.js'
 import docsearch from '@docsearch/js'
 import '@docsearch/css'
-
 import.meta.glob(['../images/**', '../svg/**'])
 import {
     animate,
@@ -49,6 +48,8 @@ window.motion = {
 }
 
 // Alpine
+window.Alpine = Alpine
+
 Alpine.data('codeBlock', codeBlock)
 Alpine.magic('refAll', (el) => {
     return (refName) => {
@@ -56,7 +57,10 @@ Alpine.magic('refAll', (el) => {
     }
 })
 
-Livewire.start()
+Alpine.plugin(collapse)
+Alpine.plugin(persist)
+Alpine.plugin(resize)
+Alpine.start()
 
 // Docsearch
 docsearch({
