@@ -31,7 +31,4 @@ return [
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
 
-    'anystack' => [
-        'key' => env('ANYSTACK_API_KEY'),
-    ],
 ];
