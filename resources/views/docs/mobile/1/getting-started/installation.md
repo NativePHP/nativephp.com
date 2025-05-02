@@ -9,7 +9,7 @@ order: 100
 2. Laravel 10 or higher
 3. An Apple Silicon Mac running macOS 12+ with Xcode 16+
 4. An active [Apple Developer account](https://developer.apple.com/)
-5. [A NativePHP for mobile license](https://checkout.anystack.sh/nativephp) 
+5. [A NativePHP for mobile license](https://nativephp.com/mobile)
 6. _Optional_ iOS device
 
 
@@ -59,7 +59,7 @@ To make NativePHP for mobile a reality has taken a lot of work and will continue
 it's not open source, and you are not free to distribute or modify its source code.
 
 Before you begin, you will need to purchase a license.
-Licenses can be obtained via [Anystack](https://checkout.anystack.sh/nativephp).
+Licenses can be obtained [here](https://nativephp.com/mobile).
 
 Once you have your license, you will need to add the following to your `composer.json`:
 
@@ -78,7 +78,7 @@ composer require nativephp/mobile
 ```
 
 If this is the first time you're installing the package, you will be prompted to authenticate. Your username is the
-email address you registered with Anystack. Your password is your license key.
+email address you used when purchasing your license. Your password is your license key.
 
 This package contains all the libraries, classes, commands, and interfaces that your application will need to work with
 iOS and Android.
