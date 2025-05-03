@@ -30,6 +30,7 @@ We're working on adding more and more features, including (in no particular orde
  - SMS (Android only)
  - File picker
  - Video camera access
+ - Document scanner
  - Background tasks
  - Geofencing
  - Native image picker
@@ -49,4 +50,6 @@ We're working on adding more and more features, including (in no particular orde
  - Battery status 
  - CPU information
  - Ads
+ - In-app billing
+ - Splash screen
 
