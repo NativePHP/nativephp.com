@@ -49,4 +49,5 @@ We're working on adding more and more features, including (in no particular orde
  - Battery status 
  - CPU information
  - Ads
+ - Splash screen
 
