@@ -26,9 +26,16 @@ class Reply extends Model
         'note' => 'boolean',
     ];
 
+    public function isFromAdmin(): Attribute
+    {
+        return Attribute::get(fn () => $this->user->is_admin)
+            ->shouldCache();
+    }
+
     public function isFromUser(): Attribute
     {
-        return Attribute::get(fn () => $this->user_id === auth()->user()->id);
+        return Attribute::get(fn () => $this->user_id === auth()->user()->id)
+            ->shouldCache();
     }
 
     public function user(): BelongsTo
