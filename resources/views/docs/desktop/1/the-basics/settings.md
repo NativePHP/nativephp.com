@@ -27,11 +27,16 @@ To retrieve a setting, use the `get` method.
 $value = Settings::get('key');
 ```
 
-You may also provide a default value to return if the setting does not exist.
+You may also provide a default value to return if the setting does not exist. You can provide either a static default value, or a closure:
 ```php
 $value = Settings::get('key', 'default');
 ```
-If the setting does not exist, `default` will be returned.
+```php
+$value = Settings::get('key', function () {
+        return 'default';
+    });
+```
+If the setting does not exist, and no default value is provided, `null` will be returned.
 
 ### Forgetting a value
 If you want to remove a setting altogether, use the `forget` method.
