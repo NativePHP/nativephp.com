@@ -2,6 +2,7 @@
 title: Security
 order: 400
 ---
+
 # Security
 
 When building desktop applications it's essential to take your application's security to the next level, both to
@@ -72,26 +73,10 @@ but you should do all you can to prevent unwanted attack vectors from being made
 
 #### Prevent regular browser access
 
-When you're ready, you should add the `PreventRegularBrowserAccess` middleware to your application's global middleware
-stack, **especially before building your application for production release**.
-
-**This is NOT done for you.**
+When you are running a build, the global `PreventRegularBrowserAccess` middleware will be applied to all your routes automatically.
 
 This ensures that only requests coming from the web view shell that booted your application can make requests into your
 application.
-
-Append the middleware in your `bootstrap/app.php` file:
-
-```php
-use Native\Laravel\Http\Middleware\PreventRegularBrowserAccess;
- 
-return Application::configure(basePath: dirname(__DIR__))
-    // ...
-    ->withMiddleware(function (Middleware $middleware) {
-         $middleware->append(PreventRegularBrowserAccess::class);
-    })
-    // ...
-```
 
 ## Protecting your users and their data
 
