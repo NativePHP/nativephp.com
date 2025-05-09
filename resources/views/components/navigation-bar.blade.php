@@ -139,20 +139,20 @@
                     <button
                         type="button"
                         @click="showDocsNavigation = !showDocsNavigation"
-                        class="-m-2 block p-2 focus:outline-none focus:ring-0 lg:hidden"
+                        class="-m-2 block p-2 text-gray-600 focus:outline-none focus:ring-0 lg:hidden dark:text-gray-300"
                         aria-expanded="false"
                         aria-controls="docs-navigation"
                         aria-label="Toggle documentation menu"
                     >
                         <div x-show="!showDocsNavigation">
                             <x-icons.menu
-                                class="h-6 w-6 text-gray-600 dark:text-gray-300"
+                                class="size-6"
                                 aria-hidden="true"
                             />
                         </div>
                         <div x-show="showDocsNavigation">
                             <x-icons.close
-                                class="h-6 w-6 text-gray-600"
+                                class="size-6"
                                 aria-hidden="true"
                             />
                         </div>
