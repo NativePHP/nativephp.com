@@ -38,22 +38,22 @@
         <div class="pr-1 opacity-70">Ends in</div>
         <div class="flex min-w-8 justify-center gap-0.5">
             <number-flow x-ref="dd"></number-flow>
-            <div class="pt-[3px] text-sm opacity-70">d</div>
+            <div class="pt-px text-sm opacity-70 md:pt-[3px]">d</div>
         </div>
         <div>:</div>
         <div class="flex min-w-8 justify-center gap-0.5">
             <number-flow x-ref="hh"></number-flow>
-            <div class="pt-[3px] text-sm opacity-70">h</div>
+            <div class="pt-px text-sm opacity-70 md:pt-[3px]">h</div>
         </div>
         <div>:</div>
         <div class="flex min-w-8 justify-center gap-0.5">
             <number-flow x-ref="mm"></number-flow>
-            <div class="pt-[3px] text-sm opacity-70">m</div>
+            <div class="pt-px text-sm opacity-70 md:pt-[3px]">m</div>
         </div>
         <div>:</div>
         <div class="flex min-w-8 justify-center gap-0.5">
             <number-flow x-ref="ss"></number-flow>
-            <div class="pt-[3px] text-sm opacity-70">s</div>
+            <div class="pt-px text-sm opacity-70 md:pt-[3px]">s</div>
         </div>
     </div>
 </a>
