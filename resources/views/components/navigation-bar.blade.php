@@ -6,7 +6,7 @@
     <x-eap-banner />
 </div>
 <nav
-    class="sticky top-0 z-50 flex flex-col items-center justify-center px-3"
+    class="sticky top-0 z-50 flex flex-col items-center justify-center px-3 pt-px"
     aria-label="Main Navigation"
 >
     <div
@@ -188,24 +188,25 @@
                     aria-hidden="true"
                 ></div>
 
-                {{-- Link
-                <a
+                {{--
+                    Link
+                    <a
                     href="{{ route('blog') }}"
                     @class([
-                        'hidden transition duration-200 lg:block',
-                        'font-medium' => request()->routeIs('blog*'),
-                        'opacity-60 hover:opacity-100' => ! request()->routeIs('blog*'),
+                    'hidden transition duration-200 lg:block',
+                    'font-medium' => request()->routeIs('blog*'),
+                    'opacity-60 hover:opacity-100' => ! request()->routeIs('blog*'),
                     ])
                     aria-current="{{ request()->routeIs('blog*') ? 'page' : 'false' }}"
-                >
+                    >
                     Blog
-                </a>
-
-                {{-- Decorative circle -- }}
-                <div
+                    </a>
+                    
+                    {{-- Decorative circle -- }}
+                    <div
                     class="hidden size-[3px] rotate-45 rounded-sm bg-gray-400 transition duration-200 lg:block dark:opacity-60"
                     aria-hidden="true"
-                ></div>
+                    ></div>
                 --}}
 
                 {{-- Link --}}
