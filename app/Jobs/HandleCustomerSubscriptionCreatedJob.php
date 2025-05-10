@@ -2,6 +2,7 @@
 
 namespace App\Jobs;
 
+use App\Models\User;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -27,9 +28,10 @@ class HandleCustomerSubscriptionCreatedJob implements ShouldQueue
             return;
         }
 
+        /** @var User $user */
         $user = Cashier::findBillable($stripeSubscription->customer);
 
-        if (! $user || ! ($email = $user->email)) {
+        if (! $user || ! $user->email) {
             $this->fail('Failed to find user from Stripe subscription customer.');
 
             return;
@@ -42,7 +44,7 @@ class HandleCustomerSubscriptionCreatedJob implements ShouldQueue
         $lastName = $nameParts[1] ?? null;
 
         dispatch(new CreateAnystackLicenseJob(
-            $email,
+            $user,
             $subscriptionPlan,
             $firstName,
             $lastName,

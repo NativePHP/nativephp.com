@@ -10,6 +10,7 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 use Laravel\Cashier\Cashier;
 use Stripe\Customer;
@@ -38,6 +39,10 @@ class CreateUserFromStripeCustomer implements ShouldQueue
 
             return;
         }
+
+        Validator::validate(['email' => $this->customer->email], [
+            'email' => 'required|email|max:255',
+        ]);
 
         $user = new User;
         $user->name = $this->customer->name;
