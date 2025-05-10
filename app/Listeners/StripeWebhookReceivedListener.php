@@ -32,7 +32,7 @@ class StripeWebhookReceivedListener
             return;
         }
 
-        $customer = Customer::retrieve($stripeCustomerId);
+        $customer = Cashier::stripe()->customers->retrieve($stripeCustomerId);
 
         if (! $customer) {
             throw new Exception(
