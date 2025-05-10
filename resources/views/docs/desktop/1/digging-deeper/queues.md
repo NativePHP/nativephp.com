@@ -31,6 +31,7 @@ Once you publish the NativePHP config file using `php artisan vendor:publish`, y
         'queues' => ['high'],
         'memory_limit' => 1024,
         'timeout' => 600,
+        'sleep' => 3,
     ],
     'four' => [
         'queues' => ['high'],
@@ -52,7 +53,10 @@ If you do not provide values for any of these settings, the following sensible d
 'queues' => ['default'],
 'memory_limit' => 128,
 'timeout' => 60,
+'sleep' => 3,
 ```
+
+The `sleep` parameter defines the number of seconds the worker will wait (sleep) when there are no new jobs available. A lower value means the worker polls for new jobs more frequently, which might be more responsive but uses more CPU. A higher value reduces CPU usage but may introduce a slight delay in processing newly added jobs.
 
 ### Managing workers
 
