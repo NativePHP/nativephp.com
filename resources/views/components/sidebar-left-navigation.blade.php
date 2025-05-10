@@ -23,7 +23,9 @@
 
         <nav class="docs-navigation">{!! $slot !!}</nav>
 
-        <div class="my-16 flex items-center justify-center space-x-6">
+        <div
+            class="mb-16 mt-7 flex flex-wrap items-center justify-center gap-6"
+        >
             <x-social-networks-all />
         </div>
     </div>

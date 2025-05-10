@@ -6,7 +6,7 @@
     <x-eap-banner />
 </div>
 <nav
-    class="sticky top-0 z-50 flex flex-col items-center justify-center px-3"
+    class="sticky top-0 z-50 flex flex-col items-center justify-center px-3 pt-px"
     aria-label="Main Navigation"
 >
     <div
@@ -139,20 +139,20 @@
                     <button
                         type="button"
                         @click="showDocsNavigation = !showDocsNavigation"
-                        class="-m-2 block p-2 focus:outline-none focus:ring-0 lg:hidden"
+                        class="-m-2 block p-2 text-gray-600 focus:outline-none focus:ring-0 lg:hidden dark:text-gray-300"
                         aria-expanded="false"
                         aria-controls="docs-navigation"
                         aria-label="Toggle documentation menu"
                     >
                         <div x-show="!showDocsNavigation">
                             <x-icons.menu
-                                class="h-6 w-6 text-gray-600 dark:text-gray-300"
+                                class="size-6"
                                 aria-hidden="true"
                             />
                         </div>
                         <div x-show="showDocsNavigation">
                             <x-icons.close
-                                class="h-6 w-6 text-gray-600"
+                                class="size-6"
                                 aria-hidden="true"
                             />
                         </div>
@@ -188,24 +188,25 @@
                     aria-hidden="true"
                 ></div>
 
-                {{-- Link
-                <a
+                {{--
+                    Link
+                    <a
                     href="{{ route('blog') }}"
                     @class([
-                        'hidden transition duration-200 lg:block',
-                        'font-medium' => request()->routeIs('blog*'),
-                        'opacity-60 hover:opacity-100' => ! request()->routeIs('blog*'),
+                    'hidden transition duration-200 lg:block',
+                    'font-medium' => request()->routeIs('blog*'),
+                    'opacity-60 hover:opacity-100' => ! request()->routeIs('blog*'),
                     ])
                     aria-current="{{ request()->routeIs('blog*') ? 'page' : 'false' }}"
-                >
+                    >
                     Blog
-                </a>
-
-                {{-- Decorative circle -- }}
-                <div
+                    </a>
+                    
+                    {{-- Decorative circle -- }}
+                    <div
                     class="hidden size-[3px] rotate-45 rounded-sm bg-gray-400 transition duration-200 lg:block dark:opacity-60"
                     aria-hidden="true"
-                ></div>
+                    ></div>
                 --}}
 
                 {{-- Link --}}
