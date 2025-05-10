@@ -92,8 +92,8 @@ class StripePurchaseHandlingTest extends TestCase
 
         $this->postJson('/stripe/webhook', $payload);
 
-        Bus::assertDispatched(CreateAnystackLicenseJob::class, function ($job) {
-            return $job->email === 'john@example.com' &&
+        Bus::assertDispatched(CreateAnystackLicenseJob::class, function (CreateAnystackLicenseJob $job) {
+            return $job->user->email === 'john@example.com' &&
                    $job->subscription === Subscription::Max &&
                    $job->firstName === 'John' &&
                    $job->lastName === 'Doe';

@@ -4,6 +4,7 @@ namespace Tests\Feature\Jobs;
 
 use App\Enums\Subscription;
 use App\Jobs\CreateAnystackLicenseJob;
+use App\Models\User;
 use App\Notifications\LicenseKeyGenerated;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Cache;
@@ -45,8 +46,13 @@ class CreateAnystackLicenseJobTest extends TestCase
     /** @test */
     public function it_creates_contact_and_license_on_anystack()
     {
+        $user = User::factory()->create([
+            'email' => 'test@example.com',
+            'name' => 'John Doe',
+        ]);
+
         $job = new CreateAnystackLicenseJob(
-            'test@example.com',
+            $user,
             Subscription::Max,
             'John',
             'Doe'
@@ -79,8 +85,13 @@ class CreateAnystackLicenseJobTest extends TestCase
     /** @test */
     public function it_stores_license_key_in_cache()
     {
+        $user = User::factory()->create([
+            'email' => 'test@example.com',
+            'name' => 'John Doe',
+        ]);
+
         $job = new CreateAnystackLicenseJob(
-            'test@example.com',
+            $user,
             Subscription::Max,
             'John',
             'Doe'
@@ -94,8 +105,13 @@ class CreateAnystackLicenseJobTest extends TestCase
     /** @test */
     public function it_sends_license_key_notification()
     {
+        $user = User::factory()->create([
+            'email' => 'test@example.com',
+            'name' => 'John Doe',
+        ]);
+
         $job = new CreateAnystackLicenseJob(
-            'test@example.com',
+            $user,
             Subscription::Max,
             'John',
             'Doe'
@@ -103,11 +119,10 @@ class CreateAnystackLicenseJobTest extends TestCase
 
         $job->handle();
 
-        Notification::assertSentOnDemand(
-            LicenseKeyGenerated::class,
+        Notification::assertSentTo(
+            $user,
             function (LicenseKeyGenerated $notification, array $channels, object $notifiable) {
-                return $notifiable->routes['mail'] === 'test@example.com' &&
-                        $notification->licenseKey === 'test-license-key-12345' &&
+                return $notification->licenseKey === 'test-license-key-12345' &&
                         $notification->subscription === Subscription::Max &&
                         $notification->firstName === 'John';
             }
@@ -117,9 +132,14 @@ class CreateAnystackLicenseJobTest extends TestCase
     /** @test */
     public function it_handles_missing_name_components()
     {
+        $user = User::factory()->create([
+            'email' => 'test@example.com',
+            'name' => null,
+        ]);
+
         // Create and run the job with missing name components
         $job = new CreateAnystackLicenseJob(
-            'test@example.com',
+            $user,
             Subscription::Max,
         );
 
@@ -135,11 +155,10 @@ class CreateAnystackLicenseJobTest extends TestCase
         });
 
         // Assert notification was sent with null firstName
-        Notification::assertSentOnDemand(
-            LicenseKeyGenerated::class,
+        Notification::assertSentTo(
+            $user,
             function (LicenseKeyGenerated $notification, array $channels, object $notifiable) {
-                return $notifiable->routes['mail'] === 'test@example.com' &&
-                       $notification->licenseKey === 'test-license-key-12345' &&
+                return $notification->licenseKey === 'test-license-key-12345' &&
                        $notification->subscription === Subscription::Max &&
                        $notification->firstName === null;
             }

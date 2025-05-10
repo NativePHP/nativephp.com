@@ -3,6 +3,7 @@
 namespace App\Jobs;
 
 use App\Enums\Subscription;
+use App\Models\User;
 use App\Notifications\LicenseKeyGenerated;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -12,14 +13,13 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Notification;
 
 class CreateAnystackLicenseJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     public function __construct(
-        public string $email,
+        public User $user,
         public Subscription $subscription,
         public ?string $firstName = null,
         public ?string $lastName = null,
@@ -27,18 +27,22 @@ class CreateAnystackLicenseJob implements ShouldQueue
 
     public function handle(): void
     {
-        $contact = $this->createContact();
+        if (! $this->user->anystack_contact_id) {
+            $contact = $this->createContact();
 
-        $license = $this->createLicense($contact['id']);
+            $this->user->anystack_contact_id = $contact['id'];
+            $this->user->save();
+        }
 
-        Cache::put($this->email.'.license_key', $license['key'], now()->addDay());
+        $license = $this->createLicense($this->user->anystack_contact_id);
 
-        Notification::route('mail', $this->email)
-            ->notify(new LicenseKeyGenerated(
-                $license['key'],
-                $this->subscription,
-                $this->firstName
-            ));
+        Cache::put($this->user->email.'.license_key', $license['key'], now()->addDay());
+
+        $this->user->notify(new LicenseKeyGenerated(
+            $license['key'],
+            $this->subscription,
+            $this->firstName
+        ));
     }
 
     private function createContact(): array
@@ -46,7 +50,7 @@ class CreateAnystackLicenseJob implements ShouldQueue
         $data = collect([
             'first_name' => $this->firstName,
             'last_name' => $this->lastName,
-            'email' => $this->email,
+            'email' => $this->user->email,
         ])
             ->filter()
             ->all();
