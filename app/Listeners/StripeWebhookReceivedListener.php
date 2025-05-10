@@ -34,7 +34,7 @@ class StripeWebhookReceivedListener
 
         $customer = Customer::retrieve($stripeCustomerId);
 
-        if (! $customer->email) {
+        if (! $customer) {
             throw new Exception(
                 'A user needed to be created for customer.subscription.created but was unable to retrieve the customer from Stripe.'
             );
