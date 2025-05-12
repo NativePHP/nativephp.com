@@ -153,6 +153,8 @@ class OrderSuccessTest extends TestCase
             }
         };
 
-        $this->app->instance(StripeClient::class, $mockStripeClient);
+        $this->app->bind(StripeClient::class, function ($app, $parameters) use ($mockStripeClient) {
+            return $mockStripeClient;
+        });
     }
 }

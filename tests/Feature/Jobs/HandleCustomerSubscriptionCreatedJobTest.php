@@ -6,6 +6,7 @@ use App\Enums\Subscription;
 use App\Jobs\CreateAnystackLicenseJob;
 use App\Jobs\CreateUserFromStripeCustomer;
 use App\Jobs\HandleCustomerSubscriptionCreatedJob;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Bus;
 use Laravel\Cashier\Events\WebhookHandled;
@@ -38,7 +39,8 @@ class HandleCustomerSubscriptionCreatedJobTest extends TestCase
         $job->handle();
 
         Bus::assertDispatched(CreateAnystackLicenseJob::class, function (CreateAnystackLicenseJob $job) {
-            return $job->email === 'test@example.com' &&
+            return $job->user instanceof User &&
+                   $job->user->email === 'test@example.com' &&
                    $job->subscription === Subscription::Max &&
                    $job->firstName === 'John' &&
                    $job->lastName === 'Doe';
@@ -99,7 +101,11 @@ class HandleCustomerSubscriptionCreatedJobTest extends TestCase
 
         $this->mockStripeClient($mockCustomer);
 
-        dispatch_sync(new CreateUserFromStripeCustomer($mockCustomer));
+        User::factory()->create([
+            'stripe_id' => 'cus_S9dhoV2rJK2Auy',
+            'name' => 'John Doe',
+            'email' => '',
+        ]);
 
         Bus::fake();
 
