@@ -34,7 +34,7 @@ jobs:
           coverage: xdebug
 
       - name: Copy .env
-        run: cp .github/.env.github.tests .env
+        run: cp .env.example .env
 
       - name: Get composer cache directory
         id: composer-cache
