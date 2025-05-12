@@ -11,6 +11,7 @@
         "php": "^8.1",
         "artesaos/seotools": "^1.2",
         "blade-ui-kit/blade-heroicons": "^2.3",
+        "doctrine/dbal": "^3.9",
         "guzzlehttp/guzzle": "^7.2",
         "laravel/cashier": "^15.6",
         "laravel/framework": "^10.10",
