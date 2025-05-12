@@ -61,4 +61,4 @@ jobs:
           DB_CONNECTION: sqlite
           DB_DATABASE: ":memory:"
           QUEUE_CONNECTION: sync
-        run: php artisan test
+        run: ./vendor/bin/phpunit --testdox
