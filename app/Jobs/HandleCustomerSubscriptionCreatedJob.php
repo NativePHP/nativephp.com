@@ -38,6 +38,7 @@ class HandleCustomerSubscriptionCreatedJob implements ShouldQueue
         }
 
         $subscriptionPlan = \App\Enums\Subscription::fromStripeSubscription($stripeSubscription);
+        $subscriptionItemId = $stripeSubscription->items->first()->id;
 
         $nameParts = explode(' ', $user->name ?? '', 2);
         $firstName = $nameParts[0] ?: null;
@@ -46,6 +47,7 @@ class HandleCustomerSubscriptionCreatedJob implements ShouldQueue
         dispatch(new CreateAnystackLicenseJob(
             $user,
             $subscriptionPlan,
+            $subscriptionItemId,
             $firstName,
             $lastName,
         ));
