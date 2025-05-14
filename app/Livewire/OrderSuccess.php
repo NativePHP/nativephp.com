@@ -8,6 +8,7 @@ use Laravel\Cashier\Cashier;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Title;
 use Livewire\Component;
+use Stripe\Exception\InvalidRequestException;
 
 #[Layout('components.layout')]
 #[Title('Thank You for Your Purchase')]
@@ -41,8 +42,11 @@ class OrderSuccess extends Component
             return $email;
         }
 
-        $stripe = Cashier::stripe();
-        $checkoutSession = $stripe->checkout->sessions->retrieve($this->checkoutSessionId);
+        try {
+            $checkoutSession = Cashier::stripe()->checkout->sessions->retrieve($this->checkoutSessionId);
+        } catch (InvalidRequestException $e) {
+            return $this->redirect('/mobile');
+        }
 
         if (! ($email = $checkoutSession?->customer_details?->email)) {
             return null;
@@ -86,8 +90,11 @@ class OrderSuccess extends Component
             return Subscription::tryFrom($subscription);
         }
 
-        $stripe = Cashier::stripe();
-        $priceId = $stripe->checkout->sessions->allLineItems($this->checkoutSessionId)->first()?->price->id;
+        try {
+            $priceId = Cashier::stripe()->checkout->sessions->allLineItems($this->checkoutSessionId)->first()?->price->id;
+        } catch (InvalidRequestException $e) {
+            return $this->redirect('/mobile');
+        }
 
         if (! $priceId) {
             return null;
