@@ -7,7 +7,6 @@ use Exception;
 use Illuminate\Support\Facades\Log;
 use Laravel\Cashier\Cashier;
 use Laravel\Cashier\Events\WebhookReceived;
-use Stripe\Customer;
 
 class StripeWebhookReceivedListener
 {
@@ -16,11 +15,6 @@ class StripeWebhookReceivedListener
         Log::debug('Webhook received', $event->payload);
 
         match ($event->payload['type']) {
-            // 'customer.created' must be dispatched sync so the user is
-            // created before the cashier webhook handling is executed.
-            'customer.created' => dispatch_sync(new CreateUserFromStripeCustomer(
-                Customer::constructFrom($event->payload['data']['object'])
-            )),
             'customer.subscription.created' => $this->createUserIfNotExists($event->payload['data']['object']['customer']),
             default => null,
         };
