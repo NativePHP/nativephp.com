@@ -12,6 +12,7 @@ use Livewire\Livewire;
 use PHPUnit\Framework\Attributes\Test;
 use Stripe\Checkout\Session as CheckoutSession;
 use Stripe\Collection;
+use Stripe\Exception\InvalidRequestException;
 use Stripe\LineItem;
 use Stripe\StripeClient;
 use Tests\TestCase;
@@ -109,6 +110,34 @@ class OrderSuccessTest extends TestCase
             ->assertSet('licenseKey', 'db-polled-license-key')
             ->assertSee('db-polled-license-key')
             ->assertDontSee('License registration in progress');
+    }
+
+    #[Test]
+    public function it_redirects_to_mobile_route_when_checkout_session_is_not_found()
+    {
+        $mockStripeClient = $this->createMock(StripeClient::class);
+
+        $mockStripeClient->checkout = new class {};
+
+        $mockStripeClient->checkout->sessions = new class
+        {
+            public function retrieve()
+            {
+                throw new InvalidRequestException('No such checkout.session');
+            }
+
+            public function allLineItems()
+            {
+                throw new InvalidRequestException('No such checkout.session');
+            }
+        };
+
+        $this->app->bind(StripeClient::class, function ($app, $parameters) use ($mockStripeClient) {
+            return $mockStripeClient;
+        });
+
+        Livewire::test(OrderSuccess::class, ['checkoutSessionId' => 'not_a_real_checkout_session'])
+            ->assertRedirect('/mobile');
     }
 
     private function mockStripeClient(): void
