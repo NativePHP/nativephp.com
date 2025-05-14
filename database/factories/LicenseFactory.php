@@ -14,6 +14,8 @@ use Laravel\Cashier\SubscriptionItem;
  */
 class LicenseFactory extends Factory
 {
+    protected $model = License::class;
+
     public function definition(): array
     {
         return [
