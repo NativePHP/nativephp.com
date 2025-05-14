@@ -4,7 +4,9 @@ namespace Tests\Feature\Livewire;
 
 use App\Enums\Subscription;
 use App\Livewire\OrderSuccess;
-use Illuminate\Support\Facades\Cache;
+use App\Models\License;
+use App\Models\User;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Session;
 use Livewire\Livewire;
 use PHPUnit\Framework\Attributes\Test;
@@ -16,6 +18,8 @@ use Tests\TestCase;
 
 class OrderSuccessTest extends TestCase
 {
+    use RefreshDatabase;
+
     protected function setUp(): void
     {
         parent::setUp();
@@ -44,16 +48,24 @@ class OrderSuccessTest extends TestCase
     }
 
     #[Test]
-    public function it_displays_license_key_when_available()
+    public function it_displays_license_key_when_available_in_database()
     {
         Session::flush();
 
-        Cache::put('test@example.com.license_key', 'test-license-key-12345');
+        $user = User::factory()->create([
+            'email' => 'test@example.com',
+        ]);
+
+        License::factory()->create([
+            'user_id' => $user->id,
+            'key' => 'db-license-key-12345',
+            'policy_name' => 'max',
+        ]);
 
         Livewire::test(OrderSuccess::class, ['checkoutSessionId' => 'cs_test_123'])
             ->assertSet('email', 'test@example.com')
-            ->assertSet('licenseKey', 'test-license-key-12345')
-            ->assertSee('test-license-key-12345')
+            ->assertSet('licenseKey', 'db-license-key-12345')
+            ->assertSee('db-license-key-12345')
             ->assertSee('test@example.com')
             ->assertDontSee('License registration in progress');
     }
@@ -61,8 +73,6 @@ class OrderSuccessTest extends TestCase
     #[Test]
     public function it_uses_session_data_when_available()
     {
-        Cache::flush();
-
         $checkoutSessionId = 'cs_test_123';
 
         Session::put("$checkoutSessionId.email", 'session@example.com');
@@ -76,7 +86,7 @@ class OrderSuccessTest extends TestCase
     }
 
     #[Test]
-    public function it_polls_for_updates()
+    public function it_polls_for_updates_from_database()
     {
         Session::flush();
 
@@ -85,11 +95,19 @@ class OrderSuccessTest extends TestCase
             ->assertSee('License registration in progress')
             ->assertSeeHtml('wire:poll.2s="loadData"');
 
-        Cache::put('test@example.com.license_key', 'polled-license-key');
+        $user = User::factory()->create([
+            'email' => 'test@example.com',
+        ]);
+
+        License::factory()->create([
+            'user_id' => $user->id,
+            'key' => 'db-polled-license-key',
+            'policy_name' => 'max',
+        ]);
 
         $component->call('loadData')
-            ->assertSet('licenseKey', 'polled-license-key')
-            ->assertSee('polled-license-key')
+            ->assertSet('licenseKey', 'db-polled-license-key')
+            ->assertSee('db-polled-license-key')
             ->assertDontSee('License registration in progress');
     }
 

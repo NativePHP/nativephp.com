@@ -6,19 +6,24 @@ use App\Enums\Subscription;
 use App\Jobs\CreateAnystackLicenseJob;
 use App\Models\User;
 use App\Notifications\LicenseKeyGenerated;
+use Carbon\CarbonImmutable;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Notification;
+use Illuminate\Support\Str;
 use Tests\TestCase;
 
 class CreateAnystackLicenseJobTest extends TestCase
 {
     use RefreshDatabase;
 
+    protected CarbonImmutable $now;
+
     protected function setUp(): void
     {
         parent::setUp();
+
+        $this->now = now()->toImmutable();
 
         Http::fake([
             'https://api.anystack.sh/v1/contacts' => Http::response([
@@ -27,6 +32,8 @@ class CreateAnystackLicenseJobTest extends TestCase
                     'email' => 'test@example.com',
                     'first_name' => 'John',
                     'last_name' => 'Doe',
+                    'created_at' => $this->now->toIso8601String(),
+                    'updated_at' => $this->now->toIso8601String(),
                 ],
             ], 201),
 
@@ -36,6 +43,13 @@ class CreateAnystackLicenseJobTest extends TestCase
                     'key' => 'test-license-key-12345',
                     'contact_id' => 'contact-123',
                     'policy_id' => 'policy-123',
+                    'name' => null,
+                    'activations' => 0,
+                    'max_activations' => 10,
+                    'suspended' => false,
+                    'expires_at' => $this->now->addYear()->toIso8601String(),
+                    'created_at' => $this->now->toIso8601String(),
+                    'updated_at' => $this->now->toIso8601String(),
                 ],
             ], 201),
         ]);
@@ -44,7 +58,7 @@ class CreateAnystackLicenseJobTest extends TestCase
     }
 
     /** @test */
-    public function it_creates_contact_and_license_on_anystack()
+    public function it_creates_a_contact_and_license_on_anystack_via_api()
     {
         $user = User::factory()->create([
             'email' => 'test@example.com',
@@ -54,6 +68,7 @@ class CreateAnystackLicenseJobTest extends TestCase
         $job = new CreateAnystackLicenseJob(
             $user,
             Subscription::Max,
+            null,
             'John',
             'Doe'
         );
@@ -83,27 +98,31 @@ class CreateAnystackLicenseJobTest extends TestCase
     }
 
     /** @test */
-    public function it_stores_license_key_in_cache()
+    public function it_does_not_create_a_contact_when_the_user_already_has_a_contact_id()
     {
         $user = User::factory()->create([
             'email' => 'test@example.com',
             'name' => 'John Doe',
+            'anystack_contact_id' => 'contact-123',
         ]);
 
         $job = new CreateAnystackLicenseJob(
             $user,
             Subscription::Max,
+            null,
             'John',
             'Doe'
         );
 
         $job->handle();
 
-        $this->assertEquals('test-license-key-12345', Cache::get('test@example.com.license_key'));
+        Http::assertNotSent(function ($request) {
+            return Str::contains($request->url(), 'https://api.anystack.sh/v1/contacts');
+        });
     }
 
     /** @test */
-    public function it_sends_license_key_notification()
+    public function it_stores_the_license_key_in_database()
     {
         $user = User::factory()->create([
             'email' => 'test@example.com',
@@ -113,6 +132,65 @@ class CreateAnystackLicenseJobTest extends TestCase
         $job = new CreateAnystackLicenseJob(
             $user,
             Subscription::Max,
+            null,
+            'John',
+            'Doe'
+        );
+
+        $job->handle();
+
+        $this->assertDatabaseHas('licenses', [
+            'user_id' => $user->id,
+            'subscription_item_id' => null,
+            'policy_name' => 'max',
+            'key' => 'test-license-key-12345',
+            'expires_at' => $this->now->addYear(),
+            'created_at' => $this->now,
+            'updated_at' => $this->now,
+        ]);
+    }
+
+    /** @test */
+    public function the_subscription_item_id_is_filled_when_provided()
+    {
+        $user = User::factory()->create([
+            'email' => 'test@example.com',
+            'name' => 'John Doe',
+        ]);
+
+        $job = new CreateAnystackLicenseJob(
+            $user,
+            Subscription::Max,
+            123,
+            'John',
+            'Doe'
+        );
+
+        $job->handle();
+
+        $this->assertDatabaseHas('licenses', [
+            'user_id' => $user->id,
+            'subscription_item_id' => 123,
+            'policy_name' => 'max',
+            'key' => 'test-license-key-12345',
+            'expires_at' => $this->now->addYear(),
+            'created_at' => $this->now,
+            'updated_at' => $this->now,
+        ]);
+    }
+
+    /** @test */
+    public function it_sends_a_license_key_notification()
+    {
+        $user = User::factory()->create([
+            'email' => 'test@example.com',
+            'name' => 'John Doe',
+        ]);
+
+        $job = new CreateAnystackLicenseJob(
+            $user,
+            Subscription::Max,
+            null,
             'John',
             'Doe'
         );
