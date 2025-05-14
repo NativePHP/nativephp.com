@@ -3,6 +3,7 @@
 namespace App\Jobs;
 
 use App\Enums\Subscription;
+use App\Models\License;
 use App\Models\User;
 use App\Notifications\LicenseKeyGenerated;
 use Illuminate\Bus\Queueable;
@@ -11,7 +12,6 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Http\Client\PendingRequest;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 
 class CreateAnystackLicenseJob implements ShouldQueue
@@ -21,6 +21,7 @@ class CreateAnystackLicenseJob implements ShouldQueue
     public function __construct(
         public User $user,
         public Subscription $subscription,
+        public ?string $subscriptionItemId = null,
         public ?string $firstName = null,
         public ?string $lastName = null,
     ) {}
@@ -34,12 +35,20 @@ class CreateAnystackLicenseJob implements ShouldQueue
             $this->user->save();
         }
 
-        $license = $this->createLicense($this->user->anystack_contact_id);
+        $licenseData = $this->createLicense($this->user->anystack_contact_id);
 
-        Cache::put($this->user->email.'.license_key', $license['key'], now()->addDay());
+        $license = License::create([
+            'user_id' => $this->user->id,
+            'subscription_item_id' => $this->subscriptionItemId,
+            'policy_name' => $this->subscription->value,
+            'key' => $licenseData['key'],
+            'expires_at' => $licenseData['expires_at'],
+            'created_at' => $licenseData['created_at'],
+            'updated_at' => $licenseData['updated_at'],
+        ]);
 
         $this->user->notify(new LicenseKeyGenerated(
-            $license['key'],
+            $license->key,
             $this->subscription,
             $this->firstName
         ));

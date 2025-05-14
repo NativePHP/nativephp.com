@@ -3,7 +3,7 @@
 namespace App\Livewire;
 
 use App\Enums\Subscription;
-use Illuminate\Support\Facades\Cache;
+use App\Models\User;
 use Laravel\Cashier\Cashier;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Title;
@@ -63,11 +63,21 @@ class OrderSuccess extends Component
             return null;
         }
 
-        if ($licenseKey = Cache::get($this->email.'.license_key')) {
-            session()->put($this->sessionKey('license_key'), $licenseKey);
+        $user = User::where('email', $this->email)->first();
+
+        if (! $user) {
+            return null;
         }
 
-        return $licenseKey;
+        $license = $user->licenses()->latest()->first();
+
+        if (! $license) {
+            return null;
+        }
+
+        session()->put($this->sessionKey('license_key'), $license->key);
+
+        return $license->key;
     }
 
     private function loadSubscription(): ?Subscription
