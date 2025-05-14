@@ -31,7 +31,7 @@ class StripePurchaseHandlingTest extends TestCase
     }
 
     #[Test]
-    public function a_user_is_created_when_a_stripe_customer_is_created()
+    public function a_user_is_not_created_when_a_stripe_customer_is_created()
     {
         Bus::fake();
 
@@ -49,7 +49,87 @@ class StripePurchaseHandlingTest extends TestCase
 
         $this->postJson('/stripe/webhook', $payload);
 
+        Bus::assertNotDispatched(CreateUserFromStripeCustomer::class);
+    }
+
+    #[Test]
+    public function a_user_is_created_when_a_stripe_customer_subscription_is_created_and_a_matching_user_doesnt_exist()
+    {
+        Bus::fake();
+
+        $this->mockStripeClient();
+
+        $payload = [
+            'id' => 'evt_test_webhook',
+            'type' => 'customer.subscription.created',
+            'data' => [
+                'object' => [
+                    'id' => 'sub_test123',
+                    'customer' => 'cus_test123',
+                    'status' => 'active',
+                    'items' => [
+                        'object' => 'list',
+                        'data' => [
+                            [
+                                'id' => 'si_test',
+                                'price' => [
+                                    'id' => Subscription::Max->stripePriceId(),
+                                    'product' => 'prod_test',
+                                ],
+                                'quantity' => 1,
+                            ],
+                        ],
+                    ],
+                ],
+            ],
+        ];
+
+        $this->postJson('/stripe/webhook', $payload);
+
         Bus::assertDispatched(CreateUserFromStripeCustomer::class);
+    }
+
+    #[Test]
+    public function a_user_is_not_created_when_a_stripe_customer_subscription_is_created_if_a_matching_user_already_exists()
+    {
+        Bus::fake();
+
+        $user = User::factory()->create([
+            'stripe_id' => 'cus_test123',
+            'name' => 'John Doe',
+            'email' => 'john@example.com',
+        ]);
+
+        $this->mockStripeClient($user);
+
+        $payload = [
+            'id' => 'evt_test_webhook',
+            'type' => 'customer.subscription.created',
+            'data' => [
+                'object' => [
+                    'id' => 'sub_test123',
+                    'customer' => $user->stripe_id,
+                    'status' => 'active',
+                    'items' => [
+                        'object' => 'list',
+                        'data' => [
+                            [
+                                'id' => 'si_test',
+                                'price' => [
+                                    'id' => Subscription::Max->stripePriceId(),
+                                    'product' => 'prod_test',
+                                ],
+                                'quantity' => 1,
+                            ],
+                        ],
+                    ],
+                ],
+            ],
+        ];
+
+        $this->postJson('/stripe/webhook', $payload);
+
+        Bus::assertNotDispatched(CreateUserFromStripeCustomer::class);
     }
 
     #[Test]
@@ -95,6 +175,7 @@ class StripePurchaseHandlingTest extends TestCase
         Bus::assertDispatched(CreateAnystackLicenseJob::class, function (CreateAnystackLicenseJob $job) {
             return $job->user->email === 'john@example.com' &&
                    $job->subscription === Subscription::Max &&
+                   $job->subscriptionItemId === $job->user->subscriptions->first()->items()->first()->id &&
                    $job->firstName === 'John' &&
                    $job->lastName === 'Doe';
         });
@@ -105,7 +186,7 @@ class StripePurchaseHandlingTest extends TestCase
         $this->assertNotEmpty($user->subscriptions->first()->items);
     }
 
-    protected function mockStripeClient(User $user): void
+    protected function mockStripeClient(?User $user = null): void
     {
         $mockStripeClient = $this->createMock(StripeClient::class);
         $mockStripeClient->customers = new class($user)
@@ -120,13 +201,15 @@ class StripePurchaseHandlingTest extends TestCase
             public function retrieve()
             {
                 return Customer::constructFrom([
-                    'id' => $this->user->stripe_id,
-                    'name' => $this->user->name,
-                    'email' => $this->user->email,
+                    'id' => $this->user?->stripe_id ?: 'cus_test123',
+                    'name' => $this->user?->name ?: 'Test Customer',
+                    'email' => $this->user?->email ?: 'test@example.com',
                 ]);
             }
         };
 
-        $this->app->instance(StripeClient::class, $mockStripeClient);
+        $this->app->bind(StripeClient::class, function ($app, $parameters) use ($mockStripeClient) {
+            return $mockStripeClient;
+        });
     }
 }

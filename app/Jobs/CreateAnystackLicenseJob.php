@@ -21,7 +21,7 @@ class CreateAnystackLicenseJob implements ShouldQueue
     public function __construct(
         public User $user,
         public Subscription $subscription,
-        public ?string $subscriptionItemId = null,
+        public ?int $subscriptionItemId = null,
         public ?string $firstName = null,
         public ?string $lastName = null,
     ) {}
