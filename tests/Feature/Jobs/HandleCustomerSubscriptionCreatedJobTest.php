@@ -21,15 +21,7 @@ class HandleCustomerSubscriptionCreatedJobTest extends TestCase
     /** @test */
     public function it_dispatches_the_create_anystack_license_job_with_correct_data()
     {
-        $mockCustomer = Customer::constructFrom([
-            'id' => 'cus_S9dhoV2rJK2Auy',
-            'email' => 'test@example.com',
-            'name' => 'John Doe',
-        ]);
-
-        $this->mockStripeClient($mockCustomer);
-
-        dispatch_sync(new CreateUserFromStripeCustomer($mockCustomer));
+        $this->createTestData('John Doe');
 
         Bus::fake();
 
@@ -54,15 +46,7 @@ class HandleCustomerSubscriptionCreatedJobTest extends TestCase
      */
     public function it_extracts_customer_name_parts_correctly($fullName, $expectedFirstName, $expectedLastName)
     {
-        $mockCustomer = Customer::constructFrom([
-            'id' => 'cus_S9dhoV2rJK2Auy',
-            'email' => 'test@example.com',
-            'name' => $fullName,
-        ]);
-
-        $this->mockStripeClient($mockCustomer);
-
-        dispatch_sync(new CreateUserFromStripeCustomer($mockCustomer));
+        $this->createTestData($fullName);
 
         $webhookCall = new WebhookHandled($this->getTestWebhookPayload());
 
@@ -115,6 +99,37 @@ class HandleCustomerSubscriptionCreatedJobTest extends TestCase
         $job->handle();
 
         Bus::assertNotDispatched(CreateAnystackLicenseJob::class);
+    }
+
+    protected function createTestData(?string $customerName)
+    {
+        $mockCustomer = Customer::constructFrom([
+            'id' => $this->getTestWebhookPayload()['data']['object']['customer'],
+            'email' => $email = 'test@example.com',
+            'name' => $customerName,
+        ]);
+
+        $this->mockStripeClient($mockCustomer);
+
+        dispatch_sync(new CreateUserFromStripeCustomer($mockCustomer));
+
+        $user = User::query()->where('email', $email)->firstOrFail();
+
+        $subscription = \Laravel\Cashier\Subscription::factory()
+            ->for($user, 'user')
+            ->create([
+                'stripe_id' => $this->getTestWebhookPayload()['data']['object']['id'],
+                'stripe_status' => 'active',
+                'stripe_price' => $this->getTestWebhookPayload()['data']['object']['items']['data'][0]['price']['id'],
+                'quantity' => 1,
+            ]);
+        $subscriptionItem = \Laravel\Cashier\SubscriptionItem::factory()
+            ->for($subscription, 'subscription')
+            ->create([
+                'stripe_id' => $this->getTestWebhookPayload()['data']['object']['items']['data'][0]['id'],
+                'stripe_price' => $this->getTestWebhookPayload()['data']['object']['items']['data'][0]['price']['id'],
+                'quantity' => 1,
+            ]);
     }
 
     protected function getTestWebhookPayload(): array

@@ -10,6 +10,7 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Laravel\Cashier\Cashier;
 use Laravel\Cashier\Events\WebhookHandled;
+use Laravel\Cashier\SubscriptionItem;
 use Stripe\Subscription;
 
 class HandleCustomerSubscriptionCreatedJob implements ShouldQueue
@@ -38,7 +39,10 @@ class HandleCustomerSubscriptionCreatedJob implements ShouldQueue
         }
 
         $subscriptionPlan = \App\Enums\Subscription::fromStripeSubscription($stripeSubscription);
-        $subscriptionItemId = $stripeSubscription->items->first()->id;
+        $cashierSubscriptionItemId = SubscriptionItem::query()
+            ->where('stripe_id', $stripeSubscription->items->first()->id)
+            ->first()
+            ->id;
 
         $nameParts = explode(' ', $user->name ?? '', 2);
         $firstName = $nameParts[0] ?: null;
@@ -47,7 +51,7 @@ class HandleCustomerSubscriptionCreatedJob implements ShouldQueue
         dispatch(new CreateAnystackLicenseJob(
             $user,
             $subscriptionPlan,
-            $subscriptionItemId,
+            $cashierSubscriptionItemId,
             $firstName,
             $lastName,
         ));
