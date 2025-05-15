@@ -140,6 +140,7 @@ class CreateAnystackLicenseJobTest extends TestCase
         $job->handle();
 
         $this->assertDatabaseHas('licenses', [
+            'anystack_id' => 'license-123',
             'user_id' => $user->id,
             'subscription_item_id' => null,
             'policy_name' => 'max',

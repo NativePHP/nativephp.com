@@ -38,6 +38,7 @@ class CreateAnystackLicenseJob implements ShouldQueue
         $licenseData = $this->createLicense($this->user->anystack_contact_id);
 
         $license = License::create([
+            'anystack_id' => $licenseData['id'],
             'user_id' => $this->user->id,
             'subscription_item_id' => $this->subscriptionItemId,
             'policy_name' => $this->subscription->value,

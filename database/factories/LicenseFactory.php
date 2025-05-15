@@ -19,6 +19,7 @@ class LicenseFactory extends Factory
     public function definition(): array
     {
         return [
+            'anystack_id' => fake()->uuid(),
             'user_id' => User::factory(),
             'subscription_item_id' => SubscriptionItem::factory(),
             'policy_name' => fake()->randomElement(Subscription::cases())->value,
