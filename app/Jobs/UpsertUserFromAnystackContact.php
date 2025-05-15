@@ -38,7 +38,7 @@ class UpsertUserFromAnystackContact implements ShouldQueue
 
         $this->assertUserAttributesAreValid($user);
 
-        Log::debug(($user->exists() ? "Updating user [{$user->id}]" : 'Creating user')." from anystack contact [{$this->contactData['id']}].");
+        Log::debug(($user->exists ? "Updating user [{$user->id}]" : 'Creating user')." from anystack contact [{$this->contactData['id']}].");
 
         $user->anystack_contact_id ??= $this->contactData['id'];
         $user->email ??= $this->contactData['email'];
