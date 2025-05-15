@@ -30,12 +30,21 @@ class CreateUserFromStripeCustomer implements ShouldQueue
             return;
         }
 
-        if ($user = User::query()->where('email', $this->customer->email)->first()) {
+        $user = User::query()->where('email', $this->customer->email)->first();
+
+        if ($user && filled($user->stripe_id)) {
             // This could occur if a user performs/attempts multiple checkouts with the same email address.
             // In the event all existing stripe customers for this email address do NOT have an active
             // subscription, we could theoretically update the stripe_id for the existing user
             // and continue. However, for now, we will throw an exception.
             $this->fail("A user with email [{$user->email}] already exists but the current stripe_id [{$user->stripe_id}] does not match the new customer id [{$this->customer->id}].");
+
+            return;
+        }
+
+        if ($user) {
+            $user->stripe_id = $this->customer->id;
+            $user->save();
 
             return;
         }
