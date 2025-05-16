@@ -9,6 +9,8 @@ enum Subscription: string
     case Mini = 'mini';
     case Pro = 'pro';
     case Max = 'max';
+    case Forever = 'forever';
+    case Trial = 'trial';
 
     public static function fromStripeSubscription(\Stripe\Subscription $subscription): self
     {
@@ -28,6 +30,18 @@ enum Subscription: string
             config('subscriptions.plans.pro.stripe_price_id') => self::Pro,
             config('subscriptions.plans.max.stripe_price_id') => self::Max,
             default => throw new RuntimeException("Unknown Stripe price id: {$priceId}"),
+        };
+    }
+
+    public static function fromAnystackPolicy(string $policyId): self
+    {
+        return match ($policyId) {
+            config('subscriptions.plans.mini.anystack_policy_id') => self::Mini,
+            config('subscriptions.plans.pro.anystack_policy_id') => self::Pro,
+            config('subscriptions.plans.max.anystack_policy_id') => self::Max,
+            config('subscriptions.plans.forever.anystack_policy_id') => self::Forever,
+            config('subscriptions.plans.trial.anystack_policy_id') => self::Trial,
+            default => throw new RuntimeException("Unknown Anystack policy id: {$policyId}"),
         };
     }
 

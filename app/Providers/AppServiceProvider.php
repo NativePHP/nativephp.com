@@ -3,8 +3,10 @@
 namespace App\Providers;
 
 use App\Support\GitHub;
+use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Queue\Events\JobFailed;
 use Illuminate\Support\Facades\Queue;
+use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 use Sentry\State\Scope;
@@ -30,6 +32,10 @@ class AppServiceProvider extends ServiceProvider
         $this->registerSharedViewVariables();
 
         $this->sendFailingJobsToSentry();
+
+        RateLimiter::for('anystack', function () {
+            return Limit::perMinute(30);
+        });
     }
 
     private function registerSharedViewVariables(): void
