@@ -608,7 +608,7 @@
     </section>
 
     {{-- Pricing Section --}}
-    <x-mobile-pricing />
+    <livewire:mobile-pricing />
 
     {{-- Testimonials Section --}}
     {{-- <x-testimonials /> --}}
@@ -843,4 +843,5 @@
             </p>
         </article>
     </section>
+    <!-- Purchase Modal Component is now included in the mobile-pricing component -->
 </x-layout>
