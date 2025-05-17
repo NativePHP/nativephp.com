@@ -118,14 +118,25 @@
                 </p>
             </div>
 
-            {{-- Button --}}
-            <a
-                href="{{ \App\Enums\Subscription::Mini->stripePaymentLink() }}"
-                class="my-5 block w-full rounded-2xl bg-zinc-200 py-4 text-center text-sm font-medium transition duration-200 ease-in-out hover:bg-zinc-800 hover:text-white dark:bg-slate-700/30 dark:hover:bg-slate-700/40"
-                aria-label="Get started with Mini plan"
-            >
-                Get started
-            </a>
+            @auth
+                <button
+                    type="button"
+                    wire:click="createCheckoutSession('mini')"
+                    class="my-5 block w-full rounded-2xl bg-zinc-200 py-4 text-center text-sm font-medium transition duration-200 ease-in-out hover:bg-zinc-800 hover:text-white dark:bg-slate-700/30 dark:hover:bg-slate-700/40"
+                    aria-label="Get started with Mini plan"
+                >
+                    Get started
+                </button>
+            @else
+                <button
+                    type="button"
+                    @click="$dispatch('open-purchase-modal', { plan: 'mini' })"
+                    class="my-5 block w-full rounded-2xl bg-zinc-200 py-4 text-center text-sm font-medium transition duration-200 ease-in-out hover:bg-zinc-800 hover:text-white dark:bg-slate-700/30 dark:hover:bg-slate-700/40"
+                    aria-label="Get started with Mini plan"
+                >
+                    Get started
+                </button>
+            @endauth
 
             {{-- Features --}}
             <div
@@ -281,14 +292,25 @@
                 </p>
             </div>
 
-            {{-- Button --}}
-            <a
-                href="{{ \App\Enums\Subscription::Pro->stripePaymentLink() }}"
-                class="my-5 block w-full rounded-2xl bg-zinc-200 py-4 text-center text-sm font-medium transition duration-200 ease-in-out hover:bg-zinc-800 hover:text-white dark:bg-slate-700/30 dark:hover:bg-slate-700/40"
-                aria-label="Get started with Pro plan"
-            >
-                Get started
-            </a>
+            @auth
+                <button
+                    type="button"
+                    wire:click="createCheckoutSession('pro')"
+                    class="my-5 block w-full rounded-2xl bg-zinc-200 py-4 text-center text-sm font-medium transition duration-200 ease-in-out hover:bg-zinc-800 hover:text-white dark:bg-slate-700/30 dark:hover:bg-slate-700/40"
+                    aria-label="Get started with Pro plan"
+                >
+                    Get started
+                </button>
+            @else
+                <button
+                    type="button"
+                    @click="$dispatch('open-purchase-modal', { plan: 'pro' })"
+                    class="my-5 block w-full rounded-2xl bg-zinc-200 py-4 text-center text-sm font-medium transition duration-200 ease-in-out hover:bg-zinc-800 hover:text-white dark:bg-slate-700/30 dark:hover:bg-slate-700/40"
+                    aria-label="Get started with Pro plan"
+                >
+                    Get started
+                </button>
+            @endauth
 
             {{-- Features --}}
             <div
@@ -452,14 +474,25 @@
                 </p>
             </div>
 
-            {{-- Button --}}
-            <a
-                href="{{ \App\Enums\Subscription::Max->stripePaymentLink() }}"
-                class="my-5 block w-full rounded-2xl bg-zinc-800 py-4 text-center text-sm font-medium text-white transition duration-200 ease-in-out hover:bg-zinc-900 dark:bg-[#d68ffe] dark:text-black dark:hover:bg-[#e1acff]"
-                aria-label="Get started with Max plan"
-            >
-                Get started
-            </a>
+            @auth
+                <button
+                    type="button"
+                    wire:click="createCheckoutSession('max')"
+                    class="my-5 block w-full rounded-2xl bg-zinc-800 py-4 text-center text-sm font-medium text-white transition duration-200 ease-in-out hover:bg-zinc-900 dark:bg-[#d68ffe] dark:text-black dark:hover:bg-[#e1acff]"
+                    aria-label="Get started with Max plan"
+                >
+                    Get started
+                </button>
+            @else
+                <button
+                    type="button"
+                    @click="$dispatch('open-purchase-modal', { plan: 'max' })"
+                    class="my-5 block w-full rounded-2xl bg-zinc-800 py-4 text-center text-sm font-medium text-white transition duration-200 ease-in-out hover:bg-zinc-900 dark:bg-[#d68ffe] dark:text-black dark:hover:bg-[#e1acff]"
+                    aria-label="Get started with Max plan"
+                >
+                    Get started
+                </button>
+            @endauth
 
             {{-- Features --}}
             <div
@@ -569,4 +602,7 @@
             </div>
         </div>
     </div>
+    @guest
+        <livewire:purchase-modal />
+    @endguest
 </section>

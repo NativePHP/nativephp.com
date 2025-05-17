@@ -608,7 +608,7 @@
     </section>
 
     {{-- Pricing Section --}}
-    <x-mobile-pricing />
+    <livewire:mobile-pricing />
 
     {{-- Testimonials Section --}}
     {{-- <x-testimonials /> --}}
@@ -676,11 +676,14 @@
                 </p>
             </x-faq-card>
 
-            <x-faq-card question="Will there ever be a free & open source version?">
+            <x-faq-card
+                question="Will there ever be a free & open source version?"
+            >
                 <p>
-                    Yes! Once we've hit sustainability and can afford to continue
-                    investing in this project indirectly, then a version of it will
-                    be fully open source and made available for free.
+                    Yes! Once we've hit sustainability and can afford to
+                    continue investing in this project indirectly, then a
+                    version of it will be fully open source and made available
+                    for free.
                 </p>
             </x-faq-card>
 
@@ -694,9 +697,7 @@
             </x-faq-card>
 
             <x-faq-card question="When will Android support be ready?">
-                <p>
-                   It's READY! Sign up and build apps for Android today!
-                </p>
+                <p>It's READY! Sign up and build apps for Android today!</p>
             </x-faq-card>
 
             <x-faq-card question="When will the EAP end?">
@@ -744,14 +745,15 @@
             </x-faq-card>
             <x-faq-card question="Can I get an invoice?">
                 <p>
-                    If you purchased after May 6, 2025, you should get an invoice with your receipt via email.
+                    If you purchased after May 6, 2025, you should get an
+                    invoice with your receipt via email.
                 </p>
                 <p class="mt-4">
                     For purchases made before this, you simply need to
                     <a
                         href="https://zenvoice.io/p/67a61665e7a3400c73fb75af"
                         onclick="event.stopPropagation()"
-                        class="underline inline-block"
+                        class="inline-block underline"
                     >
                         follow the instructions here
                     </a>
