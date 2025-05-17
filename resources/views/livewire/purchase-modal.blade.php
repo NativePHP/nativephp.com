@@ -50,7 +50,7 @@
 
                 <form
                     wire:submit.prevent="emitEmail"
-                    class="space-y-6"
+                    class="space-y-8"
                 >
                     <div>
                         <label
@@ -63,9 +63,10 @@
                             type="email"
                             id="email"
                             wire:model.blur="email"
-                            class="w-full rounded-lg border border-gray-300 px-4 py-2.5 focus:border-purple-500 focus:outline-none focus:ring-2 focus:ring-purple-500/50 dark:border-gray-600 dark:bg-gray-800 dark:text-white dark:focus:border-purple-400"
+                            class="w-full rounded-lg border border-gray-300 px-4 py-2.5 focus:border-purple-400 focus:outline-none dark:border-gray-600 dark:bg-gray-800 dark:text-white"
                             placeholder="your@email.com"
                             required
+                            x-effect="if (open) $nextTick(() => $el.focus())"
                         />
                         @error('email')
                             <p class="mt-1 text-sm text-red-600">
