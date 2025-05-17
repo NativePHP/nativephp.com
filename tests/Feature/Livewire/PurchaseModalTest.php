@@ -3,22 +3,18 @@
 namespace Tests\Feature\Livewire;
 
 use App\Livewire\PurchaseModal;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Livewire\Livewire;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
 class PurchaseModalTest extends TestCase
 {
-    use RefreshDatabase;
-
     #[Test]
-    public function purchase_modal_can_be_opened_with_plan()
+    public function purchase_modal_can_set_a_plan()
     {
         Livewire::test(PurchaseModal::class)
-            ->call('openModal', 'mini')
-            ->assertSet('selectedPlan', 'mini')
-            ->assertSet('showModal', true);
+            ->call('setPlan', 'mini')
+            ->assertSet('selectedPlan', 'mini');
     }
 
     #[Test]
@@ -38,9 +34,8 @@ class PurchaseModalTest extends TestCase
     public function purchase_modal_validates_email()
     {
         Livewire::test(PurchaseModal::class)
-            ->call('openModal', 'mini')
             ->set('email', 'invalid-email')
-            ->call('emitEmail')
+            ->call('submit')
             ->assertHasErrors(['email' => 'email']);
     }
 
@@ -48,20 +43,19 @@ class PurchaseModalTest extends TestCase
     public function purchase_modal_requires_email()
     {
         Livewire::test(PurchaseModal::class)
-            ->call('openModal', 'mini')
             ->set('email', '')
-            ->call('emitEmail')
+            ->call('submit')
             ->assertHasErrors(['email' => 'required']);
     }
 
     #[Test]
-    public function purchase_modal_emits_event_with_valid_email()
+    public function test_submit_action()
     {
         Livewire::test(PurchaseModal::class)
-            ->call('openModal', 'mini')
+            ->call('setPlan', 'mini')
             ->set('email', 'valid@example.com')
-            ->call('emitEmail')
-            ->assertDispatched('email-submitted', [
+            ->call('submit')
+            ->assertDispatched('purchase-request-submitted', [
                 'email' => 'valid@example.com',
                 'plan' => 'mini',
             ]);
@@ -71,25 +65,9 @@ class PurchaseModalTest extends TestCase
     public function purchase_modal_closes_after_emitting_event()
     {
         Livewire::test(PurchaseModal::class)
-            ->call('openModal', 'mini')
+            ->call('setPlan', 'mini')
             ->set('email', 'valid@example.com')
-            ->call('emitEmail')
+            ->call('submit')
             ->assertSet('showModal', false);
-    }
-
-    #[Test]
-    public function purchase_modal_can_be_opened_via_alpine_event()
-    {
-        $component = Livewire::test(PurchaseModal::class);
-
-        // Simulate the Alpine.js event
-        $component->dispatch('open-purchase-modal', ['plan' => 'pro'])
-            ->assertDispatched('open-purchase-modal');
-
-        // Since we can't directly test Alpine.js event handling in PHPUnit,
-        // we'll verify that the openModal method works as expected
-        $component->call('openModal', 'pro')
-            ->assertSet('selectedPlan', 'pro')
-            ->assertSet('showModal', true);
     }
 }

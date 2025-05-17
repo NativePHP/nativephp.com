@@ -2,6 +2,7 @@
 
 namespace App\Livewire;
 
+use Livewire\Attributes\Renderless;
 use Livewire\Attributes\Validate;
 use Livewire\Component;
 
@@ -18,10 +19,10 @@ class PurchaseModal extends Component
         'email' => 'required|email',
     ];
 
-    public function openModal($plan): void
+    #[Renderless]
+    public function setPlan(string $plan): void
     {
         $this->selectedPlan = $plan;
-        $this->showModal = true;
     }
 
     public function closeModal(): void
@@ -31,11 +32,11 @@ class PurchaseModal extends Component
         $this->resetValidation();
     }
 
-    public function emitEmail()
+    public function submit(): void
     {
         $this->validate();
 
-        $this->dispatch('email-submitted', [
+        $this->dispatch('purchase-request-submitted', [
             'email' => $this->email,
             'plan' => $this->selectedPlan,
         ]);

@@ -2,12 +2,10 @@
     <div
         x-data="{
             open: @entangle('showModal'),
-            selectedPlan: @entangle('selectedPlan'),
         }"
         @open-purchase-modal.window="
             open = true;
-            selectedPlan = $event.detail.plan;
-            $wire.openModal($event.detail.plan);
+            $wire.setPlan($event.detail.plan);
         "
     >
         <!-- Modal Backdrop -->
@@ -23,7 +21,6 @@
             x-cloak
         ></div>
 
-        <!-- Modal Content -->
         <div
             x-show="open"
             x-transition:enter="transition duration-300 ease-out"
@@ -49,7 +46,7 @@
                 </div>
 
                 <form
-                    wire:submit.prevent="emitEmail"
+                    wire:submit.prevent="submit"
                     class="space-y-8"
                 >
                     <div>

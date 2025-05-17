@@ -12,10 +12,10 @@ use Livewire\Component;
 class MobilePricing extends Component
 {
     protected $listeners = [
-        'email-submitted' => 'handleEmailSubmitted',
+        'purchase-request-submitted' => 'handlePurchaseRequest',
     ];
 
-    public function handleEmailSubmitted(array $data)
+    public function handlePurchaseRequest(array $data)
     {
         $user = $this->findOrCreateUser($data['email']);
 
@@ -24,15 +24,11 @@ class MobilePricing extends Component
 
     public function createCheckoutSession(string $plan, ?User $user = null)
     {
-        $user ??= Auth::user();
-
-        if (! $user) {
+        if (! ($user ??= Auth::user())) {
             return;
         }
 
-        $subscription = Subscription::tryFrom($plan);
-
-        if (! $subscription) {
+        if (! ($subscription = Subscription::tryFrom($plan))) {
             return;
         }
 
@@ -60,7 +56,14 @@ class MobilePricing extends Component
 
     private function successUrl(): string
     {
-        return Str::replace('abc', '{CHECKOUT_SESSION_ID}', route('order.success', ['checkoutSessionId' => 'abc']));
+        // This is a hack to get the route() function to work. If you try
+        // to pass {CHECKOUT_SESSION_ID} to the route function, it will
+        // throw an error.
+        return Str::replace(
+            'abc',
+            '{CHECKOUT_SESSION_ID}',
+            route('order.success', ['checkoutSessionId' => 'abc'])
+        );
     }
 
     public function render()
