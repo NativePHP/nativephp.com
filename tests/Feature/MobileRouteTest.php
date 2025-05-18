@@ -2,27 +2,26 @@
 
 namespace Tests\Feature;
 
-use Illuminate\Support\Facades\Config;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
 class MobileRouteTest extends TestCase
 {
     #[Test]
-    public function mobile_route_includes_stripe_payment_links()
+    public function mobile_route_does_not_include_stripe_payment_links()
     {
-        $mockLinks = [
-            'mini' => ['stripe_payment_link' => 'https://buy.stripe.com/mini-payment'],
-            'pro' => ['stripe_payment_link' => 'https://buy.stripe.com/pro-payment'],
-            'max' => ['stripe_payment_link' => 'https://buy.stripe.com/max-payment'],
-        ];
+        $this
+            ->withoutVite()
+            ->get(route('early-adopter'))
+            ->assertDontSee('buy.stripe.com');
+    }
 
-        Config::set('subscriptions.plans', $mockLinks);
-
-        $response = $this->withoutVite()->get(route('early-adopter'))->getContent();
-
-        $this->assertStringContainsString($mockLinks['mini']['stripe_payment_link'], $response);
-        $this->assertStringContainsString($mockLinks['pro']['stripe_payment_link'], $response);
-        $this->assertStringContainsString($mockLinks['max']['stripe_payment_link'], $response);
+    #[Test]
+    public function mobile_route_includes_mobile_pricing_livewire_component()
+    {
+        $this
+            ->withoutVite()
+            ->get(route('early-adopter'))
+            ->assertSeeLivewire('mobile-pricing');
     }
 }
