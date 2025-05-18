@@ -9,6 +9,7 @@ export default {
         './vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php',
         './storage/framework/views/*.php',
         './app/**/*.php',
+        './vendor/filament/**/*.blade.php',
     ],
 
     safelist: ['inline', 'text-red-600', 'mr-2', 'font-bold', 'no-underline'],
@@ -29,5 +30,5 @@ export default {
         },
     },
 
-    plugins: [require('@tailwindcss/typography')],
+    plugins: [require('@tailwindcss/typography'), require('@tailwindcss/forms')],
 }
