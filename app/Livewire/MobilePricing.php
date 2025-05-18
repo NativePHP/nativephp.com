@@ -27,8 +27,7 @@ class MobilePricing extends Component
     {
         // If a user isn't passed into this method, Livewire will instantiate
         // a new User. So we need to check that the user exists before using it,
-        // and then use the authenticated user as a fallback if the user is
-        // logged in.
+        // and then use the authenticated user as a fallback.
         $user = $user?->exists ? $user : Auth::user();
 
         if (! $user) {
