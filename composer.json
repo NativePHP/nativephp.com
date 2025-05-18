@@ -12,6 +12,7 @@
         "artesaos/seotools": "^1.2",
         "blade-ui-kit/blade-heroicons": "^2.3",
         "doctrine/dbal": "^3.9",
+        "filament/filament": "^3.2",
         "guzzlehttp/guzzle": "^7.2",
         "laravel/cashier": "^15.6",
         "laravel/framework": "^10.10",
@@ -51,7 +52,8 @@
         "lint": "./vendor/bin/pint",
         "post-autoload-dump": [
             "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
-            "@php artisan package:discover --ansi"
+            "@php artisan package:discover --ansi",
+            "@php artisan filament:upgrade"
         ],
         "post-update-cmd": [
             "@php artisan vendor:publish --tag=laravel-assets --ansi --force"
