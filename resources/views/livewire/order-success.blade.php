@@ -496,22 +496,24 @@
                     </p>
                 </div>
 
-                <a
-                    href="https://github.com/nativephp/ios/issues"
-                    class="rounded-2xl bg-gray-100 p-6 transition duration-200 hover:bg-gray-200/70 hover:ring-1 hover:ring-black/60 dark:bg-mirage dark:hover:bg-haiti dark:hover:ring-cloud"
-                >
-                    <div
-                        class="mb-4 flex h-12 w-12 items-center justify-center rounded-full"
+                @if ($subscription === \App\Enums\Subscription::Max)
+                    <a
+                        href="https://github.com/nativephp/mobile/issues"
+                        class="rounded-2xl bg-gray-100 p-6 transition duration-200 hover:bg-gray-200/70 hover:ring-1 hover:ring-black/60 dark:bg-mirage dark:hover:bg-haiti dark:hover:ring-cloud"
                     >
-                        <x-icons.github class="dark:fill-white" />
-                    </div>
-                    <h4 class="text-lg font-medium">Share Your Feedback</h4>
-                    <p class="mt-2 text-gray-600 dark:text-gray-400">
-                        We're currently in Early Access and constantly
-                        improving. Let us know if you find any bugs as you
-                        build.
-                    </p>
-                </a>
+                        <div
+                            class="mb-4 flex h-12 w-12 items-center justify-center rounded-full"
+                        >
+                            <x-icons.github class="dark:fill-white" />
+                        </div>
+                        <h4 class="text-lg font-medium">Share Your Feedback</h4>
+                        <p class="mt-2 text-gray-600 dark:text-gray-400">
+                            We're currently in Early Access and constantly
+                            improving. Let us know if you find any bugs as you
+                            build.
+                        </p>
+                    </a>
+                @endif
             </div>
         </div>
     </section>
