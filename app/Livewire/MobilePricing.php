@@ -6,6 +6,7 @@ use App\Enums\Subscription;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Livewire\Component;
 
@@ -24,11 +25,24 @@ class MobilePricing extends Component
 
     public function createCheckoutSession(string $plan, ?User $user = null)
     {
-        if (! ($user ??= Auth::user())) {
+        // If a user isn't passed into this method, Livewire will instantiate
+        // a new User. So we need to check that the user exists before using it,
+        // and then use the authenticated user as a fallback.
+        $user = $user?->exists ? $user : Auth::user();
+
+        if (! $user) {
+            // TODO: return a flash message or notification to the user that there
+            //   was an error.
+            Log::error('Failed to create checkout session. User does not exist and user is not authenticated.');
+
             return;
         }
 
         if (! ($subscription = Subscription::tryFrom($plan))) {
+            // TODO: return a flash message or notification to the user that there
+            //   was an error.
+            Log::error('Failed to create checkout session. Invalid subscription plan name provided.');
+
             return;
         }
 
