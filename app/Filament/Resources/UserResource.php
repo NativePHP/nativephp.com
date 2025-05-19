@@ -86,21 +86,23 @@ class UserResource extends Resource
                 //
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\Action::make('view_on_stripe')
-                    ->label('View on Stripe')
-                    ->color('gray')
-                    ->icon('heroicon-o-arrow-top-right-on-square')
-                    ->url(fn (User $record) => 'https://dashboard.stripe.com/customers/'.$record->stripe_id)
-                    ->openUrlInNewTab()
-                    ->visible(fn (User $record) => filled($record->stripe_id)),
-                Tables\Actions\Action::make('view_on_anystack')
-                    ->label('View on Anystack')
-                    ->color('gray')
-                    ->icon('heroicon-o-arrow-top-right-on-square')
-                    ->url(fn (User $record) => 'https://app.anystack.sh/contacts/'.$record->anystack_contact_id)
-                    ->openUrlInNewTab()
-                    ->visible(fn (User $record) => filled($record->anystack_contact_id)),
+                Tables\Actions\ActionGroup::make([
+                    Tables\Actions\EditAction::make(),
+                    Tables\Actions\Action::make('view_on_stripe')
+                        ->label('View on Stripe')
+                        ->color('gray')
+                        ->icon('heroicon-o-arrow-top-right-on-square')
+                        ->url(fn (User $record) => 'https://dashboard.stripe.com/customers/'.$record->stripe_id)
+                        ->openUrlInNewTab()
+                        ->visible(fn (User $record) => filled($record->stripe_id)),
+                    Tables\Actions\Action::make('view_on_anystack')
+                        ->label('View on Anystack')
+                        ->color('gray')
+                        ->icon('heroicon-o-arrow-top-right-on-square')
+                        ->url(fn (User $record) => 'https://app.anystack.sh/contacts/'.$record->anystack_contact_id)
+                        ->openUrlInNewTab()
+                        ->visible(fn (User $record) => filled($record->anystack_contact_id)),
+                ])->label('Actions')->icon('heroicon-m-ellipsis-vertical'),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
