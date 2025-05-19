@@ -102,7 +102,7 @@ class UserResource extends Resource
                         ->url(fn (User $record) => 'https://app.anystack.sh/contacts/'.$record->anystack_contact_id)
                         ->openUrlInNewTab()
                         ->visible(fn (User $record) => filled($record->anystack_contact_id)),
-                ])->label('Actions')->icon('heroicon-m-ellipsis-vertical')
+                ])->label('Actions')->icon('heroicon-m-ellipsis-vertical'),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
