@@ -25,6 +25,7 @@ Route::view('mobile', 'early-adopter')->name('early-adopter');
 Route::redirect('ios', 'mobile');
 Route::view('privacy-policy', 'privacy-policy');
 Route::view('terms-of-service', 'terms-of-service');
+Route::view('partners', 'partners')->name('partners');
 
 Route::redirect('/docs/{version}/{page?}', '/docs/desktop/{version}/{page?}')
     ->where('page', '(.*)')
