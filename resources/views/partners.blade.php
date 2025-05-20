@@ -92,7 +92,7 @@
 
                 {{-- Secondary CTA - Calendar --}}
                 <a
-                    href="#"
+                    href="https://cal.com/team/nativephp/partners"
                     class="inline-flex items-center gap-2 rounded-xl bg-gray-200 px-6 py-3 text-center font-medium text-gray-800 transition duration-200 hover:bg-gray-300 dark:bg-slate-700/30 dark:text-white dark:hover:bg-slate-700/40"
                 >
                     <svg
@@ -496,7 +496,7 @@
 
                 {{-- Secondary CTA - Calendar --}}
                 <a
-                    href="#"
+                    href="https://cal.com/team/nativephp/partners"
                     class="inline-flex items-center gap-2 rounded-xl bg-gray-200 px-6 py-3 text-center font-medium text-gray-800 transition duration-200 hover:bg-gray-300 dark:bg-slate-700/30 dark:text-white dark:hover:bg-slate-700/40"
                 >
                     <svg
