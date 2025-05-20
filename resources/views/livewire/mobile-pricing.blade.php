@@ -78,7 +78,7 @@
     >
         {{-- Mini Plan --}}
         <div
-            class="rounded-2xl bg-gray-100 p-7 opacity-0 dark:bg-mirage"
+            class="h-full rounded-2xl bg-gray-100 p-7 opacity-0 dark:bg-mirage"
             aria-labelledby="pro-plan-heading"
         >
             {{-- Plan Name --}}
@@ -252,7 +252,7 @@
 
         {{-- Pro Plan --}}
         <div
-            class="rounded-2xl bg-gray-100 p-7 opacity-0 dark:bg-mirage"
+            class="h-full rounded-2xl bg-gray-100 p-7 opacity-0 dark:bg-mirage"
             aria-labelledby="teams-plan-heading"
         >
             {{-- Plan Name --}}
@@ -426,7 +426,7 @@
 
         {{-- Max Plan - Most Popular --}}
         <div
-            class="relative rounded-2xl bg-gray-100 p-7 opacity-0 ring-1 ring-black dark:bg-black/50 dark:ring-white/20"
+            class="relative h-full rounded-2xl bg-gray-100 p-7 opacity-0 ring-1 ring-black dark:bg-black/50 dark:ring-white/20"
             aria-labelledby="max-plan-heading"
         >
             {{-- Popular badge --}}
