@@ -32,6 +32,7 @@ class UpsertLicenseFromAnystackLicense implements ShouldQueue
             'anystack_id' => $this->licenseData['id'],
             // subscription_item_id is not set here because we don't want to replace any existing values.
             'policy_name' => Subscription::fromAnystackPolicy($this->licenseData['policy_id'])->value,
+            'is_suspended' => $this->licenseData['suspended'],
             'expires_at' => $this->licenseData['expires_at'],
             'created_at' => $this->licenseData['created_at'],
             'updated_at' => $this->licenseData['updated_at'],

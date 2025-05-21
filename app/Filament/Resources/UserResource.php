@@ -108,7 +108,10 @@ class UserResource extends Resource
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
-            ]);
+            ])
+            ->recordUrl(
+                fn ($record) => static::getUrl('edit', ['record' => $record])
+            );
     }
 
     public static function getRelations(): array

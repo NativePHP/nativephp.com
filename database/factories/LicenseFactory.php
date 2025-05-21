@@ -24,6 +24,7 @@ class LicenseFactory extends Factory
             'subscription_item_id' => SubscriptionItem::factory(),
             'policy_name' => fake()->randomElement(Subscription::cases())->value,
             'key' => fake()->uuid(),
+            'is_suspended' => false,
             'created_at' => fake()->dateTimeBetween('-1 year', 'now'),
             'updated_at' => fn (array $attrs) => $attrs['created_at'],
             'expires_at' => fn (array $attrs) => Date::parse($attrs['created_at'])->addYear(),
