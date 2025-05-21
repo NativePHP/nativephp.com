@@ -23,6 +23,8 @@ Route::view('/blog', 'blog')->name('blog');
 Route::view('/article', 'article')->name('article');
 Route::view('mobile', 'early-adopter')->name('early-adopter');
 Route::redirect('ios', 'mobile');
+Route::redirect('t-shirt', 'mobile');
+Route::redirect('tshirt', 'mobile');
 Route::view('privacy-policy', 'privacy-policy');
 Route::view('terms-of-service', 'terms-of-service');
 Route::view('partners', 'partners')->name('partners');
