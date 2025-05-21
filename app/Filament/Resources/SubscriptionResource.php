@@ -60,8 +60,6 @@ class SubscriptionResource extends Resource
                 Tables\Columns\TextColumn::make('user.email')
                     ->searchable()
                     ->sortable(),
-                // Tables\Columns\TextColumn::make('type')
-                //     ->searchable(),
                 Tables\Columns\TextColumn::make('stripe_id')
                     ->searchable()
                     ->copyable(),
@@ -125,7 +123,6 @@ class SubscriptionResource extends Resource
                     ->query(fn (Builder $query): Builder => $query->where('stripe_status', 'canceled')),
             ])
             ->actions([
-                Tables\Actions\ViewAction::make(),
                 Tables\Actions\Action::make('view_on_stripe')
                     ->label('View on Stripe')
                     ->color('gray')
@@ -133,9 +130,10 @@ class SubscriptionResource extends Resource
                     ->url(fn (Subscription $record) => 'https://dashboard.stripe.com/subscriptions/'.$record->stripe_id)
                     ->openUrlInNewTab(),
             ])
-            ->bulkActions([
-                //
-            ]);
+            ->recordUrl(
+                fn ($record) => static::getUrl('view', ['record' => $record])
+            );
+
     }
 
     public static function getRelations(): array

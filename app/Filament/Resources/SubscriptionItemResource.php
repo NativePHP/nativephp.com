@@ -80,11 +80,7 @@ class SubscriptionItemResource extends Resource
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
-            ->filters([
-                //
-            ])
             ->actions([
-                Tables\Actions\ViewAction::make(),
                 Tables\Actions\Action::make('view_on_stripe')
                     ->label('View on Stripe')
                     ->color('gray')
@@ -92,9 +88,9 @@ class SubscriptionItemResource extends Resource
                     ->url(fn (SubscriptionItem $record) => 'https://dashboard.stripe.com/subscriptions/'.$record->subscription->stripe_id)
                     ->openUrlInNewTab(),
             ])
-            ->bulkActions([
-                //
-            ]);
+            ->recordUrl(
+                fn ($record) => static::getUrl('view', ['record' => $record])
+            );
     }
 
     public static function getRelations(): array

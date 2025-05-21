@@ -3,10 +3,11 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\LicenseResource\Pages;
+use App\Filament\Resources\LicenseResource\RelationManagers;
 use App\Models\License;
 use Filament\Forms;
 use Filament\Forms\Form;
-use Filament\Infolists\Components;
+use Filament\Infolists;
 use Filament\Infolists\Infolist;
 use Filament\Resources\Resource;
 use Filament\Tables;
@@ -24,24 +25,21 @@ class LicenseResource extends Resource
             ->schema([
                 Forms\Components\Section::make('License Information')
                     ->schema([
-                        Forms\Components\TextInput::make('id')
-                            ->disabled(),
+                        Forms\Components\TextInput::make('id'),
                         Forms\Components\TextInput::make('anystack_id')
-                            ->maxLength(36)
-                            ->disabled(),
+                            ->maxLength(36),
                         Forms\Components\Select::make('user_id')
-                            ->relationship('user', 'email')
-                            ->disabled(),
+                            ->relationship('user', 'email'),
                         Forms\Components\TextInput::make('policy_name')
-                            ->label('Plan')
-                            ->disabled(),
-                        Forms\Components\TextInput::make('key')
-                            ->disabled(),
-                        Forms\Components\DateTimePicker::make('expires_at')
-                            ->disabled(),
-                        Forms\Components\DateTimePicker::make('created_at')
-                            ->disabled(),
-                    ])->columns(2),
+                            ->label('Plan'),
+                        Forms\Components\TextInput::make('key'),
+                        Forms\Components\DateTimePicker::make('expires_at'),
+                        Forms\Components\DateTimePicker::make('created_at'),
+                        Forms\Components\Toggle::make('is_suspended')
+                            ->label('Suspended'),
+                    ])
+                    ->columns(2)
+                    ->disabled(),
             ]);
     }
 
@@ -54,10 +52,11 @@ class LicenseResource extends Resource
                     ->searchable(),
                 Tables\Columns\TextColumn::make('user.email')
                     ->searchable()
-                    ->sortable()
-                    ->copyable()
-                    ->url(fn (\App\Models\License $record): string => route('filament.admin.resources.users.edit', ['record' => $record->user_id]))
-                    ->openUrlInNewTab(),
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('subscription_item_id')
+                    ->label('Subscription Item')
+                    ->searchable()
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('key')
                     ->searchable()
                     ->copyable(),
@@ -70,138 +69,77 @@ class LicenseResource extends Resource
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable(),
+                Tables\Columns\IconColumn::make('is_suspended')
+                    ->boolean()
+                    ->label('Suspended')
+                    ->sortable(),
             ])
             ->filters([
                 //
             ])
             ->actions([
-                Tables\Actions\ViewAction::make()
-                    ->slideOver()
-                    ->modalHeading('License Details')
-                    ->modalWidth('7xl')
-                    ->extraModalFooterActions([
-                        Tables\Actions\Action::make('viewUser')
-                            ->label('View User')
-                            ->icon('heroicon-o-user')
-                            ->color('primary')
-                            ->url(fn (License $record) => route('filament.admin.resources.users.edit', ['record' => $record->user_id]))
-                            ->openUrlInNewTab()
-                            ->visible(fn (License $record) => $record->user_id !== null),
-                    ]),
+                Tables\Actions\ActionGroup::make([
+                    Tables\Actions\EditAction::make(),
+                    Tables\Actions\Action::make('viewUser')
+                        ->label('View User')
+                        ->icon('heroicon-o-user')
+                        ->color('primary')
+                        ->url(fn (License $record) => route('filament.admin.resources.users.edit', ['record' => $record->user_id]))
+                        ->openUrlInNewTab()
+                        ->visible(fn (License $record) => $record->user_id !== null),
+                ])
+                    ->label('Actions')
+                    ->icon('heroicon-m-ellipsis-vertical'),
             ])
             ->defaultPaginationPageOption(25)
             ->bulkActions([]);
-    }
-
-    public static function getRelations(): array
-    {
-        return [
-            //
-        ];
     }
 
     public static function infolist(Infolist $infolist): Infolist
     {
         return $infolist
             ->schema([
-                Components\Section::make('License Information')
+                Infolists\Components\Section::make('License Information')
                     ->schema([
-                        Components\TextEntry::make('id'),
-                        Components\TextEntry::make('key')
+                        Infolists\Components\TextEntry::make('id')
                             ->copyable(),
-                        Components\TextEntry::make('policy_name')
-                            ->label('Plan'),
-                        Components\TextEntry::make('expires_at')
-                            ->dateTime(),
-                        Components\TextEntry::make('created_at')
-                            ->dateTime(),
-                        Components\TextEntry::make('anystack_id')
+                        Infolists\Components\TextEntry::make('anystack_id')
                             ->copyable(),
-                    ])->columns(2),
-
-                Components\Section::make('User Information')
-                    ->schema([
-                        Components\TextEntry::make('user.id')
-                            ->label('User ID')
-                            ->url(fn ($record) => route('filament.admin.resources.users.edit', ['record' => $record->user_id]))
-                            ->openUrlInNewTab(),
-                        Components\TextEntry::make('user.email')
-                            ->label('Email')
-                            ->copyable()
-                            ->url(fn ($record) => route('filament.admin.resources.users.edit', ['record' => $record->user_id]))
-                            ->openUrlInNewTab(),
-                        Components\TextEntry::make('user.name')
-                            ->label('Name'),
-                        Components\TextEntry::make('user.first_name')
-                            ->label('First Name'),
-                        Components\TextEntry::make('user.last_name')
-                            ->label('Last Name'),
-                        Components\TextEntry::make('user.stripe_id')
-                            ->label('Stripe ID')
-                            ->copyable()
-                            ->visible(fn ($record) => filled($record->user->stripe_id))
-                            ->url(fn ($record) => filled($record->user->stripe_id)
-                                ? "https://dashboard.stripe.com/customers/{$record->user->stripe_id}"
-                                : null)
-                            ->openUrlInNewTab(),
-                        Components\TextEntry::make('user.anystack_contact_id')
-                            ->label('Anystack Contact ID')
-                            ->copyable()
-                            ->visible(fn ($record) => filled($record->user->anystack_contact_id))
-                            ->url(fn ($record) => filled($record->user->anystack_contact_id)
-                                ? "https://app.anystack.sh/contacts/{$record->user->anystack_contact_id}"
-                                : null)
-                            ->openUrlInNewTab(),
-                    ])->columns(2),
-
-                Components\Section::make('Subscription Information')
-                    ->schema([
-                        Components\TextEntry::make('subscriptionItem.id')
-                            ->label('Subscription Item ID')
-                            ->visible(fn ($record) => $record->subscription_item_id !== null),
-                        Components\TextEntry::make('subscriptionItem.stripe_id')
-                            ->label('Stripe Subscription Item ID')
-                            ->copyable()
-                            ->visible(fn ($record) => $record->subscription_item_id !== null),
-                        Components\TextEntry::make('subscriptionItem.subscription.stripe_id')
-                            ->label('Stripe Subscription ID')
-                            ->copyable()
-                            ->visible(fn ($record) => $record->subscription_item_id !== null)
-                            ->url(fn ($record) => $record->subscription_item_id !== null && filled($record->subscriptionItem?->subscription?->stripe_id)
-                                ? "https://dashboard.stripe.com/subscriptions/{$record->subscriptionItem->subscription->stripe_id}"
-                                : null)
-                            ->openUrlInNewTab(),
-                        Components\TextEntry::make('subscriptionItem.stripe_price')
-                            ->label('Stripe Price ID')
-                            ->copyable()
-                            ->visible(fn ($record) => $record->subscription_item_id !== null),
-                        Components\TextEntry::make('subscriptionItem.stripe_product')
-                            ->label('Stripe Product ID')
-                            ->copyable()
-                            ->visible(fn ($record) => $record->subscription_item_id !== null),
-                        Components\TextEntry::make('subscriptionItem.subscription.stripe_status')
-                            ->label('Subscription Status')
-                            ->badge()
-                            ->color(fn ($state): string => match ($state) {
-                                'active' => 'success',
-                                'canceled' => 'danger',
-                                'incomplete' => 'warning',
-                                'incomplete_expired' => 'danger',
-                                'past_due' => 'warning',
-                                'trialing' => 'info',
-                                'unpaid' => 'danger',
-                                default => 'gray',
-                            })
-                            ->visible(fn ($record) => $record->subscription_item_id !== null),
-                    ])->columns(2)
-                    ->visible(fn ($record) => $record->subscription_item_id !== null),
+                        Infolists\Components\TextEntry::make('user.email')
+                            ->label('User')
+                            ->copyable(),
+                        Infolists\Components\TextEntry::make('policy_name')
+                            ->label('Plan')
+                            ->copyable(),
+                        Infolists\Components\TextEntry::make('key')
+                            ->copyable(),
+                        Infolists\Components\TextEntry::make('expires_at')
+                            ->dateTime()
+                            ->copyable(),
+                        Infolists\Components\TextEntry::make('created_at')
+                            ->dateTime()
+                            ->copyable(),
+                        Infolists\Components\IconEntry::make('is_suspended')
+                            ->label('Suspended')
+                            ->boolean(),
+                    ])
+                    ->columns(2),
             ]);
+    }
+
+    public static function getRelations(): array
+    {
+        return [
+            RelationManagers\UserRelationManager::class,
+            RelationManagers\SubscriptionItemRelationManager::class,
+        ];
     }
 
     public static function getPages(): array
     {
         return [
             'index' => Pages\ListLicenses::route('/'),
+            'view' => Pages\ViewLicense::route('/{record}'),
         ];
     }
 }

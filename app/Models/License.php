@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\Subscription;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -16,6 +17,7 @@ class License extends Model
 
     protected $casts = [
         'expires_at' => 'datetime',
+        'is_suspended' => 'boolean',
     ];
 
     /**
@@ -40,5 +42,10 @@ class License extends Model
             ->whereNull('expires_at')
             ->orWhere('expires_at', '>', now())
         );
+    }
+
+    public function getAnystackProductIdAttribute(): string
+    {
+        return Subscription::from($this->policy_name)->anystackProductId();
     }
 }
