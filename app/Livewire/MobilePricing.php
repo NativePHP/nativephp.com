@@ -54,6 +54,16 @@ class MobilePricing extends Component
             ->checkout([
                 'success_url' => $this->successUrl(),
                 'cancel_url' => route('early-adopter'),
+                'consent_collection' => [
+                    'terms_of_service' => 'required',
+                ],
+                'customer_update' => [
+                    'name' => 'auto',
+                    'address' => 'auto',
+                ],
+                'tax_id_collection' => [
+                    'enabled' => true,
+                ],
             ]);
 
         return redirect($checkout->url);
