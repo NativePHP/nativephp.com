@@ -7,6 +7,7 @@ use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 use Livewire\Component;
 
@@ -71,6 +72,10 @@ class MobilePricing extends Component
 
     private function findOrCreateUser(string $email): User
     {
+        Validator::validate(['email' => $email], [
+            'email' => 'required|email|max:255',
+        ]);
+
         return User::firstOrCreate([
             'email' => $email,
         ], [
