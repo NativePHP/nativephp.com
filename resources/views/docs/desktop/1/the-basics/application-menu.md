@@ -428,7 +428,7 @@ Menu::make()
 
 ## Context Menu
 
-You may need to add custom context menu to the elements in the views of your application and override the default one.
+You may need to add custom native context menu to the elements in the views of your application and override the default one.
 
 You can use the `Native` JavaScript object provvided by NativePHP's preload script.
 
