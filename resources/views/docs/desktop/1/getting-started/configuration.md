@@ -45,6 +45,16 @@ return [
      * The copyright notice for your application.
      */
     'copyright' => env('NATIVEPHP_APP_COPYRIGHT'),
+    
+    /**
+     * The description of your application.
+     */
+    'description' => env('NATIVEPHP_APP_DESCRIPTION', 'An awesome app built with NativePHP'),
+
+    /**
+     * The Website of your application.
+     */
+    'website' => env('NATIVEPHP_APP_WEBSITE', 'https://nativephp.com'),
 
     /**
      * The default service provider for your application. This provider

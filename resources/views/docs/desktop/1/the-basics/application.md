@@ -23,6 +23,13 @@ To quit the app, use the `quit` method:
 App::quit();
 ```
 
+### Relaunch the app
+To relaunch the app, use the `relaunch` method. This will quit the app and relaunch it.
+
+```php
+App::relaunch();
+```
+
 ### Focus the app
 
 To focus the app, use the `focus` method.
