@@ -20,6 +20,8 @@ class HandleInvoicePaidJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
+    public int $maxExceptions = 1;
+
     public function __construct(public Invoice $invoice) {}
 
     public function handle(): void
