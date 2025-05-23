@@ -8,7 +8,6 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Facades\Log;
 use Laravel\Cashier\Cashier;
 use Laravel\Cashier\Events\WebhookHandled;
 use Laravel\Cashier\SubscriptionItem;
@@ -26,12 +25,6 @@ class HandleCustomerSubscriptionCreatedJob implements ShouldQueue
 
         if (! $stripeSubscription) {
             $this->fail('The Stripe webhook payload could not be constructed into a Stripe Subscription object.');
-
-            return;
-        }
-
-        if ($stripeSubscription->status !== 'active') {
-            Log::info("The subscription for customer [{$stripeSubscription->customer}] is not active. Not proceeding to license creation.");
 
             return;
         }
