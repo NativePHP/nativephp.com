@@ -133,7 +133,7 @@ class StripePurchaseHandlingTest extends TestCase
     }
 
     #[Test]
-    public function a_license_is_created_when_a_stripe_subscription_is_created()
+    public function a_license_is_not_created_when_a_stripe_subscription_is_created()
     {
         Bus::fake([CreateAnystackLicenseJob::class]);
 
@@ -172,6 +172,78 @@ class StripePurchaseHandlingTest extends TestCase
 
         $this->postJson('/stripe/webhook', $payload);
 
+        Bus::assertNotDispatched(CreateAnystackLicenseJob::class);
+
+        $user->refresh();
+
+        $this->assertNotEmpty($user->subscriptions);
+        $this->assertNotEmpty($user->subscriptions->first()->items);
+    }
+
+    #[Test]
+    public function a_license_is_created_when_a_stripe_invoice_is_paid()
+    {
+        Bus::fake([CreateAnystackLicenseJob::class]);
+
+        $user = User::factory()->create([
+            'stripe_id' => 'cus_test123',
+            'name' => 'John Doe',
+            'email' => 'john@example.com',
+        ]);
+
+        \Laravel\Cashier\Subscription::factory()
+            ->for($user, 'user')
+            ->create([
+                'stripe_id' => 'sub_test123',
+                'stripe_status' => 'incomplete', // the subscription is incomplete at the time this webhook is sent
+                'stripe_price' => Subscription::Max->stripePriceId(),
+                'quantity' => 1,
+            ]);
+        \Laravel\Cashier\SubscriptionItem::factory()
+            ->for($user->subscriptions->first(), 'subscription')
+            ->create([
+                'stripe_id' => 'si_test',
+                'stripe_price' => Subscription::Max->stripePriceId(),
+                'quantity' => 1,
+            ]);
+
+        $this->mockStripeClient($user);
+
+        $payload = [
+            'id' => 'evt_test_webhook',
+            'type' => 'invoice.paid',
+            'data' => [
+                'object' => [
+                    'id' => 'in_test',
+                    'object' => 'invoice',
+                    'billing_reason' => 'subscription_create',
+                    'customer' => 'cus_test123',
+                    'paid' => true,
+                    'status' => 'paid',
+                    'lines' => [
+                        'object' => 'list',
+                        'data' => [
+                            [
+                                'id' => 'il_test',
+                                'price' => [
+                                    'id' => Subscription::Max->stripePriceId(),
+                                    'object' => 'price',
+                                    'product' => 'prod_test',
+                                ],
+                                'quantity' => 1,
+                                'subscription' => 'sub_test123',
+                                'subscription_item' => 'si_test',
+                                'type' => 'subscription',
+                            ],
+                        ],
+                    ],
+                    'subscription' => 'sub_test123',
+                ],
+            ],
+        ];
+
+        $this->postJson('/stripe/webhook', $payload);
+
         Bus::assertDispatched(CreateAnystackLicenseJob::class, function (CreateAnystackLicenseJob $job) {
             return $job->user->email === 'john@example.com' &&
                    $job->subscription === Subscription::Max &&
@@ -179,11 +251,6 @@ class StripePurchaseHandlingTest extends TestCase
                    $job->firstName === 'John' &&
                    $job->lastName === 'Doe';
         });
-
-        $user->refresh();
-
-        $this->assertNotEmpty($user->subscriptions);
-        $this->assertNotEmpty($user->subscriptions->first()->items);
     }
 
     protected function mockStripeClient(?User $user = null): void

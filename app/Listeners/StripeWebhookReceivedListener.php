@@ -3,10 +3,12 @@
 namespace App\Listeners;
 
 use App\Jobs\CreateUserFromStripeCustomer;
+use App\Jobs\HandleInvoicePaidJob;
 use Exception;
 use Illuminate\Support\Facades\Log;
 use Laravel\Cashier\Cashier;
 use Laravel\Cashier\Events\WebhookReceived;
+use Stripe\Invoice;
 
 class StripeWebhookReceivedListener
 {
@@ -15,6 +17,7 @@ class StripeWebhookReceivedListener
         Log::debug('Webhook received', $event->payload);
 
         match ($event->payload['type']) {
+            'invoice.paid' => $this->handleInvoicePaid($event),
             'customer.subscription.created' => $this->createUserIfNotExists($event->payload['data']['object']['customer']),
             default => null,
         };
@@ -35,5 +38,12 @@ class StripeWebhookReceivedListener
         }
 
         dispatch_sync(new CreateUserFromStripeCustomer($customer));
+    }
+
+    private function handleInvoicePaid(WebhookReceived $event): void
+    {
+        $invoice = Invoice::constructFrom($event->payload['data']['object']);
+
+        dispatch(new HandleInvoicePaidJob($invoice));
     }
 }
