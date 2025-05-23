@@ -60,4 +60,12 @@ class MobilePricingTest extends TestCase
         Livewire::test(MobilePricing::class)
             ->assertDontSeeLivewire('purchase-modal');
     }
+
+    #[Test]
+    public function it_validates_email_before_creating_user()
+    {
+        Livewire::test(MobilePricing::class)
+            ->call('handlePurchaseRequest', ['email' => 'invalid-email'])
+            ->assertHasErrors('email');
+    }
 }
