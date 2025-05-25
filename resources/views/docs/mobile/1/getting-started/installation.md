@@ -27,14 +27,14 @@ order: 100
 #### For macOS
 ```shell
 export JAVA_HOME=$(/usr/libexec/java_home -v 17) // This isn't required if JAVA_HOME is already set in your environment variables (check using `printenv | grep JAVA_HOME`)
-export ANDROID_SDK_ROOT=$HOME/Library/Android/sdk
-export PATH=$PATH:$JAVA_HOME/bin:$ANDROID_SDK_ROOT/emulator:$ANDROID_SDK_ROOT/tools:$ANDROID_SDK_ROOT/tools/bin:$ANDROID_SDK_ROOT/platform-tools
+export ANDROID_HOME=$HOME/Library/Android/sdk
+export PATH=$PATH:$JAVA_HOME/bin:$ANDROID_HOME/emulator:$ANDROID_HOME/tools:$ANDROID_HOME/tools/bin:$ANDROID_HOME/platform-tools
 ```
 
 #### For Windows
 ```shell
-set ANDROID_SDK_ROOT=C:\Users\yourname\AppData\Local\Android\Sdk
-set PATH=%PATH%;%JAVA_HOME%\bin;%ANDROID_SDK_ROOT%\platform-tools
+set ANDROID_HOME=C:\Users\yourname\AppData\Local\Android\Sdk
+set PATH=%PATH%;%JAVA_HOME%\bin;%ANDROID_HOME%\platform-tools
 
 # This isn't required if JAVA_HOME is already set in the Windows Env Variables
 set JAVA_HOME=C:\Program Files\Microsoft\jdk-17.0.8.7-hotspot
