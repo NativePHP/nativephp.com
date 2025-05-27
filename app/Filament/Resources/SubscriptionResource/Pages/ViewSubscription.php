@@ -4,6 +4,7 @@ namespace App\Filament\Resources\SubscriptionResource\Pages;
 
 use App\Enums\Subscription as SubscriptionEnum;
 use App\Filament\Resources\SubscriptionResource;
+use App\Filament\Resources\UserResource;
 use Filament\Actions;
 use Filament\Infolists\Components;
 use Filament\Infolists\Infolist;
@@ -32,7 +33,8 @@ class ViewSubscription extends ViewRecord
                 Components\Section::make('Subscription Details')
                     ->schema([
                         Components\TextEntry::make('user.email')
-                            ->label('User'),
+                            ->label('User')
+                            ->url(fn ($record) => UserResource::getUrl('edit', ['record' => $record->user_id])),
                         Components\TextEntry::make('type'),
                         Components\TextEntry::make('stripe_id')
                             ->label('Stripe ID')

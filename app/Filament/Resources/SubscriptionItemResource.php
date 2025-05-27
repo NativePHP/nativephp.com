@@ -45,12 +45,31 @@ class SubscriptionItemResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->defaultSort('id', 'desc')
             ->columns([
                 Tables\Columns\TextColumn::make('id')
-                    ->sortable(),
+                    ->sortable()
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('subscription.user.email')
+                    ->sortable()
+                    ->searchable(),
                 Tables\Columns\TextColumn::make('subscription.id')
                     ->numeric()
-                    ->sortable(),
+                    ->sortable()
+                    ->url(fn ($record) => SubscriptionResource::getUrl('view', ['record' => $record->subscription])),
+                Tables\Columns\TextColumn::make('subscription.stripe_status')
+                    ->label('Subscription Status')
+                    ->badge()
+                    ->color(fn (string $state): string => match ($state) {
+                        'active' => 'success',
+                        'canceled' => 'danger',
+                        'incomplete' => 'warning',
+                        'incomplete_expired' => 'danger',
+                        'past_due' => 'warning',
+                        'trialing' => 'info',
+                        'unpaid' => 'danger',
+                        default => 'gray',
+                    }),
                 Tables\Columns\TextColumn::make('stripe_id')
                     ->searchable()
                     ->copyable(),
