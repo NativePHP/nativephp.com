@@ -2,7 +2,6 @@
 
 namespace App\Services\Anystack;
 
-use Exception;
 use Illuminate\Http\Client\PendingRequest;
 use Illuminate\Http\Client\Response;
 use Illuminate\Support\Facades\Http;
@@ -64,8 +63,6 @@ class Anystack
      */
     public function getLicense(string $productId, string $licenseId): Response
     {
-        throw new Exception('Test exception.');
-
         return $this->client()
             ->get("https://api.anystack.sh/v1/products/{$productId}/licenses/{$licenseId}")
             ->throw();
