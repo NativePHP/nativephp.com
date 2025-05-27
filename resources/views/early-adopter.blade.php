@@ -811,11 +811,26 @@
                     <a
                         href="https://zenvoice.io/p/67a61665e7a3400c73fb75af"
                         onclick="event.stopPropagation()"
-                        class="inline-block underline"
+                        class="inline-block underline hover:text-violet-400"
                     >
                         follow the instructions here
                     </a>
                     to generate your invoice.
+                </p>
+            </x-faq-card>
+
+            <x-faq-card question="How can I manage my subscription?">
+                <p>
+                    You can manage your subscription via the
+                    <a
+                        href="https://billing.stripe.com/p/login/4gwaGV5VK0uU44E288"
+                        onclick="event.stopPropagation()"
+                        class="inline-block underline hover:text-violet-400"
+                        aria-label="Stripe billing portal"
+                        target="_blank"
+                    >
+                        Stripe billing portal.
+                    </a>
                 </p>
             </x-faq-card>
         </div>
