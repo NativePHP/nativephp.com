@@ -238,7 +238,7 @@
                         <div
                             class="font-normal text-gray-600 dark:text-white/50"
                         >
-                            NativePHP for mobile
+                            NativePHP for Mobile
                         </div>
                         {{-- Image --}}
                         <a

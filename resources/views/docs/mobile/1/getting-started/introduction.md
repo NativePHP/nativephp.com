@@ -5,7 +5,7 @@ order: 001
 
 ## Welcome to the revolution!
 
-NativePHP for mobile is a first of its kind library that allows PHP developers to run PHP applications natively on
+NativePHP for Mobile is a first of its kind library that allows PHP developers to run PHP applications natively on
 all sorts of mobile devices _without a web server_.
 
 We've combined the statically compiling PHP as an embeddable C library with the flexibility of Laravel and the rich
@@ -16,7 +16,7 @@ _mobile_ applications using PHP.
 
 ## Old tools, new tricks
 
-With NativePHP for mobile, you don't have to learn any new languages or ecosystems. Stop fighting with other package
+With NativePHP for Mobile, you don't have to learn any new languages or ecosystems. Stop fighting with other package
 managers and build tools. Stay in the comfort of PHP and Composer!
 
 PHP developers all over the world are building incredible mobile experiences with the skills they already possess.
@@ -35,7 +35,7 @@ You simply interact with an easy-to-use set of functions from PHP and everything
 
 ## Batteries included
 
-NativePHP for mobile is way more than just a web view wrapper for your server-based application. Your application lives
+NativePHP for Mobile is way more than just a web view wrapper for your server-based application. Your application lives
 _on device_ and is shipped with each installation.
 
 Thanks to our custom PHP extension, you can interact with many native APIs today, with more coming each week, including:

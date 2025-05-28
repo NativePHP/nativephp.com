@@ -106,7 +106,7 @@
             class="flex flex-col gap-5"
         >
             <x-article-card
-                title="NativePHP for desktop v1 is finally here!"
+                title="NativePHP for Desktop v1 is finally here!"
                 url="/article"
                 date="2025-04-09"
             >
@@ -123,11 +123,11 @@
             >
                 Hey team, this is just a quick note about Laravel version
                 support. Per our Support Policy matrix, we will be dropping
-                Laravel 10 support for NativePHP for desktop v1. Laravel 10
+                Laravel 10 support for NativePHP for Desktop v1. Laravel 10
                 reached end of life back in February 2025.
             </x-article-card>
             <x-article-card
-                title="NativePHP for mobile—Pricing update!"
+                title="NativePHP for Mobile—Pricing update!"
                 url="/article"
                 date="2025-03-27"
             >

@@ -66,7 +66,7 @@
                 "
                 class="mt-8 text-3xl font-extrabold will-change-transform sm:text-4xl"
             >
-                NativePHP for desktop v1 is finally here!
+                NativePHP for Desktop v1 is finally here!
             </h1>
 
             {{-- Date --}}

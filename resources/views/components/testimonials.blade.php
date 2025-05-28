@@ -7,22 +7,22 @@
         <h2
             id="testimonials-heading"
             x-init="
-                    () => {
-                        motion.inView($el, (element) => {
-                            motion.animate(
-                                $el,
-                                {
-                                    opacity: [0, 1],
-                                    y: [-10, 0],
-                                },
-                                {
-                                    duration: 0.7,
-                                    ease: motion.easeOut,
-                                },
-                            )
-                        })
-                    }
-                "
+                () => {
+                    motion.inView($el, (element) => {
+                        motion.animate(
+                            $el,
+                            {
+                                opacity: [0, 1],
+                                y: [-10, 0],
+                            },
+                            {
+                                duration: 0.7,
+                                ease: motion.easeOut,
+                            },
+                        )
+                    })
+                }
+            "
             class="flex items-center gap-2 rounded-bl-md rounded-br-xl rounded-tl-xl rounded-tr-xl bg-gray-100 py-2 pl-4 pr-5 text-xl text-gray-800 opacity-0 dark:bg-gray-900 dark:text-white"
         >
             <svg
@@ -43,48 +43,48 @@
         {{-- Section Description --}}
         <p
             x-init="
-                    () => {
-                        motion.inView($el, (element) => {
-                            motion.animate(
-                                $el,
-                                {
-                                    opacity: [0, 1],
-                                    y: [10, 0],
-                                },
-                                {
-                                    duration: 0.7,
-                                    ease: motion.easeOut,
-                                },
-                            )
-                        })
-                    }
-                "
+                () => {
+                    motion.inView($el, (element) => {
+                        motion.animate(
+                            $el,
+                            {
+                                opacity: [0, 1],
+                                y: [10, 0],
+                            },
+                            {
+                                duration: 0.7,
+                                ease: motion.easeOut,
+                            },
+                        )
+                    })
+                }
+            "
             class="mx-auto max-w-xl pt-2 text-base/relaxed text-gray-600 opacity-0 dark:text-white/50"
         >
-            Here's what folks are saying about NativePHP for mobile
+            Here's what folks are saying about NativePHP for Mobile
         </p>
     </header>
 
     {{-- Testimonial List --}}
     <div
         x-init="
-                () => {
-                    motion.inView($el, (element) => {
-                        motion.animate(
-                            $refAll('testimonial'),
-                            {
-                                scale: [0, 1],
-                                opacity: [0, 1],
-                            },
-                            {
-                                duration: 0.7,
-                                ease: motion.circOut,
-                                delay: motion.stagger(0.1),
-                            },
-                        )
-                    })
-                }
-            "
+            () => {
+                motion.inView($el, (element) => {
+                    motion.animate(
+                        $refAll('testimonial'),
+                        {
+                            scale: [0, 1],
+                            opacity: [0, 1],
+                        },
+                        {
+                            duration: 0.7,
+                            ease: motion.circOut,
+                            delay: motion.stagger(0.1),
+                        },
+                    )
+                })
+            }
+        "
         class="columns-1 pt-2 sm:columns-2 lg:columns-3"
         aria-label="Customer testimonials"
     >
