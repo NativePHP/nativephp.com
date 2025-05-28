@@ -2,54 +2,36 @@
 
 namespace App\Services\Anystack;
 
-use Illuminate\Http\Client\PendingRequest;
+use App\Models\User;
+use Illuminate\Http\Client\HttpClientException;
 use Illuminate\Http\Client\Response;
-use Illuminate\Support\Facades\Http;
 
-class Anystack
+final class Anystack
 {
     /**
      * Create a new Anystack API client.
      */
-    public function client(): PendingRequest
+    public static function api(?string $apiKey = null): AnystackClient
     {
-        return Http::withToken(config('services.anystack.key'))
-            ->acceptJson()
-            ->asJson();
+        if (! ($apiKey ??= config('services.anystack.key'))) {
+            throw new HttpClientException('Anystack API key is not configured.');
+        }
+
+        return app(AnystackClient::class, ['apiKey' => $apiKey]);
     }
 
-    /**
-     * Suspend a license on AnyStack.
-     *
-     * @param  string  $productId  The AnyStack product ID
-     * @param  string  $licenseId  The AnyStack license ID
-     * @return Response The API response
-     *
-     * @throws \Illuminate\Http\Client\RequestException If the request fails
-     */
-    public function suspendLicense(string $productId, string $licenseId): Response
+    public static function findContact(string $contactUuid): ?User
     {
-        return $this->client()
-            ->patch("https://api.anystack.sh/v1/products/{$productId}/licenses/{$licenseId}", [
-                'suspended' => true,
-            ])
-            ->throw();
+        return User::query()
+            ->where('anystack_contact_id', $contactUuid)
+            ->first();
     }
 
-    /**
-     * Delete a license on AnyStack.
-     *
-     * @param  string  $productId  The AnyStack product ID
-     * @param  string  $licenseId  The AnyStack license ID
-     * @return Response The API response
-     *
-     * @throws \Illuminate\Http\Client\RequestException If the request fails
-     */
-    public function deleteLicense(string $productId, string $licenseId): Response
+    public static function findContactOrFail(string $contactUuid): ?User
     {
-        return $this->client()
-            ->delete("https://api.anystack.sh/v1/products/{$productId}/licenses/{$licenseId}")
-            ->throw();
+        return User::query()
+            ->where('anystack_contact_id', $contactUuid)
+            ->firstOrFail();
     }
 
     /**
