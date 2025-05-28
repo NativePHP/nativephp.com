@@ -7,8 +7,6 @@ use App\Filament\Resources\LicenseResource\RelationManagers;
 use App\Models\License;
 use Filament\Forms;
 use Filament\Forms\Form;
-use Filament\Infolists;
-use Filament\Infolists\Infolist;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
@@ -25,27 +23,39 @@ class LicenseResource extends Resource
             ->schema([
                 Forms\Components\Section::make('License Information')
                     ->schema([
-                        Forms\Components\TextInput::make('id'),
+                        Forms\Components\TextInput::make('id')
+                            ->disabled(),
                         Forms\Components\TextInput::make('anystack_id')
-                            ->maxLength(36),
+                            ->maxLength(36)
+                            ->disabled(),
                         Forms\Components\Select::make('user_id')
-                            ->relationship('user', 'email'),
+                            ->relationship('user', 'email')
+                            ->searchable(['id', 'email']),
+                        Forms\Components\Select::make('subscription_item_id')
+                            ->relationship('subscriptionItem', 'id')
+                            ->nullable()
+                            ->searchable(),
                         Forms\Components\TextInput::make('policy_name')
-                            ->label('Plan'),
-                        Forms\Components\TextInput::make('key'),
-                        Forms\Components\DateTimePicker::make('expires_at'),
-                        Forms\Components\DateTimePicker::make('created_at'),
+                            ->label('Plan')
+                            ->disabled(),
+                        Forms\Components\TextInput::make('key')
+                            ->disabled(),
+                        Forms\Components\DateTimePicker::make('expires_at')
+                            ->disabled(),
+                        Forms\Components\DateTimePicker::make('created_at')
+                            ->disabled(),
                         Forms\Components\Toggle::make('is_suspended')
-                            ->label('Suspended'),
+                            ->label('Suspended')
+                            ->disabled(),
                     ])
-                    ->columns(2)
-                    ->disabled(),
+                    ->columns(2),
             ]);
     }
 
     public static function table(Table $table): Table
     {
         return $table
+            ->defaultSort('id', 'desc')
             ->columns([
                 Tables\Columns\TextColumn::make('id')
                     ->sortable()
@@ -75,7 +85,8 @@ class LicenseResource extends Resource
                     ->sortable(),
             ])
             ->filters([
-                //
+                Tables\Filters\TernaryFilter::make('is_suspended')
+                    ->label('Suspended'),
             ])
             ->actions([
                 Tables\Actions\ActionGroup::make([
@@ -92,39 +103,10 @@ class LicenseResource extends Resource
                     ->icon('heroicon-m-ellipsis-vertical'),
             ])
             ->defaultPaginationPageOption(25)
-            ->bulkActions([]);
-    }
-
-    public static function infolist(Infolist $infolist): Infolist
-    {
-        return $infolist
-            ->schema([
-                Infolists\Components\Section::make('License Information')
-                    ->schema([
-                        Infolists\Components\TextEntry::make('id')
-                            ->copyable(),
-                        Infolists\Components\TextEntry::make('anystack_id')
-                            ->copyable(),
-                        Infolists\Components\TextEntry::make('user.email')
-                            ->label('User')
-                            ->copyable(),
-                        Infolists\Components\TextEntry::make('policy_name')
-                            ->label('Plan')
-                            ->copyable(),
-                        Infolists\Components\TextEntry::make('key')
-                            ->copyable(),
-                        Infolists\Components\TextEntry::make('expires_at')
-                            ->dateTime()
-                            ->copyable(),
-                        Infolists\Components\TextEntry::make('created_at')
-                            ->dateTime()
-                            ->copyable(),
-                        Infolists\Components\IconEntry::make('is_suspended')
-                            ->label('Suspended')
-                            ->boolean(),
-                    ])
-                    ->columns(2),
-            ]);
+            ->bulkActions([])
+            ->recordUrl(
+                fn ($record) => static::getUrl('edit', ['record' => $record])
+            );
     }
 
     public static function getRelations(): array
@@ -139,7 +121,7 @@ class LicenseResource extends Resource
     {
         return [
             'index' => Pages\ListLicenses::route('/'),
-            'view' => Pages\ViewLicense::route('/{record}'),
+            'edit' => Pages\EditLicense::route('/{record}/edit'),
         ];
     }
 }
