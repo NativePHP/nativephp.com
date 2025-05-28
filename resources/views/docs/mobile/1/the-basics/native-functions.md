@@ -3,7 +3,7 @@ title: Native Functions
 order: 1
 ---
 
-Nearly any basic Laravel app will work as a mobile app with NativePHP for mobile. However, what makes NativePHP
+Nearly any basic Laravel app will work as a mobile app with NativePHP for Mobile. However, what makes NativePHP
 unique is that it allows you to call native functions from your PHP code.
 
 These functions are called from your PHP code using one of an ever-growing list of facades.

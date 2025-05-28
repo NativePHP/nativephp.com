@@ -9,7 +9,7 @@ order: 100
 2. Laravel 10 or higher
 3. An Apple Silicon Mac running macOS 12+ with Xcode 16+
 4. An active [Apple Developer account](https://developer.apple.com/)
-5. [A NativePHP for mobile license](https://nativephp.com/mobile)
+5. [A NativePHP for Mobile license](https://nativephp.com/mobile)
 6. _Optional_ iOS device
 
 
@@ -42,20 +42,20 @@ set JAVA_HOME=C:\Program Files\Microsoft\jdk-17.0.8.7-hotspot
 
 > **Note** You cannot build iOS apps on Windows or Linux
 
-You don't _need_ a physical iOS/Android device to compile your application and test it for your app, as NativePHP for mobile supports
+You don't _need_ a physical iOS/Android device to compile your application and test it for your app, as NativePHP for Mobile supports
 the iOS Simulator and Android emulators. However, we highly recommend that you test your application on a real device before submitting to the
 App/Google Play Store.
 
 ## Laravel
 
-NativePHP for mobile is built to work with Laravel. You can install it into an existing Laravel application, or
+NativePHP for Mobile is built to work with Laravel. You can install it into an existing Laravel application, or
 [start a new one](https://laravel.com/docs/installation). The most painless way to get PHP and Node up and running on your system is with
 [Laravel Herd](https://herd.laravel.com). It's fast and free!
 
 
-## Install NativePHP for mobile
+## Install NativePHP for Mobile
 
-To make NativePHP for mobile a reality has taken a lot of work and will continue to require even more. For this reason,
+To make NativePHP for Mobile a reality has taken a lot of work and will continue to require even more. For this reason,
 it's not open source, and you are not free to distribute or modify its source code.
 
 Before you begin, you will need to purchase a license.
@@ -97,7 +97,7 @@ NATIVEPHP_APP_VERSION_CODE="1"
 php artisan native:install
 ```
 
-The NativePHP installer works similarly to NativePHP for desktop, taking care of setting up and configuring your Laravel
+The NativePHP installer works similarly to NativePHP for Desktop, taking care of setting up and configuring your Laravel
 application to work with iOS and/or Android.
 
 ## Start your app

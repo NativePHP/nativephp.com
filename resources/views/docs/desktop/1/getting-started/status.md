@@ -9,7 +9,7 @@ We're currently focused on reaching the next minor release.
 
 ## Current Status
 
-NativePHP for desktop is **production-ready**. So you should feel completely ready to build and distribute apps
+NativePHP for Desktop is **production-ready**. So you should feel completely ready to build and distribute apps
 with NativePHP.
 
 But we always need your help! If you spot any bugs or feel that there are any features missing, be sure to share
