@@ -7,7 +7,7 @@ use App\Livewire\OrderSuccess;
 use App\Models\License;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\Session;
+use Laravel\Cashier\Cashier;
 use Livewire\Livewire;
 use PHPUnit\Framework\Attributes\Test;
 use Stripe\Checkout\Session as CheckoutSession;
@@ -39,10 +39,8 @@ class OrderSuccessTest extends TestCase
     #[Test]
     public function it_displays_loading_state_when_no_license_key_is_available()
     {
-        Session::flush();
-
         Livewire::test(OrderSuccess::class, ['checkoutSessionId' => 'cs_test_123'])
-            ->assertSet('email', 'test@example.com')
+            ->assertSet('email', null)
             ->assertSet('licenseKey', null)
             ->assertSee('License registration in progress')
             ->assertSee('check your email');
@@ -51,17 +49,31 @@ class OrderSuccessTest extends TestCase
     #[Test]
     public function it_displays_license_key_when_available_in_database()
     {
-        Session::flush();
-
         $user = User::factory()->create([
             'email' => 'test@example.com',
+            'stripe_id' => 'cus_test123',
         ]);
 
-        License::factory()->create([
-            'user_id' => $user->id,
-            'key' => 'db-license-key-12345',
-            'policy_name' => 'max',
-        ]);
+        $subscription = Cashier::$subscriptionModel::factory()
+            ->for($user, 'user')
+            ->create([
+                'stripe_id' => 'sub_test123',
+            ]);
+
+        $subscriptionItem = Cashier::$subscriptionItemModel::factory()
+            ->for($subscription, 'subscription')
+            ->create([
+                'stripe_id' => 'si_test123',
+                'stripe_price' => Subscription::Max->stripePriceId(),
+            ]);
+
+        $license = License::factory()
+            ->for($user, 'user')
+            ->for($subscriptionItem, 'subscriptionItem')
+            ->create([
+                'key' => 'db-license-key-12345',
+                'policy_name' => 'max',
+            ]);
 
         Livewire::test(OrderSuccess::class, ['checkoutSessionId' => 'cs_test_123'])
             ->assertSet('email', 'test@example.com')
@@ -72,25 +84,8 @@ class OrderSuccessTest extends TestCase
     }
 
     #[Test]
-    public function it_uses_session_data_when_available()
-    {
-        $checkoutSessionId = 'cs_test_123';
-
-        Session::put("$checkoutSessionId.email", 'session@example.com');
-        Session::put("$checkoutSessionId.license_key", 'session-license-key');
-
-        Livewire::test(OrderSuccess::class, ['checkoutSessionId' => 'cs_test_123'])
-            ->assertSet('email', 'session@example.com')
-            ->assertSet('licenseKey', 'session-license-key')
-            ->assertSee('session-license-key')
-            ->assertSee('session@example.com');
-    }
-
-    #[Test]
     public function it_polls_for_updates_from_database()
     {
-        Session::flush();
-
         $component = Livewire::test(OrderSuccess::class, ['checkoutSessionId' => 'cs_test_123'])
             ->assertSet('licenseKey', null)
             ->assertSee('License registration in progress')
@@ -98,13 +93,29 @@ class OrderSuccessTest extends TestCase
 
         $user = User::factory()->create([
             'email' => 'test@example.com',
+            'stripe_id' => 'cus_test123',
         ]);
 
-        License::factory()->create([
-            'user_id' => $user->id,
-            'key' => 'db-polled-license-key',
-            'policy_name' => 'max',
-        ]);
+        $subscription = Cashier::$subscriptionModel::factory()
+            ->for($user, 'user')
+            ->create([
+                'stripe_id' => 'sub_test123',
+            ]);
+
+        $subscriptionItem = Cashier::$subscriptionItemModel::factory()
+            ->for($subscription, 'subscription')
+            ->create([
+                'stripe_id' => 'si_test123',
+                'stripe_price' => Subscription::Max->stripePriceId(),
+            ]);
+
+        $license = License::factory()
+            ->for($user, 'user')
+            ->for($subscriptionItem, 'subscriptionItem')
+            ->create([
+                'key' => 'db-polled-license-key',
+                'policy_name' => 'max',
+            ]);
 
         $component->call('loadData')
             ->assertSet('licenseKey', 'db-polled-license-key')
@@ -144,9 +155,11 @@ class OrderSuccessTest extends TestCase
     {
         $mockCheckoutSession = CheckoutSession::constructFrom([
             'id' => 'cs_test_123',
+            'customer' => 'cus_test123',
             'customer_details' => [
                 'email' => 'test@example.com',
             ],
+            'subscription' => 'sub_test123',
         ]);
 
         $mockCheckoutSessionLineItems = Collection::constructFrom([

@@ -3,7 +3,8 @@
 namespace App\Livewire;
 
 use App\Enums\Subscription;
-use App\Models\User;
+use App\Models\License;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Laravel\Cashier\Cashier;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Title;
@@ -31,84 +32,37 @@ class OrderSuccess extends Component
 
     public function loadData(): void
     {
-        $this->email = $this->loadEmail();
-        $this->licenseKey = $this->loadLicenseKey();
-        $this->subscription = $this->loadSubscription();
-    }
-
-    private function loadEmail(): ?string
-    {
-        if ($email = session($this->sessionKey('email'))) {
-            return $email;
-        }
-
         try {
-            $checkoutSession = Cashier::stripe()->checkout->sessions->retrieve($this->checkoutSessionId);
+            $subscriptionId = Cashier::stripe()->checkout->sessions->retrieve($this->checkoutSessionId)->subscription;
         } catch (InvalidRequestException $e) {
-            return $this->redirect('/mobile');
+            $this->redirect('/mobile');
+
+            return;
         }
 
-        if (! ($email = $checkoutSession?->customer_details?->email)) {
-            return null;
+        $subscriptionRecord = Cashier::$subscriptionModel::query()
+            ->whereNotNull('stripe_id')
+            ->where('stripe_id', $subscriptionId)
+            ->first();
+
+        if (! $subscriptionRecord) {
+            return;
         }
 
-        session()->put($this->sessionKey('email'), $email);
+        $subscriptionItem = Cashier::$subscriptionItemModel::query()
+            ->whereBelongsTo($subscriptionRecord)
+            ->first();
 
-        return $email;
-    }
+        if (! $subscriptionItem) {
+            report(new ModelNotFoundException("No subscription item found for subscription record [{$subscriptionRecord->id}]."));
 
-    private function loadLicenseKey(): ?string
-    {
-        if ($licenseKey = session($this->sessionKey('license_key'))) {
-            return $licenseKey;
+            return;
         }
 
-        if (! $this->email) {
-            return null;
-        }
-
-        $user = User::where('email', $this->email)->first();
-
-        if (! $user) {
-            return null;
-        }
-
-        $license = $user->licenses()->latest()->first();
-
-        if (! $license) {
-            return null;
-        }
-
-        session()->put($this->sessionKey('license_key'), $license->key);
-
-        return $license->key;
-    }
-
-    private function loadSubscription(): ?Subscription
-    {
-        if ($subscription = session($this->sessionKey('subscription'))) {
-            return Subscription::tryFrom($subscription);
-        }
-
-        try {
-            $priceId = Cashier::stripe()->checkout->sessions->allLineItems($this->checkoutSessionId)->first()?->price->id;
-        } catch (InvalidRequestException $e) {
-            return $this->redirect('/mobile');
-        }
-
-        if (! $priceId) {
-            return null;
-        }
-
-        $subscription = Subscription::fromStripePriceId($priceId);
-
-        session()->put($this->sessionKey('subscription'), $subscription->value);
-
-        return $subscription;
-    }
-
-    private function sessionKey(string $key): string
-    {
-        return "{$this->checkoutSessionId}.{$key}";
+        $this->subscription = Subscription::fromStripePriceId($subscriptionItem->stripe_price);
+        $this->email = $subscriptionRecord->user->email;
+        $this->licenseKey = License::query()
+            ->whereBelongsTo($subscriptionItem)
+            ->first()?->key;
     }
 }
