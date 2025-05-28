@@ -35,7 +35,10 @@ class EditLicense extends EditRecord
                     ->visible(fn () => filled($this->record->anystack_id))
                     ->action(function () {
                         try {
-                            $response = app(Anystack::class)->getLicense($this->record->anystack_product_id, $this->record->anystack_id);
+                            $response = Anystack::api()
+                                ->license($this->record->anystack_id, $this->record->anystack_product_id)
+                                ->retrieve();
+
                             dispatch_sync(new UpsertLicenseFromAnystackLicense($response->json('data')));
 
                             Notification::make()

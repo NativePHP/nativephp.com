@@ -7,16 +7,14 @@ use App\Services\Anystack\Anystack;
 
 class SuspendLicense
 {
-    public function __construct(
-        protected Anystack $anystack
-    ) {}
-
     /**
      * Handle the suspension of a license.
      */
     public function handle(License $license): License
     {
-        $this->anystack->suspendLicense($license->anystack_product_id, $license->anystack_id);
+        Anystack::api()
+            ->license($license->anystack_id, $license->anystack_product_id)
+            ->suspend();
 
         $license->update([
             'is_suspended' => true,

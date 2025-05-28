@@ -41,8 +41,10 @@ class ListLicenses extends ListRecords
                 ])
                 ->action(function (array $data) {
                     try {
-                        $productId = Subscription::Mini->anystackProductId();
-                        $response = app(Anystack::class)->getLicense($productId, $data['anystack_id']);
+                        $response = Anystack::api()
+                            ->license($data['anystack_id'], Subscription::Mini->anystackProductId()) // any plan's product id will work
+                            ->retrieve();
+
                         $licenseData = $response->json('data');
 
                         dispatch_sync(new UpsertLicenseFromAnystackLicense($licenseData));

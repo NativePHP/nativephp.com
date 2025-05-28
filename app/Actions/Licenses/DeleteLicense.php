@@ -7,17 +7,15 @@ use App\Services\Anystack\Anystack;
 
 class DeleteLicense
 {
-    public function __construct(
-        protected Anystack $anystack
-    ) {}
-
     /**
      * Handle the deletion of a license.
      */
     public function handle(License $license, bool $deleteFromAnystack = true): bool
     {
         if ($deleteFromAnystack) {
-            $this->anystack->deleteLicense($license->anystack_product_id, $license->anystack_id);
+            Anystack::api()
+                ->license($license->anystack_id, $license->anystack_product_id)
+                ->delete();
         }
 
         return $license->delete();
