@@ -33,7 +33,9 @@
     </div>
 
     {{-- Title --}}
-    <h2 class="font-medium">NativePHP for desktop and mobile have reached v1!</h2>
+    <h2 class="font-medium">
+        NativePHP for Desktop and Mobile have reached v1!
+    </h2>
 
     {{-- Dot 1 --}}
     <div

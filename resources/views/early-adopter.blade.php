@@ -27,7 +27,7 @@
                 "
                 class="text-3xl font-extrabold sm:text-4xl"
             >
-                NativePHP for mobile
+                NativePHP for Mobile
             </h1>
 
             {{-- Introduction Description --}}
@@ -593,7 +593,7 @@
                 <div
                     x-ref="box"
                     class="relative isolate z-0 mt-3 grid h-52 w-72 place-items-center overflow-hidden rounded-xl opacity-0"
-                    aria-label="Developer using an app built with NativePHP for mobile"
+                    aria-label="Developer using an app built with NativePHP for Mobile"
                 >
                     {{-- Background image --}}
                     <img
@@ -728,7 +728,7 @@
                 <p>
                     We want to build an amazing tool and make it sustainable. A
                     lot of NativePHP is already fully open source. With
-                    NativePHP for mobile, we need to take a different path to
+                    NativePHP for Mobile, we need to take a different path to
                     ensure that the entire project continues to get the support
                     it deserves.
                 </p>
@@ -786,7 +786,7 @@
             </x-faq-card>
             <x-faq-card question="Will my apps built with NativePHP be secure?">
                 <p>
-                    Definitely. NativePHP for mobile apps are just like other
+                    Definitely. NativePHP for Mobile apps are just like other
                     iOS and Android apps - they're as secure as you make them.
                 </p>
             </x-faq-card>
@@ -883,7 +883,7 @@
             </p>
             <p>
                 With
-                <strong class="dark:text-white">NativePHP for mobile</strong>
+                <strong class="dark:text-white">NativePHP for Mobile</strong>
                 , we are excited about the possibilities that lie ahead.
             </p>
             <p>
@@ -911,7 +911,7 @@
             <p class="italic">We can't wait to see what you build!</p>
             <p>
                 <span class="font-bold italic dark:text-white">
-                    Simon, Shane, &amp; Marcel
+                    Simon &amp; Shane
                 </span>
                 <br />
                 <span class="text-indigo-400">Creators of NativePHP</span>

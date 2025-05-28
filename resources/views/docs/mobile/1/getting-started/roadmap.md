@@ -5,11 +5,11 @@ order: 099
 
 ## Current Status
 
-NativePHP for mobile v1 is here. While we're still in the process of adding more and more 
+NativePHP for Mobile v1 is here. While we're still in the process of adding more and more 
 native API's and other features we believe it's robust enough to build useful applications that can be
 distributed to users.
 
-Presently, NativePHP for mobile offers the following "native" functionality:
+Presently, NativePHP for Mobile offers the following "native" functionality:
 
 - Vibrate
 - Show Toasts

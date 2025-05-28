@@ -4,6 +4,7 @@ namespace App\Filament\Resources\LicenseResource\Pages;
 
 use App\Actions\Licenses\DeleteLicense;
 use App\Actions\Licenses\SuspendLicense;
+use App\Actions\Licenses\UnsuspendLicense;
 use App\Filament\Resources\LicenseResource;
 use App\Jobs\UpsertLicenseFromAnystackLicense;
 use App\Models\License;
@@ -35,7 +36,10 @@ class EditLicense extends EditRecord
                     ->visible(fn () => filled($this->record->anystack_id))
                     ->action(function () {
                         try {
-                            $response = app(Anystack::class)->getLicense($this->record->anystack_product_id, $this->record->anystack_id);
+                            $response = Anystack::api()
+                                ->license($this->record->anystack_id, $this->record->anystack_product_id)
+                                ->retrieve();
+
                             dispatch_sync(new UpsertLicenseFromAnystackLicense($response->json('data')));
 
                             Notification::make()
@@ -54,19 +58,52 @@ class EditLicense extends EditRecord
                 Actions\Action::make('suspend')
                     ->label('Suspend')
                     ->icon('heroicon-o-archive-box-x-mark')
-                    ->color('danger')
+                    ->color('warning')
                     ->requiresConfirmation()
                     ->modalHeading('Suspend')
                     ->modalDescription('Are you sure you want to suspend this license?')
-                    ->modalSubmitActionLabel('Suspend license')
+                    ->modalSubmitActionLabel('Suspend')
                     ->visible(fn () => ! $this->record->is_suspended)
                     ->action(function () {
-                        app(SuspendLicense::class)->handle($this->record);
+                        try {
+                            app(SuspendLicense::class)->handle($this->record);
 
-                        Notification::make()
-                            ->title('License suspended successfully')
-                            ->success()
-                            ->send();
+                            Notification::make()
+                                ->title('License suspended successfully')
+                                ->success()
+                                ->send();
+                        } catch (\Exception $e) {
+                            Notification::make()
+                                ->title('Error suspending license')
+                                ->body('Failed to suspend license: '.$e->getMessage())
+                                ->danger()
+                                ->send();
+                        }
+                    }),
+                Actions\Action::make('unsuspend')
+                    ->label('Unsuspend')
+                    ->icon('heroicon-o-power')
+                    ->color('warning')
+                    ->requiresConfirmation()
+                    ->modalHeading('Unsuspend')
+                    ->modalDescription('Are you sure you want to remove the suspension for this license?')
+                    ->modalSubmitActionLabel('Unsuspend')
+                    ->visible(fn () => $this->record->is_suspended)
+                    ->action(function () {
+                        try {
+                            app(UnsuspendLicense::class)->handle($this->record);
+
+                            Notification::make()
+                                ->title('License unsuspended successfully')
+                                ->success()
+                                ->send();
+                        } catch (\Exception $e) {
+                            Notification::make()
+                                ->title('Error unsuspending license')
+                                ->body('Failed to unsuspend license: '.$e->getMessage())
+                                ->danger()
+                                ->send();
+                        }
                     }),
                 Actions\Action::make('delete')
                     ->label('Delete')
