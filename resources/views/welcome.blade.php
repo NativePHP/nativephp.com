@@ -407,108 +407,60 @@
         </p>
 
         {{-- Call to Action Button --}}
-        <div class="grid place-items-center pt-5">
+        <div
+            class="mt-10 flex flex-wrap-reverse items-center justify-center gap-4 sm:flex-nowrap"
+        >
+            {{-- Desktop --}}
             <a
-                x-init="
-                    () => {
-                        motion.animate(
-                            $el,
-                            {
-                                scale: [0, 1],
-                                opacity: [0, 1],
-                            },
-                            {
-                                duration: 0.8,
-                                ease: motion.backOut,
-                            },
-                        )
-                    }
-                "
-                href="/docs/"
-                class="group isolate z-0 grid place-items-center leading-snug text-white will-change-transform"
-                aria-label="Get started with NativePHP documentation"
+                href="/docs/desktop/1"
+                class="group relative isolate z-0 flex h-16 w-full max-w-64 items-center justify-between gap-3 overflow-hidden rounded-2xl bg-[#EBEDF2] pl-5 pr-6 leading-snug transition duration-200 ease-in-out will-change-transform hover:bg-[#e5d6ff] dark:bg-haiti dark:hover:bg-indigo-900/60"
+                aria-label="Get started with NativePHP documentation for desktop apps"
             >
-                {{-- Label --}}
-                <div
-                    class="z-10 grid place-items-center gap-1.5 self-center justify-self-center [grid-area:1/-1]"
-                >
-                    <div>Get</div>
-                    <div>Started</div>
-
-                    {{-- Arrow --}}
-                    <div
-                        x-init="
-                            () => {
-                                motion.animate(
-                                    $el,
-                                    {
-                                        x: [0, 5],
-                                    },
-                                    {
-                                        duration: 0.8,
-                                        repeat: Infinity,
-                                        repeatType: 'mirror',
-                                        ease: motion.easeInOut,
-                                    },
-                                )
-                            }
-                        "
-                        aria-hidden="true"
-                    >
-                        <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            viewBox="0 0 15 11"
-                            fill="none"
-                            class="mt-1 w-5 text-[#DBDAE8] transition duration-300 ease-out group-hover:text-violet-400"
-                            aria-hidden="true"
-                        >
-                            <path
-                                d="M1 4.8C0.613401 4.8 0.3 5.1134 0.3 5.5C0.3 5.8866 0.613401 6.2 1 6.2L1 4.8ZM14.495 5.99498C14.7683 5.72161 14.7683 5.27839 14.495 5.00503L10.0402 0.550253C9.76684 0.276886 9.32362 0.276886 9.05025 0.550253C8.77689 0.823621 8.77689 1.26684 9.05025 1.5402L13.0101 5.5L9.05025 9.4598C8.77689 9.73317 8.77689 10.1764 9.05025 10.4497C9.32362 10.7231 9.76683 10.7231 10.0402 10.4497L14.495 5.99498ZM1 6.2L14 6.2L14 4.8L1 4.8L1 6.2Z"
-                                fill="currentColor"
-                            />
-                        </svg>
+                {{-- Arrow --}}
+                <div class="flex items-center gap-1">
+                    <div class="size-1 rounded-full bg-current"></div>
+                    <div class="flex flex-col gap-2 opacity-50">
+                        <div class="size-1 rounded-full bg-current"></div>
+                        <div class="size-1 rounded-full bg-current"></div>
                     </div>
                 </div>
 
-                {{-- Shape --}}
-                <div
-                    x-init="
-                        () => {
-                            motion.animate(
-                                $el,
-                                {
-                                    rotate: [0, 180],
-                                },
-                                {
-                                    duration: 6,
-                                    repeat: Infinity,
-                                    repeatType: 'loop',
-                                    ease: 'linear',
-                                },
-                            )
-                        }
-                    "
-                    class="self-center justify-self-center [grid-area:1/-1]"
-                    aria-hidden="true"
-                >
-                    <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        class="size-32 text-black transition duration-500 ease-out will-change-transform group-hover:scale-110 group-hover:text-zinc-900 dark:text-[#181a25] dark:group-hover:text-black"
-                        viewBox="0 0 133 133"
-                        fill="none"
-                        aria-hidden="true"
-                    >
-                        <path
-                            d="M133 66.5028C133 58.2246 128.093 50.5844 119.798 44.4237C121.305 34.2085 119.374 25.3317 113.518 19.4759C107.663 13.6202 98.7915 11.689 88.5707 13.1967C82.4213 4.9071 74.7811 0 66.5028 0C58.2246 0 50.5844 4.9071 44.4237 13.2023C34.2085 11.6946 25.3317 13.6258 19.4759 19.4816C13.6202 25.3374 11.689 34.2086 13.1967 44.4293C4.9071 50.5787 0 58.2246 0 66.5028C0 74.7811 4.9071 82.4213 13.2023 88.582C11.6946 98.7971 13.6258 107.674 19.4816 113.53C25.3374 119.385 34.2086 121.317 44.4293 119.809C50.5844 128.099 58.2302 133.011 66.5085 133.011C74.7867 133.011 82.4269 128.104 88.5876 119.809C98.8027 121.317 107.68 119.385 113.535 113.53C119.391 107.674 121.322 98.8027 119.815 88.582C128.104 82.4269 133.017 74.7811 133.017 66.5028H133Z"
-                            fill="currentColor"
-                        />
-                    </svg>
+                {{-- Label --}}
+                <div class="flex items-center gap-3">
+                    <div>Desktop</div>
+                    <x-icons.pc class="size-7 shrink-0" />
+                </div>
+            </a>
+
+            {{-- Mobile --}}
+            <a
+                href="/docs/mobile/1"
+                class="group relative isolate z-0 flex h-16 w-full max-w-64 items-center justify-between gap-3 overflow-hidden rounded-2xl bg-[#EBEDF2] pl-6 pr-5 leading-snug transition duration-200 ease-in-out will-change-transform hover:bg-[#e5d6ff] dark:bg-haiti dark:hover:bg-indigo-900/50"
+                aria-label="Get started with NativePHP documentation for mobile apps"
+            >
+                {{-- Label --}}
+                <div class="flex items-center gap-3">
+                    <x-icons.device-mobile-phone class="size-6 shrink-0" />
+                    <div>Mobile</div>
                 </div>
 
-                {{-- Blur --}}
+                {{-- Arrow --}}
+                <div class="flex items-center gap-1">
+                    <div class="flex flex-col gap-2 opacity-50">
+                        <div class="size-1 rounded-full bg-current"></div>
+                        <div class="size-1 rounded-full bg-current"></div>
+                    </div>
+                    <div class="size-1 rounded-full bg-current"></div>
+                </div>
+
+                {{-- Blue blur --}}
                 <div
-                    class="hidden size-20 self-center justify-self-center bg-indigo-400/70 blur-3xl [grid-area:1/-1] dark:block"
-                    aria-hidden="true"
+                    class="absolute -bottom-12 left-14 -z-10 h-20 w-44 rounded-full bg-[#D3D3FF] blur-xl dark:bg-blue-500/30"
+                ></div>
+
+                {{-- Orange blur --}}
+                <div
+                    class="absolute -bottom-12 -left-5 -z-20 h-20 w-44 rounded-full bg-[#FFE7D3] blur-xl dark:bg-indigo-500/30"
                 ></div>
             </a>
         </div>
