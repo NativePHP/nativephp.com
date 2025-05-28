@@ -240,32 +240,7 @@
             "
             class="opacity-0"
         >
-            <span>© {{ date('Y') }} Maintained by</span>
-            <a
-                href="https://x.com/marcelpociot"
-                target="_blank"
-                class="group relative font-medium text-black/80 transition duration-200 hover:text-black dark:text-white/80 dark:hover:text-white"
-                aria-label="Marcel Pociot's Twitter profile"
-                rel="noopener noreferrer"
-            >
-                Marcel Pociot
-                <div
-                    class="absolute -bottom-0.5 left-0 h-px w-full origin-right scale-x-0 bg-current transition duration-300 ease-out will-change-transform group-hover:origin-left group-hover:scale-x-100"
-                ></div>
-            </a>
-            <span>and</span>
-            <a
-                href="https://x.com/simonhamp"
-                target="_blank"
-                class="group relative font-medium text-black/80 transition duration-200 hover:text-black dark:text-white/80 dark:hover:text-white"
-                aria-label="Simon Hamp's Twitter profile"
-                rel="noopener noreferrer"
-            >
-                Simon Hamp
-                <div
-                    class="absolute -bottom-0.5 left-0 h-px w-full origin-right scale-x-0 bg-current transition duration-300 ease-out will-change-transform group-hover:origin-left group-hover:scale-x-100"
-                ></div>
-            </a>
+            <span>© {{ date('Y') }} Bifrost Technology, LLC</span>
         </div>
     </section>
 </footer>
