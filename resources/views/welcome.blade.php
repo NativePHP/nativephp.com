@@ -411,58 +411,149 @@
             class="mt-10 flex flex-wrap-reverse items-center justify-center gap-4 sm:flex-nowrap"
         >
             {{-- Desktop --}}
-            <a
-                href="/docs/desktop/1"
-                class="group relative isolate z-0 flex h-16 w-full max-w-64 items-center justify-between gap-3 overflow-hidden rounded-2xl bg-[#EBEDF2] pl-5 pr-6 leading-snug transition duration-200 ease-in-out will-change-transform hover:bg-[#e5d6ff] dark:bg-haiti dark:hover:bg-indigo-900/60"
-                aria-label="Get started with NativePHP documentation for desktop apps"
+            <div
+                x-init="
+                    () => {
+                        motion.animate(
+                            $el,
+                            {
+                                opacity: [0, 1],
+                                x: [10, 0],
+                            },
+                            {
+                                duration: 1,
+                                ease: motion.easeOut,
+                            },
+                        )
+                    }
+                "
+                class="w-full max-w-64"
             >
-                {{-- Arrow --}}
-                <div class="flex items-center gap-1">
-                    <div class="size-1 rounded-full bg-current"></div>
-                    <div class="flex flex-col gap-2 opacity-50">
-                        <div class="size-1 rounded-full bg-current"></div>
-                        <div class="size-1 rounded-full bg-current"></div>
+                <a
+                    href="/docs/desktop/1"
+                    class="group relative isolate z-0 flex h-16 items-center justify-between gap-3 overflow-hidden rounded-2xl bg-[#EBEDF2] pl-5 pr-6 leading-snug transition duration-200 ease-in-out will-change-transform hover:bg-[#e5d6ff] dark:bg-haiti dark:hover:bg-indigo-900/60"
+                    aria-label="Get started with NativePHP documentation for desktop apps"
+                >
+                    {{-- Arrow --}}
+                    <div class="flex items-center gap-1">
+                        <div
+                            class="size-1 rounded-full bg-current transition duration-500 ease-in-out will-change-transform group-hover:translate-x-2 group-hover:translate-y-1.5 group-hover:opacity-50"
+                        ></div>
+                        <div class="flex flex-col gap-2">
+                            <div
+                                class="size-1 rounded-full bg-current opacity-50 transition duration-500 ease-in-out will-change-transform group-hover:-translate-x-2 group-hover:translate-y-1.5 group-hover:opacity-100"
+                            ></div>
+                            <div
+                                class="size-1 rounded-full bg-current opacity-50 transition duration-500 ease-in-out will-change-transform group-hover:-translate-y-3"
+                            ></div>
+                        </div>
                     </div>
-                </div>
 
-                {{-- Label --}}
-                <div class="flex items-center gap-3">
-                    <div>Desktop</div>
-                    <x-icons.pc class="size-7 shrink-0" />
-                </div>
-            </a>
+                    {{-- Label --}}
+                    <div
+                        class="flex items-center gap-3 duration-500 ease-in-out will-change-transform group-hover:-translate-x-1"
+                    >
+                        <div>Desktop</div>
+                        <x-icons.pc class="size-7 shrink-0" />
+                    </div>
+                </a>
+            </div>
 
             {{-- Mobile --}}
-            <a
-                href="/docs/mobile/1"
-                class="group relative isolate z-0 flex h-16 w-full max-w-64 items-center justify-between gap-3 overflow-hidden rounded-2xl bg-[#EBEDF2] pl-6 pr-5 leading-snug transition duration-200 ease-in-out will-change-transform hover:bg-[#e5d6ff] dark:bg-haiti dark:hover:bg-indigo-900/50"
-                aria-label="Get started with NativePHP documentation for mobile apps"
+            <div
+                x-init="
+                    () => {
+                        motion.animate(
+                            $el,
+                            {
+                                opacity: [0, 1],
+                                x: [-10, 0],
+                            },
+                            {
+                                duration: 1,
+                                ease: motion.easeOut,
+                            },
+                        )
+                    }
+                "
+                class="w-full max-w-64"
             >
-                {{-- Label --}}
-                <div class="flex items-center gap-3">
-                    <x-icons.device-mobile-phone class="size-6 shrink-0" />
-                    <div>Mobile</div>
-                </div>
-
-                {{-- Arrow --}}
-                <div class="flex items-center gap-1">
-                    <div class="flex flex-col gap-2 opacity-50">
-                        <div class="size-1 rounded-full bg-current"></div>
-                        <div class="size-1 rounded-full bg-current"></div>
+                <a
+                    href="/docs/mobile/1"
+                    class="group relative isolate z-0 flex h-16 items-center justify-between gap-3 overflow-hidden rounded-2xl bg-[#EBEDF2] pl-6 pr-5 leading-snug transition duration-200 ease-in-out will-change-transform hover:bg-[#e5d6ff] dark:bg-haiti dark:hover:bg-indigo-900/50"
+                    aria-label="Get started with NativePHP documentation for mobile apps"
+                >
+                    {{-- Label --}}
+                    <div
+                        class="flex items-center gap-3 duration-500 ease-in-out will-change-transform group-hover:translate-x-1"
+                    >
+                        <x-icons.device-mobile-phone class="size-6 shrink-0" />
+                        <div>Mobile</div>
                     </div>
-                    <div class="size-1 rounded-full bg-current"></div>
-                </div>
 
-                {{-- Blue blur --}}
-                <div
-                    class="absolute -bottom-12 left-14 -z-10 h-20 w-44 rounded-full bg-[#D3D3FF] blur-xl dark:bg-blue-500/30"
-                ></div>
+                    {{-- Arrow --}}
+                    <div class="flex items-center gap-1">
+                        <div class="flex flex-col gap-2">
+                            <div
+                                class="size-1 rounded-full bg-current opacity-50 transition duration-500 ease-in-out will-change-transform group-hover:translate-x-2 group-hover:translate-y-1.5 group-hover:opacity-100"
+                            ></div>
+                            <div
+                                class="size-1 rounded-full bg-current opacity-50 transition duration-500 ease-in-out will-change-transform group-hover:-translate-y-3"
+                            ></div>
+                        </div>
+                        <div
+                            class="size-1 rounded-full bg-current transition duration-500 ease-in-out will-change-transform group-hover:-translate-x-2 group-hover:translate-y-1.5 group-hover:opacity-50"
+                        ></div>
+                    </div>
 
-                {{-- Orange blur --}}
-                <div
-                    class="absolute -bottom-12 -left-5 -z-20 h-20 w-44 rounded-full bg-[#FFE7D3] blur-xl dark:bg-indigo-500/30"
-                ></div>
-            </a>
+                    {{-- Blue blur --}}
+                    <div
+                        x-init="
+                            () => {
+                                motion.animate(
+                                    $el,
+                                    {
+                                        x: [0, 20, -100, 0],
+                                        y: [0, 5, 0],
+                                        scale: [1, 0.7, 1],
+                                        rotate: [0, 10, 0],
+                                    },
+                                    {
+                                        duration: 10,
+                                        repeat: Infinity,
+                                        repeatType: 'loop',
+                                        ease: motion.easeInOut,
+                                    },
+                                )
+                            }
+                        "
+                        class="absolute -bottom-12 left-14 -z-10 h-20 w-44 rounded-full bg-[#D3D3FF] blur-xl will-change-transform dark:bg-blue-500/30"
+                    ></div>
+
+                    {{-- Orange blur --}}
+                    <div
+                        x-init="
+                            () => {
+                                motion.animate(
+                                    $el,
+                                    {
+                                        x: [0, -10, 0],
+                                        y: [0, 10, 0],
+                                        scale: [1, 1.2, 1],
+                                    },
+                                    {
+                                        duration: 5,
+                                        repeat: Infinity,
+                                        repeatType: 'loop',
+                                        ease: motion.easeInOut,
+                                    },
+                                )
+                            }
+                        "
+                        class="absolute -bottom-12 -left-5 -z-20 h-20 w-44 rounded-full bg-[#FFE7D3] blur-xl will-change-transform dark:bg-indigo-500/30"
+                    ></div>
+                </a>
+            </div>
         </div>
     </section>
 
