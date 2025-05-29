@@ -92,30 +92,12 @@
             {{-- Price --}}
             <div
                 class="flex items-start gap-1.5 pt-5"
-                aria-label="Price: $50 per year"
+                aria-label="Price: $100 per year"
             >
                 <div class="text-5xl font-semibold">
-                    ${{ number_format(50) }}
+                    ${{ number_format(100) }}
                 </div>
                 <div class="self-end pb-1.5 text-zinc-500">per year</div>
-            </div>
-
-            {{-- Warning --}}
-            <div
-                class="flex items-center gap-2 pt-3 text-sm"
-                aria-label="Price warning"
-            >
-                <x-icons.warning
-                    class="size-5 shrink-0"
-                    aria-hidden="true"
-                />
-                <p class="text-zinc-500">
-                    Increases to
-                    <span class="font-medium text-black dark:text-white">
-                        $100
-                    </span>
-                    after the EAP.
-                </p>
             </div>
 
             @auth
@@ -266,30 +248,12 @@
             {{-- Price --}}
             <div
                 class="flex items-start gap-1.5 pt-5"
-                aria-label="Price: $150 per year"
+                aria-label="Price: $750 per year"
             >
                 <div class="text-5xl font-semibold">
-                    ${{ number_format(150) }}
+                    ${{ number_format(750) }}
                 </div>
                 <div class="self-end pb-1.5 text-zinc-500">per year</div>
-            </div>
-
-            {{-- Warning --}}
-            <div
-                class="flex items-center gap-2 pt-3 text-sm"
-                aria-label="Price warning"
-            >
-                <x-icons.warning
-                    class="size-5 shrink-0"
-                    aria-hidden="true"
-                />
-                <p class="text-zinc-500">
-                    Increases to
-                    <span class="font-medium text-black dark:text-white">
-                        $750
-                    </span>
-                    after the EAP.
-                </p>
             </div>
 
             @auth
@@ -448,30 +412,12 @@
             {{-- Price --}}
             <div
                 class="flex items-start gap-1.5 pt-5"
-                aria-label="Price: $250 per year"
+                aria-label="Price: $2,500 per year"
             >
                 <div class="text-5xl font-semibold">
-                    ${{ number_format(250) }}
+                    ${{ number_format(2500) }}
                 </div>
                 <div class="self-end pb-1.5 text-zinc-500">per year</div>
-            </div>
-
-            {{-- Warning --}}
-            <div
-                class="flex items-center gap-2 pt-3 text-sm"
-                aria-label="Price warning"
-            >
-                <x-icons.warning
-                    class="size-5 shrink-0"
-                    aria-hidden="true"
-                />
-                <p class="text-zinc-500">
-                    Increases to
-                    <span class="font-medium text-black dark:text-white">
-                        $2,500
-                    </span>
-                    after the EAP.
-                </p>
             </div>
 
             @auth

@@ -758,8 +758,78 @@
                 <p>It's READY! Sign up and build apps for Android today!</p>
             </x-faq-card>
 
-            <x-faq-card question="When will the EAP end?">
-                <p>The EAP will end May 31, 2025.</p>
+            <x-faq-card
+                question="What does 'build unlimited apps, release X production apps' mean?"
+            >
+                <p>
+                    Every NativePHP for Mobile license entitles you to
+                    <i>release</i>
+                    , think publish or distribute (typically through an app
+                    store), a maximum of X apps (unlimited for Max and Ultra
+                    license plans). In simple terms: if someone is using your
+                    app that doesn't hold a NativePHP for Mobile license, then
+                    that counts as a 'released app'.
+                </p>
+                <br />
+                <p>
+                    However, you are welcome to
+                    <i>build</i>
+                    , aka develop, as many apps as you want for internal/local
+                    use, testing, evaluation, etc. If no one else besides you
+                    and other license holders have access to your app, then it
+                    doesn't count towards your license as a 'released app'.
+                </p>
+            </x-faq-card>
+
+            <x-faq-card question="What is a 'developer seat'?">
+                <p>
+                    A 'developer seat' represents an individual developer that
+                    can build apps under that license plan.
+                </p>
+                <br />
+                <p>
+                    For example, the Pro plan includes 10 developer seats.
+                    Therefore, the license holder can create up to 10 unique
+                    license keys that can be assigned to individual developers,
+                    one key per developer.
+                </p>
+                <br />
+                <p>
+                    Imagine an agency with 8 developers. The company can
+                    purchase a Pro plan and assign a license key to each
+                    developer, with 2 unused seats for future hires.
+                    Furthermore, this agency is allowed to release 10 apps with
+                    their plan. An analogy would be a Github plan that permits
+                    up to 10 team members (developer seats) within your
+                    organization, and your organization is allowed to create 10
+                    repositories (released apps).
+                </p>
+            </x-faq-card>
+
+            <x-faq-card
+                question="Is it possible to purchase additional developer seats or released apps?"
+            >
+                <p>
+                    Not at this time, but we do plan to make this possible in
+                    the near future. Please feel free to reach out to us at
+                    <a
+                        href="mailto:support@nativephp.com"
+                        class="hover:text-violet-400"
+                    >
+                        support@nativephp.com
+                    </a>
+                    if you have immediate need for additional seats/apps.
+                </p>
+            </x-faq-card>
+
+            <x-faq-card question="What was the EAP and when did it end?">
+                <p>
+                    The Early Access Program (EAP) provided initial access to
+                    the NativePHP for Mobile platform for early adopters at
+                    reduced pricing while we worked on releasing v1 of the
+                    technology. The EAP started in February and ended in May
+                    2025.
+                </p>
             </x-faq-card>
 
             <x-faq-card question="Which price will my license renew at?">
