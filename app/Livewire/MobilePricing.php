@@ -24,8 +24,15 @@ class MobilePricing extends Component
         return $this->createCheckoutSession($data['plan'], $user);
     }
 
-    public function createCheckoutSession(string $plan, ?User $user = null)
+    public function createCheckoutSession(?string $plan, ?User $user = null)
     {
+        // This method is somehow getting called without a plan being passed in.
+        // Not sure how (probably folks hacking or a bot thing),
+        // but we will just return early when this happens.
+        if (! $plan) {
+            return;
+        }
+
         // If a user isn't passed into this method, Livewire will instantiate
         // a new User. So we need to check that the user exists before using it,
         // and then use the authenticated user as a fallback.
