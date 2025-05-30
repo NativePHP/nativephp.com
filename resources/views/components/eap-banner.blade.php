@@ -32,7 +32,7 @@
 
     {{-- Countdown --}}
     <div
-        x-data="countdown('2025-05-31T23:59:59')"
+        x-data="countdown('2025-05-31T23:59:59Z')"
         class="flex items-center gap-1 rounded-lg px-2.5 py-1 text-sm text-white ring-1 ring-white/45 md:text-base"
     >
         <div class="pr-1 opacity-70">Ends in</div>
