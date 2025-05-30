@@ -510,7 +510,7 @@
                             <a
                                 href="https://auth.anystack.sh/register?accountType=customer"
                                 target="_blank"
-                                class="hover:text-violet-400"
+                                class="text-violet-600 hover:text-violet-800 dark:text-violet-400 dark:hover:text-violet-300"
                             >
                                 Create a customer account
                             </a>
@@ -519,7 +519,7 @@
                             <a
                                 href="https://github.com/nativephp/mobile/issues"
                                 target="_blank"
-                                class="hover:text-violet-400"
+                                class="text-violet-600 hover:text-violet-800 dark:text-violet-400 dark:hover:text-violet-300"
                             >
                                 repository
                             </a>
