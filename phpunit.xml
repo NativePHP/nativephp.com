@@ -33,6 +33,9 @@
         <env name="STRIPE_MINI_PRICE_ID" value="price_mini"/>
         <env name="STRIPE_PRO_PRICE_ID" value="price_pro"/>
         <env name="STRIPE_MAX_PRICE_ID" value="price_max"/>
+        <env name="STRIPE_MINI_PRICE_ID_EAP" value="price_mini_eap"/>
+        <env name="STRIPE_PRO_PRICE_ID_EAP" value="price_pro_eap"/>
+        <env name="STRIPE_MAX_PRICE_ID_EAP" value="price_max_eap"/>
         <env name="STRIPE_MINI_PAYMENT_LINK" value="https://buy.stripe.com/test_mini"/>
         <env name="STRIPE_PRO_PAYMENT_LINK" value="https://buy.stripe.com/test_pro"/>
         <env name="STRIPE_MAX_PAYMENT_LINK" value="https://buy.stripe.com/test_max"/>
