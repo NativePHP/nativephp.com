@@ -10,7 +10,7 @@
     </div>
     <div class="pt-6">
         <h3 class="text-lg font-medium">{{ $title }}</h3>
-        <p class="pt-3 text-gray-600 dark:text-gray-400">
+        <p class="pt-2 text-gray-600 dark:text-gray-400">
             {{ $description }}
         </p>
     </div>

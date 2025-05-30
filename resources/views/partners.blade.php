@@ -22,7 +22,7 @@
                     }
                 "
             >
-                <x-illustrations.partnership class="mx-auto w-44" />
+                <x-illustrations.partnership class="mx-auto w-48" />
             </div>
 
             {{-- Title --}}
@@ -46,11 +46,11 @@
                 "
                 class="mt-5 text-4xl md:text-5xl lg:text-6xl"
             >
-                <span class="-mx-1.5 text-violet-400 dark:text-indigo-500">
+                <span class="-mx-1.5 text-[#99ceb2] dark:text-indigo-500">
                     {
                 </span>
                 <span class="font-bold">Partner</span>
-                <span class="-mx-1.5 text-violet-400 dark:text-indigo-500">
+                <span class="-mx-1.5 text-[#99ceb2] dark:text-indigo-500">
                     }
                 </span>
                 <span class="font-semibold">with NativePHP</span>
