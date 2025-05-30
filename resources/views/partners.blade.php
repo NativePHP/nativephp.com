@@ -1,44 +1,74 @@
 <x-layout>
     {{-- Hero Section --}}
-    <section class="mx-auto mt-16 max-w-5xl px-5 md:mt-24">
-        <div class="text-center">
+    <section class="mx-auto mt-12 max-w-5xl px-5">
+        <div class="grid place-items-center text-center">
+            {{-- Illustration --}}
+            <div
+                x-init="
+                    () => {
+                        motion.inView($el, (element) => {
+                            motion.animate(
+                                $el,
+                                {
+                                    opacity: [0, 1],
+                                    y: [-10, 0],
+                                },
+                                {
+                                    duration: 0.7,
+                                    ease: motion.easeOut,
+                                },
+                            )
+                        })
+                    }
+                "
+            >
+                <x-illustrations.partnership class="mx-auto w-44" />
+            </div>
+
+            {{-- Title --}}
             <h1
                 x-init="
                     () => {
-                        motion.animate(
-                            $el,
-                            {
-                                opacity: [0, 1],
-                                y: [-10, 0],
-                            },
-                            {
-                                duration: 0.7,
-                                ease: motion.easeOut,
-                            },
-                        )
+                        motion.inView($el, (element) => {
+                            motion.animate(
+                                $el,
+                                {
+                                    opacity: [0, 1],
+                                    x: [-10, 0],
+                                },
+                                {
+                                    duration: 0.7,
+                                    ease: motion.easeOut,
+                                },
+                            )
+                        })
                     }
                 "
-                class="text-4xl font-bold md:text-5xl lg:text-6xl"
+                class="mt-5 text-4xl md:text-5xl lg:text-6xl"
             >
-                <span class="text-violet-400">Partner</span>
-                with NativePHP
+                <span class="-mx-1.5 text-violet-400">{</span>
+                <span class="font-bold">Partner</span>
+                <span class="-mx-1.5 text-violet-400">}</span>
+                <span class="font-semibold">with NativePHP</span>
             </h1>
 
+            {{-- Subtitle --}}
             <p
                 x-init="
                     () => {
-                        motion.animate(
-                            $el,
-                            {
-                                opacity: [0, 1],
-                                y: [-10, 0],
-                            },
-                            {
-                                duration: 0.7,
-                                delay: 0.1,
-                                ease: motion.easeOut,
-                            },
-                        )
+                        motion.inView($el, (element) => {
+                            motion.animate(
+                                $el,
+                                {
+                                    opacity: [0, 1],
+                                    x: [10, 0],
+                                },
+                                {
+                                    duration: 0.7,
+                                    ease: motion.easeOut,
+                                },
+                            )
+                        })
                     }
                 "
                 class="mx-auto mt-6 max-w-3xl text-lg text-gray-600 dark:text-zinc-400"
@@ -48,92 +78,99 @@
                 mobile app development.
             </p>
 
+            {{-- Call to Action Buttons --}}
             <div
                 x-init="
                     () => {
-                        motion.animate(
-                            $el,
-                            {
-                                opacity: [0, 1],
-                                y: [-10, 0],
-                            },
-                            {
-                                duration: 0.7,
-                                delay: 0.2,
-                                ease: motion.easeOut,
-                            },
-                        )
+                        motion.inView($el, (element) => {
+                            motion.animate(
+                                Array.from($el.children),
+                                {
+                                    y: [10, 0],
+                                    opacity: [0, 1],
+                                },
+                                {
+                                    duration: 0.7,
+                                    ease: motion.backOut,
+                                    delay: motion.stagger(0.2),
+                                },
+                            )
+                        })
                     }
                 "
-                class="mt-8 flex flex-col items-center justify-center gap-4 sm:flex-row"
+                class="mt-8 flex w-full flex-col items-center justify-center gap-4 sm:flex-row"
             >
                 {{-- Primary CTA - Email --}}
-                <a
-                    href="mailto:partners@nativephp.com?subject=Interested%20In%20Being%20a%20Partner"
-                    class="inline-flex items-center gap-2 rounded-xl bg-zinc-800 px-6 py-3 text-center font-medium text-white transition duration-200 hover:bg-zinc-900 dark:bg-[#d68ffe] dark:text-black dark:hover:bg-[#e1acff]"
-                >
-                    <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        class="size-5"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        stroke-width="2"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
+                <div class="w-full max-w-56">
+                    <a
+                        href="mailto:partners@nativephp.com?subject=Interested%20In%20Being%20a%20Partner"
+                        class="flex items-center justify-center gap-2 rounded-xl bg-zinc-800 px-6 py-4 font-medium text-white transition duration-200 hover:bg-zinc-900 dark:bg-[#d68ffe] dark:text-black dark:hover:bg-[#e1acff]"
                     >
-                        <path
-                            d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"
-                        ></path>
-                        <polyline points="22,6 12,13 2,6"></polyline>
-                    </svg>
-                    Contact Us
-                </a>
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            class="size-5"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="2"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                        >
+                            <path
+                                d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"
+                            ></path>
+                            <polyline points="22,6 12,13 2,6"></polyline>
+                        </svg>
+                        Email us
+                    </a>
+                </div>
 
                 {{-- Secondary CTA - Calendar --}}
-                <a
-                    href="https://cal.com/team/nativephp/partners"
-                    class="inline-flex items-center gap-2 rounded-xl bg-gray-200 px-6 py-3 text-center font-medium text-gray-800 transition duration-200 hover:bg-gray-300 dark:bg-slate-700/30 dark:text-white dark:hover:bg-slate-700/40"
-                >
-                    <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        class="size-5"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        stroke-width="2"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
+                <div class="w-full max-w-56">
+                    <a
+                        href="https://cal.com/team/nativephp/partners"
+                        class="flex items-center justify-center gap-2 rounded-xl bg-gray-200 px-6 py-4 font-medium text-gray-800 transition duration-200 hover:bg-gray-300 dark:bg-slate-700/30 dark:text-white dark:hover:bg-slate-700/40"
                     >
-                        <rect
-                            x="3"
-                            y="4"
-                            width="18"
-                            height="18"
-                            rx="2"
-                            ry="2"
-                        ></rect>
-                        <line
-                            x1="16"
-                            y1="2"
-                            x2="16"
-                            y2="6"
-                        ></line>
-                        <line
-                            x1="8"
-                            y1="2"
-                            x2="8"
-                            y2="6"
-                        ></line>
-                        <line
-                            x1="3"
-                            y1="10"
-                            x2="21"
-                            y2="10"
-                        ></line>
-                    </svg>
-                    Schedule a Meeting
-                </a>
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            class="size-5"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="2"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                        >
+                            <rect
+                                x="3"
+                                y="4"
+                                width="18"
+                                height="18"
+                                rx="2"
+                                ry="2"
+                            ></rect>
+                            <line
+                                x1="16"
+                                y1="2"
+                                x2="16"
+                                y2="6"
+                            ></line>
+                            <line
+                                x1="8"
+                                y1="2"
+                                x2="8"
+                                y2="6"
+                            ></line>
+                            <line
+                                x1="3"
+                                y1="10"
+                                x2="21"
+                                y2="10"
+                            ></line>
+                        </svg>
+                        Book a Meeting
+                    </a>
+                </div>
             </div>
         </div>
     </section>
