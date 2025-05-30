@@ -26,9 +26,12 @@ enum Subscription: string
     public static function fromStripePriceId(string $priceId): self
     {
         return match ($priceId) {
-            config('subscriptions.plans.mini.stripe_price_id') => self::Mini,
-            config('subscriptions.plans.pro.stripe_price_id') => self::Pro,
-            config('subscriptions.plans.max.stripe_price_id') => self::Max,
+            config('subscriptions.plans.mini.stripe_price_id'),
+            config('subscriptions.plans.mini.stripe_price_id_eap') => self::Mini,
+            config('subscriptions.plans.pro.stripe_price_id'),
+            config('subscriptions.plans.pro.stripe_price_id_eap') => self::Pro,
+            config('subscriptions.plans.max.stripe_price_id'),
+            config('subscriptions.plans.max.stripe_price_id_eap') => self::Max,
             default => throw new RuntimeException("Unknown Stripe price id: {$priceId}"),
         };
     }
