@@ -55,7 +55,10 @@ enum Subscription: string
 
     public function stripePriceId(): string
     {
-        return config("subscriptions.plans.{$this->value}.stripe_price_id");
+        // EAP ends June 1st at midnight UTC
+        return now()->isBefore('2025-06-01 00:00:00')
+            ? config("subscriptions.plans.{$this->value}.stripe_price_id_eap")
+            : config("subscriptions.plans.{$this->value}.stripe_price_id");
     }
 
     public function stripePaymentLink(): string
