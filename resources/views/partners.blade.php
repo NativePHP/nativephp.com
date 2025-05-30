@@ -46,9 +46,13 @@
                 "
                 class="mt-5 text-4xl md:text-5xl lg:text-6xl"
             >
-                <span class="-mx-1.5 text-violet-400">{</span>
+                <span class="-mx-1.5 text-violet-400 dark:text-indigo-500">
+                    {
+                </span>
                 <span class="font-bold">Partner</span>
-                <span class="-mx-1.5 text-violet-400">}</span>
+                <span class="-mx-1.5 text-violet-400 dark:text-indigo-500">
+                    }
+                </span>
                 <span class="font-semibold">with NativePHP</span>
             </h1>
 
@@ -104,7 +108,7 @@
                 <div class="w-full max-w-56">
                     <a
                         href="mailto:partners@nativephp.com?subject=Interested%20In%20Being%20a%20Partner"
-                        class="flex items-center justify-center gap-2 rounded-xl bg-zinc-800 px-6 py-4 font-medium text-white transition duration-200 hover:bg-zinc-900 dark:bg-[#d68ffe] dark:text-black dark:hover:bg-[#e1acff]"
+                        class="flex items-center justify-center gap-2.5 rounded-xl bg-zinc-800 px-6 py-4 text-white transition duration-200 hover:bg-zinc-900 dark:bg-indigo-700/80 dark:hover:bg-indigo-900"
                     >
                         <svg
                             xmlns="http://www.w3.org/2000/svg"
@@ -129,7 +133,7 @@
                 <div class="w-full max-w-56">
                     <a
                         href="https://cal.com/team/nativephp/partners"
-                        class="flex items-center justify-center gap-2 rounded-xl bg-gray-200 px-6 py-4 font-medium text-gray-800 transition duration-200 hover:bg-gray-300 dark:bg-slate-700/30 dark:text-white dark:hover:bg-slate-700/40"
+                        class="flex items-center justify-center gap-2.5 rounded-xl bg-gray-200 px-6 py-4 text-gray-800 transition duration-200 hover:bg-gray-300/80 dark:bg-slate-700/30 dark:text-white dark:hover:bg-slate-700/40"
                     >
                         <svg
                             xmlns="http://www.w3.org/2000/svg"
@@ -176,32 +180,32 @@
     </section>
 
     {{-- Partnership Details Section --}}
-    <section class="mx-auto mt-16 max-w-5xl px-5">
+    <section class="mx-auto mt-24 max-w-5xl px-5">
         <div
             x-init="
                 () => {
                     motion.inView($el, (element) => {
                         motion.animate(
-                            $el,
+                            Array.from($el.children),
                             {
-                                opacity: [0, 1],
                                 y: [10, 0],
+                                opacity: [0, 1],
+                                scale: [0.8, 1],
                             },
                             {
                                 duration: 0.7,
-                                ease: motion.easeOut,
+                                ease: motion.backOut,
+                                delay: motion.stagger(0.1),
                             },
                         )
                     })
                 }
             "
-            class="grid gap-8 md:grid-cols-2 lg:grid-cols-3"
+            class="grid gap-x-8 gap-y-12 md:grid-cols-2 lg:grid-cols-3"
         >
-            {{-- Card 1 --}}
-            <div class="rounded-2xl bg-gray-100 p-7 dark:bg-mirage">
-                <div
-                    class="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-[#D4FD7D] dark:bg-[#d68ffe] dark:text-black"
-                >
+            {{-- Card --}}
+            <x-benefit-card>
+                <x-slot name="icon">
                     <svg
                         xmlns="http://www.w3.org/2000/svg"
                         fill="none"
@@ -216,19 +220,19 @@
                             d="M9.75 3.104v5.714a2.25 2.25 0 0 1-.659 1.591L5 14.5M9.75 3.104c-.251.023-.501.05-.75.082m.75-.082a24.301 24.301 0 0 1 4.5 0m0 0v5.714c0 .597.237 1.17.659 1.591L19.8 15.3M14.25 3.104c.251.023.501.05.75.082M19.8 15.3l-1.57.393A9.065 9.065 0 0 1 12 15a9.065 9.065 0 0 1-6.23-.693L5 14.5m14.8.8 1.402 1.402c1.232 1.232.65 3.318-1.067 3.611A48.309 48.309 0 0 1 12 21c-2.773 0-5.491-.235-8.135-.687-1.718-.293-2.3-2.379-1.067-3.61L5 14.5"
                         />
                     </svg>
-                </div>
-                <h3 class="text-2xl font-semibold">Dedicated Support</h3>
-                <p class="mt-4 text-gray-600 dark:text-gray-400">
+                </x-slot>
+
+                <x-slot name="title">Dedicated Support</x-slot>
+
+                <x-slot name="description">
                     Get priority access to our development team with dedicated
                     support channels and faster response times.
-                </p>
-            </div>
+                </x-slot>
+            </x-benefit-card>
 
-            {{-- Card 2 --}}
-            <div class="rounded-2xl bg-gray-100 p-7 dark:bg-mirage">
-                <div
-                    class="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-[#D4FD7D] dark:bg-[#d68ffe] dark:text-black"
-                >
+            {{-- Card --}}
+            <x-benefit-card>
+                <x-slot name="icon">
                     <svg
                         xmlns="http://www.w3.org/2000/svg"
                         fill="none"
@@ -243,22 +247,20 @@
                             d="M17.25 6.75 22.5 12l-5.25 5.25m-10.5 0L1.5 12l5.25-5.25m7.5-3-4.5 16.5"
                         />
                     </svg>
-                </div>
-                <h3 class="text-2xl font-semibold">
-                    Priority Roadmap Influence
-                </h3>
-                <p class="mt-4 text-gray-600 dark:text-gray-400">
+                </x-slot>
+
+                <x-slot name="title">Priority Roadmap Influence</x-slot>
+
+                <x-slot name="description">
                     Have a direct line to our development team with priority
                     influence over feature development to ensure your business
                     needs are met.
-                </p>
-            </div>
+                </x-slot>
+            </x-benefit-card>
 
-            {{-- Card 3 --}}
-            <div class="rounded-2xl bg-gray-100 p-7 dark:bg-mirage">
-                <div
-                    class="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-[#D4FD7D] dark:bg-[#d68ffe] dark:text-black"
-                >
+            {{-- Card --}}
+            <x-benefit-card>
+                <x-slot name="icon">
                     <svg
                         xmlns="http://www.w3.org/2000/svg"
                         fill="none"
@@ -273,19 +275,19 @@
                             d="M4.26 10.147a60.438 60.438 0 0 0-.491 6.347A48.62 48.62 0 0 1 12 20.904a48.62 48.62 0 0 1 8.232-4.41 60.46 60.46 0 0 0-.491-6.347m-15.482 0a50.636 50.636 0 0 0-2.658-.813A59.906 59.906 0 0 1 12 3.493a59.903 59.903 0 0 1 10.399 5.84c-.896.248-1.783.52-2.658.814m-15.482 0A50.717 50.717 0 0 1 12 13.489a50.702 50.702 0 0 1 7.74-3.342M6.75 15a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Zm0 0v-3.675A55.378 55.378 0 0 1 12 8.443m-7.007 11.55A5.981 5.981 0 0 0 6.75 15.75v-1.5"
                         />
                     </svg>
-                </div>
-                <h3 class="text-2xl font-semibold">Training & Onboarding</h3>
-                <p class="mt-4 text-gray-600 dark:text-gray-400">
+                </x-slot>
+
+                <x-slot name="title">Training & Onboarding</x-slot>
+
+                <x-slot name="description">
                     Comprehensive training and onboarding for your development
                     team to get up to speed quickly.
-                </p>
-            </div>
+                </x-slot>
+            </x-benefit-card>
 
-            {{-- Card 4 --}}
-            <div class="rounded-2xl bg-gray-100 p-7 dark:bg-mirage">
-                <div
-                    class="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-[#D4FD7D] dark:bg-[#d68ffe] dark:text-black"
-                >
+            {{-- Card --}}
+            <x-benefit-card>
+                <x-slot name="icon">
                     <svg
                         xmlns="http://www.w3.org/2000/svg"
                         fill="none"
@@ -300,20 +302,20 @@
                             d="M2.25 21h19.5m-18-18v18m10.5-18v18m6-13.5V21M6.75 6.75h.75m-.75 3h.75m-.75 3h.75m3-6h.75m-.75 3h.75m-.75 3h.75M6.75 21v-3.375c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21M3 3h12m-.75 4.5H21m-3.75 3.75h.008v.008h-.008v-.008Zm0 3h.008v.008h-.008v-.008Zm0 3h.008v.008h-.008v-.008Z"
                         />
                     </svg>
-                </div>
-                <h3 class="text-2xl font-semibold">Ultra Licensing</h3>
-                <p class="mt-4 text-gray-600 dark:text-gray-400">
+                </x-slot>
+
+                <x-slot name="title">Ultra Licensing</x-slot>
+
+                <x-slot name="description">
                     Receive an Ultra license for: unlimited published
                     applications, unlimited developers, and team management
                     tools.
-                </p>
-            </div>
+                </x-slot>
+            </x-benefit-card>
 
-            {{-- Card 5 --}}
-            <div class="rounded-2xl bg-gray-100 p-7 dark:bg-mirage">
-                <div
-                    class="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-[#D4FD7D] dark:bg-[#d68ffe] dark:text-black"
-                >
+            {{-- Card --}}
+            <x-benefit-card>
+                <x-slot name="icon">
                     <svg
                         xmlns="http://www.w3.org/2000/svg"
                         fill="none"
@@ -328,19 +330,19 @@
                             d="M9.813 15.904 9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09ZM18.259 8.715 18 9.75l-.259-1.035a3.375 3.375 0 0 0-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 0 0 2.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 0 0 2.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 0 0-2.456 2.456ZM16.894 20.567 16.5 21.75l-.394-1.183a2.25 2.25 0 0 0-1.423-1.423L13.5 18.75l1.183-.394a2.25 2.25 0 0 0 1.423-1.423l.394-1.183.394 1.183a2.25 2.25 0 0 0 1.423 1.423l1.183.394-1.183.394a2.25 2.25 0 0 0-1.423 1.423Z"
                         />
                     </svg>
-                </div>
-                <h3 class="text-2xl font-semibold">Zephpyr Early Access</h3>
-                <p class="mt-4 text-gray-600 dark:text-gray-400">
+                </x-slot>
+
+                <x-slot name="title">Zephpyr Early Access</x-slot>
+
+                <x-slot name="description">
                     Early access to Zephpyr, our service that helps you build,
                     secure, and distribute your NativePHP applications.
-                </p>
-            </div>
+                </x-slot>
+            </x-benefit-card>
 
-            {{-- Card 6 --}}
-            <div class="rounded-2xl bg-gray-100 p-7 dark:bg-mirage">
-                <div
-                    class="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-[#D4FD7D] dark:bg-[#d68ffe] dark:text-black"
-                >
+            {{-- Card --}}
+            <x-benefit-card>
+                <x-slot name="icon">
                     <svg
                         xmlns="http://www.w3.org/2000/svg"
                         fill="none"
@@ -355,13 +357,15 @@
                             d="M15 19.128a9.38 9.38 0 0 0 2.625.372 9.337 9.337 0 0 0 4.121-.952 4.125 4.125 0 0 0-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 0 1 8.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0 1 11.964-3.07M12 6.375a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0Zm8.25 2.25a2.625 2.625 0 1 1-5.25 0 2.625 2.625 0 0 1 5.25 0Z"
                         />
                     </svg>
-                </div>
-                <h3 class="text-2xl font-semibold">Strategic Partnership</h3>
-                <p class="mt-4 text-gray-600 dark:text-gray-400">
+                </x-slot>
+
+                <x-slot name="title">Strategic Partnership</x-slot>
+
+                <x-slot name="description">
                     Become a strategic partner in the NativePHP ecosystem with
                     co-marketing opportunities.
-                </p>
-            </div>
+                </x-slot>
+            </x-benefit-card>
         </div>
     </section>
 
@@ -392,7 +396,7 @@
             <div class="mt-6 space-y-4">
                 <div class="flex gap-3">
                     <div
-                        class="mt-1.5 grid size-7 shrink-0 place-items-center self-start rounded-xl bg-[#D4FD7D] dark:bg-[#d68ffe] dark:text-black"
+                        class="mt-1.5 grid size-7 shrink-0 place-items-center self-start rounded-xl bg-[#D4FD7D] dark:bg-indigo-400 dark:text-black"
                     >
                         <svg
                             xmlns="http://www.w3.org/2000/svg"
@@ -420,7 +424,7 @@
 
                 <div class="flex gap-3">
                     <div
-                        class="mt-1.5 grid size-7 shrink-0 place-items-center self-start rounded-xl bg-[#D4FD7D] dark:bg-[#d68ffe] dark:text-black"
+                        class="mt-1.5 grid size-7 shrink-0 place-items-center self-start rounded-xl bg-[#D4FD7D] dark:bg-indigo-400 dark:text-black"
                     >
                         <svg
                             xmlns="http://www.w3.org/2000/svg"
@@ -446,7 +450,7 @@
 
                 <div class="flex gap-3">
                     <div
-                        class="mt-1.5 grid size-7 shrink-0 place-items-center self-start rounded-xl bg-[#D4FD7D] dark:bg-[#d68ffe] dark:text-black"
+                        class="mt-1.5 grid size-7 shrink-0 place-items-center self-start rounded-xl bg-[#D4FD7D] dark:bg-indigo-400 dark:text-black"
                     >
                         <svg
                             xmlns="http://www.w3.org/2000/svg"
@@ -511,7 +515,7 @@
                 {{-- Primary CTA - Email --}}
                 <a
                     href="mailto:partners@nativephp.com?subject=Interested%20In%20Being%20a%20Partner"
-                    class="inline-flex items-center gap-2 rounded-xl bg-zinc-800 px-6 py-3 text-center font-medium text-white transition duration-200 hover:bg-zinc-900 dark:bg-[#d68ffe] dark:text-black dark:hover:bg-[#e1acff]"
+                    class="inline-flex items-center gap-2 rounded-xl bg-zinc-800 px-6 py-3 text-center font-medium text-white transition duration-200 hover:bg-zinc-900 dark:bg-indigo-400 dark:text-black dark:hover:bg-[#e1acff]"
                 >
                     <svg
                         xmlns="http://www.w3.org/2000/svg"
