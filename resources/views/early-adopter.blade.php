@@ -754,30 +754,22 @@
                 </p>
             </x-faq-card>
 
-            <x-faq-card question="When will Android support be ready?">
-                <p>It's READY! Sign up and build apps for Android today!</p>
-            </x-faq-card>
-
             <x-faq-card
                 question="What does 'build unlimited apps, release X production apps' mean?"
             >
                 <p>
                     Every NativePHP for Mobile license entitles you to
-                    <i>release</i>
-                    , think publish or distribute (typically through an app
-                    store), a maximum of X apps (unlimited for Max and Ultra
-                    license plans). In simple terms: if someone is using your
-                    app that doesn't hold a NativePHP for Mobile license, then
-                    that counts as a 'released app'.
+                    <i>release</i> a certain number of applications.
+                    A 'released' app is when it's published or distributed
+                    (typically through an app store).
                 </p>
                 <br />
                 <p>
                     However, you are welcome to
                     <i>build</i>
-                    , aka develop, as many apps as you want for internal/local
-                    use, testing, evaluation, etc. If no one else besides you
+                    (develop), as many apps as you want. If no one else besides you
                     and other license holders have access to your app, then it
-                    doesn't count towards your license as a 'released app'.
+                    doesn't count towards your quota of 'released' apps.
                 </p>
             </x-faq-card>
 
@@ -788,21 +780,16 @@
                 </p>
                 <br />
                 <p>
-                    For example, the Pro plan includes 10 developer seats.
-                    Therefore, the license holder can create up to 10 unique
+                    For example, on the Pro plan, the license holder can create up to 10 unique
                     license keys that can be assigned to individual developers,
                     one key per developer.
                 </p>
                 <br />
                 <p>
-                    Imagine an agency with 8 developers. The company can
-                    purchase a Pro plan and assign a license key to each
-                    developer, with 2 unused seats for future hires.
-                    Furthermore, this agency is allowed to release 10 apps with
-                    their plan. An analogy would be a Github plan that permits
-                    up to 10 team members (developer seats) within your
-                    organization, and your organization is allowed to create 10
-                    repositories (released apps).
+                    This allows the license holder to control who has the ability to
+                    use their license for building apps. You can add or remove developers
+                    and each will get their own unique license key. If a developer leaves
+                    your team, you can revoke their license key to prevent abuse.
                 </p>
             </x-faq-card>
 
@@ -810,15 +797,7 @@
                 question="Is it possible to purchase additional developer seats or released apps?"
             >
                 <p>
-                    Not at this time, but we do plan to make this possible in
-                    the near future. Please feel free to reach out to us at
-                    <a
-                        href="mailto:support@nativephp.com"
-                        class="hover:text-violet-400"
-                    >
-                        support@nativephp.com
-                    </a>
-                    if you have immediate need for additional seats/apps.
+                    You can purchase more Mini or Pro licenses as needed.
                 </p>
             </x-faq-card>
 
@@ -854,6 +833,7 @@
             <x-faq-card question="Can I upgrade or downgrade my license later?">
                 <p>That's not currently possible.</p>
             </x-faq-card>
+
             <x-faq-card question="Will my apps built with NativePHP be secure?">
                 <p>
                     Definitely. NativePHP for Mobile apps are just like other
@@ -871,6 +851,7 @@
                     build!
                 </p>
             </x-faq-card>
+
             <x-faq-card question="Can I get an invoice?">
                 <p>
                     If you purchased after May 6, 2025, you should get an

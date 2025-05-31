@@ -183,18 +183,7 @@
                     >
                         <x-icons.checkmark class="size-5 shrink-0" />
                     </div>
-                    <div class="font-medium">Community Discord channel</div>
-                </div>
-                <div class="flex items-center gap-2">
-                    <div
-                        class="grid size-7 shrink-0 place-items-center rounded-xl bg-[#D4FD7D] dark:bg-[#d68ffe] dark:text-black"
-                        aria-hidden="true"
-                    >
-                        <x-icons.checkmark class="size-5 shrink-0" />
-                    </div>
-                    <div class="font-medium">
-                        Your name in NativePHP's history
-                    </div>
+                    <div class="font-medium">Community support via Discord</div>
                 </div>
                 <div class="flex items-center gap-2">
                     <div
@@ -227,7 +216,7 @@
                             class="size-2.5 shrink-0 dark:opacity-70"
                         />
                     </div>
-                    <div>Business hours support (GMT)</div>
+                    <div>Business hours email support (GMT)</div>
                 </div>
             </div>
         </div>
@@ -343,17 +332,6 @@
                 </div>
                 <div class="flex items-center gap-2">
                     <div
-                        class="grid size-7 shrink-0 place-items-center rounded-xl bg-[#D4FD7D] dark:bg-[#d68ffe] dark:text-black"
-                        aria-hidden="true"
-                    >
-                        <x-icons.checkmark class="size-5 shrink-0" />
-                    </div>
-                    <div class="font-medium">
-                        Your name in NativePHP's history
-                    </div>
-                </div>
-                <div class="flex items-center gap-2">
-                    <div
                         class="grid size-7 shrink-0 place-items-center rounded-xl bg-zinc-200 dark:bg-gray-700/50"
                         aria-hidden="true"
                     >
@@ -383,7 +361,7 @@
                             class="size-2.5 shrink-0 dark:opacity-70"
                         />
                     </div>
-                    <div>Business hours support (GMT)</div>
+                    <div>Business hours email support (GMT)</div>
                 </div>
             </div>
         </div>
@@ -504,7 +482,7 @@
                         <x-icons.checkmark class="size-5 shrink-0" />
                     </div>
                     <div class="font-medium">
-                        Exclusive access to private Discord channels
+                        Private Discord channels for rapid support
                     </div>
                 </div>
                 <div class="flex items-center gap-2">
@@ -532,18 +510,7 @@
                     >
                         <x-icons.checkmark class="size-5 shrink-0" />
                     </div>
-                    <div class="font-medium">Business hours support (GMT)</div>
-                </div>
-                <div class="flex items-center gap-2">
-                    <div
-                        class="grid size-7 shrink-0 place-items-center rounded-xl bg-[#D4FD7D] dark:bg-[#d68ffe] dark:text-black"
-                        aria-hidden="true"
-                    >
-                        <x-icons.checkmark class="size-5 shrink-0" />
-                    </div>
-                    <div class="font-medium">
-                        Your name in NativePHP's history
-                    </div>
+                    <div class="font-medium">Business hours email support (GMT)</div>
                 </div>
             </div>
         </div>
