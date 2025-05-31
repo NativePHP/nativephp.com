@@ -28,7 +28,7 @@ and start distributing them to your users via the App Store.
 
 #### On macOS
 ```shell
-export JAVA_HOME=$(/usr/libexec/java_home -v 17) // This isn't required if JAVA_HOME is already set in the Windows Env Variables
+export JAVA_HOME=$(/usr/libexec/java_home -v 17) // This isn't required if JAVA_HOME is already set in your environment variables (check using `printenv | grep JAVA_HOME`)
 export ANDROID_HOME=$HOME/Library/Android/sdk
 export PATH=$PATH:$JAVA_HOME/bin:$ANDROID_HOME/emulator:$ANDROID_HOME/tools:$ANDROID_HOME/tools/bin:$ANDROID_HOME/platform-tools
 ```
