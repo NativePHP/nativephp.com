@@ -42,6 +42,7 @@ class LicenseKeyGenerated extends Notification implements ShouldQueue
             ->line("**{$this->licenseKey}**")
             ->line('When prompted by Composer, use your email address as the username and this license key as the password.')
             ->action('View Installation Guide', url('/docs/mobile/1/getting-started/installation'))
+            ->line('If you need to manage your subscription for this license, you can do so on [Stripe](https://billing.stripe.com/p/login/4gwaGV5VK0uU44E288).')
             ->line("If you have any questions, please don't hesitate to reach out to our support team.")
             ->lineIf($this->subscription === Subscription::Max, 'As a Max subscriber, you also have access to the NativePHP/mobile repository. To access it, please log in to [Anystack.sh](https://auth.anystack.sh/?accountType=customer) using the same email address you used for your purchase.')
             ->salutation("Happy coding!\n\nThe NativePHP Team")

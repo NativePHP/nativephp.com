@@ -238,7 +238,7 @@
                         <div
                             class="font-normal text-gray-600 dark:text-white/50"
                         >
-                            NativePHP for mobile
+                            NativePHP for Mobile
                         </div>
                         {{-- Image --}}
                         <a
@@ -407,585 +407,166 @@
         </p>
 
         {{-- Call to Action Button --}}
-        <div class="grid place-items-center pt-5">
-            <a
+        <div
+            class="mt-10 flex flex-wrap-reverse items-center justify-center gap-4 sm:flex-nowrap"
+            x-data="{ desktopHover: false, mobileHover: false }"
+        >
+            {{-- Desktop --}}
+            <div
                 x-init="
                     () => {
                         motion.animate(
                             $el,
                             {
-                                scale: [0, 1],
                                 opacity: [0, 1],
+                                x: [10, 0],
                             },
                             {
-                                duration: 0.8,
-                                ease: motion.backOut,
+                                duration: 1,
+                                ease: motion.easeOut,
                             },
                         )
                     }
                 "
-                href="/docs/"
-                class="group isolate z-0 grid place-items-center leading-snug text-white will-change-transform"
-                aria-label="Get started with NativePHP documentation"
+                class="w-full max-w-64"
             >
-                {{-- Label --}}
                 <div
-                    class="z-10 grid place-items-center gap-1.5 self-center justify-self-center [grid-area:1/-1]"
+                    class="transition duration-300"
+                    :class="{ 'opacity-60 grayscale': mobileHover }"
                 >
-                    <div>Get</div>
-                    <div>Started</div>
-
-                    {{-- Arrow --}}
-                    <div
-                        x-init="
-                            () => {
-                                motion.animate(
-                                    $el,
-                                    {
-                                        x: [0, 5],
-                                    },
-                                    {
-                                        duration: 0.8,
-                                        repeat: Infinity,
-                                        repeatType: 'mirror',
-                                        ease: motion.easeInOut,
-                                    },
-                                )
-                            }
-                        "
-                        aria-hidden="true"
+                    <a
+                        href="/docs/desktop/1"
+                        class="group relative isolate z-0 flex h-16 items-center justify-between gap-3 overflow-hidden rounded-2xl bg-[#EBEDF2] pl-5 pr-6 leading-snug transition duration-200 ease-in-out will-change-transform hover:bg-[#e5d6ff] dark:bg-haiti dark:hover:bg-indigo-900/60"
+                        aria-label="Get started with NativePHP documentation for desktop apps"
+                        x-on:mouseenter="desktopHover = true"
+                        x-on:mouseleave="desktopHover = false"
                     >
-                        <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            viewBox="0 0 15 11"
-                            fill="none"
-                            class="mt-1 w-5 text-[#DBDAE8] transition duration-300 ease-out group-hover:text-violet-400"
-                            aria-hidden="true"
+                        {{-- Arrow --}}
+                        <div class="flex items-center gap-1">
+                            <div
+                                class="size-1 rounded-full bg-current transition duration-500 ease-in-out will-change-transform group-hover:translate-x-2 group-hover:translate-y-1.5 group-hover:opacity-50"
+                            ></div>
+                            <div class="flex flex-col gap-2">
+                                <div
+                                    class="size-1 rounded-full bg-current opacity-50 transition duration-500 ease-in-out will-change-transform group-hover:-translate-x-2 group-hover:translate-y-1.5 group-hover:opacity-100"
+                                ></div>
+                                <div
+                                    class="size-1 rounded-full bg-current opacity-50 transition duration-500 ease-in-out will-change-transform group-hover:-translate-y-3"
+                                ></div>
+                            </div>
+                        </div>
+                        {{-- Label --}}
+                        <div
+                            class="flex items-center gap-3 duration-500 ease-in-out will-change-transform group-hover:-translate-x-1"
                         >
-                            <path
-                                d="M1 4.8C0.613401 4.8 0.3 5.1134 0.3 5.5C0.3 5.8866 0.613401 6.2 1 6.2L1 4.8ZM14.495 5.99498C14.7683 5.72161 14.7683 5.27839 14.495 5.00503L10.0402 0.550253C9.76684 0.276886 9.32362 0.276886 9.05025 0.550253C8.77689 0.823621 8.77689 1.26684 9.05025 1.5402L13.0101 5.5L9.05025 9.4598C8.77689 9.73317 8.77689 10.1764 9.05025 10.4497C9.32362 10.7231 9.76683 10.7231 10.0402 10.4497L14.495 5.99498ZM1 6.2L14 6.2L14 4.8L1 4.8L1 6.2Z"
-                                fill="currentColor"
+                            <div>Desktop</div>
+                            <x-icons.pc class="size-7 shrink-0" />
+                        </div>
+                    </a>
+                </div>
+            </div>
+
+            {{-- Mobile --}}
+            <div
+                x-init="
+                    () => {
+                        motion.animate(
+                            $el,
+                            {
+                                opacity: [0, 1],
+                                x: [-10, 0],
+                            },
+                            {
+                                duration: 1,
+                                ease: motion.easeOut,
+                            },
+                        )
+                    }
+                "
+                class="w-full max-w-64"
+            >
+                <div
+                    class="transition duration-300"
+                    :class="{ 'opacity-60 grayscale': desktopHover }"
+                >
+                    <a
+                        href="/docs/mobile/1"
+                        class="group relative isolate z-0 flex h-16 items-center justify-between gap-3 overflow-hidden rounded-2xl bg-[#EBEDF2] pl-6 pr-5 leading-snug transition duration-200 ease-in-out will-change-transform hover:bg-[#e5d6ff] dark:bg-haiti dark:hover:bg-indigo-900/50"
+                        aria-label="Get started with NativePHP documentation for mobile apps"
+                        x-on:mouseenter="mobileHover = true"
+                        x-on:mouseleave="mobileHover = false"
+                    >
+                        {{-- Label --}}
+                        <div
+                            class="flex items-center gap-3 duration-500 ease-in-out will-change-transform group-hover:translate-x-1"
+                        >
+                            <x-icons.device-mobile-phone
+                                class="size-6 shrink-0"
                             />
-                        </svg>
-                    </div>
-                </div>
-
-                {{-- Shape --}}
-                <div
-                    x-init="
-                        () => {
-                            motion.animate(
-                                $el,
-                                {
-                                    rotate: [0, 180],
-                                },
-                                {
-                                    duration: 6,
-                                    repeat: Infinity,
-                                    repeatType: 'loop',
-                                    ease: 'linear',
-                                },
-                            )
-                        }
-                    "
-                    class="self-center justify-self-center [grid-area:1/-1]"
-                    aria-hidden="true"
-                >
-                    <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        class="size-32 text-black transition duration-500 ease-out will-change-transform group-hover:scale-110 group-hover:text-zinc-900 dark:text-[#181a25] dark:group-hover:text-black"
-                        viewBox="0 0 133 133"
-                        fill="none"
-                        aria-hidden="true"
-                    >
-                        <path
-                            d="M133 66.5028C133 58.2246 128.093 50.5844 119.798 44.4237C121.305 34.2085 119.374 25.3317 113.518 19.4759C107.663 13.6202 98.7915 11.689 88.5707 13.1967C82.4213 4.9071 74.7811 0 66.5028 0C58.2246 0 50.5844 4.9071 44.4237 13.2023C34.2085 11.6946 25.3317 13.6258 19.4759 19.4816C13.6202 25.3374 11.689 34.2086 13.1967 44.4293C4.9071 50.5787 0 58.2246 0 66.5028C0 74.7811 4.9071 82.4213 13.2023 88.582C11.6946 98.7971 13.6258 107.674 19.4816 113.53C25.3374 119.385 34.2086 121.317 44.4293 119.809C50.5844 128.099 58.2302 133.011 66.5085 133.011C74.7867 133.011 82.4269 128.104 88.5876 119.809C98.8027 121.317 107.68 119.385 113.535 113.53C119.391 107.674 121.322 98.8027 119.815 88.582C128.104 82.4269 133.017 74.7811 133.017 66.5028H133Z"
-                            fill="currentColor"
-                        />
-                    </svg>
-                </div>
-
-                {{-- Blur --}}
-                <div
-                    class="hidden size-20 self-center justify-self-center bg-indigo-400/70 blur-3xl [grid-area:1/-1] dark:block"
-                    aria-hidden="true"
-                ></div>
-            </a>
-        </div>
-    </section>
-
-    {{-- Collaborations --}}
-    <section
-        class="mx-auto mt-20 max-w-5xl px-5"
-        aria-labelledby="collaborations-title"
-    >
-        <h2
-            id="collaborations-title"
-            x-init="
-                () => {
-                    motion.inView($el, (element) => {
-                        motion.animate(
-                            $el,
-                            {
-                                opacity: [0, 1],
-                                y: [-10, 0],
-                            },
-                            {
-                                duration: 0.7,
-                                ease: motion.circOut,
-                            },
-                        )
-                    })
-                }
-            "
-            class="text-center text-xl font-medium capitalize opacity-0"
-        >
-            A collaboration between:
-        </h2>
-
-        {{-- Cards --}}
-        <div
-            class="mt-5 flex flex-col items-center justify-center gap-5 rounded-2xl bg-gradient-to-br from-[#FFF0DC] to-[#E8EEFF] text-center min-[500px]:mt-10 sm:mt-32 sm:flex-row sm:bg-gradient-to-r dark:from-blue-900/10 dark:to-[#4c407f]/25"
-            x-data="{ hoverSimon: false, hoverMarcel: false }"
-        >
-            {{-- Simon card --}}
-            <div
-                x-init="
-                    () => {
-                        motion.inView($el, (element) => {
-                            motion.animate(
-                                $el,
-                                {
-                                    opacity: [0, 1],
-                                    x: [20, 0],
-                                },
-                                {
-                                    duration: 0.7,
-                                    ease: motion.circOut,
-                                },
-                            )
-                        })
-                    }
-                "
-                class="group/simon flex flex-col-reverse items-center px-2 pt-2 opacity-0 min-[500px]:flex-row min-[500px]:gap-5 sm:-mt-[6.3rem] sm:gap-0 sm:px-0 sm:pt-0 md:gap-5"
-                x-on:mouseenter="hoverSimon = true"
-                x-on:mouseleave="hoverSimon = false"
-            >
-                <div class="relative flex flex-col items-center">
-                    {{-- Shape --}}
-                    <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        class="hidden w-5 text-[#FFCABA] transition duration-500 ease-in-out will-change-transform group-hover/simon:rotate-90 group-hover/simon:text-orange-300 min-[500px]:block dark:text-orange-300 dark:group-hover/simon:text-orange-400"
-                        viewBox="0 0 24 23"
-                        fill="none"
-                        aria-hidden="true"
-                    >
-                        <path
-                            d="M21.5037 9.50367H18.5162C17.8899 9.50367 17.5764 8.74661 18.0192 8.30376L20.1041 6.21886C20.8478 5.47515 20.9216 4.27314 20.2335 3.47741C19.4666 2.59031 18.1233 2.55376 17.3093 3.36846L15.1969 5.48078C14.7541 5.92362 13.997 5.61012 13.997 4.9838V1.99633C13.997 0.894132 13.1036 0 12.0007 0C10.8985 0 10.0044 0.893429 10.0044 1.99633V4.9838C10.0044 5.61012 9.24731 5.92362 8.80446 5.48078L6.69214 3.36846C5.91259 2.58891 4.64872 2.58891 3.86916 3.36846C3.08961 4.14801 3.08961 5.41189 3.86916 6.19144L5.98148 8.30376C6.42433 8.74661 6.11082 9.50367 5.48451 9.50367H2.49633C1.39413 9.50367 0.5 10.3971 0.5 11.5C0.5 12.6022 1.39343 13.4963 2.49633 13.4963H5.4838C6.11012 13.4963 6.42362 14.2534 5.98078 14.6962L3.86846 16.8086C3.08891 17.5881 3.08891 18.852 3.86846 19.6315C4.64801 20.4111 5.91189 20.4111 6.69144 19.6315L8.80376 17.5192C9.24661 17.0764 10.0037 17.3899 10.0037 18.0162V21.0037C10.0037 22.1059 10.8971 23 12 23C13.1022 23 13.9963 22.1066 13.9963 21.0037V18.0162C13.9963 17.3899 14.7534 17.0764 15.1962 17.5192L17.3086 19.6315C18.0881 20.4111 19.352 20.4111 20.1315 19.6315C20.9111 18.852 20.9111 17.5881 20.1315 16.8086L18.0192 14.6962C17.5764 14.2534 17.8899 13.4963 18.5162 13.4963H21.5037C22.6059 13.4963 23.5 12.6029 23.5 11.5C23.5 10.3978 22.6066 9.50367 21.5037 9.50367Z"
-                            fill="currentColor"
-                        />
-                    </svg>
-
-                    {{-- Name --}}
-                    <h3 class="pt-2 text-xl leading-relaxed">
-                        Simon
-                        <br />
-                        Hamp
-                    </h3>
-
-                    {{-- Title --}}
-                    <div
-                        class="flex flex-col items-center pt-2 min-[500px]:pt-0"
-                    >
-                        <div
-                            class="hidden text-2xl font-light min-[500px]:block"
-                            aria-hidden="true"
-                        >
-                            ~
+                            <div>Mobile</div>
                         </div>
-                        <p class="text-sm text-gray-600 dark:text-white/50">
-                            Developer & Artisan —
-                            <a
-                                href="https://laradevs.com/?ref=nativephp"
-                                target="_blank"
-                                rel="noopener"
-                                class="transition duration-200 hover:text-black dark:hover:text-white"
-                                aria-label="Visit LaraDevs website - Simon Hamp's company"
-                            >
-                                LaraDevs
-                            </a>
-                        </p>
-                    </div>
-
-                    {{-- Dashed line --}}
-                    <div
-                        class="absolute -right-9 top-2 hidden md:block"
-                        aria-hidden="true"
-                    >
-                        <div
-                            class="relative flex items-end text-gray-400 transition duration-500 ease-in-out group-hover/simon:text-black dark:group-hover/simon:text-white"
-                        >
-                            {{-- Line --}}
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                class="h-8"
-                                viewBox="0 0 133 37"
-                                fill="none"
-                            >
-                                <path
-                                    x-init="
-                                        () => {
-                                            motion.animate(
-                                                $el,
-                                                {
-                                                    strokeDashoffset: [20, 0],
-                                                },
-                                                {
-                                                    duration: 1.5,
-                                                    repeat: Infinity,
-                                                    repeatType: 'loop',
-                                                    ease: 'linear',
-                                                },
-                                            )
-                                        }
-                                    "
-                                    d="M0 1H49.5166C52.9323 1 56.1117 2.74339 57.9482 5.62334L74.0518 30.8767C75.8883 33.7566 79.0677 35.5 82.4834 35.5H132.5"
-                                    stroke="currentColor"
-                                    stroke-width="1.2"
-                                    stroke-dasharray="5 5"
-                                />
-                            </svg>
-
-                            {{-- Arrow --}}
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                class="relative top-0.5 size-2 rotate-90"
-                                viewBox="0 0 24 24"
-                            >
-                                <path
-                                    fill="currentColor"
-                                    d="M12 1.67a2.91 2.91 0 0 0-2.492 1.403L1.398 16.61a2.914 2.914 0 0 0 2.484 4.385h16.225a2.914 2.914 0 0 0 2.503-4.371L14.494 3.078A2.92 2.92 0 0 0 12 1.67"
-                                />
-                            </svg>
+                        {{-- Arrow --}}
+                        <div class="flex items-center gap-1">
+                            <div class="flex flex-col gap-2">
+                                <div
+                                    class="size-1 rounded-full bg-current opacity-50 transition duration-500 ease-in-out will-change-transform group-hover:translate-x-2 group-hover:translate-y-1.5 group-hover:opacity-100"
+                                ></div>
+                                <div
+                                    class="size-1 rounded-full bg-current opacity-50 transition duration-500 ease-in-out will-change-transform group-hover:-translate-y-3"
+                                ></div>
+                            </div>
+                            <div
+                                class="size-1 rounded-full bg-current transition duration-500 ease-in-out will-change-transform group-hover:-translate-x-2 group-hover:translate-y-1.5 group-hover:opacity-50"
+                            ></div>
                         </div>
-                    </div>
-                </div>
-
-                {{-- Image --}}
-                <img
-                    src="{{ Vite::asset('resources/images/simonhamp_faded.webp') }}"
-                    alt="Simon Hamp - Creator of NativePHP and founder of LaraDevs"
-                    class="pointer-events-none -ml-10 -mr-10 -mt-5 w-52 transition duration-500 ease-in-out will-change-transform group-hover/simon:-translate-x-1 group-hover/simon:-translate-y-1 group-hover/simon:scale-[1.06] sm:-ml-14 sm:-mr-16 sm:w-64"
-                    width="256"
-                    height="256"
-                    :class="{'grayscale-[70%]': hoverMarcel}"
-                />
-            </div>
-            {{-- Marcel card --}}
-            <div
-                x-init="
-                    () => {
-                        motion.inView($el, (element) => {
-                            motion.animate(
-                                $el,
-                                {
-                                    opacity: [0, 1],
-                                    x: [-20, 0],
-                                },
-                                {
-                                    duration: 0.7,
-                                    ease: motion.circOut,
-                                },
-                            )
-                        })
-                    }
-                "
-                class="group/marcel flex flex-col items-center px-2 pb-5 pt-2 opacity-0 min-[500px]:flex-row min-[500px]:gap-5 min-[500px]:pb-0 sm:-mt-[6.3rem] sm:gap-0 sm:px-0 sm:pt-0 md:gap-5"
-                x-on:mouseenter="hoverMarcel = true"
-                x-on:mouseleave="hoverMarcel = false"
-            >
-                {{-- Image --}}
-                <img
-                    src="{{ Vite::asset('resources/images/marcelpaciot_faded.webp') }}"
-                    alt="Marcel Pociot - Creator of NativePHP and CTO of BeyondCode"
-                    class="pointer-events-none -ml-10 -mr-10 -mt-5 w-52 transition duration-500 ease-in-out will-change-transform group-hover/marcel:-translate-y-1 group-hover/marcel:translate-x-1 group-hover/marcel:scale-[1.06] sm:-ml-16 sm:-mr-14 sm:w-64"
-                    width="256"
-                    height="256"
-                    :class="{'grayscale-[70%]': hoverSimon}"
-                />
-
-                <div class="relative flex flex-col items-center">
-                    {{-- Shape --}}
-                    <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        class="hidden w-5 text-[#CBDAFF] transition duration-500 ease-in-out will-change-transform group-hover/marcel:-rotate-90 group-hover/marcel:text-blue-300 min-[500px]:block dark:text-rose-300 dark:group-hover/marcel:text-rose-400"
-                        viewBox="0 0 24 23"
-                        fill="none"
-                        aria-hidden="true"
-                    >
-                        <path
-                            d="M12.8747 12.3751C27.0405 26.5408 -3.04242 26.5408 11.1233 12.3751C-3.04242 26.5408 -3.04242 -3.54205 11.1233 10.6237C-3.04242 -3.54205 27.0405 -3.54205 12.8747 10.6237C27.0405 -3.54205 27.0405 26.5408 12.8747 12.3751Z"
-                            fill="currentColor"
-                        />
-                    </svg>
-
-                    {{-- Name --}}
-                    <h3 class="pt-2 text-xl leading-relaxed">
-                        Marcel
-                        <br />
-                        Pociot
-                    </h3>
-
-                    {{-- Title --}}
-                    <div
-                        class="flex flex-col items-center pt-2 min-[500px]:pt-0"
-                    >
+                        {{-- Blue blur --}}
                         <div
-                            class="hidden text-2xl font-light min-[500px]:block"
-                            aria-hidden="true"
-                        >
-                            ~
-                        </div>
-                        <p class="text-sm text-gray-600 dark:text-white/50">
-                            CTO & Cofounder —
-                            <a
-                                href="https://beyondco.de/?utm_source=nativephp&utm_medium=logo&utm_campaign=nativephp"
-                                target="_blank"
-                                rel="noopener"
-                                class="transition duration-200 hover:text-black dark:hover:text-white"
-                                aria-label="Visit BeyondCode website - Marcel Pociot's company"
-                            >
-                                BeyondCode
-                            </a>
-                        </p>
-                    </div>
-
-                    {{-- Dashed line --}}
-                    <div
-                        class="absolute -left-9 top-2 hidden md:block"
-                        aria-hidden="true"
-                    >
+                            x-init="
+                                () => {
+                                    motion.animate(
+                                        $el,
+                                        {
+                                            x: [0, 20, -100, 0],
+                                            y: [0, 5, 0],
+                                            scale: [1, 0.7, 1],
+                                            rotate: [0, 10, 0],
+                                        },
+                                        {
+                                            duration: 10,
+                                            repeat: Infinity,
+                                            repeatType: 'loop',
+                                            ease: motion.easeInOut,
+                                        },
+                                    )
+                                }
+                            "
+                            class="absolute -bottom-12 left-14 -z-10 h-20 w-44 rounded-full bg-[#D3D3FF] blur-xl will-change-transform dark:bg-blue-500/30"
+                        ></div>
+                        {{-- Orange blur --}}
                         <div
-                            class="relative flex items-end text-gray-400 transition duration-500 ease-in-out group-hover/marcel:text-black dark:group-hover/marcel:text-white"
-                        >
-                            {{-- Arrow --}}
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                class="relative top-0.5 size-2 -rotate-90"
-                                viewBox="0 0 24 24"
-                            >
-                                <path
-                                    fill="currentColor"
-                                    d="M12 1.67a2.91 2.91 0 0 0-2.492 1.403L1.398 16.61a2.914 2.914 0 0 0 2.484 4.385h16.225a2.914 2.914 0 0 0 2.503-4.371L14.494 3.078A2.92 2.92 0 0 0 12 1.67"
-                                />
-                            </svg>
-                            {{-- Line --}}
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                class="h-8"
-                                viewBox="0 0 133 37"
-                                fill="none"
-                            >
-                                <path
-                                    x-init="
-                                        () => {
-                                            motion.animate(
-                                                $el,
-                                                {
-                                                    strokeDashoffset: [20, 0],
-                                                },
-                                                {
-                                                    duration: 1.5,
-                                                    repeat: Infinity,
-                                                    repeatType: 'loop',
-                                                    ease: 'linear',
-                                                },
-                                            )
-                                        }
-                                    "
-                                    d="M132.5 1H82.9834C79.5677 1 76.3883 2.74339 74.5518 5.62334L58.4482 30.8767C56.6117 33.7566 53.4323 35.5 50.0166 35.5H0"
-                                    stroke="currentColor"
-                                    stroke-width="1.2"
-                                    stroke-dasharray="5 5"
-                                />
-                            </svg>
-                        </div>
-                    </div>
+                            x-init="
+                                () => {
+                                    motion.animate(
+                                        $el,
+                                        {
+                                            x: [0, -10, 0],
+                                            y: [0, 10, 0],
+                                            scale: [1, 1.2, 1],
+                                        },
+                                        {
+                                            duration: 5,
+                                            repeat: Infinity,
+                                            repeatType: 'loop',
+                                            ease: motion.easeInOut,
+                                        },
+                                    )
+                                }
+                            "
+                            class="absolute -bottom-12 -left-5 -z-20 h-20 w-44 rounded-full bg-[#FFE7D3] blur-xl will-change-transform dark:bg-indigo-500/30"
+                        ></div>
+                    </a>
                 </div>
             </div>
-        </div>
-
-        <h3
-            x-init="
-                () => {
-                    motion.inView($el, (element) => {
-                        motion.animate(
-                            $el,
-                            {
-                                opacity: [0, 1],
-                                y: [10, 0],
-                            },
-                            {
-                                duration: 0.7,
-                                ease: motion.circOut,
-                            },
-                        )
-                    })
-                }
-            "
-            class="mt-10 text-center text-xl font-medium capitalize opacity-0"
-        >
-            + Many community contributors:
-        </h3>
-
-        {{-- Contributors List --}}
-        <div
-            x-init="
-                () => {
-                    motion.inView($el, (element) => {
-                        motion.animate(
-                            $refAll('contributor'),
-                            {
-                                y: [10, 0],
-                                opacity: [0, 1],
-                            },
-                            {
-                                duration: 0.7,
-                                ease: motion.backOut,
-                                delay: motion.stagger(0.1),
-                            },
-                        )
-                    })
-                }
-            "
-            class="flex flex-wrap items-center justify-center gap-1.5 pt-4"
-            aria-label="Community contributors to the NativePHP project"
-        >
-            <a
-                x-ref="contributor"
-                href="https://github.com/SRWieZ"
-                target="_blank"
-                rel="noopener"
-                class="group grid size-12 place-items-center overflow-hidden rounded-full opacity-0 dark:ring-1 dark:ring-white/10"
-                aria-label="View Eser DENIZ's GitHub profile - NativePHP contributor"
-            >
-                <img
-                    src="https://avatars.githubusercontent.com/u/1408020?v=4"
-                    alt="Eser DENIZ - NativePHP contributor"
-                    class="h-full w-full object-cover transition duration-300 ease-out will-change-transform group-hover:scale-110"
-                    loading="lazy"
-                    width="48"
-                    height="48"
-                />
-            </a>
-            <a
-                x-ref="contributor"
-                href="https://github.com/XbNz"
-                target="_blank"
-                rel="noopener"
-                class="group grid size-12 place-items-center overflow-hidden rounded-full opacity-0 dark:ring-1 dark:ring-white/10"
-                aria-label="View A G's GitHub profile - NativePHP contributor"
-            >
-                <img
-                    src="https://avatars.githubusercontent.com/u/12668624?v=4"
-                    alt="A G - NativePHP contributor"
-                    class="h-full w-full object-cover transition duration-300 ease-out will-change-transform group-hover:scale-110"
-                    loading="lazy"
-                    width="48"
-                    height="48"
-                />
-            </a>
-            <a
-                x-ref="contributor"
-                href="https://github.com/gwleuverink"
-                target="_blank"
-                rel="noopener"
-                class="group grid size-12 place-items-center overflow-hidden rounded-full opacity-0 dark:ring-1 dark:ring-white/10"
-                aria-label="View Willem Leuverink's GitHub profile - NativePHP contributor"
-            >
-                <img
-                    src="https://avatars.githubusercontent.com/u/17123491?v=4"
-                    alt="Willem Leuverink - NativePHP contributor"
-                    class="h-full w-full object-cover transition duration-300 ease-out will-change-transform group-hover:scale-110"
-                    loading="lazy"
-                    width="48"
-                    height="48"
-                />
-            </a>
-            <a
-                x-ref="contributor"
-                href="https://github.com/PeteBishwhip"
-                target="_blank"
-                rel="noopener"
-                class="group grid size-12 place-items-center overflow-hidden rounded-full opacity-0 dark:ring-1 dark:ring-white/10"
-                aria-label="View Peter Bishop's GitHub profile - NativePHP contributor"
-            >
-                <img
-                    src="https://avatars.githubusercontent.com/u/9081809?v=4"
-                    alt="Peter Bishop - NativePHP contributor"
-                    class="h-full w-full object-cover transition duration-300 ease-out will-change-transform group-hover:scale-110"
-                    loading="lazy"
-                    width="48"
-                    height="48"
-                />
-            </a>
-            <a
-                x-ref="contributor"
-                href="https://github.com/NativePHP/laravel/graphs/contributors"
-                target="_blank"
-                rel="noopener"
-                class="group relative z-0 grid size-12 place-items-center overflow-hidden rounded-full opacity-0"
-                aria-label="View all additional contributors to the NativePHP project on GitHub"
-            >
-                <div
-                    class="z-10 self-center justify-self-center truncate text-center text-sm font-medium [grid-area:1/-1]"
-                >
-                    40+
-                </div>
-                <svg
-                    class="-z-10 h-full w-full self-center justify-self-center [grid-area:1/-1]"
-                    viewBox="0 0 63 64"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                >
-                    <rect
-                        class="text-[#C4FEE8] transition duration-300 ease-out group-hover:text-[#aeffe0] dark:text-emerald-500/30 dark:group-hover:text-emerald-500/30"
-                        x="0.75"
-                        y="1.25"
-                        width="61.5"
-                        height="61.5"
-                        rx="30.75"
-                        fill="currentColor"
-                    />
-                    <rect
-                        x-init="
-                            () => {
-                                motion.animate(
-                                    $el,
-                                    {
-                                        rotate: [0, 180],
-                                    },
-                                    {
-                                        duration: 6,
-                                        repeat: Infinity,
-                                        repeatType: 'loop',
-                                        ease: 'linear',
-                                    },
-                                )
-                            }
-                        "
-                        class="origin-center text-[#8CDDBF] dark:opacity-50"
-                        x="0.75"
-                        y="1.25"
-                        width="61.5"
-                        height="61.5"
-                        rx="30.75"
-                        stroke="currentColor"
-                        stroke-width="1.5"
-                        stroke-dasharray="7 7"
-                    />
-                </svg>
-            </a>
         </div>
     </section>
 

@@ -79,7 +79,7 @@ Need some inspiration? [Check out our repository of awesome projects](https://gi
 Go read the docs! We've tried to make them as comprehensive as possible, but if you find something missing, please
 feel free to [contribute](https://github.com/nativephp/nativephp.com).
 
-This site and all the NativePHP for desktop repositories are open source and available on [GitHub](https://github.com/nativephp).
+This site and all the NativePHP for Desktop repositories are open source and available on [GitHub](https://github.com/nativephp).
 
 Ready to jump in? [Let's get started](installation).
 

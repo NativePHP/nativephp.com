@@ -26,9 +26,9 @@ goes a long way in defraying the expenses of working for free to keep this proje
 
 Together, we can continue to grow NativePHP and ensure it remains a valuable tool for the community. 
 
-## NativePHP for mobile
+## NativePHP for Mobile
 
-If you're interested in NativePHP for mobile, you can get access right now via the [Early Access Program](/mobile).
+If you're interested in NativePHP for Mobile, you can get access right now via the [Early Access Program](/mobile).
 NativePHP is already working on iOS and Android is in active development. Your support will help us continue.
 
 ## Corporate Partners
