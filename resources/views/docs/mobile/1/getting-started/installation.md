@@ -10,10 +10,13 @@ order: 100
 3. [A NativePHP for Mobile license](https://nativephp.com/mobile)
 
 ### For iOS
-1. An Apple Silicon Mac running macOS 12+ with Xcode 16+
+1. An Apple Silicon Mac running macOS 12+ with [Xcode 16+](https://apps.apple.com/app/xcode/id497799835)
 2. An active [Apple Developer account](https://developer.apple.com/)
-3. You can download Xcode from the Mac App Store
-4. _Optional_ iOS device
+3. _Optional_ iOS device
+
+You **do not** need to enroll in the [Apple Developer Program](https://developer.apple.com/programs/enroll/) ($99/year)
+to develop and test your apps on a Simulator. But you will need to when you want to test your apps on real devices
+and start distributing them to your users via the App Store.
 
 > **Note** You cannot build iOS apps on Windows or Linux
 
@@ -26,14 +29,14 @@ order: 100
 #### On macOS
 ```shell
 export JAVA_HOME=$(/usr/libexec/java_home -v 17) // This isn't required if JAVA_HOME is already set in the Windows Env Variables
-export ANDROID_SDK_ROOT=$HOME/Library/Android/sdk
+export ANDROID_HOME=$HOME/Library/Android/sdk
 export PATH=$PATH:$JAVA_HOME/bin:$ANDROID_HOME/emulator:$ANDROID_HOME/tools:$ANDROID_HOME/tools/bin:$ANDROID_HOME/platform-tools
 ```
 
 #### On Windows
 ```shell
-set ANDROID_SDK_ROOT=C:\Users\yourname\AppData\Local\Android\Sdk
-set PATH=%PATH%;%JAVA_HOME%\bin;%ANDROID_SDK_ROOT%\platform-tools
+set ANDROID_HOME=C:\Users\yourname\AppData\Local\Android\Sdk
+set PATH=%PATH%;%JAVA_HOME%\bin;%ANDROID_HOME%\platform-tools
 
 # This isn't required if JAVA_HOME is already set in the Windows Env Variables
 set JAVA_HOME=C:\Program Files\Microsoft\jdk-17.0.8.7-hotspot
