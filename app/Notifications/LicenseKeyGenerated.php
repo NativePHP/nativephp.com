@@ -37,7 +37,7 @@ class LicenseKeyGenerated extends Notification implements ShouldQueue
         return (new MailMessage)
             ->subject('Your NativePHP License Key')
             ->greeting($greeting)
-            ->line('Thank you for purchasing a license for the early access program of mobile NativePHP.')
+            ->line('Thank you for purchasing a NativePHP for Mobile license.')
             ->line('Your license key is:')
             ->line("**{$this->licenseKey}**")
             ->line('When prompted by Composer, use your email address as the username and this license key as the password.')
