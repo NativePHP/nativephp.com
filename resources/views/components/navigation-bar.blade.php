@@ -3,7 +3,7 @@
     x-collapse
     x-show="!showDocsNavigation"
 >
-    <x-eap-banner />
+    <x-ticket-giveaway-banner />
 </div>
 <nav
     class="sticky top-0 z-50 flex flex-col items-center justify-center px-3 pt-px"
