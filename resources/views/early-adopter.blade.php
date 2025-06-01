@@ -99,8 +99,7 @@
                     </h3>
                     {{-- Text --}}
                     <p class="pt-2.5 text-sm dark:text-gray-400">
-                        Join the Early Access Program and start developing iOS
-                        apps today.
+                        Build and ship App Store approved iOS apps today!
                     </p>
                     {{-- Mockup --}}
                     <div class="pt-10">
@@ -759,17 +758,18 @@
             >
                 <p>
                     Every NativePHP for Mobile license entitles you to
-                    <i>release</i> a certain number of applications.
-                    A 'released' app is when it's published or distributed
-                    (typically through an app store).
+                    <i>release</i>
+                    a certain number of applications. A 'released' app is when
+                    it's published or distributed (typically through an app
+                    store).
                 </p>
                 <br />
                 <p>
                     However, you are welcome to
                     <i>build</i>
-                    (develop), as many apps as you want. If no one else besides you
-                    and other license holders have access to your app, then it
-                    doesn't count towards your quota of 'released' apps.
+                    (develop), as many apps as you want. If no one else besides
+                    you and other license holders have access to your app, then
+                    it doesn't count towards your quota of 'released' apps.
                 </p>
             </x-faq-card>
 
@@ -780,25 +780,24 @@
                 </p>
                 <br />
                 <p>
-                    For example, on the Pro plan, the license holder can create up to 10 unique
-                    license keys that can be assigned to individual developers,
-                    one key per developer.
+                    For example, on the Pro plan, the license holder can create
+                    up to 10 unique license keys that can be assigned to
+                    individual developers, one key per developer.
                 </p>
                 <br />
                 <p>
-                    This allows the license holder to control who has the ability to
-                    use their license for building apps. You can add or remove developers
-                    and each will get their own unique license key. If a developer leaves
-                    your team, you can revoke their license key to prevent abuse.
+                    This allows the license holder to control who has the
+                    ability to use their license for building apps. You can add
+                    or remove developers and each will get their own unique
+                    license key. If a developer leaves your team, you can revoke
+                    their license key to prevent abuse.
                 </p>
             </x-faq-card>
 
             <x-faq-card
                 question="Is it possible to purchase additional developer seats or released apps?"
             >
-                <p>
-                    You can purchase more Mini or Pro licenses as needed.
-                </p>
+                <p>You can purchase more Mini or Pro licenses as needed.</p>
             </x-faq-card>
 
             <x-faq-card question="What was the EAP and when did it end?">
