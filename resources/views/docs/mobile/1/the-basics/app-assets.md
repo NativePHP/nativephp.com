@@ -1,6 +1,6 @@
 ---
 title: App Assets
-order: 400
+order: 200
 ---
 
 ## Customizing Your App Icon
