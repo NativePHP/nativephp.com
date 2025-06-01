@@ -1,10 +1,5 @@
 @props(['hasMenu' => false])
-<div
-    x-collapse
-    x-show="!showDocsNavigation"
->
-    <x-eap-banner />
-</div>
+
 <nav
     class="sticky top-0 z-50 flex flex-col items-center justify-center px-3 pt-px"
     aria-label="Main Navigation"
@@ -201,7 +196,7 @@
                     >
                     Blog
                     </a>
-                    
+
                     {{-- Decorative circle -- }}
                     <div
                     class="hidden size-[3px] rotate-45 rounded-sm bg-gray-400 transition duration-200 lg:block dark:opacity-60"

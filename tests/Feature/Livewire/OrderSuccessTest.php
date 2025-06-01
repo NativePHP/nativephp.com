@@ -168,7 +168,7 @@ class OrderSuccessTest extends TestCase
                 LineItem::constructFrom([
                     'id' => 'li_1RFKPpAyFo6rlwXqAHI9wA95',
                     'object' => 'item',
-                    'description' => 'Early Access Program (Max)',
+                    'description' => 'Max',
                     'price' => [
                         'id' => Subscription::Max->stripePriceId(),
                         'object' => 'price',

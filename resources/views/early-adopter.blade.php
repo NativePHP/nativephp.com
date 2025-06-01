@@ -754,12 +754,61 @@
                 </p>
             </x-faq-card>
 
-            <x-faq-card question="When will Android support be ready?">
-                <p>It's READY! Sign up and build apps for Android today!</p>
+            <x-faq-card
+                question="What does 'build unlimited apps, release X production apps' mean?"
+            >
+                <p>
+                    Every NativePHP for Mobile license entitles you to
+                    <i>release</i> a certain number of applications.
+                    A 'released' app is when it's published or distributed
+                    (typically through an app store).
+                </p>
+                <br />
+                <p>
+                    However, you are welcome to
+                    <i>build</i>
+                    (develop), as many apps as you want. If no one else besides you
+                    and other license holders have access to your app, then it
+                    doesn't count towards your quota of 'released' apps.
+                </p>
             </x-faq-card>
 
-            <x-faq-card question="When will the EAP end?">
-                <p>The EAP will end May 31, 2025.</p>
+            <x-faq-card question="What is a 'developer seat'?">
+                <p>
+                    A 'developer seat' represents an individual developer that
+                    can build apps under that license plan.
+                </p>
+                <br />
+                <p>
+                    For example, on the Pro plan, the license holder can create up to 10 unique
+                    license keys that can be assigned to individual developers,
+                    one key per developer.
+                </p>
+                <br />
+                <p>
+                    This allows the license holder to control who has the ability to
+                    use their license for building apps. You can add or remove developers
+                    and each will get their own unique license key. If a developer leaves
+                    your team, you can revoke their license key to prevent abuse.
+                </p>
+            </x-faq-card>
+
+            <x-faq-card
+                question="Is it possible to purchase additional developer seats or released apps?"
+            >
+                <p>
+                    You can purchase more Mini or Pro licenses as needed.
+                </p>
+            </x-faq-card>
+
+            <x-faq-card question="What was the EAP and when did it end?">
+                <p>
+                    The Early Access Program (EAP) provided initial access to
+                    the NativePHP for Mobile platform for early adopters at
+                    reduced pricing while we worked on releasing v1 of the
+                    technology. The EAP started in February and ended in May
+                    2025.
+                </p>
             </x-faq-card>
 
             <x-faq-card question="Which price will my license renew at?">
@@ -784,6 +833,7 @@
             <x-faq-card question="Can I upgrade or downgrade my license later?">
                 <p>That's not currently possible.</p>
             </x-faq-card>
+
             <x-faq-card question="Will my apps built with NativePHP be secure?">
                 <p>
                     Definitely. NativePHP for Mobile apps are just like other
@@ -801,6 +851,7 @@
                     build!
                 </p>
             </x-faq-card>
+
             <x-faq-card question="Can I get an invoice?">
                 <p>
                     If you purchased after May 6, 2025, you should get an
@@ -834,88 +885,5 @@
                 </p>
             </x-faq-card>
         </div>
-    </section>
-
-    {{-- Why Join Program Section --}}
-    <section
-        class="mx-auto mt-20 max-w-5xl px-5"
-        aria-labelledby="join-program-heading"
-    >
-        <article
-            x-init="
-                () => {
-                    motion.inView(
-                        $el,
-                        (element) => {
-                            motion.animate(
-                                $el,
-                                {
-                                    opacity: [0, 1],
-                                    x: [-10, 0],
-                                },
-                                {
-                                    duration: 0.7,
-                                    ease: motion.easeOut,
-                                },
-                            )
-                        },
-                        {
-                            amount: 0.2,
-                        },
-                    )
-                }
-            "
-            class="prose mx-auto max-w-2xl opacity-0 dark:text-gray-400"
-        >
-            <h2
-                id="join-program-heading"
-                class="dark:text-white"
-            >
-                Why Join the Early Access Program?
-            </h2>
-            <p>
-                From the beginning, NativePHP has been focused on Windows, Mac,
-                and Linux. Until now!
-            </p>
-            <p>
-                We believe that breaking the mobile frontier is what makes this
-                project truly compelling... and truly cross-platform.
-            </p>
-            <p>
-                With
-                <strong class="dark:text-white">NativePHP for Mobile</strong>
-                , we are excited about the possibilities that lie ahead.
-            </p>
-            <p>
-                However, to make this vision a reality for both iOS and Android,
-                we need your support.
-            </p>
-            <p>
-                As an EAP member, you will be supporting the continued
-                development of all of NativePHP, but especially of NativePHP for
-                mobile.
-            </p>
-            <p>
-                You'll have the opportunity to influence the direction of the
-                project and provide critical feedback right from an early stage.
-            </p>
-            <p>
-                You'll get exclusive access to all the latest features first and
-                special perks for the life of the NativePHP project... a project
-                we plan to be working on for a long time to come!
-            </p>
-            <p>
-                Please join us on this exciting journey to expand NativePHP onto
-                mobile platforms.
-            </p>
-            <p class="italic">We can't wait to see what you build!</p>
-            <p>
-                <span class="font-bold italic dark:text-white">
-                    Simon &amp; Shane
-                </span>
-                <br />
-                <span class="text-indigo-400">Creators of NativePHP</span>
-            </p>
-        </article>
     </section>
 </x-layout>
