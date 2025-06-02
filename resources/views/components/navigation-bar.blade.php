@@ -115,7 +115,7 @@
                 <a
                     href="{{ route('early-adopter') }}"
                     @class([
-                        'hidden transition duration-200 lg:block',
+                        'transition duration-200',
                         'font-medium' => request()->routeIs('early-adopter*'),
                         'opacity-60 hover:opacity-100' => ! request()->routeIs('early-adopter*'),
                     ])
