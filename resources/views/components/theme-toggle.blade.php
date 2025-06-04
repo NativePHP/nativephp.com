@@ -1,120 +1,90 @@
 <div
     x-on:click="darkMode = !darkMode"
     x-data="{
-        nightToDay: [
-            [
-                '.theme-selector-moon',
-                {
-                    opacity: [1, 0],
-                    transform:
-                        'translate(0%, -50%) translate(12px, 0px) rotate(70deg) scale(0.6, 0.6)',
-                },
-                { duration: 0.3, ease: motion.easeOut },
-            ],
+        timeline: null,
 
-            [
-                '.theme-selector-mini-star',
-                { opacity: [1, 0], scale: [1, 0] },
-                { duration: 0.3, ease: motion.easeOut, at: 0 },
-            ],
-
-            [
-                '.theme-selector-micro-star',
-                { opacity: [1, 0], scale: [1, 0] },
-                { duration: 0.3, ease: motion.easeOut, at: 0 },
-            ],
-
-            [
-                '.theme-selector-sunball',
-                { opacity: [0, 1], x: [-5, 0], y: [-5, 0], scale: [0, 1] },
-                {
-                    duration: 0.3,
-                    ease: motion.easeOut,
-                    at: 0.15,
-                },
-            ],
-
-            [
-                '.theme-selector-sunshine',
-                { opacity: [0, 1], scale: [0, 1], rotate: [-180, 0] },
-                {
-                    duration: 0.3,
-                    ease: motion.easeOut,
-                    at: 0.15,
-                },
-            ],
-        ],
-        dayToNight: [
-            [
-                '.theme-selector-sunshine',
-                { opacity: [1, 0], scale: [1, 0], rotate: [0, -180] },
-                {
-                    duration: 0.3,
-                    ease: motion.easeOut,
-                },
-            ],
-
-            [
-                '.theme-selector-sunball',
-                { opacity: [1, 0], x: [0, -5], y: [0, -5], scale: [1, 0] },
-                {
-                    duration: 0.3,
-                    ease: motion.easeOut,
-                    at: 0.15,
-                },
-            ],
-
-            [
-                '.theme-selector-micro-star',
-                { opacity: [0, 1], scale: [0, 1] },
-                { duration: 0.3, ease: motion.easeOut, at: 0 },
-            ],
-
-            [
-                '.theme-selector-mini-star',
-                { opacity: [0, 1], scale: [0, 1] },
-                { duration: 0.3, ease: motion.easeOut, at: 0 },
-            ],
-
-            [
-                '.theme-selector-moon',
-                {
-                    opacity: [0, 1],
-                    transform: 'translate(0%, -50%) translate(12px, 0px)',
-                },
-                { duration: 0.3, ease: motion.easeOut, at: 0 },
-            ],
-        ],
-        setInitialState() {
-            // Set initial state directly without animation
-            if (! darkMode) {
-                document.querySelector('.theme-selector-sunball').style.opacity =
-                    '0'
-                document.querySelector('.theme-selector-sunshine').style.opacity =
-                    '0'
-                document.querySelector('.theme-selector-moon').style.transform =
-                    'translate(0%, -50%) translate(12px, 0px)'
-            } else {
-                document.querySelector('.theme-selector-moon').style.opacity = '0'
-                document.querySelector('.theme-selector-moon').style.transform =
-                    'translate(0%, -50%) translate(12px, 0px) rotate(70deg) scale(0.6, 0.6)'
-                document.querySelector('.theme-selector-mini-star').style.opacity =
-                    '0'
-                document.querySelector('.theme-selector-micro-star').style.opacity =
-                    '0'
-            }
-        },
         init() {
-            motion.animate($el, { scale: 1 }, { duration: 0.1 })
+            gsap.to('.theme-selector', {
+                scale: 1,
+                duration: 0.1,
+            })
 
-            this.setInitialState()
+            timeline = gsap
+                .timeline({
+                    paused: true,
+                })
+                .to('.theme-selector-moon', {
+                    rotate: 70,
+                    ease: 'sine.out',
+                    duration: 0.3,
+                })
+                .to(
+                    '.theme-selector-mini-star',
+                    {
+                        autoAlpha: 0,
+                        scale: 0,
+                        ease: 'sine.out',
+                        duration: 0.3,
+                    },
+                    '>-0.3',
+                )
+                .to(
+                    '.theme-selector-micro-star',
+                    {
+                        autoAlpha: 0,
+                        scale: 0,
+                        ease: 'sine.out',
+                        duration: 0.3,
+                    },
+                    '<',
+                )
+                .to(
+                    '.theme-selector-moon',
+                    {
+                        scale: 0.6,
+                        ease: 'sine.out',
+                        duration: 0.3,
+                    },
+                    '<',
+                )
+                .fromTo(
+                    '.theme-selector-sunball',
+                    {
+                        scale: 0,
+                        x: -5,
+                        y: 5,
+                    },
+                    {
+                        x: 0,
+                        y: 0,
+                        scale: 1,
+                        ease: 'expo.out',
+                        duration: 0.3,
+                    },
+                    '>-0.15',
+                )
+                .fromTo(
+                    '.theme-selector-sunshine',
+                    {
+                        scale: 0,
+                        rotate: -180,
+                    },
+                    {
+                        scale: 1,
+                        rotate: 0,
+                        ease: 'expo.out',
+                        duration: 0.3,
+                    },
+                    '<',
+                )
 
-            // Watch for dark mode changes
+            if (darkMode) timeline.progress(1)
+
             $watch('darkMode', (value) => {
                 if (value) {
-                    motion.animate(this.nightToDay)
+                    timeline.play()
                 } else {
-                    motion.animate(this.dayToNight)
+                    timeline.reverse()
                 }
             })
         },
