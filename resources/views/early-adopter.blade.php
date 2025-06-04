@@ -106,7 +106,7 @@
                         <img
                             src="{{ Vite::asset('resources/images/mobile/ios_phone_mockup.webp') }}"
                             alt="iOS phone mockup displaying a NativePHP application"
-                            class="-mb-[11rem] w-40 dark:mix-blend-hard-light"
+                            class="-mb-44 w-40 dark:mix-blend-hard-light"
                         />
                     </div>
                     {{-- White blurred circle - Decorative --}}

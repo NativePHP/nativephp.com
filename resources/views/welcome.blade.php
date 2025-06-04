@@ -112,7 +112,7 @@
 
                 {{-- Glass shape --}}
                 <div
-                    class="absolute -left-[3rem] top-[4rem] size-6 rounded-bl-xl rounded-br-3xl rounded-tl-3xl rounded-tr-xl bg-[#5A31FF]/10 ring-1 ring-white/50 backdrop-blur-sm min-[400px]:-left-[3.5rem] min-[400px]:top-[4.5rem] min-[400px]:size-8 md:-left-[4.5rem] md:top-[5.6rem] md:size-10 dark:hidden dark:ring-gray-700/50"
+                    class="absolute -left-12 top-16 size-6 rounded-bl-xl rounded-br-3xl rounded-tl-3xl rounded-tr-xl bg-[#5A31FF]/10 ring-1 ring-white/50 backdrop-blur-xs min-[400px]:-left-14 min-[400px]:top-18 min-[400px]:size-8 md:-left-18 md:top-[5.6rem] md:size-10 dark:hidden dark:ring-gray-700/50"
                     x-init="
                         () => {
                             motion.animate(
@@ -149,7 +149,7 @@
                             )
                         }
                     "
-                    class="group absolute -right-[19rem] -top-[5.7rem] hidden items-end gap-1 text-left text-sm lg:flex"
+                    class="group absolute -right-76 -top-[5.7rem] hidden items-end gap-1 text-left text-sm lg:flex"
                 >
                     <div class="relative -top-1.5 -mr-6 flex items-end gap-1">
                         {{-- Black circle --}}
@@ -207,7 +207,7 @@
                             href="https://www.youtube.com/watch?v=CsM66a0koAM"
                             target="_blank"
                             rel="noopener"
-                            class="relative -top-5 grid size-10 place-items-center rounded-full bg-black/30 text-white ring-1 ring-white/10 backdrop-blur transition duration-300 ease-in-out will-change-transform group-hover:scale-110 group-hover:text-[#d4fd7d] dark:group-hover:text-[#9c90f0]"
+                            class="relative -top-5 grid size-10 place-items-center rounded-full bg-black/30 text-white ring-1 ring-white/10 backdrop-blur-sm transition duration-300 ease-in-out will-change-transform group-hover:scale-110 group-hover:text-[#d4fd7d] dark:group-hover:text-[#9c90f0]"
                             aria-label="Watch NativePHP introduction video on YouTube"
                         >
                             <x-icons.play-button
@@ -284,7 +284,7 @@
 
             {{-- Shiny line --}}
             <div
-                class="absolute left-1/2 top-32 z-20 -translate-x-1/2 rotate-[50deg] transition duration-500 ease-out will-change-transform group-hover/header:translate-x-[-55%] group-hover/header:opacity-0"
+                class="absolute left-1/2 top-32 z-20 -translate-x-1/2 rotate-50 transition duration-500 ease-out will-change-transform group-hover/header:translate-x-[-55%] group-hover/header:opacity-0"
                 aria-hidden="true"
             >
                 <div
@@ -303,7 +303,7 @@
                             )
                         }
                     "
-                    class="h-2.5 w-[26rem] bg-gradient-to-r from-transparent to-white/50 ring-1 ring-white/50 dark:hidden"
+                    class="h-2.5 w-104 bg-linear-to-r from-transparent to-white/50 ring-1 ring-white/50 dark:hidden"
                 ></div>
             </div>
         </header>
@@ -319,7 +319,7 @@
             >
                 {{-- Play button --}}
                 <div
-                    class="absolute right-1/2 top-1/2 grid size-16 -translate-y-1/2 translate-x-1/2 place-items-center rounded-full bg-white/10 text-white ring-1 ring-white/10 backdrop-blur transition duration-300 ease-in-out will-change-transform group-hover:scale-110 group-hover:text-[#d4fd7d]"
+                    class="absolute right-1/2 top-1/2 grid size-16 -translate-y-1/2 translate-x-1/2 place-items-center rounded-full bg-white/10 text-white ring-1 ring-white/10 backdrop-blur-sm transition duration-300 ease-in-out will-change-transform group-hover:scale-110 group-hover:text-[#d4fd7d]"
                     aria-hidden="true"
                 >
                     <x-icons.play-button
@@ -664,7 +664,7 @@
                 >
                     {{-- Play button --}}
                     <div
-                        class="absolute right-1/2 top-1/2 grid size-16 -translate-y-1/2 translate-x-1/2 place-items-center rounded-full bg-white/10 text-white ring-1 ring-white/10 backdrop-blur transition duration-300 ease-in-out will-change-transform group-hover:scale-110 group-hover:text-[#d4fd7d]"
+                        class="absolute right-1/2 top-1/2 grid size-16 -translate-y-1/2 translate-x-1/2 place-items-center rounded-full bg-white/10 text-white ring-1 ring-white/10 backdrop-blur-sm transition duration-300 ease-in-out will-change-transform group-hover:scale-110 group-hover:text-[#d4fd7d]"
                         aria-hidden="true"
                     >
                         <x-icons.play-button

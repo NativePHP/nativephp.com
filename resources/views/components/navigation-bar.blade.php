@@ -9,7 +9,7 @@
             'ring-gray-200/80 dark:ring-gray-800/50 bg-white/50 dark:bg-white/5 translate-y-3': scrolled || showDocsNavigation,
             'ring-transparent dark:bg-transparent': ! scrolled && ! showDocsNavigation,
         }"
-        class="mx-auto flex w-full max-w-5xl items-center justify-between gap-5 rounded-2xl px-5 py-4 ring-1 backdrop-blur-md transition duration-200 ease-out xl:max-w-7xl 2xl:max-w-[90rem]"
+        class="mx-auto flex w-full max-w-5xl items-center justify-between gap-5 rounded-2xl px-5 py-4 ring-1 backdrop-blur-md transition duration-200 ease-out xl:max-w-7xl 2xl:max-w-360"
     >
         {{-- Left side --}}
         <div class="flex items-center gap-3">
@@ -31,11 +31,11 @@
                 title="Read the NativePHP v1 announcement"
             >
                 <div
-                    class="absolute inset-0 flex items-center [container-type:inline-size]"
+                    class="@container absolute inset-0 flex items-center"
                     aria-hidden="true"
                 >
                     <div
-                        class="absolute h-[100cqw] w-[100cqw] bg-[conic-gradient(from_0_at_50%_50%,rgba(167,139,250,0.75)_0deg,transparent_60deg,transparent_300deg,rgba(167,139,250,0.75)_360deg)] transition duration-300 [animation:spin_2.5s_linear_infinite]"
+                        class="absolute h-[100cqw] w-[100cqw] animate-[spin_2.5s_linear_infinite] bg-[conic-gradient(from_0_at_50%_50%,rgba(167,139,250,0.75)_0deg,transparent_60deg,transparent_300deg,rgba(167,139,250,0.75)_360deg)] transition duration-300"
                     ></div>
                 </div>
 
@@ -107,7 +107,7 @@
 
                 {{-- Decorative circle --}}
                 <div
-                    class="hidden size-[3px] rotate-45 rounded-sm bg-gray-400 transition duration-200 lg:block dark:opacity-60"
+                    class="hidden size-[3px] rotate-45 rounded-xs bg-gray-400 transition duration-200 lg:block dark:opacity-60"
                     aria-hidden="true"
                 ></div>
 
@@ -126,7 +126,7 @@
 
                 {{-- Decorative circle --}}
                 <div
-                    class="hidden size-[3px] rotate-45 rounded-sm bg-gray-400 transition duration-200 lg:block dark:opacity-60"
+                    class="hidden size-[3px] rotate-45 rounded-xs bg-gray-400 transition duration-200 lg:block dark:opacity-60"
                     aria-hidden="true"
                 ></div>
 
@@ -134,7 +134,7 @@
                     <button
                         type="button"
                         @click="showDocsNavigation = !showDocsNavigation"
-                        class="-m-2 block p-2 text-gray-600 focus:outline-none focus:ring-0 lg:hidden dark:text-gray-300"
+                        class="-m-2 block p-2 text-gray-600 focus:ring-0 focus:outline-hidden lg:hidden dark:text-gray-300"
                         aria-expanded="false"
                         aria-controls="docs-navigation"
                         aria-label="Toggle documentation menu"
@@ -179,7 +179,7 @@
 
                 {{-- Decorative circle --}}
                 <div
-                    class="hidden size-[3px] rotate-45 rounded-sm bg-gray-400 transition duration-200 lg:block dark:opacity-60"
+                    class="hidden size-[3px] rotate-45 rounded-xs bg-gray-400 transition duration-200 lg:block dark:opacity-60"
                     aria-hidden="true"
                 ></div>
 
@@ -196,10 +196,10 @@
                     >
                     Blog
                     </a>
-
+                    
                     {{-- Decorative circle -- }}
                     <div
-                    class="hidden size-[3px] rotate-45 rounded-sm bg-gray-400 transition duration-200 lg:block dark:opacity-60"
+                    class="hidden size-[3px] rotate-45 rounded-xs bg-gray-400 transition duration-200 lg:block dark:opacity-60"
                     aria-hidden="true"
                     ></div>
                 --}}
@@ -272,7 +272,7 @@
                         }
                     "
                     href="/docs/1/getting-started/sponsoring"
-                    class="relative hidden bg-gradient-to-tr from-violet-600 to-violet-300 bg-clip-text font-medium text-transparent lg:block dark:from-violet-500 dark:to-white/80"
+                    class="relative hidden bg-linear-to-tr from-violet-600 to-violet-300 bg-clip-text font-medium text-transparent lg:block dark:from-violet-500 dark:to-white/80"
                     aria-label="Sponsor NativePHP"
                     title="Support NativePHP development"
                 >
@@ -282,7 +282,7 @@
                     {{-- Heart 1 --}}
                     <div
                         x-ref="sponsorHeart1"
-                        class="absolute right-1/2 top-0 origin-center scale-0 opacity-0"
+                        class="absolute top-0 right-1/2 origin-center scale-0 opacity-0"
                         aria-hidden="true"
                     >
                         <x-icons.heart class="size-[9px] text-violet-400" />
@@ -291,7 +291,7 @@
                     {{-- Heart 2 --}}
                     <div
                         x-ref="sponsorHeart2"
-                        class="absolute left-1/2 top-0 origin-center scale-0 opacity-0"
+                        class="absolute top-0 left-1/2 origin-center scale-0 opacity-0"
                         aria-hidden="true"
                     >
                         <x-icons.heart class="size-[7px] text-violet-400" />
@@ -300,7 +300,7 @@
                     {{-- Heart 3 --}}
                     <div
                         x-ref="sponsorHeart3"
-                        class="absolute right-1/2 top-0 origin-center scale-0 opacity-0"
+                        class="absolute top-0 right-1/2 origin-center scale-0 opacity-0"
                         aria-hidden="true"
                     >
                         <x-icons.heart class="size-[5px] text-violet-400" />
@@ -350,7 +350,7 @@
                                 )
                             }
                         "
-                        class="absolute -bottom-1.5 left-0 h-8 w-2 origin-left rounded-full bg-gradient-to-t from-violet-500 to-transparent blur-[9px] will-change-transform dark:blur-sm"
+                        class="absolute -bottom-1.5 left-0 h-8 w-2 origin-left rounded-full bg-linear-to-t from-violet-500 to-transparent blur-[9px] will-change-transform dark:blur-xs"
                         aria-hidden="true"
                     ></div>
                 </a>

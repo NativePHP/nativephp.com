@@ -1,5 +1,4 @@
 <div
-    class="theme-selector relative -mx-1.5 size-9 cursor-pointer select-none hover:text-slate-600 dark:opacity-70 dark:hover:text-[#bcc1ef]"
     x-on:click="darkMode = !darkMode"
     x-data="{
         nightToDay: [
@@ -124,12 +123,13 @@
     aria-label="Toggle between light and dark mode"
     x-bind:aria-pressed="darkMode ? 'true' : 'false'"
     tabindex="0"
+    class="theme-selector relative -mx-1.5 size-9 cursor-pointer select-none hover:text-slate-600 dark:opacity-70 dark:hover:text-[#bcc1ef]"
 >
     <span class="sr-only">Toggle theme</span>
 
     {{-- Moon --}}
     <div
-        class="theme-selector-moon absolute right-1/2 top-1/2 -translate-y-1/2 translate-x-1/2"
+        class="theme-selector-moon absolute top-1/2 right-1/2 translate-x-1/2 -translate-y-1/2"
         aria-hidden="true"
     >
         <div class="-scale-x-100 transition duration-300">
@@ -149,7 +149,7 @@
     </div>
     {{-- Mini star --}}
     <div
-        class="theme-selector-mini-star absolute left-[.5rem] top-[.5rem]"
+        class="theme-selector-mini-star absolute top-[.5rem] left-[.5rem]"
         aria-hidden="true"
     >
         <div class="transition duration-300">
@@ -169,7 +169,7 @@
     </div>
     {{-- Micro star --}}
     <div
-        class="theme-selector-micro-star absolute left-[.9rem] top-[.9rem]"
+        class="theme-selector-micro-star absolute top-[.9rem] left-[.9rem]"
         aria-hidden="true"
     >
         <div class="transition duration-300">
@@ -189,7 +189,7 @@
     </div>
     {{-- Sun ball --}}
     <div
-        class="absolute right-1/2 top-1/2 -translate-y-1/2 translate-x-1/2"
+        class="absolute top-1/2 right-1/2 translate-x-1/2 -translate-y-1/2"
         aria-hidden="true"
     >
         <div class="theme-selector-sunball">
@@ -206,36 +206,36 @@
         <div class="relative h-full w-full">
             {{-- Top --}}
             <div
-                class="absolute right-1/2 top-[0.45rem] h-[3px] w-[1.5px] translate-x-1/2 rounded-full bg-current transition duration-300"
+                class="absolute top-[0.45rem] right-1/2 h-[3px] w-[1.5px] translate-x-1/2 rounded-full bg-current transition duration-300"
             ></div>
             {{-- Right --}}
             <div
-                class="absolute right-[0.45rem] top-1/2 h-[3px] w-[1.5px] -translate-y-1/2 rotate-[90deg] rounded-full bg-current transition duration-300"
+                class="absolute top-1/2 right-[0.45rem] h-[3px] w-[1.5px] -translate-y-1/2 rotate-90 rounded-full bg-current transition duration-300"
             ></div>
             {{-- Bottom --}}
             <div
-                class="absolute bottom-[0.45rem] right-1/2 h-[3px] w-[1.5px] translate-x-1/2 rounded-full bg-current transition duration-300"
+                class="absolute right-1/2 bottom-[0.45rem] h-[3px] w-[1.5px] translate-x-1/2 rounded-full bg-current transition duration-300"
             ></div>
             {{-- Left --}}
             <div
-                class="absolute left-[0.45rem] top-1/2 h-[3px] w-[1.5px] -translate-y-1/2 rotate-[90deg] rounded-full bg-current transition duration-300"
+                class="absolute top-1/2 left-[0.45rem] h-[3px] w-[1.5px] -translate-y-1/2 rotate-90 rounded-full bg-current transition duration-300"
             ></div>
             {{-- Top Right --}}
             <div
-                class="absolute right-[0.65rem] top-[0.65rem] h-[3px] w-[1.5px] rotate-[45deg] rounded-full bg-current transition duration-300"
+                class="absolute top-[0.65rem] right-[0.65rem] h-[3px] w-[1.5px] rotate-45 rounded-full bg-current transition duration-300"
             ></div>
             {{-- Top Left --}}
             <div
-                class="absolute left-[0.65rem] top-[0.65rem] h-[3px] w-[1.5px] rotate-[-45deg] rounded-full bg-current transition duration-300"
+                class="absolute top-[0.65rem] left-[0.65rem] h-[3px] w-[1.5px] -rotate-45 rounded-full bg-current transition duration-300"
             ></div>
 
             {{-- Bottom Right --}}
             <div
-                class="absolute bottom-[0.65rem] right-[0.65rem] h-[3px] w-[1.5px] rotate-[-45deg] rounded-full bg-current transition duration-300"
+                class="absolute right-[0.65rem] bottom-[0.65rem] h-[3px] w-[1.5px] -rotate-45 rounded-full bg-current transition duration-300"
             ></div>
             {{-- Bottom Left --}}
             <div
-                class="absolute bottom-[0.65rem] left-[0.65rem] h-[3px] w-[1.5px] rotate-[45deg] rounded-full bg-current transition duration-300"
+                class="absolute bottom-[0.65rem] left-[0.65rem] h-[3px] w-[1.5px] rotate-45 rounded-full bg-current transition duration-300"
             ></div>
         </div>
     </div>
