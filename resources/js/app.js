@@ -1,6 +1,7 @@
 import './fonts'
 import './bootstrap'
 import 'number-flow'
+import { gsap } from 'gsap'
 import {
     Livewire,
     Alpine,
@@ -48,6 +49,9 @@ window.motion = {
     stagger: stagger,
     cubicBezier: cubicBezier,
 }
+
+// GSAP
+window.gsap = gsap
 
 // Alpine
 Alpine.data('codeBlock', codeBlock)

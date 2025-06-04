@@ -1,7 +1,7 @@
 <x-layout :hasMenu="! empty($sidebarLeft)">
     {{-- Main container --}}
     <main
-        class="mx-auto flex w-full max-w-5xl grow items-start px-4 pt-1 xl:max-w-7xl 2xl:max-w-[90rem]"
+        class="mx-auto flex w-full max-w-5xl grow items-start px-4 pt-1 xl:max-w-7xl 2xl:max-w-360"
     >
         {{-- Left sidebar --}}
         @if (! empty($sidebarLeft))

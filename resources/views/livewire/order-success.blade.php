@@ -315,7 +315,7 @@
                         class="mt-6 rounded-xl bg-indigo-50 p-4 dark:bg-indigo-900/20"
                     >
                         <div class="flex">
-                            <div class="flex-shrink-0">
+                            <div class="shrink-0">
                                 <svg
                                     class="h-5 w-5 text-indigo-400"
                                     xmlns="http://www.w3.org/2000/svg"

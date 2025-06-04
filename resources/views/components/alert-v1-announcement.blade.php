@@ -6,19 +6,19 @@
 >
     {{-- Blue circle --}}
     <div
-        class="absolute left-6 top-0 -z-10 hidden h-32 w-6 -rotate-[60deg] rounded-full blur-lg min-[450px]:top-1/2 min-[450px]:-translate-y-1/2 dark:block dark:bg-gradient-to-b dark:from-blue-500 dark:to-blue-500/10"
+        class="absolute left-6 top-0 -z-10 hidden h-32 w-6 -rotate-60 rounded-full blur-lg min-[450px]:top-1/2 min-[450px]:-translate-y-1/2 dark:block dark:bg-linear-to-b dark:from-blue-500 dark:to-blue-500/10"
         aria-hidden="true"
     ></div>
 
     {{-- White circle --}}
     <div
-        class="absolute left-20 top-0 -z-20 hidden h-32 w-3 -rotate-[60deg] rounded-full blur-lg min-[450px]:top-1/2 min-[450px]:-translate-y-1/2 dark:block dark:bg-gradient-to-b dark:from-white/30 dark:to-transparent"
+        class="absolute left-20 top-0 -z-20 hidden h-32 w-3 -rotate-60 rounded-full blur-lg min-[450px]:top-1/2 min-[450px]:-translate-y-1/2 dark:block dark:bg-linear-to-b dark:from-white/30 dark:to-transparent"
         aria-hidden="true"
     ></div>
 
     {{-- Icon --}}
     <div
-        class="grid size-10 place-items-center rounded-full bg-gray-200/50 backdrop-blur-sm dark:bg-black/30"
+        class="grid size-10 place-items-center rounded-full bg-gray-200/50 backdrop-blur-xs dark:bg-black/30"
         aria-hidden="true"
     >
         <x-icons.colored-confetti

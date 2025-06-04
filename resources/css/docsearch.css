@@ -1,3 +1,5 @@
+@reference "./app.css"
+
 :root {
     --docsearch-container-background: rgba(0, 0, 0, 0.5);
     --docsearch-primary-color: #987af1;
@@ -34,11 +36,11 @@
 }
 
 .DocSearch-Button-Placeholder {
-    @apply hidden pl-1 pr-1 text-sm text-black/60 min-[400px]:block min-[520px]:pr-20 dark:text-white/60;
+    @apply hidden pr-1 pl-1 text-sm text-black/60 min-[400px]:block min-[520px]:pr-20 dark:text-white/60;
 }
 
 .DocSearch-Button-Keys {
-    @apply ml-1 mt-1 hidden min-w-[auto] text-sm leading-none min-[520px]:flex;
+    @apply mt-1 ml-1 hidden min-w-[auto] text-sm leading-none min-[520px]:flex;
 }
 
 .DocSearch-Button-Key {
