@@ -131,6 +131,7 @@
                     aria-hidden="true"
                 ></div>
 
+                {{-- Link --}}
                 <a
                     href="/docs/"
                     @class([
@@ -142,45 +143,6 @@
                 >
                     Docs
                 </a>
-
-                {{-- Temporarily disabled --}}
-                {{--
-                    <button
-                    type="button"
-                    @click="showDocsNavigation = !showDocsNavigation"
-                    class="-m-2 block p-2 text-gray-600 focus:ring-0 focus:outline-hidden dark:text-gray-300"
-                    aria-expanded="false"
-                    aria-controls="docs-navigation"
-                    aria-label="Toggle documentation menu"
-                    >
-                    <div x-show="!showDocsNavigation">
-                    <x-icons.menu
-                    class="size-6"
-                    aria-hidden="true"
-                    />
-                    </div>
-                    <div x-show="showDocsNavigation">
-                    <x-icons.close
-                    class="size-6"
-                    aria-hidden="true"
-                    />
-                    </div>
-                    </button>
-                --}}
-                @if ($hasMenu)
-                    <a
-                        href="/docs/"
-                        @class([
-                            'hidden transition duration-200 lg:block',
-                            'font-medium' => request()->is('docs*'),
-                            'opacity-60 hover:opacity-100' => ! request()->is('docs*'),
-                        ])
-                        aria-current="{{ request()->is('docs*') ? 'page' : 'false' }}"
-                    >
-                        Docs
-                    </a>
-                @else
-                @endif
 
                 {{-- Decorative circle --}}
                 <div
