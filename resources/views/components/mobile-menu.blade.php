@@ -53,7 +53,7 @@
                 <a
                     href="/"
                     @class([
-                        'py-3 transition duration-200',
+                        'flex w-full items-center justify-between py-3 transition duration-200',
                         'font-medium' => request()->routeIs('welcome*'),
                         'opacity-50 hover:translate-x-1 hover:opacity-100' => ! request()->routeIs(
                             'welcome*',
@@ -61,7 +61,14 @@
                     ])
                     aria-current="{{ request()->routeIs('welcome*') ? 'page' : 'false' }}"
                 >
-                    Home
+                    <div>Home</div>
+
+                    @if (request()->routeIs('welcome*'))
+                        <x-icons.right-arrow
+                            class="size-4 shrink-0"
+                            aria-hidden="true"
+                        />
+                    @endif
                 </a>
 
                 {{-- Divider --}}
@@ -73,7 +80,7 @@
                 <a
                     href="{{ route('early-adopter') }}"
                     @class([
-                        'py-3 transition duration-200',
+                        'flex w-full items-center justify-between py-3 transition duration-200',
                         'font-medium' => request()->routeIs('early-adopter*'),
                         'opacity-50 hover:translate-x-1 hover:opacity-100' => ! request()->routeIs(
                             'early-adopter*',
@@ -81,7 +88,14 @@
                     ])
                     aria-current="{{ request()->routeIs('early-adopter*') ? 'page' : 'false' }}"
                 >
-                    Mobile
+                    <div>Mobile</div>
+
+                    @if (request()->routeIs('early-adopter*'))
+                        <x-icons.right-arrow
+                            class="size-4 shrink-0"
+                            aria-hidden="true"
+                        />
+                    @endif
                 </a>
 
                 {{-- Divider --}}
@@ -93,7 +107,7 @@
                 <a
                     href="/docs/"
                     @class([
-                        'py-3 transition duration-200',
+                        'flex w-full items-center justify-between py-3 transition duration-200',
                         'font-medium' => request()->is('docs*'),
                         'opacity-50 hover:translate-x-1 hover:opacity-100' => ! request()->is(
                             'docs*',
@@ -101,7 +115,14 @@
                     ])
                     aria-current="{{ request()->is('docs*') ? 'page' : 'false' }}"
                 >
-                    Docs
+                    <div>Docs</div>
+
+                    @if (request()->routeIs('docs*'))
+                        <x-icons.right-arrow
+                            class="size-4 shrink-0"
+                            aria-hidden="true"
+                        />
+                    @endif
                 </a>
 
                 {{-- Divider --}}
@@ -113,7 +134,7 @@
                 <a
                     href="/docs/1/getting-started/sponsoring"
                     @class([
-                        'py-3 transition duration-200',
+                        'flex w-full items-center justify-between py-3 transition duration-200',
                         'font-medium' => request()->is('docs/*/getting-started/sponsoring'),
                         'opacity-50 hover:translate-x-1 hover:opacity-100' => ! request()->is(
                             'docs/*/getting-started/sponsoring',
@@ -123,7 +144,14 @@
                     title="Support NativePHP development"
                     aria-current="{{ request()->is('docs/*/getting-started/sponsoring') ? 'page' : 'false' }}"
                 >
-                    Sponsor
+                    <div>Sponsor</div>
+
+                    @if (request()->is('docs/*/getting-started/sponsoring'))
+                        <x-icons.right-arrow
+                            class="size-4 shrink-0"
+                            aria-hidden="true"
+                        />
+                    @endif
                 </a>
             </nav>
 
