@@ -1,11 +1,30 @@
-<div class="relative z-40 lg:hidden">
+<div
+    x-init="
+        () => {
+            // Sync Popover ➜ Alpine
+            $refs.popover.addEventListener('toggle', () => {
+                showMobileMenu = $refs.popover.matches(':popover-open')
+            })
+
+            // Sync Alpine ➜ Popover
+            $watch('showMobileMenu', (open) => {
+                if (open && ! $refs.popover.matches(':popover-open')) {
+                    $refs.popover.showPopover()
+                } else if (! open && $refs.popover.matches(':popover-open')) {
+                    $refs.popover.hidePopover()
+                }
+            })
+        }
+    "
+    class="relative z-40 lg:hidden"
+>
     <button
         type="button"
         popovertarget="mobile-menu-popover"
-        x-on:click="showMobileMenu = !showMobileMenu"
+        popovertargetaction="toggle"
         class="-m-1.5 grid size-9 place-items-center overflow-hidden focus:ring-0 focus:outline-none"
-        aria-expanded="false"
-        aria-controls="mobile-navigation"
+        :aria-expanded="showMobileMenu"
+        aria-controls="mobile-menu-popover"
         aria-label="Toggle mobile menu"
     >
         <div class="flex flex-col items-end gap-1 [grid-area:1/-1]">
@@ -42,13 +61,12 @@
 
     <div
         popover
+        x-ref="popover"
         id="mobile-menu-popover"
-        x-on:click.outside="showMobileMenu = false"
-        x-on:keydown.escape.window="showMobileMenu = false"
-        class="fixed top-23 right-3.5 bottom-3.5 left-3.5 h-auto w-auto origin-top -translate-y-2 scale-y-90 overflow-y-scroll overscroll-contain rounded-2xl bg-gray-100/50 text-xl opacity-0 ring-1 ring-gray-200/80 backdrop-blur-2xl transition transition-discrete duration-300 open:translate-y-0 open:scale-y-100 open:opacity-100 dark:bg-black/50 dark:text-white dark:ring-gray-700/70 starting:open:-translate-y-2 starting:open:scale-y-0 starting:open:opacity-0"
+        class="fixed top-23 right-3.5 bottom-3.5 left-3.5 h-auto w-auto origin-top -translate-y-2 scale-y-90 overflow-y-scroll overscroll-contain rounded-2xl bg-gray-100/50 opacity-0 ring-1 ring-gray-200/80 backdrop-blur-2xl transition transition-discrete duration-300 open:translate-y-0 open:scale-y-100 open:opacity-100 dark:bg-black/50 dark:text-white dark:ring-gray-700/70 starting:open:-translate-y-2 starting:open:scale-y-0 starting:open:opacity-0"
     >
         <div class="flex h-full flex-col p-6">
-            <nav class="flex flex-1 flex-col items-start">
+            <nav class="flex flex-1 flex-col items-start text-xl">
                 @php
                     $isHomeActive = request()->routeIs('welcome*');
                     $isMobileActive = request()->routeIs('early-adopter*');
@@ -155,13 +173,13 @@
 
             {{-- Theme toggle --}}
             <div
-                class="mb-2 flex w-full items-center justify-between gap-2 pb-2 text-sm"
+                class="mb-2 flex w-full items-center justify-between gap-2 pb-2"
             >
                 {{-- Label --}}
                 <div class="">Theme:</div>
                 {{-- Theme toggle --}}
                 <button
-                    x-on:click="darkMode = !darkMode"
+                    x-on:click="darkMode = !darkMode; showMobileMenu = false"
                     class="flex h-10 items-center gap-0.5 rounded-full bg-gray-100 p-1 ring-1 ring-black/5 dark:bg-black/20 dark:ring-white/10"
                 >
                     <div
