@@ -49,21 +49,26 @@
     >
         <div class="flex h-full flex-col p-6">
             <nav class="flex flex-1 flex-col items-start">
-                {{-- Link --}}
+                @php
+                    $isHomeActive = request()->routeIs('welcome*');
+                    $isMobileActive = request()->routeIs('early-adopter*');
+                    $isDocsActive = request()->is('docs*');
+                    $isSponsorActive = request()->is('docs/*/getting‐started/sponsoring*');
+                @endphp
+
+                {{-- Home Link --}}
                 <a
                     href="/"
                     @class([
                         'flex w-full items-center justify-between py-3 transition duration-200',
-                        'font-medium' => request()->routeIs('welcome*'),
-                        'opacity-50 hover:translate-x-1 hover:opacity-100' => ! request()->routeIs(
-                            'welcome*',
-                        ),
+                        'font-medium' => $isHomeActive,
+                        'opacity-50 hover:translate-x-1 hover:opacity-100' => ! $isHomeActive,
                     ])
-                    aria-current="{{ request()->routeIs('welcome*') ? 'page' : 'false' }}"
+                    aria-current="{{ $isHomeActive ? 'page' : 'false' }}"
                 >
                     <div>Home</div>
 
-                    @if (request()->routeIs('welcome*'))
+                    @if ($isHomeActive)
                         <x-icons.right-arrow
                             class="size-4 shrink-0"
                             aria-hidden="true"
@@ -76,21 +81,19 @@
                     class="h-0.5 w-full rounded-full bg-current opacity-5"
                 ></div>
 
-                {{-- Link --}}
+                {{-- Mobile Link --}}
                 <a
                     href="{{ route('early-adopter') }}"
                     @class([
                         'flex w-full items-center justify-between py-3 transition duration-200',
-                        'font-medium' => request()->routeIs('early-adopter*'),
-                        'opacity-50 hover:translate-x-1 hover:opacity-100' => ! request()->routeIs(
-                            'early-adopter*',
-                        ),
+                        'font-medium' => $isMobileActive,
+                        'opacity-50 hover:translate-x-1 hover:opacity-100' => ! $isMobileActive,
                     ])
-                    aria-current="{{ request()->routeIs('early-adopter*') ? 'page' : 'false' }}"
+                    aria-current="{{ $isMobileActive ? 'page' : 'false' }}"
                 >
                     <div>Mobile</div>
 
-                    @if (request()->routeIs('early-adopter*'))
+                    @if ($isMobileActive)
                         <x-icons.right-arrow
                             class="size-4 shrink-0"
                             aria-hidden="true"
@@ -103,21 +106,19 @@
                     class="h-0.5 w-full rounded-full bg-current opacity-5"
                 ></div>
 
-                {{-- Link --}}
+                {{-- Docs Link --}}
                 <a
                     href="/docs/"
                     @class([
                         'flex w-full items-center justify-between py-3 transition duration-200',
-                        'font-medium' => request()->is('docs*'),
-                        'opacity-50 hover:translate-x-1 hover:opacity-100' => ! request()->is(
-                            'docs*',
-                        ),
+                        'font-medium' => $isDocsActive,
+                        'opacity-50 hover:translate-x-1 hover:opacity-100' => ! $isDocsActive,
                     ])
-                    aria-current="{{ request()->is('docs*') ? 'page' : 'false' }}"
+                    aria-current="{{ $isDocsActive ? 'page' : 'false' }}"
                 >
                     <div>Docs</div>
 
-                    @if (request()->routeIs('docs*'))
+                    @if ($isDocsActive)
                         <x-icons.right-arrow
                             class="size-4 shrink-0"
                             aria-hidden="true"
@@ -130,23 +131,20 @@
                     class="h-0.5 w-full rounded-full bg-current opacity-5"
                 ></div>
 
-                {{-- Link --}}
+                {{-- Sponsor Link --}}
                 <a
-                    href="/docs/1/getting-started/sponsoring"
+                    href="/docs/1/getting‐started/sponsoring"
                     @class([
                         'flex w-full items-center justify-between py-3 transition duration-200',
-                        'font-medium' => request()->is('docs/*/getting-started/sponsoring'),
-                        'opacity-50 hover:translate-x-1 hover:opacity-100' => ! request()->is(
-                            'docs/*/getting-started/sponsoring',
-                        ),
+                        'font-medium' => $isSponsorActive,
+                        'opacity-50 hover:translate-x-1 hover:opacity-100' => ! $isSponsorActive,
                     ])
                     aria-label="Sponsor NativePHP"
-                    title="Support NativePHP development"
-                    aria-current="{{ request()->is('docs/*/getting-started/sponsoring') ? 'page' : 'false' }}"
+                    aria-current="{{ $isSponsorActive ? 'page' : 'false' }}"
                 >
                     <div>Sponsor</div>
 
-                    @if (request()->is('docs/*/getting-started/sponsoring'))
+                    @if ($isSponsorActive)
                         <x-icons.right-arrow
                             class="size-4 shrink-0"
                             aria-hidden="true"
