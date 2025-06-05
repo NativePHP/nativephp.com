@@ -60,6 +60,7 @@
     <body
         x-cloak
         x-data="{
+            showMobileMenu: false,
             showDocsNavigation: false,
             scrolled: window.scrollY > 50,
             width: window.innerWidth,
@@ -69,7 +70,10 @@
         }"
         x-resize="
             width = $width
-            if (width >= 1024) showDocsNavigation = false
+            if (width >= 1024) {
+                showMobileMenu = false
+                showDocsNavigation = false
+            }
         "
         x-init="
             window.addEventListener('scroll', () => {
@@ -83,7 +87,7 @@
                 document.body.style.overflow = ''
             }
         "
-        class="min-h-screen overflow-x-clip font-poppins antialiased selection:bg-black selection:text-[#b4a9ff] dark:bg-[#050714] dark:text-white"
+        class="font-poppins min-h-screen overflow-x-clip antialiased selection:bg-black selection:text-[#b4a9ff] dark:bg-[#050714] dark:text-white"
     >
         <x-navigation-bar :hasMenu="$hasMenu ?? false" />
         {{ $slot }}

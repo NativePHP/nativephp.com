@@ -67,6 +67,11 @@
     }
 }
 
+/* Prevents scrollbars from appearing when a popover is open */
+html:has(#mobile-menu-popover:popover-open) {
+    overflow: hidden;
+}
+
 /* Scrollbar width */
 ::-webkit-scrollbar {
     height: 8px;
