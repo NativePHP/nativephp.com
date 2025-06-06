@@ -99,6 +99,10 @@
     color: var(--color-slate-400);
 }
 
+.DocSearch-Hit-source {
+    @apply py-2.5 text-base;
+}
+
 .DocSearch-Dropdown .DocSearch-Hit-source:where(.dark, .dark *) {
     background-color: var(--color-slate-950);
     color: var(--color-slate-300);
@@ -131,14 +135,18 @@
     color: var(--color-slate-300);
 }
 
+.DocSearch-Footer {
+    @apply py-6;
+}
+
 .DocSearch-Footer:where(.dark, .dark *) {
     background: var(--color-slate-950);
     box-shadow: none;
-    @apply border-t border-t-slate-500;
+    @apply border-t border-t-slate-700;
 }
 
 .DocSearch-Footer .DocSearch-Logo svg :where(.dark, .dark *) {
-    fill: var(--color-slate-500);
+    fill: var(--color-gray-500);
     color: var(--color-white);
     background: transparent;
 }
