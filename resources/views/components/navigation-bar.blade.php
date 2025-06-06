@@ -77,7 +77,12 @@
         {{-- Right side --}}
         <div class="flex items-center gap-3.5">
             {{-- Doc search --}}
-            <div>
+            <div
+                class="-mr-0.5 transition-all duration-200 ease-in-out will-change-transform"
+                :class="{
+                    'pr-0.5': showMobileMenu,
+                }"
+            >
                 <div
                     id="docsearch"
                     x-on:click="if (window.innerWidth < 640) window.scrollTo({ top: 0, behavior: 'instant' })"
