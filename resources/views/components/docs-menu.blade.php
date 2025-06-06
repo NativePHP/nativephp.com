@@ -1,16 +1,19 @@
 <div class="lg:hidden">
     <div
-        class="mb-2.5 flex flex-col-reverse items-start justify-between gap-3 min-[400px]:flex-row min-[400px]:items-center"
+        class="mb-2 flex flex-col-reverse items-start justify-between gap-3.5 min-[400px]:mb-2.5 min-[400px]:flex-row min-[400px]:items-end"
     >
         {{-- Docs menu button --}}
         <button
             type="button"
             x-on:click="showDocsMenu = !showDocsMenu"
-            class="flex items-center gap-1.5 px-1 py-1.5 focus:ring-0 focus:outline-none"
+            class="-mx-1 flex items-center gap-1.5 px-1 py-1.5 transition duration-300 ease-in-out will-change-transform focus:ring-0 focus:outline-none"
             :aria-expanded="showDocsMenu"
             aria-label="Toggle docs menu"
             aria-haspopup="true"
             title="Open docs navigation"
+            :class="{
+                'translate-x-1': showDocsMenu,
+            }"
         >
             <svg
                 xmlns="http://www.w3.org/2000/svg"
