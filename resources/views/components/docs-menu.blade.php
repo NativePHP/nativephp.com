@@ -50,18 +50,15 @@
 
     {{-- Docs mobile menu --}}
     <div
+        x-show="showDocsMenu"
+        x-collapse
         role="dialog"
         aria-modal="true"
         aria-label="Docs menu"
-        class="grid grid-rows-[0fr] [transition:grid-template-rows_0.3s_ease-in-out]"
-        :class="{
-            'grid-rows-[1fr]': showDocsMenu,
-        }"
+        class="dark:bg-mirage rounded-xl bg-gray-100"
     >
-        <div class="overflow-hidden">
-            <div class="dark:bg-mirage rounded-xl bg-gray-100 p-6">
-                {{ $slot }}
-            </div>
+        <div class="p-6">
+            {{ $slot }}
         </div>
     </div>
 </div>
