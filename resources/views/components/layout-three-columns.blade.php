@@ -13,19 +13,13 @@
         <div class="flex w-full min-w-0 grow items-start px-2 pt-2">
             {{-- Content --}}
             <article class="flex w-full min-w-0 grow flex-col lg:pl-5 xl:pr-5">
-                {{-- Docs navigation --}}
-                <div
-                    class="dark:bg-mirage z-40 overflow-x-hidden overflow-y-auto bg-white lg:hidden"
-                >
-                    <div class="px-3">
-                        <x-platform-switcher />
-
-                        <nav class="docs-navigation">{{ $sidebarLeft }}</nav>
-                    </div>
-                </div>
+                {{-- Docs mobile menu --}}
+                <x-docs-menu>
+                    <nav class="docs-navigation">{{ $sidebarLeft }}</nav>
+                </x-docs-menu>
 
                 {{-- Main content --}}
-                <div class="mt-5">{{ $slot }}</div>
+                <div class="mt-3">{{ $slot }}</div>
             </article>
 
             {{-- Right sidebar --}}

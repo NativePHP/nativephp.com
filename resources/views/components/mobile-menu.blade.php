@@ -2,16 +2,16 @@
     x-init="
         () => {
             // Sync Popover ➜ Alpine
-            $refs.popover.addEventListener('toggle', () => {
-                showMobileMenu = $refs.popover.matches(':popover-open')
+            $refs.mobilePopover.addEventListener('toggle', () => {
+                showMobileMenu = $refs.mobilePopover.matches(':popover-open')
             })
 
             // Sync Alpine ➜ Popover
             $watch('showMobileMenu', (open) => {
-                if (open && ! $refs.popover.matches(':popover-open')) {
-                    $refs.popover.showPopover()
-                } else if (! open && $refs.popover.matches(':popover-open')) {
-                    $refs.popover.hidePopover()
+                if (open && ! $refs.mobilePopover.matches(':popover-open')) {
+                    $refs.mobilePopover.showPopover()
+                } else if (! open && $refs.mobilePopover.matches(':popover-open')) {
+                    $refs.mobilePopover.hidePopover()
                 }
             })
         }
@@ -63,7 +63,7 @@
 
     <div
         popover
-        x-ref="popover"
+        x-ref="mobilePopover"
         id="mobile-menu-popover"
         role="dialog"
         aria-modal="true"

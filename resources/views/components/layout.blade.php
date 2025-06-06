@@ -61,7 +61,7 @@
         x-cloak
         x-data="{
             showMobileMenu: false,
-            showDocsNavigation: false,
+            showDocsMenu: false,
             scrolled: window.scrollY > 50,
             width: window.innerWidth,
             get showPlatformSwitcherHeader() {
@@ -72,20 +72,13 @@
             width = $width
             if (width >= 1024) {
                 showMobileMenu = false
-                showDocsNavigation = false
+                showDocsMenu = false
             }
         "
         x-init="
             window.addEventListener('scroll', () => {
                 scrolled = window.scrollY > 50
             })
-        "
-        x-effect="
-            if (showDocsNavigation) {
-                document.body.style.overflow = 'hidden'
-            } else {
-                document.body.style.overflow = ''
-            }
         "
         class="font-poppins min-h-screen overflow-x-clip antialiased selection:bg-black selection:text-[#b4a9ff] dark:bg-[#050714] dark:text-white"
     >
