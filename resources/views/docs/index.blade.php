@@ -1,4 +1,4 @@
-<x-layout-three-columns>
+<x-docs-layout>
     <x-slot name="sidebarLeft">
         {!! $navigation !!}
     </x-slot>
@@ -44,7 +44,7 @@
     </div>
 
     <div
-        class="prose mt-8 max-w-none dark:prose-invert prose-headings:scroll-mt-20 prose-headings:text-gray-800 sm:prose-headings:scroll-mt-32 dark:prose-headings:text-gray-50"
+        class="prose dark:prose-invert prose-headings:scroll-mt-20 prose-headings:text-gray-800 sm:prose-headings:scroll-mt-32 dark:prose-headings:text-gray-50 mt-8 max-w-none"
     >
         {!! $content !!}
     </div>
@@ -99,4 +99,4 @@
             Edit this page on GitHub
         </x-link-subtle>
     </div>
-</x-layout-three-columns>
+</x-docs-layout>
