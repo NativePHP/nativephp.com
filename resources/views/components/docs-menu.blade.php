@@ -1,6 +1,6 @@
 <div class="lg:hidden">
     <div
-        class="mb-2 flex flex-col-reverse items-start justify-between gap-3.5 min-[400px]:mb-2.5 min-[400px]:flex-row min-[400px]:items-end"
+        class="mb-2 flex flex-col-reverse items-start justify-between gap-3.5 min-[400px]:mb-2.5 min-[400px]:flex-row min-[400px]:items-center"
     >
         {{-- Docs menu button --}}
         <button
