@@ -1,15 +1,13 @@
-@props(['hasMenu' => false])
-
 <nav
     class="sticky top-0 z-50 flex flex-col items-center justify-center px-3 pt-px"
     aria-label="Main Navigation"
 >
     <div
         :class="{
-            'ring-gray-200/80 dark:ring-gray-800/50 bg-white/50 dark:bg-white/5 translate-y-3': scrolled || showDocsNavigation,
-            'ring-transparent dark:bg-transparent': ! scrolled && ! showDocsNavigation,
+            'ring-gray-200/80 dark:ring-gray-700/70 bg-white/50 dark:bg-black/50 translate-y-3': scrolled || showMobileMenu,
+            'ring-transparent dark:bg-transparent': ! scrolled && ! showMobileMenu,
         }"
-        class="mx-auto flex w-full max-w-5xl items-center justify-between gap-5 rounded-2xl px-5 py-4 ring-1 backdrop-blur-md transition duration-200 ease-out xl:max-w-7xl 2xl:max-w-360"
+        class="mx-auto flex w-full max-w-5xl items-center justify-between gap-5 rounded-2xl px-5 py-4 ring-1 backdrop-blur-2xl transition duration-200 ease-out xl:max-w-7xl 2xl:max-w-360"
     >
         {{-- Left side --}}
         <div class="flex items-center gap-3">
@@ -79,7 +77,12 @@
         {{-- Right side --}}
         <div class="flex items-center gap-3.5">
             {{-- Doc search --}}
-            <div>
+            <div
+                class="-mr-0.5 transition-all duration-200 ease-in-out will-change-transform"
+                :class="{
+                    'pr-0.5': showMobileMenu,
+                }"
+            >
                 <div
                     id="docsearch"
                     x-on:click="if (window.innerWidth < 640) window.scrollTo({ top: 0, behavior: 'instant' })"
@@ -87,16 +90,19 @@
                 ></div>
             </div>
 
+            {{-- Mobile menu --}}
+            <x-mobile-menu />
+
             {{-- Desktop menu --}}
             <div
-                class="flex items-center gap-3.5 text-sm"
+                class="hidden items-center gap-3.5 text-sm lg:flex"
                 aria-label="Primary navigation"
             >
                 {{-- Link --}}
                 <a
                     href="/"
                     @class([
-                        'hidden transition duration-200 lg:block',
+                        'transition duration-200',
                         'font-medium' => request()->routeIs('welcome*'),
                         'opacity-60 hover:opacity-100' => ! request()->routeIs('welcome*'),
                     ])
@@ -107,7 +113,7 @@
 
                 {{-- Decorative circle --}}
                 <div
-                    class="hidden size-[3px] rotate-45 rounded-xs bg-gray-400 transition duration-200 lg:block dark:opacity-60"
+                    class="size-[3px] rotate-45 rounded-xs bg-gray-400 transition duration-200 dark:opacity-60"
                     aria-hidden="true"
                 ></div>
 
@@ -126,60 +132,26 @@
 
                 {{-- Decorative circle --}}
                 <div
-                    class="hidden size-[3px] rotate-45 rounded-xs bg-gray-400 transition duration-200 lg:block dark:opacity-60"
+                    class="size-[3px] rotate-45 rounded-xs bg-gray-400 transition duration-200 dark:opacity-60"
                     aria-hidden="true"
                 ></div>
 
-                @if ($hasMenu)
-                    <button
-                        type="button"
-                        @click="showDocsNavigation = !showDocsNavigation"
-                        class="-m-2 block p-2 text-gray-600 focus:ring-0 focus:outline-hidden lg:hidden dark:text-gray-300"
-                        aria-expanded="false"
-                        aria-controls="docs-navigation"
-                        aria-label="Toggle documentation menu"
-                    >
-                        <div x-show="!showDocsNavigation">
-                            <x-icons.menu
-                                class="size-6"
-                                aria-hidden="true"
-                            />
-                        </div>
-                        <div x-show="showDocsNavigation">
-                            <x-icons.close
-                                class="size-6"
-                                aria-hidden="true"
-                            />
-                        </div>
-                    </button>
-                    <a
-                        href="/docs/"
-                        @class([
-                            'hidden transition duration-200 lg:block',
-                            'font-medium' => request()->is('docs*'),
-                            'opacity-60 hover:opacity-100' => ! request()->is('docs*'),
-                        ])
-                        aria-current="{{ request()->is('docs*') ? 'page' : 'false' }}"
-                    >
-                        Docs
-                    </a>
-                @else
-                    <a
-                        href="/docs/"
-                        @class([
-                            'transition duration-200',
-                            'font-medium' => request()->is('docs*'),
-                            'opacity-60 hover:opacity-100' => ! request()->is('docs*'),
-                        ])
-                        aria-current="{{ request()->is('docs*') ? 'page' : 'false' }}"
-                    >
-                        Docs
-                    </a>
-                @endif
+                {{-- Link --}}
+                <a
+                    href="/docs/"
+                    @class([
+                        'transition duration-200',
+                        'font-medium' => request()->is('docs*'),
+                        'opacity-60 hover:opacity-100' => ! request()->is('docs*'),
+                    ])
+                    aria-current="{{ request()->is('docs*') ? 'page' : 'false' }}"
+                >
+                    Docs
+                </a>
 
                 {{-- Decorative circle --}}
                 <div
-                    class="hidden size-[3px] rotate-45 rounded-xs bg-gray-400 transition duration-200 lg:block dark:opacity-60"
+                    class="size-[3px] rotate-45 rounded-xs bg-gray-400 transition duration-200 dark:opacity-60"
                     aria-hidden="true"
                 ></div>
 
@@ -188,7 +160,7 @@
                     <a
                     href="{{ route('blog') }}"
                     @class([
-                    'hidden transition duration-200 lg:block',
+                    'transition duration-200',
                     'font-medium' => request()->routeIs('blog*'),
                     'opacity-60 hover:opacity-100' => ! request()->routeIs('blog*'),
                     ])
@@ -196,10 +168,9 @@
                     >
                     Blog
                     </a>
-                    
                     {{-- Decorative circle -- }}
                     <div
-                    class="hidden size-[3px] rotate-45 rounded-xs bg-gray-400 transition duration-200 lg:block dark:opacity-60"
+                    class="size-[3px] rotate-45 rounded-xs bg-gray-400 transition duration-200  dark:opacity-60"
                     aria-hidden="true"
                     ></div>
                 --}}
@@ -272,7 +243,7 @@
                         }
                     "
                     href="/docs/1/getting-started/sponsoring"
-                    class="relative hidden bg-linear-to-tr from-violet-600 to-violet-300 bg-clip-text font-medium text-transparent lg:block dark:from-violet-500 dark:to-white/80"
+                    class="relative bg-linear-to-tr from-violet-600 to-violet-300 bg-clip-text font-medium text-transparent dark:from-violet-500 dark:to-white/80"
                     aria-label="Sponsor NativePHP"
                     title="Support NativePHP development"
                 >
