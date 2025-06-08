@@ -1,4 +1,4 @@
-<x-layout>
+<x-layout title="Laracon US 2025 Ticket Giveaway">
     {{-- Hero Section --}}
     <section class="mx-auto mt-2 max-w-7xl px-5">
         <div
