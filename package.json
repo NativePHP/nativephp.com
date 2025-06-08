@@ -15,6 +15,7 @@
         "@tailwindcss/postcss": "^4.1.8",
         "@tailwindcss/typography": "^0.5.16",
         "alpinejs": "^3.14.9",
+        "atropos": "^2.0.2",
         "axios": "^1.9.0",
         "gsap": "^3.13.0",
         "laravel-vite-plugin": "^0.7.8",

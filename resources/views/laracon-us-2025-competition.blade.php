@@ -1,7 +1,10 @@
 <x-layout>
     {{-- Hero Section --}}
     <section class="mx-auto mt-12 max-w-5xl px-5">
-        <div class="grid place-items-center text-center">
+        <div
+            x-ref="ticketEvent"
+            class="grid place-items-center text-center"
+        >
             {{-- Countdown Header --}}
             <h2
                 x-init="
@@ -114,21 +117,46 @@
                         })
                     }
                 "
-                class="relative isolate mt-8"
+                class="relative isolate p-10"
             >
-                <img
-                    src="{{ Vite::asset('resources/images/laraconus2025ticket.webp') }}"
-                    alt="Laracon US 2025 Ticket"
-                    class="max-w-130"
-                />
+                <div
+                    x-init="
+                        () => {
+                            Atropos({
+                                el: $el,
+                                activeOffset: 10,
+                                shadow: false,
+                                highlight: false,
+                                eventsEl: $refs.ticketEvent,
+                            })
+                        }
+                    "
+                    class="atropos"
+                >
+                    <div class="atropos-scale">
+                        <div class="atropos-rotate">
+                            <div class="atropos-inner">
+                                <img
+                                    src="{{ Vite::asset('resources/images/laracon/laraconus2025ticket.webp') }}"
+                                    alt="Laracon US 2025 Ticket"
+                                    class="max-w-130"
+                                />
+                                <img
+                                    data-atropos-offset="8"
+                                    src="{{ Vite::asset('resources/images/laracon/laracon.webp') }}"
+                                    alt="Laracon"
+                                    class="absolute right-34 bottom-6 w-58"
+                                />
+                            </div>
+                        </div>
+                    </div>
+                </div>
                 <div
                     class="absolute top-1/2 right-1/2 -z-10 hidden h-full w-full translate-x-1/2 -translate-y-1/2 rounded-full bg-slate-500/25 blur-3xl dark:block"
                 ></div>
             </div>
 
-            <header
-                class="relative z-10 mt-10 grid place-items-center text-center"
-            >
+            <header class="relative z-10 grid place-items-center text-center">
                 {{-- Primary Heading --}}
                 <h1
                     id="hero-heading"
