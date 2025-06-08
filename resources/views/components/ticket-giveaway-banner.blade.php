@@ -62,7 +62,7 @@
             {{-- Taylor --}}
             <img
                 x-ref="taylorOtwell"
-                src="{{ Vite::asset('resources/images/laracon-us-2025-speakers/Taylor-Otwell.webp') }}"
+                src="{{ Vite::asset('resources/images/laracon-us-2025/speakers/Taylor-Otwell.webp') }}"
                 alt="Taylor Otwell"
                 class="z-[1] h-full w-full object-cover [grid-area:1/-1]"
             />
@@ -70,7 +70,7 @@
             {{-- Evan --}}
             <img
                 x-ref="evanYou"
-                src="{{ Vite::asset('resources/images/laracon-us-2025-speakers/Evan-You.webp') }}"
+                src="{{ Vite::asset('resources/images/laracon-us-2025/speakers/Evan-You.webp') }}"
                 alt="Evan You"
                 class="z-[2] h-full w-full object-cover [grid-area:1/-1]"
             />
@@ -78,7 +78,7 @@
             {{-- Jeffrey --}}
             <img
                 x-ref="jeffreyWay"
-                src="{{ Vite::asset('resources/images/laracon-us-2025-speakers/Jeffrey-Way.webp') }}"
+                src="{{ Vite::asset('resources/images/laracon-us-2025/speakers/Jeffrey-Way.webp') }}"
                 alt="Jeffrey Way"
                 class="z-[3] h-full w-full object-cover [grid-area:1/-1]"
             />
@@ -86,7 +86,7 @@
             {{-- Joe --}}
             <img
                 x-ref="joeTannenbaum"
-                src="{{ Vite::asset('resources/images/laracon-us-2025-speakers/Joe-Tannenbaum.webp') }}"
+                src="{{ Vite::asset('resources/images/laracon-us-2025/speakers/Joe-Tannenbaum.webp') }}"
                 alt="Joe Tannenbaum"
                 class="z-[5] h-full w-full object-cover [grid-area:1/-1]"
             />

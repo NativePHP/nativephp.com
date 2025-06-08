@@ -137,13 +137,13 @@
                         <div class="atropos-rotate">
                             <div class="atropos-inner">
                                 <img
-                                    src="{{ Vite::asset('resources/images/laracon/laraconus2025ticket.webp') }}"
+                                    src="{{ Vite::asset('resources/images/laracon-us-2025/ticket.webp') }}"
                                     alt="Laracon US 2025 Ticket"
                                     class="max-w-130"
                                 />
                                 <img
                                     data-atropos-offset="8"
-                                    src="{{ Vite::asset('resources/images/laracon/laracon.webp') }}"
+                                    src="{{ Vite::asset('resources/images/laracon-us-2025/laracon-text.webp') }}"
                                     alt="Laracon"
                                     class="absolute right-34 bottom-6 w-58"
                                 />
