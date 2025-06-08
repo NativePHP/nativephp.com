@@ -574,4 +574,45 @@
             </div>
         </div>
     </section>
+
+    {{-- Legal --}}
+    <section class="mx-auto mt-20 max-w-4xl px-5">
+        <div
+            x-init="
+                () => {
+                    motion.inView($el, (element) => {
+                        motion.animate(
+                            $el,
+                            {
+                                opacity: [0, 1],
+                                x: [10, 0],
+                            },
+                            {
+                                duration: 0.7,
+                                ease: motion.easeOut,
+                            },
+                        )
+                    })
+                }
+            "
+            class="text-center"
+        >
+            <h3 class="text-3xl font-semibold">Legal</h3>
+            <article class="mt-4 text-lg text-gray-600 dark:text-gray-400">
+                <p>
+                    This giveaway is not affiliated with or endorsed by Laracon
+                    US, Twitter, or any other entity. By participating, you
+                    agree to the terms and conditions outlined in the official
+                    rules.
+                </p>
+
+                <br />
+
+                <p>
+                    The winners will be selected randomly and announced on our
+                    social media channels. Good luck to all participants!
+                </p>
+            </article>
+        </div>
+    </section>
 </x-layout>
