@@ -270,8 +270,10 @@
         </h2>
 
         {{-- List --}}
-        <div class="mt-5 flex flex-wrap items-start justify-center gap-5">
-            <div class="flex flex-col items-center gap-4">
+        <div
+            class="mt-10 flex flex-col items-center justify-center gap-x-6 gap-y-8 lg:flex-row lg:items-start"
+        >
+            <div class="flex items-center gap-x-7 gap-y-5 lg:flex-col">
                 {{-- Card --}}
                 <div
                     class="group relative isolate flex w-full max-w-75 items-center gap-5 overflow-hidden rounded-2xl bg-gradient-to-br from-violet-50 to-violet-300 p-8 dark:bg-gradient-to-bl dark:from-white/10 dark:to-white/2"
@@ -296,19 +298,19 @@
                 </div>
 
                 {{-- Description --}}
-                <div class="flex flex-col gap-5">
+                <div class="flex flex-col gap-4">
                     <div class="flex items-center gap-2.5">
                         <img
                             src="{{ Vite::asset('resources/images/prizes/gold_medal.webp') }}"
                             alt=""
-                            class="h-9"
+                            class="h-8"
                         />
                         {{-- Title --}}
-                        <h6 class="text-xl font-medium">1st Place</h6>
+                        <h6 class="text-lg font-medium">1st Place</h6>
                     </div>
                 </div>
             </div>
-            <div class="flex flex-col items-center gap-4">
+            <div class="flex items-center gap-x-7 gap-y-5 lg:flex-col">
                 {{-- Card --}}
                 <div
                     class="group relative isolate flex w-full max-w-75 items-center gap-5 overflow-hidden rounded-2xl bg-gradient-to-br from-sky-50 to-sky-300 p-8 dark:bg-gradient-to-bl dark:from-white/10 dark:to-white/2"
@@ -333,28 +335,28 @@
                 </div>
 
                 {{-- Description --}}
-                <div class="flex flex-col gap-5">
+                <div class="flex flex-col gap-4">
                     <div class="flex items-center gap-2.5">
                         <img
                             src="{{ Vite::asset('resources/images/prizes/gold_medal.webp') }}"
                             alt=""
-                            class="h-9"
+                            class="h-8"
                         />
                         {{-- Title --}}
-                        <h6 class="text-xl font-medium">1st Place</h6>
+                        <h6 class="text-lg font-medium">1st Place</h6>
                     </div>
                     <div class="flex items-center gap-2.5">
                         <img
                             src="{{ Vite::asset('resources/images/prizes/silver_medal.webp') }}"
                             alt=""
-                            class="h-9"
+                            class="h-8"
                         />
                         {{-- Title --}}
-                        <h6 class="text-xl font-medium">2nd Place</h6>
+                        <h6 class="text-lg font-medium">2nd Place</h6>
                     </div>
                 </div>
             </div>
-            <div class="flex flex-col items-center gap-4">
+            <div class="flex items-center gap-x-7 gap-y-5 lg:flex-col">
                 <div
                     class="group relative isolate flex w-full max-w-75 items-center gap-5 overflow-hidden rounded-2xl bg-gradient-to-br from-orange-50 to-orange-300 p-8 dark:bg-gradient-to-bl dark:from-white/10 dark:to-white/2"
                 >
@@ -378,33 +380,33 @@
                 </div>
 
                 {{-- Description --}}
-                <div class="flex flex-col gap-5">
+                <div class="flex flex-col gap-4">
                     <div class="flex items-center gap-2.5">
                         <img
                             src="{{ Vite::asset('resources/images/prizes/gold_medal.webp') }}"
                             alt=""
-                            class="h-9"
+                            class="h-8"
                         />
                         {{-- Title --}}
-                        <h6 class="text-xl font-medium">1st Place</h6>
+                        <h6 class="text-lg font-medium">1st Place</h6>
                     </div>
                     <div class="flex items-center gap-2.5">
                         <img
                             src="{{ Vite::asset('resources/images/prizes/silver_medal.webp') }}"
                             alt=""
-                            class="h-9"
+                            class="h-8"
                         />
                         {{-- Title --}}
-                        <h6 class="text-xl font-medium">2nd Place</h6>
+                        <h6 class="text-lg font-medium">2nd Place</h6>
                     </div>
                     <div class="flex items-center gap-2.5">
                         <img
                             src="{{ Vite::asset('resources/images/prizes/bronze_medal.webp') }}"
                             alt=""
-                            class="h-9"
+                            class="h-8"
                         />
                         {{-- Title --}}
-                        <h6 class="text-xl font-medium">3rd Place</h6>
+                        <h6 class="text-lg font-medium">3rd Place</h6>
                     </div>
                 </div>
             </div>
