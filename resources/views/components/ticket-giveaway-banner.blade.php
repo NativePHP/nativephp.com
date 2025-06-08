@@ -1,7 +1,7 @@
 <a
     href="/laracon-us-2025-competition"
     onclick="fathom.trackEvent('alert_click');"
-    class="group relative z-30 flex items-center justify-center gap-x-2 gap-y-2.5 overflow-hidden bg-[#050714] px-5 py-3"
+    class="group relative z-30 flex items-center justify-center gap-x-2 gap-y-2.5 overflow-hidden bg-[#050714] px-5 py-3 select-none"
 >
     {{-- Laracon --}}
     <div
@@ -124,11 +124,11 @@
 
     {{-- Left blur --}}
     <div
-        class="absolute -left-20 -top-10 -z-10 size-36 rounded-full bg-violet-400 blur-2xl sm:-left-16 sm:-top-16 sm:size-52 sm:blur-3xl"
+        class="absolute -top-10 -left-20 -z-10 size-36 rounded-full bg-violet-400 blur-2xl sm:-top-16 sm:-left-16 sm:size-52 sm:blur-3xl"
     ></div>
 
     {{-- Right blur --}}
     <div
-        class="absolute -right-20 -top-10 -z-10 size-36 rounded-full bg-rose-500 blur-2xl sm:-right-16 sm:-top-16 sm:size-52 sm:blur-3xl"
+        class="absolute -top-10 -right-20 -z-10 size-36 rounded-full bg-rose-500 blur-2xl sm:-top-16 sm:-right-16 sm:size-52 sm:blur-3xl"
     ></div>
 </a>

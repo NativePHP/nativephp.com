@@ -22,6 +22,7 @@ Route::view('/', 'welcome')->name('welcome');
 Route::view('/blog', 'blog')->name('blog');
 Route::view('/article', 'article')->name('article');
 Route::view('mobile', 'early-adopter')->name('early-adopter');
+Route::view('laracon-us-2025-competition', 'laracon-us-2025-competition')->name('laracon-us-2025-competition');
 Route::redirect('ios', 'mobile');
 Route::redirect('t-shirt', 'mobile');
 Route::redirect('tshirt', 'mobile');
