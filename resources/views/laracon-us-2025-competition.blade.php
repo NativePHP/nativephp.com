@@ -289,14 +289,14 @@
                     })
                 }
             "
-            class="mt-10 flex flex-col items-center justify-center gap-8 lg:flex-row lg:items-start"
+            class="mt-10 flex flex-col items-center justify-start gap-8 lg:flex-row lg:items-start"
         >
             <div
                 class="flex flex-col items-center gap-x-7 gap-y-5 sm:flex-row lg:flex-col"
             >
                 {{-- Card --}}
                 <div
-                    class="group relative isolate flex w-full max-w-75 items-center gap-5 overflow-hidden rounded-2xl bg-gradient-to-br from-violet-50 to-violet-300 p-8 dark:bg-gradient-to-bl dark:from-white/10 dark:to-white/2"
+                    class="group relative isolate flex w-75 items-center gap-5 overflow-hidden rounded-2xl bg-gradient-to-br from-violet-50 to-violet-300 p-8 dark:bg-gradient-to-bl dark:from-white/10 dark:to-white/2"
                 >
                     {{-- Title --}}
                     <h5
@@ -320,11 +320,12 @@
                 </div>
 
                 {{-- Description --}}
-                <div class="flex flex-col gap-4">
+                <div class="flex shrink-0 flex-col gap-4">
                     <div class="flex items-center gap-2.5">
                         <img
                             src="{{ Vite::asset('resources/images/prizes/gold_medal.webp') }}"
                             alt=""
+                            loading="lazy"
                             class="h-8 lg:h-9"
                         />
                         {{-- Title --}}
@@ -339,7 +340,7 @@
             >
                 {{-- Card --}}
                 <div
-                    class="group relative isolate flex w-full max-w-75 items-center gap-5 overflow-hidden rounded-2xl bg-gradient-to-br from-sky-50 to-sky-300 p-8 dark:bg-gradient-to-bl dark:from-white/10 dark:to-white/2"
+                    class="group relative isolate flex w-75 items-center gap-5 overflow-hidden rounded-2xl bg-gradient-to-br from-sky-50 to-sky-300 p-8 dark:bg-gradient-to-bl dark:from-white/10 dark:to-white/2"
                 >
                     {{-- Title --}}
                     <h5
@@ -363,11 +364,12 @@
                 </div>
 
                 {{-- Description --}}
-                <div class="flex flex-col gap-4">
+                <div class="flex shrink-0 flex-col gap-4">
                     <div class="flex items-center gap-2.5">
                         <img
                             src="{{ Vite::asset('resources/images/prizes/gold_medal.webp') }}"
                             alt=""
+                            loading="lazy"
                             class="h-8 lg:h-9"
                         />
                         {{-- Title --}}
@@ -379,6 +381,7 @@
                         <img
                             src="{{ Vite::asset('resources/images/prizes/silver_medal.webp') }}"
                             alt=""
+                            loading="lazy"
                             class="h-8 lg:h-9"
                         />
                         {{-- Title --}}
@@ -392,7 +395,7 @@
                 class="flex flex-col items-center gap-x-7 gap-y-5 sm:flex-row lg:flex-col"
             >
                 <div
-                    class="group relative isolate flex w-full max-w-75 items-center gap-5 overflow-hidden rounded-2xl bg-gradient-to-br from-orange-50 to-orange-300 p-8 dark:bg-gradient-to-bl dark:from-white/10 dark:to-white/2"
+                    class="group relative isolate flex w-75 items-center gap-5 overflow-hidden rounded-2xl bg-gradient-to-br from-orange-50 to-orange-300 p-8 dark:bg-gradient-to-bl dark:from-white/10 dark:to-white/2"
                 >
                     {{-- Title --}}
                     <h5
@@ -416,11 +419,12 @@
                 </div>
 
                 {{-- Description --}}
-                <div class="flex flex-col gap-4">
+                <div class="flex shrink-0 flex-col gap-4">
                     <div class="flex items-center gap-2.5">
                         <img
                             src="{{ Vite::asset('resources/images/prizes/gold_medal.webp') }}"
                             alt=""
+                            loading="lazy"
                             class="h-8 lg:h-9"
                         />
                         {{-- Title --}}
@@ -432,6 +436,7 @@
                         <img
                             src="{{ Vite::asset('resources/images/prizes/silver_medal.webp') }}"
                             alt=""
+                            loading="lazy"
                             class="h-8 lg:h-9"
                         />
                         {{-- Title --}}
@@ -443,6 +448,7 @@
                         <img
                             src="{{ Vite::asset('resources/images/prizes/bronze_medal.webp') }}"
                             alt=""
+                            loading="lazy"
                             class="h-8 lg:h-9"
                         />
                         {{-- Title --}}
