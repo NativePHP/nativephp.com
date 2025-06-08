@@ -1,9 +1,9 @@
 <x-layout>
     {{-- Hero Section --}}
-    <section class="mx-auto mt-12 max-w-5xl px-5">
+    <section class="mx-auto mt-2 max-w-7xl px-5">
         <div
             x-ref="ticketEvent"
-            class="grid place-items-center text-center"
+            class="grid place-items-center py-10 text-center"
         >
             {{-- Countdown Header --}}
             <h2
@@ -125,6 +125,8 @@
                             Atropos({
                                 el: $el,
                                 activeOffset: 1,
+                                rotateXMax: 15,
+                                rotateYMax: 13,
                                 shadow: false,
                                 highlight: false,
                                 eventsEl: $refs.ticketEvent,
@@ -241,7 +243,7 @@
     </section>
 
     {{-- Prizes --}}
-    <section class="mx-auto mt-25 max-w-5xl px-5">
+    <section class="mx-auto mt-20 max-w-5xl px-5">
         {{-- Header --}}
         <h2
             id="hero-heading"
