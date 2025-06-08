@@ -305,10 +305,12 @@
                         <img
                             src="{{ Vite::asset('resources/images/prizes/gold_medal.webp') }}"
                             alt=""
-                            class="h-8"
+                            class="h-8 lg:h-9"
                         />
                         {{-- Title --}}
-                        <h6 class="text-lg font-medium">1st Place</h6>
+                        <h6 class="text-lg font-medium lg:text-xl">
+                            1st Place
+                        </h6>
                     </div>
                 </div>
             </div>
@@ -330,7 +332,7 @@
                         src="{{ Vite::asset('resources/images/prizes/nativephp_black_shirt.webp') }}"
                         alt=""
                         loading="lazy"
-                        class="pointer-events-none -mb-20 h-40 transition duration-300 ease-in-out will-change-transform select-none group-hover:-translate-x-0.5 dark:contrast-120"
+                        class="pointer-events-none relative right-2 -mb-20 h-40 transition duration-300 ease-in-out will-change-transform select-none group-hover:-translate-x-0.5 dark:contrast-120"
                     />
                     {{-- Shiny circle --}}
                     <div
@@ -344,19 +346,23 @@
                         <img
                             src="{{ Vite::asset('resources/images/prizes/gold_medal.webp') }}"
                             alt=""
-                            class="h-8"
+                            class="h-8 lg:h-9"
                         />
                         {{-- Title --}}
-                        <h6 class="text-lg font-medium">1st Place</h6>
+                        <h6 class="text-lg font-medium lg:text-xl">
+                            1st Place
+                        </h6>
                     </div>
                     <div class="flex items-center gap-2.5">
                         <img
                             src="{{ Vite::asset('resources/images/prizes/silver_medal.webp') }}"
                             alt=""
-                            class="h-8"
+                            class="h-8 lg:h-9"
                         />
                         {{-- Title --}}
-                        <h6 class="text-lg font-medium">2nd Place</h6>
+                        <h6 class="text-lg font-medium lg:text-xl">
+                            2nd Place
+                        </h6>
                     </div>
                 </div>
             </div>
@@ -391,28 +397,34 @@
                         <img
                             src="{{ Vite::asset('resources/images/prizes/gold_medal.webp') }}"
                             alt=""
-                            class="h-8"
+                            class="h-8 lg:h-9"
                         />
                         {{-- Title --}}
-                        <h6 class="text-lg font-medium">1st Place</h6>
+                        <h6 class="text-lg font-medium lg:text-xl">
+                            1st Place
+                        </h6>
                     </div>
                     <div class="flex items-center gap-2.5">
                         <img
                             src="{{ Vite::asset('resources/images/prizes/silver_medal.webp') }}"
                             alt=""
-                            class="h-8"
+                            class="h-8 lg:h-9"
                         />
                         {{-- Title --}}
-                        <h6 class="text-lg font-medium">2nd Place</h6>
+                        <h6 class="text-lg font-medium lg:text-xl">
+                            2nd Place
+                        </h6>
                     </div>
                     <div class="flex items-center gap-2.5">
                         <img
                             src="{{ Vite::asset('resources/images/prizes/bronze_medal.webp') }}"
                             alt=""
-                            class="h-8"
+                            class="h-8 lg:h-9"
                         />
                         {{-- Title --}}
-                        <h6 class="text-lg font-medium">3rd Place</h6>
+                        <h6 class="text-lg font-medium lg:text-xl">
+                            3rd Place
+                        </h6>
                     </div>
                 </div>
             </div>
