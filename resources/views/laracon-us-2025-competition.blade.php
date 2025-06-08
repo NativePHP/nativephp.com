@@ -25,7 +25,7 @@
                         })
                     }
                 "
-                class="text-lg font-medium text-gray-600 dark:text-gray-400"
+                class="font-medium text-gray-600 sm:text-lg dark:text-gray-400"
             >
                 Hurry! Entry Closes In:
             </h2>
@@ -51,7 +51,7 @@
                         })
                     }
                 "
-                class="mt-2 grid grid-cols-4 gap-10 text-5xl"
+                class="mt-2 grid grid-cols-4 gap-5 text-4xl sm:gap-10 sm:text-5xl"
             >
                 <div class="flex flex-col items-center">
                     <number-flow
@@ -59,7 +59,7 @@
                         class="font-bold"
                     ></number-flow>
                     <div
-                        class="text-base text-slate-600 uppercase dark:text-white/60"
+                        class="text-sm text-slate-600 uppercase sm:text-base dark:text-white/60"
                     >
                         Days
                     </div>
@@ -70,7 +70,7 @@
                         class="font-bold"
                     ></number-flow>
                     <div
-                        class="text-base text-slate-600 uppercase dark:text-white/60"
+                        class="text-sm text-slate-600 uppercase sm:text-base dark:text-white/60"
                     >
                         Hours
                     </div>
@@ -81,7 +81,7 @@
                         class="font-bold"
                     ></number-flow>
                     <div
-                        class="text-base text-slate-600 uppercase dark:text-white/60"
+                        class="text-sm text-slate-600 uppercase sm:text-base dark:text-white/60"
                     >
                         Minutes
                     </div>
@@ -92,7 +92,7 @@
                         class="font-bold"
                     ></number-flow>
                     <div
-                        class="text-base text-slate-600 uppercase dark:text-white/60"
+                        class="text-sm text-slate-600 uppercase sm:text-base dark:text-white/60"
                     >
                         Seconds
                     </div>
@@ -117,7 +117,7 @@
                         })
                     }
                 "
-                class="relative isolate p-10"
+                class="relative isolate py-10"
             >
                 <div
                     x-init="
@@ -139,13 +139,13 @@
                                 <img
                                     src="{{ Vite::asset('resources/images/laracon-us-2025/ticket.webp') }}"
                                     alt="Laracon US 2025 Ticket"
-                                    class="max-w-130"
+                                    class="w-full max-w-130"
                                 />
                                 <img
                                     data-atropos-offset="8"
                                     src="{{ Vite::asset('resources/images/laracon-us-2025/laracon-text.webp') }}"
                                     alt="Laracon"
-                                    class="absolute right-34 bottom-6 w-58"
+                                    class="absolute right-[23vw] bottom-[4vw] w-[40vw] sm:right-34 sm:bottom-6 sm:w-58"
                                 />
                             </div>
                         </div>
@@ -227,10 +227,10 @@
                             })
                         }
                     "
-                    class="mt-5 w-full max-w-56"
+                    class="mt-7 w-full max-w-56"
                 >
                     <a
-                        href="mailto:partners@nativephp.com?subject=Interested%20In%20Being%20a%20Partner"
+                        href="#enter-to-win"
                         class="flex items-center justify-center gap-2.5 rounded-2xl bg-zinc-800 px-6 py-4 text-white transition duration-200 hover:bg-zinc-900 dark:bg-violet-400/80 dark:drop-shadow-xl dark:drop-shadow-transparent dark:hover:bg-violet-400 dark:hover:drop-shadow-violet-400/30"
                     >
                         Enter to Win
