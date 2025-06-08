@@ -297,7 +297,7 @@
             >
                 {{-- Title --}}
                 <h5
-                    class="text-2xl leading-relaxed font-semibold text-sky-900 transition duration-300 ease-in-out will-change-transform group-hover:translate-x-0.5 dark:text-sky-400"
+                    class="text-2xl leading-relaxed font-semibold text-sky-900 transition duration-300 ease-in-out will-change-transform group-hover:translate-x-0.5 dark:text-sky-300"
                 >
                     NativePHP T-Shirt
                 </h5>
@@ -307,7 +307,7 @@
                     src="{{ Vite::asset('resources/images/prizes/nativephp_black_shirt.webp') }}"
                     alt=""
                     loading="lazy"
-                    class="pointer-events-none -mb-20 h-40 transition duration-300 ease-in-out will-change-transform select-none group-hover:-translate-x-0.5"
+                    class="pointer-events-none -mb-20 h-40 transition duration-300 ease-in-out will-change-transform select-none group-hover:-translate-x-0.5 dark:contrast-120"
                 />
 
                 {{-- Shiny circle --}}
@@ -330,7 +330,7 @@
                     src="{{ Vite::asset('resources/images/prizes/3d_license_document.webp') }}"
                     alt=""
                     loading="lazy"
-                    class="pointer-events-none h-20 transition duration-300 ease-in-out will-change-transform select-none group-hover:-translate-x-0.5"
+                    class="pointer-events-none h-22 transition duration-300 ease-in-out will-change-transform select-none group-hover:-translate-x-0.5"
                 />
 
                 {{-- Shiny circle --}}
