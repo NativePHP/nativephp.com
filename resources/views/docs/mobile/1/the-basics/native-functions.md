@@ -1,6 +1,6 @@
 ---
 title: Native Functions
-order: 1
+order: 100
 ---
 
 Nearly any basic Laravel app will work as a mobile app with NativePHP for Mobile. However, what makes NativePHP

@@ -92,30 +92,12 @@
             {{-- Price --}}
             <div
                 class="flex items-start gap-1.5 pt-5"
-                aria-label="Price: $50 per year"
+                aria-label="Price: $100 per year"
             >
                 <div class="text-5xl font-semibold">
-                    ${{ number_format(50) }}
+                    ${{ number_format(100) }}
                 </div>
                 <div class="self-end pb-1.5 text-zinc-500">per year</div>
-            </div>
-
-            {{-- Warning --}}
-            <div
-                class="flex items-center gap-2 pt-3 text-sm"
-                aria-label="Price warning"
-            >
-                <x-icons.warning
-                    class="size-5 shrink-0"
-                    aria-hidden="true"
-                />
-                <p class="text-zinc-500">
-                    Increases to
-                    <span class="font-medium text-black dark:text-white">
-                        $100
-                    </span>
-                    after the EAP.
-                </p>
             </div>
 
             @auth
@@ -201,18 +183,7 @@
                     >
                         <x-icons.checkmark class="size-5 shrink-0" />
                     </div>
-                    <div class="font-medium">Community Discord channel</div>
-                </div>
-                <div class="flex items-center gap-2">
-                    <div
-                        class="grid size-7 shrink-0 place-items-center rounded-xl bg-[#D4FD7D] dark:bg-[#d68ffe] dark:text-black"
-                        aria-hidden="true"
-                    >
-                        <x-icons.checkmark class="size-5 shrink-0" />
-                    </div>
-                    <div class="font-medium">
-                        Your name in NativePHP's history
-                    </div>
+                    <div class="font-medium">Community support via Discord</div>
                 </div>
                 <div class="flex items-center gap-2">
                     <div
@@ -245,7 +216,7 @@
                             class="size-2.5 shrink-0 dark:opacity-70"
                         />
                     </div>
-                    <div>Business hours support (GMT)</div>
+                    <div>Business hours email support (GMT)</div>
                 </div>
             </div>
         </div>
@@ -266,30 +237,12 @@
             {{-- Price --}}
             <div
                 class="flex items-start gap-1.5 pt-5"
-                aria-label="Price: $150 per year"
+                aria-label="Price: $750 per year"
             >
                 <div class="text-5xl font-semibold">
-                    ${{ number_format(150) }}
+                    ${{ number_format(750) }}
                 </div>
                 <div class="self-end pb-1.5 text-zinc-500">per year</div>
-            </div>
-
-            {{-- Warning --}}
-            <div
-                class="flex items-center gap-2 pt-3 text-sm"
-                aria-label="Price warning"
-            >
-                <x-icons.warning
-                    class="size-5 shrink-0"
-                    aria-hidden="true"
-                />
-                <p class="text-zinc-500">
-                    Increases to
-                    <span class="font-medium text-black dark:text-white">
-                        $750
-                    </span>
-                    after the EAP.
-                </p>
             </div>
 
             @auth
@@ -379,17 +332,6 @@
                 </div>
                 <div class="flex items-center gap-2">
                     <div
-                        class="grid size-7 shrink-0 place-items-center rounded-xl bg-[#D4FD7D] dark:bg-[#d68ffe] dark:text-black"
-                        aria-hidden="true"
-                    >
-                        <x-icons.checkmark class="size-5 shrink-0" />
-                    </div>
-                    <div class="font-medium">
-                        Your name in NativePHP's history
-                    </div>
-                </div>
-                <div class="flex items-center gap-2">
-                    <div
                         class="grid size-7 shrink-0 place-items-center rounded-xl bg-zinc-200 dark:bg-gray-700/50"
                         aria-hidden="true"
                     >
@@ -419,7 +361,7 @@
                             class="size-2.5 shrink-0 dark:opacity-70"
                         />
                     </div>
-                    <div>Business hours support (GMT)</div>
+                    <div>Business hours email support (GMT)</div>
                 </div>
             </div>
         </div>
@@ -431,7 +373,7 @@
         >
             {{-- Popular badge --}}
             <div
-                class="absolute -right-3 -top-5 rounded-xl bg-gradient-to-tr from-[#6886FF] to-[#B8C1FF] px-5 py-2 text-sm text-white dark:from-gray-900 dark:to-black dark:ring-1 dark:ring-white/10"
+                class="absolute -right-3 -top-5 rounded-xl bg-linear-to-tr from-[#6886FF] to-[#B8C1FF] px-5 py-2 text-sm text-white dark:from-gray-900 dark:to-black dark:ring-1 dark:ring-white/10"
                 aria-label="Most popular plan"
             >
                 Most Popular
@@ -448,30 +390,12 @@
             {{-- Price --}}
             <div
                 class="flex items-start gap-1.5 pt-5"
-                aria-label="Price: $250 per year"
+                aria-label="Price: $2,500 per year"
             >
                 <div class="text-5xl font-semibold">
-                    ${{ number_format(250) }}
+                    ${{ number_format(2500) }}
                 </div>
                 <div class="self-end pb-1.5 text-zinc-500">per year</div>
-            </div>
-
-            {{-- Warning --}}
-            <div
-                class="flex items-center gap-2 pt-3 text-sm"
-                aria-label="Price warning"
-            >
-                <x-icons.warning
-                    class="size-5 shrink-0"
-                    aria-hidden="true"
-                />
-                <p class="text-zinc-500">
-                    Increases to
-                    <span class="font-medium text-black dark:text-white">
-                        $2,500
-                    </span>
-                    after the EAP.
-                </p>
             </div>
 
             @auth
@@ -558,7 +482,7 @@
                         <x-icons.checkmark class="size-5 shrink-0" />
                     </div>
                     <div class="font-medium">
-                        Exclusive access to private Discord channels
+                        Private Discord channels for rapid support
                     </div>
                 </div>
                 <div class="flex items-center gap-2">
@@ -586,18 +510,7 @@
                     >
                         <x-icons.checkmark class="size-5 shrink-0" />
                     </div>
-                    <div class="font-medium">Business hours support (GMT)</div>
-                </div>
-                <div class="flex items-center gap-2">
-                    <div
-                        class="grid size-7 shrink-0 place-items-center rounded-xl bg-[#D4FD7D] dark:bg-[#d68ffe] dark:text-black"
-                        aria-hidden="true"
-                    >
-                        <x-icons.checkmark class="size-5 shrink-0" />
-                    </div>
-                    <div class="font-medium">
-                        Your name in NativePHP's history
-                    </div>
+                    <div class="font-medium">Business hours email support (GMT)</div>
                 </div>
             </div>
         </div>

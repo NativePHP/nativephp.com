@@ -1,3 +1,5 @@
+@reference "./app.css"
+
 :root {
     --docsearch-container-background: rgba(0, 0, 0, 0.5);
     --docsearch-primary-color: #987af1;
@@ -9,12 +11,12 @@
 }
 
 .DocSearch-Button {
-    @apply m-0 flex items-center rounded-lg bg-gray-50 font-normal ring-1 ring-gray-700/40 transition duration-300 ease-out dark:bg-black/30;
+    @apply m-0 flex items-center rounded-lg bg-gray-50 font-normal ring-1 ring-slate-600/40 transition duration-300 ease-out dark:bg-black/30;
 }
 
 .DocSearch-Button:hover {
     box-shadow: none;
-    @apply bg-gray-100 ring-gray-300 dark:bg-black/50 dark:ring-gray-700/70;
+    @apply bg-gray-100 ring-1 ring-transparent dark:bg-slate-950 dark:ring-slate-700/70;
 }
 
 .DocSearch-Button:hover .DocSearch-Button-Placeholder {
@@ -34,11 +36,11 @@
 }
 
 .DocSearch-Button-Placeholder {
-    @apply hidden pl-1 pr-1 text-sm text-black/60 min-[400px]:block min-[520px]:pr-20 dark:text-white/60;
+    @apply px-1 text-sm text-black/60 transition duration-300 min-[520px]:pr-20 dark:text-white/60;
 }
 
 .DocSearch-Button-Keys {
-    @apply ml-1 mt-1 hidden min-w-[auto] text-sm leading-none min-[520px]:flex;
+    @apply mt-1 ml-1 hidden min-w-[auto] text-sm leading-none sm:flex;
 }
 
 .DocSearch-Button-Key {
@@ -53,12 +55,108 @@
     @apply text-black;
 }
 
+.DocSearch-Modal:where(.dark, .dark *) {
+    background-color: var(--color-slate-950);
+    --docsearch-hit-active-color: var(--color-slate-300);
+}
+
+.DocSearch-SearchBar .DocSearch-Form:where(.dark, .dark *) {
+    border-color: color-mix(in oklab, var(--color-white) 10%, transparent);
+    background-color: color-mix(in oklab, var(--color-white) 15%, transparent);
+    color: var(--color-slate-300);
+}
+.DocSearch-SearchBar .DocSearch-Form:where(.dark, .dark *)::placeholder {
+    color: var(--color-slate-400);
+}
+.DocSearch-SearchBar .DocSearch-Form:where(.dark, .dark *) {
+    --tw-shadow: 0 0 #0000;
+    box-shadow:
+        var(--tw-inset-shadow), var(--tw-inset-ring-shadow),
+        var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow);
+}
+.DocSearch-SearchBar .DocSearch-Form:where(.dark, .dark *):disabled {
+    border-color: color-mix(in oklab, var(--color-white) 5%, transparent);
+    color: var(--color-slate-400);
+}
+.DocSearch-SearchBar
+    .DocSearch-Form:where(.dark, .dark *):disabled::placeholder,
+.DocSearch-SearchBar .DocSearch-MagnifierLabel {
+    color: var(--color-slate-500);
+}
+.DocSearch-SearchBar .DocSearch-MagnifierLabel:where(.dark, .dark *) {
+    color: var(--color-slate-300);
+}
+.DocSearch-SearchBar .DocSearch-LoadingIndicator {
+    color: var(--color-slate-500);
+}
+.DocSearch-SearchBar .DocSearch-LoadingIndicator:where(.dark, .dark *),
+.DocSearch-SearchBar .DocSearch-Input:where(.dark, .dark *),
+.DocSearch-SearchBar .DocSearch-Cancel:where(.dark, .dark *) {
+    color: var(--color-slate-300);
+}
+
+.DocSearch-Dropdown .DocSearch-Hits mark:where(.dark, .dark *) {
+    color: var(--color-slate-400);
+}
+
+.DocSearch-Hit-source {
+    @apply py-2.5 text-base;
+}
+
+.DocSearch-Dropdown .DocSearch-Hit-source:where(.dark, .dark *) {
+    background-color: var(--color-slate-950);
+    color: var(--color-slate-300);
+}
+
+.DocSearch-Dropdown
+    .DocSearch-Hit[aria-selected='true']
+    a:where(.dark, .dark *) {
+    background-color: var(--color-indigo-800);
+}
+
+.DocSearch-Dropdown .DocSearch-Hit a:where(.dark, .dark *) {
+    background-color: var(--color-indigo-900);
+    box-shadow: none;
+}
+
+.DocSearch-Dropdown .DocSearch-Hit .DocSearch-Hit-title:where(.dark, .dark *) {
+    color: var(--color-slate-300);
+}
+
+.DocSearch-Dropdown
+    .DocSearch-NoResults
+    .DocSearch-Screen-Icon:where(.dark, .dark *) {
+    color: var(--color-slate-500);
+}
+
+.DocSearch-Dropdown
+    .DocSearch-NoResults
+    .DocSearch-Title:where(.dark, .dark *) {
+    color: var(--color-slate-300);
+}
+
+.DocSearch-Footer {
+    @apply py-6;
+}
+
+.DocSearch-Footer:where(.dark, .dark *) {
+    background: var(--color-slate-950);
+    box-shadow: none;
+    @apply border-t border-t-slate-700;
+}
+
+.DocSearch-Footer .DocSearch-Logo svg :where(.dark, .dark *) {
+    fill: var(--color-gray-500);
+    color: var(--color-white);
+    background: transparent;
+}
+
 .DocSearch-Screen-Icon {
     display: none;
 }
 
 .DocSearch-Input {
-    @apply focus-visible:outline-none;
+    @apply ring-0 outline-0 focus-visible:outline-none;
 }
 
 .DocSearch-Form {

@@ -315,7 +315,7 @@
                         class="mt-6 rounded-xl bg-indigo-50 p-4 dark:bg-indigo-900/20"
                     >
                         <div class="flex">
-                            <div class="flex-shrink-0">
+                            <div class="shrink-0">
                                 <svg
                                     class="h-5 w-5 text-indigo-400"
                                     xmlns="http://www.w3.org/2000/svg"
@@ -497,8 +497,7 @@
                 </div>
 
                 @if ($subscription === \App\Enums\Subscription::Max)
-                    <a
-                        href="https://github.com/nativephp/mobile/issues"
+                    <div
                         class="rounded-2xl bg-gray-100 p-6 transition duration-200 hover:bg-gray-200/70 hover:ring-1 hover:ring-black/60 dark:bg-mirage dark:hover:bg-haiti dark:hover:ring-cloud"
                     >
                         <div
@@ -506,13 +505,28 @@
                         >
                             <x-icons.github class="dark:fill-white" />
                         </div>
-                        <h4 class="text-lg font-medium">Share Your Feedback</h4>
+                        <h4 class="text-lg font-medium">Access the Repo</h4>
                         <p class="mt-2 text-gray-600 dark:text-gray-400">
-                            We're currently in Early Access and constantly
-                            improving. Let us know if you find any bugs as you
-                            build.
+                            <a
+                                href="https://auth.anystack.sh/register?accountType=customer"
+                                target="_blank"
+                                class="text-violet-600 hover:text-violet-800 dark:text-violet-400 dark:hover:text-violet-300"
+                            >
+                                Create a customer account
+                            </a>
+                            on Anystack to gain access to the NativePHP for
+                            Mobile
+                            <a
+                                href="https://github.com/nativephp/mobile/issues"
+                                target="_blank"
+                                class="text-violet-600 hover:text-violet-800 dark:text-violet-400 dark:hover:text-violet-300"
+                            >
+                                repository
+                            </a>
+                            where you can let us know if you find any bugs as
+                            you build.
                         </p>
-                    </a>
+                    </div>
                 @endif
             </div>
         </div>

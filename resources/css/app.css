@@ -1,6 +1,50 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import 'tailwindcss';
+
+@plugin '@tailwindcss/typography';
+@plugin '@tailwindcss/forms';
+
+@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
+@source '../../storage/framework/views/*.php';
+@source '../../vendor/filament/**/*.blade.php';
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+    --color-mirage: #141624;
+    --color-haiti: #16182c;
+    --color-cloud: #2b2e53;
+
+    --font-poppins: 'Poppins', Verdana, sans-serif;
+}
+
+@utility container {
+    margin-inline: auto;
+}
+
+@layer base {
+    button:not(:disabled),
+    [role='button']:not(:disabled) {
+        cursor: pointer;
+    }
+}
+
+/*
+  The default border color has changed to `currentcolor` in Tailwind CSS v4,
+  so we've added these compatibility styles to make sure everything still
+  looks the same as it did with Tailwind CSS v3.
+
+  If we ever want to remove these styles, we need to add an explicit border
+  color utility to any element that depends on these defaults.
+*/
+@layer base {
+    *,
+    ::after,
+    ::before,
+    ::backdrop,
+    ::file-selector-button {
+        border-color: var(--color-gray-200, currentcolor);
+    }
+}
 
 @layer base {
     html {
@@ -21,6 +65,11 @@
     to {
         transform: rotate(360deg);
     }
+}
+
+/* Prevents scrollbars from appearing when a popover is open */
+html:has(#mobile-menu-popover:popover-open) {
+    overflow: hidden;
 }
 
 /* Scrollbar width */

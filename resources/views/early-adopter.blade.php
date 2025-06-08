@@ -86,7 +86,7 @@
                 aria-labelledby="ios-heading"
             >
                 <div
-                    class="relative isolate z-10 flex w-full max-w-xs flex-col items-center overflow-hidden rounded-2xl bg-[#EBECF6] p-8 text-center ring-4 ring-inset ring-white/60 dark:bg-black/50 dark:ring-white/5"
+                    class="relative isolate z-10 flex w-full max-w-xs flex-col items-center overflow-hidden rounded-2xl bg-[#EBECF6] p-8 text-center ring-4 ring-white/60 ring-inset dark:bg-black/50 dark:ring-white/5"
                 >
                     {{-- Subtitle --}}
                     <p class="text-sm text-gray-500">Available now for</p>
@@ -99,15 +99,14 @@
                     </h3>
                     {{-- Text --}}
                     <p class="pt-2.5 text-sm dark:text-gray-400">
-                        Join the Early Access Program and start developing iOS
-                        apps today.
+                        Build and ship App Store approved iOS apps today!
                     </p>
                     {{-- Mockup --}}
                     <div class="pt-10">
                         <img
                             src="{{ Vite::asset('resources/images/mobile/ios_phone_mockup.webp') }}"
                             alt="iOS phone mockup displaying a NativePHP application"
-                            class="-mb-[11rem] w-40 dark:mix-blend-hard-light"
+                            class="-mb-44 w-40 dark:mix-blend-hard-light"
                         />
                     </div>
                     {{-- White blurred circle - Decorative --}}
@@ -117,7 +116,7 @@
                     ></div>
                     {{-- Blue blurred circle - Decorative --}}
                     <div
-                        class="absolute bottom-0 right-1/2 -z-10 h-52 w-72 translate-x-1/2 rounded-full bg-[#9CA8D9]/40 blur-2xl dark:bg-blue-800/40"
+                        class="absolute right-1/2 bottom-0 -z-10 h-52 w-72 translate-x-1/2 rounded-full bg-[#9CA8D9]/40 blur-2xl dark:bg-blue-800/40"
                         aria-hidden="true"
                     ></div>
                 </div>
@@ -152,7 +151,7 @@
                 aria-labelledby="android-heading"
             >
                 <div
-                    class="relative isolate z-10 flex w-full max-w-xs flex-col items-center overflow-hidden rounded-2xl bg-[#F6F1EB] p-8 text-center ring-4 ring-inset ring-white/60 dark:bg-black/50 dark:ring-white/5"
+                    class="relative isolate z-10 flex w-full max-w-xs flex-col items-center overflow-hidden rounded-2xl bg-[#F6F1EB] p-8 text-center ring-4 ring-white/60 ring-inset dark:bg-black/50 dark:ring-white/5"
                 >
                     {{-- Subtitle --}}
                     <p class="text-sm text-gray-500">Available now for</p>
@@ -182,7 +181,7 @@
                     ></div>
                     {{-- Center blurred circle - Decorative --}}
                     <div
-                        class="absolute bottom-0 right-1/2 -z-10 h-52 w-72 translate-x-1/2 rounded-full bg-[#E0D7CE] blur-2xl dark:bg-slate-700/50"
+                        class="absolute right-1/2 bottom-0 -z-10 h-52 w-72 translate-x-1/2 rounded-full bg-[#E0D7CE] blur-2xl dark:bg-slate-700/50"
                         aria-hidden="true"
                     ></div>
                 </div>
@@ -462,7 +461,7 @@
                 {{-- Box --}}
                 <div
                     x-ref="box"
-                    class="mt-3 grid h-52 w-72 place-items-center rounded-xl bg-[#f4f1ee] p-5 opacity-0 dark:bg-mirage"
+                    class="dark:bg-mirage mt-3 grid h-52 w-72 place-items-center rounded-xl bg-[#f4f1ee] p-5 opacity-0"
                     aria-label="Purchase confirmation visualization"
                 >
                     <div class="flex flex-col items-center gap-5 text-center">
@@ -475,7 +474,7 @@
                             <x-icons.checkmark class="size-6" />
 
                             <div
-                                class="absolute right-1/2 top-1/2 hidden size-24 -translate-y-1/2 translate-x-1/2 rounded-full bg-emerald-400/20 blur-2xl dark:block"
+                                class="absolute top-1/2 right-1/2 hidden size-24 translate-x-1/2 -translate-y-1/2 rounded-full bg-emerald-400/20 blur-2xl dark:block"
                                 aria-hidden="true"
                             ></div>
                         </div>
@@ -525,7 +524,7 @@
                     {{-- Terminal --}}
                     <div
                         x-ref="terminal"
-                        class="-mb-12 -mr-12 h-52 w-72 overflow-hidden rounded-xl bg-white opacity-0 dark:bg-gray-900"
+                        class="-mr-12 -mb-12 h-52 w-72 overflow-hidden rounded-xl bg-white opacity-0 dark:bg-gray-900"
                     >
                         <div
                             class="flex items-center gap-1 bg-gray-100 px-3 py-3.5 dark:bg-gray-800"
@@ -633,7 +632,7 @@
                     })
                 }
             "
-            class="space-y-6 rounded-2xl bg-gray-100 p-7 dark:bg-mirage"
+            class="dark:bg-mirage space-y-6 rounded-2xl bg-gray-100 p-7"
         >
             {{-- Plan Name --}}
             <h3
@@ -657,7 +656,7 @@
                 license management, early access to build services, and other
                 enterprise-oriented services for businesses.
             </p>
-            <div class="">
+            <div>
                 <a
                     href="{{ route('partners') }}"
                     class="mt-5 block w-full max-w-xs rounded-2xl bg-zinc-200 py-4 text-center text-sm font-medium transition duration-200 ease-in-out hover:bg-zinc-800 hover:text-white dark:bg-slate-700/30 dark:hover:bg-slate-700/40"
@@ -754,12 +753,61 @@
                 </p>
             </x-faq-card>
 
-            <x-faq-card question="When will Android support be ready?">
-                <p>It's READY! Sign up and build apps for Android today!</p>
+            <x-faq-card
+                question="What does 'build unlimited apps, release X production apps' mean?"
+            >
+                <p>
+                    Every NativePHP for Mobile license entitles you to
+                    <i>release</i>
+                    a certain number of applications. A 'released' app is when
+                    it's published or distributed (typically through an app
+                    store).
+                </p>
+                <br />
+                <p>
+                    However, you are welcome to
+                    <i>build</i>
+                    (develop), as many apps as you want. If no one else besides
+                    you and other license holders have access to your app, then
+                    it doesn't count towards your quota of 'released' apps.
+                </p>
             </x-faq-card>
 
-            <x-faq-card question="When will the EAP end?">
-                <p>The EAP will end May 31, 2025.</p>
+            <x-faq-card question="What is a 'developer seat'?">
+                <p>
+                    A 'developer seat' represents an individual developer that
+                    can build apps under that license plan.
+                </p>
+                <br />
+                <p>
+                    For example, on the Pro plan, the license holder can create
+                    up to 10 unique license keys that can be assigned to
+                    individual developers, one key per developer.
+                </p>
+                <br />
+                <p>
+                    This allows the license holder to control who has the
+                    ability to use their license for building apps. You can add
+                    or remove developers and each will get their own unique
+                    license key. If a developer leaves your team, you can revoke
+                    their license key to prevent abuse.
+                </p>
+            </x-faq-card>
+
+            <x-faq-card
+                question="Is it possible to purchase additional developer seats or released apps?"
+            >
+                <p>You can purchase more Mini or Pro licenses as needed.</p>
+            </x-faq-card>
+
+            <x-faq-card question="What was the EAP and when did it end?">
+                <p>
+                    The Early Access Program (EAP) provided initial access to
+                    the NativePHP for Mobile platform for early adopters at
+                    reduced pricing while we worked on releasing v1 of the
+                    technology. The EAP started in February and ended in May
+                    2025.
+                </p>
             </x-faq-card>
 
             <x-faq-card question="Which price will my license renew at?">
@@ -784,6 +832,7 @@
             <x-faq-card question="Can I upgrade or downgrade my license later?">
                 <p>That's not currently possible.</p>
             </x-faq-card>
+
             <x-faq-card question="Will my apps built with NativePHP be secure?">
                 <p>
                     Definitely. NativePHP for Mobile apps are just like other
@@ -801,6 +850,7 @@
                     build!
                 </p>
             </x-faq-card>
+
             <x-faq-card question="Can I get an invoice?">
                 <p>
                     If you purchased after May 6, 2025, you should get an
@@ -834,88 +884,5 @@
                 </p>
             </x-faq-card>
         </div>
-    </section>
-
-    {{-- Why Join Program Section --}}
-    <section
-        class="mx-auto mt-20 max-w-5xl px-5"
-        aria-labelledby="join-program-heading"
-    >
-        <article
-            x-init="
-                () => {
-                    motion.inView(
-                        $el,
-                        (element) => {
-                            motion.animate(
-                                $el,
-                                {
-                                    opacity: [0, 1],
-                                    x: [-10, 0],
-                                },
-                                {
-                                    duration: 0.7,
-                                    ease: motion.easeOut,
-                                },
-                            )
-                        },
-                        {
-                            amount: 0.2,
-                        },
-                    )
-                }
-            "
-            class="prose mx-auto max-w-2xl opacity-0 dark:text-gray-400"
-        >
-            <h2
-                id="join-program-heading"
-                class="dark:text-white"
-            >
-                Why Join the Early Access Program?
-            </h2>
-            <p>
-                From the beginning, NativePHP has been focused on Windows, Mac,
-                and Linux. Until now!
-            </p>
-            <p>
-                We believe that breaking the mobile frontier is what makes this
-                project truly compelling... and truly cross-platform.
-            </p>
-            <p>
-                With
-                <strong class="dark:text-white">NativePHP for Mobile</strong>
-                , we are excited about the possibilities that lie ahead.
-            </p>
-            <p>
-                However, to make this vision a reality for both iOS and Android,
-                we need your support.
-            </p>
-            <p>
-                As an EAP member, you will be supporting the continued
-                development of all of NativePHP, but especially of NativePHP for
-                mobile.
-            </p>
-            <p>
-                You'll have the opportunity to influence the direction of the
-                project and provide critical feedback right from an early stage.
-            </p>
-            <p>
-                You'll get exclusive access to all the latest features first and
-                special perks for the life of the NativePHP project... a project
-                we plan to be working on for a long time to come!
-            </p>
-            <p>
-                Please join us on this exciting journey to expand NativePHP onto
-                mobile platforms.
-            </p>
-            <p class="italic">We can't wait to see what you build!</p>
-            <p>
-                <span class="font-bold italic dark:text-white">
-                    Simon &amp; Shane
-                </span>
-                <br />
-                <span class="text-indigo-400">Creators of NativePHP</span>
-            </p>
-        </article>
     </section>
 </x-layout>

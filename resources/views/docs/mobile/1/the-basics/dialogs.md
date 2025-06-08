@@ -1,6 +1,6 @@
 ---
 title: Dialogs
-order: 400
+order: 300
 ---
 
 ## Native Dialogs
