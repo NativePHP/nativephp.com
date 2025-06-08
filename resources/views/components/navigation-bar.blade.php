@@ -1,7 +1,6 @@
-@props(['hasMenu' => false])
 <div
     x-collapse
-    x-show="!showDocsNavigation"
+    x-show="!showMobileMenu"
 >
     <x-ticket-giveaway-banner />
 </div>
