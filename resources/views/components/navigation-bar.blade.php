@@ -10,10 +10,10 @@
 >
     <div
         :class="{
-            'ring-gray-200/80 dark:ring-gray-700/70 bg-white/50 dark:bg-black/50 translate-y-3': scrolled || showMobileMenu,
+            'ring-gray-200/80 backdrop-blur-2xl dark:ring-gray-700/70 bg-white/50 dark:bg-black/50 translate-y-3': scrolled || showMobileMenu,
             'ring-transparent dark:bg-transparent': ! scrolled && ! showMobileMenu,
         }"
-        class="mx-auto flex w-full max-w-5xl items-center justify-between gap-5 rounded-2xl px-5 py-4 ring-1 backdrop-blur-2xl transition duration-200 ease-out xl:max-w-7xl 2xl:max-w-360"
+        class="mx-auto flex w-full max-w-5xl items-center justify-between gap-5 rounded-2xl px-5 py-4 ring-1 transition duration-200 ease-out xl:max-w-7xl 2xl:max-w-360"
     >
         {{-- Left side --}}
         <div class="flex items-center gap-3">
