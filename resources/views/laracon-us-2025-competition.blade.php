@@ -117,14 +117,14 @@
                         })
                     }
                 "
-                class="relative isolate py-10"
+                class="relative isolate py-7 sm:py-10"
             >
                 <div
                     x-init="
                         () => {
                             Atropos({
                                 el: $el,
-                                activeOffset: 10,
+                                activeOffset: 1,
                                 shadow: false,
                                 highlight: false,
                                 eventsEl: $refs.ticketEvent,
@@ -237,6 +237,107 @@
                     </a>
                 </div>
             </header>
+        </div>
+    </section>
+
+    {{-- Prizes --}}
+    <section class="mx-auto mt-25 max-w-5xl px-5">
+        {{-- Header --}}
+        <h2
+            id="hero-heading"
+            x-init="
+                () => {
+                    motion.inView($el, (element) => {
+                        motion.animate(
+                            $el,
+                            {
+                                opacity: [0, 1],
+                                y: [-10, 0],
+                            },
+                            {
+                                duration: 0.7,
+                                ease: motion.easeOut,
+                            },
+                        )
+                    })
+                }
+            "
+            class="text-center text-3xl font-extrabold sm:text-4xl"
+        >
+            Prizes
+        </h2>
+
+        {{-- List --}}
+        <div class="mt-5 flex flex-wrap items-center justify-center gap-5">
+            <div
+                class="group relative isolate flex w-full max-w-75 items-center gap-5 overflow-hidden rounded-2xl bg-gradient-to-br from-violet-50 to-violet-300 p-8 dark:bg-gradient-to-bl dark:from-white/10 dark:to-white/2"
+            >
+                {{-- Title --}}
+                <h5
+                    class="text-2xl leading-relaxed font-semibold text-violet-900 transition duration-300 ease-in-out will-change-transform group-hover:translate-x-0.5 dark:text-violet-400"
+                >
+                    Laracon Ticket
+                </h5>
+
+                {{-- Illustration --}}
+                <img
+                    src="{{ Vite::asset('resources/images/prizes/3d_purple_tickets.webp') }}"
+                    alt=""
+                    loading="lazy"
+                    class="pointer-events-none h-16 transition duration-300 ease-in-out will-change-transform select-none group-hover:-translate-x-0.5"
+                />
+
+                {{-- Shiny circle --}}
+                <div
+                    class="absolute -top-40 -right-40 -z-10 size-80 rounded-full bg-gradient-to-t from-white/5 to-white/50 dark:from-transparent dark:to-violet-500/65 dark:blur-2xl"
+                ></div>
+            </div>
+            <div
+                class="group relative isolate flex w-full max-w-75 items-center gap-5 overflow-hidden rounded-2xl bg-gradient-to-br from-sky-50 to-sky-300 p-8 dark:bg-gradient-to-bl dark:from-white/10 dark:to-white/2"
+            >
+                {{-- Title --}}
+                <h5
+                    class="text-2xl leading-relaxed font-semibold text-sky-900 transition duration-300 ease-in-out will-change-transform group-hover:translate-x-0.5 dark:text-sky-400"
+                >
+                    NativePHP T-Shirt
+                </h5>
+
+                {{-- Illustration --}}
+                <img
+                    src="{{ Vite::asset('resources/images/prizes/nativephp_black_shirt.webp') }}"
+                    alt=""
+                    loading="lazy"
+                    class="pointer-events-none -mb-20 h-40 transition duration-300 ease-in-out will-change-transform select-none group-hover:-translate-x-0.5"
+                />
+
+                {{-- Shiny circle --}}
+                <div
+                    class="absolute -top-40 -right-40 -z-10 size-80 rounded-full bg-gradient-to-t from-white/5 to-white/50 dark:from-transparent dark:to-sky-500/65 dark:blur-2xl"
+                ></div>
+            </div>
+            <div
+                class="group relative isolate flex w-full max-w-75 items-center gap-5 overflow-hidden rounded-2xl bg-gradient-to-br from-orange-50 to-orange-300 p-8 dark:bg-gradient-to-bl dark:from-white/10 dark:to-white/2"
+            >
+                {{-- Title --}}
+                <h5
+                    class="text-2xl leading-relaxed font-semibold text-orange-900 transition duration-300 ease-in-out will-change-transform group-hover:translate-x-0.5 dark:text-orange-400"
+                >
+                    NativePHP License
+                </h5>
+
+                {{-- Illustration --}}
+                <img
+                    src="{{ Vite::asset('resources/images/prizes/3d_license_document.webp') }}"
+                    alt=""
+                    loading="lazy"
+                    class="pointer-events-none h-20 transition duration-300 ease-in-out will-change-transform select-none group-hover:-translate-x-0.5"
+                />
+
+                {{-- Shiny circle --}}
+                <div
+                    class="absolute -top-40 -right-40 -z-10 size-80 rounded-full bg-gradient-to-t from-white/5 to-white/50 dark:from-transparent dark:to-orange-500/65 dark:blur-2xl"
+                ></div>
+            </div>
         </div>
     </section>
 </x-layout>
