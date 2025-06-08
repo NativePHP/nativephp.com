@@ -232,7 +232,7 @@
                     class="mt-7 w-full max-w-56"
                 >
                     <a
-                        href="#enter-to-win"
+                        href="#how-to-enter"
                         class="flex items-center justify-center gap-2.5 rounded-2xl bg-zinc-800 px-6 py-4 text-white transition duration-200 hover:bg-zinc-900 dark:bg-violet-400/80 dark:drop-shadow-xl dark:drop-shadow-transparent dark:hover:bg-violet-400 dark:hover:drop-shadow-violet-400/30"
                     >
                         Enter to Win
@@ -289,7 +289,7 @@
                     })
                 }
             "
-            class="mt-10 flex flex-col items-center justify-center gap-x-6 gap-y-8 lg:flex-row lg:items-start"
+            class="mt-10 flex flex-col items-center justify-center gap-8 lg:flex-row lg:items-start"
         >
             <div
                 class="flex flex-col items-center gap-x-7 gap-y-5 sm:flex-row lg:flex-col"
@@ -451,6 +451,120 @@
                         </h6>
                     </div>
                 </div>
+            </div>
+        </div>
+    </section>
+
+    {{-- How to enter --}}
+    <section
+        id="how-to-enter"
+        class="mx-auto mt-20 max-w-5xl px-5"
+    >
+        <div
+            x-init="
+                () => {
+                    motion.inView($el, (element) => {
+                        motion.animate(
+                            $el,
+                            {
+                                opacity: [0, 1],
+                                x: [-10, 0],
+                            },
+                            {
+                                duration: 0.7,
+                                ease: motion.easeOut,
+                            },
+                        )
+                    })
+                }
+            "
+            class="rounded-2xl bg-[#F4F1EE] p-12 dark:bg-[#1a1a2e]"
+        >
+            {{-- Header --}}
+            <header class="text-center">
+                <h2 class="text-4xl font-bold sm:text-5xl">How to enter</h2>
+                <h6 class="pt-2 text-slate-600 dark:text-gray-400">
+                    Increase your chances with each step
+                </h6>
+            </header>
+
+            {{-- List --}}
+            <div class="mt-8 space-y-4">
+                <a
+                    href="https://x.com/nativephp"
+                    target="_blank"
+                    class="group dark:bg-mirage flex items-center justify-between gap-5 rounded-2xl bg-white/50 p-6 transition duration-300 hover:bg-white/80 dark:hover:bg-slate-700/40"
+                >
+                    {{-- Left side --}}
+                    <div
+                        class="flex flex-col items-start gap-x-2 gap-y-1 sm:flex-row sm:items-center"
+                    >
+                        <div
+                            class="font-medium text-nowrap opacity-40 transition duration-300 group-hover:text-indigo-500 group-hover:opacity-100"
+                        >
+                            Step 1:
+                        </div>
+                        <h3 class="font-medium opacity-90">
+                            Retweet the Ticket Giveaway on X/Bluesky
+                        </h3>
+                    </div>
+
+                    {{-- Icon --}}
+                    <x-icons.right-arrow
+                        class="size-3.5 shrink-0 transition duration-300 group-hover:translate-x-1"
+                        aria-hidden="true"
+                    />
+                </a>
+                <a
+                    href="https://youtube.com/@NativePHPOfficial"
+                    target="_blank"
+                    class="group dark:bg-mirage flex items-center justify-between gap-5 rounded-2xl bg-white/50 p-6 transition duration-300 hover:bg-white/80 dark:hover:bg-slate-700/40"
+                >
+                    {{-- Left side --}}
+                    <div
+                        class="flex flex-col items-start gap-x-2 gap-y-1 sm:flex-row sm:items-center"
+                    >
+                        <div
+                            class="font-medium text-nowrap opacity-40 transition duration-300 group-hover:text-indigo-500 group-hover:opacity-100"
+                        >
+                            Step 2:
+                        </div>
+                        <h3 class="font-medium opacity-90">
+                            Subscribe to NativePHP on YouTube
+                        </h3>
+                    </div>
+
+                    {{-- Icon --}}
+                    <x-icons.right-arrow
+                        class="size-3.5 shrink-0 transition duration-300 group-hover:translate-x-1"
+                        aria-hidden="true"
+                    />
+                </a>
+                <a
+                    href="https://nativephp.app.test/newsletter"
+                    target="_blank"
+                    class="group dark:bg-mirage flex items-center justify-between gap-5 rounded-2xl bg-white/50 p-6 transition duration-300 hover:bg-white/80 dark:hover:bg-slate-700/40"
+                >
+                    {{-- Left side --}}
+                    <div
+                        class="flex flex-col items-start gap-x-2 gap-y-1 sm:flex-row sm:items-center"
+                    >
+                        <div
+                            class="font-medium text-nowrap opacity-40 transition duration-300 group-hover:text-indigo-500 group-hover:opacity-100"
+                        >
+                            Step 3:
+                        </div>
+                        <h3 class="font-medium opacity-90">
+                            Subscribe to our newsletter
+                        </h3>
+                    </div>
+
+                    {{-- Icon --}}
+                    <x-icons.right-arrow
+                        class="size-3.5 shrink-0 transition duration-300 group-hover:translate-x-1"
+                        aria-hidden="true"
+                    />
+                </a>
             </div>
         </div>
     </section>
