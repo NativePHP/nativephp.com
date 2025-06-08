@@ -271,6 +271,24 @@
 
         {{-- List --}}
         <div
+            x-init="
+                () => {
+                    motion.inView($el, (element) => {
+                        motion.animate(
+                            Array.from($el.children),
+                            {
+                                y: [20, 0],
+                                opacity: [0, 1],
+                            },
+                            {
+                                duration: 1,
+                                ease: motion.backOut,
+                                delay: motion.stagger(0.1),
+                            },
+                        )
+                    })
+                }
+            "
             class="mt-10 flex flex-col items-center justify-center gap-x-6 gap-y-8 lg:flex-row lg:items-start"
         >
             <div
@@ -284,7 +302,9 @@
                     <h5
                         class="text-2xl leading-relaxed font-semibold text-violet-900 transition duration-300 ease-in-out will-change-transform group-hover:translate-x-0.5 dark:text-violet-400"
                     >
-                        Laracon Ticket
+                        Laracon
+                        <br />
+                        Ticket
                     </h5>
                     {{-- Illustration --}}
                     <img
@@ -325,7 +345,9 @@
                     <h5
                         class="text-2xl leading-relaxed font-semibold text-sky-900 transition duration-300 ease-in-out will-change-transform group-hover:translate-x-0.5 dark:text-sky-300"
                     >
-                        NativePHP T-Shirt
+                        NativePHP
+                        <br />
+                        T-Shirt
                     </h5>
                     {{-- Illustration --}}
                     <img
@@ -376,7 +398,9 @@
                     <h5
                         class="text-2xl leading-relaxed font-semibold text-orange-900 transition duration-300 ease-in-out will-change-transform group-hover:translate-x-0.5 dark:text-orange-400"
                     >
-                        NativePHP License
+                        NativePHP
+                        <br />
+                        License
                     </h5>
                     {{-- Illustration --}}
                     <img
