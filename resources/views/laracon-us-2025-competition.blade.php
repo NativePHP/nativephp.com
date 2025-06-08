@@ -273,7 +273,9 @@
         <div
             class="mt-10 flex flex-col items-center justify-center gap-x-6 gap-y-8 lg:flex-row lg:items-start"
         >
-            <div class="flex items-center gap-x-7 gap-y-5 lg:flex-col">
+            <div
+                class="flex flex-col items-center gap-x-7 gap-y-5 sm:flex-row lg:flex-col"
+            >
                 {{-- Card --}}
                 <div
                     class="group relative isolate flex w-full max-w-75 items-center gap-5 overflow-hidden rounded-2xl bg-gradient-to-br from-violet-50 to-violet-300 p-8 dark:bg-gradient-to-bl dark:from-white/10 dark:to-white/2"
@@ -310,7 +312,9 @@
                     </div>
                 </div>
             </div>
-            <div class="flex items-center gap-x-7 gap-y-5 lg:flex-col">
+            <div
+                class="flex flex-col items-center gap-x-7 gap-y-5 sm:flex-row lg:flex-col"
+            >
                 {{-- Card --}}
                 <div
                     class="group relative isolate flex w-full max-w-75 items-center gap-5 overflow-hidden rounded-2xl bg-gradient-to-br from-sky-50 to-sky-300 p-8 dark:bg-gradient-to-bl dark:from-white/10 dark:to-white/2"
@@ -356,7 +360,9 @@
                     </div>
                 </div>
             </div>
-            <div class="flex items-center gap-x-7 gap-y-5 lg:flex-col">
+            <div
+                class="flex flex-col items-center gap-x-7 gap-y-5 sm:flex-row lg:flex-col"
+            >
                 <div
                     class="group relative isolate flex w-full max-w-75 items-center gap-5 overflow-hidden rounded-2xl bg-gradient-to-br from-orange-50 to-orange-300 p-8 dark:bg-gradient-to-bl dark:from-white/10 dark:to-white/2"
                 >
