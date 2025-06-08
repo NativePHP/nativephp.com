@@ -270,75 +270,143 @@
         </h2>
 
         {{-- List --}}
-        <div class="mt-5 flex flex-wrap items-center justify-center gap-5">
-            <div
-                class="group relative isolate flex w-full max-w-75 items-center gap-5 overflow-hidden rounded-2xl bg-gradient-to-br from-violet-50 to-violet-300 p-8 dark:bg-gradient-to-bl dark:from-white/10 dark:to-white/2"
-            >
-                {{-- Title --}}
-                <h5
-                    class="text-2xl leading-relaxed font-semibold text-violet-900 transition duration-300 ease-in-out will-change-transform group-hover:translate-x-0.5 dark:text-violet-400"
-                >
-                    Laracon Ticket
-                </h5>
-
-                {{-- Illustration --}}
-                <img
-                    src="{{ Vite::asset('resources/images/prizes/3d_purple_tickets.webp') }}"
-                    alt=""
-                    loading="lazy"
-                    class="pointer-events-none h-16 transition duration-300 ease-in-out will-change-transform select-none group-hover:-translate-x-0.5"
-                />
-
-                {{-- Shiny circle --}}
+        <div class="mt-5 flex flex-wrap items-start justify-center gap-5">
+            <div class="flex flex-col items-center gap-4">
+                {{-- Card --}}
                 <div
-                    class="absolute -top-40 -right-40 -z-10 size-80 rounded-full bg-gradient-to-t from-white/5 to-white/50 dark:from-transparent dark:to-violet-500/65 dark:blur-2xl"
-                ></div>
+                    class="group relative isolate flex w-full max-w-75 items-center gap-5 overflow-hidden rounded-2xl bg-gradient-to-br from-violet-50 to-violet-300 p-8 dark:bg-gradient-to-bl dark:from-white/10 dark:to-white/2"
+                >
+                    {{-- Title --}}
+                    <h5
+                        class="text-2xl leading-relaxed font-semibold text-violet-900 transition duration-300 ease-in-out will-change-transform group-hover:translate-x-0.5 dark:text-violet-400"
+                    >
+                        Laracon Ticket
+                    </h5>
+                    {{-- Illustration --}}
+                    <img
+                        src="{{ Vite::asset('resources/images/prizes/3d_purple_tickets.webp') }}"
+                        alt=""
+                        loading="lazy"
+                        class="pointer-events-none h-16 transition duration-300 ease-in-out will-change-transform select-none group-hover:-translate-x-0.5"
+                    />
+                    {{-- Shiny circle --}}
+                    <div
+                        class="absolute -top-40 -right-40 -z-10 size-80 rounded-full bg-gradient-to-t from-white/5 to-white/50 dark:from-transparent dark:to-violet-500/65 dark:blur-2xl"
+                    ></div>
+                </div>
+
+                {{-- Description --}}
+                <div class="flex flex-col gap-5">
+                    <div class="flex items-center gap-2.5">
+                        <img
+                            src="{{ Vite::asset('resources/images/prizes/gold_medal.webp') }}"
+                            alt=""
+                            class="h-9"
+                        />
+                        {{-- Title --}}
+                        <h6 class="text-xl font-medium">1st Place</h6>
+                    </div>
+                </div>
             </div>
-            <div
-                class="group relative isolate flex w-full max-w-75 items-center gap-5 overflow-hidden rounded-2xl bg-gradient-to-br from-sky-50 to-sky-300 p-8 dark:bg-gradient-to-bl dark:from-white/10 dark:to-white/2"
-            >
-                {{-- Title --}}
-                <h5
-                    class="text-2xl leading-relaxed font-semibold text-sky-900 transition duration-300 ease-in-out will-change-transform group-hover:translate-x-0.5 dark:text-sky-300"
-                >
-                    NativePHP T-Shirt
-                </h5>
-
-                {{-- Illustration --}}
-                <img
-                    src="{{ Vite::asset('resources/images/prizes/nativephp_black_shirt.webp') }}"
-                    alt=""
-                    loading="lazy"
-                    class="pointer-events-none -mb-20 h-40 transition duration-300 ease-in-out will-change-transform select-none group-hover:-translate-x-0.5 dark:contrast-120"
-                />
-
-                {{-- Shiny circle --}}
+            <div class="flex flex-col items-center gap-4">
+                {{-- Card --}}
                 <div
-                    class="absolute -top-40 -right-40 -z-10 size-80 rounded-full bg-gradient-to-t from-white/5 to-white/50 dark:from-transparent dark:to-sky-500/65 dark:blur-2xl"
-                ></div>
+                    class="group relative isolate flex w-full max-w-75 items-center gap-5 overflow-hidden rounded-2xl bg-gradient-to-br from-sky-50 to-sky-300 p-8 dark:bg-gradient-to-bl dark:from-white/10 dark:to-white/2"
+                >
+                    {{-- Title --}}
+                    <h5
+                        class="text-2xl leading-relaxed font-semibold text-sky-900 transition duration-300 ease-in-out will-change-transform group-hover:translate-x-0.5 dark:text-sky-300"
+                    >
+                        NativePHP T-Shirt
+                    </h5>
+                    {{-- Illustration --}}
+                    <img
+                        src="{{ Vite::asset('resources/images/prizes/nativephp_black_shirt.webp') }}"
+                        alt=""
+                        loading="lazy"
+                        class="pointer-events-none -mb-20 h-40 transition duration-300 ease-in-out will-change-transform select-none group-hover:-translate-x-0.5 dark:contrast-120"
+                    />
+                    {{-- Shiny circle --}}
+                    <div
+                        class="absolute -top-40 -right-40 -z-10 size-80 rounded-full bg-gradient-to-t from-white/5 to-white/50 dark:from-transparent dark:to-sky-500/65 dark:blur-2xl"
+                    ></div>
+                </div>
+
+                {{-- Description --}}
+                <div class="flex flex-col gap-5">
+                    <div class="flex items-center gap-2.5">
+                        <img
+                            src="{{ Vite::asset('resources/images/prizes/gold_medal.webp') }}"
+                            alt=""
+                            class="h-9"
+                        />
+                        {{-- Title --}}
+                        <h6 class="text-xl font-medium">1st Place</h6>
+                    </div>
+                    <div class="flex items-center gap-2.5">
+                        <img
+                            src="{{ Vite::asset('resources/images/prizes/silver_medal.webp') }}"
+                            alt=""
+                            class="h-9"
+                        />
+                        {{-- Title --}}
+                        <h6 class="text-xl font-medium">2nd Place</h6>
+                    </div>
+                </div>
             </div>
-            <div
-                class="group relative isolate flex w-full max-w-75 items-center gap-5 overflow-hidden rounded-2xl bg-gradient-to-br from-orange-50 to-orange-300 p-8 dark:bg-gradient-to-bl dark:from-white/10 dark:to-white/2"
-            >
-                {{-- Title --}}
-                <h5
-                    class="text-2xl leading-relaxed font-semibold text-orange-900 transition duration-300 ease-in-out will-change-transform group-hover:translate-x-0.5 dark:text-orange-400"
-                >
-                    NativePHP License
-                </h5>
-
-                {{-- Illustration --}}
-                <img
-                    src="{{ Vite::asset('resources/images/prizes/3d_license_document.webp') }}"
-                    alt=""
-                    loading="lazy"
-                    class="pointer-events-none h-22 transition duration-300 ease-in-out will-change-transform select-none group-hover:-translate-x-0.5"
-                />
-
-                {{-- Shiny circle --}}
+            <div class="flex flex-col items-center gap-4">
                 <div
-                    class="absolute -top-40 -right-40 -z-10 size-80 rounded-full bg-gradient-to-t from-white/5 to-white/50 dark:from-transparent dark:to-orange-500/65 dark:blur-2xl"
-                ></div>
+                    class="group relative isolate flex w-full max-w-75 items-center gap-5 overflow-hidden rounded-2xl bg-gradient-to-br from-orange-50 to-orange-300 p-8 dark:bg-gradient-to-bl dark:from-white/10 dark:to-white/2"
+                >
+                    {{-- Title --}}
+                    <h5
+                        class="text-2xl leading-relaxed font-semibold text-orange-900 transition duration-300 ease-in-out will-change-transform group-hover:translate-x-0.5 dark:text-orange-400"
+                    >
+                        NativePHP License
+                    </h5>
+                    {{-- Illustration --}}
+                    <img
+                        src="{{ Vite::asset('resources/images/prizes/3d_license_document.webp') }}"
+                        alt=""
+                        loading="lazy"
+                        class="pointer-events-none h-22 transition duration-300 ease-in-out will-change-transform select-none group-hover:-translate-x-0.5"
+                    />
+                    {{-- Shiny circle --}}
+                    <div
+                        class="absolute -top-40 -right-40 -z-10 size-80 rounded-full bg-gradient-to-t from-white/5 to-white/50 dark:from-transparent dark:to-orange-500/65 dark:blur-2xl"
+                    ></div>
+                </div>
+
+                {{-- Description --}}
+                <div class="flex flex-col gap-5">
+                    <div class="flex items-center gap-2.5">
+                        <img
+                            src="{{ Vite::asset('resources/images/prizes/gold_medal.webp') }}"
+                            alt=""
+                            class="h-9"
+                        />
+                        {{-- Title --}}
+                        <h6 class="text-xl font-medium">1st Place</h6>
+                    </div>
+                    <div class="flex items-center gap-2.5">
+                        <img
+                            src="{{ Vite::asset('resources/images/prizes/silver_medal.webp') }}"
+                            alt=""
+                            class="h-9"
+                        />
+                        {{-- Title --}}
+                        <h6 class="text-xl font-medium">2nd Place</h6>
+                    </div>
+                    <div class="flex items-center gap-2.5">
+                        <img
+                            src="{{ Vite::asset('resources/images/prizes/bronze_medal.webp') }}"
+                            alt=""
+                            class="h-9"
+                        />
+                        {{-- Title --}}
+                        <h6 class="text-xl font-medium">3rd Place</h6>
+                    </div>
+                </div>
             </div>
         </div>
     </section>
