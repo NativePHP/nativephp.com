@@ -1,5 +1,5 @@
 <a
-    href="/laracon-us-2025-competition"
+    href="/laracon-us-2025-giveaway"
     onclick="fathom.trackEvent('alert_click');"
     class="group relative z-30 flex items-center justify-center gap-x-2 gap-y-2.5 overflow-hidden bg-[#050714] px-5 py-3 select-none"
 >
