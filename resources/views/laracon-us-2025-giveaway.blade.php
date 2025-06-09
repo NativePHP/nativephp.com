@@ -1,4 +1,9 @@
 <x-layout title="Laracon US 2025 Ticket Giveaway">
+    <style>
+        html {
+            scroll-behavior: smooth;
+        }
+    </style>
     {{-- Hero Section --}}
     <section class="mx-auto mt-2 max-w-7xl px-5">
         <div
@@ -32,7 +37,7 @@
 
             {{-- Countdown Timer --}}
             <div
-                x-data="countdown('2025-06-31T23:59:59Z')"
+                x-data="countdown('2025-07-01T00:00:00Z')"
                 x-init="
                     () => {
                         motion.inView($el, (element) => {
@@ -464,7 +469,7 @@
     {{-- How to enter --}}
     <section
         id="how-to-enter"
-        class="mx-auto mt-20 max-w-5xl px-5"
+        class="mx-auto mt-20 max-w-5xl scroll-mt-32 px-5"
     >
         <div
             x-init="
@@ -489,15 +494,12 @@
             {{-- Header --}}
             <header class="text-center">
                 <h2 class="text-4xl font-bold sm:text-5xl">How to enter</h2>
-                <h6 class="pt-2 text-slate-600 dark:text-gray-400">
-                    Increase your chances with each step
-                </h6>
             </header>
 
             {{-- List --}}
             <div class="mt-8 space-y-4">
                 <a
-                    href="https://x.com/nativephp"
+                    href="/newsletter"
                     target="_blank"
                     class="group dark:bg-mirage flex items-center justify-between gap-5 rounded-2xl bg-white/50 p-6 transition duration-300 hover:bg-white/80 dark:hover:bg-slate-700/40"
                 >
@@ -511,7 +513,57 @@
                             Step 1:
                         </div>
                         <h3 class="font-medium opacity-90">
-                            Retweet the Ticket Giveaway on X/Bluesky
+                            Subscribe to our giveaway newsletter
+                        </h3>
+                    </div>
+
+                    {{-- Icon --}}
+                    <x-icons.right-arrow
+                        class="size-3.5 shrink-0 transition duration-300 group-hover:translate-x-1"
+                        aria-hidden="true"
+                    />
+                </a>
+                <a
+                    href="https://x.com/nativephp"
+                    target="_blank"
+                    class="group dark:bg-mirage flex items-center justify-between gap-5 rounded-2xl bg-white/50 p-6 transition duration-300 hover:bg-white/80 dark:hover:bg-slate-700/40"
+                >
+                    {{-- Left side --}}
+                    <div
+                        class="flex flex-col items-start gap-x-2 gap-y-1 sm:flex-row sm:items-center"
+                    >
+                        <div
+                            class="font-medium text-nowrap opacity-40 transition duration-300 group-hover:text-indigo-500 group-hover:opacity-100"
+                        >
+                            Step 2:
+                        </div>
+                        <h3 class="font-medium opacity-90">
+                            Repost the Ticket Giveaway Announcement on X
+                        </h3>
+                    </div>
+
+                    {{-- Icon --}}
+                    <x-icons.right-arrow
+                        class="size-3.5 shrink-0 transition duration-300 group-hover:translate-x-1"
+                        aria-hidden="true"
+                    />
+                </a>
+                <a
+                    href="https://bsky.app/profile/nativephp.com"
+                    target="_blank"
+                    class="group dark:bg-mirage flex items-center justify-between gap-5 rounded-2xl bg-white/50 p-6 transition duration-300 hover:bg-white/80 dark:hover:bg-slate-700/40"
+                >
+                    {{-- Left side --}}
+                    <div
+                        class="flex flex-col items-start gap-x-2 gap-y-1 sm:flex-row sm:items-center"
+                    >
+                        <div
+                            class="font-medium text-nowrap opacity-40 transition duration-300 group-hover:text-indigo-500 group-hover:opacity-100"
+                        >
+                            Step 3:
+                        </div>
+                        <h3 class="font-medium opacity-90">
+                            Repost the Ticket Giveaway Announcement on Bluesky
                         </h3>
                     </div>
 
@@ -533,35 +585,10 @@
                         <div
                             class="font-medium text-nowrap opacity-40 transition duration-300 group-hover:text-indigo-500 group-hover:opacity-100"
                         >
-                            Step 2:
+                            Step 4:
                         </div>
                         <h3 class="font-medium opacity-90">
                             Subscribe to NativePHP on YouTube
-                        </h3>
-                    </div>
-
-                    {{-- Icon --}}
-                    <x-icons.right-arrow
-                        class="size-3.5 shrink-0 transition duration-300 group-hover:translate-x-1"
-                        aria-hidden="true"
-                    />
-                </a>
-                <a
-                    href="https://nativephp.app.test/newsletter"
-                    target="_blank"
-                    class="group dark:bg-mirage flex items-center justify-between gap-5 rounded-2xl bg-white/50 p-6 transition duration-300 hover:bg-white/80 dark:hover:bg-slate-700/40"
-                >
-                    {{-- Left side --}}
-                    <div
-                        class="flex flex-col items-start gap-x-2 gap-y-1 sm:flex-row sm:items-center"
-                    >
-                        <div
-                            class="font-medium text-nowrap opacity-40 transition duration-300 group-hover:text-indigo-500 group-hover:opacity-100"
-                        >
-                            Step 3:
-                        </div>
-                        <h3 class="font-medium opacity-90">
-                            Subscribe to our newsletter
                         </h3>
                     </div>
 
@@ -595,23 +622,50 @@
                     })
                 }
             "
-            class="text-center"
         >
-            <h3 class="text-3xl font-semibold">Legal</h3>
-            <article class="mt-4 text-lg text-gray-600 dark:text-gray-400">
-                <p>
-                    This giveaway is not affiliated with or endorsed by Laracon
-                    US, Twitter, or any other entity. By participating, you
-                    agree to the terms and conditions outlined in the official
-                    rules.
-                </p>
-
-                <br />
-
-                <p>
-                    The winners will be selected randomly and announced on our
-                    social media channels. Good luck to all participants!
-                </p>
+            <h3 class="text-3xl font-semibold">Rules</h3>
+            <article class="mt-4 text-gray-600 dark:text-gray-400">
+                <ul class="list-disc space-y-2">
+                    <li>
+                        To enter, you must subscribe to our giveaway newsletter
+                        list (step 1 above). Even if you are already subscribed
+                        to the NativePHP newsletter, you must still subscribe to
+                        the giveaway-specific newsletter list via the link
+                        above. Steps 2 & 3 are optional but appreciated. No
+                        purchase is necessary to enter.
+                    </li>
+                    <li>Only one entry is permitted per person.</li>
+                    <li>Must be 18 years or older to enter.</li>
+                    <li>
+                        This giveaway is open until July 1st, 2025 at 12:00AM
+                        UTC and winners will be drawn within 24 hours of the
+                        giveaway closing.
+                    </li>
+                    <li>
+                        The winners will be selected by randomly drawing names
+                        from the list of giveaway newsletter subscribers.
+                        Winners will be notified via email and must respond
+                        within 48 hours to claim their prize. If a winner does
+                        not respond within 48 hours, another winner will be
+                        selected in their place.
+                    </li>
+                    <li>
+                        Winners are responsible for adhering to applicable laws,
+                        regulations, and taxes within their jurisdiction.
+                    </li>
+                    <li>
+                        The approximate prize values (in USD) are as follows:
+                        1st Place: $880, 2nd Place: $130, 3rd Place: $30.
+                    </li>
+                    <li>
+                        This giveaway is provided by Bifrost Technology, LLC
+                        located at 1111B S Governors Ave STE 2838, Dover, DE
+                        19904. The giveaway is not affiliated with or endorsed
+                        by Laracon US, Twitter, or any other entity. By
+                        participating, you agree to the terms and conditions
+                        outlined in these official rules.
+                    </li>
+                </ul>
             </article>
         </div>
     </section>
