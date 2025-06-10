@@ -17,6 +17,7 @@ use Illuminate\Support\Str;
 
 Route::redirect('/newsletter', 'https://simonhamp.mailcoach.app/nativephp');
 Route::redirect('/sponsor', '/docs/1/getting-started/sponsoring');
+Route::redirect('/phpverse-2025', 'https://lp.jetbrains.com/phpverse-2025');
 
 Route::view('/', 'welcome')->name('welcome');
 Route::view('/blog', 'blog')->name('blog');
