@@ -93,7 +93,7 @@
     aria-label="Toggle between light and dark mode"
     x-bind:aria-pressed="darkMode ? 'true' : 'false'"
     tabindex="0"
-    class="theme-selector relative -mx-1.5 size-9 cursor-pointer select-none hover:text-slate-600 dark:opacity-70 dark:hover:text-[#bcc1ef]"
+    class="theme-selector relative -mx-1.5 size-9 cursor-pointer transition duration-300 select-none hover:opacity-75 dark:opacity-70 dark:hover:opacity-100"
 >
     <span class="sr-only">Toggle theme</span>
 
