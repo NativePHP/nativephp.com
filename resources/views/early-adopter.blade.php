@@ -86,7 +86,7 @@
                 aria-labelledby="ios-heading"
             >
                 <div
-                    class="relative isolate z-10 flex w-full max-w-xs flex-col items-center overflow-hidden rounded-2xl bg-[#EBECF6] p-8 text-center ring-4 ring-inset ring-white/60 dark:bg-black/50 dark:ring-white/5"
+                    class="relative isolate z-10 flex w-full max-w-xs flex-col items-center overflow-hidden rounded-2xl bg-[#EBECF6] p-8 text-center ring-4 ring-white/60 ring-inset dark:bg-black/50 dark:ring-white/5"
                 >
                     {{-- Subtitle --}}
                     <p class="text-sm text-gray-500">Available now for</p>
@@ -106,7 +106,7 @@
                         <img
                             src="{{ Vite::asset('resources/images/mobile/ios_phone_mockup.webp') }}"
                             alt="iOS phone mockup displaying a NativePHP application"
-                            class="-mb-[11rem] w-40 dark:mix-blend-hard-light"
+                            class="-mb-44 w-40 dark:mix-blend-hard-light"
                         />
                     </div>
                     {{-- White blurred circle - Decorative --}}
@@ -116,7 +116,7 @@
                     ></div>
                     {{-- Blue blurred circle - Decorative --}}
                     <div
-                        class="absolute bottom-0 right-1/2 -z-10 h-52 w-72 translate-x-1/2 rounded-full bg-[#9CA8D9]/40 blur-2xl dark:bg-blue-800/40"
+                        class="absolute right-1/2 bottom-0 -z-10 h-52 w-72 translate-x-1/2 rounded-full bg-[#9CA8D9]/40 blur-2xl dark:bg-blue-800/40"
                         aria-hidden="true"
                     ></div>
                 </div>
@@ -151,7 +151,7 @@
                 aria-labelledby="android-heading"
             >
                 <div
-                    class="relative isolate z-10 flex w-full max-w-xs flex-col items-center overflow-hidden rounded-2xl bg-[#F6F1EB] p-8 text-center ring-4 ring-inset ring-white/60 dark:bg-black/50 dark:ring-white/5"
+                    class="relative isolate z-10 flex w-full max-w-xs flex-col items-center overflow-hidden rounded-2xl bg-[#F6F1EB] p-8 text-center ring-4 ring-white/60 ring-inset dark:bg-black/50 dark:ring-white/5"
                 >
                     {{-- Subtitle --}}
                     <p class="text-sm text-gray-500">Available now for</p>
@@ -181,7 +181,7 @@
                     ></div>
                     {{-- Center blurred circle - Decorative --}}
                     <div
-                        class="absolute bottom-0 right-1/2 -z-10 h-52 w-72 translate-x-1/2 rounded-full bg-[#E0D7CE] blur-2xl dark:bg-slate-700/50"
+                        class="absolute right-1/2 bottom-0 -z-10 h-52 w-72 translate-x-1/2 rounded-full bg-[#E0D7CE] blur-2xl dark:bg-slate-700/50"
                         aria-hidden="true"
                     ></div>
                 </div>
@@ -461,7 +461,7 @@
                 {{-- Box --}}
                 <div
                     x-ref="box"
-                    class="mt-3 grid h-52 w-72 place-items-center rounded-xl bg-[#f4f1ee] p-5 opacity-0 dark:bg-mirage"
+                    class="dark:bg-mirage mt-3 grid h-52 w-72 place-items-center rounded-xl bg-[#f4f1ee] p-5 opacity-0"
                     aria-label="Purchase confirmation visualization"
                 >
                     <div class="flex flex-col items-center gap-5 text-center">
@@ -474,7 +474,7 @@
                             <x-icons.checkmark class="size-6" />
 
                             <div
-                                class="absolute right-1/2 top-1/2 hidden size-24 -translate-y-1/2 translate-x-1/2 rounded-full bg-emerald-400/20 blur-2xl dark:block"
+                                class="absolute top-1/2 right-1/2 hidden size-24 translate-x-1/2 -translate-y-1/2 rounded-full bg-emerald-400/20 blur-2xl dark:block"
                                 aria-hidden="true"
                             ></div>
                         </div>
@@ -524,7 +524,7 @@
                     {{-- Terminal --}}
                     <div
                         x-ref="terminal"
-                        class="-mb-12 -mr-12 h-52 w-72 overflow-hidden rounded-xl bg-white opacity-0 dark:bg-gray-900"
+                        class="-mr-12 -mb-12 h-52 w-72 overflow-hidden rounded-xl bg-white opacity-0 dark:bg-gray-900"
                     >
                         <div
                             class="flex items-center gap-1 bg-gray-100 px-3 py-3.5 dark:bg-gray-800"
@@ -632,7 +632,7 @@
                     })
                 }
             "
-            class="space-y-6 rounded-2xl bg-gray-100 p-7 dark:bg-mirage"
+            class="dark:bg-mirage space-y-6 rounded-2xl bg-gray-100 p-7"
         >
             {{-- Plan Name --}}
             <h3
@@ -656,7 +656,7 @@
                 license management, early access to build services, and other
                 enterprise-oriented services for businesses.
             </p>
-            <div class="">
+            <div>
                 <a
                     href="{{ route('partners') }}"
                     class="mt-5 block w-full max-w-xs rounded-2xl bg-zinc-200 py-4 text-center text-sm font-medium transition duration-200 ease-in-out hover:bg-zinc-800 hover:text-white dark:bg-slate-700/30 dark:hover:bg-slate-700/40"

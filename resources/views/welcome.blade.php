@@ -49,7 +49,7 @@
                             )
                         }
                     "
-                    class="truncate text-6xl font-extrabold uppercase text-violet-400 min-[400px]:text-7xl md:text-8xl"
+                    class="truncate text-6xl font-extrabold text-violet-400 uppercase min-[400px]:text-7xl md:text-8xl"
                     aria-hidden="true"
                 >
                     Native
@@ -78,7 +78,7 @@
                             )
                         }
                     "
-                    class="absolute -right-10 -top-10"
+                    class="absolute -top-10 -right-10"
                 >
                     <svg
                         xmlns="http://www.w3.org/2000/svg"
@@ -112,7 +112,7 @@
 
                 {{-- Glass shape --}}
                 <div
-                    class="absolute -left-[3rem] top-[4rem] size-6 rounded-bl-xl rounded-br-3xl rounded-tl-3xl rounded-tr-xl bg-[#5A31FF]/10 ring-1 ring-white/50 backdrop-blur-sm min-[400px]:-left-[3.5rem] min-[400px]:top-[4.5rem] min-[400px]:size-8 md:-left-[4.5rem] md:top-[5.6rem] md:size-10 dark:hidden dark:ring-gray-700/50"
+                    class="absolute top-16 -left-12 size-6 rounded-tl-3xl rounded-tr-xl rounded-br-3xl rounded-bl-xl bg-[#5A31FF]/10 ring-1 ring-white/50 backdrop-blur-xs min-[400px]:top-18 min-[400px]:-left-14 min-[400px]:size-8 md:top-[5.6rem] md:-left-18 md:size-10 dark:hidden dark:ring-gray-700/50"
                     x-init="
                         () => {
                             motion.animate(
@@ -149,7 +149,7 @@
                             )
                         }
                     "
-                    class="group absolute -right-[19rem] -top-[5.7rem] hidden items-end gap-1 text-left text-sm lg:flex"
+                    class="group absolute -top-[5.7rem] -right-76 hidden items-end gap-1 text-left text-sm lg:flex"
                 >
                     <div class="relative -top-1.5 -mr-6 flex items-end gap-1">
                         {{-- Black circle --}}
@@ -207,7 +207,7 @@
                             href="https://www.youtube.com/watch?v=CsM66a0koAM"
                             target="_blank"
                             rel="noopener"
-                            class="relative -top-5 grid size-10 place-items-center rounded-full bg-black/30 text-white ring-1 ring-white/10 backdrop-blur transition duration-300 ease-in-out will-change-transform group-hover:scale-110 group-hover:text-[#d4fd7d] dark:group-hover:text-[#9c90f0]"
+                            class="relative -top-5 grid size-10 place-items-center rounded-full bg-black/30 text-white ring-1 ring-white/10 backdrop-blur-sm transition duration-300 ease-in-out will-change-transform group-hover:scale-110 group-hover:text-[#d4fd7d] dark:group-hover:text-[#9c90f0]"
                             aria-label="Watch NativePHP introduction video on YouTube"
                         >
                             <x-icons.play-button
@@ -284,7 +284,7 @@
 
             {{-- Shiny line --}}
             <div
-                class="absolute left-1/2 top-32 z-20 -translate-x-1/2 rotate-[50deg] transition duration-500 ease-out will-change-transform group-hover/header:translate-x-[-55%] group-hover/header:opacity-0"
+                class="absolute top-32 left-1/2 z-20 -translate-x-1/2 rotate-50 transition duration-500 ease-out will-change-transform group-hover/header:translate-x-[-55%] group-hover/header:opacity-0"
                 aria-hidden="true"
             >
                 <div
@@ -303,7 +303,7 @@
                             )
                         }
                     "
-                    class="h-2.5 w-[26rem] bg-gradient-to-r from-transparent to-white/50 ring-1 ring-white/50 dark:hidden"
+                    class="h-2.5 w-104 bg-linear-to-r from-transparent to-white/50 ring-1 ring-white/50 dark:hidden"
                 ></div>
             </div>
         </header>
@@ -319,7 +319,7 @@
             >
                 {{-- Play button --}}
                 <div
-                    class="absolute right-1/2 top-1/2 grid size-16 -translate-y-1/2 translate-x-1/2 place-items-center rounded-full bg-white/10 text-white ring-1 ring-white/10 backdrop-blur transition duration-300 ease-in-out will-change-transform group-hover:scale-110 group-hover:text-[#d4fd7d]"
+                    class="absolute top-1/2 right-1/2 grid size-16 translate-x-1/2 -translate-y-1/2 place-items-center rounded-full bg-white/10 text-white ring-1 ring-white/10 backdrop-blur-sm transition duration-300 ease-in-out will-change-transform group-hover:scale-110 group-hover:text-[#d4fd7d]"
                     aria-hidden="true"
                 >
                     <x-icons.play-button
@@ -436,7 +436,7 @@
                 >
                     <a
                         href="/docs/desktop/1"
-                        class="group relative isolate z-0 flex h-16 items-center justify-between gap-3 overflow-hidden rounded-2xl bg-[#EBEDF2] pl-5 pr-6 leading-snug transition duration-200 ease-in-out will-change-transform hover:bg-[#e5d6ff] dark:bg-haiti dark:hover:bg-indigo-900/60"
+                        class="group dark:bg-haiti relative isolate z-0 flex h-16 items-center justify-between gap-3 overflow-hidden rounded-2xl bg-[#EBEDF2] pr-6 pl-5 leading-snug transition duration-200 ease-in-out will-change-transform hover:bg-[#e5d6ff] dark:hover:bg-indigo-900/60"
                         aria-label="Get started with NativePHP documentation for desktop apps"
                         x-on:mouseenter="desktopHover = true"
                         x-on:mouseleave="desktopHover = false"
@@ -490,8 +490,8 @@
                     :class="{ 'opacity-60 grayscale': desktopHover }"
                 >
                     <a
-                        href="/docs/mobile/1"
-                        class="group relative isolate z-0 flex h-16 items-center justify-between gap-3 overflow-hidden rounded-2xl bg-[#EBEDF2] pl-6 pr-5 leading-snug transition duration-200 ease-in-out will-change-transform hover:bg-[#e5d6ff] dark:bg-haiti dark:hover:bg-indigo-900/50"
+                        href="/mobile"
+                        class="group dark:bg-haiti relative isolate z-0 flex h-16 items-center justify-between gap-3 overflow-hidden rounded-2xl bg-[#EBEDF2] pr-5 pl-6 leading-snug transition duration-200 ease-in-out will-change-transform hover:bg-[#e5d6ff] dark:hover:bg-indigo-900/50"
                         aria-label="Get started with NativePHP documentation for mobile apps"
                         x-on:mouseenter="mobileHover = true"
                         x-on:mouseleave="mobileHover = false"
@@ -664,7 +664,7 @@
                 >
                     {{-- Play button --}}
                     <div
-                        class="absolute right-1/2 top-1/2 grid size-16 -translate-y-1/2 translate-x-1/2 place-items-center rounded-full bg-white/10 text-white ring-1 ring-white/10 backdrop-blur transition duration-300 ease-in-out will-change-transform group-hover:scale-110 group-hover:text-[#d4fd7d]"
+                        class="absolute top-1/2 right-1/2 grid size-16 translate-x-1/2 -translate-y-1/2 place-items-center rounded-full bg-white/10 text-white ring-1 ring-white/10 backdrop-blur-sm transition duration-300 ease-in-out will-change-transform group-hover:scale-110 group-hover:text-[#d4fd7d]"
                         aria-hidden="true"
                     >
                         <x-icons.play-button
@@ -850,7 +850,7 @@
         >
             <a
                 href="/docs/getting-started/sponsoring"
-                class="group flex flex-wrap items-center justify-center gap-x-5 gap-y-3 rounded-3xl bg-gray-100 px-8 py-8 transition duration-200 ease-in-out hover:ring-1 hover:ring-black/60 md:justify-between md:px-12 md:py-10 dark:bg-mirage dark:hover:bg-haiti dark:hover:ring-cloud"
+                class="group dark:bg-mirage dark:hover:bg-haiti dark:hover:ring-cloud flex flex-wrap items-center justify-center gap-x-5 gap-y-3 rounded-3xl bg-gray-100 px-8 py-8 transition duration-200 ease-in-out hover:ring-1 hover:ring-black/60 md:justify-between md:px-12 md:py-10"
                 aria-label="Learn about sponsoring the NativePHP project"
             >
                 <div
@@ -866,7 +866,7 @@
                         xmlns="http://www.w3.org/2000/svg"
                         fill="none"
                         viewBox="0 0 24 24"
-                        class="w-12 -rotate-45 transition duration-300 ease-out will-change-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5 md:w-16 md:rotate-0"
+                        class="w-12 -rotate-45 transition duration-300 ease-out will-change-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5 md:w-16 md:rotate-0"
                         aria-hidden="true"
                     >
                         <path

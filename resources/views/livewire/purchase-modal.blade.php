@@ -17,7 +17,7 @@
             x-transition:leave="transition duration-200 ease-in"
             x-transition:leave-start="opacity-100"
             x-transition:leave-end="opacity-0"
-            class="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm"
+            class="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs"
             x-cloak
         ></div>
 
@@ -60,7 +60,7 @@
                             type="email"
                             id="email"
                             wire:model.blur="email"
-                            class="w-full rounded-lg border border-gray-300 px-4 py-2.5 focus:border-purple-400 focus:outline-none dark:border-gray-600 dark:bg-gray-800 dark:text-white"
+                            class="w-full rounded-lg border border-gray-300 px-4 py-2.5 focus:border-purple-400 focus:outline-hidden dark:border-gray-600 dark:bg-gray-800 dark:text-white"
                             placeholder="your@email.com"
                             required
                             x-effect="if (open) $nextTick(() => $el.focus())"
