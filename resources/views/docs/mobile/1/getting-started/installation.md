@@ -76,6 +76,7 @@ Then run:
 ```shell
 composer require nativephp/mobile
 ```
+*If you experience a cURL error when running this command make sure you are running PHP v8.3+ in your CLI.*
 
 If this is the first time you're installing the package, you will be prompted to authenticate. Your username is the
 email address you used when purchasing your license. Your password is your license key.
