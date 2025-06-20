@@ -720,14 +720,19 @@
                     </li>
                     <li>
                         The approximate prize values (in USD) are as follows:
-                        1st Place: $880, 2nd Place: $130, 3rd Place: $30.
+                        1st Place: $880, 2nd Place: $130, 3rd Place: $100.
+                    </li>
+                    <li>
+                        Reasonable shipping & import costs will be covered by
+                        Bifrost Technology, LLC. Shipping times will vary and
+                        delivery cannot be guaranteed.
                     </li>
                     <li>
                         This giveaway is provided by Bifrost Technology, LLC
                         located at 1111B S Governors Ave STE 2838, Dover, DE
                         19904. The giveaway is not affiliated with or endorsed
-                        by Laracon US, Twitter, or any other entity. By
-                        participating, you agree to the terms and conditions
+                        by Laracon US, X, Bluesky, YouTube, or any other entity.
+                        By participating, you agree to the terms and conditions
                         outlined in these official rules.
                     </li>
                 </ul>
