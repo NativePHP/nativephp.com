@@ -489,7 +489,7 @@
                     })
                 }
             "
-            class="rounded-2xl bg-[#F4F1EE] p-12 dark:bg-[#1a1a2e]"
+            class="rounded-2xl bg-[#F4F1EE] p-5 sm:p-8 md:p-10 lg:p-12 dark:bg-[#1a1a2e]"
         >
             {{-- Header --}}
             <header class="text-center">
@@ -498,12 +498,9 @@
 
             {{-- List --}}
             <div class="mt-8 space-y-4">
-                <a
-                    href="/newsletter"
-                    target="_blank"
-                    class="group dark:bg-mirage flex items-center justify-between gap-5 rounded-2xl bg-white/50 p-6 transition duration-300 hover:bg-white/80 dark:hover:bg-slate-700/40"
+                <div
+                    class="group dark:bg-mirage space-y-6 rounded-2xl bg-white/50 p-6 transition duration-300 hover:bg-white/80 dark:hover:bg-slate-700/40"
                 >
-                    {{-- Left side --}}
                     <div
                         class="flex flex-col items-start gap-x-2 gap-y-1 sm:flex-row sm:items-center"
                     >
@@ -513,16 +510,83 @@
                             Step 1:
                         </div>
                         <h3 class="font-medium opacity-90">
-                            Subscribe to our giveaway newsletter
+                            Provide Your Contact Information
                         </h3>
                     </div>
-
-                    {{-- Icon --}}
-                    <x-icons.right-arrow
-                        class="size-3.5 shrink-0 transition duration-300 group-hover:translate-x-1"
-                        aria-hidden="true"
-                    />
-                </a>
+                    @if ((int) request()->query('pending') === 1)
+                        <p class="text-sm text-gray-600 dark:text-gray-400">
+                            Thank you! Please check your inbox for an email to
+                            confirm your entry.
+                        </p>
+                    @elseif ((int) request()->query('subscribed') === 1)
+                        <p class="text-sm text-gray-600 dark:text-gray-400">
+                            Thank you! You have been entered into the giveaway.
+                        </p>
+                    @else
+                        <form
+                            method="POST"
+                            action="https://simonhamp.mailcoach.app/subscribe/4ae9db1b-d066-40b5-9e16-99f3723ec57c"
+                        >
+                            <fieldset class="flex flex-col gap-4 md:flex-row">
+                                <div class="basis-1/2">
+                                    <label
+                                        for="email"
+                                        class="block text-sm font-medium text-gray-500 dark:text-gray-500"
+                                    >
+                                        Email
+                                    </label>
+                                    <input
+                                        type="email"
+                                        id="email"
+                                        name="email"
+                                        class="w-full rounded-lg border border-gray-300 px-4 py-2.5 focus:border-purple-400 focus:ring-0 focus:outline-hidden dark:border-gray-600 dark:bg-gray-800 dark:text-white"
+                                        placeholder="your@email.com"
+                                        autocomplete="email"
+                                        required
+                                    />
+                                </div>
+                                <div class="basis-1/2">
+                                    <label
+                                        for="first_name"
+                                        class="block text-sm font-medium text-gray-500 dark:text-gray-500"
+                                    >
+                                        First Name
+                                    </label>
+                                    <input
+                                        type="text"
+                                        id="first_name"
+                                        name="first_name"
+                                        class="w-full rounded-lg border border-gray-300 px-4 py-2.5 focus:border-purple-400 focus:ring-0 focus:outline-hidden dark:border-gray-600 dark:bg-gray-800 dark:text-white"
+                                        placeholder="Taylor"
+                                        autocomplete="given-name"
+                                        required
+                                    />
+                                </div>
+                                <input
+                                    type="hidden"
+                                    name="redirect_after_subscribed"
+                                    value="{{ route('laracon-us-2025-giveaway', ['subscribed' => 1]) . '#how-to-enter' }}"
+                                />
+                                <input
+                                    type="hidden"
+                                    name="redirect_after_already_subscribed"
+                                    value="{{ route('laracon-us-2025-giveaway', ['subscribed' => 1]) . '#how-to-enter' }}"
+                                />
+                                <input
+                                    type="hidden"
+                                    name="redirect_after_subscription_pending"
+                                    value="{{ route('laracon-us-2025-giveaway', ['pending' => 1]) . '#how-to-enter' }}"
+                                />
+                            </fieldset>
+                            <button
+                                type="submit"
+                                class="mt-4 ml-auto block w-full rounded-xl bg-zinc-800 px-8 py-3 text-white outline-violet-500 transition duration-200 hover:bg-zinc-900 focus-visible:outline-2 focus-visible:outline-offset-2 sm:w-auto dark:bg-violet-400/80 dark:drop-shadow-xl dark:drop-shadow-transparent dark:hover:bg-violet-400 dark:hover:drop-shadow-violet-400/30 dark:active:bg-violet-500"
+                            >
+                                Submit
+                            </button>
+                        </form>
+                    @endif
+                </div>
                 <a
                     href="https://x.com/nativephp"
                     target="_blank"
@@ -625,14 +689,15 @@
         >
             <h3 class="text-3xl font-semibold">Rules</h3>
             <article class="mt-4 text-gray-600 dark:text-gray-400">
-                <ul class="list-disc space-y-2">
+                <ul class="ml-5 list-disc space-y-2 marker:text-violet-400">
                     <li>
-                        To enter, you must subscribe to our giveaway newsletter
-                        list (step 1 above). Even if you are already subscribed
-                        to the NativePHP newsletter, you must still subscribe to
-                        the giveaway-specific newsletter list via the link
-                        above. Steps 2 & 3 are optional but appreciated. No
-                        purchase is necessary to enter.
+                        To enter, you must provide your contact information
+                        (step 1 above). This will subscribe you to our
+                        giveaway-specific newsletter list. Even if you are
+                        already subscribed to the NativePHP newsletter, you must
+                        still subscribe to the giveaway-specific newsletter list
+                        via the form above. Steps 2-4 are optional but
+                        appreciated. No purchase is necessary to enter.
                     </li>
                     <li>Only one entry is permitted per person.</li>
                     <li>Must be 18 years or older to enter.</li>
