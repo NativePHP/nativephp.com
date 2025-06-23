@@ -588,7 +588,7 @@
                     @endif
                 </div>
                 <a
-                    href="https://x.com/nativephp"
+                    href="https://x.com/nativephp/status/1937157416984223832"
                     target="_blank"
                     class="group dark:bg-mirage flex items-center justify-between gap-5 rounded-2xl bg-white/50 p-6 transition duration-300 hover:bg-white/80 dark:hover:bg-slate-700/40"
                 >
@@ -613,7 +613,7 @@
                     />
                 </a>
                 <a
-                    href="https://bsky.app/profile/nativephp.com"
+                    href="https://bsky.app/profile/nativephp.com/post/3lsbsinv7gs2l"
                     target="_blank"
                     class="group dark:bg-mirage flex items-center justify-between gap-5 rounded-2xl bg-white/50 p-6 transition duration-300 hover:bg-white/80 dark:hover:bg-slate-700/40"
                 >
