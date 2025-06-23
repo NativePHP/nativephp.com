@@ -180,7 +180,7 @@
                     $isHomeActive = request()->routeIs('welcome*');
                     $isMobileActive = request()->routeIs('early-adopter*');
                     $isDocsActive = request()->is('docs*');
-                    $isSponsorActive = request()->is('docs/*/getting‐started/sponsoring*');
+                    $isSponsorActive = request()->routeIs('sponsoring*');
                 @endphp
 
                 {{-- Home Link --}}
@@ -267,7 +267,7 @@
                 {{-- Sponsor Link --}}
                 <div class="gsap-mobile-menu-link w-full">
                     <a
-                        href="/docs/1/getting‐started/sponsoring"
+                        href="/sponsor"
                         @class([
                             'flex items-center justify-between py-3 transition duration-200',
                             'font-medium' => $isSponsorActive,

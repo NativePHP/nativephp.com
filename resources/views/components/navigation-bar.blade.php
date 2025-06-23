@@ -248,7 +248,7 @@
                             })
                         }
                     "
-                    href="/docs/1/getting-started/sponsoring"
+                    href="/sponsor"
                     class="relative bg-linear-to-tr from-violet-600 to-violet-300 bg-clip-text font-medium text-transparent dark:from-violet-500 dark:to-white/80"
                     aria-label="Sponsor NativePHP"
                     title="Support NativePHP development"
