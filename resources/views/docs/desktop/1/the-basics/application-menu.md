@@ -428,9 +428,9 @@ Menu::make()
 
 ## Context Menu
 
-You may need to add custom native context menu to the elements in the views of your application and override the default one.
+You may wish to add a custom native context menu to the elements in the views of your application and override the default one.
 
-You can use the `Native` JavaScript object provvided by NativePHP's preload script.
+You can use the `Native` JavaScript helper provided by NativePHP's preload script.
 
 This object exposes the `contextMenu()` method which takes an array of objects that matches the 
 [MenuItem](https://www.electronjs.org/docs/latest/api/menu-item) constructor's `options` argument.
@@ -448,7 +448,7 @@ Native.contextMenu([
 ]);
 ```
 
-You can use the `contextmenu` event to capture the user's action and show your menu:
+You can listen for the `contextmenu` event to show your custom context menu:
 
 ```js
 const element = document.getElementById('your-element');
