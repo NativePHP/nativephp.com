@@ -2,7 +2,7 @@
     x-collapse
     x-show="!showMobileMenu"
 >
-    <x-ticket-giveaway-banner />
+    {{-- announcement banner goes here --}}
 </div>
 <nav
     class="sticky top-0 z-50 flex flex-col items-center justify-center px-3 pt-px"
