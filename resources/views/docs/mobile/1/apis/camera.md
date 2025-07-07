@@ -148,7 +148,7 @@ class PhotoManager extends Component
 ## Platform Support
 
 - **iOS:** Uses UIImagePickerController and Photos framework
-- **Android:** Uses Intent.ACTION_IMAGE_CAPTURE and gallery intents
+- **Android:** Uses `Intent.ACTION_IMAGE_CAPTURE` and gallery intents
 - **Permissions:** Camera permission required for photo capture
 - **File Location:** Photos saved to app's temporary directory
 
