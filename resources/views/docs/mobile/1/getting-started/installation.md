@@ -1,6 +1,6 @@
 ---
 title: Installation
-order: 100
+order: 150
 ---
 
 ## Requirements
@@ -9,42 +9,7 @@ order: 100
 2. Laravel 10 or higher
 3. [A NativePHP for Mobile license](https://nativephp.com/mobile)
 
-### For iOS
-1. An Apple Silicon Mac running macOS 12+ with [Xcode 16+](https://apps.apple.com/app/xcode/id497799835)
-2. An active [Apple Developer account](https://developer.apple.com/)
-3. _Optional_ iOS device
-
-You **do not** need to enroll in the [Apple Developer Program](https://developer.apple.com/programs/enroll/) ($99/year)
-to develop and test your apps on a Simulator. But you will need to when you want to test your apps on real devices
-and start distributing them to your users via the App Store.
-
-> **Note** You cannot build iOS apps on Windows or Linux
-
-### For Android
-1. [Android Studio Giraffe (or later)](https://developer.android.com/studio)
-2. The following environment variables set.
-3. You should be able to successfully run `java -v` and `adb devices` from the terminal.
-4. **Windows only**: You must have [7zip](https://www.7-zip.org/) installed.
-
-#### On macOS
-```shell
-export JAVA_HOME=$(/usr/libexec/java_home -v 17) // This isn't required if JAVA_HOME is already set in your environment variables (check using `printenv | grep JAVA_HOME`)
-export ANDROID_HOME=$HOME/Library/Android/sdk
-export PATH=$PATH:$JAVA_HOME/bin:$ANDROID_HOME/emulator:$ANDROID_HOME/tools:$ANDROID_HOME/tools/bin:$ANDROID_HOME/platform-tools
-```
-
-#### On Windows
-```shell
-set ANDROID_HOME=C:\Users\yourname\AppData\Local\Android\Sdk
-set PATH=%PATH%;%JAVA_HOME%\bin;%ANDROID_HOME%\platform-tools
-
-# This isn't required if JAVA_HOME is already set in the Windows Env Variables
-set JAVA_HOME=C:\Program Files\Microsoft\jdk-17.0.8.7-hotspot
-```
-
-You don't _need_ a physical iOS/Android device to compile and test your application, as NativePHP for Mobile supports
-the iOS Simulator and Android emulators. However, we highly recommend that you test your application on a real device before submitting to the
-Apple App Store and Google Play Store.
+For platform-specific development environment setup (iOS and Android), see the [Environment Setup](/docs/mobile/1/getting-started/environment-setup) page.
 
 ## Laravel
 
@@ -78,6 +43,8 @@ composer require nativephp/mobile
 ```
 *If you experience a cURL error when running this command make sure you are running PHP v8.3+ in your CLI.*
 
+**Windows Performance Tip:** Add `C:\temp` to your Windows Defender exclusions list to significantly speed up composer installs during app compilation. This prevents real-time scanning from slowing down the many temporary files created during the build process.
+
 If this is the first time you're installing the package, you will be prompted to authenticate. Your username is the
 email address you used when purchasing your license. Your password is your license key.
 
@@ -92,6 +59,8 @@ NATIVEPHP_APP_VERSION="DEBUG"
 NATIVEPHP_APP_VERSION_CODE="1"
 ```
 
+**Important: the NATIVEPHP_APP_ID must not contain any special characters or spaces**
+
 ## Run the NativePHP installer
 
 ```shell
@@ -99,6 +68,10 @@ php artisan native:install
 ```
 
 The NativePHP installer takes care of setting up and configuring your Laravel application to work with iOS and Android.
+
+## ICU Support (Android Only)
+
+If you are wanting to run [Filament](https://filamentphp.com) or use some of the Number or I18n methods within Laravel you will need to install NativePHP with the optional ICU supported binaries, more on that [here](/docs/mobile/1/the-basics/icu-support). 
 
 ## Start your app
 
@@ -113,16 +86,6 @@ php artisan native:run
 
 This will start compiling your application and boot it on whichever device you select.
 
-### Running on a real device
-
-#### On iOS
-If you want to run your app on a real iOS device, you need to make sure it is in
-[Developer Mode](https://developer.apple.com/documentation/xcode/enabling-developer-mode-on-a-device)
-and that it's been added to your Apple Developer account as
-[a registered device](https://developer.apple.com/account/resources/devices/list).
-
-#### On Android
-On Android you need to [enable developer options](https://developer.android.com/studio/debug/dev-options#enable)
-and have USB debugging (ADB) enabled.
-
 And that's it! You should now see your Laravel application running as a native app! 🎉
+
+For information about running on real devices, see the [Environment Setup](/docs/mobile/1/getting-started/environment-setup) page.

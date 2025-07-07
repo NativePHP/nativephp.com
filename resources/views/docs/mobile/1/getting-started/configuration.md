@@ -42,11 +42,11 @@ This is useful for removing files like logs or other temporary files.
 
 ## Permissions
 In general, the app stores don't want apps to request permissions that they don't need. 
-To enable some permissions your app needs you simply need to change their values in the permissions section.
+To enable some permissions your app needs, you simply need to change their values in the permissions section.
 
 ```dotenv
 biometric
 camera
 nfc
-push_notifications
+location
 ```

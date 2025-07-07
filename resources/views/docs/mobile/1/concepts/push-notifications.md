@@ -1,5 +1,5 @@
 ---
-title: Push Notifications
+title: Push Notifications - Firebase
 order: 400
 ---
 
@@ -26,7 +26,7 @@ take a look at how easy it is to listen for a `TokenGenerated` event in Livewire
 ```php
 use Livewire\Attributes\On;
 use Livewire\Component;
-use Native\Mobile\Facades\System;
+use Native\Mobile\Facades\PushNotifications;
 use Native\Mobile\Events\PushNotification\TokenGenerated;
 
 class PushNotifications extends Component

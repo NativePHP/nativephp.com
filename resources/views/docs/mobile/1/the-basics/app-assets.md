@@ -18,7 +18,7 @@ Place a single high-resolution icon file at: `public/icon.png`
 - Shape: Square
 - Background: Transparent or solid — your choice
 
-Note: This image will be automatically resized for all Android densities and used as the base iOS app icon.
+Note: This image will be automatically resized for all Android densities and used as the base iOS app icon. You must have the GD extension installed and active in your local PHP environment for this to work.
 
 ---
 
@@ -49,21 +49,3 @@ This is useful during development for quickly testing changes without rebuilding
 ### Recommendation
 
 Use `--watch` when you're iterating on Blade views or Livewire components. For all other use cases, treat this flag as experimental and optional.
-
----
-
-## Optional: Installing with ICU Support
-
-By default, NativePHP installs a smaller PHP runtime without ICU (International Components for Unicode) to keep app size minimal.
-
-If your Laravel app uses features that rely on `intl` (such as number formatting, localized date handling, or advanced string collation), you’ll need ICU support enabled.
-
-To include ICU during installation, select it when running: `php artisan native:install`.
-
-This will install a version of PHP with full ICU support. Note that it increases the PHP binary size significantly (typically from ~16MB to ~44MB).
-
-**Important:** If you plan to use [Filament](https://filamentphp.com/) in your app, you must enable this option. Filament relies on the `intl` extension for formatting and localization features.
-
-
-
-
