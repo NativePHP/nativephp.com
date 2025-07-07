@@ -8,7 +8,9 @@ import {
 } from '../../vendor/livewire/livewire/dist/livewire.esm'
 import codeBlock from './alpine/codeBlock.js'
 import docsearch from '@docsearch/js'
+import Atropos from 'atropos'
 import '@docsearch/css'
+import 'atropos/css'
 
 import.meta.glob(['../images/**', '../svg/**'])
 import {
@@ -49,6 +51,9 @@ window.motion = {
     stagger: stagger,
     cubicBezier: cubicBezier,
 }
+
+// Atropos
+window.Atropos = Atropos
 
 // GSAP
 window.gsap = gsap

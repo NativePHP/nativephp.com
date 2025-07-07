@@ -16,19 +16,22 @@ use Illuminate\Support\Str;
 */
 
 Route::redirect('/newsletter', 'https://simonhamp.mailcoach.app/nativephp');
-Route::redirect('/sponsor', '/docs/1/getting-started/sponsoring');
 Route::redirect('/phpverse-2025', 'https://lp.jetbrains.com/phpverse-2025');
+Route::redirect('/docs/1/getting-started/sponsoring', '/sponsor');
+Route::redirect('/docs/desktop/1/getting-started/sponsoring', '/sponsor');
 
 Route::view('/', 'welcome')->name('welcome');
 Route::view('/blog', 'blog')->name('blog');
 Route::view('/article', 'article')->name('article');
 Route::view('mobile', 'early-adopter')->name('early-adopter');
+Route::view('laracon-us-2025-giveaway', 'laracon-us-2025-giveaway')->name('laracon-us-2025-giveaway');
 Route::redirect('ios', 'mobile');
 Route::redirect('t-shirt', 'mobile');
 Route::redirect('tshirt', 'mobile');
 Route::view('privacy-policy', 'privacy-policy');
 Route::view('terms-of-service', 'terms-of-service');
 Route::view('partners', 'partners')->name('partners');
+Route::view('sponsor', 'sponsoring')->name('sponsoring');
 
 Route::redirect('/docs/{version}/{page?}', '/docs/mobile/{version}/{page?}')
     ->where('page', '(.*)')
