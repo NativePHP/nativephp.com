@@ -143,7 +143,6 @@ class ShowDocumentationController extends Controller
             }
         }
 
-
         return $pageProperties;
     }
 
