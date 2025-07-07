@@ -77,9 +77,8 @@
                 "
                 class="mx-auto mt-6 max-w-3xl text-lg text-gray-600 dark:text-zinc-400"
             >
-                We're looking for business partners to support the development
-                of NativePHP technology. Join us in shaping the future of PHP
-                mobile app development.
+                We're helping teams just like yours build beautiful mobile and desktop apps faster
+                than ever!
             </p>
 
             {{-- Call to Action Buttons --}}
@@ -225,7 +224,7 @@
                 <x-slot name="title">Dedicated Support</x-slot>
 
                 <x-slot name="description">
-                    Get priority access to our development team with dedicated
+                    Get access to the creators of NativePHP, with dedicated
                     support channels and faster response times.
                 </x-slot>
             </x-benefit-card>
@@ -249,11 +248,11 @@
                     </svg>
                 </x-slot>
 
-                <x-slot name="title">Priority Roadmap Influence</x-slot>
+                <x-slot name="title">Priority Feature Development</x-slot>
 
                 <x-slot name="description">
-                    Have a direct line to our development team with priority
-                    influence over feature development to ensure your business
+                    Have a direct line to our development team and
+                    influence our feature development to ensure your business
                     needs are met.
                 </x-slot>
             </x-benefit-card>
@@ -280,8 +279,8 @@
                 <x-slot name="title">Training & Onboarding</x-slot>
 
                 <x-slot name="description">
-                    Comprehensive training and onboarding for your development
-                    team to get up to speed quickly.
+                    Comprehensive training and onboarding for your
+                    team to get them up to speed quickly.
                 </x-slot>
             </x-benefit-card>
 
@@ -332,11 +331,10 @@
                     </svg>
                 </x-slot>
 
-                <x-slot name="title">Zephpyr Early Access</x-slot>
+                <x-slot name="title">Development Support</x-slot>
 
                 <x-slot name="description">
-                    Early access to Zephpyr, our service that helps you build,
-                    secure, and distribute your NativePHP applications.
+                    Just need someone to build your app? We'll be delighted to!
                 </x-slot>
             </x-benefit-card>
 
@@ -505,7 +503,7 @@
 
             <p class="mx-auto mt-4 max-w-2xl text-gray-600 dark:text-gray-400">
                 Contact our team to discuss how a partnership with NativePHP can
-                benefit your business and help you deliver exceptional mobile
+                benefit your business and help you deliver exceptional
                 applications.
             </p>
 
