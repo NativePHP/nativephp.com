@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use DateTime;
 use Illuminate\Contracts\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -28,6 +29,11 @@ class Article extends Model
         return 'slug';
     }
 
+    /*
+    |--------------------------------------------------------------------------
+    | Scopes
+    |--------------------------------------------------------------------------
+    */
     public function scopePublished(Builder $query): void
     {
         $query
@@ -36,11 +42,42 @@ class Article extends Model
             ->where('published_at', '<=', now());
     }
 
+    /*
+    |--------------------------------------------------------------------------
+    | Relationships
+    |--------------------------------------------------------------------------
+    */
     public function author(): BelongsTo
     {
         return $this->belongsTo(User::class, 'author_id');
     }
 
+    /*
+    |--------------------------------------------------------------------------
+    | Support
+    |--------------------------------------------------------------------------
+    */
+    public function isPublished(): bool
+    {
+        return $this->published_at && $this->published_at->isPast();
+    }
+
+    public function publish(?DateTime $on = null)
+    {
+        if (! $on) {
+            $on = now();
+        }
+
+        $this->update([
+            'published_at' => $on,
+        ]);
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Listeners
+    |--------------------------------------------------------------------------
+    */
     protected static function boot()
     {
         parent::boot();

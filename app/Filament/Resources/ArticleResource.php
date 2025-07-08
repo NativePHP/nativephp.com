@@ -2,9 +2,10 @@
 
 namespace App\Filament\Resources;
 
+use App\Filament\Resources\ArticleResource\Actions\PublishAction;
+use App\Filament\Resources\ArticleResource\Actions\ScheduleAction;
 use App\Filament\Resources\ArticleResource\Pages;
 use App\Models\Article;
-use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\MarkdownEditor;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
@@ -12,6 +13,7 @@ use Filament\Forms\Form;
 use Filament\Forms\Set;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Tables\Actions\ActionGroup;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Support\Str;
@@ -41,14 +43,6 @@ class ArticleResource extends Resource
                     ->unique(Article::class, 'slug', ignoreRecord: true)
                     ->afterStateUpdated(fn (Set $set, ?string $state) => $set('slug', Str::slug($state))),
 
-                DateTimePicker::make('published_at')
-                    ->label('Published At')
-                    ->displayFormat('M j, Y H:i')
-                    ->seconds(false)
-                    ->dehydrated()
-                    ->reactive()
-                    ->default(now()),
-
                 Textarea::make('excerpt')
                     ->required()
                     ->maxLength(400)
@@ -76,6 +70,7 @@ class ArticleResource extends Resource
                     ->label('Author')
                     ->searchable()
                     ->sortable(),
+
                 TextColumn::make('published_at')
                     ->dateTime('M j, Y H:i')
                     ->sortable()
@@ -86,8 +81,11 @@ class ArticleResource extends Resource
                 //
             ])
             ->actions([
-                Tables\Actions\EditAction::make()
-                    ->url(fn ($record) => static::getUrl('edit', ['record' => $record->id])),
+                ActionGroup::make([
+                    Tables\Actions\EditAction::make()->url(fn ($record) => static::getUrl('edit', ['record' => $record->id])),
+                    PublishAction::make('publish'),
+                    ScheduleAction::make('schedule'),
+                ]),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
