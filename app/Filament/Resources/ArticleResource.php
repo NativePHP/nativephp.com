@@ -37,14 +37,29 @@ class ArticleResource extends Resource
             ->schema([
                 TextInput::make('title')
                     ->required()
-                    ->maxLength(255),
+                    ->maxLength(255)
+                    ->live(onBlur: true)
+                    ->afterStateUpdated(function (Article $article, Set $set, ?string $state) {
+                        if ($article->isPublished()) {
+                            return;
+                        }
+
+                        $set('slug', Str::slug($state));
+                    }),
 
                 TextInput::make('slug')
                     ->required()
                     ->maxLength(255)
                     ->live(onBlur: true)
                     ->unique(Article::class, 'slug', ignoreRecord: true)
-                    ->afterStateUpdated(fn (Set $set, ?string $state) => $set('slug', Str::slug($state))),
+                    ->disabled(fn (Article $article) => $article->isPublished())
+                    ->afterStateUpdated(
+                        fn (Set $set, ?string $state) => $set('slug', Str::slug($state))
+                    )
+                    ->helperText(fn (Article $article) => $article->isPublished()
+                        ? 'The slug cannot be changed after the article is published.'
+                        : false
+                    ),
 
                 Textarea::make('excerpt')
                     ->required()
