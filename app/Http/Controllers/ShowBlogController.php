@@ -19,7 +19,7 @@ class ShowBlogController extends Controller
 
     public function show(Article $article)
     {
-        abort_if(! $article->isPublished(), 404);
+        abort_unless($article->isPublished() || auth()->user()?->isAdmin(), 404);
 
         return view('article', [
             'article' => $article,

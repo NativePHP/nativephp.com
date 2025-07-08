@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources;
 
+use App\Filament\Resources\ArticleResource\Actions\PreviewAction;
 use App\Filament\Resources\ArticleResource\Actions\PublishAction;
 use App\Filament\Resources\ArticleResource\Actions\ScheduleAction;
 use App\Filament\Resources\ArticleResource\Actions\UnpublishAction;
@@ -86,6 +87,7 @@ class ArticleResource extends Resource
             ])
             ->actions([
                 ActionGroup::make([
+                    PreviewAction::make('preview'),
                     Tables\Actions\EditAction::make()->url(fn ($record) => static::getUrl('edit', ['record' => $record->id])),
                     UnpublishAction::make('unpublish'),
                     PublishAction::make('publish'),
