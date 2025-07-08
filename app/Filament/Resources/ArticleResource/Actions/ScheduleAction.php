@@ -21,6 +21,7 @@ class ScheduleAction extends Action
                     ->displayFormat('M j, Y H:i')
                     ->seconds(false)
                     ->default($article->published_at)
+                    ->afterOrEqual('now')
                     ->required(),
             ])
             ->action(function (Article $article, array $data) {
