@@ -73,6 +73,13 @@ class Article extends Model
         ]);
     }
 
+    public function unpublish()
+    {
+        $this->update([
+            'published_at' => null,
+        ]);
+    }
+
     /*
     |--------------------------------------------------------------------------
     | Listeners
