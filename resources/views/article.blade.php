@@ -82,7 +82,7 @@
                     datetime="2025-04-09"
                     class="text-sm"
                 >
-                    {{ $article->published_at->format('F j, Y') }}
+                    {{ $article->published_at?->format('F j, Y') }}
                 </time>
             </div>
         </header>

@@ -3,7 +3,9 @@
 namespace Tests\Feature;
 
 use App\Models\Article;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Config;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
@@ -72,6 +74,41 @@ class BlogTest extends TestCase
         $article = Article::factory()->scheduled()->create();
 
         $this->get(route('article', $article))
+            ->assertStatus(404);
+    }
+
+    #[Test]
+    public function articles_can_be_previewed_by_admin_users()
+    {
+        $article = Article::factory()->create([
+            'published_at' => null,
+        ]);
+
+        $admin = User::factory()->create();
+        Config::set('filament.users', [$admin->email]);
+
+        // Visitors
+        $this->get(route('article', $article))
+            ->assertStatus(404);
+
+        // Admins
+        $this->actingAs($admin)
+            ->get(route('article', $article))
+            ->assertOk();
+    }
+
+    #[Test]
+    public function articles_cant_be_previewed_by_regular_users()
+    {
+        $article = Article::factory()->create([
+            'published_at' => null,
+        ]);
+
+        $user = User::factory()->create();
+
+        // Non-admin users
+        $this->actingAs($user)
+            ->get(route('article', $article))
             ->assertStatus(404);
     }
 }
