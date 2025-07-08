@@ -24,6 +24,7 @@ class Article extends Model
     {
         $query
             ->orderByDesc('published_at')
+            ->whereNotNull('published_at')
             ->where('published_at', '<=', now());
     }
 
