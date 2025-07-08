@@ -11,6 +11,14 @@ class Article extends Model
 {
     use HasFactory;
 
+    protected $fillable = [
+        'slug',
+        'title',
+        'excerpt',
+        'content',
+        'published_at',
+    ];
+
     protected $casts = [
         'published_at' => 'datetime',
     ];
@@ -31,5 +39,16 @@ class Article extends Model
     public function author(): BelongsTo
     {
         return $this->belongsTo(User::class, 'author_id');
+    }
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($article) {
+            if (auth()->check() && ! $article->author_id) {
+                $article->author_id = auth()->id();
+            }
+        });
     }
 }
