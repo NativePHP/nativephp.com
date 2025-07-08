@@ -16,6 +16,7 @@ use Filament\Tables;
 use Filament\Tables\Actions\ActionGroup;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Illuminate\Contracts\Database\Eloquent\Builder;
 use Illuminate\Support\Str;
 
 class ArticleResource extends Resource
@@ -72,10 +73,12 @@ class ArticleResource extends Resource
                     ->sortable(),
 
                 TextColumn::make('published_at')
-                    ->dateTime('M j, Y H:i')
-                    ->sortable()
                     ->badge()
-                    ->color(fn ($state) => $state && $state->isPast() ? 'success' : 'warning'),
+                    ->dateTime('M j, Y H:i')
+                    ->color(fn ($state) => $state && $state->isPast() ? 'success' : 'warning')
+                    ->sortable(query: function (Builder $query, string $direction): Builder {
+                        return $query->orderByRaw("published_at IS NULL {$direction}, published_at {$direction}");
+                    }),
             ])
             ->filters([
                 //
