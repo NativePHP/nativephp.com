@@ -67,7 +67,7 @@ Dialog::share(
 
 ## Events
 
-### `Native\Mobile\Events\Alert\ButtonPressed`
+### `ButtonPressed`
 
 Fired when a button is pressed in an alert dialog.
 

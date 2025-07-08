@@ -19,7 +19,7 @@ Prompts the user for biometric authentication.
 
 ## Events
 
-### `Native\Mobile\Events\Biometric\Completed`
+### `Completed`
 
 Fired when biometric authentication completes (success or failure).
 

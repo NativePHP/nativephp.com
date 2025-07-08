@@ -44,7 +44,7 @@ Camera::pickImages('all', true);
 
 ## Events
 
-### `Native\Mobile\Events\Camera\PhotoTaken`
+### `PhotoTaken`
 
 Fired when a photo is taken with the camera.
 
@@ -62,7 +62,7 @@ public function handlePhotoTaken(string $path)
 }
 ```
 
-### `Native\Mobile\Events\Gallery\MediaSelected`
+### `MediaSelected`
 
 Fired when media is selected from the gallery.
 

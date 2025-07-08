@@ -78,14 +78,3 @@ class HapticsExample extends Component
 **Use haptics for:** Button presses, form validation, important notifications, game events  
 **Avoid haptics for:** Frequent events, background processes, minor updates
 
-## Migration from System Facade
-
-```php
-// Old way (deprecated)
-use Native\Mobile\Facades\System;
-System::vibrate();
-
-// New way (recommended)
-use Native\Mobile\Facades\Haptics;
-Haptics::vibrate();
-```

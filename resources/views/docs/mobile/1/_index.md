@@ -11,11 +11,11 @@ NativePHP for Mobile revolutionizes mobile development by allowing PHP developer
 
 ## What Makes NativePHP Mobile Special?
 
-=€ **Native Performance** - Your app runs natively on device with embedded PHP runtime  
-=ñ **True Mobile APIs** - Access camera, biometrics, push notifications, and more  
-¡ **Laravel Powered** - Use your existing Laravel skills and ecosystem  
-=' **No Web Server** - Your app runs entirely on-device  
-<¯ **Cross Platform** - Single codebase for iOS and Android  
+ðŸ“±**Native Performance** - Your app runs natively on device with embedded PHP runtime  
+ðŸ”¥**True Mobile APIs** - Access camera, biometrics, push notifications, and more  
+âš¡ **Laravel Powered** - Use your existing Laravel skills and ecosystem  
+ðŸš«**No Web Server** - Your app runs entirely on-device  
+ðŸ”„**Cross Platform** - Single codebase for iOS and Android  
 
 ## Quick Start
 
@@ -35,19 +35,19 @@ php artisan native:run
 ## Current Features (v1.1)
 
 **Available now:**
-- =ø Camera & Gallery access
-- = Biometric authentication (Face ID, Touch ID, Fingerprint)
-- = Push notifications via Firebase
-- =¬ Native dialogs & toasts
-- = Deep links & universal links
-- =á NFC support
-- =ó Haptic feedback & vibration
-- =& Flashlight control
-- =ä Native sharing
-- = Secure storage (Keychain/Keystore)
-- =Í Location services
+- ðŸ“· Camera & Gallery access
+- ðŸ” Biometric authentication (Face ID, Touch ID, Fingerprint)
+- ðŸ”” Push notifications via Firebase
+- ðŸ’¬ Native dialogs & toasts
+- ðŸ”— Deep links & universal links
+- ðŸ“± NFC support
+- ðŸ“³ Haptic feedback & vibration
+- ðŸ”¦ Flashlight control
+- ðŸ“¤ Native sharing
+- ðŸ”’ Secure storage (Keychain/Keystore)
+- ðŸ“ Location services
 
-[See the complete roadmap ’](/docs/mobile/1/getting-started/roadmap)
+[See the complete roadmap ðŸ—ºï¸](/docs/mobile/1/getting-started/roadmap)
 
 ## Documentation Sections
 
@@ -96,4 +96,4 @@ Advanced topics for production apps:
 - **Community** - Join our Discord for support and discussions
 - **Examples** - Check out the Kitchen Sink demo app (coming soon to app stores)
 
-Ready to build your first mobile app with PHP? [Let's get started! ’](/docs/mobile/1/getting-started/introduction)
+Ready to build your first mobile app with PHP? [Let's get started! ðŸš€](/docs/mobile/1/getting-started/introduction)

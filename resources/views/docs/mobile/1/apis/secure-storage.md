@@ -273,16 +273,3 @@ public function storeSecurely(string $key, string $value)
 }
 ```
 
-## Migration from System Facade
-
-If you were using the deprecated `System::secureSet()` and `System::secureGet()` methods:
-
-```php
-// Old way (deprecated)
-System::secureSet('key', 'value');
-$value = System::secureGet('key');
-
-// New way (recommended)
-SecureStorage::set('key', 'value');
-$value = SecureStorage::get('key');
-```

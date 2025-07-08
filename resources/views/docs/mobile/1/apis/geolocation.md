@@ -52,7 +52,7 @@ Geolocation::requestPermissions();
 
 ## Events
 
-### `Geolocation\LocationReceived`
+### `LocationReceived`
 
 Fired when location data is requested (success or failure).
 
@@ -93,7 +93,7 @@ public function handleLocationReceived($success = null, $latitude = null, $longi
 }
 ```
 
-### `Geolocation\PermissionStatusReceived`
+### `PermissionStatusReceived`
 
 Fired when permission status is checked.
 
@@ -128,7 +128,7 @@ public function handlePermissionStatus($location, $coarseLocation, $fineLocation
 }
 ```
 
-### `Geolocation\PermissionRequestResult`
+### `PermissionRequestResult`
 
 Fired when a permission request completes.
 

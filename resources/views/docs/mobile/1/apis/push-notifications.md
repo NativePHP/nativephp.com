@@ -42,7 +42,7 @@ if ($token) {
 
 ## Events
 
-#### `Native\Mobile\Events\PushNotification\TokenGenerated`
+### `TokenGenerated`
 
 Fired when a push notification token is successfully generated.
 
@@ -386,19 +386,6 @@ public function handleRegistrationFailure()
 }
 ```
 
-## Migration from System Facade
-
-```php
-// Old way (deprecated)
-use Native\Mobile\Facades\System;
-System::enrollForPushNotifications();
-$token = System::getPushNotificationsToken();
-
-// New way (recommended)
-use Native\Mobile\Facades\PushNotifications;
-PushNotifications::enrollForPushNotifications();
-$token = PushNotifications::getPushNotificationsToken();
-```
 
 ## Best Practices
 
