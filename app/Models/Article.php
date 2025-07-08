@@ -22,7 +22,9 @@ class Article extends Model
 
     public function scopePublished(Builder $query): void
     {
-        $query->whereDate('published_at', '<=', now());
+        $query
+            ->orderByDesc('published_at')
+            ->where('published_at', '<=', now());
     }
 
     public function author(): BelongsTo

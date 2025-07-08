@@ -8,13 +8,19 @@ class ShowBlogController extends Controller
 {
     public function index()
     {
+        $articles = Article::query()
+            ->published()
+            ->paginate(6);
+
         return view('blog', [
-            'articles' => Article::latest()->paginate(6),
+            'articles' => $articles,
         ]);
     }
 
     public function show(Article $article)
     {
+        abort_if($article->published_at->isFuture(), 404);
+
         return view('article', [
             'article' => $article,
         ]);
