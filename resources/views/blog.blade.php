@@ -64,7 +64,7 @@
 
             {{-- Blurred circle - Decorative --}}
             <div
-                class="absolute left-0 top-1/2 -z-30 h-60 w-60 rounded-full bg-orange-200/60 blur-[150px] md:left-1/2 md:w-80 dark:bg-slate-500/50"
+                class="absolute top-1/2 left-0 -z-30 h-60 w-60 rounded-full bg-orange-200/60 blur-[150px] md:left-1/2 md:w-80 dark:bg-slate-500/50"
                 aria-hidden="true"
             ></div>
         </header>
@@ -105,37 +105,15 @@
             "
             class="flex flex-col gap-5"
         >
-            <x-article-card
-                title="NativePHP for Desktop v1 is finally here!"
-                url="/article"
-                date="2025-04-09"
-            >
-                🎉 WE DID IT! We finally got to v1. I almost don't believe it!
-                This is an awesome milestone. For a project that started as just
-                an idea, to see it reach a truly stable place and support
-                building powerful apps across all major platforms is just
-                incredible.
-            </x-article-card>
-            <x-article-card
-                title="Dropping Laravel 10 support"
-                url="/article"
-                date="2025-04-4"
-            >
-                Hey team, this is just a quick note about Laravel version
-                support. Per our Support Policy matrix, we will be dropping
-                Laravel 10 support for NativePHP for Desktop v1. Laravel 10
-                reached end of life back in February 2025.
-            </x-article-card>
-            <x-article-card
-                title="NativePHP for Mobile—Pricing update!"
-                url="/article"
-                date="2025-03-27"
-            >
-                Earlier this week I spoke at the Laravel Worldwide Meetup where
-                I unveiled: 🌐 A brand new nativephp.com, lovingly (and
-                painstakingly!) crafted by the incredible
-                @HassanZahirnia
-            </x-article-card>
+            @foreach ($articles as $article)
+                <x-article-card
+                    :title="$article->title"
+                    :url="route('article', $article)"
+                    :date="$article->published_at->format('Y-m-d')"
+                >
+                    {{ $article->excerpt }}
+                </x-article-card>
+            @endforeach
         </div>
 
         {{-- Pagination --}}
@@ -164,15 +142,17 @@
                 "
                 class="will-change-transform"
             >
-                <a
-                    href="#"
-                    class="inline-block p-1.5 opacity-60 transition duration-200 hover:opacity-100"
-                    aria-label="Go to previous page"
-                    rel="prev"
-                >
-                    <span class="sr-only">Navigate to</span>
-                    Previous
-                </a>
+                @if (! $articles->onFirstPage())
+                    <a
+                        href="{{ $articles->previousPageUrl() }}"
+                        class="inline-block p-1.5 opacity-60 transition duration-200 hover:opacity-100"
+                        aria-label="Go to previous page"
+                        rel="prev"
+                    >
+                        <span class="sr-only">Navigate to</span>
+                        Previous
+                    </a>
+                @endif
             </div>
 
             {{-- Next --}}
@@ -196,15 +176,17 @@
                 "
                 class="will-change-transform"
             >
-                <a
-                    href="#"
-                    class="inline-block p-1.5 opacity-80 transition duration-200 hover:opacity-100"
-                    aria-label="Go to next page"
-                    rel="next"
-                >
-                    <span class="sr-only">Navigate to</span>
-                    Next
-                </a>
+                @if (! $articles->onLastPage())
+                    <a
+                        href="{{ $articles->nextPageUrl() }}"
+                        class="inline-block p-1.5 opacity-80 transition duration-200 hover:opacity-100"
+                        aria-label="Go to next page"
+                        rel="next"
+                    >
+                        <span class="sr-only">Navigate to</span>
+                        Next
+                    </a>
+                @endif
             </div>
         </nav>
     </section>

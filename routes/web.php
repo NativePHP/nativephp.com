@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ShowDocumentationController;
+use App\Models\Article;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Str;
 
@@ -62,5 +63,8 @@ Route::get('/docs/{page?}', function ($page = null) {
 
 Route::get('/order/{checkoutSessionId}', App\Livewire\OrderSuccess::class)->name('order.success');
 
-Route::view('blog', 'blog')->name('blog');
-Route::view('article', 'article')->name('article');
+Route::view('blog', 'blog', [
+    'articles' => Article::latest()->paginate(6),
+])->name('blog');
+
+Route::view('blog/{article}', 'article')->name('article');
