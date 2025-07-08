@@ -15,6 +15,11 @@ class Article extends Model
         'published_at' => 'datetime',
     ];
 
+    public function getRouteKeyName()
+    {
+        return 'slug';
+    }
+
     public function scopePublished(Builder $query): void
     {
         $query->whereDate('published_at', '<=', now());

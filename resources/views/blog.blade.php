@@ -109,7 +109,7 @@
                 <x-article-card
                     :title="$article->title"
                     :url="route('article', $article)"
-                    :date="$article->published_at->format('Y-m-d')"
+                    :date="$article->published_at"
                 >
                     {{ $article->excerpt }}
                 </x-article-card>
