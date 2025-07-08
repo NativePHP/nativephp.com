@@ -61,3 +61,6 @@ Route::get('/docs/{page?}', function ($page = null) {
 })->name('docs')->where('page', '.*');
 
 Route::get('/order/{checkoutSessionId}', App\Livewire\OrderSuccess::class)->name('order.success');
+
+Route::view('blog', 'blog')->name('blog');
+Route::view('article', 'article')->name('article');

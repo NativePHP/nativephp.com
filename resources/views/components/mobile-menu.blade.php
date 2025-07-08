@@ -180,6 +180,7 @@
                     $isHomeActive = request()->routeIs('welcome*');
                     $isMobileActive = request()->routeIs('early-adopter*');
                     $isDocsActive = request()->is('docs*');
+                    $isBlogActive = request()->routeIs('blog*');
                     $isSponsorActive = request()->routeIs('sponsoring*');
                 @endphp
 
@@ -250,6 +251,33 @@
                     >
                         <div>Docs</div>
                         @if ($isDocsActive)
+                            <x-icons.right-arrow
+                                class="size-4 shrink-0"
+                                aria-hidden="true"
+                                focusable="false"
+                            />
+                        @endif
+                    </a>
+                </div>
+
+                <div
+                    class="gsap-mobile-menu-divider h-0.5 w-full rounded-full bg-current opacity-5"
+                    role="presentation"
+                ></div>
+
+                {{-- Blog Link --}}
+                <div class="gsap-mobile-menu-link w-full">
+                    <a
+                        href="{{ route('blog') }}"
+                        @class([
+                            'flex items-center justify-between py-3 transition duration-200',
+                            'font-medium' => $isBlogActive,
+                            'opacity-50 hover:translate-x-1 hover:opacity-100' => ! $isBlogActive,
+                        ])
+                        aria-current="{{ $isBlogActive ? 'page' : 'false' }}"
+                    >
+                        <div>Blog</div>
+                        @if ($isBlogActive)
                             <x-icons.right-arrow
                                 class="size-4 shrink-0"
                                 aria-hidden="true"
