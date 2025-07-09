@@ -117,6 +117,17 @@ You can also print directly to PDF:
 System::printToPDF('<html>...');
 ```
 
+This returns the PDF data in a `base64_encoded` binary string. So be sure to `base64_decode` it before storing it to
+disk:
+
+```php
+use Illuminate\Support\Facades\Storage;
+
+$pdf = System::printToPDF('<html>...');
+
+Storage::disk('desktop')->put('My Awesome File.pdf', base64_decode($pdf));
+```
+
 ### Print Settings
 
 You can change the configuration before sending something to be printed, for example if you want multiple copies:
@@ -159,17 +170,6 @@ System::print('<html>...', $printer, $settings);
 ```
 
 For a complete list of available print settings, refer to the [Electron webContents.print()](https://www.electronjs.org/docs/latest/api/web-contents#contentsprintoptions-callback) and [webContents.printToPDF()](https://www.electronjs.org/docs/latest/api/web-contents#contentsprinttopdfoptions) documentation.
-
-This returns the PDF data in a `base64_encoded` binary string. So be sure to `base64_decode` it before storing it to
-disk:
-
-```php
-use Illuminate\Support\Facades\Storage;
-
-$pdf = System::printToPDF('<html>...');
-
-Storage::disk('desktop')->put('My Awesome File.pdf', base64_decode($pdf));
-```
 
 ## Time Zones
 
