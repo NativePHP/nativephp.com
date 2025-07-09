@@ -164,6 +164,7 @@ nav.docs-navigation > ul > li > ul {
     }
 }
 
+/* Prose */
 .prose h1 {
     @apply text-2xl;
 }
@@ -240,4 +241,19 @@ nav.docs-navigation > ul > li > ul {
 .prose pre code.torchlight .line-number,
 .prose pre code.torchlight .summary-caret {
     @apply mr-4;
+}
+
+/*
+ Prose dark mode
+*/
+.dark .prose strong {
+    @apply text-gray-300;
+}
+
+.dark .prose blockquote {
+    @apply text-gray-300;
+}
+
+.dark .prose code {
+    @apply text-gray-300;
 }
