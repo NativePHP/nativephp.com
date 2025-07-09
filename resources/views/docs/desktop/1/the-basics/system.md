@@ -111,6 +111,14 @@ System::print('<html>...', $printer);
 
 If no `$printer` object is provided, the default printer and settings will be used.
 
+You can also print directly to PDF:
+
+```php
+System::printToPDF('<html>...');
+```
+
+### Print Settings
+
 You can change the configuration before sending something to be printed, for example if you want multiple copies:
 
 ```php
@@ -119,11 +127,39 @@ $printer->options['copies'] = 5;
 System::print('<html>...', $printer);
 ```
 
-You can also print directly to PDF:
+Additionally, both the `print()` and `printToPDF()` methods accept an optional `$settings` parameter that allows you to customize the print behavior:
 
 ```php
-System::printToPDF('<html>...');
+System::print('<html>...', $printer, $settings);
 ```
+
+#### Print Settings Examples
+
+You can customize print behavior using the settings array. Here are some common examples:
+
+```php
+// Print with custom page size and orientation
+$settings = [
+    'pageSize' => 'A4',
+    'landscape' => true,
+    'marginsType' => 1, // 0: default, 1: none, 2: minimum
+];
+
+System::print('<html>...', $printer, $settings);
+```
+
+```php
+// Print multiple copies with duplex
+$settings = [
+    'copies' => 3,
+    'duplex' => 'long', // 'simplex', 'short', 'long'
+    'color' => false, // true for color, false for monochrome
+];
+
+System::print('<html>...', $printer, $settings);
+```
+
+For a complete list of available print settings, refer to the [Electron webContents.print()](https://www.electronjs.org/docs/latest/api/web-contents#contentsprintoptions-callback) and [webContents.printToPDF()](https://www.electronjs.org/docs/latest/api/web-contents#contentsprinttopdfoptions) documentation.
 
 This returns the PDF data in a `base64_encoded` binary string. So be sure to `base64_decode` it before storing it to
 disk:
