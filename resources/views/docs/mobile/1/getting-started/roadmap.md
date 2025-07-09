@@ -46,10 +46,10 @@ We're working on adding more and more features, including (in no particular orde
  - Gyroscope
  - Accelerometer
  - Screen brightness
- - Haptic feedback
+ - More Haptic feedback
  - Network info access
  - Battery status 
- - CPU information
+ - CPU/Device information
  - Ads
  - In-app billing
 

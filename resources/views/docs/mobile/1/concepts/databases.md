@@ -27,6 +27,58 @@ upon foreign key constraints, [you need to enable SQLite support for them](https
 **It's important to test your migrations on prod builds before releasing updates!** You don't want to accidentally
 delete your user's data when they update your app.
 
+## Seeding Data with Migrations
+
+Migrations are the perfect mechanism for seeding data in mobile applications. They provide the natural behavior you want for data seeding:
+
+- **Run once**: Each migration runs exactly once per device
+- **Tracked**: Laravel tracks which migrations have been executed
+- **Versioned**: New app versions can include new data seeding migrations
+- **Reversible**: You can create migrations to remove or update seed data
+
+### Creating Seed Migrations
+
+Create dedicated migrations for seeding data:
+
+```bash
+php artisan make:migration seed_default_categories
+php artisan make:migration seed_app_settings
+php artisan make:migration seed_initial_user_data
+```
+
+### Example: Seeding Default Categories
+
+```php
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Support\Facades\DB;
+
+return new class extends Migration
+{
+    public function up()
+    {
+        DB::table('categories')->insert([
+            ['name' => 'Work', 'color' => '#3B82F6'],
+            ['name' => 'Personal', 'color' => '#10B981'],
+        ]);
+    }
+
+    public function down()
+    {
+        // Rollback/fresh migrations never run
+    }
+};
+```
+
+### Best Practices for Seed Migrations
+
+1. **Use specific timestamps**: Name migrations with dates to ensure proper ordering
+2. **Check before inserting**: Prevent duplicate data with updateOrCreate() or firstOrCreate()
+3. **Handle conflicts gracefully**: Check if data already exists before seeding
+4. **Use realistic data**: Seed with data that matches your production environment
+5. **Test thoroughly**: Verify seed migrations work on fresh installs and updates
+
+This approach ensures your mobile app has the initial data it needs while maintaining consistency across different app versions and user devices.
+
 ## Things to note
 
 - As your app is installed on a separate device, you do not have remote access to the database.
