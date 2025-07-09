@@ -142,7 +142,6 @@ You can customize print behavior using the settings array. Here are some common 
 $settings = [
     'pageSize' => 'A4',
     'landscape' => true,
-    'marginsType' => 1, // 0: default, 1: none, 2: minimum
 ];
 
 System::print('<html>...', $printer, $settings);
@@ -152,7 +151,7 @@ System::print('<html>...', $printer, $settings);
 // Print multiple copies with duplex
 $settings = [
     'copies' => 3,
-    'duplex' => 'long', // 'simplex', 'short', 'long'
+    'duplexMode' => 'longEdge', // 'simplex', 'shortEdge', 'longEdge'
     'color' => false, // true for color, false for monochrome
 ];
 
