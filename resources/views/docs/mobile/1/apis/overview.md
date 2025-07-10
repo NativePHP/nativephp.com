@@ -82,30 +82,7 @@ Execute immediately and return results:
 - `SecureStorage::set()` / `get()`
 
 ### Asynchronous APIs
-Trigger operations and fire events when complete:
-- `Camera::getPhoto()` → `PhotoTaken` event
-- `Camera::pickImages()` → `MediaSelected` event
-- `Biometrics::promptForBiometricID()` → `Completed` event
-- `PushNotifications::enrollForPushNotifications()` → `TokenGenerated` event
-- `Geolocation::getCurrentPosition()` → `LocationReceived` event
-- `Geolocation::checkPermissions()` → `PermissionStatusReceived` event
-- `Geolocation::requestPermissions()` → `PermissionRequestResult` event
-- `Dialog::alert()` → `ButtonPressed` event
-
-### Event Handling
-All async APIs use Laravel events with Livewire integration:
-
-```php
-use Livewire\Attributes\On;
-use Native\Mobile\Events\Camera\PhotoTaken;
-
-#[On('native:' . PhotoTaken::class)]
-public function handlePhotoTaken(string $path)
-{
-    // Process the captured photo
-}
-```
-
+[Read more about asynchronous API methods here.](/docs/mobile/1/the-basics/asynchronous-methods)
 
 ## Platform Support
 
@@ -115,16 +92,4 @@ All APIs work on both iOS and Android with platform-appropriate implementations:
 - **Permissions**: Automatically handled with user prompts when required
 - **Fallbacks**: Graceful degradation when features aren't available
 
-## Error Handling
-
-APIs provide both success and error events for proper error handling:
-
-```php
-#[On('native:' . PhotoTaken::class)]
-public function handleSuccess($data) { /* ... */ }
-
-#[On('native:' . PermissionDenied::class)]
-public function handleError($error) { /* ... */ }
-```
-
-Each API documentation includes complete error handling examples and best practices.
+- Each API documentation includes complete error handling examples and best practices.

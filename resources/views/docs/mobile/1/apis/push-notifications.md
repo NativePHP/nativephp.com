@@ -70,251 +70,25 @@ use Native\Mobile\Events\PushNotification\TokenGenerated;
 
 class NotificationManager extends Component
 {
-    public bool $isRegistered = false;
-    public bool $isRegistering = false;
-    public string $error = '';
-
-    public function mount()
+    public function promptForPushNotifications()
     {
-        // Check if already registered
-        $this->checkExistingRegistration();
+        PushNotifications::getPushNotificationsToken();
     }
 
-    public function enableNotifications()
+    #[On('native:'. TokenGenerated::class)]
+    public function handlePushNotificationsToken(KitchenSinkService $service, $token)
     {
-        $this->isRegistering = true;
-        $this->error = '';
-        
-        // Request permission and get token
-        PushNotifications::enrollForPushNotifications();
-    }
+        $response = $service->sendForPushNotification($token);
 
-    #[On('native:' . TokenGenerated::class)]
-    public function handleTokenGenerated(string $token)
-    {
-        $this->isRegistering = false;
-        
-        try {
-            // Send token to your backend API
-            $response = Http::withToken(session('api_token'))
-                ->post('/api/push-tokens', [
-                    'token' => $token,
-                    'device_id' => $this->getDeviceId(),
-                    'platform' => $this->getPlatform(),
-                    'user_id' => auth()->id()
-                ]);
-
-            if ($response->successful()) {
-                $this->isRegistered = true;
-                session(['push_token' => $token]);
-                
-                Log::info('Push notification token registered', [
-                    'user_id' => auth()->id(),
-                    'token_preview' => substr($token, 0, 10) . '...'
-                ]);
-            } else {
-                throw new Exception('Server rejected token registration');
-            }
-
-        } catch (Exception $e) {
-            $this->error = 'Failed to register for notifications: ' . $e->getMessage();
-            
-            Log::error('Push token registration failed', [
-                'error' => $e->getMessage(),
-                'user_id' => auth()->id()
-            ]);
+        if ($response->successful()) {
+           nativephp_alert('Push Notification Sent!',
+                'Push notifications will not display while the app is open, close the app and wait one minute to see the notification.');
         }
-    }
-
-    public function disableNotifications()
-    {
-        $token = session('push_token');
-        
-        if ($token) {
-            try {
-                // Remove token from server
-                Http::withToken(session('api_token'))
-                    ->delete("/api/push-tokens/{$token}");
-
-                session()->forget('push_token');
-                $this->isRegistered = false;
-
-            } catch (Exception $e) {
-                $this->error = 'Failed to disable notifications';
-            }
-        }
-    }
-
-    private function checkExistingRegistration()
-    {
-        $existingToken = session('push_token');
-        
-        if ($existingToken) {
-            // Verify token is still valid
-            $currentToken = PushNotifications::getPushNotificationsToken();
-            
-            if ($currentToken === $existingToken) {
-                $this->isRegistered = true;
-            } else {
-                // Token changed, need to re-register
-                session()->forget('push_token');
-                $this->isRegistered = false;
-            }
-        }
-    }
-
-    private function getDeviceId(): string
-    {
-        if (!session()->has('device_id')) {
-            session(['device_id' => Str::uuid()]);
-        }
-        
-        return session('device_id');
-    }
-
-    private function getPlatform(): string
-    {
-        // Detect platform from user agent or environment
-        return request()->header('X-Platform', 'unknown');
     }
 
     public function render()
     {
         return view('livewire.notification-manager');
-    }
-}
-```
-
-## Backend Integration
-
-### Database Schema
-
-```php
-// Migration for storing push tokens
-Schema::create('push_tokens', function (Blueprint $table) {
-    $table->id();
-    $table->foreignId('user_id')->constrained()->onDelete('cascade');
-    $table->string('token')->unique();
-    $table->string('device_id')->nullable();
-    $table->enum('platform', ['ios', 'android', 'unknown']);
-    $table->timestamp('last_used_at')->nullable();
-    $table->timestamps();
-    
-    $table->index(['user_id', 'platform']);
-});
-```
-
-### API Controller
-
-```php
-namespace App\Http\Controllers\Api;
-
-use App\Models\PushToken;
-use Illuminate\Http\Request;
-
-class PushTokenController extends Controller
-{
-    public function store(Request $request)
-    {
-        $validated = $request->validate([
-            'token' => 'required|string|max:255',
-            'device_id' => 'nullable|string|max:255',
-            'platform' => 'required|in:ios,android,unknown'
-        ]);
-
-        PushToken::updateOrCreate(
-            [
-                'user_id' => $request->user()->id,
-                'device_id' => $validated['device_id']
-            ],
-            [
-                'token' => $validated['token'],
-                'platform' => $validated['platform'],
-                'last_used_at' => now()
-            ]
-        );
-
-        return response()->json(['message' => 'Token registered successfully']);
-    }
-
-    public function destroy(Request $request, string $token)
-    {
-        PushToken::where('user_id', $request->user()->id)
-            ->where('token', $token)
-            ->delete();
-
-        return response()->json(['message' => 'Token removed successfully']);
-    }
-}
-```
-
-### Sending Notifications
-
-```php
-namespace App\Services;
-
-use Google\Client as GoogleClient;
-use Google\Service\FirebaseCloudMessaging;
-
-class PushNotificationService
-{
-    public function sendToUser(int $userId, array $notification, array $data = [])
-    {
-        $tokens = PushToken::where('user_id', $userId)
-            ->pluck('token')
-            ->toArray();
-
-        if (empty($tokens)) {
-            throw new Exception('No push tokens found for user');
-        }
-
-        return $this->sendToTokens($tokens, $notification, $data);
-    }
-
-    private function sendToTokens(array $tokens, array $notification, array $data = [])
-    {
-        $client = new GoogleClient();
-        $client->setAuthConfig(base_path('google-services.json'));
-        $client->addScope('https://www.googleapis.com/auth/firebase.messaging');
-        
-        $fcm = new FirebaseCloudMessaging($client);
-        $projectId = config('services.firebase.project_id');
-        
-        $results = [];
-        
-        foreach ($tokens as $token) {
-            try {
-                $message = [
-                    'token' => $token,
-                    'notification' => $notification,
-                    'data' => array_map('strval', $data)
-                ];
-
-                $response = $fcm->projects_messages->send($projectId, [
-                    'message' => $message
-                ]);
-
-                $results[] = [
-                    'token' => substr($token, 0, 10) . '...',
-                    'success' => true,
-                    'message_id' => $response->getName()
-                ];
-
-            } catch (Exception $e) {
-                $results[] = [
-                    'token' => substr($token, 0, 10) . '...',
-                    'success' => false,
-                    'error' => $e->getMessage()
-                ];
-
-                // Remove invalid tokens
-                if (str_contains($e->getMessage(), 'registration-token-not-registered')) {
-                    PushToken::where('token', $token)->delete();
-                }
-            }
-        }
-        
-        return $results;
     }
 }
 ```

@@ -41,6 +41,8 @@ php artisan native:run android --build=bundle --no-tty
 
 ### Packaging Command
 
+> **Note**: ICU support is currently only available on Android. We are working to add iOS support as soon as possible and will remove this note when it becomes available.
+
 Package signed releases for distribution:
 
 ```bash
@@ -62,10 +64,6 @@ ANDROID_KEYSTORE_PASSWORD="your-keystore-password"
 ANDROID_KEY_ALIAS="your-key-alias"
 ANDROID_KEY_PASSWORD="your-key-password"
 
-# Push Notifications (optional)
-FCM_SERVER_KEY="your-fcm-server-key"
-GOOGLE_SERVICE_ACCOUNT_KEY="/path/to/service-account.json"
-
 # App Configuration
 NATIVEPHP_APP_ID="com.yourcompany.yourapp"
 NATIVEPHP_APP_VERSION="1.0.0"
@@ -86,6 +84,7 @@ Overwrites existing files and directories:
 - Useful for clean builds in CI
 - Ensures fresh installation of NativePHP scaffolding
 - Prevents build failures from existing files
+- Do this whenever you are updating the `nativephp/mobile` package.
 
 ### Build Types
 - `--build=debug`: Development builds with debugging enabled
@@ -118,7 +117,7 @@ export ANDROID_KEY_PASSWORD="your-key-password"
 php artisan native:package android --build-type=release --output=./artifacts --no-tty
 ```
 
-## Common CI/CD Workflows
+## Common CI Workflows
 
 ### Development Pipeline
 1. Install dependencies: `composer install`
@@ -135,7 +134,7 @@ php artisan native:package android --build-type=release --output=./artifacts --n
 ### Play Store Pipeline
 1. Same as release pipeline through step 3
 2. Package bundle: `native:package android --build-type=bundle --no-tty`
-3. Upload to Play Console via API
+3. Upload to Play Console
 
 ## Error Handling
 
@@ -157,7 +156,6 @@ Cache these directories in CI for faster builds:
 - `vendor/` (Composer dependencies)
 - `nativephp/android/` (Android project)
 - Android SDK components
-
 
 ### Optimization
 - Use `--no-dev` for production Composer installs
