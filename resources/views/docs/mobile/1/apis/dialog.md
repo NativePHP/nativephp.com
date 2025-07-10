@@ -20,20 +20,18 @@ Displays a native alert dialog with customizable buttons.
 **Parameters:**
 - `string $title` - The alert title
 - `string $message` - The alert message
-- `array $buttons` - Array of button configurations
-- `callable $callback` - Callback function for button presses
+- `array $buttons` - Array of button labels (max 3 buttons)
+
+**Button Positioning:**
+- **1 button** - Positive (OK/Confirm)
+- **2 buttons** - Negative (Cancel) + Positive (OK/Confirm) 
+- **3 buttons** - Negative (Cancel) + Neutral (Maybe) + Positive (OK/Confirm)
 
 ```php
 Dialog::alert(
     'Confirm Action',
     'Are you sure you want to delete this item?',
-    [
-        ['text' => 'Cancel', 'style' => 'cancel'],
-        ['text' => 'Delete', 'style' => 'destructive']
-    ],
-    function($buttonIndex) {
-        // Handle button press
-    }
+    ['Cancel', 'Delete']
 );
 ```
 
@@ -71,22 +69,26 @@ Dialog::share(
 
 Fired when a button is pressed in an alert dialog.
 
-**Payload:** `int $buttonIndex` - Index of the pressed button (0-based)
+**Payload:** 
+- `int $index` - Index of the pressed button (0-based)
+- `string $label` - Label/text of the pressed button
 
 ```php
 use Livewire\Attributes\On;
 use Native\Mobile\Events\Alert\ButtonPressed;
 
 #[On('native:' . ButtonPressed::class)]
-public function handleAlertButton(int $buttonIndex)
+public function handleAlertButton($index, $label)
 {
-    switch ($buttonIndex) {
+    switch ($index) {
         case 0:
             // First button (usually Cancel)
+            Dialog::toast("You pressed '{$label}'");
             break;
         case 1:
             // Second button (usually OK/Confirm)
             $this->performAction();
+            Dialog::toast("You pressed '{$label}'");
             break;
     }
 }
@@ -112,24 +114,21 @@ class ItemManager extends Component
         Dialog::alert(
             'Delete Item',
             'This action cannot be undone. Are you sure?',
-            [
-                ['text' => 'Cancel', 'style' => 'cancel'],
-                ['text' => 'Delete', 'style' => 'destructive']
-            ],
-            null
+            ['Cancel', 'Delete']
         );
     }
 
     #[On('native:' . ButtonPressed::class)]
-    public function handleDeleteConfirmation(int $buttonIndex)
+    public function handleDeleteConfirmation($index, $label)
     {
-        if ($buttonIndex === 1 && $this->itemToDelete) {
+        if ($index === 1 && $this->itemToDelete) {
             // User confirmed deletion
             $this->performDelete($this->itemToDelete);
             Dialog::toast('Item deleted successfully');
             $this->itemToDelete = null;
         } else {
             // User cancelled
+            Dialog::toast("You pressed '{$label}'");
             $this->itemToDelete = null;
         }
     }
@@ -163,30 +162,35 @@ class ItemManager extends Component
 }
 ```
 
-## Alert Button Styles
+## Alert Button Examples
 
-### iOS Button Styles
-- `'default'` - Standard blue button
-- `'cancel'` - Bold cancel button (usually on the left)
-- `'destructive'` - Red destructive action button
-
-### Android Button Styles
-- `'positive'` - Primary action button
-- `'negative'` - Cancel/dismiss button
-- `'neutral'` - Additional option button
-
+### Simple Confirmation
 ```php
-// Cross-platform alert with proper styling
 Dialog::alert(
     'Delete Account',
     'This will permanently delete your account and all data.',
-    [
-        ['text' => 'Cancel', 'style' => 'cancel'],
-        ['text' => 'Delete', 'style' => 'destructive']
-    ],
-    null
+    ['Cancel', 'Delete']
 );
 ```
+
+### Three Button Options
+```php
+Dialog::alert(
+    'Save Changes',
+    'Do you want to save your changes before closing?',
+    ['Cancel', 'Don\'t Save', 'Save']
+);
+```
+
+### Single Button Alert
+```php
+Dialog::alert(
+    'Welcome!',
+    'Thanks for downloading our app!',
+    ['OK']
+);
+```
+
 
 ## Toast Guidelines
 
