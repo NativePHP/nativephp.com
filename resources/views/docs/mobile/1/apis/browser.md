@@ -5,7 +5,7 @@ order: 250
 
 ## Overview
 
-The Browser API allows you to open URLs in an in-app browser that is "owned" by your application. This is essential when working with OAuth redirects since you need to provide a redirect URL that would naturally open in the user's default browser.
+The Browser API provides three methods for opening URLs in mobile apps, each designed for specific use cases: in-app browsing, system browser navigation, and OAuth authentication flows.
 
 ```php
 use Native\Mobile\Facades\Browser;
@@ -15,72 +15,51 @@ use Native\Mobile\Facades\Browser;
 
 ### `inApp()`
 
-Opens a URL in an in-app browser window.
-
-**Parameters:**
-- `string $url` - The URL to open in the in-app browser
+Opens a URL in an embedded browser within your app using Custom Tabs (Android) or SFSafariViewController (iOS).
 
 ```php
 Browser::inApp('https://nativephp.com/mobile');
 ```
 
+### `system()`
+
+Opens a URL in the device's default browser app, leaving your application entirely.
+
+```php
+Browser::system('https://nativephp.com/mobile');
+```
+
+### `auth()`
+
+Opens a URL in a specialized authentication browser designed for OAuth flows with automatic `nativephp://` redirect handling.
+
+```php
+Browser::auth('https://provider.com/oauth/authorize?client_id=123&redirect_uri=nativephp://127.0.0.1/auth/callback');
+```
+
 ## Use Cases
 
-### OAuth Authentication
+### When to Use Each Method
 
-The in-app browser is particularly useful for OAuth flows where you need to:
-- Redirect users to a third-party authentication provider
-- Capture the redirect URL after authentication
-- Return control to your app seamlessly
+**`inApp()`** - Keep users within your app experience:
+- Documentation, help pages, terms of service
+- External content that relates to your app
+- When you want users to easily return to your app
 
-```php
-use Native\Mobile\Facades\Browser;
+**`system()`** - Full browser experience needed:
+- Complex web applications
+- Content requiring specific browser features
+- When users need bookmarking or sharing capabilities
 
-class AuthController extends Component
-{
-    public function authenticateWithProvider()
-    {
-        // Open OAuth provider in in-app browser
-        Browser::inApp('https://provider.com/oauth/authorize?client_id=your_client_id&redirect_uri=your_app_scheme://oauth/callback');
-    }
-}
-```
+**`auth()`** - OAuth authentication flows:
+- Login with WorkOS, Auth0, Google, Facebook, etc.
+- Secure authentication with automatic redirects
+- Isolated browser session for security
 
-### External Content
+## Platform Behavior
 
-Display external content while keeping users within your app:
+- **iOS**: Uses SFSafariViewController (inApp), Safari (system), ASWebAuthenticationSession (auth)
+- **Android**: Uses Custom Tabs (inApp), default browser (system), Custom Tabs with auth handling (auth)
 
-```php
-// Open documentation
-Browser::inApp('https://docs.example.com/help');
-
-// Open terms of service
-Browser::inApp('https://example.com/terms');
-
-// Open privacy policy
-Browser::inApp('https://example.com/privacy');
-```
-
-## Integration with Deep Links
-
-Use the in-app browser in conjunction with App/Universal/Deep links for complete OAuth flows:
-
-1. **Open OAuth provider** - Use `Browser::inApp()` to start authentication
-2. **User authenticates** - User completes authentication in the in-app browser
-3. **Redirect to app** - OAuth provider redirects to your app's deep link
-4. **Handle in app** - Your app receives the deep link and processes the authentication
-
-```php
-use Native\Mobile\Facades\Browser;
-use Livewire\Attributes\On;
-use Native\Mobile\Events\DeepLink\Received;
-
-class OAuthHandler extends Component
-{
-    public function startOAuth()
-    {
-        Browser::inApp('https://github.com/login/oauth/authorize?client_id=your_client_id&redirect_uri=myapp://oauth/callback');
-    }
-}
-```
+The Browser API provides the right tool for each browsing scenario in your mobile application.
 
