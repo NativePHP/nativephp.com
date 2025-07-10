@@ -84,33 +84,3 @@ class OAuthHandler extends Component
 }
 ```
 
-## Platform Behavior
-
-### iOS
-- Uses `SFSafariViewController` for the in-app browser
-- Provides native Safari experience within your app
-- Includes address bar, navigation controls, and share functionality
-- Users can easily return to your app
-
-### Android
-- Uses `Chrome Custom Tabs` when available
-- Falls back to `WebView` if Custom Tabs unavailable
-- Provides native browser experience
-- Maintains your app's context
-
-## Best Practices
-
-1. **Use for OAuth flows** - Perfect for authentication redirects
-2. **Keep users in your app** - Better than opening external browser
-3. **Combine with deep links** - Essential for complete OAuth implementation
-4. **Handle errors gracefully** - Network issues or invalid URLs should be handled
-5. **Provide user feedback** - Show loading states when opening URLs
-
-## Security Considerations
-
-- **Validate URLs** - Ensure URLs are from trusted sources
-- **Handle redirects** - Be prepared for OAuth redirects back to your app
-- **Secure communication** - Always use HTTPS for sensitive operations
-- **User consent** - Make it clear when opening external content
-
-The in-app browser provides a seamless way to handle external content and OAuth flows while maintaining your app's user experience.
