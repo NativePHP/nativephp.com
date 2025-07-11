@@ -20,6 +20,7 @@ Route::redirect('/newsletter', 'https://simonhamp.mailcoach.app/nativephp');
 Route::redirect('/phpverse-2025', 'https://lp.jetbrains.com/phpverse-2025');
 Route::redirect('/docs/1/getting-started/sponsoring', '/sponsor');
 Route::redirect('/docs/desktop/1/getting-started/sponsoring', '/sponsor');
+Route::redirect('/discord', 'https://discord.gg/X62tWNStZK');
 
 Route::view('/', 'welcome')->name('welcome');
 Route::view('mobile', 'early-adopter')->name('early-adopter');
