@@ -111,14 +111,6 @@ System::print('<html>...', $printer);
 
 If no `$printer` object is provided, the default printer and settings will be used.
 
-You can change the configuration before sending something to be printed, for example if you want multiple copies:
-
-```php
-$printer->options['copies'] = 5;
-
-System::print('<html>...', $printer);
-```
-
 You can also print directly to PDF:
 
 ```php
@@ -135,6 +127,49 @@ $pdf = System::printToPDF('<html>...');
 
 Storage::disk('desktop')->put('My Awesome File.pdf', base64_decode($pdf));
 ```
+
+### Print Settings
+
+You can change the configuration before sending something to be printed, for example if you want multiple copies:
+
+```php
+$printer->options['copies'] = 5;
+
+System::print('<html>...', $printer);
+```
+
+Additionally, both the `print()` and `printToPDF()` methods accept an optional `$settings` parameter that allows you to customize the print behavior:
+
+```php
+System::print('<html>...', $printer, $settings);
+```
+
+#### Print Settings Examples
+
+You can customize print behavior using the settings array. Here are some common examples:
+
+```php
+// Print with custom page size and orientation
+$settings = [
+    'pageSize' => 'A4',
+    'landscape' => true,
+];
+
+System::print('<html>...', $printer, $settings);
+```
+
+```php
+// Print multiple copies with duplex
+$settings = [
+    'copies' => 3,
+    'duplexMode' => 'longEdge', // 'simplex', 'shortEdge', 'longEdge'
+    'color' => false, // true for color, false for monochrome
+];
+
+System::print('<html>...', $printer, $settings);
+```
+
+For a complete list of available print settings, refer to the [Electron webContents.print()](https://www.electronjs.org/docs/latest/api/web-contents#contentsprintoptions-callback) and [webContents.printToPDF()](https://www.electronjs.org/docs/latest/api/web-contents#contentsprinttopdfoptions) documentation.
 
 ## Time Zones
 
