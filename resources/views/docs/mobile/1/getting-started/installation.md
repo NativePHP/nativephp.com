@@ -78,6 +78,8 @@ composer require nativephp/mobile
 ```
 *If you experience a cURL error when running this command make sure you are running PHP v8.3+ in your CLI.*
 
+**Windows Performance Tip:** Add `C:\temp` to your Windows Defender exclusions list to significantly speed up composer installs during app compilation. This prevents real-time scanning from slowing down the many temporary files created during the build process.
+
 If this is the first time you're installing the package, you will be prompted to authenticate. Your username is the
 email address you used when purchasing your license. Your password is your license key.
 

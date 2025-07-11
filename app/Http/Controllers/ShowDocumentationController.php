@@ -46,7 +46,6 @@ class ShowDocumentationController extends Controller
         } catch (InvalidArgumentException $e) {
             return $this->redirectToFirstNavigationPage($navigation, $page);
         }
-
         SEOTools::setTitle($pageProperties['title'].' - NativePHP '.$platform.' v'.$version);
         SEOTools::setDescription(Arr::exists($pageProperties, 'description') ? $pageProperties['description'] : '');
 
@@ -65,7 +64,8 @@ class ShowDocumentationController extends Controller
         $pageProperties = $document->matter();
 
         $versionProperties = YamlFrontMatter::parseFile(resource_path("views/docs/{$platform}/{$version}/_index.md"));
-        $pageProperties = array_merge($pageProperties, $versionProperties->matter());
+
+        $pageProperties = array_merge($versionProperties->matter(), $pageProperties);
 
         $pageProperties['platform'] = $platform;
         $pageProperties['version'] = $version;

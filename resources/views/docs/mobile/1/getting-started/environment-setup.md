@@ -1,0 +1,94 @@
+---
+title: Environment Setup
+order: 100
+---
+
+## iOS Requirements
+
+### For iOS
+1. macOS (required - iOS development is only possible on Mac)
+2. [Xcode 16.0 or later](https://apps.apple.com/app/xcode/id497799835)
+3. Xcode Command Line Tools
+4. Homebrew (for dependency management)
+5. CocoaPods
+6. _Optional_ iOS device for testing
+
+#### Setting up iOS Development Environment
+
+1. **Install Xcode**
+   - Download from the [Mac App Store](https://apps.apple.com/app/xcode/id497799835)
+   - Minimum version: Xcode 16.0
+
+2. **Install Xcode Command Line Tools**
+   ```shell
+   xcode-select --install
+   ```
+   Verify installation:
+   ```shell
+   xcode-select -p
+   ```
+
+3. **Install Homebrew** (if not already installed)
+   ```shell
+   /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+   ```
+
+4. **Install CocoaPods**
+   ```shell
+   brew install cocoapods
+   ```
+   Verify installation:
+   ```shell
+   pod --version
+   ```
+
+#### Apple Developer Account
+You **do not** need to enroll in the [Apple Developer Program](https://developer.apple.com/programs/enroll/) ($99/year)
+to develop and test your apps on a Simulator. However, you will need to enroll when you want to:
+- Test your apps on real devices
+- Distribute your apps via the App Store
+
+> **Note** You cannot build iOS apps on Windows or Linux
+
+## Android Requirements
+
+### For Android
+1. [Android Studio 2024.2.1 or later](https://developer.android.com/studio)
+2. Android SDK with API 23 or higher
+3. **Windows only**: You must have [7zip](https://www.7-zip.org/) installed.
+
+> **Note** You do not need to separately install the Java Development Kit (JDK). Android Studio will automatically install the proper JDK for you.
+
+#### Setting up Android Studio and SDK
+
+1. **Download and Install Android Studio**
+   - Download from the [Android Studio download page](https://developer.android.com/studio)
+   - Minimum version required: Android Studio 2024.2.1
+
+2. **Install Android SDK**
+   - Open Android Studio
+   - Navigate to **Tools → SDK Manager**
+   - In the **SDK Platforms** tab, install at least one Android SDK platform for API 23 or higher
+     - Latest stable version: Android 15 (API 35)
+     - You only need to install one API version to get started
+   - In the **SDK Tools** tab, ensure **Android SDK Build-Tools** and **Android SDK Platform-Tools** are installed
+
+That's it! Android Studio handles all the necessary configuration automatically.
+
+## Testing on Real Devices
+
+You don't _need_ a physical iOS/Android device to compile and test your application, as NativePHP for Mobile supports
+the iOS Simulator and Android emulators. However, we highly recommend that you test your application on a real device before submitting to the
+Apple App Store and Google Play Store.
+
+### Running on a real device
+
+#### On iOS
+If you want to run your app on a real iOS device, you need to make sure it is in
+[Developer Mode](https://developer.apple.com/documentation/xcode/enabling-developer-mode-on-a-device)
+and that it's been added to your Apple Developer account as
+[a registered device](https://developer.apple.com/account/resources/devices/list).
+
+#### On Android
+On Android you need to [enable developer options](https://developer.android.com/studio/debug/dev-options#enable)
+and have USB debugging (ADB) enabled.

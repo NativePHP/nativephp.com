@@ -21,11 +21,13 @@ Presently, NativePHP for Mobile offers the following "native" functionality:
 - Push Notifications
 - Deep Links
 - NFC
+- Secure Storage
+- Location
+- Native image picker
+- Splash screen
 
 We're working on adding more and more features, including (in no particular order):
- - Secure Storage
  - Microphone access
- - Location
  - Bluetooth
  - SMS (Android only)
  - File picker
@@ -33,7 +35,6 @@ We're working on adding more and more features, including (in no particular orde
  - Document scanner
  - Background tasks
  - Geofencing
- - Native image picker
  - Calendar access
  - Local notifications, scheduled notifications
  - Clipboard API
@@ -45,11 +46,10 @@ We're working on adding more and more features, including (in no particular orde
  - Gyroscope
  - Accelerometer
  - Screen brightness
- - Haptic feedback
+ - More Haptic feedback
  - Network info access
  - Battery status 
- - CPU information
+ - CPU/Device information
  - Ads
  - In-app billing
- - Splash screen
 
