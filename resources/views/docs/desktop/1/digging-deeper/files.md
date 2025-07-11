@@ -101,15 +101,14 @@ NativePHP allows you to bundle additional files with your application that can b
 
 ### Adding Files
 
-To include extra files with your application, place them in the `public/extras/` directory at the root of your Laravel project:
+To include extra files with your application, place them in a `extras/` directory at the root of your Laravel project:
 
 ```
 your-project/
-├── public/
-│   └── extras/
-│       ├── my-tool.sh
-│       ├── my-tool.exe
-│       └── sample.csv
+├── extras/
+│   ├── my-tool.sh
+│   ├── my-tool.exe
+│   └── sample.csv
 ├── app/
 └── ...
 ```
