@@ -5,7 +5,8 @@ order: 500
 
 ## Overview
 
-NativePHP Mobile provides robust CLI commands designed for automated CI/CD environments. With proper configuration, you can build, package, and deploy mobile apps without manual intervention.
+NativePHP for Mobile provides robust CLI commands designed for automated CI/CD environments. With proper configuration,
+you can build, package, and deploy mobile apps without manual intervention.
 
 ## Key Commands for CI/CD
 
@@ -13,7 +14,7 @@ NativePHP Mobile provides robust CLI commands designed for automated CI/CD envir
 
 Install NativePHP dependencies in automated environments:
 
-```bash
+```shell
 # Install Android platform, overwriting existing files
 php artisan native:install android --force --no-tty
 
@@ -28,7 +29,7 @@ php artisan native:install both --force
 
 Build your app for different environments:
 
-```bash
+```shell
 # Build debug version (development)
 php artisan native:run android --build=debug --no-tty
 
@@ -40,8 +41,6 @@ php artisan native:run android --build=bundle --no-tty
 ```
 
 ### Packaging Command
-
-> **Note**: ICU support is currently only available on Android. We are working to add iOS support as soon as possible and will remove this note when it becomes available.
 
 Package signed releases for distribution:
 
@@ -63,11 +62,6 @@ ANDROID_KEYSTORE_FILE="/path/to/keystore.jks"
 ANDROID_KEYSTORE_PASSWORD="your-keystore-password"
 ANDROID_KEY_ALIAS="your-key-alias"
 ANDROID_KEY_PASSWORD="your-key-password"
-
-# App Configuration
-NATIVEPHP_APP_ID="com.yourcompany.yourapp"
-NATIVEPHP_APP_VERSION="1.0.0"
-NATIVEPHP_APP_VERSION_CODE="1"
 ```
 
 ## Command Line Options

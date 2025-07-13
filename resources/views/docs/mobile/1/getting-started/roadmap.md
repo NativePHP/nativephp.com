@@ -1,30 +1,10 @@
 ---
 title: Roadmap
-order: 099
+order: 098
 ---
 
-## Current Status
-
-NativePHP for Mobile v1 is here. While we're still in the process of adding more and more 
-native API's and other features we believe it's robust enough to build useful applications that can be
-distributed to users.
-
-Presently, NativePHP for Mobile offers the following "native" functionality:
-
-- Vibrate
-- Show Toasts
-- Show Alerts
-- Share
-- Camera
-- Flashlight
-- Biometric ID
-- Push Notifications
-- Deep Links
-- NFC
-- Secure Storage
-- Location
-- Native image picker
-- Splash screen
+NativePHP for Mobile is stable and already deployed in production apps released on the app stores. But it's still early
+days. We haven't yet built interfaces to all of the available mobile APIs.
 
 We're working on adding more and more features, including (in no particular order):
  - Microphone access
@@ -53,3 +33,13 @@ We're working on adding more and more features, including (in no particular orde
  - Ads
  - In-app billing
 
+<aside class="relative z-0 mt-5 overflow-hidden rounded-2xl bg-pink-50 px-5 ring-1 ring-black/5 dark:bg-pink-600/10">
+
+#### Something missing?
+
+The mobile platforms are very mature and we're working hard to catch up with all their features.
+If you've got a **Max** or **Ultra** license, you can help us prioritize what we build next by
+[suggesting and voting for](https://github.com/nativephp/mobile/discussions?discussions_q=is%3Aopen+sort%3Atop)
+the features you want most.
+
+</aside>

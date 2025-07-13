@@ -27,26 +27,23 @@ upon foreign key constraints, [you need to enable SQLite support for them](https
 **It's important to test your migrations on prod builds before releasing updates!** You don't want to accidentally
 delete your user's data when they update your app.
 
-## Seeding Data with Migrations
+## Seeding data with migrations
 
-Migrations are the perfect mechanism for seeding data in mobile applications. They provide the natural behavior you want for data seeding:
+Migrations are the perfect mechanism for seeding data in mobile applications. They provide the natural behavior you
+want for data seeding:
 
-- **Run once**: Each migration runs exactly once per device
-- **Tracked**: Laravel tracks which migrations have been executed
-- **Versioned**: New app versions can include new data seeding migrations
-- **Reversible**: You can create migrations to remove or update seed data
+- **Run once**: Each migration runs exactly once per installation.
+- **Tracked**: Laravel tracks which migrations have been executed.
+- **Versioned**: New app versions can include new data seeding migrations.
+- **Reversible**: You can create migrations to remove or update seed data.
 
-### Creating Seed Migrations
+### Creating seed migrations
 
 Create dedicated migrations for seeding data:
 
-```bash
-php artisan make:migration seed_default_categories
+```shell
 php artisan make:migration seed_app_settings
-php artisan make:migration seed_initial_user_data
 ```
-
-### Example: Seeding Default Categories
 
 ```php
 use Illuminate\Database\Migrations\Migration;
@@ -61,44 +58,42 @@ return new class extends Migration
             ['name' => 'Personal', 'color' => '#10B981'],
         ]);
     }
-
-    public function down()
-    {
-        // Rollback/fresh migrations never run
-    }
 };
 ```
 
-### Best Practices for Seed Migrations
+### Test thoroughly
 
-1. **Use specific timestamps**: Name migrations with dates to ensure proper ordering
-2. **Check before inserting**: Prevent duplicate data with updateOrCreate() or firstOrCreate()
-3. **Handle conflicts gracefully**: Check if data already exists before seeding
-4. **Use realistic data**: Seed with data that matches your production environment
-5. **Test thoroughly**: Verify seed migrations work on fresh installs and updates
+This is the most important step when releasing new versions of your app, especially with new migrations.
 
-This approach ensures your mobile app has the initial data it needs while maintaining consistency across different app versions and user devices.
+Your migrations should work both for users who are installing your app for the first time (or re-installing) _and_
+users who have updated your app to a new release.
+
+Make sure you test your migrations under the different scenarios that your users' databases are likely to be in.
 
 ## Things to note
 
 - As your app is installed on a separate device, you do not have remote access to the database.
 - If a user deletes your application from their device, any databases are also deleted.
 
-## Database Security & Remote Data
+## Can I get MySQL/Postgres/other support?
 
-### Why No MySQL/PostgreSQL Support?
+No.
 
-NativePHP for Mobile intentionally does not include MySQL, PostgreSQL, or other remote database drivers. This is a deliberate security decision to prevent developers from accidentally embedding production database credentials directly in mobile applications.
+SQLite being the only supported database driver is a deliberate security decision to prevent developers from
+accidentally embedding production database credentials directly in mobile applications. Why?
 
-**Key security concerns:**
-- Mobile apps are distributed to user devices and can be reverse-engineered
-- Database credentials embedded in apps are accessible to anyone with the app binary
-- Direct database connections bypass important security layers like rate limiting and access controls
-- Network connectivity issues make direct database connections unreliable on mobile
+- Mobile apps are distributed to user devices and can be reverse-engineered.
+- Database credentials embedded in apps may be accessible to anyone with the app binary.
+- Direct database connections bypass important security layers like rate limiting and access controls.
+- Network connectivity issues make direct database connections unreliable from mobile devices and can be troublesome
+    for your database to handle.
 
-### The API-First Approach
+## API-first
 
-Instead of direct database connections, we strongly recommend building a secure API backend that your mobile app communicates with. This provides multiple security and architectural benefits:
+If a key part of your application relies on syncing data between a central database and your client apps, we strongly
+recommend that you do so via a secure API backend that your mobile app can communicate with.
+
+This provides multiple security and architectural benefits:
 
 **Security Benefits:**
 - Database credentials never leave your server
@@ -113,36 +108,42 @@ Instead of direct database connections, we strongly recommend building a secure 
 - Version your API for backward compatibility
 - Transform data specifically for mobile consumption
 
-### Recommended Architecture
+### Securing your API
 
-```php
-// ❌ NEVER DO THIS - Direct database in mobile app
-DB::connection('production')->table('users')->get(); // Credentials exposed!
+For the same reasons that you shouldn't share database credentials in your `.env` file or elsewhere in your app code,
+you shouldn't store API keys or tokens either.
 
-// ✅ DO THIS - Secure API communication
-$response = Http::withToken($this->getStoredToken())
-    ->get('https://your-api.com/api/users');
-```
+If anything, you should provide a client key that **only** allows client apps to request tokens. Once you have
+authenticated your user, you can pass an access token back to your mobile app and use this for communicating with your
+API.
 
-### Laravel Sanctum Integration
+Store these tokens on your users' devices securely with the [`SecureStorage`](/docs/mobile/1/apis/secure-storage) API.
 
-[Laravel Sanctum](https://laravel.com/docs/sanctum) is the perfect solution for API authentication between your mobile app and Laravel backend. It provides secure, token-based authentication without the complexity of OAuth.
+It's a good practice to ensure these tokens have high entropy so that they are very hard to guess and a short lifespan.
+Generating tokens is cheap; leaking personal customer data can get _very_ expensive!
 
+Use industry-standard tools like OAuth-2.0-based providers, Laravel Passport, or Laravel Sanctum.
 
-### Best Practices
+<aside class="relative z-0 mt-5 overflow-hidden rounded-2xl bg-pink-50 px-5 ring-1 ring-black/5 dark:bg-pink-600/10">
 
-**For Mobile Apps:**
-- Always store API tokens in SecureStorage
-- Implement proper error handling for network requests
-- Cache data locally using SQLite for offline functionality
+[Laravel Sanctum](https://laravel.com/docs/sanctum) is an ideal solution for API authentication between your mobile app and Laravel backend.
+It provides secure, token-based authentication without the complexity of OAuth.
+
+</aside>
+
+#### Considerations
+
+In your mobile apps:
+
+- Always store API tokens using `SecureStorage`
 - Use HTTPS for all API communications
-- Implement retry logic with exponential backoff
+- Cache data locally using SQLite for offline functionality
+- Check for connectivity before making API calls
 
-**For API Backends:**
-- Use Laravel Sanctum or similar for token-based authentication
+And on the API side:
+
+- Use token-based authentication
 - Implement rate limiting to prevent abuse
 - Validate and sanitize all input data
 - Use HTTPS with proper SSL certificates
 - Log all authentication attempts and API access
-
-This approach ensures your mobile app remains secure while providing seamless access to your backend data through a well-designed API layer.

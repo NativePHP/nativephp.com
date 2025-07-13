@@ -5,7 +5,8 @@ order: 700
 
 ## Overview
 
-The SecureStorage API provides secure storage using the device's native keychain (iOS) or keystore (Android) for sensitive data like tokens, passwords, and user credentials.
+The SecureStorage API provides secure storage using the device's native keychain (iOS) or keystore (Android). It's
+ideal for storing sensitive data like tokens, passwords, and user credentials.
 
 ```php
 use Native\Mobile\Facades\SecureStorage;
@@ -24,13 +25,7 @@ Stores a secure value in the native keychain or keystore.
 **Returns:** `bool` - `true` if successfully stored, `false` otherwise
 
 ```php
-$success = SecureStorage::set('api_token', 'abc123xyz');
-
-if ($success) {
-    // Token stored securely
-} else {
-    // Storage failed
-}
+SecureStorage::set('api_token', 'abc123xyz');
 ```
 
 ### `get()`
@@ -44,14 +39,6 @@ Retrieves a secure value from the native keychain or keystore.
 
 ```php
 $token = SecureStorage::get('api_token');
-
-if ($token) {
-    // Use the retrieved token
-    $this->authenticateWithToken($token);
-} else {
-    // Token not found, user needs to login
-    $this->redirectToLogin();
-}
 ```
 
 ### `delete()`
@@ -84,18 +71,16 @@ Deletes a secure value from the native keychain or keystore.
 - **System Protection:** Protected by device authentication
 - **Tamper Resistance:** Hardware-backed security when available
 
-## Best Practices
-
-### What to Store
+## What to Store
 - API tokens and refresh tokens
 - User credentials (if necessary)
 - Encryption keys
 - Sensitive user preferences
 - Two-factor authentication secrets
 
-### What NOT to Store
+## What NOT to Store
 - Large amounts of data (use encrypted database instead)
-- Non-sensitive configuration
+- Non-sensitive data
 - Temporary data
 - Cached content
 

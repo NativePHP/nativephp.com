@@ -69,27 +69,17 @@ Fired when location data is requested (success or failure).
 use Livewire\Attributes\On;
 use Native\Mobile\Events\Geolocation\LocationReceived;
 
-#[On('native:' . LocationReceived::class)]
-public function handleLocationReceived($success = null, $latitude = null, $longitude = null, $accuracy = null, $timestamp = null, $provider = null, $error = null)
-{
-    if ($success) {
-        // Location successfully retrieved
-        $this->latitude = $latitude;
-        $this->longitude = $longitude;
-        $this->accuracy = $accuracy;
-        $this->provider = $provider;
-        
-        Log::info('Location received', [
-            'lat' => $latitude,
-            'lng' => $longitude,
-            'accuracy' => $accuracy,
-            'provider' => $provider
-        ]);
-    } else {
-        // Location request failed
-        $this->error = $error ?? 'Failed to get location';
-        Log::warning('Location request failed', ['error' => $error]);
-    }
+#[On('native:'.LocationReceived::class)]
+public function handleLocationReceived(
+    $success = null,
+    $latitude = null,
+    $longitude = null,
+    $accuracy = null,
+    $timestamp = null,
+    $provider = null,
+    $error = null
+) {
+    // ...
 }
 ```
 
@@ -111,20 +101,10 @@ Fired when permission status is checked.
 use Livewire\Attributes\On;
 use Native\Mobile\Events\Geolocation\PermissionStatusReceived;
 
-#[On('native:' . PermissionStatusReceived::class)]
+#[On('native:'.PermissionStatusReceived::class)]
 public function handlePermissionStatus($location, $coarseLocation, $fineLocation)
 {
-    $this->locationPermission = $location;
-    $this->coarsePermission = $coarseLocation;
-    $this->finePermission = $fineLocation;
-    
-    if ($coarseLocation === 'granted' || $fineLocation === 'granted') {
-        // At least some location permission is granted
-        $this->canRequestLocation = true;
-    } else {
-        // No location permissions granted
-        $this->showPermissionExplanation();
-    }
+    // ...
 }
 ```
 
@@ -150,71 +130,22 @@ use Native\Mobile\Events\Geolocation\PermissionRequestResult;
 public function handlePermissionRequest($location, $coarseLocation, $fineLocation, $message = null, $needsSettings = null)
 {
     if ($location === 'permanently_denied') {
-        // Permission permanently denied - must go to Settings
-        $this->error = $message ?? 'Location permission permanently denied. Please enable in Settings.';
-        $this->showSettingsPrompt = true;
+        $this->error = 'Location permission permanently denied. Please enable in Settings.';
     } elseif ($coarseLocation === 'granted' || $fineLocation === 'granted') {
-        // Permission granted - can now request location
-        $this->permissionGranted = true;
         $this->getCurrentLocation();
     } else {
-        // Permission denied but can ask again
         $this->error = 'Location permission is required for this feature.';
     }
 }
 ```
 
-## Understanding Permission States
-
-### Permission Types
-
-**Coarse Location (`ACCESS_COARSE_LOCATION` on Android)**
-- Network-based location (WiFi, cellular towers)
-- Lower accuracy (~100-1000 meters)
-- Less battery usage
-- Faster location fixes
-
-**Fine Location (`ACCESS_FINE_LOCATION` on Android, Location Services on iOS)**
-- GPS-based location
-- Higher accuracy (~5-50 meters)  
-- More battery usage
-- Slower initial location fix
-
-
-## Platform Support
-
-### iOS
-- Uses Core Location framework
-- Requires location usage description in Info.plist
-- Supports both "When in Use" and "Always" permissions
-- Automatic permission prompts
-
-### Android  
-- Uses FusedLocationProviderClient (Google Play Services)
-- Requires location permissions in AndroidManifest.xml
-- Supports coarse and fine location permissions
-- Runtime permission requests (Android 6+)
-
 ## Privacy Considerations
 
-### Best Practices
 - **Explain why** you need location access before requesting
 - **Request at the right time** - when the feature is actually needed
 - **Respect denials** - provide alternative functionality when possible
 - **Use appropriate accuracy** - don't request fine location if coarse is sufficient
 - **Limit frequency** - don't request location updates constantly
-
-## Accuracy and Performance
-
-### Choosing Accuracy Level
-
-```php
-// For general location (city-level)
-Geolocation::getCurrentPosition(false); // ~100-1000m accuracy
-
-// For precise location (navigation, delivery)
-Geolocation::getCurrentPosition(true);  // ~5-50m accuracy
-```
 
 ### Performance Considerations
 - **Battery Usage** - GPS uses more battery than network location
@@ -222,10 +153,3 @@ Geolocation::getCurrentPosition(true);  // ~5-50m accuracy
 - **Indoor Accuracy** - GPS may not work well indoors
 - **Caching** - Consider caching recent locations for better UX
 
-### Error Handling
-- Always handle both success and failure cases
-- Provide meaningful error messages to users
-- Implement fallback strategies (manual entry, saved locations)
-- Log errors for debugging but don't expose sensitive details
-
-The Geolocation API provides powerful location capabilities while respecting user privacy and platform requirements. Always handle permissions gracefully and provide clear value propositions for why location access is needed.

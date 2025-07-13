@@ -3,11 +3,14 @@ title: Native Functions
 order: 100
 ---
 
-NativePHP for Mobile enables you to build powerful mobile applications using Laravel and PHP. What makes this approach unique is the ability to call native device functions directly from your PHP code, giving you access to platform-specific features while maintaining the productivity and familiarity of Laravel development.
+Our custom PHP extension enables tight integration with each platform, providing a consistent and performant abstraction
+that lets you focus on building your app. Build for both platforms while you develop on one.
 
-These functions are called from your PHP code using one of an ever-growing list of facades.
+Native device functions are called directly from your PHP code, giving you access to platform-specific features while
+maintaining the productivity and familiarity of Laravel development.
 
-All native functionality is namespaced into its own Facade, they are:
+These functions are called from your PHP code using an ever-growing list of classes. These classes are also wrapped in
+Laravel Facades for ease of access and testing:
 
 - `Native\Mobile\Facades\Biometrics`
 - `Native\Mobile\Facades\Camera`
@@ -17,3 +20,12 @@ All native functionality is namespaced into its own Facade, they are:
 - `Native\Mobile\Facades\PushNotifications`
 - `Native\Mobile\Facades\SecureStorage`
 - `Native\Mobile\Facades\System`
+
+<aside class="relative z-0 mt-5 overflow-hidden rounded-2xl bg-pink-50 px-5 ring-1 ring-black/5 dark:bg-pink-600/10">
+
+#### Found a bug?
+
+Community support is available to all at no cost via [Discord](/discord). Higher priority support directly from the
+NativePHP team is available to **Max** and **Ultra** license holders.
+
+</aside>

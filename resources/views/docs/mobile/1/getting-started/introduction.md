@@ -14,6 +14,19 @@ experiences using the tools you already know.
 
 **It's never been this easy to build beautiful, local-first apps for iOS and Android.**
 
+## What makes NativePHP for Mobile special?
+
+- 📱 **Native performance**  
+    Your app runs natively through an embedded PHP runtime optimized for each platform.  
+- 🔥 **True mobile APIs**  
+    Access camera, biometrics, push notifications, and more. One cohesive library that does it all.
+- ⚡ **Laravel powered**  
+    Leverage the entire Laravel ecosystem and your existing skillset.
+- 🚫 **No web server required**  
+    Your app runs entirely on-device and can operate completely offline-first.
+- 🔄 **Cross platform**  
+    Build apps for both iOS and Android from a single codebase.
+
 ## Old tools, new tricks
 
 With NativePHP for Mobile, you don’t need to learn Swift, Kotlin, or anything new.
@@ -40,16 +53,22 @@ You simply interact with an easy-to-use set of functions from PHP and everything
 NativePHP for Mobile is way more than just a web view wrapper for your server-based application. Your application lives
 _on device_ and is shipped with each installation.
 
-Thanks to our custom PHP extension, you can interact with many native APIs today, with more coming, including:
+Thanks to our custom PHP extension, you can interact with many native APIs today, with more coming all the time,
+including:
 
-- Camera & Microphone
-- Biometric ID
-- Vibration
-- Accelerometer, GPS and other sensors
-- Push notifications, native alerts and other native UI elements
+- 📷 Camera & Gallery access
+- 🔐 Biometric authentication (Face ID, Touch ID, Fingerprint)
+- 🔔 Push notifications via APNs (for iOS) or Firebase (both)
+- 💬 Native dialogs & toasts
+- 🔗 Deep links & universal links
+- 📳 Haptic feedback & vibration
+- 🔦 Flashlight control
+- 📤 Native sharing
+- 🔒 Secure storage (Keychain/Keystore)
+- 📍 Location services
 
 You have the full power of PHP and Laravel at your fingertips... literally! And you're not sandboxed into the web view;
-this goes way beyond what's possible with PWAs and WASM without any of the complexity... we've got full-cream PHP ready
-to go!
+this goes way beyond what's possible with PWAs and WASM without any of the complexity... we've got full-cream PHP at
+the ready!
 
-**What are you waiting for!? [Let's go!](installation)**
+**What are you waiting for!? [Let's go!](quick-start)**
