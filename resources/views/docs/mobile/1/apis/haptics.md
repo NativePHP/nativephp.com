@@ -23,58 +23,7 @@ Triggers device vibration for tactile feedback.
 Haptics::vibrate();
 ```
 
-## Example Usage
+**Use haptics for:** Button presses, form validation, important notifications, game events.
 
-### Basic Form Feedback
-```php
-use Livewire\Component;
-use Native\Mobile\Facades\Haptics;
-
-class FormComponent extends Component
-{
-    public function save()
-    {
-        if ($this->hasErrors()) {
-            // Haptic feedback for errors
-            Haptics::vibrate();
-            return;
-        }
-
-        $this->saveData();
-        
-        // Success haptic feedback
-        Haptics::vibrate();
-    }
-
-    public function deleteItem()
-    {
-        // Haptic feedback for important actions
-        Haptics::vibrate();
-        $this->performDelete();
-    }
-}
-```
-
-### Best Practices
-```php
-class HapticsExample extends Component
-{
-    // ✅ Good: Button presses, form errors, important actions
-    public function onButtonPress()
-    {
-        Haptics::vibrate();
-        $this->processAction();
-    }
-
-    // ❌ Avoid: Frequent events like scrolling
-    public function onScroll()
-    {
-        // Don't vibrate on every scroll - too annoying!
-        // Haptics::vibrate();
-    }
-}
-```
-
-**Use haptics for:** Button presses, form validation, important notifications, game events  
-**Avoid haptics for:** Frequent events, background processes, minor updates
+**Avoid haptics for:** Frequent events, background processes, minor updates.
 

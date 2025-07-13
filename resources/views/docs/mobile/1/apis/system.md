@@ -23,33 +23,14 @@ Toggles the device flashlight (camera flash LED) on and off.
 System::flashlight(); // Toggle flashlight state
 ```
 
-## Example Usage
+### `isIos()`
 
-```php
-use Livewire\Component;
-use Native\Mobile\Facades\System;
+Determines if the current device is running iOS.
 
-class FlashlightController extends Component
-{
-    public bool $isFlashlightOn = false;
+**Returns:** `true` if iOS, `false` otherwise
 
-    public function toggleFlashlight()
-    {
-        System::flashlight();
-        $this->isFlashlightOn = !$this->isFlashlightOn;
-    }
+### `isAndroid()`
 
-    public function render()
-    {
-        return view('livewire.flashlight-controller');
-    }
-}
-```
+Determines if the current device is running Android.
 
-## Platform Support
-
-### Flashlight
-- **iOS:** Controls camera flash LED
-- **Android:** Controls camera flash LED
-- **Permissions:** None required
-- **Limitations:** May not work if camera is currently in use
+**Returns:** `true` if Android, `false` otherwise

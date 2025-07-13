@@ -54,7 +54,7 @@ Fired when a photo is taken with the camera.
 use Livewire\Attributes\On;
 use Native\Mobile\Events\Camera\PhotoTaken;
 
-#[On('native:' . PhotoTaken::class)]
+#[On('native:'.PhotoTaken::class)]
 public function handlePhotoTaken(string $path)
 {
     // Process the captured photo
@@ -72,7 +72,7 @@ Fired when media is selected from the gallery.
 use Livewire\Attributes\On;
 use Native\Mobile\Events\Gallery\MediaSelected;
 
-#[On('native:' . MediaSelected::class)]
+#[On('native:'.MediaSelected::class)]
 public function handleMediaSelected($success, $files, $count)
 {
     foreach ($files as $file) {
@@ -82,80 +82,9 @@ public function handleMediaSelected($success, $files, $count)
 }
 ```
 
-## Example Usage
-
-```php
-use Livewire\Component;
-use Livewire\Attributes\On;
-use Native\Mobile\Facades\Camera;
-use Native\Mobile\Events\Camera\PhotoTaken;
-use Native\Mobile\Events\Gallery\MediaSelected;
-
-class PhotoManager extends Component
-{
-    public array $photos = [];
-    public bool $isCapturing = false;
-
-    public function takePhoto()
-    {
-        $this->isCapturing = true;
-        Camera::getPhoto();
-    }
-
-    public function pickFromGallery()
-    {
-        Camera::pickImages('images', true, 5);
-    }
-
-    #[On('native:' . PhotoTaken::class)]
-    public function handlePhotoTaken(string $path)
-    {
-        $this->isCapturing = false;
-        $this->addPhoto($path);
-    }
-
-    #[On('native:' . MediaSelected::class)]
-    public function handleMediaSelected($success, $files, $count)
-    {
-        foreach ($files as $file) {
-            $this->addPhoto($file);
-        }
-    }
-
-    private function addPhoto(string $path)
-    {
-        $this->photos[] = [
-            'path' => $path,
-            'data_url' => $this->createDataUrl($path),
-            'timestamp' => now()
-        ];
-    }
-
-    private function createDataUrl(string $path): string
-    {
-        $data = base64_encode(file_get_contents($path));
-        $mime = mime_content_type($path);
-        return "data:$mime;base64,$data";
-    }
-
-    public function render()
-    {
-        return view('livewire.photo-manager');
-    }
-}
-```
-
-## Platform Support
-
-- **iOS:** Uses UIImagePickerController and Photos framework
-- **Android:** Uses `Intent.ACTION_IMAGE_CAPTURE` and gallery intents
-- **Permissions:** Camera permission required for photo capture
-- **File Location:** Photos saved to app's temporary directory
-
 ## Notes
 
 - The first time your app requests camera access, users will be prompted for permission
 - If permission is denied, camera functions will fail silently
 - Captured photos are stored in the app's temporary directory
-- Consider implementing cleanup for old temporary photos
 - File formats are platform-dependent (typically JPEG)

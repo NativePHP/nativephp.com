@@ -39,12 +39,20 @@ Dialog::alert(
 
 Displays a brief toast notification message.
 
+
 **Parameters:**
 - `string $message` - The message to display
 
 ```php
 Dialog::toast('Item saved successfully!');
 ```
+
+#### Good toast messages
+
+- Short and clear
+- Great for confirmations and status updates
+- Don't rely on them for critical information
+- Avoid showing multiple toasts in quick succession
 
 ### `share()`
 
@@ -77,7 +85,7 @@ Fired when a button is pressed in an alert dialog.
 use Livewire\Attributes\On;
 use Native\Mobile\Events\Alert\ButtonPressed;
 
-#[On('native:' . ButtonPressed::class)]
+#[On('native:'.ButtonPressed::class)]
 public function handleAlertButton($index, $label)
 {
     switch ($index) {
@@ -93,40 +101,3 @@ public function handleAlertButton($index, $label)
     }
 }
 ```
-
-## Toast Guidelines
-
-### Best Practices
-- Keep messages short and clear
-- Use for confirmations and status updates
-- Don't rely on toasts for critical information
-- Avoid showing multiple toasts in quick succession
-
-```php
-// Good toast messages
-Dialog::toast('Saved!');
-Dialog::toast('Photo uploaded');
-Dialog::toast('Settings updated');
-
-// Avoid long messages
-Dialog::toast('Your photo has been successfully uploaded to the server and will be processed shortly');
-```
-
-## Platform Differences
-
-### iOS
-- Alerts use UIAlertController
-- Toasts use custom overlay views
-- Sharing uses UIActivityViewController
-
-### Android
-- Alerts use AlertDialog
-- Toasts use native Toast system
-- Sharing uses Intent.ACTION_SEND
-
-## Accessibility
-
-- All dialogs automatically support screen readers
-- Button text should be descriptive
-- Toast messages are announced by accessibility services
-- Consider users with motor disabilities when designing button layouts

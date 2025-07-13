@@ -1,11 +1,12 @@
 ---
 title: Browser
-order: 250
+order: 150
 ---
 
 ## Overview
 
-The Browser API provides three methods for opening URLs in mobile apps, each designed for specific use cases: in-app browsing, system browser navigation, and OAuth authentication flows.
+The Browser API provides three methods for opening URLs, each designed for specific use cases:
+in-app browsing, system browser navigation, and web authentication flows.
 
 ```php
 use Native\Mobile\Facades\Browser;
@@ -55,11 +56,3 @@ Browser::auth('https://provider.com/oauth/authorize?client_id=123&redirect_uri=n
 - Login with WorkOS, Auth0, Google, Facebook, etc.
 - Secure authentication with automatic redirects
 - Isolated browser session for security
-
-## Platform Behavior
-
-- **iOS**: Uses SFSafariViewController (inApp), Safari (system), ASWebAuthenticationSession (auth)
-- **Android**: Uses Custom Tabs (inApp), default browser (system), Custom Tabs with auth handling (auth)
-
-The Browser API provides the right tool for each browsing scenario in your mobile application.
-

@@ -1,249 +1,92 @@
 ---
-title: Deep, Universal, App Links and NFC
+title: Deep Links
 order: 300
 ---
 
 ## Overview
 
-NativePHP for Mobile supports both **deep linking** and **web-based linking** into your mobile apps.
+NativePHP for Mobile supports **deep linking** into your app via Custom URL Schemes and Associated Domains:
 
-There are two types of link integrations you can configure:
+- **Custom URL Scheme**
+    ```
+    myapp://some/path
+    ```
+- **Associated Domains** (a.k.a. Universal Links on iOS, App Links on Android)
+    ```
+    https://example.net/some/path
+    ```
 
-- **Deep Links** (myapp://some/path)
-- **Universal Links (iOS)** and **App Links (Android)** (https://example.net/some/path)
+In each case, your app can be opened directly at the route matching `/some/path`.
 
-Each method has its use case, and NativePHP handles all the platform-specific configuration automatically when you provide the proper environment variables.
+Each method has its use cases, and NativePHP handles all the platform-specific configuration automatically when you
+provide the proper environment variables.
 
----
+You can even use both approaches at the same time in a single app!
 
-## Deep Links
+## Custom URL Scheme
 
-Deep links use a **custom URL scheme** to open your app.
+Custom URL schemes are a great way to allow apps to pass data between themselves. If your app is installed when a user
+uses a deep link that incorporates your custom scheme, your app will open immediately to the desired route.
 
-For example:
+But note that custom URL schemes can only work when your app has been installed and cannot aid in app discovery. If a
+user interacts with URL with a custom scheme for an app they don't have installed, there will be no prompt to install
+an app that can load that URL.
 
-```
-myapp://profile/123
-```
-
-When a user taps a deep link, the mobile operating system detects the custom scheme and opens your app directly.
-
-### Configuration
-
-To enable deep linking, you must define:
-
-- **Scheme**: The protocol (e.g., myapp)
-- **Host**: An optional domain-like segment (e.g., open)
-
-These are configured in your .env:
+To enable your app's custom URL scheme, define it in your `.env`:
 
 ```dotenv
 NATIVEPHP_DEEPLINK_SCHEME=myapp
-NATIVEPHP_DEEPLINK_HOST=open
 ```
 
-### Platform Behavior
+You should choose a scheme that is unique to your app to avoid confusion with other apps. Note that some schemes are
+reserved by the system and cannot be used (e.g. `https`).
 
-- **iOS**: Deep links work immediately after installation
-- **Android**: Deep links work immediately after installation
-- **Both**: Apps will open directly when deep links are tapped
+## Associated domains
 
-## Universal Links (iOS) and App Links (Android)
+Universal Links/App Links allow real HTTPS URLs to open your app instead of in a web browser, if the app is installed.
+If the app is not installed, the URL will load as normal in the browser.
 
-Universal Links and App Links allow real HTTPS URLs to open your app instead of a web browser, if the app is installed.
+This flow increases the opportunity for app discovery dramatically and provides a much better overall user experience.
 
-For example:
-```dotenv
-https://example.net/property/456
-```
+### How it works
 
-### User Experience
-
-When a user taps this link:
-
-- **If your app is installed**: It opens directly into the app
-- **If not installed**: It opens normally in the browser
-- **Seamless fallback**: No broken experience for users without the app
-
-This provides a seamless user experience without needing a custom scheme.
-
-### How It Works
-
-1. You must prove to iOS and Android that you own the domain by hosting special files:
+1. You must prove to the operating system on the user's device that your app is legitimately associated with the domain
+    you are trying to redirect by hosting special files on your server:
    - `.well-known/apple-app-site-association` (for iOS)
    - `.well-known/assetlinks.json` (for Android)
 2. The mobile OS reads these files to verify the link association
-3. Once verified, tapping a real URL will open your app instead of Safari or Chrome
+3. Once verified, tapping a real URL will open your app instead of opening it in the user's browser
 
-**NativePHP handles all the technical setup automatically** - you just need to host the verification files and configure your domain.
+**NativePHP handles all the technical setup automatically** - you just need to host the verification files and
+configure your domain correctly.
 
-### Configuration
-
-To enable Universal Links and App Links, you must define:
-
-- **Host**: The domain name (e.g., example.net)
-
-These are configured in your .env:
+To enable an app-associated domain, define it in your `.env`:
 
 ```dotenv
 NATIVEPHP_DEEPLINK_HOST=example.net
 ```
 
-#### Complete Configuration Example
+## Testing & troubleshooting
 
-```dotenv
-# For both deep links and universal/app links
-NATIVEPHP_DEEPLINK_SCHEME=myapp
-NATIVEPHP_DEEPLINK_HOST=example.net
+Associated Domains do not usually work in simulators. Testing on a real device that connects to a publicly-accessible
+server for verification is often the best way to ensure these are operating correctly.
 
-# Your app will respond to:
-# myapp://profile/123 (deep link)
-# https://example.net/profile/123 (universal/app link)
-```
+If you are experiencing issues getting your associated domain to open your app, try:
+- Completely deleting and reinstalling the app. Registration verifications (including failures) are often cached
+    against the app.
+- Validating that your associated domain verification files are formatted correctly and contain the correct data.
 
-## Domain Verification
+There is usually no such limitation for Custom URL Schemes.
 
-### Required Files
+## Use cases
 
-The app stores generate the content for these files, but you must host them on your domain:
+Deep linking is great for bringing users from another context directly to a key place in your app. Universal/App Links
+are usually the more appropriate choice for this because of their flexibility in falling back to simple loading a URL
+in the browser.
 
-#### iOS - `.well-known/apple-app-site-association`
+They're also more likely to behave the same across both platforms.
 
-```json
-{
-  "applinks": {
-    "details": [
-      {
-        "appIDs": ["TEAM_ID.com.yourcompany.yourapp"],
-        "components": [
-          {
-            "*": "*"
-          }
-        ]
-      }
-    ]
-  }
-}
-```
-
-#### Android - `.well-known/assetlinks.json`
-
-```json
-[{
-  "relation": ["delegate_permission/common.handle_all_urls"],
-  "target": {
-    "namespace": "android_app",
-    "package_name": "com.yourcompany.yourapp",
-    "sha256_cert_fingerprints": ["SHA256_FINGERPRINT"]
-  }
-}]
-```
-
-### Verification Process
-
-1. **iOS**: Apple's servers periodically check the `apple-app-site-association` file
-2. **Android**: Google Play Services verifies the `assetlinks.json` file
-3. **Both**: Files must be accessible via HTTPS without redirects
-4. **Content-Type**: Serve files as `application/json`
-
-### Automatic Configuration
-
-NativePHP automatically:
-- Configures iOS `associatedDomains` in your app
-- Sets up Android `intentFilters` for your domain
-- Generates the correct fingerprints and app IDs
-- Handles platform-specific URL routing
-
-## Platform-Specific Behavior
-
-### iOS Universal Links
-
-- **Immediate**: Work as soon as the app is installed
-- **Smart Banner**: iOS can display an install banner if app isn't installed
-- **Fallback**: Opens in Safari if app isn't installed
-- **Cross-app**: Work from any app, not just Safari
-
-### Android App Links
-
-- **Verification**: Requires domain verification before working
-- **Default**: Can be set as default handler for domain links
-- **Fallback**: Opens in Chrome if app isn't installed
-- **Intent**: Uses Android's Intent system for routing
-
-## Handling Universal/App Links
-
-Once you've configured your deep link settings, you can handle the link in your app.
-
-Simply set up a route in your web.php file and the deeplink will redirect to your route.
-
-```dotenv
-https://example.net/profile/123
-```
-
-```php
-Route::get('/profile/{id}', function ($id) {
-    // Handle the deep link
-    // This works for both deep links and universal/app links
-});
-```
-
-## Testing and Development
-
-### Testing Limitations
-
-- **Development builds**: Universal/App Links may not work in development
-- **Production required**: Full testing requires production builds and domain verification
-- **Simulator**: iOS Simulator may not handle Universal Links correctly
-
-### Best Practices
-
-1. **Test both link types** - Ensure deep links and universal/app links work
-2. **Verify domain files** - Check that .well-known files are accessible
-3. **Production testing** - Test universal/app links with production builds
-4. **Fallback handling** - Ensure your website handles users without the app
-5. **Analytics tracking** - Monitor which link types are most effective
-
-## NFC
-
-NFC is a technology that allows you to read and write NFC tags. 
-
-NativePHP handles NFC tag "bumping" just like a Universal/App Link. 
-You can use a tool like [NFC Tools](https://www.wakdev.com/en/) to write NFC tags.
-
-Set the url to a Universal/App Link and the tag will be written to the NFC tag. 
-"Bumping" the tag will open the app.
-
-### NFC Configuration
-
-NFC tags work best with Universal/App Links because:
-- They provide fallback to website if app isn't installed
-- They work across different devices and platforms
-- They provide a better user experience than custom schemes
-
-```bash
-# Write this URL to an NFC tag
-https://example.net/product/456
-
-# When "bumped":
-# - Opens your app if installed
-# - Opens website if not installed
-```
-
-## Troubleshooting
-
-### Common Issues
-
-1. **Universal Links not working**: Check domain verification files
-2. **Deep links not opening**: Verify URL scheme configuration
-3. **Wrong app opening**: Check for conflicting URL schemes
-4. **iOS Smart Banner**: Ensure proper app store metadata
-
-### Debug Steps
-
-1. **Verify .env configuration** - Check scheme and host values
-2. **Test deep links first** - Easier to debug than universal links
-3. **Check domain files** - Ensure .well-known files are accessible
-4. **Use production builds** - Development builds may not work correctly
-5. **Monitor app logs** - Check for link handling errors
-
-Remember that NativePHP handles all the complex platform-specific setup automatically - you just need to configure your domain and environment variables correctly.
+Then you could use Universal/App Links in:
+- NFC tags
+- QR codes
+- Email/SMS marketing
