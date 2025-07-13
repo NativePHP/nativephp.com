@@ -27,7 +27,14 @@
             content="{{ csrf_token() }}"
         />
 
-        <title>NativePHP{{ isset($title) ? ' | ' . $title : '' }}</title>
+        @php
+            $seoTitle = SEOMeta::getTitle();
+            $defaultSeoTitle = config('seotools.meta.defaults.title');
+        @endphp
+        
+        @if($seoTitle === $defaultSeoTitle || empty($seoTitle))
+            <title>NativePHP{{ isset($title) ? ' | ' . $title : '' }}</title>
+        @endif
 
         {{-- Favicon --}}
         <link
