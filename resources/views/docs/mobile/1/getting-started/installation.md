@@ -68,15 +68,34 @@ email address you used when purchasing your license. Your password is your licen
 This package contains all the libraries, classes, commands, and interfaces that your application will need to work with
 iOS and Android.
 
+## Run the NativePHP installer
+
 **Before** running the `install` command, it is important to set the following variables in your `.env`:
 
-```shell
+```dotenv
 NATIVEPHP_APP_ID=com.yourcompany.yourapp
 NATIVEPHP_APP_VERSION="DEBUG"
 NATIVEPHP_APP_VERSION_CODE="1"
 ```
 
-## Run the NativePHP installer
+Find out more about these options in
+[Configuration](/docs/mobile/1/getting-started/configuration#codenativephp-app-idcode).
+
+<aside class="relative z-0 mt-5 overflow-hidden rounded-2xl bg-pink-50 px-5 ring-1 ring-black/5 dark:bg-pink-600/10">
+
+#### Setting your Apple Developer Team ID
+
+It may be useful to set your development team. You can do this via your `.env` file. Your development team ID can be
+found in your [Apple Developer account](https://developer.apple.com/account), under 'Membership details'.
+
+![](/img/docs/team-id.png)
+
+```dotenv
+NATIVEPHP_DEVELOPMENT_TEAM={your team ID}
+```
+
+</aside>
+
 
 ```shell
 php artisan native:install

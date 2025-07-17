@@ -1,6 +1,6 @@
 ---
 title: Security
-order: 400
+order: 100
 ---
 
 ## Security
@@ -25,6 +25,80 @@ level of entropy, as this makes them hard to guess and hard to abuse.
 **Always use HTTPS.**
 
 If your application allows users to connect _their own_ API keys for a service, you should treat these keys with great
-care. If you choose to store them anywhere (either in a [File](files) or
+care. If you choose to store them anywhere (either in a file or
 [Database](databases)), make sure you store them
 [encrypted](../the-basics/system#encryption-decryption) and decrypt them only when needed.
+
+## Secure Storage
+
+NativePHP provides access to your users' device's native Keystore/Keychain through the
+[`SecureStorage`](/docs/mobile/1/apis/secure-storage) facade, which
+allow you to store small amounts of data in a secure way.
+
+The device's secure storage encrypts and decrypts data on the fly and that means you can safely rely on it to store
+critical things like API tokens, keeping your users and your systems safe.
+
+This data is only accessible by your app and is persisted beyond the lifetime of your app, so it will still be available
+the next time your app is open.
+
+### Why not use the Laravel `Crypt` facade?
+
+By default, the `Crypt` facade - and by extension the `encrypt` and `decrypt` helper functions - all rely on the
+`APP_KEY` value set in your `.env` file.
+
+We _will_ use Laravel's underlying `Encryption` class, but you should avoid using these helpers directly.
+
+In the context of distributed apps, the `APP_KEY` is shipped _with_ your app and therefore isn't secure. Anyone who
+knows where to look for it will be able to find it. Then any data encrypted with it is no better off than if it was
+stored in plain text.
+
+Also, it will be the same key for every user, and this presents a considerable risk.
+
+What you really want is a **unique key for each user**, and for that you really need to generate your encryption key
+once your app is installed on your user's device.
+
+You could do this and update the `.env` file, but it would still be stored in a way that an attacker may be able to
+exploit.
+
+A better approach is to generate a secure key the first time your app opens, place that key in Secure Storage, and
+then use that key to encrypt your other data before storage:
+
+```php
+use Illuminate\Encryption\Encrypter;
+use Illuminate\Support\Facades\Storage;
+use Native\Mobile\Facades\SecureStorage;
+
+function generateRandomKey()
+{
+    return base64_encode(
+        Encrypter::generateKey(config('app.cipher'))
+    );
+}
+
+$encryptionKey = SecureStorage::get('encryption_key');
+
+if (! $encryptionKey) {
+    SecureStorage::set('encryption_key', $encryptionKey = generateRandomKey());
+}
+
+$mobileEncrypter = new Encrypter($encryptionKey);
+
+$encryptedContents = $mobileEncrypter->encrypt(
+    $request->file('super_private_file')
+);
+
+Storage::put('my_secure_file.pdf', $encryptedContents);
+```
+
+And then decrypt it later:
+
+```php
+$decryptedContents = $mobileEncrypter->decrypt(
+    Storage::get('my_secure_file.pdf')
+);
+```
+
+### Secure Storage vs Database/Files
+
+Secure Storage is only meant for small amounts of text data, usually no more than a few KBs. If you need to store
+larger amounts of data or files, you should store this in a database or as a file.

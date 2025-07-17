@@ -66,11 +66,8 @@ This is useful during development for quickly testing changes without rebuilding
 
 ### Caveats
 
-- This feature is currently best suited for **Blade** and **Livewire** applications.
-- It does **not** currently detect or sync **compiled frontend assets**, such as those built with Vite or used by
-    **Inertia.js**.
-- If you're working with a JavaScript-heavy stack (Vue, React, Inertia), you should continue
-    [building your frontend](/docs/mobile/1/the-basics/assets) before launching the app with `native:run`.
+This feature is currently best suited for **Blade** and **Livewire** applications. It does not work so well if you're
+also trying to hot reload compiled frontends using something like Vite's hot reloading.
 
 ## Releasing
 
