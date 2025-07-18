@@ -79,7 +79,7 @@ NATIVEPHP_APP_VERSION_CODE="1"
 ```
 
 Find out more about these options in
-[Configuration](/docs/mobile/1/getting-started/configuration#codenativephp-app-idcode).
+[Configuration](/docs/getting-started/configuration#codenativephp-app-idcode).
 
 <aside class="relative z-0 mt-5 overflow-hidden rounded-2xl bg-pink-50 px-5 ring-1 ring-black/5 dark:bg-pink-600/10">
 
