@@ -19,7 +19,7 @@
         "laravel/sanctum": "^3.2",
         "laravel/tinker": "^2.8",
         "league/commonmark": "^2.4",
-        "livewire/livewire": "^3.6",
+        "livewire/livewire": "^3.6.4",
         "sentry/sentry-laravel": "^4.13",
         "spatie/laravel-menu": "^4.1",
         "spatie/yaml-front-matter": "^2.0",
