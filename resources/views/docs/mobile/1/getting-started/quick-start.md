@@ -32,4 +32,4 @@ php artisan native:run
 - **Examples** - Check out the [Kitchen Sink demo app](https://play.google.com/store/apps/details?id=com.nativephp.kitchensinkapp)
     on Android (coming soon to iOS!)
 
-Ready to build your first mobile app with PHP? [Let's get started! 🚀](/docs/mobile/1/getting-started/introduction)
+Ready to build your first mobile app with PHP? [Let's get started! 🚀](/docs/getting-started/introduction)
