@@ -96,7 +96,27 @@ NativePHP makes this as easy for you as it can, but each platform does have slig
 
 ### Windows
 
-[See the Electron documentation](https://www.electronforge.io/guides/code-signing/code-signing-windows) for more details.
+NativePHP supports two methods for Windows code signing: traditional certificate-based signing and Azure Trusted Signing.
+
+#### Azure Trusted Signing (Recommended)
+
+Azure Trusted Signing is a cloud-based code signing service that eliminates the need to manage local certificates. To use Azure Trusted Signing, add the following environment variables to your `.env` file:
+
+```dotenv
+AZURE_TENANT_ID=your-tenant-id
+AZURE_CLIENT_ID=your-client-id
+AZURE_CLIENT_SECRET=your-client-secret
+NATIVEPHP_AZURE_PUBLISHER_NAME=your-publisher-name
+NATIVEPHP_AZURE_ENDPOINT=your-endpoint-url
+NATIVEPHP_AZURE_CERTIFICATE_PROFILE_NAME=your-certificate-profile
+NATIVEPHP_AZURE_CODE_SIGNING_ACCOUNT_NAME=your-code-signing-account
+```
+
+These credentials will be automatically stripped from your built application for security.
+
+#### Traditional Certificate Signing
+
+For traditional certificate-based signing, [see the Electron documentation](https://www.electronforge.io/guides/code-signing/code-signing-windows) for more details.
 
 ### macOS
 
