@@ -2,13 +2,10 @@
 
 namespace Tests\Feature\Api;
 
-use App\Enums\LicenseSource;
-use App\Enums\Subscription;
-use App\Jobs\CreateAnystackLicenseJob;
 use App\Models\License;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\Queue;
+use Illuminate\Support\Facades\Http;
 use Tests\TestCase;
 
 class CreateLicenseTest extends TestCase
@@ -18,7 +15,20 @@ class CreateLicenseTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        Queue::fake();
+
+        // Mock the Anystack API calls
+        Http::fake([
+            'https://api.anystack.sh/v1/contacts' => Http::response(['data' => ['id' => 'contact_123']], 200),
+            'https://api.anystack.sh/v1/products/*/licenses' => Http::response([
+                'data' => [
+                    'id' => 'license_123',
+                    'key' => 'TEST-LICENSE-KEY',
+                    'expires_at' => null,
+                    'created_at' => now()->toISOString(),
+                    'updated_at' => now()->toISOString(),
+                ],
+            ], 200),
+        ]);
     }
 
     public function test_requires_authentication()
@@ -109,37 +119,8 @@ class CreateLicenseTest extends TestCase
         ]);
     }
 
-    public function test_dispatches_create_anystack_license_job()
+    public function test_creates_license_with_bifrost_source()
     {
-        $user = User::factory()->create();
-        $token = $user->createToken('test-token')->plainTextToken;
-
-        $this->withHeaders([
-            'Authorization' => 'Bearer '.$token,
-        ])->postJson('/api/licenses', [
-            'email' => 'test@example.com',
-            'name' => 'Test User',
-            'subscription' => 'pro',
-        ]);
-
-        Queue::assertPushed(CreateAnystackLicenseJob::class, function ($job) {
-            return $job->subscription === Subscription::Pro
-                && $job->firstName === null
-                && $job->lastName === null
-                && $job->source === LicenseSource::Bifrost
-                && $job->subscriptionItemId === null;
-        });
-    }
-
-    public function test_returns_existing_license_when_found()
-    {
-        $targetUser = User::factory()->create(['email' => 'test@example.com']);
-        $license = License::factory()->create([
-            'user_id' => $targetUser->id,
-            'policy_name' => 'pro',
-            'source' => LicenseSource::Bifrost,
-        ]);
-
         $user = User::factory()->create();
         $token = $user->createToken('test-token')->plainTextToken;
 
@@ -152,30 +133,61 @@ class CreateLicenseTest extends TestCase
         ]);
 
         $response->assertStatus(200)
-            ->assertJson([
-                'id' => $license->id,
-                'policy_name' => 'pro',
-                'source' => 'bifrost',
+            ->assertJsonStructure([
+                'id',
+                'user_id',
+                'policy_name',
+                'source',
+                'key',
+                'created_at',
+                'updated_at',
             ]);
+
+        // Verify the license was created with correct attributes
+        $this->assertDatabaseHas('licenses', [
+            'policy_name' => 'pro',
+            'source' => 'bifrost',
+            'key' => 'TEST-LICENSE-KEY',
+        ]);
+
+        // Verify user was created/found
+        $this->assertDatabaseHas('users', [
+            'email' => 'test@example.com',
+        ]);
     }
 
-    public function test_returns_pending_response_when_license_not_found()
+    public function test_creates_license_for_existing_user()
     {
-        $user = User::factory()->create();
-        $token = $user->createToken('test-token')->plainTextToken;
+        // Create an existing user
+        $existingUser = User::factory()->create([
+            'email' => 'existing@example.com',
+            'name' => 'Existing User',
+        ]);
+
+        $authUser = User::factory()->create();
+        $token = $authUser->createToken('test-token')->plainTextToken;
 
         $response = $this->withHeaders([
             'Authorization' => 'Bearer '.$token,
         ])->postJson('/api/licenses', [
-            'email' => 'newuser@example.com',
-            'name' => 'New User',
-            'subscription' => 'mini',
+            'email' => 'existing@example.com',
+            'name' => 'Different Name',  // This should be ignored
+            'subscription' => 'max',
         ]);
 
-        $response->assertStatus(202)
-            ->assertJson([
-                'message' => 'License creation initiated. Please check back shortly.',
-                'subscription' => 'mini',
+        $response->assertStatus(200)
+            ->assertJsonStructure([
+                'id',
+                'user_id',
+                'policy_name',
+                'source',
+                'key',
             ]);
+
+        // Verify license was created for the existing user
+        $license = License::where('user_id', $existingUser->id)->first();
+        $this->assertNotNull($license);
+        $this->assertEquals('max', $license->policy_name);
+        $this->assertEquals('bifrost', $license->source->value);
     }
 }
