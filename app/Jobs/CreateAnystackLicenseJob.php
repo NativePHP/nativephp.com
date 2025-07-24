@@ -2,6 +2,7 @@
 
 namespace App\Jobs;
 
+use App\Enums\LicenseSource;
 use App\Enums\Subscription;
 use App\Models\License;
 use App\Models\User;
@@ -24,6 +25,7 @@ class CreateAnystackLicenseJob implements ShouldQueue
         public ?int $subscriptionItemId = null,
         public ?string $firstName = null,
         public ?string $lastName = null,
+        public LicenseSource $source = LicenseSource::Stripe,
     ) {}
 
     public function handle(): void
@@ -42,6 +44,7 @@ class CreateAnystackLicenseJob implements ShouldQueue
             'user_id' => $this->user->id,
             'subscription_item_id' => $this->subscriptionItemId,
             'policy_name' => $this->subscription->value,
+            'source' => $this->source,
             'key' => $licenseData['key'],
             'expires_at' => $licenseData['expires_at'],
             'created_at' => $licenseData['created_at'],
