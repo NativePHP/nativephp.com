@@ -36,7 +36,7 @@ class PersonalAccessTokenResource extends Resource
                     ->options(\App\Models\User::pluck('name', 'id'))
                     ->required()
                     ->searchable(),
-                
+
                 Forms\Components\Hidden::make('tokenable_type')
                     ->default(\App\Models\User::class),
 
