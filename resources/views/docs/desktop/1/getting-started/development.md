@@ -27,7 +27,7 @@ It also keeps the connection to the terminal open so you can see and inspect use
 in real time.
 
 These builds are unsigned and not meant for distribution. They do not go through various optimizations typically done
-when [building your application for production](/docs/publishing) and so they expose more about the inner workings of
+when [building your application for production](/docs/desktop/1/publishing/publishing) and so they expose more about the inner workings of
 the code than you would typically want to share with your users.
 
 A major part of the build process, even for debug builds, involves _copying_ your application code into the runtime's
