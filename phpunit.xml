@@ -44,5 +44,6 @@
         <env name="ANYSTACK_MINI_POLICY_ID" value="pol_mini"/>
         <env name="ANYSTACK_PRO_POLICY_ID" value="pol_pro"/>
         <env name="ANYSTACK_MAX_POLICY_ID" value="pol_max"/>
+        <env name="BIFROST_API_KEY" value="fake_key"/>
     </php>
 </phpunit>
