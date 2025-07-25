@@ -44,8 +44,7 @@ class CreateLicenseTest extends TestCase
 
     public function test_validates_required_fields()
     {
-        $user = User::factory()->create();
-        $token = $user->createToken('test-token')->plainTextToken;
+        $token = config('services.bifrost.api_key');
 
         $response = $this->withHeaders([
             'Authorization' => 'Bearer '.$token,
@@ -57,8 +56,7 @@ class CreateLicenseTest extends TestCase
 
     public function test_validates_subscription_enum()
     {
-        $user = User::factory()->create();
-        $token = $user->createToken('test-token')->plainTextToken;
+        $token = config('services.bifrost.api_key');
 
         $response = $this->withHeaders([
             'Authorization' => 'Bearer '.$token,
@@ -74,8 +72,7 @@ class CreateLicenseTest extends TestCase
 
     public function test_creates_new_user_when_email_not_exists()
     {
-        $user = User::factory()->create();
-        $token = $user->createToken('test-token')->plainTextToken;
+        $token = config('services.bifrost.api_key');
 
         $this->withHeaders([
             'Authorization' => 'Bearer '.$token,
@@ -101,8 +98,7 @@ class CreateLicenseTest extends TestCase
             'name' => 'Original Name',
         ]);
 
-        $user = User::factory()->create();
-        $token = $user->createToken('test-token')->plainTextToken;
+        $token = config('services.bifrost.api_key');
 
         $this->withHeaders([
             'Authorization' => 'Bearer '.$token,
@@ -121,8 +117,7 @@ class CreateLicenseTest extends TestCase
 
     public function test_creates_license_with_bifrost_source()
     {
-        $user = User::factory()->create();
-        $token = $user->createToken('test-token')->plainTextToken;
+        $token = config('services.bifrost.api_key');
 
         $response = $this->withHeaders([
             'Authorization' => 'Bearer '.$token,
@@ -164,8 +159,7 @@ class CreateLicenseTest extends TestCase
             'name' => 'Existing User',
         ]);
 
-        $authUser = User::factory()->create();
-        $token = $authUser->createToken('test-token')->plainTextToken;
+        $token = config('services.bifrost.api_key');
 
         $response = $this->withHeaders([
             'Authorization' => 'Bearer '.$token,
