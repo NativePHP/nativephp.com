@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\LicenseSource;
 use App\Enums\Subscription;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -18,6 +19,7 @@ class License extends Model
     protected $casts = [
         'expires_at' => 'datetime',
         'is_suspended' => 'boolean',
+        'source' => LicenseSource::class,
     ];
 
     /**
