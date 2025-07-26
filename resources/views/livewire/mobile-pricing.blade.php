@@ -92,10 +92,10 @@
             {{-- Price --}}
             <div
                 class="flex items-start gap-1.5 pt-5"
-                aria-label="Price: $100 per year"
+                aria-label="Price: $50 per year"
             >
                 <div class="text-5xl font-semibold">
-                    ${{ number_format(100) }}
+                    ${{ number_format(50) }}
                 </div>
                 <div class="self-end pb-1.5 text-zinc-500">per year</div>
             </div>
@@ -237,10 +237,10 @@
             {{-- Price --}}
             <div
                 class="flex items-start gap-1.5 pt-5"
-                aria-label="Price: $750 per year"
+                aria-label="Price: $250 per year"
             >
                 <div class="text-5xl font-semibold">
-                    ${{ number_format(750) }}
+                    ${{ number_format(250) }}
                 </div>
                 <div class="self-end pb-1.5 text-zinc-500">per year</div>
             </div>
@@ -390,10 +390,10 @@
             {{-- Price --}}
             <div
                 class="flex items-start gap-1.5 pt-5"
-                aria-label="Price: $2,500 per year"
+                aria-label="Price: $1,000 per year"
             >
                 <div class="text-5xl font-semibold">
-                    ${{ number_format(2500) }}
+                    ${{ number_format(1000) }}
                 </div>
                 <div class="self-end pb-1.5 text-zinc-500">per year</div>
             </div>
