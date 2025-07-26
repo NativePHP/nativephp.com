@@ -92,7 +92,7 @@
         >
             <p>
                 NativePHP is an organization backed by a team of dedicated employees, maintainers, and contributors who commit their time to
-                ensure its continued development and improvement. Currently, we operate two major projects: NativePHP for Mobile and 
+                ensure its continued development and improvement. Currently, we operate two major projects: NativePHP for Mobile and
                 NativePHP for Desktop. Together, we can continue to grow NativePHP and ensure it remains a valuable tool for the community.
             </p>
 
@@ -107,18 +107,17 @@
             <h2>NativePHP for Desktop</h2>
 
             <p>
-                NativePHP for Desktop is a free, open source project available under MIT license. We encourage and appreciate any
-                contributions to the project, whether it's through code, documentation, spreading the word, or a financial sponsorship. 
+                NativePHP for Desktop is a free, open source project available under an MIT license. We encourage and appreciate any
+                contributions to the project, whether it's through code, documentation, spreading the word, or a financial sponsorship.
                 We provide the following ways of making an easy financial contribution:
             </p>
 
             <ul>
-                <li><a href="https://github.com/nativephp/laravel?sponsor=1">GitHub Sponsors</a></li>
                 <li><a href="https://opencollective.com/nativephp">OpenCollective</a></li>
             </ul>
 
             <p>
-                All contributions are welcome, at any amount, as a one-off payment or on a recurring schedule. These funds are used to 
+                All contributions are welcome, at any amount, as a one-off payment or on a recurring schedule. These funds are used to
                 support the maintainers of the Desktop project.
             </p>
 
@@ -137,7 +136,8 @@
             </p>
 
             <p>
-                For more details, please view our <a href="/partners">partners page</a> or email us at <a href="mailto:partners@nativephp.com?subject=Corporate%20Sponsorship">partners@nativephp.com</a>.
+                For more details, please view our <a href="/partners">partners page</a> or email us at
+                <a href="mailto:partners@nativephp.com?subject=Corporate%20Sponsorship">partners@nativephp.com</a>.
             </p>
         </article>
     </section>
