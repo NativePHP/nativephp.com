@@ -95,7 +95,7 @@
             <div
                 class="gradient-text bg-clip-text text-center tracking-tight text-pretty text-transparent"
             >
-                Build for anything. From anywhere. With PHP
+                The fastest way to compile, sign and distribute your apps for every platform
             </div>
         </div>
 
