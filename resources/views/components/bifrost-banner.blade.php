@@ -1,9 +1,57 @@
 <a
     href="https://bifrost.nativephp.com/"
     onclick="fathom.trackEvent('alert_click');"
-    class="group relative z-30 flex items-center justify-center gap-x-2 gap-y-2.5 overflow-hidden bg-slate-100 px-5 py-3 select-none dark:bg-[#050714]"
+    class="group relative z-30 flex flex-col items-center justify-center gap-x-3 gap-y-2.5 overflow-hidden bg-slate-200/60 px-5 py-3 select-none sm:flex-row dark:bg-gray-950/50"
 >
-    {{-- Laracon --}}
+    {{-- Left side decorations --}}
+    <div class="absolute top-1/2 left-2 -z-5 hidden -translate-y-1/2 md:block">
+        <div class="flex items-center gap-2">
+            {{-- Lines --}}
+            <div
+                class="flex items-center *:-mr-1 *:h-0.5 *:w-4 *:-rotate-50 *:rounded-full *:bg-slate-300 *:dark:bg-gray-600"
+            >
+                <div class="opacity-10"></div>
+                <div class="opacity-20"></div>
+                <div class="opacity-30"></div>
+                <div class="opacity-40"></div>
+                <div class="opacity-50"></div>
+                <div class="opacity-60"></div>
+                <div class="opacity-70"></div>
+                <div class="opacity-80"></div>
+            </div>
+
+            {{-- Arrow --}}
+            <x-icons.modern-arrow
+                class="h-3.5 text-slate-300 dark:text-gray-600"
+            />
+        </div>
+    </div>
+
+    {{-- Right side decorations --}}
+    <div class="absolute top-1/2 right-2 -z-5 hidden -translate-y-1/2 md:block">
+        <div class="flex items-center gap-2">
+            {{-- Arrow --}}
+            <x-icons.modern-arrow
+                class="h-3.5 -scale-x-100 -scale-y-100 text-slate-300 dark:text-gray-600"
+            />
+
+            {{-- Lines --}}
+            <div
+                class="flex items-center *:-mr-1 *:h-0.5 *:w-4 *:rotate-50 *:rounded-full *:bg-slate-300 *:dark:bg-gray-600"
+            >
+                <div class="opacity-80"></div>
+                <div class="opacity-70"></div>
+                <div class="opacity-60"></div>
+                <div class="opacity-50"></div>
+                <div class="opacity-40"></div>
+                <div class="opacity-30"></div>
+                <div class="opacity-20"></div>
+                <div class="opacity-10"></div>
+            </div>
+        </div>
+    </div>
+
+    {{-- Bifrost --}}
     <div
         class="flex items-center gap-2.5 transition duration-200 ease-in-out will-change-transform group-hover:-translate-x-0.5"
     >
@@ -45,24 +93,25 @@
                 }
             </style>
             <div
-                class="gradient-text bg-clip-text tracking-tight text-transparent"
+                class="gradient-text bg-clip-text text-center tracking-tight text-pretty text-transparent"
             >
                 Build for anything. From anywhere. With PHP
             </div>
         </div>
+
         {{-- Arrow --}}
-        <x-icons.right-arrow class="size-3 shrink-0 text-white" />
+        <x-icons.right-arrow class="size-3 shrink-0" />
     </div>
 
     {{-- Left blur --}}
-    <div class="absolute top-12 right-1/2 -z-10 translate-x-1/2">
+    <div class="absolute right-1/2 -bottom-11 -z-10 translate-x-1/2">
         <div
             class="h-10 w-36 -translate-x-10 -rotate-15 rounded-full bg-sky-300 blur-xl dark:bg-sky-500/60"
         ></div>
     </div>
 
     {{-- Right blur --}}
-    <div class="absolute top-12 right-1/2 -z-10 translate-x-1/2">
+    <div class="absolute right-1/2 -bottom-11 -z-10 translate-x-1/2">
         <div
             class="h-10 w-36 translate-x-10 -rotate-15 rounded-full bg-pink-300 blur-xl dark:bg-slate-400/60"
         ></div>
