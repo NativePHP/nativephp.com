@@ -2,7 +2,8 @@
     x-collapse
     x-show="!showMobileMenu"
 >
-    {{-- announcement banner goes here --}}
+    {{-- Announcement banner goes here --}}
+    <x-bifrost-banner />
 </div>
 <nav
     class="sticky top-0 z-50 flex flex-col items-center justify-center px-3 pt-px"
