@@ -53,7 +53,7 @@
 
     {{-- Bifrost --}}
     <div
-        class="flex items-center gap-2.5 transition duration-200 ease-in-out will-change-transform group-hover:-translate-x-0.5"
+        class="flex items-center gap-2.5 translate-y-[2.8px] transition duration-200 ease-in-out will-change-transform group-hover:-translate-x-0.5"
     >
         <x-logos.bifrost class="h-4" />
     </div>
