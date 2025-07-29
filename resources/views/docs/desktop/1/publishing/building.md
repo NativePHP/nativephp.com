@@ -96,7 +96,45 @@ NativePHP makes this as easy for you as it can, but each platform does have slig
 
 ### Windows
 
-[See the Electron documentation](https://www.electronforge.io/guides/code-signing/code-signing-windows) for more details.
+NativePHP supports two methods for Windows code signing: traditional certificate-based signing and Azure Trusted Signing.
+
+#### Azure Trusted Signing (Recommended)
+
+Azure Trusted Signing is a cloud-based code signing service that eliminates the need to manage local certificates. 
+
+When building your application, you can identify which signing method is being used:
+- **Azure Trusted Signing**: The build output will show "Signing with Azure Trusted Signing (beta)"
+- **Traditional Certificate**: The build output will show "Signing with signtool.exe"
+
+To use Azure Trusted Signing, add the following environment variables to your `.env` file:
+
+```dotenv
+# Azure AD authentication
+AZURE_TENANT_ID=your-tenant-id
+AZURE_CLIENT_ID=your-client-id
+AZURE_CLIENT_SECRET=your-client-secret
+
+# Azure Trusted Signing configuration
+# This is the CommonName (CN) value - your full name or company name
+# as entered in the Identity Validation Request form
+NATIVEPHP_AZURE_PUBLISHER_NAME=your-publisher-name
+
+# The endpoint URL for the Azure region where your certificate is stored
+NATIVEPHP_AZURE_ENDPOINT=https://eus.codesigning.azure.net/
+
+# The name of your certificate profile (NOT the Trusted Signing Account)
+NATIVEPHP_AZURE_CERTIFICATE_PROFILE_NAME=your-certificate-profile
+
+# Your Trusted Signing Account name (NOT the app registration display name)
+# This is the account name shown in Azure Trusted Signing, not your login name
+NATIVEPHP_AZURE_CODE_SIGNING_ACCOUNT_NAME=your-code-signing-account
+```
+
+These credentials will be automatically stripped from your built application for security.
+
+#### Traditional Certificate Signing
+
+For traditional certificate-based signing, [see the Electron documentation](https://www.electronforge.io/guides/code-signing/code-signing-windows) for more details.
 
 ### macOS
 
