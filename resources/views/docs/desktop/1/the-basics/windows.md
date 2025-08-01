@@ -366,6 +366,34 @@ Window::open()
     ->hideMenu();
 ```
 
+### Taskbar and Mission Control Visibility
+
+You may control whether a window appears in the taskbar and Mission Control.
+
+#### Skip Taskbar
+
+By default, all windows created with the `Window` facade will appear in the taskbar on Windows and macOS.
+You may use the `skipTaskbar()` method to prevent a window from appearing in the taskbar.
+
+```php
+Window::open()
+    ->skipTaskbar();
+```
+
+This is useful for utility windows, floating toolboxes, or background windows that should not clutter the taskbar.
+
+#### Hidden in Mission Control
+
+On macOS, all windows will appear in Mission Control by default.
+You may use the `hiddenInMissionControl()` method to prevent a window from appearing when the user toggles into Mission Control.
+
+```php
+Window::open()
+    ->hiddenInMissionControl();
+```
+
+This is particularly useful for always-on-top utility windows or menubar applications that should not be visible in Mission Control.
+
 ## Window Title Styles
 
 ### Default Title Style
