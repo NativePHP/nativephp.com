@@ -22,7 +22,7 @@ your ideas and questions through the [forum](https://github.com/orgs/nativephp/d
 #### Can you sponsor?
 
 If you're building an app that you plan to sell,
-[can you sponsor the development of NativePHP](/docs/desktop/1/getting-started/sponsoring)? This will help us to continue
+[can you sponsor the development of NativePHP](/docs/getting-started/sponsoring)? This will help us to continue
 maintaining and supporting NativePHP.
 
 </aside>

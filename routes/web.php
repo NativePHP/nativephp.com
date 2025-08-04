@@ -36,31 +36,40 @@ Route::view('sponsor', 'sponsoring')->name('sponsoring');
 Route::get('blog', [ShowBlogController::class, 'index'])->name('blog');
 Route::get('blog/{article}', [ShowBlogController::class, 'show'])->name('article');
 
-Route::redirect('/docs/{version}/{page?}', '/docs/mobile/{version}/{page?}')
-    ->where('page', '(.*)')
-    ->where('version', '[0-9]+');
-
 Route::get('/docs/{platform}/{version}/{page?}', ShowDocumentationController::class)
     ->where('page', '(.*)')
     ->where('platform', '[a-z]+')
-    ->where('version', '[0-9]+');
+    ->where('version', '[0-9]+')
+    ->name('docs.show');
 
 // Forward unversioned requests to the latest version
 Route::get('/docs/{page?}', function ($page = null) {
+    $page ??= 'introduction';
     $version = session('viewing_docs_version', '1');
+    $platform = session('viewing_docs_platform', 'mobile');
 
     $referer = request()->header('referer');
 
     // If coming from elsewhere in the docs, match the current version being viewed
     if (
-        ! session()->has('viewing_docs_version')
-        && parse_url($referer, PHP_URL_HOST) === parse_url(url('/'), PHP_URL_HOST)
+        parse_url($referer, PHP_URL_HOST) === parse_url(url('/'), PHP_URL_HOST)
         && str($referer)->contains('/docs/')
     ) {
-        $version = Str::before(ltrim(Str::after($referer, url('/docs/')), '/'), '/');
+        $path = Str::after($referer, url('/docs/'));
+        $path = ltrim($path, '/');
+        $segments = explode('/', $path);
+
+        if (count($segments) >= 2 && in_array($segments[0], ['desktop', 'mobile']) && is_numeric($segments[1])) {
+            $platform = $segments[0];
+            $version = $segments[1];
+        }
     }
 
-    return redirect("/docs/{$version}/{$page}");
+    return redirect()->route('docs.show', [
+        'platform' => $platform,
+        'version' => $version,
+        'page' => $page,
+    ]);
 })->name('docs')->where('page', '.*');
 
 Route::get('/order/{checkoutSessionId}', App\Livewire\OrderSuccess::class)->name('order.success');

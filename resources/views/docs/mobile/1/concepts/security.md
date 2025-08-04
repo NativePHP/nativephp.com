@@ -32,7 +32,7 @@ care. If you choose to store them anywhere (either in a file or
 ## Secure Storage
 
 NativePHP provides access to your users' device's native Keystore/Keychain through the
-[`SecureStorage`](/docs/mobile/1/apis/secure-storage) facade, which
+[`SecureStorage`](/docs/apis/secure-storage) facade, which
 allow you to store small amounts of data in a secure way.
 
 The device's secure storage encrypts and decrypts data on the fly and that means you can safely rely on it to store
