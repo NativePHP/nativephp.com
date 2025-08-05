@@ -129,13 +129,22 @@ class CreateLicenseTest extends TestCase
 
         $response->assertStatus(200)
             ->assertJsonStructure([
-                'id',
-                'user_id',
-                'policy_name',
-                'source',
-                'key',
-                'created_at',
-                'updated_at',
+                'data' => [
+                    'id',
+                    'anystack_id',
+                    'key',
+                    'policy_name',
+                    'source',
+                    'expires_at',
+                    'created_at',
+                    'updated_at',
+                    'email',
+                ],
+            ])
+            ->assertJson([
+                'data' => [
+                    'email' => 'test@example.com',
+                ],
             ]);
 
         // Verify the license was created with correct attributes
@@ -171,11 +180,22 @@ class CreateLicenseTest extends TestCase
 
         $response->assertStatus(200)
             ->assertJsonStructure([
-                'id',
-                'user_id',
-                'policy_name',
-                'source',
-                'key',
+                'data' => [
+                    'id',
+                    'anystack_id',
+                    'key',
+                    'policy_name',
+                    'source',
+                    'expires_at',
+                    'created_at',
+                    'updated_at',
+                    'email',
+                ],
+            ])
+            ->assertJson([
+                'data' => [
+                    'email' => 'existing@example.com',
+                ],
             ]);
 
         // Verify license was created for the existing user

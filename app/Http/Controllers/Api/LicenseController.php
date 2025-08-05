@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Enums\LicenseSource;
 use App\Enums\Subscription;
 use App\Http\Controllers\Controller;
+use App\Http\Resources\Api\LicenseResource;
 use App\Jobs\CreateAnystackLicenseJob;
 use App\Models\License;
 use App\Models\User;
@@ -47,11 +48,21 @@ class LicenseController extends Controller
         // Since we're using dispatchSync, the job has completed by this point
         // Find the created license
         $license = License::where('user_id', $user->id)
+            ->with('user')
             ->where('policy_name', $subscription->value)
             ->where('source', LicenseSource::Bifrost)
             ->latest()
             ->firstOrFail();
 
-        return response()->json($license);
+        return new LicenseResource($license);
+    }
+
+    public function show(string $key)
+    {
+        $license = License::where('key', $key)
+            ->with('user')
+            ->firstOrFail();
+
+        return new LicenseResource($license);
     }
 }

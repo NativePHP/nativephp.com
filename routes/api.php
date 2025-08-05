@@ -17,6 +17,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::middleware('auth.api_key')->group(function () {
     Route::post('/licenses', [LicenseController::class, 'store']);
+    Route::get('/licenses/{key}', [LicenseController::class, 'show']);
 });
 
 Route::middleware('auth:sanctum')->group(function () {
