@@ -860,6 +860,7 @@
                     For purchases made before this, you simply need to
                     <a
                         href="https://zenvoice.io/p/67a61665e7a3400c73fb75af"
+                        target="_blank"
                         onclick="event.stopPropagation()"
                         class="inline-block underline hover:text-violet-400"
                     >

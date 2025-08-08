@@ -1,6 +1,7 @@
 <div>
     <a
         href="https://x.com/nativephp"
+        target="_blank"
         title="Twitter"
         class="group dark:hover:bg-haiti inline-grid size-10 place-items-center rounded-xl bg-zinc-200/80 transition duration-200 hover:bg-gray-200/70 dark:bg-gray-700/40"
     >
@@ -13,6 +14,7 @@
 <div>
     <a
         href="https://youtube.com/@NativePHPOfficial"
+        target="_blank"
         title="Youtube"
         class="group dark:hover:bg-haiti inline-grid size-10 place-items-center rounded-xl bg-zinc-200/80 transition duration-200 hover:bg-gray-200/70 dark:bg-gray-700/40"
     >
@@ -25,6 +27,7 @@
 <div>
     <a
         href="https://bsky.app/profile/nativephp.com"
+        target="_blank"
         title="Bluesky"
         class="group dark:hover:bg-haiti inline-grid size-10 place-items-center rounded-xl bg-zinc-200/80 transition duration-200 hover:bg-gray-200/70 dark:bg-gray-700/40"
     >
@@ -36,7 +39,8 @@
 
 <div>
     <a
-        href="https://discord.gg/X62tWNStZK"
+        href="{{ $discordLink }}"
+        target="_blank"
         title="Go to discord server"
         class="group dark:hover:bg-haiti inline-grid size-10 place-items-center rounded-xl bg-zinc-200/80 transition duration-200 hover:bg-gray-200/70 dark:bg-gray-700/40"
     >
@@ -48,7 +52,8 @@
 
 <div>
     <a
-        href="https://opencollective.com/nativephp"
+        href="{{ $openCollectiveLink }}"
+        target="_blank"
         title="NativePHP on Open Collective"
         class="group dark:hover:bg-haiti inline-grid size-10 place-items-center rounded-xl bg-zinc-200/80 transition duration-200 hover:bg-gray-200/70 dark:bg-gray-700/40"
     >
@@ -60,7 +65,8 @@
 
 <div>
     <a
-        href="https://github.com/nativephp"
+        href="{{ $githubLink }}"
+        target="_blank"
         title="Source code of NativePHP"
         class="group dark:hover:bg-haiti inline-grid size-10 place-items-center rounded-xl bg-zinc-200/80 transition duration-200 hover:bg-gray-200/70 dark:bg-gray-700/40"
     >
@@ -73,6 +79,7 @@
 <div>
     <a
         href="https://pinkary.com/@nativephp"
+        target="_blank"
         title="NativePHP on Pinkary"
         class="group dark:hover:bg-haiti inline-grid size-10 place-items-center rounded-xl bg-zinc-200/80 transition duration-200 hover:bg-gray-200/70 dark:bg-gray-700/40"
     >
@@ -85,6 +92,7 @@
 <div>
     <a
         href="https://www.linkedin.com/company/nativephp/"
+        target="_blank"
         title="NativePHP on LinkedIn"
         class="group dark:hover:bg-haiti inline-grid size-10 place-items-center rounded-xl bg-zinc-200/80 transition duration-200 hover:bg-gray-200/70 dark:bg-gray-700/40"
     >

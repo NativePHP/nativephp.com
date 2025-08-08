@@ -35,7 +35,7 @@ PushNotifications::enrollForPushNotifications(); // → TokenGenerated event
 
 ## Basic Event Structure
 
-All events are standard [Laravel Event classes](https://laravel.com/docs/12.x/events#defining-events). The public
+All events are standard <a href="https://laravel.com/docs/12.x/events#defining-events" target="_blank">Laravel Event classes</a>. The public
 properties of the events contain the pertinent data coming from the native app side.
 
 ## Event Handling
@@ -90,7 +90,7 @@ public function handlePhoto(string $path)
 
 You can also listen for these events on the PHP side as they are simultaneously passed to your Laravel application.
 
-Simply [add a listener](https://laravel.com/docs/12.x/events#registering-events-and-listeners) as you normally would:
+Simply <a href="https://laravel.com/docs/12.x/events#registering-events-and-listeners" target="_blank">add a listener</a> as you normally would:
 
 ```php
 use App\Services\APIService;

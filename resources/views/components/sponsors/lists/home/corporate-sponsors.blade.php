@@ -4,6 +4,7 @@
 >
     <a
         href="https://www.redgalaxy.co.uk/"
+        target="_blank"
         class="inline-grid h-16 w-60 shrink-0 place-items-center rounded-2xl bg-gray-100 p-5 transition duration-200 hover:bg-gray-200/70 hover:ring-1 hover:ring-black/60 dark:bg-mirage dark:hover:bg-haiti dark:hover:ring-cloud"
         title="Learn more about RedGalaxy"
         aria-label="Visit RedGalaxy website"
@@ -24,6 +25,7 @@
 >
     <a
         href="https://sevalla.com/?utm_source=nativephp&utm_medium=Referral&utm_campaign=homepage"
+        target="_blank"
         class="inline-grid h-16 w-60 shrink-0 place-items-center rounded-2xl bg-gray-100 p-5 transition duration-200 hover:bg-gray-200/70 hover:ring-1 hover:ring-black/60 dark:bg-mirage dark:hover:bg-haiti dark:hover:ring-cloud"
         title="Learn more about Sevalla"
         aria-label="Visit Sevalla website"
@@ -61,6 +63,7 @@
 >
     <a
         href="https://www.kaashosting.nl/?lang=en"
+        target="_blank"
         class="inline-grid h-16 w-60 shrink-0 place-items-center rounded-2xl bg-gray-100 p-5 transition duration-200 hover:bg-gray-200/70 hover:ring-1 hover:ring-black/60 dark:bg-mirage dark:hover:bg-haiti dark:hover:ring-cloud"
         title="Learn more about KaasHosting"
         aria-label="Visit KaasHosting website"
@@ -81,6 +84,7 @@
 >
     <a
         href="https://www.quantumweb.co/"
+        target="_blank"
         class="inline-grid h-16 w-60 shrink-0 place-items-center rounded-2xl bg-gray-100 p-5 transition duration-200 hover:bg-gray-200/70 hover:ring-1 hover:ring-black/60 dark:bg-mirage dark:hover:bg-haiti dark:hover:ring-cloud"
         title="Learn more about Quantumweb"
         aria-label="Visit Quantumweb website"

@@ -154,8 +154,8 @@ as removing debugging code and unnecessary features (i.e. Composer dev dependenc
 **You should test this build on a real device.** Once you're happy that everything is working as intended you can then
 submit it to the stores for approval and distribution.
 
-- [Google Play Store submission guidelines](https://support.google.com/googleplay/android-developer/answer/9859152?hl=en-GB#zippy=%2Cmaximum-size-limit)
-- [Apple App Store submission guidelines](https://developer.apple.com/ios/submit/)
+- <a href="https://support.google.com/googleplay/android-developer/answer/9859152?hl=en-GB#zippy=%2Cmaximum-size-limit" target="_blank">Google Play Store submission guidelines</a>
+- <a href="https://developer.apple.com/ios/submit/" target="_blank">Apple App Store submission guidelines</a>
 
 <aside class="relative z-0 mt-5 overflow-hidden rounded-2xl bg-pink-50 px-5 ring-1 ring-black/5 dark:bg-pink-600/10">
 

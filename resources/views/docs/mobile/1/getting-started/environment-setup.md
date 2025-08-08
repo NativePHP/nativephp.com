@@ -10,7 +10,7 @@ order: 100
 3. [A NativePHP for Mobile license](https://nativephp.com/mobile)
 
 If you don't already have PHP installed on your machine, the most painless way to get PHP up and running on Mac and
-Windows is with [Laravel Herd](https://herd.laravel.com). It's fast and free!
+Windows is with <a href="https://herd.laravel.com" target="_blank">Laravel Herd</a>. It's fast and free!
 
 ## iOS Requirements
 
@@ -23,7 +23,7 @@ You cannot build iOS apps on Windows or Linux. This is a limitation imposed by A
 </aside>
 
 1. macOS (required - iOS development is only possible on a Mac)
-2. [Xcode 16.0 or later](https://apps.apple.com/app/xcode/id497799835)
+2. <a href="https://apps.apple.com/app/xcode/id497799835" target="_blank">Xcode 16.0 or later</a>
 3. Xcode Command Line Tools
 4. Homebrew & CocoaPods
 5. _Optional_ iOS device for testing
@@ -31,7 +31,7 @@ You cannot build iOS apps on Windows or Linux. This is a limitation imposed by A
 ### Setting up iOS Development Environment
 
 1. **Install Xcode**
-   - Download from the [Mac App Store](https://apps.apple.com/app/xcode/id497799835)
+   - Download from the <a href="https://apps.apple.com/app/xcode/id497799835" target="_blank">Mac App Store</a>
    - Minimum version: Xcode 16.0
 
 2. **Install Xcode Command Line Tools**
@@ -58,16 +58,16 @@ You cannot build iOS apps on Windows or Linux. This is a limitation imposed by A
    ```
 
 ### Apple Developer Account
-You **do not** need to enroll in the [Apple Developer Program](https://developer.apple.com/programs/enroll/) ($99/year)
+You **do not** need to enroll in the <a href="https://developer.apple.com/programs/enroll/" target="_blank">Apple Developer Program</a> ($99/year)
 to develop and test your apps on a Simulator. However, you will need to enroll when you want to:
 - Test your apps on real devices
 - Distribute your apps via the App Store
 
 ## Android Requirements
 
-1. [Android Studio 2024.2.1 or later](https://developer.android.com/studio)
+1. <a href="https://developer.android.com/studio" target="_blank">Android Studio 2024.2.1 or later</a>
 2. Android SDK with API 23 or higher
-3. **Windows only**: You must have [7zip](https://www.7-zip.org/) installed.
+3. **Windows only**: You must have <a href="https://www.7-zip.org/" target="_blank">7zip</a> installed.
 
 <aside class="relative z-0 mt-5 overflow-hidden rounded-2xl bg-pink-50 px-5 ring-1 ring-black/5 dark:bg-pink-600/10">
 
@@ -81,7 +81,7 @@ proper JDK for you.
 ### Setting up Android Studio and SDK
 
 1. **Download and Install Android Studio**
-   - Download from the [Android Studio download page](https://developer.android.com/studio)
+   - Download from the <a href="https://developer.android.com/studio" target="_blank">Android Studio download page</a>
    - Minimum version required: Android Studio 2024.2.1
 
 2. **Install Android SDK**
@@ -123,10 +123,10 @@ before submitting to the Apple App Store and Google Play Store.
 
 ### On iOS
 If you want to run your app on a real iOS device, you need to make sure it is in
-[Developer Mode](https://developer.apple.com/documentation/xcode/enabling-developer-mode-on-a-device)
+<a href="https://developer.apple.com/documentation/xcode/enabling-developer-mode-on-a-device" target="_blank">Developer Mode</a>
 and that it's been added to your Apple Developer account as
-[a registered device](https://developer.apple.com/account/resources/devices/list).
+<a href="https://developer.apple.com/account/resources/devices/list" target="_blank">a registered device</a>.
 
 ### On Android
-On Android you need to [enable developer options](https://developer.android.com/studio/debug/dev-options#enable)
+On Android you need to <a href="https://developer.android.com/studio/debug/dev-options#enable" target="_blank">enable developer options</a>
 and have USB debugging (ADB) enabled.

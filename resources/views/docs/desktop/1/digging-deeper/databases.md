@@ -20,7 +20,7 @@ You can interact with SQLite via PDO or an ORM, such as Eloquent, in exactly the
 
 ## SQLite
 
-[SQLite](https://sqlite.org/) is a feature-rich, portable, lightweight, file-based database. It's perfect for native
+<a href="https://sqlite.org/" target="_blank">SQLite</a> is a feature-rich, portable, lightweight, file-based database. It's perfect for native
 applications that need persistent storage of complex data structures with the speed and tooling of SQL.
 
 Its small footprint and minimal dependencies make it ideal for cross-platform, native applications. Your users
@@ -48,7 +48,7 @@ it doesn't modify any other SQLite databases you may already be using.
 When writing migrations, you need to consider any special recommendations for working with SQLite.
 
 For example, prior to Laravel 11, SQLite foreign key constraints are turned off by default. If your application relies
-upon foreign key constraints, [you need to enable SQLite support for them](https://laravel.com/docs/database#configuration) before running your migrations.
+upon foreign key constraints, <a href="https://laravel.com/docs/database#configuration" target="_blank">you need to enable SQLite support for them</a> before running your migrations.
 
 **It's important to test your migrations on prod builds before releasing updates!** You don't want to accidentally
 delete your user's data when they update your app.
@@ -83,7 +83,7 @@ php artisan native:migrate:fresh
 ## Seeding
 
 When developing, it's especially useful to seed your database with sample data. If you've set up
-[Database Seeders](https://laravel.com/docs/seeding), you can run these using the `native:db:seed` command:
+<a href="https://laravel.com/docs/seeding" target="_blank">Database Seeders</a>, you can run these using the `native:db:seed` command:
 
 ```shell
 php artisan native:db:seed

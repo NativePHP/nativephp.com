@@ -24,14 +24,14 @@ On top of this, fewer PHP extensions means a smaller application size and attack
 extensions has both performance & [security](security) implications for your apps.
 
 The extensions that are included in the default binaries are defined in the 
-[`php-extensions.txt`](https://github.com/NativePHP/php-bin/blob/main/php-extensions.txt) in the `php-bin` repo.
+<a href="https://github.com/NativePHP/php-bin/blob/main/php-extensions.txt" target="_blank">`php-extensions.txt`</a> in the `php-bin` repo.
 
 If you think an extension is missing that would make sense as a default extension, feel free to
-[make a feature request](https://github.com/nativephp/laravel/issues/new/choose) for it.
+<a href="{{ $githubLink }}/laravel/issues/new/choose" target="_blank">make a feature request</a> for it.
 
 ## Building custom binaries
 
-NativePHP uses the awesome [`static-php-cli`](https://static-php.dev/) library to build distributable PHP binaries.
+NativePHP uses the awesome <a href="https://static-php.dev/" target="_blank">`static-php-cli`</a> library to build distributable PHP binaries.
 
 You may use this too to build your own binaries. Of course, you may build static binaries however you prefer.
 

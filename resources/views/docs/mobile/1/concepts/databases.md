@@ -6,7 +6,7 @@ order: 200
 ## Working with Databases
 
 You'll almost certainly want your application to persist structured data. For this, NativePHP supports
-[SQLite](https://sqlite.org/), which works on both iOS and Android devices.
+<a href="https://sqlite.org/" target="_blank">SQLite</a>, which works on both iOS and Android devices.
 
 You can interact with SQLite from PHP in whichever way you're used to.
 
@@ -22,7 +22,7 @@ You do not need to do anything special to configure your application to use SQLi
 When writing migrations, you need to consider any special recommendations for working with SQLite.
 
 For example, prior to Laravel 11, SQLite foreign key constraints are turned off by default. If your application relies
-upon foreign key constraints, [you need to enable SQLite support for them](https://laravel.com/docs/database#configuration) before running your migrations.
+upon foreign key constraints, <a href="https://laravel.com/docs/database#configuration" target="_blank">you need to enable SQLite support for them</a> before running your migrations.
 
 **It's important to test your migrations on [prod builds](/docs/mobile/1/getting-started/development#releasing)
 before releasing updates!** You don't want to accidentally delete your user's data when they update your app.
@@ -126,7 +126,7 @@ Use industry-standard tools like OAuth-2.0-based providers, Laravel Passport, or
 
 <aside class="relative z-0 mt-5 overflow-hidden rounded-2xl bg-pink-50 px-5 ring-1 ring-black/5 dark:bg-pink-600/10">
 
-[Laravel Sanctum](https://laravel.com/docs/sanctum) is an ideal solution for API authentication between your mobile app and Laravel backend.
+<a href="https://laravel.com/docs/sanctum" target="_blank">Laravel Sanctum</a> is an ideal solution for API authentication between your mobile app and Laravel backend.
 It provides secure, token-based authentication without the complexity of OAuth.
 
 </aside>

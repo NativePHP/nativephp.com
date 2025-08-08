@@ -26,7 +26,7 @@ need to configure APNS separately. You only need to configure Firebase with acce
 
 ## Firebase
 
-1. Create a [Firebase](https://firebase.google.com/) account
+1. Create a <a href="https://firebase.google.com/" target="_blank">Firebase</a> account
 2. Create a project
 3. Download the `google-services.json` file (for Android) and `GoogleService-Info.plist` file (for iOS)
 4. These files contain the configuration for your app and is used by the Firebase SDK to retrieve tokens for each device

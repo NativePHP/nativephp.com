@@ -169,7 +169,7 @@ $settings = [
 System::print('<html>...', $printer, $settings);
 ```
 
-For a complete list of available print settings, refer to the [Electron webContents.print()](https://www.electronjs.org/docs/latest/api/web-contents#contentsprintoptions-callback) and [webContents.printToPDF()](https://www.electronjs.org/docs/latest/api/web-contents#contentsprinttopdfoptions) documentation.
+For a complete list of available print settings, refer to the <a href="https://www.electronjs.org/docs/latest/api/web-contents#contentsprintoptions-callback" target="_blank">Electron webContents.print()</a> and <a href="https://www.electronjs.org/docs/latest/api/web-contents#contentsprinttopdfoptions" target="_blank">webContents.printToPDF()</a> documentation.
 
 ## Time Zones
 

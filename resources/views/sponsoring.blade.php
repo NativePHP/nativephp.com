@@ -113,7 +113,7 @@
             </p>
 
             <ul>
-                <li><a href="https://opencollective.com/nativephp">OpenCollective</a></li>
+                <li><a href="{{ $openCollectiveLink }}" target="_blank">OpenCollective</a></li>
             </ul>
 
             <p>
@@ -123,7 +123,7 @@
 
             <p>
                 All monthly sponsors above $10/month will be bestowed the <b>Sponsor</b> role on the NativePHP
-                <a href="https://discord.gg/X62tWNStZK">Discord</a>, granting access to private channels, early access to new releases, and
+                <a href="{{ $discordLink }}" target="_blank">Discord</a>, granting access to private channels, early access to new releases, and
                 discounts on future premium services.
             </p>
 

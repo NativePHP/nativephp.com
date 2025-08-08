@@ -2,8 +2,8 @@
 
 return [
 
-    'users' => str_getcsv(env('FILAMENT_USERS') ?: ''),
-
+    'users' => str_getcsv(env('FILAMENT_USERS') ?: ''), // From PHP v8.4.0 above function `str_getcsv` was deprecated.
+    // 'users' => env('FILAMENT_USERS', ''), // If you are using PHP v8.4.0 uncomment this.
     /*
     |--------------------------------------------------------------------------
     | Broadcasting

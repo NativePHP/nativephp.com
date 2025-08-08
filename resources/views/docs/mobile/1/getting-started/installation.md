@@ -27,7 +27,7 @@ Thank you for supporting the project in this way! 🙏
 #### We love Laravel
 
 NativePHP for Mobile is built to work with Laravel. We recommend that you create a
-[new Laravel application](https://laravel.com/docs/installation) for your NativePHP application.
+<a href="https://laravel.com/docs/installation" target="_blank">new Laravel application</a> for your NativePHP application.
 
 </aside>
 
@@ -86,7 +86,7 @@ Find out more about these options in
 #### Setting your Apple Developer Team ID
 
 It may be useful to set your development team. You can do this via your `.env` file. Your development team ID can be
-found in your [Apple Developer account](https://developer.apple.com/account), under 'Membership details'.
+found in your <a href="https://developer.apple.com/account" target="_blank">Apple Developer account</a>, under 'Membership details'.
 
 ![](/img/docs/team-id.png)
 
@@ -148,12 +148,12 @@ Just follow the prompts! This will start compiling your application and boot it 
 
 #### On iOS
 If you want to run your app on a real iOS device, you need to make sure it is in
-[Developer Mode](https://developer.apple.com/documentation/xcode/enabling-developer-mode-on-a-device)
+<a href="https://developer.apple.com/documentation/xcode/enabling-developer-mode-on-a-device" target="_blank">Developer Mode</a>
 and that it's been added to your Apple Developer account as
-[a registered device](https://developer.apple.com/account/resources/devices/list).
+<a href="https://developer.apple.com/account/resources/devices/list" target="_blank">a registered device</a>.
 
 #### On Android
-On Android you need to [enable developer options](https://developer.android.com/studio/debug/dev-options#enable)
+On Android you need to <a href="https://developer.android.com/studio/debug/dev-options#enable" target="_blank">enable developer options</a>
 and have USB debugging (ADB) enabled.
 
 And that's it! You should now see your Laravel application running as a native app! 🎉
