@@ -96,7 +96,7 @@ That's it! Android Studio handles all the necessary configuration automatically.
 
 ### Preparing for NativePHP
 
-1. Check that you can run `java -v` and `adb devices` from the terminal.
+1. Check that you can run `java -version` and `adb devices` from the terminal.
 2. The following environment variables set:
 
 #### On macOS
