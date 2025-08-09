@@ -42,7 +42,7 @@ appropriate for the problem you're trying to solve:
 ### Queues
 
 The [queue runner](queues) is useful for very simply offloading _Laravel_ tasks to the background. Each task must be a
-Laravel queued [Job](https://laravel.com/docs/queues#creating-jobs).
+Laravel queued <a href="https://laravel.com/docs/queues#creating-jobs" target="_blank">Job</a>.
 
 Any queued jobs that don't get processed before your app is quit, will get processed when your application (and the
 queue runner) starts again.
@@ -50,7 +50,7 @@ queue runner) starts again.
 ### Scheduler
 
 The Laravel scheduler runs as normal (every minute) inside a NativePHP application. You can add
-[scheduled tasks](https://laravel.com/docs/scheduling) to your application just as you normally would, to have them run
+<a href="https://laravel.com/docs/scheduling" target="_blank">scheduled tasks</a> to your application just as you normally would, to have them run
 on a regular schedule.
 
 Any scheduled tasks that would have run while your application isn't running will be skipped.
@@ -62,9 +62,9 @@ only be able to run while your application is running.**
 
 PHP has good built-in support for running arbitrary programs in separate processes. For example:
 
--   [`shell_exec`](https://www.php.net/manual/en/function.shell-exec.php) allows you to run commands and return their
+-   <a href="https://www.php.net/manual/en/function.shell-exec.php" target="_blank">`shell_exec`</a> allows you to run commands and return their
     output to your application.
--   [`proc_open`](https://www.php.net/manual/en/function.proc-open.php) allows you to spin up a command with more control
+-   <a href="https://www.php.net/manual/en/function.proc-open.php" target="_blank">`proc_open`</a> allows you to spin up a command with more control
     over how its input and output streams are handled.
 
 While these can be used in your NativePHP application, consider that they:
@@ -120,7 +120,7 @@ ChildProcess::start(
 ### Persistent Processes
 
 You may mark a process as `persistent` to indicate that the runtime should make sure that once it has been started it
-is always running. This works similarly to tools like [`supervisord`](http://supervisord.org/), ensuring that the
+is always running. This works similarly to tools like <a href="http://supervisord.org/" target="_blank">`supervisord`</a>, ensuring that the
 process gets booted up again in case it crashes.
 
 ```php

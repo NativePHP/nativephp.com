@@ -26,7 +26,7 @@ You should build your application for each platform you intend to support and te
 publishing to make sure that everything works as expected.
 
 ### Running commands before and after builds
-Many applications rely on a tool such as [Vite](https://vitejs.dev/) or [Webpack](https://webpack.js.org/) to compile their CSS and JS assets before a production build.
+Many applications rely on a tool such as <a href="https://vitejs.dev/" target="_blank">Vite</a> or <a href="https://webpack.js.org/" target="_blank">Webpack</a> to compile their CSS and JS assets before a production build.
 
 To facilitate this, NativePHP provides two hooks that you can use to run commands before and after the build process.
 
@@ -78,7 +78,7 @@ Possible options are: `mac`, `win`, `linux`.
 
 #### Cross-compilation on Linux
 
-Compiling Windows binaries is possible with [wine](https://www.winehq.org/).
+Compiling Windows binaries is possible with <a href="https://www.winehq.org/" target="_blank">wine</a>.
 NSIS requires 32-bit wine when building x64 applications.
 
 ```bash
@@ -134,11 +134,11 @@ These credentials will be automatically stripped from your built application for
 
 #### Traditional Certificate Signing
 
-For traditional certificate-based signing, [see the Electron documentation](https://www.electronforge.io/guides/code-signing/code-signing-windows) for more details.
+For traditional certificate-based signing, <a href="https://www.electronforge.io/guides/code-signing/code-signing-windows" target="_blank">see the Electron documentation</a> for more details.
 
 ### macOS
 
-[See the Electron documentation](https://www.electronforge.io/guides/code-signing/code-signing-macos) for more details.
+<a href="https://www.electronforge.io/guides/code-signing/code-signing-macos" target="_blank">See the Electron documentation</a> for more details.
 
 To prepare for signing and notarizing, please provide the following environment variables when running
 `php artisan native:build`:

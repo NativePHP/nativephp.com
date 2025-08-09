@@ -29,7 +29,7 @@ php artisan native:run
 ## Need help?
 
 - **Community** - Join our [Discord](/discord) for support and discussions.
-- **Examples** - Check out the [Kitchen Sink demo app](https://play.google.com/store/apps/details?id=com.nativephp.kitchensinkapp)
-    on Android (coming soon to iOS!)
+- **Examples** - Check out the <a href="https://play.google.com/store/apps/details?id=com.nativephp.kitchensinkapp" target="_blank">Kitchen Sink demo app</a>
+  on Android (coming soon to iOS!)
 
 Ready to build your first mobile app with PHP? [Let's get started! 🚀](/docs/getting-started/introduction)

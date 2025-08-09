@@ -75,6 +75,7 @@
     >
         <a
             href="https://bifrost.nativephp.com/"
+            target="_blank"
             class="group relative z-0 mt-10 flex flex-col-reverse items-center justify-between gap-x-10 gap-y-3 overflow-hidden rounded-2xl bg-slate-50 px-5 pt-6 pb-5 ring-6 ring-slate-100 transition duration-300 hover:bg-slate-100/80 sm:flex-row sm:px-8 sm:py-2 dark:bg-slate-800/30 dark:ring-slate-800/35 dark:hover:bg-slate-900/30 dark:hover:ring-slate-900/30"
         >
             {{-- Left side --}}

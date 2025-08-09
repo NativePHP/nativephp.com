@@ -78,12 +78,12 @@ The default updater configuration looks like this:
 
 How to setup your storage and generate the relevant API credentials:
 
-- [DigitalOcean](https://docs.digitalocean.com/products/spaces/how-to/manage-access/)
-- Amazon S3 - See [this video](https://www.youtube.com/watch?v=FLIp6BLtwjk&ab_channel=CloudCasts) by Chris Fidao or
-  this [Step 2](https://www.twilio.com/docs/video/tutorials/storing-aws-s3#step-2) of this article by Twilio
+- <a href="https://docs.digitalocean.com/products/spaces/how-to/manage-access/" target="_blank">DigitalOcean</a>
+- Amazon S3 - See <a href="https://www.youtube.com/watch?v=FLIp6BLtwjk&ab_channel=CloudCasts" target="_blank">this video</a> by Chris Fidao or
+  this <a href="https://www.twilio.com/docs/video/tutorials/storing-aws-s3#step-2" target="_blank">Step 2</a> of this article by Twilio
 
   If you got the error message "The bucket does not allow ACLs" you can follow this guide
-  from [Learn AWS](https://www.learnaws.org/2023/08/26/aws-s3-bucket-does-not-allow-acls)
+  from <a href="https://www.learnaws.org/2023/08/26/aws-s3-bucket-does-not-allow-acls" target="_blank">Learn AWS</a>
   on how to setup your bucket correctly.
 
 ## Disabling the updater

@@ -44,7 +44,7 @@ supports hot reloading of certain files within its core and your application, bu
 source code for changes. It is left to you to determine how you want to approach this.
 
 If you're using Vite, hot reloading will just work inside your app as long as you've booted your Vite dev server and
-[included the Vite script tag](https://laravel.com/docs/vite#loading-your-scripts-and-styles) in your views
+<a href="https://laravel.com/docs/vite#loading-your-scripts-and-styles" target="_blank">included the Vite script tag</a> in your views
 (ideally in your app's main layout file).
 
 You can do this easily in Blade using the `@@vite` directive.

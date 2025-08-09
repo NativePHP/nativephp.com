@@ -3,7 +3,7 @@ title: Versioning Policy
 order: 50
 ---
 
-NativePHP for Mobile follows [semantic versioning](https://semver.org) with a mobile-specific approach that distinguishes between
+NativePHP for Mobile follows <a href="https://semver.org" target="_blank">semantic versioning</a> with a mobile-specific approach that distinguishes between
 Laravel-only changes and native code changes. This ensures predictable updates and optimal compatibility.
 
 Our aim is to limit the amount of work you need to do to get the latest updates and ensure everything works.
@@ -25,7 +25,7 @@ This means that you can:
 - Avoid a complete rebuild (no need to `native:install --force`).
 - Allow for easier app updates avoiding the app stores.
 
-### Minor releases  
+### Minor releases
 
 Minor releases may contain **native code changes**. Respecting semantic versioning, these still should not contain
 breaking changes, but there may be new native APIs, Kotlin/Swift updates, platform-specific features, or native
@@ -44,14 +44,14 @@ time to make the necessary changes to your application code.
 
 ## Version constraints
 
-We recommend using the [tilde range operator](https://getcomposer.org/doc/articles/versions.md#tilde-version-range-)
+We recommend using the <a href="https://getcomposer.org/doc/articles/versions.md#tilde-version-range-" target="_blank">tilde range operator</a>
 with a full minimum patch release defined in your `composer.json`:
 
 ```json
 {
-    "require": {
-        "nativephp/mobile": "~1.1.0"
-    }
+  "require": {
+    "nativephp/mobile": "~1.1.0"
+  }
 }
 ```
 

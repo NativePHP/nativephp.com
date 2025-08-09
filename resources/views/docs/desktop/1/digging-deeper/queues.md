@@ -6,7 +6,7 @@ order: 500
 
 Queueing tasks to be run in the background is a critical part of creating a great user experience.
 
-NativePHP has built-in support for Laravel's [Queues](https://laravel.com/docs/queues).
+NativePHP has built-in support for Laravel's <a href="https://laravel.com/docs/queues" target="_blank">Queues</a>.
 
 ## Queueing a job
 If you're familiar with queueing jobs in Laravel, you should feel right at home. There's nothing special you need to do.

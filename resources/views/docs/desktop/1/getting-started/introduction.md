@@ -72,14 +72,14 @@ that puts cowboy hats on every smiley-face emoji it sees.
 
 (You should totally build that last one.)
 
-Need some inspiration? [Check out our repository of awesome projects](https://github.com/NativePHP/awesome-nativephp) created by people like you!
+Need some inspiration? <a href="https://github.com/NativePHP/awesome-nativephp" target="_blank">Check out our repository of awesome projects</a> created by people like you!
 
 ## What's next?
 
 Go read the docs! We've tried to make them as comprehensive as possible, but if you find something missing, please
-feel free to [contribute](https://github.com/nativephp/nativephp.com).
+feel free to <a href="https://github.com/nativephp/nativephp.com" target="_blank">contribute</a>.
 
-This site and all the NativePHP for Desktop repositories are open source and available on [GitHub](https://github.com/nativephp).
+This site and all the NativePHP for Desktop repositories are open source and available on <a href="https://github.com/nativephp" target="_blank">GitHub</a>.
 
 Ready to jump in? [Let's get started](installation).
 
@@ -87,9 +87,9 @@ Ready to jump in? [Let's get started](installation).
 
 NativePHP wouldn't be possible without the following projects and the hard work of all of their wonderful contributors:
 
-- [PHP](https://php.net)
-- [Electron](https://electronjs.org)
-- [Tauri](https://tauri.app)
-- [Laravel](https://laravel.com)
-- [Symfony](https://symfony.com)
-- [Static PHP CLI](https://github.com/crazywhalecc/static-php-cli/)
+- <a href="https://php.net" target="_blank">PHP</a>
+- <a href="https://electronjs.org" target="_blank">Electron</a>
+- <a href="https://tauri.app" target="_blank">Tauri</a>
+- <a href="https://laravel.com" target="_blank">Laravel</a>
+- <a href="https://symfony.com" target="_blank">Symfony</a>
+- <a href="https://github.com/crazywhalecc/static-php-cli/" target="_blank">Static PHP CLI</a>

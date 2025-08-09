@@ -7,7 +7,7 @@ order: 300
 
 Working with files in NativePHP is just like working with files in a regular Laravel application.
 To achieve this, NativePHP rewrites the `Application::$storagePath()` (and thus `app()->storagePath()` and the `storage_path()` helper)
-to the [Electron `app.getPath('appData')` path](https://www.electronjs.org/docs/latest/api/app#appgetpathname),
+to the <a href="https://www.electronjs.org/docs/latest/api/app#appgetpathname" target="_blank">Electron `app.getPath('appData')` path</a>,
 which is different for each operating system.
 
 This means that you can continue to use Laravel's `Storage` facade to store and retrieve files on your user's file
@@ -31,7 +31,7 @@ It's also the location where your SQLite database will be stored.
 ### Storing files elsewhere
 
 NativePHP doesn't interfere with any of your _existing_ filesystem configuration, so you may continue to configure
-[Filesystem](https://laravel.com/docs/filesystem) as you normally would, however you should be aware that it does
+<a href="https://laravel.com/docs/filesystem" target="_blank">Filesystem</a> as you normally would, however you should be aware that it does
 _add_ some new default filesystems for your convenience.
 
 Consider that your users want to store their files in locations other than the obscure `appdata` directories on their

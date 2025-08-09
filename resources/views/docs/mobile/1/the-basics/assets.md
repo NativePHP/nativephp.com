@@ -21,7 +21,7 @@ make available to your application wherever makes the most sense for you.
 #### Accessing arbitrary files
 
 All files must be accessed using _relative_ paths from the root of your app. Use Laravel's
-[Path helpers](https://laravel.com/docs/12.x/helpers#paths) to access files in the appropriate location.
+<a href="https://laravel.com/docs/12.x/helpers#paths" target="_blank">Path helpers</a> to access files in the appropriate location.
 
 Note that the `storage_path()` helper points to a location _outside_ of your Laravel application's root.
 

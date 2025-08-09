@@ -13,9 +13,9 @@ NativePHP for Desktop is **production-ready**. So you should feel completely rea
 with NativePHP.
 
 But we always need your help! If you spot any bugs or feel that there are any features missing, be sure to share
-your ideas and questions through the [forum](https://github.com/orgs/nativephp/discussions), by
-[raising issues](https://github.com/nativephp/laravel/issues/new/choose)/reporting bugs, and discussing on
-[Discord](https://discord.gg/X62tWNStZK).
+your ideas and questions through the <a href="https://github.com/orgs/nativephp/discussions" target="_blank">forum</a>, by
+<a href="https://github.com/nativephp/laravel/issues/new/choose" target="_blank">raising issues/reporting bugs</a>, and discussing on
+[Discord](/discord).
 
 <aside class="relative z-0 mt-5 overflow-hidden rounded-2xl bg-pink-50 px-5 ring-1 ring-black/5 dark:bg-pink-600/10">
 

@@ -276,7 +276,7 @@ Menu::link('/login', 'Login');
 This will navigate the currently-focused window to the URL provided.
 
 You may use the `Menu::route()` method as a convenience to map to a
-[named route](https://laravel.com/docs/routing#named-routes):
+<a href="https://laravel.com/docs/routing#named-routes" target="_blank">named route</a>:
 
 ```php
 Menu::route('login', 'Login');
@@ -433,7 +433,7 @@ You may wish to add a custom native context menu to the elements in the views of
 You can use the `Native` JavaScript helper provided by NativePHP's preload script.
 
 This object exposes the `contextMenu()` method which takes an array of objects that matches the 
-[MenuItem](https://www.electronjs.org/docs/latest/api/menu-item) constructor's `options` argument.
+<a href="https://www.electronjs.org/docs/latest/api/menu-item" target="_blank">MenuItem</a> constructor's `options` argument.
 
 ```js
 Native.contextMenu([

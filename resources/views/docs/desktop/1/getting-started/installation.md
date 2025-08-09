@@ -15,7 +15,7 @@ order: 100
 The best development experience for NativePHP is to have PHP and Node running on your development machine directly.
 
 If you're using Mac or Windows, the most painless way to get PHP and Node up and running on your system is with
-[Laravel Herd](https://herd.laravel.com). It's fast and free!
+<a href="https://herd.laravel.com" target="_blank">Laravel Herd</a>. It's fast and free!
 
 Please note that, whilst it's possible to develop and run your application from a virtualized environment or container,
 you may encounter more unexpected issues and have more manual steps to create working builds.
@@ -23,7 +23,7 @@ you may encounter more unexpected issues and have more manual steps to create wo
 ### Laravel
 
 NativePHP is built to work best with Laravel. You can install it into an existing Laravel application, or
-[start a new one](https://laravel.com/docs/installation).
+<a href="https://laravel.com/docs/installation" target="_blank">start a new one</a>.
 
 ## Install a NativePHP runtime
 
