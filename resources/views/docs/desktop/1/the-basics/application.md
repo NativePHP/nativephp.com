@@ -70,6 +70,22 @@ To get the current app version, use the `version` method. The version is defined
 $version = App::version();
 ```
 
+### Locale information
+
+The facade offers several methods for accessing some of the system's localisation information.
+This data can be helpful for localising your application, e.g. if you want to suggest the corresponding language to the user on first launch.
+
+```php
+App::getLocale();
+App::getLocaleCountryCode();
+App::getSystemLocale();
+```
+
+The `getLocale` method will return the full locale string used by the app. This includes both the language and the country or region.
+`getLocaleCountryCode` returns only the country code part of the locale.
+With `getSystemLocale` you can access the system-wide locale setting. This is the locale set at the operating system level, not necessarily what the app is using.
+
+
 ### App Badge Count
 _Only available on macOS and Linux_
 
