@@ -47,3 +47,22 @@
         <span class="sr-only">Laradevs</span>
     </a>
 </div>
+
+<div
+    x-ref="sponsor"
+    class="opacity-0"
+>
+    <a
+        href="https://www.nexcalia.com/?ref=nativephp"
+        title="Learn more about nexcalia"
+        aria-label="Visit nexcalia website"
+        class="inline-grid h-32 w-60 shrink-0 place-items-center rounded-2xl bg-gray-100 p-5 transition duration-200 hover:bg-gray-200/70 hover:ring-1 hover:ring-black/60 dark:bg-mirage dark:hover:bg-haiti dark:hover:ring-cloud"
+        rel="sponsored"
+    >
+        <x-sponsors.logos.nexcalia
+            class="block h-auto max-h-10 max-w-full text-black dark:text-white"
+            aria-hidden="true"
+        />
+        <span class="sr-only">Nexcalia</span>
+    </a>
+</div>
