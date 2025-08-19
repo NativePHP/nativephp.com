@@ -2,11 +2,34 @@
 <html
     lang="{{ str_replace('_', '-', app()->getLocale()) }}"
     x-data="{
-        darkMode: $persist(
-            window.matchMedia('(prefers-color-scheme: dark)').matches,
-        ),
+        // Persisted theme preference: 'light' | 'dark' | 'system'
+        themePreference: $persist('system').as('theme'),
+        // Effective dark-mode flag derived from preference + OS
+        isDark: false,
+        prefersDarkQuery: window.matchMedia('(prefers-color-scheme: dark)'),
+        applyTheme() {
+            this.isDark =
+                this.themePreference === 'dark' ||
+                (this.themePreference === 'system' && this.prefersDarkQuery.matches)
+        },
+        init() {
+            const valid = ['light', 'dark', 'system']
+
+            // Initial compute
+            this.applyTheme()
+
+            // React to OS preference changes while in 'system' mode
+            this.prefersDarkQuery.addEventListener('change', () => {
+                if (this.themePreference === 'system') {
+                    this.applyTheme()
+                }
+            })
+
+            // React to user-selected preference changes
+            this.$watch('themePreference', () => this.applyTheme())
+        },
     }"
-    x-bind:class="{ 'dark': darkMode === true }"
+    x-bind:class="{ 'dark': isDark === true }"
 >
     <head>
         <meta
@@ -31,8 +54,8 @@
             $seoTitle = SEOMeta::getTitle();
             $defaultSeoTitle = config('seotools.meta.defaults.title');
         @endphp
-        
-        @if($seoTitle === $defaultSeoTitle || empty($seoTitle))
+
+        @if ($seoTitle === $defaultSeoTitle || empty($seoTitle))
             <title>NativePHP{{ isset($title) ? ' | ' . $title : '' }}</title>
         @endif
 

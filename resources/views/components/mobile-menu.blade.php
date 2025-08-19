@@ -321,7 +321,7 @@
             >
                 <div class="gsap-mobile-menu-left-to-right-slide">Theme:</div>
                 <button
-                    x-on:click="darkMode = !darkMode; showMobileMenu = false"
+                    x-on:click="isDark = !isDark; showMobileMenu = false"
                     class="gsap-mobile-menu-right-to-left-slide flex h-10 items-center gap-0.5 rounded-full bg-gray-100 p-1 ring-1 ring-black/5 dark:bg-black/20 dark:ring-white/10"
                     aria-pressed="false"
                     aria-label="Toggle light or dark theme"
@@ -330,7 +330,7 @@
                     <div
                         class="rounded-full px-4 py-1.5 transition duration-300 ease-in-out"
                         :class="{
-                            'bg-gray-200/10': darkMode,
+                            'bg-gray-200/10': isDark,
                         }"
                     >
                         Dark
@@ -338,7 +338,7 @@
                     <div
                         class="rounded-full px-4 py-1.5 transition duration-300 ease-in-out"
                         :class="{
-                            'bg-zinc-300/70': !darkMode,
+                            'bg-zinc-300/70': !isDark,
                         }"
                     >
                         Light
