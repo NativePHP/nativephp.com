@@ -11,13 +11,13 @@
 <a
     href="{{ $href }}"
     @if ($title) aria-label="{{ $title }}" @endif
-    class="group hover:bg-snow-flurry-50/70 hover:ring-snow-flurry-100 flex items-center gap-3 rounded-lg py-2 pr-3 pl-2 ring-1 ring-transparent transition"
+    class="group hover:bg-snow-flurry-50/70 hover:ring-snow-flurry-100 flex items-center gap-3 rounded-lg py-2 pr-3 pl-2 ring-1 ring-transparent transition dark:hover:bg-violet-400/20 dark:hover:ring-violet-400/50"
     role="menuitem"
     tabindex="-1"
     {{ $attributes }}
 >
     <div
-        class="group-hover:bg-snow-flurry-200/30 group-hover:ring-snow-flurry-200/50 grid size-10 shrink-0 place-items-center rounded-lg bg-zinc-100 ring-1 ring-transparent transition ring-inset"
+        class="group-hover:bg-snow-flurry-200/30 group-hover:ring-snow-flurry-200/50 dark:bg-cloud/50 grid size-10 shrink-0 place-items-center rounded-lg bg-zinc-100 ring-1 ring-transparent transition ring-inset dark:group-hover:bg-violet-400/30 dark:group-hover:ring-violet-400/50"
     >
         @if ($icon)
             <x-dynamic-component
@@ -33,7 +33,7 @@
         @endif
 
         @if ($subtitle)
-            <div class="mt-0.5 text-xs opacity-70 group-hover:mask-r-from-0%">
+            <div class="mt-0.5 text-xs opacity-60 group-hover:mask-r-from-0%">
                 {{ $subtitle }}
             </div>
         @endif

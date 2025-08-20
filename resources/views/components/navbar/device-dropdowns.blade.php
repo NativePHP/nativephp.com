@@ -1,4 +1,4 @@
-<nav class="flex items-center gap-2.5">
+<nav class="flex items-center gap-2">
     {{-- Mobile dropdown --}}
     <x-navbar.device-dropdown
         label="Mobile"
@@ -39,17 +39,17 @@
             icon="docs"
         />
         <x-navbar.device-dropdown-item
-            href="https://github.com/nativephp"
-            title="GitHub"
-            subtitle="Visit our GitHub repository"
-            icon="github"
-        />
-        <x-navbar.device-dropdown-item
             href="/sponsor"
             title="Sponsor"
             subtitle="Support our contributors"
             icon="heart"
             icon-class="size-4"
+        />
+        <x-navbar.device-dropdown-item
+            href="https://github.com/nativephp"
+            title="GitHub"
+            subtitle="Visit our GitHub repository"
+            icon="github"
         />
     </x-navbar.device-dropdown>
 </nav>
