@@ -31,8 +31,12 @@
             )
             this.open = true
             this.$nextTick(() => {
-                if (focusFirst && this.$refs.firstItem) {
-                    this.$refs.firstItem.focus()
+                if (focusFirst && this.$refs.dropdownItemsNav) {
+                    const firstItem =
+                        this.$refs.dropdownItemsNav.querySelector('[role=menuitem]')
+                    if (firstItem) {
+                        firstItem.focus()
+                    }
                 }
             })
         },
@@ -79,10 +83,10 @@
         aria-controls="{{ $menuId }}"
         aria-label="Toggle {{ $label }} menu"
         aria-haspopup="menu"
-        class="flex scale-102 items-center gap-2.5 overflow-hidden rounded-full px-3 py-2 text-xs transition duration-200 will-change-transform hover:scale-100 focus:ring-0 focus:outline-none"
+        class="flex items-center gap-2.5 overflow-hidden rounded-full px-3 py-2 text-xs transition duration-200 focus:ring-0 focus:outline-none"
         :class="{
             'bg-zinc-200/60 hover:bg-zinc-200 dark:bg-cloud/50 dark:hover:bg-cloud/70': !open,
-            'bg-zinc-200/70 dark:bg-cloud/80': open
+            'bg-zinc-200 dark:bg-cloud/80': open
         }"
         @click="toggle()"
         @keydown.enter.prevent="toggle()"
@@ -93,7 +97,7 @@
         <div class="flex items-center gap-2">
             <x-dynamic-component
                 :component="'icons.' . $icon"
-                class="size-4.5 shrink-0"
+                class="h-4.5 shrink-0"
             />
             <div>{{ $label }}</div>
         </div>
@@ -143,6 +147,7 @@
             role="none"
         >
             <nav
+                x-ref="dropdownItemsNav"
                 class="flex flex-col gap-2 text-sm"
                 role="none"
             >

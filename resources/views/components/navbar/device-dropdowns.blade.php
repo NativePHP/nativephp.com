@@ -2,18 +2,21 @@
     {{-- Mobile dropdown --}}
     <x-navbar.device-dropdown
         label="Mobile"
-        icon="tablet-smartphone"
+        icon="device-mobile-phone"
         id="mobile-dropdown"
     >
         <x-navbar.device-dropdown-item
-            x-ref="firstItem"
             href="/docs/mobile/1/getting-started/introduction"
-            aria-label="NativePHP for Mobile"
             title="Documentation"
             subtitle="Get started with Mobile"
-            tooltip="Get started with Mobile"
             icon="docs"
-            icon-class="size-4.5"
+        />
+        <x-navbar.device-dropdown-item
+            href="{{ route('early-adopter') }}"
+            title="Pricing"
+            subtitle="See our pricing plans"
+            icon="dollar-circle"
+            icon-class="size-5.5"
         />
         <x-navbar.device-dropdown-item
             href="https://github.com/nativephp"
@@ -30,18 +33,21 @@
         id="desktop-dropdown"
     >
         <x-navbar.device-dropdown-item
+            href="/docs/desktop/1/getting-started/introduction"
+            title="Documentation"
+            subtitle="Get started with Desktop"
+            icon="docs"
+        />
+        <x-navbar.device-dropdown-item
             href="https://github.com/nativephp"
             title="GitHub"
             subtitle="Visit our GitHub repository"
             icon="github"
-            x-ref="firstItem"
         />
         <x-navbar.device-dropdown-item
             href="/sponsor"
-            aria-label="Sponsor NativePHP"
             title="Sponsor"
-            subtitle="Support NativePHP development"
-            tooltip="Support NativePHP development"
+            subtitle="Support our contributors"
             icon="heart"
             icon-class="size-4"
         />
