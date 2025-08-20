@@ -57,8 +57,8 @@
             aria-haspopup="menu"
             class="flex scale-102 items-center gap-2.5 overflow-hidden rounded-full px-3 py-2 transition duration-200 will-change-transform hover:scale-100 focus:ring-0 focus:outline-none"
             :class="{
-                'bg-gray-200/60 hover:bg-gray-200 dark:bg-cloud/50 dark:hover:bg-cloud/70': !open,
-                'bg-violet-100 dark:bg-violet-400/20': open
+                'bg-zinc-200/60 hover:bg-zinc-200 dark:bg-cloud/50 dark:hover:bg-cloud/70': !open,
+                'bg-zinc-200/70 dark:bg-cloud/80': open
             }"
             @click="toggle()"
             @keydown.enter.prevent="toggle()"
@@ -72,17 +72,19 @@
             </div>
 
             <div
-                class="transition will-change-transform"
+                class="transition duration-200 will-change-transform"
                 :class="{
-                    'rotate-180': open
+                    'opacity-30': !open,
+                    'rotate-180 opacity-50': open
                 }"
             >
-                <x-icons.chevron-down class="size-3 text-gray-400" />
+                <x-icons.chevron-down class="size-3" />
             </div>
         </button>
 
         <div
             x-cloak
+            x-ref="menu"
             x-show="open"
             x-transition:enter="transition duration-150 ease-out"
             x-transition:enter-start="-translate-y-2 scale-y-90 opacity-0"
@@ -93,8 +95,7 @@
             id="desktopDropdown-menu"
             role="menu"
             aria-labelledby="desktopDropdownButton"
-            class="absolute top-full left-0 mt-2 w-max max-w-[calc(100vw-2rem)] min-w-[16rem] origin-top overflow-y-scroll overscroll-contain rounded-xl bg-zinc-100/70 ring-1 ring-zinc-200/80 backdrop-blur-2xl dark:bg-black/50 dark:text-white dark:ring-zinc-700/70"
-            x-ref="menu"
+            class="absolute top-full right-0 mt-2 w-max max-w-[calc(100vw-1rem)] min-w-[16rem] origin-top overflow-y-auto overscroll-contain rounded-xl bg-white shadow-xl ring-1 shadow-black/5 ring-zinc-200/80 sm:right-auto sm:left-0 dark:bg-black/50 dark:text-white dark:ring-zinc-700/70"
             @mouseenter="pointerFine && (closeTimeout && clearTimeout(closeTimeout))"
             @keydown.tab="closeMenu()"
             @keydown.arrow-down.prevent="(() => {
@@ -111,63 +112,80 @@
             })()"
         >
             <div
-                class="flex h-full flex-col overflow-hidden p-3.5"
+                class="flex h-full flex-col overflow-hidden px-3.5 py-4"
                 role="none"
             >
-                <div class="opacity-70">Menu</div>
                 <nav
-                    class="mt-2 flex flex-col gap-2"
+                    class="flex flex-col gap-2"
                     role="none"
                 >
                     <a
                         href="https://github.com/nativephp"
-                        class="flex items-center gap-3 rounded-lg px-3 py-2 transition hover:bg-zinc-200/60"
+                        class="group hover:bg-snow-flurry-50/70 hover:ring-snow-flurry-100 flex items-center gap-3 rounded-lg py-2 pr-3 pl-2 ring-1 ring-transparent transition"
                         role="menuitem"
                         tabindex="-1"
                         x-ref="firstItem"
                     >
                         {{-- Icon --}}
                         <div
-                            class="grid size-11 place-items-center rounded-lg bg-white"
+                            class="group-hover:bg-snow-flurry-200/30 group-hover:ring-snow-flurry-200/50 grid size-10 place-items-center rounded-lg bg-zinc-100 ring-1 ring-transparent transition ring-inset"
                         >
-                            <x-icons.github class="size-6" />
+                            <x-icons.github
+                                class="size-5 transition will-change-transform group-hover:scale-95"
+                            />
                         </div>
 
                         {{-- Right side --}}
-                        <div>
+                        <div class="relative grow">
                             {{-- Title --}}
                             <div class="font-medium">GitHub</div>
 
                             {{-- Subtitle --}}
-                            <div class="text-xs opacity-70">
+                            <div
+                                class="mt-0.5 text-xs opacity-70 group-hover:mask-r-from-0%"
+                            >
                                 Visit our GitHub repository
                             </div>
+
+                            {{-- Arrow --}}
+                            <x-icons.right-arrow
+                                class="absolute top-1/2 right-1.5 size-3 -translate-y-1/2 opacity-0 transition will-change-transform group-hover:translate-x-1 group-hover:opacity-100"
+                            />
                         </div>
                     </a>
                     <a
                         href="/sponsor"
                         aria-label="Sponsor NativePHP"
                         title="Support NativePHP development"
-                        class="flex items-center gap-3 rounded-lg px-3 py-2 transition hover:bg-zinc-200/60"
+                        class="group hover:bg-snow-flurry-50/70 hover:ring-snow-flurry-100 flex items-center gap-3 rounded-lg py-2 pr-3 pl-2 ring-1 ring-transparent transition"
                         role="menuitem"
                         tabindex="-1"
                     >
                         {{-- Icon --}}
                         <div
-                            class="grid size-11 place-items-center rounded-lg bg-white"
+                            class="group-hover:bg-snow-flurry-200/30 group-hover:ring-snow-flurry-200/50 grid size-10 place-items-center rounded-lg bg-zinc-100 ring-1 ring-transparent transition ring-inset"
                         >
-                            <x-icons.heart class="size-5" />
+                            <x-icons.heart
+                                class="size-4 transition will-change-transform group-hover:scale-95"
+                            />
                         </div>
 
                         {{-- Right side --}}
-                        <div>
+                        <div class="relative grow">
                             {{-- Title --}}
                             <div class="font-medium">Sponsor</div>
 
                             {{-- Subtitle --}}
-                            <div class="text-xs opacity-70">
+                            <div
+                                class="mt-0.5 text-xs opacity-70 group-hover:mask-r-from-0%"
+                            >
                                 Support NativePHP development
                             </div>
+
+                            {{-- Arrow --}}
+                            <x-icons.right-arrow
+                                class="absolute top-1/2 right-1.5 size-3 -translate-y-1/2 opacity-0 transition will-change-transform group-hover:translate-x-1 group-hover:opacity-100"
+                            />
                         </div>
                     </a>
                 </nav>

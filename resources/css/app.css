@@ -13,6 +13,10 @@
     --color-mirage: #141624;
     --color-haiti: #16182c;
     --color-cloud: #2b2e53;
+    --color-snow-flurry-50: #e0ffcb;
+    --color-snow-flurry-100: #d1ffae;
+    --color-snow-flurry-200: #a2fd00;
+    --color-snow-flurry-300: #97ed00;
 
     --font-poppins: 'Poppins', Verdana, sans-serif;
 }
