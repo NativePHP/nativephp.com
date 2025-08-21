@@ -18,6 +18,35 @@
                   : 'Use light theme'
         },
 
+        readable(pref) {
+            if (pref === 'system') {
+                return 'Auto'
+            }
+
+            if (pref === 'dark') {
+                return 'Dark'
+            }
+
+            return 'Light'
+        },
+
+        nextPref(pref) {
+            // Cycle: light -> dark -> system -> light
+            if (pref === 'light') {
+                return 'dark'
+            }
+
+            if (pref === 'dark') {
+                return 'system'
+            }
+
+            return 'light'
+        },
+
+        hintText() {
+            return `${this.readable(this.themePreference)} → ${this.readable(this.nextPref(this.themePreference))}`
+        },
+
         init() {
             gsap.to('.theme-selector', { scale: 1, duration: 0.1 })
 
@@ -101,7 +130,7 @@
     aria-label="Toggle theme"
     x-bind:aria-pressed="themePreference !== 'system' ? 'true' : 'mixed'"
     tabindex="0"
-    class="theme-selector relative -mx-1.5 size-9 cursor-pointer transition duration-300 select-none hover:opacity-75 dark:opacity-70 dark:hover:opacity-100"
+    class="theme-selector group relative -mx-1.5 size-9 cursor-pointer transition duration-300 select-none hover:opacity-75 dark:opacity-70 dark:hover:opacity-100"
 >
     <span
         class="sr-only"
@@ -234,4 +263,11 @@
             </div>
         </div>
     </div>
+
+    {{-- Hover hint: Current -> Next preference --}}
+    <div
+        class="pointer-events-none absolute top-full left-1/2 -translate-x-1/2 translate-y-2 text-[10px] leading-none whitespace-nowrap text-gray-500 opacity-0 transition duration-200 group-hover:translate-y-1 group-hover:opacity-100 dark:text-gray-400"
+        aria-hidden="true"
+        x-text="hintText()"
+    ></div>
 </div>
