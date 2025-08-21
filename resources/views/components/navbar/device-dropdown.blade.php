@@ -83,7 +83,7 @@
         aria-controls="{{ $menuId }}"
         aria-label="Toggle {{ $label }} menu"
         aria-haspopup="menu"
-        class="flex items-center gap-2 overflow-hidden rounded-full px-3 py-2 text-xs transition duration-200 focus:ring-0 focus:outline-none"
+        class="flex items-center gap-2 overflow-hidden rounded-full px-3 py-2 text-xs transition duration-200 select-none focus:ring-0 focus:outline-none lg:text-sm"
         :class="{
             'bg-zinc-200/60 hover:bg-zinc-200 dark:bg-cloud/45 dark:hover:bg-cloud/70': !open,
             'bg-violet-300/70 dark:bg-cloud': open
@@ -97,7 +97,7 @@
         <div class="flex items-center gap-2">
             <x-dynamic-component
                 :component="'icons.' . $icon"
-                class="h-4.5 shrink-0"
+                class="h-4.5 shrink-0 lg:h-5"
             />
             <div>{{ $label }}</div>
         </div>
@@ -126,7 +126,7 @@
         id="{{ $menuId }}"
         role="menu"
         aria-labelledby="{{ $buttonId }}"
-        class="dark:bg-mirage absolute top-full right-0 mt-2 w-max max-w-[calc(100vw-1rem)] min-w-[16rem] origin-top overflow-y-auto overscroll-contain rounded-xl bg-white shadow-xl ring-1 shadow-black/5 ring-zinc-200/80 sm:right-auto sm:left-0 dark:text-white dark:ring-zinc-700/70"
+        class="dark:bg-mirage absolute top-full left-0 mt-2 w-max max-w-[calc(100vw-1rem)] min-w-[16rem] origin-top overflow-y-auto overscroll-contain rounded-xl bg-white shadow-xl ring-1 shadow-black/5 ring-zinc-200/80 sm:right-auto sm:left-0 dark:text-white dark:ring-zinc-700/70"
         @mouseenter="pointerFine && (closeTimeout && clearTimeout(closeTimeout))"
         @keydown.tab="closeMenu()"
         @keydown.arrow-down.prevent="(() => {
