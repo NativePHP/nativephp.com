@@ -127,6 +127,9 @@
                     Shop
                 </a>
 
+                {{-- Theme toggle --}}
+                <x-navbar.theme-toggle />
+
                 {{-- Doc search --}}
                 <div
                     class="-mr-0.5 transition-all duration-200 ease-in-out will-change-transform"
@@ -140,9 +143,6 @@
                         aria-label="Search documentation"
                     ></div>
                 </div>
-
-                {{-- Theme toggle --}}
-                <x-navbar.theme-toggle />
             </div>
         </div>
     </div>

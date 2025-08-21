@@ -266,7 +266,7 @@
 
     {{-- Hover hint: Current -> Next preference --}}
     <div
-        class="pointer-events-none absolute top-full left-1/2 -translate-x-1/2 translate-y-2 text-[10px] leading-none whitespace-nowrap text-gray-500 opacity-0 transition duration-200 group-hover:translate-y-1 group-hover:opacity-100 dark:text-gray-400"
+        class="pointer-events-none absolute top-full left-1/2 -translate-x-1/2 translate-y-2 text-[10px] leading-none whitespace-nowrap text-gray-500 opacity-0 transition duration-200 group-hover:translate-y-0.5 group-hover:opacity-100 dark:text-gray-400"
         aria-hidden="true"
         x-text="hintText()"
     ></div>
