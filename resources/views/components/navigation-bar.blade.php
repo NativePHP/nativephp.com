@@ -6,7 +6,7 @@
     <x-bifrost-banner />
 </div>
 <nav
-    class="sticky top-0 z-50 flex flex-col items-center justify-center px-3 pt-px"
+    class="sticky top-0 z-50 flex flex-col items-center justify-center px-2 pt-px min-[500px]:px-3"
     aria-label="Main Navigation"
 >
     <div

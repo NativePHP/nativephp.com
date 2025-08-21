@@ -68,7 +68,7 @@
         role="dialog"
         aria-modal="true"
         aria-label="Site menu"
-        class="fixed top-23 right-3.5 bottom-3.5 left-3.5 h-auto w-auto origin-top -translate-y-2 scale-y-90 overflow-y-scroll overscroll-contain rounded-2xl bg-gray-100/50 opacity-0 ring-1 ring-gray-200/80 backdrop-blur-2xl transition transition-discrete duration-300 open:translate-y-0 open:scale-y-100 open:opacity-100 dark:bg-black/50 dark:text-white dark:ring-gray-700/70 starting:open:-translate-y-2 starting:open:scale-y-0 starting:open:opacity-0"
+        class="fixed top-23 right-3 bottom-3.5 left-3 h-auto w-auto origin-top -translate-y-2 scale-y-90 overflow-y-scroll overscroll-contain rounded-2xl bg-gray-100/50 opacity-0 ring-1 ring-gray-200/80 backdrop-blur-2xl transition transition-discrete duration-300 open:translate-y-0 open:scale-y-100 open:opacity-100 min-[500px]:right-3.5 min-[500px]:left-3.5 dark:bg-black/50 dark:text-white dark:ring-gray-700/70 starting:open:-translate-y-2 starting:open:scale-y-0 starting:open:opacity-0"
     >
         <div
             x-data="{
@@ -308,30 +308,51 @@
                 class="mb-2 flex w-full items-center justify-between gap-2 pb-2"
             >
                 <div class="gsap-mobile-menu-left-to-right-slide">Theme:</div>
-                <button
-                    x-on:click="isDark = !isDark; showMobileMenu = false"
-                    class="gsap-mobile-menu-right-to-left-slide flex h-10 items-center gap-0.5 rounded-full bg-gray-100 p-1 ring-1 ring-black/5 dark:bg-black/20 dark:ring-white/10"
-                    aria-pressed="false"
-                    aria-label="Toggle light or dark theme"
-                    title="Switch between dark and light mode"
+                <div
+                    class="gsap-mobile-menu-right-to-left-slide flex h-10 items-center gap-0.5 rounded-full bg-gray-100 p-1 text-sm ring-1 ring-black/5 dark:bg-black/20 dark:ring-white/10"
+                    role="radiogroup"
+                    aria-label="Theme preference"
                 >
-                    <div
-                        class="rounded-full px-4 py-1.5 transition duration-300 ease-in-out"
+                    <button
+                        type="button"
+                        role="radio"
+                        :aria-checked="themePreference === 'light'"
+                        x-on:click="themePreference = 'light'; showMobileMenu = false"
+                        class="rounded-full px-3 py-1.5 transition duration-300 ease-in-out"
                         :class="{
-                            'bg-gray-200/10': isDark,
+                            'bg-zinc-300/70': themePreference === 'light',
                         }"
-                    >
-                        Dark
-                    </div>
-                    <div
-                        class="rounded-full px-4 py-1.5 transition duration-300 ease-in-out"
-                        :class="{
-                            'bg-zinc-300/70': !isDark,
-                        }"
+                        title="Use light theme"
                     >
                         Light
-                    </div>
-                </button>
+                    </button>
+                    <button
+                        type="button"
+                        role="radio"
+                        :aria-checked="themePreference === 'system'"
+                        x-on:click="themePreference = 'system'; showMobileMenu = false"
+                        class="rounded-full px-3 py-1.5 transition duration-300 ease-in-out"
+                        :class="{
+                            'bg-zinc-300/50 dark:bg-gray-200/10': themePreference === 'system',
+                        }"
+                        title="Use system theme"
+                    >
+                        System
+                    </button>
+                    <button
+                        type="button"
+                        role="radio"
+                        :aria-checked="themePreference === 'dark'"
+                        x-on:click="themePreference = 'dark'; showMobileMenu = false"
+                        class="rounded-full px-3 py-1.5 transition duration-300 ease-in-out"
+                        :class="{
+                            'bg-gray-200/10': themePreference === 'dark',
+                        }"
+                        title="Use dark theme"
+                    >
+                        Dark
+                    </button>
+                </div>
             </div>
 
             <div
