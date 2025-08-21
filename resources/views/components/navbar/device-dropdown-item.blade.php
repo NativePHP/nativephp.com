@@ -11,7 +11,7 @@
 <a
     href="{{ $href }}"
     @if ($title) aria-label="{{ $title }}" @endif
-    class="group hover:bg-snow-flurry-50/70 hover:ring-snow-flurry-100 flex items-center gap-3 rounded-lg py-2 pr-3 pl-2 ring-1 ring-transparent transition dark:hover:bg-violet-400/20 dark:hover:ring-violet-400/50"
+    class="group hover:bg-snow-flurry-50/70 hover:ring-snow-flurry-100 flex items-center gap-3 rounded-lg py-2 pr-3 pl-2 ring-1 ring-transparent transition dark:hover:bg-violet-400/40 dark:hover:ring-violet-400/70"
     role="menuitem"
     tabindex="-1"
     {{ $attributes }}
@@ -27,7 +27,7 @@
         @endif
     </div>
 
-    <div class="relative grow truncate">
+    <div class="relative grow truncate pr-5">
         @if ($title)
             <div class="font-medium">{{ $title }}</div>
         @endif
