@@ -1,34 +1,183 @@
 <section
-    class="mt-10 px-5 md:mt-14"
+    class="mt-5"
     aria-labelledby="hero-title"
 >
+    <div
+        class="relative overflow-hidden rounded-xl bg-gradient-to-t from-[#E0E5EB] to-[#F9F9F9] p-8 dark:from-slate-950 dark:to-slate-900 dark:ring-1 dark:ring-slate-800"
+    >
+        <div class="grid place-items-center text-center text-pretty">
+            {{-- Build --}}
+            <h1
+                id="hero-title"
+                x-init="
+                    () => {
+                        motion.animate(
+                            $el,
+                            {
+                                opacity: [0, 1],
+                                x: [-10, 0],
+                            },
+                            {
+                                duration: 1,
+                                ease: motion.easeOut,
+                            },
+                        )
+                    }
+                "
+                class="text-3xl font-bold text-gray-800 dark:text-white"
+            >
+                The only way to build native apps in PHP
+            </h1>
+
+            {{-- Description --}}
+            <p
+                x-init="
+                    () => {
+                        motion.animate(
+                            $el,
+                            {
+                                opacity: [0, 1],
+                                y: [10, 0],
+                            },
+                            {
+                                duration: 1,
+                                ease: motion.easeOut,
+                            },
+                        )
+                    }
+                "
+                class="mx-auto mt-2 max-w-4xl text-center text-lg/relaxed text-gray-600 dark:text-zinc-400"
+                aria-describedby="hero-title"
+            >
+                Bring your
+                <a
+                    href="https://www.php.net"
+                    target="_blank"
+                    rel="noopener"
+                    class="inline-block font-medium text-gray-900 transition duration-200 will-change-transform hover:-translate-y-0.5 dark:text-white"
+                    aria-label="Learn more about PHP programming language"
+                >
+                    PHP
+                </a>
+                &
+                <a
+                    href="https://laravel.com"
+                    target="_blank"
+                    rel="noopener"
+                    class="inline-block font-medium text-gray-900 transition duration-200 will-change-transform hover:-translate-y-0.5 dark:text-white"
+                    aria-label="Learn more about Laravel framework"
+                >
+                    Laravel
+                </a>
+                skills to the world of
+                <span class="text-gray-900 dark:text-white">
+                    desktop & mobile apps
+                </span>
+                .
+                <br class="hidden md:block" />
+                Build cross-platform applications effortlessly—no extra tools,
+                just the stack you love.
+            </p>
+
+            {{-- Call to action --}}
+            <div
+                x-init="
+                    () => {
+                        motion.animate(
+                            $el,
+                            {
+                                opacity: [0, 1],
+                                x: [-10, 0],
+                            },
+                            {
+                                duration: 1,
+                                ease: motion.easeOut,
+                            },
+                        )
+                    }
+                "
+                class="mt-3 w-full max-w-55"
+            >
+                <div class="transition duration-300">
+                    <a
+                        href="/docs/mobile/1/getting-started/introduction"
+                        class="group dark:bg-haiti relative isolate z-0 flex h-15 items-center justify-between gap-3 overflow-hidden rounded-3xl bg-gray-900 px-5 leading-snug text-white transition duration-200 ease-in-out will-change-transform hover:bg-gray-800 dark:hover:bg-indigo-900/50"
+                        aria-label="Get started with NativePHP documentation for mobile apps"
+                    >
+                        {{-- Label --}}
+                        <div
+                            class="bg-gradient-to-br from-white to-cyan-300 bg-clip-text text-transparent duration-500 ease-in-out will-change-transform group-hover:translate-x-1"
+                        >
+                            Start building
+                        </div>
+                        {{-- Arrow --}}
+                        <div class="flex items-center gap-1">
+                            <div class="flex flex-col gap-2">
+                                <div
+                                    class="size-1 rounded-full bg-current opacity-50 transition duration-500 ease-in-out will-change-transform group-hover:translate-x-2 group-hover:translate-y-1.5 group-hover:opacity-100"
+                                ></div>
+                                <div
+                                    class="size-1 rounded-full bg-current opacity-50 transition duration-500 ease-in-out will-change-transform group-hover:-translate-y-3"
+                                ></div>
+                            </div>
+                            <div
+                                class="size-1 rounded-full bg-current transition duration-500 ease-in-out will-change-transform group-hover:-translate-x-2 group-hover:translate-y-1.5 group-hover:opacity-50"
+                            ></div>
+                        </div>
+                        {{-- Blue blur --}}
+                        <div
+                            x-init="
+                                () => {
+                                    motion.animate(
+                                        $el,
+                                        {
+                                            x: [0, 20, -100, 0],
+                                            y: [0, 5, 0],
+                                            scale: [1, 0.7, 1],
+                                            rotate: [0, 10, 0],
+                                        },
+                                        {
+                                            duration: 10,
+                                            repeat: Infinity,
+                                            repeatType: 'loop',
+                                            ease: motion.easeInOut,
+                                        },
+                                    )
+                                }
+                            "
+                            class="absolute -bottom-12 left-14 -z-10 h-20 w-44 rounded-full bg-transparent blur-xl will-change-transform dark:bg-blue-500/30"
+                        ></div>
+                        {{-- Orange blur --}}
+                        <div
+                            x-init="
+                                () => {
+                                    motion.animate(
+                                        $el,
+                                        {
+                                            x: [0, -10, 0],
+                                            y: [0, 10, 0],
+                                            scale: [1, 1.2, 1],
+                                        },
+                                        {
+                                            duration: 5,
+                                            repeat: Infinity,
+                                            repeatType: 'loop',
+                                            ease: motion.easeInOut,
+                                        },
+                                    )
+                                }
+                            "
+                            class="absolute -bottom-12 -left-5 -z-20 h-20 w-44 rounded-full bg-transparent blur-xl will-change-transform dark:bg-cyan-500/30"
+                        ></div>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
     {{-- Header --}}
     <header
-        class="group/header relative isolate grid place-items-center gap-0.5 text-center dark:text-white/90"
+        class="group/header relative isolate mt-40 grid place-items-center gap-0.5 text-center dark:text-white/90"
     >
-        {{-- Build --}}
-        <h1
-            id="hero-title"
-            x-init="
-                () => {
-                    motion.animate(
-                        $el,
-                        {
-                            opacity: [0, 1],
-                            x: [-10, 0],
-                        },
-                        {
-                            duration: 1,
-                            ease: motion.easeOut,
-                        },
-                    )
-                }
-            "
-            class="truncate text-6xl font-extrabold uppercase min-[400px]:text-7xl md:text-8xl"
-        >
-            Build
-            <span class="sr-only">Native PHP Apps</span>
-        </h1>
         {{-- Native --}}
         <div class="relative">
             <h1
@@ -52,12 +201,6 @@
             >
                 Native
             </h1>
-
-            {{-- Blurred circle --}}
-            <div
-                class="absolute -top-20 size-48 rounded-full bg-white/60 blur-[100px] md:-right-32 md:size-60 dark:-top-80 dark:right-1/2 dark:-z-50 dark:size-80 dark:translate-x-1/2 dark:bg-[#444892]/80"
-                aria-hidden="true"
-            ></div>
 
             {{-- Star --}}
             <div
@@ -246,28 +389,6 @@
                 </div>
             </div>
         </div>
-        {{-- PHP Apps --}}
-        <h1
-            x-init="
-                () => {
-                    motion.animate(
-                        $el,
-                        {
-                            opacity: [0, 1],
-                            x: [-10, 0],
-                        },
-                        {
-                            duration: 1,
-                            ease: motion.easeOut,
-                        },
-                    )
-                }
-            "
-            class="truncate text-6xl font-extrabold uppercase min-[400px]:text-7xl md:text-8xl"
-            aria-hidden="true"
-        >
-            PHP Apps
-        </h1>
 
         {{-- Shiny line --}}
         <div
@@ -341,214 +462,5 @@
                 loading="lazy"
             />
         </a>
-    </div>
-
-    {{-- Description --}}
-    <p
-        x-init="
-            () => {
-                motion.animate(
-                    $el,
-                    {
-                        opacity: [0, 1],
-                        y: [10, 0],
-                    },
-                    {
-                        duration: 1,
-                        ease: motion.easeOut,
-                    },
-                )
-            }
-        "
-        class="mx-auto max-w-4xl pt-5 text-center text-lg/relaxed text-gray-600 md:text-xl/relaxed dark:text-zinc-400"
-        aria-describedby="hero-title"
-    >
-        Bring your
-        <a
-            href="https://www.php.net"
-            target="_blank"
-            rel="noopener"
-            class="inline-block font-medium text-[#7a8bd7] transition duration-200 will-change-transform hover:-translate-y-0.5 dark:text-[#92a6ff]"
-            aria-label="Learn more about PHP programming language"
-        >
-            PHP
-        </a>
-        &
-        <a
-            href="https://laravel.com"
-            target="_blank"
-            rel="noopener"
-            class="inline-block font-medium text-[#F53003] transition duration-200 will-change-transform hover:-translate-y-0.5"
-            aria-label="Learn more about Laravel framework"
-        >
-            Laravel
-        </a>
-        skills to the world of
-        <span class="text-black dark:text-white">desktop & mobile apps</span>
-        .
-        <br class="hidden md:block" />
-        Build cross-platform applications effortlessly—no extra tools, just the
-        stack you love.
-    </p>
-
-    {{-- Call to Action Button --}}
-    <div
-        class="mt-10 flex flex-wrap-reverse items-center justify-center gap-4 sm:flex-nowrap"
-        x-data="{ desktopHover: false, mobileHover: false }"
-    >
-        {{-- Desktop --}}
-        <div
-            x-init="
-                () => {
-                    motion.animate(
-                        $el,
-                        {
-                            opacity: [0, 1],
-                            x: [10, 0],
-                        },
-                        {
-                            duration: 1,
-                            ease: motion.easeOut,
-                        },
-                    )
-                }
-            "
-            class="w-full max-w-64"
-        >
-            <div
-                class="transition duration-300"
-                :class="{ 'opacity-60 grayscale': mobileHover }"
-            >
-                <a
-                    href="/docs/desktop/1"
-                    class="group dark:bg-haiti relative isolate z-0 flex h-16 items-center justify-between gap-3 overflow-hidden rounded-2xl bg-[#EBEDF2] pr-6 pl-5 leading-snug transition duration-200 ease-in-out will-change-transform hover:bg-[#e5d6ff] dark:hover:bg-indigo-900/60"
-                    aria-label="Get started with NativePHP documentation for desktop apps"
-                    x-on:mouseenter="desktopHover = true"
-                    x-on:mouseleave="desktopHover = false"
-                >
-                    {{-- Arrow --}}
-                    <div class="flex items-center gap-1">
-                        <div
-                            class="size-1 rounded-full bg-current transition duration-500 ease-in-out will-change-transform group-hover:translate-x-2 group-hover:translate-y-1.5 group-hover:opacity-50"
-                        ></div>
-                        <div class="flex flex-col gap-2">
-                            <div
-                                class="size-1 rounded-full bg-current opacity-50 transition duration-500 ease-in-out will-change-transform group-hover:-translate-x-2 group-hover:translate-y-1.5 group-hover:opacity-100"
-                            ></div>
-                            <div
-                                class="size-1 rounded-full bg-current opacity-50 transition duration-500 ease-in-out will-change-transform group-hover:-translate-y-3"
-                            ></div>
-                        </div>
-                    </div>
-                    {{-- Label --}}
-                    <div
-                        class="flex items-center gap-3 duration-500 ease-in-out will-change-transform group-hover:-translate-x-1"
-                    >
-                        <div>Desktop</div>
-                        <x-icons.pc class="size-7 shrink-0" />
-                    </div>
-                </a>
-            </div>
-        </div>
-
-        {{-- Mobile --}}
-        <div
-            x-init="
-                () => {
-                    motion.animate(
-                        $el,
-                        {
-                            opacity: [0, 1],
-                            x: [-10, 0],
-                        },
-                        {
-                            duration: 1,
-                            ease: motion.easeOut,
-                        },
-                    )
-                }
-            "
-            class="w-full max-w-64"
-        >
-            <div
-                class="transition duration-300"
-                :class="{ 'opacity-60 grayscale': desktopHover }"
-            >
-                <a
-                    href="/mobile"
-                    class="group dark:bg-haiti relative isolate z-0 flex h-16 items-center justify-between gap-3 overflow-hidden rounded-2xl bg-[#EBEDF2] pr-5 pl-6 leading-snug transition duration-200 ease-in-out will-change-transform hover:bg-[#e5d6ff] dark:hover:bg-indigo-900/50"
-                    aria-label="Get started with NativePHP documentation for mobile apps"
-                    x-on:mouseenter="mobileHover = true"
-                    x-on:mouseleave="mobileHover = false"
-                >
-                    {{-- Label --}}
-                    <div
-                        class="flex items-center gap-3 duration-500 ease-in-out will-change-transform group-hover:translate-x-1"
-                    >
-                        <x-icons.device-mobile-phone class="size-6 shrink-0" />
-                        <div>Mobile</div>
-                    </div>
-                    {{-- Arrow --}}
-                    <div class="flex items-center gap-1">
-                        <div class="flex flex-col gap-2">
-                            <div
-                                class="size-1 rounded-full bg-current opacity-50 transition duration-500 ease-in-out will-change-transform group-hover:translate-x-2 group-hover:translate-y-1.5 group-hover:opacity-100"
-                            ></div>
-                            <div
-                                class="size-1 rounded-full bg-current opacity-50 transition duration-500 ease-in-out will-change-transform group-hover:-translate-y-3"
-                            ></div>
-                        </div>
-                        <div
-                            class="size-1 rounded-full bg-current transition duration-500 ease-in-out will-change-transform group-hover:-translate-x-2 group-hover:translate-y-1.5 group-hover:opacity-50"
-                        ></div>
-                    </div>
-                    {{-- Blue blur --}}
-                    <div
-                        x-init="
-                            () => {
-                                motion.animate(
-                                    $el,
-                                    {
-                                        x: [0, 20, -100, 0],
-                                        y: [0, 5, 0],
-                                        scale: [1, 0.7, 1],
-                                        rotate: [0, 10, 0],
-                                    },
-                                    {
-                                        duration: 10,
-                                        repeat: Infinity,
-                                        repeatType: 'loop',
-                                        ease: motion.easeInOut,
-                                    },
-                                )
-                            }
-                        "
-                        class="absolute -bottom-12 left-14 -z-10 h-20 w-44 rounded-full bg-[#D3D3FF] blur-xl will-change-transform dark:bg-blue-500/30"
-                    ></div>
-                    {{-- Orange blur --}}
-                    <div
-                        x-init="
-                            () => {
-                                motion.animate(
-                                    $el,
-                                    {
-                                        x: [0, -10, 0],
-                                        y: [0, 10, 0],
-                                        scale: [1, 1.2, 1],
-                                    },
-                                    {
-                                        duration: 5,
-                                        repeat: Infinity,
-                                        repeatType: 'loop',
-                                        ease: motion.easeInOut,
-                                    },
-                                )
-                            }
-                        "
-                        class="absolute -bottom-12 -left-5 -z-20 h-20 w-44 rounded-full bg-[#FFE7D3] blur-xl will-change-transform dark:bg-indigo-500/30"
-                    ></div>
-                </a>
-            </div>
-        </div>
     </div>
 </section>

@@ -1,8 +1,6 @@
 <x-layout>
     {{-- Main container --}}
-    <main
-        class="mx-auto flex w-full max-w-5xl grow items-start px-4 pt-1 xl:max-w-7xl 2xl:max-w-360"
-    >
+    <main class="flex grow items-start pt-1">
         {{-- Left sidebar --}}
         @if (! empty($sidebarLeft))
             <x-docs.sidebar-left-navigation>

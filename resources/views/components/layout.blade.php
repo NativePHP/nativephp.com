@@ -113,7 +113,13 @@
         class="font-poppins min-h-screen overflow-x-clip antialiased selection:bg-black selection:text-[#b4a9ff] dark:bg-[#050714] dark:text-white"
     >
         <x-navigation-bar />
-        {{ $slot }}
+
+        <div
+            class="mx-auto w-full max-w-5xl px-5 lg:px-3 xl:max-w-7xl 2xl:max-w-360"
+        >
+            {{ $slot }}
+        </div>
+
         <x-footer />
         @livewireScriptConfig
         @vite('resources/js/app.js')
