@@ -12,7 +12,7 @@
             icon="docs"
         />
         <x-navbar.device-dropdown-item
-            href="{{ route('early-adopter') }}"
+            href="{{ route('pricing') }}"
             title="Pricing"
             subtitle="See our pricing plans"
             icon="dollar-circle"

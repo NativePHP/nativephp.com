@@ -178,7 +178,7 @@
             >
                 @php
                     $isHomeActive = request()->routeIs('welcome*');
-                    $isMobileActive = request()->routeIs('early-adopter*');
+                    $isPricingActive = request()->routeIs('pricing*');
                     $isDocsActive = request()->is('docs*');
                     $isBlogActive = request()->routeIs('blog*');
                     $isSponsorActive = request()->routeIs('sponsoring*');
@@ -214,16 +214,16 @@
                 {{-- Mobile Link --}}
                 <div class="gsap-mobile-menu-link w-full">
                     <a
-                        href="{{ route('early-adopter') }}"
+                        href="{{ route('pricing') }}"
                         @class([
                             'flex items-center justify-between py-3 transition duration-200',
-                            'font-medium' => $isMobileActive,
-                            'opacity-50 hover:translate-x-1 hover:opacity-100' => ! $isMobileActive,
+                            'font-medium' => $isPricingActive,
+                            'opacity-50 hover:translate-x-1 hover:opacity-100' => ! $isPricingActive,
                         ])
-                        aria-current="{{ $isMobileActive ? 'page' : 'false' }}"
+                        aria-current="{{ $isPricingActive ? 'page' : 'false' }}"
                     >
-                        <div>Mobile</div>
-                        @if ($isMobileActive)
+                        <div>Mobile pricing</div>
+                        @if ($isPricingActive)
                             <x-icons.right-arrow
                                 class="size-4 shrink-0"
                                 aria-hidden="true"
@@ -292,26 +292,14 @@
                     role="presentation"
                 ></div>
 
-                {{-- Sponsor Link --}}
+                {{-- Shop Link --}}
                 <div class="gsap-mobile-menu-link w-full">
                     <a
-                        href="/sponsor"
-                        @class([
-                            'flex items-center justify-between py-3 transition duration-200',
-                            'font-medium' => $isSponsorActive,
-                            'opacity-50 hover:translate-x-1 hover:opacity-100' => ! $isSponsorActive,
-                        ])
-                        aria-label="Sponsor NativePHP project"
-                        aria-current="{{ $isSponsorActive ? 'page' : 'false' }}"
+                        href="https://shop.nativephp.com/"
+                        class="flex items-center justify-between py-3 opacity-50 transition duration-200 hover:translate-x-1 hover:opacity-100"
+                        aria-label="NativePHP Shop"
                     >
-                        <div>Sponsor</div>
-                        @if ($isSponsorActive)
-                            <x-icons.right-arrow
-                                class="size-4 shrink-0"
-                                aria-hidden="true"
-                                focusable="false"
-                            />
-                        @endif
+                        <div>Shop</div>
                     </a>
                 </div>
             </nav>
