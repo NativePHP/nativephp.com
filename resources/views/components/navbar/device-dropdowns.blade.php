@@ -1,4 +1,4 @@
-<nav class="flex items-center gap-2">
+<nav class="flex items-center gap-1.5 lg:gap-2">
     {{-- Mobile dropdown --}}
     <x-navbar.device-dropdown
         label="Mobile"

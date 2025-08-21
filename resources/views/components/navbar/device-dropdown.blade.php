@@ -83,9 +83,9 @@
         aria-controls="{{ $menuId }}"
         aria-label="Toggle {{ $label }} menu"
         aria-haspopup="menu"
-        class="flex items-center gap-2 overflow-hidden rounded-full px-3 py-2 text-xs transition duration-200 select-none focus:ring-0 focus:outline-none lg:text-sm"
+        class="flex items-center gap-2 overflow-hidden rounded-full px-3 py-2.5 text-xs transition duration-200 select-none focus:ring-0 focus:outline-none lg:py-2 lg:text-sm dark:ring-1 dark:ring-slate-700/50 dark:ring-inset"
         :class="{
-            'bg-zinc-200/60 hover:bg-zinc-200 dark:bg-cloud/45 dark:hover:bg-cloud/70': !open,
+            'bg-zinc-200/60 hover:bg-zinc-200 dark:bg-slate-950/30  dark:hover:bg-cloud/70': !open,
             'bg-violet-300/70 dark:bg-cloud': open
         }"
         @click="toggle()"
