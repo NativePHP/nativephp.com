@@ -3,7 +3,7 @@
     aria-labelledby="hero-title"
 >
     <div
-        class="relative z-0 flex flex-col overflow-hidden rounded-2xl bg-gradient-to-t from-[#E0E5EB] to-[#F9F9F9] px-5 pt-8 pb-10 lg:px-10 lg:pt-8 lg:pb-17 dark:from-slate-950 dark:to-slate-900 dark:ring-1 dark:ring-slate-800"
+        class="relative z-0 flex flex-col overflow-hidden rounded-2xl bg-gradient-to-t from-[#E0E5EB] to-[#F9F9F9] px-5 pt-8 pb-10 ring-1 ring-zinc-200/50 lg:px-10 lg:pt-8 lg:pb-17 dark:from-slate-950 dark:to-slate-900 dark:ring-slate-800"
     >
         {{-- Demo app --}}
         <div
@@ -600,6 +600,54 @@
                     </a>
                 </div>
             </div>
+
+            {{-- Introduction video for mobile viewport --}}
+            <div class="mt-6 grid place-items-center lg:hidden">
+                <a
+                    href="https://www.youtube.com/watch?v=WOTSjPFXQ2k"
+                    target="_blank"
+                    rel="noopener"
+                    class="group relative"
+                    aria-label="Watch introduction to NativePHP for Mobile"
+                >
+                    {{-- Play button --}}
+                    <div
+                        class="absolute top-1/2 right-1/2 grid size-16 translate-x-1/2 -translate-y-1/2 place-items-center rounded-full bg-white/10 text-white ring-1 ring-white/10 backdrop-blur-sm transition duration-300 ease-in-out will-change-transform group-hover:scale-110 group-hover:text-cyan-200"
+                        aria-hidden="true"
+                    >
+                        <x-icons.play-button
+                            x-init="
+                            () => {
+                                motion.animate(
+                                    $el,
+                                    {
+                                        x: [0, 3],
+                                    },
+                                    {
+                                        duration: 0.6,
+                                        repeat: Infinity,
+                                        repeatType: 'mirror',
+                                        ease: motion.easeInOut,
+                                    },
+                                )
+                            }
+                        "
+                            class="size-7"
+                            aria-hidden="true"
+                        />
+                        <span class="sr-only">Play video</span>
+                    </div>
+                    {{-- Image --}}
+                    <img
+                        src="{{ Vite::asset('resources/images/home/video_introduction_thumbnail.webp') }}"
+                        alt="Introduction to NativePHP for Mobile"
+                        class="w-full max-w-sm rounded-2xl"
+                        width="350"
+                        height="200"
+                        loading="lazy"
+                    />
+                </a>
+            </div>
         </div>
 
         {{-- Top left line --}}
@@ -641,53 +689,5 @@
             class="pointer-events-none absolute top-1/2 -left-20 -z-20 size-100 rounded-full bg-cyan-100 blur-[100px] dark:bg-cyan-500/20"
             aria-hidden="true"
         ></div>
-    </div>
-
-    {{-- Simon talk for mobile --}}
-    <div class="grid place-items-center pt-4 lg:hidden">
-        <a
-            href="https://www.youtube.com/watch?v=CsM66a0koAM"
-            target="_blank"
-            rel="noopener"
-            class="group relative"
-            aria-label="Watch Simon Hamp's talk on building mobile apps with PHP"
-        >
-            {{-- Play button --}}
-            <div
-                class="absolute top-1/2 right-1/2 grid size-16 translate-x-1/2 -translate-y-1/2 place-items-center rounded-full bg-white/10 text-white ring-1 ring-white/10 backdrop-blur-sm transition duration-300 ease-in-out will-change-transform group-hover:scale-110 group-hover:text-[#d4fd7d]"
-                aria-hidden="true"
-            >
-                <x-icons.play-button
-                    x-init="
-                            () => {
-                                motion.animate(
-                                    $el,
-                                    {
-                                        x: [0, 3],
-                                    },
-                                    {
-                                        duration: 0.6,
-                                        repeat: Infinity,
-                                        repeatType: 'mirror',
-                                        ease: motion.easeInOut,
-                                    },
-                                )
-                            }
-                        "
-                    class="size-7"
-                    aria-hidden="true"
-                />
-                <span class="sr-only">Play video</span>
-            </div>
-            {{-- Image --}}
-            <img
-                src="{{ Vite::asset('resources/images/simon2025laraconeu.webp') }}"
-                alt="Simon Hamp presenting at Laracon EU 2025 on building mobile apps with PHP"
-                class="w-full max-w-[505px] rounded-xl"
-                width="505"
-                height="284"
-                loading="lazy"
-            />
-        </a>
     </div>
 </section>
