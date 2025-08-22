@@ -6,7 +6,7 @@
         class="relative z-0 overflow-hidden rounded-2xl bg-gradient-to-t from-[#E0E5EB] to-[#F9F9F9] px-10 pt-8 pb-17 dark:from-slate-950 dark:to-slate-900 dark:ring-1 dark:ring-slate-800"
     >
         {{-- Demo app --}}
-        <div class="-mb-7 flex justify-end text-xs">
+        <div class="-mb-20 flex justify-end text-xs">
             <div class="flex flex-col items-end gap-1.5">
                 <h5 class="font-light dark:font-extralight">
                     Try our
@@ -94,7 +94,7 @@
             </style>
 
             <div
-                class="group absolute top-0 left-5 h-60 overflow-hidden mask-y-from-75%"
+                class="group absolute top-0 left-5 h-60 overflow-hidden mask-y-from-75% xl:left-1/7 2xl:left-1/6"
             >
                 {{-- Track (two sets for seamless loop) --}}
                 <div
