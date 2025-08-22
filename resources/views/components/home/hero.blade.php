@@ -237,13 +237,13 @@
                         )
                     }
                 "
-                class="relative text-3xl font-bold text-gray-700 lg:text-4xl dark:text-white"
+                class="xs:text-3xl 2xs:text-2xl relative text-xl font-bold text-gray-700 lg:text-4xl dark:text-white"
             >
                 Build
 
                 <!-- display: inline -->
                 <span
-                    class="2xs:inline block rounded-2xl bg-gradient-to-tl from-[#AADEE9] to-[#BDE7F0] px-2.5 py-1 text-[#589baa] dark:from-cyan-950 dark:to-cyan-800 dark:text-cyan-400"
+                    class="rounded-2xl bg-gradient-to-tl from-[#AADEE9] to-[#BDE7F0] px-2.5 py-1 text-[#589baa] dark:from-cyan-950 dark:to-cyan-800 dark:text-cyan-400"
                     >Native PHP</span
                 >
                 Apps
@@ -418,7 +418,7 @@
                         )
                     }
                 "
-                class="mx-auto mt-5 max-w-4xl text-center text-lg/relaxed text-gray-600 dark:text-zinc-400"
+                class="xs:text-lg xs:mt-5 mx-auto mt-4 max-w-4xl text-center leading-relaxed text-gray-600 dark:text-zinc-400"
                 aria-describedby="hero-title"
             >
                 Bring your
