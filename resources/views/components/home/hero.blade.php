@@ -43,17 +43,103 @@
         </div>
 
         {{-- Mockups --}}
-        <div class="flex items-end justify-center">
+        <div class="relative flex items-end justify-center">
+            {{-- Macbook --}}
             <img
                 src="{{ Vite::asset('resources/images/home/macbook.webp') }}"
                 alt=""
                 class="w-100"
             />
+
+            {{-- Iphone --}}
             <img
                 src="{{ Vite::asset('resources/images/home/iphone.webp') }}"
                 alt=""
                 class="-ml-18 w-23"
             />
+
+            {{-- Feature list --}}
+            <div
+                class="absolute top-0 left-5 flex h-60 flex-col gap-3 overflow-hidden mask-y-from-75%"
+            >
+                <div class="flex items-center gap-2 text-sm">
+                    {{-- Icon --}}
+                    <x-icons.home.share-link class="size-5" />
+
+                    {{-- Label --}}
+                    <div class="text-gray-700">Native sharing</div>
+                </div>
+                <div class="flex items-center gap-2 text-sm">
+                    {{-- Icon --}}
+                    <x-icons.home.gallery class="size-5" />
+
+                    {{-- Label --}}
+                    <div class="text-gray-700">Gallery</div>
+                </div>
+                <div class="flex items-center gap-2 text-sm">
+                    {{-- Icon --}}
+                    <x-icons.home.camera class="size-5" />
+
+                    {{-- Label --}}
+                    <div class="text-gray-700">Camera</div>
+                </div>
+                <div class="flex items-center gap-2 text-sm">
+                    {{-- Icon --}}
+                    <x-icons.home.fingerprint class="size-5" />
+
+                    {{-- Label --}}
+                    <div class="text-gray-700">Biometrics</div>
+                </div>
+                <div class="flex items-center gap-2 text-sm">
+                    {{-- Icon --}}
+                    <x-icons.home.bell class="size-5" />
+
+                    {{-- Label --}}
+                    <div class="text-gray-700">Push notifications</div>
+                </div>
+                <div class="flex items-center gap-2 text-sm">
+                    {{-- Icon --}}
+                    <x-icons.home.phone-message class="size-5" />
+
+                    {{-- Label --}}
+                    <div class="text-gray-700">Native dialogs</div>
+                </div>
+                <div class="flex items-center gap-2 text-sm">
+                    {{-- Icon --}}
+                    <x-icons.home.external-link class="size-5" />
+
+                    {{-- Label --}}
+                    <div class="text-gray-700">Deep links</div>
+                </div>
+                <div class="flex items-center gap-2 text-sm">
+                    {{-- Icon --}}
+                    <x-icons.home.phone-vibrate class="size-5" />
+
+                    {{-- Label --}}
+                    <div class="text-gray-700">Haptic feedback</div>
+                </div>
+                <div class="flex items-center gap-2 text-sm">
+                    {{-- Icon --}}
+                    <x-icons.home.flashlight class="size-5" />
+
+                    {{-- Label --}}
+                    <div class="text-gray-700">Flashlight</div>
+                </div>
+                <div class="flex items-center gap-2 text-sm">
+                    {{-- Icon --}}
+                    <x-icons.home.database-shield class="size-5" />
+
+                    {{-- Label --}}
+                    <div class="text-gray-700">Secure storage</div>
+                </div>
+                <div class="flex items-center gap-2 text-sm">
+                    {{-- Icon --}}
+                    <x-icons.home.location-pin class="size-5" />
+
+                    {{-- Label --}}
+                    <div class="text-gray-700">Location services</div>
+                </div>
+            </div>
         </div>
 
         {{-- Main --}}
