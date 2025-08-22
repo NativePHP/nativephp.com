@@ -221,15 +221,14 @@
                 id="hero-title"
                 x-init="
                     () => {
-                        motion.animate(
+                        gsap.fromTo(
                             $el,
+                            { autoAlpha: 0, x: -10 },
                             {
-                                opacity: [0, 1],
-                                x: [-10, 0],
-                            },
-                            {
+                                autoAlpha: 1,
+                                x: 0,
                                 duration: 1,
-                                ease: motion.easeOut,
+                                ease: 'power1.out',
                             },
                         )
                     }
@@ -249,15 +248,14 @@
                 <div
                     x-init="
                         () => {
-                            motion.animate(
+                            gsap.fromTo(
                                 $el,
+                                { scale: 0, autoAlpha: 0 },
                                 {
-                                    scale: [0, 1],
-                                    opacity: [0, 1],
-                                },
-                                {
+                                    scale: 1,
+                                    autoAlpha: 1,
                                     duration: 1,
-                                    ease: motion.anticipate,
+                                    ease: 'back.out(1.4)',
                                 },
                             )
                         }
@@ -267,18 +265,12 @@
                     <x-icons.star
                         x-init="
                             () => {
-                                motion.animate(
-                                    $el,
-                                    {
-                                        rotate: [0, 180],
-                                    },
-                                    {
-                                        duration: 3,
-                                        repeat: Infinity,
-                                        repeatType: 'loop',
-                                        ease: 'linear',
-                                    },
-                                )
+                                gsap.to($el, {
+                                    rotate: 180,
+                                    duration: 3,
+                                    repeat: -1,
+                                    ease: 'linear',
+                                })
                             }
                         "
                         class="size-4 text-gray-500"
@@ -289,15 +281,14 @@
                 <div
                     x-init="
                         () => {
-                            motion.animate(
+                            gsap.fromTo(
                                 $el,
+                                { y: -10, x: 10 },
                                 {
-                                    y: [-10, 0],
-                                    x: [10, 0],
-                                },
-                                {
+                                    y: 0,
+                                    x: 0,
                                     duration: 1.5,
-                                    ease: motion.circOut,
+                                    ease: 'circ.out',
                                 },
                             )
                         }
@@ -309,14 +300,13 @@
                         <div
                             x-init="
                                 () => {
-                                    motion.animate(
+                                    gsap.fromTo(
                                         $el,
+                                        { scale: 0 },
                                         {
-                                            scale: [0, 1],
-                                        },
-                                        {
+                                            scale: 1,
                                             duration: 1,
-                                            ease: motion.backOut,
+                                            ease: 'back.out(1.4)',
                                         },
                                     )
                                 }
@@ -336,15 +326,13 @@
                             <path
                                 x-init="
                                     () => {
-                                        motion.animate(
+                                        gsap.fromTo(
                                             $el,
+                                            { strokeDashoffset: 0 },
                                             {
-                                                strokeDashoffset: [0, 20],
-                                            },
-                                            {
+                                                strokeDashoffset: 20,
                                                 duration: 1.5,
-                                                repeat: Infinity,
-                                                repeatType: 'loop',
+                                                repeat: -1,
                                                 ease: 'linear',
                                             },
                                         )
@@ -366,18 +354,13 @@
                             <x-icons.play-button
                                 x-init="
                                         () => {
-                                            motion.animate(
-                                                $el,
-                                                {
-                                                    x: [-1, 1],
-                                                },
-                                                {
-                                                    duration: 0.6,
-                                                    repeat: Infinity,
-                                                    repeatType: 'mirror',
-                                                    ease: motion.easeInOut,
-                                                },
-                                            )
+                                            gsap.to($el, {
+                                                x: 1,
+                                                duration: 0.6,
+                                                repeat: -1,
+                                                yoyo: true,
+                                                ease: 'power1.inOut',
+                                            })
                                         }
                                     "
                                 class="size-4"
@@ -419,15 +402,14 @@
             <p
                 x-init="
                     () => {
-                        motion.animate(
+                        gsap.fromTo(
                             $el,
+                            { autoAlpha: 0, y: 10 },
                             {
-                                opacity: [0, 1],
-                                y: [10, 0],
-                            },
-                            {
+                                autoAlpha: 1,
+                                y: 0,
                                 duration: 1,
-                                ease: motion.easeOut,
+                                ease: 'power2.out',
                             },
                         )
                     }
@@ -469,15 +451,14 @@
             <div
                 x-init="
                     () => {
-                        motion.animate(
+                        gsap.fromTo(
                             $el,
+                            { autoAlpha: 0, x: -10 },
                             {
-                                opacity: [0, 1],
-                                x: [-10, 0],
-                            },
-                            {
+                                autoAlpha: 1,
+                                x: 0,
                                 duration: 1,
-                                ease: motion.easeOut,
+                                ease: 'power2.out',
                             },
                         )
                     }
