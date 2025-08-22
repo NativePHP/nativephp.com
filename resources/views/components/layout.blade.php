@@ -71,11 +71,14 @@
         {!! Twitter::generate() !!}
 
         <!-- Fathom - beautiful, simple website analytics -->
-        <script
-            src="https://cdn.usefathom.com/script.js"
-            data-site="HALHTNZU"
-            defer
-        ></script>
+        @production
+            <script
+                src="https://cdn.usefathom.com/script.js"
+                data-site="HALHTNZU"
+                defer
+            ></script>
+        @endproduction
+
         <!-- / Fathom -->
 
         {{-- Styles --}}

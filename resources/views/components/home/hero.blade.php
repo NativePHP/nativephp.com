@@ -58,86 +58,81 @@
                 class="-ml-18 w-23"
             />
 
-            {{-- Feature list --}}
+            {{-- Feature list (infinite vertical marquee) --}}
+            @php
+                $features = [
+                    ['icon' => 'icons.home.share-link', 'label' => 'Native sharing'],
+                    ['icon' => 'icons.home.gallery', 'label' => 'Gallery'],
+                    ['icon' => 'icons.home.camera', 'label' => 'Camera'],
+                    ['icon' => 'icons.home.fingerprint', 'label' => 'Biometrics'],
+                    ['icon' => 'icons.home.bell', 'label' => 'Push notifications'],
+                    ['icon' => 'icons.home.phone-message', 'label' => 'Native dialogs'],
+                    ['icon' => 'icons.home.external-link', 'label' => 'Deep links'],
+                    ['icon' => 'icons.home.phone-vibrate', 'label' => 'Haptic feedback'],
+                    ['icon' => 'icons.home.flashlight', 'label' => 'Flashlight'],
+                    ['icon' => 'icons.home.database-shield', 'label' => 'Secure storage'],
+                    ['icon' => 'icons.home.location-pin', 'label' => 'Location services'],
+                ];
+            @endphp
+
+            {{-- Local CSS for marquee (kept tiny and scoped) --}}
+            <style>
+                @keyframes nphp-vmarquee {
+                    to {
+                        transform: translateY(-50%);
+                    }
+                }
+                .nphp-marquee-track {
+                    animation: nphp-vmarquee var(--marquee-duration, 22s) linear
+                        infinite;
+                }
+                @media (prefers-reduced-motion: reduce) {
+                    .nphp-marquee-track {
+                        animation: none !important;
+                    }
+                }
+            </style>
+
             <div
-                class="absolute top-0 left-5 flex h-60 flex-col gap-3 overflow-hidden mask-y-from-75%"
+                class="group absolute top-0 left-5 h-60 overflow-hidden mask-y-from-75%"
             >
-                <div class="flex items-center gap-2 text-sm">
-                    {{-- Icon --}}
-                    <x-icons.home.share-link class="size-5" />
+                {{-- Track (two sets for seamless loop) --}}
+                <div
+                    class="nphp-marquee-track flex flex-col gap-3 will-change-transform group-hover:[animation-play-state:paused]"
+                    style="--marquee-duration: 24s"
+                >
+                    {{-- Set A --}}
+                    <div class="flex flex-col gap-3">
+                        @foreach ($features as $feature)
+                            <div class="flex items-center gap-2 text-sm">
+                                <x-dynamic-component
+                                    :component="$feature['icon']"
+                                    class="size-5"
+                                />
+                                <div class="text-gray-700 dark:text-gray-400">
+                                    {{ $feature['label'] }}
+                                </div>
+                            </div>
+                        @endforeach
+                    </div>
 
-                    {{-- Label --}}
-                    <div class="text-gray-700">Native sharing</div>
-                </div>
-                <div class="flex items-center gap-2 text-sm">
-                    {{-- Icon --}}
-                    <x-icons.home.gallery class="size-5" />
-
-                    {{-- Label --}}
-                    <div class="text-gray-700">Gallery</div>
-                </div>
-                <div class="flex items-center gap-2 text-sm">
-                    {{-- Icon --}}
-                    <x-icons.home.camera class="size-5" />
-
-                    {{-- Label --}}
-                    <div class="text-gray-700">Camera</div>
-                </div>
-                <div class="flex items-center gap-2 text-sm">
-                    {{-- Icon --}}
-                    <x-icons.home.fingerprint class="size-5" />
-
-                    {{-- Label --}}
-                    <div class="text-gray-700">Biometrics</div>
-                </div>
-                <div class="flex items-center gap-2 text-sm">
-                    {{-- Icon --}}
-                    <x-icons.home.bell class="size-5" />
-
-                    {{-- Label --}}
-                    <div class="text-gray-700">Push notifications</div>
-                </div>
-                <div class="flex items-center gap-2 text-sm">
-                    {{-- Icon --}}
-                    <x-icons.home.phone-message class="size-5" />
-
-                    {{-- Label --}}
-                    <div class="text-gray-700">Native dialogs</div>
-                </div>
-                <div class="flex items-center gap-2 text-sm">
-                    {{-- Icon --}}
-                    <x-icons.home.external-link class="size-5" />
-
-                    {{-- Label --}}
-                    <div class="text-gray-700">Deep links</div>
-                </div>
-                <div class="flex items-center gap-2 text-sm">
-                    {{-- Icon --}}
-                    <x-icons.home.phone-vibrate class="size-5" />
-
-                    {{-- Label --}}
-                    <div class="text-gray-700">Haptic feedback</div>
-                </div>
-                <div class="flex items-center gap-2 text-sm">
-                    {{-- Icon --}}
-                    <x-icons.home.flashlight class="size-5" />
-
-                    {{-- Label --}}
-                    <div class="text-gray-700">Flashlight</div>
-                </div>
-                <div class="flex items-center gap-2 text-sm">
-                    {{-- Icon --}}
-                    <x-icons.home.database-shield class="size-5" />
-
-                    {{-- Label --}}
-                    <div class="text-gray-700">Secure storage</div>
-                </div>
-                <div class="flex items-center gap-2 text-sm">
-                    {{-- Icon --}}
-                    <x-icons.home.location-pin class="size-5" />
-
-                    {{-- Label --}}
-                    <div class="text-gray-700">Location services</div>
+                    {{-- Set B (clone) --}}
+                    <div
+                        class="flex flex-col gap-3"
+                        aria-hidden="true"
+                    >
+                        @foreach ($features as $feature)
+                            <div class="flex items-center gap-2 text-sm">
+                                <x-dynamic-component
+                                    :component="$feature['icon']"
+                                    class="size-5"
+                                />
+                                <div class="text-gray-700 dark:text-gray-400">
+                                    {{ $feature['label'] }}
+                                </div>
+                            </div>
+                        @endforeach
+                    </div>
                 </div>
             </div>
         </div>
