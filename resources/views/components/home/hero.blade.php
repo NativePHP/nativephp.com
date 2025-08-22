@@ -5,20 +5,152 @@
     <div
         class="relative z-0 overflow-hidden rounded-2xl bg-gradient-to-t from-[#E0E5EB] to-[#F9F9F9] p-10 dark:from-slate-950 dark:to-slate-900 dark:ring-1 dark:ring-slate-800"
     >
+        {{-- Mockups --}}
         <div class="flex items-end justify-center">
             <img
                 src="{{ Vite::asset('resources/images/home/macbook.webp') }}"
                 alt=""
-                class="w-100"
+                class="w-90"
             />
             <img
                 src="{{ Vite::asset('resources/images/home/iphone.webp') }}"
                 alt=""
-                class="-ml-20 h-50"
+                class="-ml-18 h-45"
             />
         </div>
+
+        {{-- Main --}}
         <div class="mt-8 grid place-items-center text-center text-pretty">
-            {{-- Build --}}
+            {{-- Video --}}
+            <div class="-mt-40 -mr-7 flex w-full justify-end">
+                <div
+                    x-init="
+                        () => {
+                            motion.animate(
+                                $el,
+                                {
+                                    y: [-10, 0],
+                                    x: [10, 0],
+                                },
+                                {
+                                    duration: 1.5,
+                                    ease: motion.circOut,
+                                },
+                            )
+                        }
+                    "
+                    class="group hidden items-end gap-1 text-left lg:flex"
+                >
+                    <div class="relative top-0.5 -mr-6 flex items-end gap-1">
+                        {{-- Black circle --}}
+                        <div
+                            x-init="
+                                () => {
+                                    motion.animate(
+                                        $el,
+                                        {
+                                            scale: [0, 1],
+                                        },
+                                        {
+                                            duration: 1,
+                                            ease: motion.backOut,
+                                        },
+                                    )
+                                }
+                            "
+                            class="-mb-1.5 size-1 rounded-full bg-white ring-[3px] ring-black dark:bg-black/50 dark:ring-white"
+                            aria-hidden="true"
+                        ></div>
+                        {{-- Line --}}
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="94"
+                            height="41"
+                            viewBox="0 0 94 41"
+                            fill="none"
+                            aria-hidden="true"
+                        >
+                            <path
+                                x-init="
+                                    () => {
+                                        motion.animate(
+                                            $el,
+                                            {
+                                                strokeDashoffset: [0, 20],
+                                            },
+                                            {
+                                                duration: 1.5,
+                                                repeat: Infinity,
+                                                repeatType: 'loop',
+                                                ease: 'linear',
+                                            },
+                                        )
+                                    }
+                                "
+                                d="M94 0.5H47.3449C41.942 0.5 36.7691 2.68588 33.0033 6.56012L0.5 40"
+                                stroke="currentColor"
+                                stroke-dasharray="5 5"
+                            />
+                        </svg>
+                        {{-- Play button --}}
+                        <a
+                            href="https://www.youtube.com/watch?v=WOTSjPFXQ2k"
+                            target="_blank"
+                            rel="noopener"
+                            class="relative -top-5 grid size-10 place-items-center rounded-full bg-black/30 text-white ring-1 ring-white/10 backdrop-blur-sm transition duration-300 ease-in-out will-change-transform group-hover:scale-110 group-hover:text-[#d4fd7d] dark:group-hover:text-[#9c90f0]"
+                            aria-label="Watch NativePHP introduction video on YouTube"
+                        >
+                            <x-icons.play-button
+                                x-init="
+                                        () => {
+                                            motion.animate(
+                                                $el,
+                                                {
+                                                    x: [-1, 1],
+                                                },
+                                                {
+                                                    duration: 0.6,
+                                                    repeat: Infinity,
+                                                    repeatType: 'mirror',
+                                                    ease: motion.easeInOut,
+                                                },
+                                            )
+                                        }
+                                    "
+                                class="size-4"
+                                aria-hidden="true"
+                            />
+                            <span class="sr-only">Play introduction</span>
+                        </a>
+                    </div>
+                    <div>
+                        <div class="text-xs text-gray-600 dark:text-white/50">
+                            Introducing
+                        </div>
+                        <div class="text-sm font-medium">
+                            NativePHP for Mobile
+                        </div>
+                        {{-- Image --}}
+                        <a
+                            href="https://www.youtube.com/watch?v=WOTSjPFXQ2k"
+                            target="_blank"
+                            rel="noopener"
+                            aria-label="Watch Simon Hamp's Laracon EU talk about building mobile apps with PHP"
+                        >
+                            <img
+                                src="{{ Vite::asset('resources/images/home/video_introduction_thumbnail.webp') }}"
+                                alt="Simon Hamp presenting at Laracon EU 2025 on building mobile apps with PHP"
+                                class="mt-2 w-35 rounded-2xl"
+                                width="140"
+                                height="80"
+                                loading="lazy"
+                            />
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            {{-- Headline --}}
             <h1
                 id="hero-title"
                 x-init="
@@ -36,9 +168,49 @@
                         )
                     }
                 "
-                class="text-3xl font-bold text-gray-800 dark:text-white"
+                class="relative bg-gradient-to-r from-gray-500 to-gray-800 bg-clip-text text-3xl font-bold text-transparent dark:text-white"
             >
                 The only way to build native apps in PHP
+
+                {{-- Star --}}
+                <div
+                    x-init="
+                        () => {
+                            motion.animate(
+                                $el,
+                                {
+                                    scale: [0, 1],
+                                    opacity: [0, 1],
+                                },
+                                {
+                                    duration: 1,
+                                    ease: motion.anticipate,
+                                },
+                            )
+                        }
+                    "
+                    class="absolute -top-4 -left-4"
+                >
+                    <x-icons.star
+                        x-init="
+                            () => {
+                                motion.animate(
+                                    $el,
+                                    {
+                                        rotate: [0, 180],
+                                    },
+                                    {
+                                        duration: 3,
+                                        repeat: Infinity,
+                                        repeatType: 'loop',
+                                        ease: 'linear',
+                                    },
+                                )
+                            }
+                        "
+                        class="size-4 text-gray-500 dark:size-6"
+                    />
+                </div>
             </h1>
 
             {{-- Description --}}
@@ -208,247 +380,6 @@
             class="absolute top-1/2 -left-20 -z-20 size-100 rounded-full bg-cyan-100 blur-[100px] dark:bg-cyan-500/20"
         ></div>
     </div>
-    {{-- Header --}}
-    <header
-        class="group/header relative isolate mt-40 grid place-items-center gap-0.5 text-center dark:text-white/90"
-    >
-        {{-- Native --}}
-        <div class="relative">
-            <h1
-                x-init="
-                    () => {
-                        motion.animate(
-                            $el,
-                            {
-                                opacity: [0, 1],
-                                x: [10, 0],
-                            },
-                            {
-                                duration: 1,
-                                ease: motion.easeOut,
-                            },
-                        )
-                    }
-                "
-                class="truncate text-6xl font-extrabold text-violet-400 uppercase min-[400px]:text-7xl md:text-8xl"
-                aria-hidden="true"
-            >
-                Native
-            </h1>
-
-            {{-- Star --}}
-            <div
-                x-init="
-                    () => {
-                        motion.animate(
-                            $el,
-                            {
-                                scale: [0, 1],
-                                opacity: [0, 1],
-                            },
-                            {
-                                duration: 1,
-                                ease: motion.anticipate,
-                            },
-                        )
-                    }
-                "
-                class="absolute -top-10 -right-10"
-            >
-                <x-icons.star
-                    x-init="
-                            () => {
-                                motion.animate(
-                                    $el,
-                                    {
-                                        rotate: [0, -180],
-                                    },
-                                    {
-                                        duration: 1.5,
-                                        repeat: Infinity,
-                                        repeatType: 'loop',
-                                        ease: 'linear',
-                                    },
-                                )
-                            }
-                        "
-                    class="size-8 text-[#E4DFFB] dark:size-6"
-                />
-            </div>
-
-            {{-- Glass shape --}}
-            <div
-                class="absolute top-16 -left-12 size-6 rounded-tl-3xl rounded-tr-xl rounded-br-3xl rounded-bl-xl bg-[#5A31FF]/10 ring-1 ring-white/50 backdrop-blur-xs min-[400px]:top-18 min-[400px]:-left-14 min-[400px]:size-8 md:top-[5.6rem] md:-left-18 md:size-10 dark:hidden dark:ring-gray-700/50"
-                x-init="
-                    () => {
-                        motion.animate(
-                            $el,
-                            {
-                                rotate: [-90, 0],
-                                scale: [0, 1],
-                                opacity: [0, 1],
-                            },
-                            {
-                                duration: 1.5,
-                                ease: motion.anticipate,
-                            },
-                        )
-                    }
-                "
-                aria-hidden="true"
-            ></div>
-
-            {{-- Video introduction --}}
-            <div
-                x-init="
-                    () => {
-                        motion.animate(
-                            $el,
-                            {
-                                y: [-10, 0],
-                                x: [10, 0],
-                            },
-                            {
-                                duration: 1.5,
-                                ease: motion.circOut,
-                            },
-                        )
-                    }
-                "
-                class="group absolute -top-[5.7rem] -right-76 hidden items-end gap-1 text-left text-sm lg:flex"
-            >
-                <div class="relative -top-1.5 -mr-6 flex items-end gap-1">
-                    {{-- Black circle --}}
-                    <div
-                        x-init="
-                            () => {
-                                motion.animate(
-                                    $el,
-                                    {
-                                        scale: [0, 1],
-                                    },
-                                    {
-                                        duration: 1,
-                                        ease: motion.backOut,
-                                    },
-                                )
-                            }
-                        "
-                        class="-mb-1.5 size-1 rounded-full bg-white ring-[3px] ring-black dark:bg-black/50 dark:ring-white"
-                        aria-hidden="true"
-                    ></div>
-                    {{-- Line --}}
-                    <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="94"
-                        height="41"
-                        viewBox="0 0 94 41"
-                        fill="none"
-                        aria-hidden="true"
-                    >
-                        <path
-                            x-init="
-                                () => {
-                                    motion.animate(
-                                        $el,
-                                        {
-                                            strokeDashoffset: [0, 20],
-                                        },
-                                        {
-                                            duration: 1.5,
-                                            repeat: Infinity,
-                                            repeatType: 'loop',
-                                            ease: 'linear',
-                                        },
-                                    )
-                                }
-                            "
-                            d="M94 0.5H47.3449C41.942 0.5 36.7691 2.68588 33.0033 6.56012L0.5 40"
-                            stroke="currentColor"
-                            stroke-dasharray="5 5"
-                        />
-                    </svg>
-                    {{-- Play button --}}
-                    <a
-                        href="https://www.youtube.com/watch?v=CsM66a0koAM"
-                        target="_blank"
-                        rel="noopener"
-                        class="relative -top-5 grid size-10 place-items-center rounded-full bg-black/30 text-white ring-1 ring-white/10 backdrop-blur-sm transition duration-300 ease-in-out will-change-transform group-hover:scale-110 group-hover:text-[#d4fd7d] dark:group-hover:text-[#9c90f0]"
-                        aria-label="Watch NativePHP introduction video on YouTube"
-                    >
-                        <x-icons.play-button
-                            x-init="
-                                    () => {
-                                        motion.animate(
-                                            $el,
-                                            {
-                                                x: [-1, 1],
-                                            },
-                                            {
-                                                duration: 0.6,
-                                                repeat: Infinity,
-                                                repeatType: 'mirror',
-                                                ease: motion.easeInOut,
-                                            },
-                                        )
-                                    }
-                                "
-                            class="size-4"
-                            aria-hidden="true"
-                        />
-                        <span class="sr-only">Play introduction video</span>
-                    </a>
-                </div>
-                <div>
-                    <div class="font-medium">Video</div>
-                    <div class="font-normal text-gray-600 dark:text-white/50">
-                        NativePHP for Mobile
-                    </div>
-                    {{-- Image --}}
-                    <a
-                        href="https://www.youtube.com/watch?v=CsM66a0koAM"
-                        target="_blank"
-                        rel="noopener"
-                        aria-label="Watch Simon Hamp's Laracon EU talk about building mobile apps with PHP"
-                    >
-                        <img
-                            src="{{ Vite::asset('resources/images/simon2025laraconeu.webp') }}"
-                            alt="Simon Hamp presenting at Laracon EU 2025 on building mobile apps with PHP"
-                            class="mt-2 w-40 rounded-xl"
-                            width="160"
-                            height="90"
-                            loading="lazy"
-                        />
-                    </a>
-                </div>
-            </div>
-        </div>
-
-        {{-- Shiny line --}}
-        <div
-            class="absolute top-32 left-1/2 z-20 -translate-x-1/2 rotate-50 transition duration-500 ease-out will-change-transform group-hover/header:translate-x-[-55%] group-hover/header:opacity-0"
-            aria-hidden="true"
-        >
-            <div
-                x-init="
-                    () => {
-                        motion.animate(
-                            $el,
-                            {
-                                y: [-30, 0],
-                                opacity: [0, 0, 1],
-                            },
-                            {
-                                duration: 1.2,
-                                ease: motion.easeOut,
-                            },
-                        )
-                    }
-                "
-                class="h-2.5 w-104 bg-linear-to-r from-transparent to-white/50 ring-1 ring-white/50 dark:hidden"
-            ></div>
-        </div>
-    </header>
 
     {{-- Simon talk for mobile --}}
     <div class="grid place-items-center pt-4 lg:hidden">
