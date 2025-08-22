@@ -5,6 +5,43 @@
     <div
         class="relative z-0 overflow-hidden rounded-2xl bg-gradient-to-t from-[#E0E5EB] to-[#F9F9F9] p-10 dark:from-slate-950 dark:to-slate-900 dark:ring-1 dark:ring-slate-800"
     >
+        {{-- Demo app --}}
+        <div class="-mb-7 flex justify-end text-xs">
+            <div class="flex flex-col items-end gap-1.5">
+                <h5 class="font-light dark:font-extralight">
+                    Try our
+                    <span class="font-medium">Demo</span>
+                    app:
+                </h5>
+                <div class="contents">
+                    <a
+                        href="https://play.google.com/store/apps/details?id=com.nativephp.kitchensinkapp"
+                        target="_blank"
+                        class="flex items-center gap-2 rounded-xl bg-white/70 px-3 py-2.5 backdrop-blur-md transition duration-200 will-change-transform hover:scale-98 hover:bg-white dark:bg-slate-500/25 dark:hover:bg-slate-500/40"
+                    >
+                        <x-icons.play-store class="h-4.5" />
+                        <div>Play Store</div>
+                    </a>
+                    <a
+                        href="https://play.google.com/store/apps/details?id=com.nativephp.kitchensinkapp"
+                        target="_blank"
+                        class="flex items-center gap-2 rounded-xl bg-white/70 px-3 py-2.5 backdrop-blur-md transition duration-200 will-change-transform hover:scale-98 hover:bg-white dark:bg-slate-500/25 dark:hover:bg-slate-500/40"
+                    >
+                        <x-icons.app-store class="h-4.5" />
+                        <div>App Store</div>
+                    </a>
+                    <a
+                        href="https://github.com/nativephp"
+                        target="_blank"
+                        class="flex items-center gap-2 rounded-xl bg-white/70 px-3 py-2.5 backdrop-blur-md transition duration-200 will-change-transform hover:scale-98 hover:bg-white dark:bg-slate-500/25 dark:hover:bg-slate-500/40"
+                    >
+                        <x-icons.github class="h-4.5" />
+                        <div>Source code</div>
+                    </a>
+                </div>
+            </div>
+        </div>
+
         {{-- Mockups --}}
         <div class="flex items-end justify-center">
             <img
@@ -22,7 +59,7 @@
         {{-- Main --}}
         <div class="mt-8 grid place-items-center text-center text-pretty">
             {{-- Video --}}
-            <div class="-mt-40 -mr-7 flex w-full justify-end">
+            <div class="-mt-43 -mr-7 flex w-full justify-end">
                 <div
                     x-init="
                         () => {
@@ -168,9 +205,16 @@
                         )
                     }
                 "
-                class="relative bg-gradient-to-r from-gray-500 to-gray-800 bg-clip-text text-3xl font-bold text-transparent dark:text-white"
+                class="relative text-4xl font-bold text-gray-800 dark:text-white"
             >
-                The only way to build native apps in PHP
+                Build
+
+                <!-- display: inline -->
+                <span
+                    class="rounded-2xl bg-gradient-to-tl from-[#AADEE9] to-[#BDE7F0] px-2.5 py-1 text-[#417682] dark:from-cyan-950 dark:to-cyan-800 dark:text-cyan-400"
+                    >Native PHP</span
+                >
+                Apps
 
                 {{-- Star --}}
                 <div
@@ -208,7 +252,7 @@
                                 )
                             }
                         "
-                        class="size-4 text-gray-500 dark:size-6"
+                        class="size-4 text-gray-500"
                     />
                 </div>
             </h1>
@@ -230,7 +274,7 @@
                         )
                     }
                 "
-                class="mx-auto mt-2.5 max-w-4xl text-center text-lg/relaxed text-gray-600 dark:text-zinc-400"
+                class="mx-auto mt-4 max-w-4xl text-center text-lg/relaxed text-gray-600 dark:text-zinc-400"
                 aria-describedby="hero-title"
             >
                 Bring your
