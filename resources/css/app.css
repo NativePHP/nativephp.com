@@ -10,6 +10,9 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 @theme {
+    --breakpoint-2xs: 25rem;
+    --breakpoint-xs: 30rem;
+
     --color-mirage: #141624;
     --color-haiti: #16182c;
     --color-cloud: #2b2e53;

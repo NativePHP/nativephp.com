@@ -3,10 +3,12 @@
     aria-labelledby="hero-title"
 >
     <div
-        class="relative z-0 overflow-hidden rounded-2xl bg-gradient-to-t from-[#E0E5EB] to-[#F9F9F9] px-10 pt-8 pb-17 dark:from-slate-950 dark:to-slate-900 dark:ring-1 dark:ring-slate-800"
+        class="relative z-0 flex flex-col overflow-hidden rounded-2xl bg-gradient-to-t from-[#E0E5EB] to-[#F9F9F9] px-5 pt-5 pb-10 lg:px-10 lg:pt-8 lg:pb-17 dark:from-slate-950 dark:to-slate-900 dark:ring-1 dark:ring-slate-800"
     >
         {{-- Demo app --}}
-        <div class="-mb-20 flex justify-end text-xs">
+        <div
+            class="order-last mt-7 flex justify-center text-xs lg:order-first lg:mt-0 lg:-mb-20 lg:justify-end"
+        >
             <div
                 x-init="
                     () => {
@@ -25,9 +27,11 @@
                         })
                     }
                 "
-                class="flex flex-col items-end gap-1.5"
+                class="flex flex-wrap justify-center gap-2 lg:flex-col lg:items-end lg:gap-1.5"
             >
-                <h5 class="font-light dark:font-extralight">
+                <h5
+                    class="w-full text-center font-light lg:w-auto dark:font-extralight"
+                >
                     Try our
                     <span class="font-medium">Demo</span>
                     app:
@@ -66,7 +70,7 @@
         </div>
 
         {{-- Mockups --}}
-        <div class="relative -z-16 flex items-end justify-center">
+        <div class="relative -z-16 mt-5 flex items-end justify-center lg:mt-0">
             <div class="grid w-100">
                 {{-- Macbook --}}
                 <img
@@ -80,7 +84,7 @@
 
                 {{-- Window --}}
                 <div
-                    class="relative -top-3 z-1 flex h-40 w-70 flex-col self-center justify-self-center overflow-hidden rounded-md [grid-area:1/-1]"
+                    class="2xs:scale-75 xs:scale-100 relative -top-3 z-1 flex h-40 w-70 scale-60 flex-col self-center justify-self-center overflow-hidden rounded-md [grid-area:1/-1]"
                 >
                     {{-- Header --}}
                     <div
@@ -129,7 +133,7 @@
             <img
                 src="{{ Vite::asset('resources/images/home/iphone.webp') }}"
                 alt=""
-                class="relative z-2 -ml-18 w-23 dark:brightness-80 dark:contrast-150"
+                class="relative z-2 -ml-15 w-18 sm:-ml-18 sm:w-23 dark:brightness-80 dark:contrast-150"
                 width="92"
                 height="190"
                 loading="lazy"
@@ -171,7 +175,7 @@
             </style>
 
             <div
-                class="group absolute top-0 left-5 h-60 overflow-hidden mask-y-from-75% xl:left-1/7 2xl:left-1/6"
+                class="group absolute top-0 -left-3 hidden h-60 overflow-hidden mask-y-from-75% md:left-5 md:block xl:left-1/7 2xl:left-1/6"
             >
                 {{-- Track (two sets for seamless loop) --}}
                 <div
@@ -233,13 +237,13 @@
                         )
                     }
                 "
-                class="relative text-4xl font-bold text-gray-700 dark:text-white"
+                class="relative text-3xl font-bold text-gray-700 lg:text-4xl dark:text-white"
             >
                 Build
 
                 <!-- display: inline -->
                 <span
-                    class="rounded-2xl bg-gradient-to-tl from-[#AADEE9] to-[#BDE7F0] px-2.5 py-1 text-[#589baa] dark:from-cyan-950 dark:to-cyan-800 dark:text-cyan-400"
+                    class="2xs:inline block rounded-2xl bg-gradient-to-tl from-[#AADEE9] to-[#BDE7F0] px-2.5 py-1 text-[#589baa] dark:from-cyan-950 dark:to-cyan-800 dark:text-cyan-400"
                     >Native PHP</span
                 >
                 Apps
