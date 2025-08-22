@@ -72,7 +72,7 @@
         {{-- Mockups --}}
         <div class="relative -z-16 flex flex-col-reverse gap-7">
             <div class="flex items-end justify-center">
-                <div class="grid w-100">
+                <div class="grid w-100 2xl:w-125">
                     {{-- Macbook --}}
                     <img
                         src="{{ Vite::asset('resources/images/home/macbook.webp') }}"
@@ -84,7 +84,7 @@
                     />
                     {{-- Window --}}
                     <div
-                        class="2xs:scale-75 xs:scale-100 relative -top-3 z-1 flex h-40 w-70 scale-60 flex-col self-center justify-self-center overflow-hidden rounded-md [grid-area:1/-1]"
+                        class="2xs:scale-75 xs:scale-100 relative -top-3 z-1 flex h-40 w-70 scale-60 flex-col self-center justify-self-center overflow-hidden rounded-md [grid-area:1/-1] 2xl:scale-120"
                     >
                         {{-- Header --}}
                         <div
@@ -126,11 +126,12 @@
                         </div>
                     </div>
                 </div>
+
                 {{-- Iphone --}}
                 <img
                     src="{{ Vite::asset('resources/images/home/iphone.webp') }}"
                     alt=""
-                    class="relative z-2 -ml-15 w-18 sm:-ml-18 sm:w-23 dark:brightness-80 dark:contrast-150"
+                    class="relative z-2 -ml-15 w-18 sm:-ml-18 sm:w-23 2xl:-ml-25 2xl:w-30 dark:brightness-80 dark:contrast-150"
                     width="92"
                     height="190"
                     loading="lazy"
@@ -185,7 +186,7 @@
             </style>
 
             <div
-                class="group absolute top-0 left-5 hidden h-60 overflow-hidden mask-y-from-75% lg:block xl:left-1/7 2xl:left-1/6"
+                class="group absolute top-0 left-5 hidden h-60 overflow-hidden mask-y-from-75% lg:block xl:left-1/7 2xl:left-1/6 2xl:h-70"
             >
                 {{-- Track (two sets for seamless loop) --}}
                 <div
@@ -291,7 +292,7 @@
                         )
                     }
                 "
-                class="xs:text-3xl 2xs:text-2xl relative text-xl font-bold text-gray-700 lg:text-4xl dark:text-white"
+                class="xs:text-3xl 2xs:text-2xl relative text-xl font-bold text-gray-700 lg:text-4xl 2xl:text-5xl dark:text-white"
             >
                 Build
 
@@ -351,9 +352,11 @@
                             )
                         }
                     "
-                    class="group absolute -top-35 -right-65 hidden items-end gap-1 text-left lg:flex"
+                    class="group absolute -top-35 -right-65 hidden items-end gap-1 text-left lg:flex 2xl:-top-39"
                 >
-                    <div class="relative top-0.5 -mr-6 flex items-end gap-1">
+                    <div
+                        class="relative top-0.5 -mr-6 flex items-end gap-1 2xl:-top-1"
+                    >
                         {{-- Black circle --}}
                         <div
                             x-init="
@@ -429,7 +432,7 @@
                     </div>
                     <div>
                         <div
-                            class="text-xs font-normal text-gray-600 dark:text-white/50"
+                            class="text-xs font-normal text-gray-600 2xl:text-sm dark:text-white/50"
                         >
                             Introducing
                         </div>
@@ -446,7 +449,7 @@
                             <img
                                 src="{{ Vite::asset('resources/images/home/video_introduction_thumbnail.webp') }}"
                                 alt="Simon Hamp presenting at Laracon EU 2025 on building mobile apps with PHP"
-                                class="mt-2 w-35 rounded-2xl"
+                                class="mt-2 w-35 rounded-2xl 2xl:w-40"
                                 width="140"
                                 height="80"
                                 loading="lazy"
@@ -472,7 +475,7 @@
                         )
                     }
                 "
-                class="xs:text-lg xs:mt-5 mx-auto mt-4 max-w-4xl text-center leading-relaxed text-gray-600 dark:text-zinc-400"
+                class="xs:text-lg xs:mt-5 mx-auto mt-4 max-w-4xl text-center leading-relaxed text-gray-600 2xl:text-xl dark:text-zinc-400"
                 aria-describedby="hero-title"
             >
                 Bring your
@@ -526,12 +529,12 @@
                 <div class="transition duration-300">
                     <a
                         href="/docs/mobile/1/getting-started/introduction"
-                        class="group dark:bg-haiti relative isolate z-0 flex h-15 items-center justify-between gap-3 overflow-hidden rounded-3xl bg-gray-900 px-5 leading-snug text-white transition duration-200 ease-in-out will-change-transform hover:bg-gray-800 dark:hover:bg-indigo-900/50"
+                        class="group dark:bg-haiti relative isolate z-0 flex h-15 items-center justify-between gap-3 overflow-hidden rounded-3xl bg-gray-900 px-5 leading-snug text-white transition duration-200 ease-in-out will-change-transform hover:bg-gray-800 2xl:h-17 2xl:px-7 dark:hover:bg-indigo-900/50"
                         aria-label="Get started with NativePHP documentation for mobile apps"
                     >
                         {{-- Label --}}
                         <div
-                            class="bg-gradient-to-br from-white to-cyan-300 bg-clip-text text-transparent duration-500 ease-in-out will-change-transform group-hover:translate-x-1"
+                            class="bg-gradient-to-br from-white to-cyan-300 bg-clip-text text-transparent duration-500 ease-in-out will-change-transform group-hover:translate-x-1 2xl:text-lg"
                         >
                             Start building
                         </div>
