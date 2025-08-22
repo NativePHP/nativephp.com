@@ -398,7 +398,7 @@ This is particularly useful for always-on-top utility windows or menubar applica
 
 By default, Electron allows additional windows to be opened from a window that was previously opened programmatically.
 This is the case, for example, with `a` elements that have the target attribute set to `_blank` or when the user clicks on a link with the middle mouse button.
-This behaviour is potentially undesirable in a desktop application, as it enables the user to `break out` of a window.
+This behaviour is potentially undesirable in a desktop application, as it enables the user to "break out" of a window.
 
 To prevent additional windows from opening, you can apply the `suppressNewWindows()` method when opening a new window.
 
