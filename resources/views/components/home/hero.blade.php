@@ -47,17 +47,17 @@
             <img
                 src="{{ Vite::asset('resources/images/home/macbook.webp') }}"
                 alt=""
-                class="w-90"
+                class="w-100"
             />
             <img
                 src="{{ Vite::asset('resources/images/home/iphone.webp') }}"
                 alt=""
-                class="-ml-18 h-45"
+                class="-ml-18 w-23"
             />
         </div>
 
         {{-- Main --}}
-        <div class="mt-8 grid place-items-center text-center text-pretty">
+        <div class="mt-12 grid place-items-center text-center text-pretty">
             {{-- Headline --}}
             <h1
                 id="hero-title"
@@ -202,7 +202,7 @@
                             href="https://www.youtube.com/watch?v=WOTSjPFXQ2k"
                             target="_blank"
                             rel="noopener"
-                            class="relative -top-5 grid size-10 place-items-center rounded-full bg-black/30 text-white ring-1 ring-white/10 backdrop-blur-sm transition duration-300 ease-in-out will-change-transform group-hover:scale-110 group-hover:text-[#d4fd7d] dark:group-hover:text-[#9c90f0]"
+                            class="relative -top-5 grid size-10 place-items-center rounded-full bg-black/20 text-white ring-1 ring-white/10 backdrop-blur-sm transition duration-300 ease-in-out will-change-transform group-hover:scale-110 group-hover:text-[#d4fd7d] dark:bg-slate-500/20 dark:group-hover:text-[#9c90f0]"
                             aria-label="Watch NativePHP introduction video on YouTube"
                         >
                             <x-icons.play-button
@@ -398,6 +398,13 @@
                     </a>
                 </div>
             </div>
+        </div>
+
+        {{-- Top left line --}}
+        <div class="absolute top-25 -left-30 -z-17 rotate-45">
+            <div
+                class="h-30 w-120 bg-gradient-to-b from-white/50 to-transparent mask-x-from-70% dark:from-slate-500/5"
+            ></div>
         </div>
 
         {{-- Top right vertical lines --}}
