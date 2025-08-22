@@ -3,7 +3,7 @@
     aria-labelledby="hero-title"
 >
     <div
-        class="relative z-0 flex flex-col overflow-hidden rounded-2xl bg-gradient-to-t from-[#E0E5EB] to-[#F9F9F9] px-5 pt-5 pb-10 lg:px-10 lg:pt-8 lg:pb-17 dark:from-slate-950 dark:to-slate-900 dark:ring-1 dark:ring-slate-800"
+        class="relative z-0 flex flex-col overflow-hidden rounded-2xl bg-gradient-to-t from-[#E0E5EB] to-[#F9F9F9] px-5 pt-8 pb-10 lg:px-10 lg:pt-8 lg:pb-17 dark:from-slate-950 dark:to-slate-900 dark:ring-1 dark:ring-slate-800"
     >
         {{-- Demo app --}}
         <div
@@ -70,7 +70,7 @@
         </div>
 
         {{-- Mockups --}}
-        <div class="relative -z-16 mt-5 flex flex-col-reverse gap-5 lg:mt-0">
+        <div class="relative -z-16 flex flex-col-reverse gap-7">
             <div class="flex items-end justify-center">
                 <div class="grid w-100">
                     {{-- Macbook --}}
@@ -185,7 +185,7 @@
             </style>
 
             <div
-                class="group absolute top-0 -left-3 hidden h-60 overflow-hidden mask-y-from-75% md:left-5 md:block xl:left-1/7 2xl:left-1/6"
+                class="group absolute top-0 left-5 hidden h-60 overflow-hidden mask-y-from-75% lg:block xl:left-1/7 2xl:left-1/6"
             >
                 {{-- Track (two sets for seamless loop) --}}
                 <div
@@ -229,7 +229,7 @@
 
             {{-- Feature list (horizontal marquee on small screens) --}}
             <div
-                class="group z-1 block w-full overflow-hidden mask-x-from-70% md:hidden"
+                class="group z-1 block w-full overflow-hidden mask-x-from-70% lg:hidden"
             >
                 {{-- Track (two sets for seamless loop) --}}
                 <div
