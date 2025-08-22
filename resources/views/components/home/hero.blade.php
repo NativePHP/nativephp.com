@@ -43,7 +43,7 @@
         </div>
 
         {{-- Mockups --}}
-        <div class="relative flex items-end justify-center">
+        <div class="relative -z-16 flex items-end justify-center">
             {{-- Macbook --}}
             <img
                 src="{{ Vite::asset('resources/images/home/macbook.webp') }}"
@@ -109,7 +109,7 @@
                                     :component="$feature['icon']"
                                     class="size-5"
                                 />
-                                <div class="text-gray-700 dark:text-gray-300">
+                                <div class="text-gray-700 dark:text-slate-300">
                                     {{ $feature['label'] }}
                                 </div>
                             </div>
@@ -127,7 +127,7 @@
                                     :component="$feature['icon']"
                                     class="size-5"
                                 />
-                                <div class="text-gray-700 dark:text-gray-400">
+                                <div class="text-gray-700 dark:text-slate-300">
                                     {{ $feature['label'] }}
                                 </div>
                             </div>
@@ -482,32 +482,43 @@
         </div>
 
         {{-- Top left line --}}
-        <div class="absolute top-25 -left-30 -z-17 rotate-45">
+        <div
+            class="pointer-events-none absolute top-25 -left-30 -z-17 rotate-45"
+            aria-hidden="true"
+        >
             <div
                 class="h-30 w-120 bg-gradient-to-b from-white/50 to-transparent mask-x-from-70% dark:from-slate-500/5"
             ></div>
         </div>
 
         {{-- Top right vertical lines --}}
-        <div class="absolute top-0 right-0 -z-18 mask-l-from-30%">
+        <div
+            class="pointer-events-none absolute top-0 right-0 -z-18 mask-l-from-30%"
+            aria-hidden="true"
+        >
             <div class="-scale-x-100 -scale-y-100">
                 <x-home.vertical-lines />
             </div>
         </div>
 
         {{-- Bottom left vertical lines --}}
-        <div class="absolute bottom-0 left-0 -z-18 mask-r-from-30%">
+        <div
+            class="pointer-events-none absolute bottom-0 left-0 -z-18 mask-r-from-30%"
+            aria-hidden="true"
+        >
             <x-home.vertical-lines />
         </div>
 
         {{-- Green blur --}}
         <div
-            class="absolute -right-20 bottom-1/2 -z-19 size-70 rounded-full bg-emerald-100 blur-[100px] dark:bg-emerald-500/20"
+            class="pointer-events-none absolute -right-20 bottom-1/2 -z-19 size-70 rounded-full bg-emerald-100 blur-[100px] dark:bg-emerald-500/20"
+            aria-hidden="true"
         ></div>
 
         {{-- Cyan blur --}}
         <div
-            class="absolute top-1/2 -left-20 -z-20 size-100 rounded-full bg-cyan-100 blur-[100px] dark:bg-cyan-500/20"
+            class="pointer-events-none absolute top-1/2 -left-20 -z-20 size-100 rounded-full bg-cyan-100 blur-[100px] dark:bg-cyan-500/20"
+            aria-hidden="true"
         ></div>
     </div>
 
