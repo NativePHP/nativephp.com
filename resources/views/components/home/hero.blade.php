@@ -98,7 +98,7 @@
             >
                 {{-- Track (two sets for seamless loop) --}}
                 <div
-                    class="nphp-marquee-track flex flex-col gap-3 will-change-transform group-hover:[animation-play-state:paused]"
+                    class="nphp-marquee-track flex flex-col gap-3 will-change-transform [--icon-bg:#D3EDF1] [--icon-dot:#F9F9F9] [--icon-stroke:#4197A5] group-hover:[animation-play-state:paused] dark:[--icon-bg:--alpha(var(--color-slate-400)/30%)] dark:[--icon-dot:--alpha(var(--color-white)/30%)] dark:[--icon-stroke:--alpha(var(--color-white)/60%)]"
                     style="--marquee-duration: 24s"
                 >
                     {{-- Set A --}}
@@ -109,7 +109,7 @@
                                     :component="$feature['icon']"
                                     class="size-5"
                                 />
-                                <div class="text-gray-700 dark:text-gray-400">
+                                <div class="text-gray-700 dark:text-gray-300">
                                     {{ $feature['label'] }}
                                 </div>
                             </div>
