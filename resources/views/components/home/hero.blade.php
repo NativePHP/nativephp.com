@@ -44,21 +44,69 @@
 
         {{-- Mockups --}}
         <div class="relative -z-16 flex items-end justify-center">
-            {{-- Macbook --}}
-            <img
-                src="{{ Vite::asset('resources/images/home/macbook.webp') }}"
-                alt=""
-                class="w-100 dark:brightness-80 dark:contrast-150"
-                width="400"
-                height="250"
-                loading="lazy"
-            />
+            <div class="grid w-100">
+                {{-- Macbook --}}
+                <img
+                    src="{{ Vite::asset('resources/images/home/macbook.webp') }}"
+                    alt=""
+                    class="relative z-0 w-full self-center justify-self-center [grid-area:1/-1] dark:brightness-80 dark:contrast-150"
+                    width="400"
+                    height="250"
+                    loading="lazy"
+                />
+
+                {{-- Window --}}
+                <div
+                    class="relative -top-3 z-1 flex h-40 w-70 flex-col self-center justify-self-center overflow-hidden rounded-md [grid-area:1/-1]"
+                >
+                    {{-- Header --}}
+                    <div
+                        class="relative flex h-3 items-center bg-gray-800 px-1"
+                    >
+                        {{-- Traffic lights --}}
+                        <div class="flex items-center gap-[3px]">
+                            <div
+                                class="size-[3px] rounded-full bg-green-400"
+                            ></div>
+                            <div
+                                class="size-[3px] rounded-full bg-amber-400"
+                            ></div>
+                            <div
+                                class="size-[3px] rounded-full bg-red-400"
+                            ></div>
+                        </div>
+
+                        {{-- Label --}}
+                        <div
+                            class="absolute top-1/2 right-1/2 translate-x-1/2 -translate-y-1/2 text-[5px] text-gray-300"
+                        >
+                            NativePHP App
+                        </div>
+                    </div>
+
+                    {{-- Page --}}
+                    <div
+                        class="grid grow place-items-center bg-[#fdfdfc] dark:bg-[#0a0a0a]"
+                    >
+                        <img
+                            src="{{ Vite::asset('resources/images/home/laravel_welcome_light.webp') }}"
+                            alt=""
+                            class="w-55 self-center justify-self-center [grid-area:1/-1] dark:opacity-0"
+                        />
+                        <img
+                            src="{{ Vite::asset('resources/images/home/laravel_welcome_dark.webp') }}"
+                            alt=""
+                            class="w-55 self-center justify-self-center opacity-0 [grid-area:1/-1] dark:opacity-100"
+                        />
+                    </div>
+                </div>
+            </div>
 
             {{-- Iphone --}}
             <img
                 src="{{ Vite::asset('resources/images/home/iphone.webp') }}"
                 alt=""
-                class="-ml-18 w-23 dark:brightness-80 dark:contrast-150"
+                class="relative z-2 -ml-18 w-23 dark:brightness-80 dark:contrast-150"
                 width="92"
                 height="190"
                 loading="lazy"
@@ -316,7 +364,9 @@
                         </a>
                     </div>
                     <div>
-                        <div class="text-xs text-gray-600 dark:text-white/50">
+                        <div
+                            class="text-xs font-normal text-gray-600 dark:text-white/50"
+                        >
                             Introducing
                         </div>
                         <div class="text-sm font-medium">
