@@ -7,13 +7,32 @@
     >
         {{-- Demo app --}}
         <div class="-mb-20 flex justify-end text-xs">
-            <div class="flex flex-col items-end gap-1.5">
+            <div
+                x-init="
+                    () => {
+                        motion.inView($el, (element) => {
+                            gsap.fromTo(
+                                Array.from($el.children),
+                                { x: -10, autoAlpha: 0 },
+                                {
+                                    x: 0,
+                                    autoAlpha: 1,
+                                    stagger: 0.1,
+                                    duration: 0.7,
+                                    ease: 'power2.out',
+                                },
+                            )
+                        })
+                    }
+                "
+                class="flex flex-col items-end gap-1.5"
+            >
                 <h5 class="font-light dark:font-extralight">
                     Try our
                     <span class="font-medium">Demo</span>
                     app:
                 </h5>
-                <div class="contents">
+                <div>
                     <a
                         href="https://play.google.com/store/apps/details?id=com.nativephp.kitchensinkapp"
                         target="_blank"
@@ -22,6 +41,8 @@
                         <x-icons.play-store class="h-4.5" />
                         <div>Play Store</div>
                     </a>
+                </div>
+                <div>
                     <a
                         href="https://play.google.com/store/apps/details?id=com.nativephp.kitchensinkapp"
                         target="_blank"
@@ -30,6 +51,8 @@
                         <x-icons.app-store class="h-4.5" />
                         <div>App Store</div>
                     </a>
+                </div>
+                <div>
                     <a
                         href="https://github.com/nativephp"
                         target="_blank"
@@ -211,13 +234,13 @@
                         )
                     }
                 "
-                class="relative text-4xl font-bold text-gray-800 dark:text-white"
+                class="relative text-4xl font-bold text-gray-700 dark:text-white"
             >
                 Build
 
                 <!-- display: inline -->
                 <span
-                    class="rounded-2xl bg-gradient-to-tl from-[#AADEE9] to-[#BDE7F0] px-2.5 py-1 text-[#417682] dark:from-cyan-950 dark:to-cyan-800 dark:text-cyan-400"
+                    class="rounded-2xl bg-gradient-to-tl from-[#AADEE9] to-[#BDE7F0] px-2.5 py-1 text-[#589baa] dark:from-cyan-950 dark:to-cyan-800 dark:text-cyan-400"
                     >Native PHP</span
                 >
                 Apps
