@@ -3,7 +3,7 @@
     aria-labelledby="hero-title"
 >
     <div
-        class="relative z-0 overflow-hidden rounded-2xl bg-gradient-to-t from-[#E0E5EB] to-[#F9F9F9] p-10 dark:from-slate-950 dark:to-slate-900 dark:ring-1 dark:ring-slate-800"
+        class="relative z-0 overflow-hidden rounded-2xl bg-gradient-to-t from-[#E0E5EB] to-[#F9F9F9] px-10 pt-8 pb-17 dark:from-slate-950 dark:to-slate-900 dark:ring-1 dark:ring-slate-800"
     >
         {{-- Demo app --}}
         <div class="-mb-7 flex justify-end text-xs">
@@ -58,8 +58,76 @@
 
         {{-- Main --}}
         <div class="mt-8 grid place-items-center text-center text-pretty">
-            {{-- Video --}}
-            <div class="-mt-43 -mr-7 flex w-full justify-end">
+            {{-- Headline --}}
+            <h1
+                id="hero-title"
+                x-init="
+                    () => {
+                        motion.animate(
+                            $el,
+                            {
+                                opacity: [0, 1],
+                                x: [-10, 0],
+                            },
+                            {
+                                duration: 1,
+                                ease: motion.easeOut,
+                            },
+                        )
+                    }
+                "
+                class="relative text-4xl font-bold text-gray-800 dark:text-white"
+            >
+                Build
+
+                <!-- display: inline -->
+                <span
+                    class="rounded-2xl bg-gradient-to-tl from-[#AADEE9] to-[#BDE7F0] px-2.5 py-1 text-[#417682] dark:from-cyan-950 dark:to-cyan-800 dark:text-cyan-400"
+                    >Native PHP</span
+                >
+                Apps
+
+                {{-- Star --}}
+                <div
+                    x-init="
+                        () => {
+                            motion.animate(
+                                $el,
+                                {
+                                    scale: [0, 1],
+                                    opacity: [0, 1],
+                                },
+                                {
+                                    duration: 1,
+                                    ease: motion.anticipate,
+                                },
+                            )
+                        }
+                    "
+                    class="absolute -top-4 -left-4"
+                >
+                    <x-icons.star
+                        x-init="
+                            () => {
+                                motion.animate(
+                                    $el,
+                                    {
+                                        rotate: [0, 180],
+                                    },
+                                    {
+                                        duration: 3,
+                                        repeat: Infinity,
+                                        repeatType: 'loop',
+                                        ease: 'linear',
+                                    },
+                                )
+                            }
+                        "
+                        class="size-4 text-gray-500"
+                    />
+                </div>
+
+                {{-- Video --}}
                 <div
                     x-init="
                         () => {
@@ -76,7 +144,7 @@
                             )
                         }
                     "
-                    class="group hidden items-end gap-1 text-left lg:flex"
+                    class="group absolute -top-35 -right-65 hidden items-end gap-1 text-left lg:flex"
                 >
                     <div class="relative top-0.5 -mr-6 flex items-end gap-1">
                         {{-- Black circle --}}
@@ -185,76 +253,6 @@
                         </a>
                     </div>
                 </div>
-            </div>
-
-            {{-- Headline --}}
-            <h1
-                id="hero-title"
-                x-init="
-                    () => {
-                        motion.animate(
-                            $el,
-                            {
-                                opacity: [0, 1],
-                                x: [-10, 0],
-                            },
-                            {
-                                duration: 1,
-                                ease: motion.easeOut,
-                            },
-                        )
-                    }
-                "
-                class="relative text-4xl font-bold text-gray-800 dark:text-white"
-            >
-                Build
-
-                <!-- display: inline -->
-                <span
-                    class="rounded-2xl bg-gradient-to-tl from-[#AADEE9] to-[#BDE7F0] px-2.5 py-1 text-[#417682] dark:from-cyan-950 dark:to-cyan-800 dark:text-cyan-400"
-                    >Native PHP</span
-                >
-                Apps
-
-                {{-- Star --}}
-                <div
-                    x-init="
-                        () => {
-                            motion.animate(
-                                $el,
-                                {
-                                    scale: [0, 1],
-                                    opacity: [0, 1],
-                                },
-                                {
-                                    duration: 1,
-                                    ease: motion.anticipate,
-                                },
-                            )
-                        }
-                    "
-                    class="absolute -top-4 -left-4"
-                >
-                    <x-icons.star
-                        x-init="
-                            () => {
-                                motion.animate(
-                                    $el,
-                                    {
-                                        rotate: [0, 180],
-                                    },
-                                    {
-                                        duration: 3,
-                                        repeat: Infinity,
-                                        repeatType: 'loop',
-                                        ease: 'linear',
-                                    },
-                                )
-                            }
-                        "
-                        class="size-4 text-gray-500"
-                    />
-                </div>
             </h1>
 
             {{-- Description --}}
@@ -274,7 +272,7 @@
                         )
                     }
                 "
-                class="mx-auto mt-4 max-w-4xl text-center text-lg/relaxed text-gray-600 dark:text-zinc-400"
+                class="mx-auto mt-5 max-w-4xl text-center text-lg/relaxed text-gray-600 dark:text-zinc-400"
                 aria-describedby="hero-title"
             >
                 Bring your
@@ -324,7 +322,7 @@
                         )
                     }
                 "
-                class="mt-3.5 w-full max-w-55"
+                class="mt-4 w-full max-w-55"
             >
                 <div class="transition duration-300">
                     <a
