@@ -1,11 +1,23 @@
 <section
-    class="mt-5"
+    class="mt-2"
     aria-labelledby="hero-title"
 >
     <div
-        class="relative overflow-hidden rounded-xl bg-gradient-to-t from-[#E0E5EB] to-[#F9F9F9] p-8 dark:from-slate-950 dark:to-slate-900 dark:ring-1 dark:ring-slate-800"
+        class="relative z-0 overflow-hidden rounded-2xl bg-gradient-to-t from-[#E0E5EB] to-[#F9F9F9] p-10 dark:from-slate-950 dark:to-slate-900 dark:ring-1 dark:ring-slate-800"
     >
-        <div class="grid place-items-center text-center text-pretty">
+        <div class="flex items-end justify-center">
+            <img
+                src="{{ Vite::asset('resources/images/home/macbook.webp') }}"
+                alt=""
+                class="w-100"
+            />
+            <img
+                src="{{ Vite::asset('resources/images/home/iphone.webp') }}"
+                alt=""
+                class="-ml-20 h-50"
+            />
+        </div>
+        <div class="mt-8 grid place-items-center text-center text-pretty">
             {{-- Build --}}
             <h1
                 id="hero-title"
@@ -46,7 +58,7 @@
                         )
                     }
                 "
-                class="mx-auto mt-2 max-w-4xl text-center text-lg/relaxed text-gray-600 dark:text-zinc-400"
+                class="mx-auto mt-2.5 max-w-4xl text-center text-lg/relaxed text-gray-600 dark:text-zinc-400"
                 aria-describedby="hero-title"
             >
                 Bring your
@@ -96,7 +108,7 @@
                         )
                     }
                 "
-                class="mt-3 w-full max-w-55"
+                class="mt-3.5 w-full max-w-55"
             >
                 <div class="transition duration-300">
                     <a
@@ -173,6 +185,28 @@
                 </div>
             </div>
         </div>
+
+        {{-- Top right vertical lines --}}
+        <div class="absolute top-0 right-0 -z-18 mask-l-from-30%">
+            <div class="-scale-x-100 -scale-y-100">
+                <x-home.vertical-lines />
+            </div>
+        </div>
+
+        {{-- Bottom left vertical lines --}}
+        <div class="absolute bottom-0 left-0 -z-18 mask-r-from-30%">
+            <x-home.vertical-lines />
+        </div>
+
+        {{-- Green blur --}}
+        <div
+            class="absolute -right-20 bottom-1/2 -z-19 size-70 rounded-full bg-emerald-100 blur-[100px] dark:bg-emerald-500/20"
+        ></div>
+
+        {{-- Cyan blur --}}
+        <div
+            class="absolute top-1/2 -left-20 -z-20 size-100 rounded-full bg-cyan-100 blur-[100px] dark:bg-cyan-500/20"
+        ></div>
     </div>
     {{-- Header --}}
     <header
