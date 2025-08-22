@@ -49,6 +49,9 @@
                 src="{{ Vite::asset('resources/images/home/macbook.webp') }}"
                 alt=""
                 class="w-100"
+                width="400"
+                height="250"
+                loading="lazy"
             />
 
             {{-- Iphone --}}
@@ -56,6 +59,9 @@
                 src="{{ Vite::asset('resources/images/home/iphone.webp') }}"
                 alt=""
                 class="-ml-18 w-23"
+                width="92"
+                height="190"
+                loading="lazy"
             />
 
             {{-- Feature list (infinite vertical marquee) --}}
