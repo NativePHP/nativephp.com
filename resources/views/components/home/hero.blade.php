@@ -48,7 +48,7 @@
             <img
                 src="{{ Vite::asset('resources/images/home/macbook.webp') }}"
                 alt=""
-                class="w-100"
+                class="w-100 dark:brightness-80 dark:contrast-150"
                 width="400"
                 height="250"
                 loading="lazy"
@@ -58,7 +58,7 @@
             <img
                 src="{{ Vite::asset('resources/images/home/iphone.webp') }}"
                 alt=""
-                class="-ml-18 w-23"
+                class="-ml-18 w-23 dark:brightness-80 dark:contrast-150"
                 width="92"
                 height="190"
                 loading="lazy"
