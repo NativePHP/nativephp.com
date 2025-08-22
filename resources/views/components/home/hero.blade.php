@@ -70,74 +70,72 @@
         </div>
 
         {{-- Mockups --}}
-        <div class="relative -z-16 mt-5 flex items-end justify-center lg:mt-0">
-            <div class="grid w-100">
-                {{-- Macbook --}}
-                <img
-                    src="{{ Vite::asset('resources/images/home/macbook.webp') }}"
-                    alt=""
-                    class="relative z-0 w-full self-center justify-self-center [grid-area:1/-1] dark:brightness-80 dark:contrast-150"
-                    width="400"
-                    height="250"
-                    loading="lazy"
-                />
-
-                {{-- Window --}}
-                <div
-                    class="2xs:scale-75 xs:scale-100 relative -top-3 z-1 flex h-40 w-70 scale-60 flex-col self-center justify-self-center overflow-hidden rounded-md [grid-area:1/-1]"
-                >
-                    {{-- Header --}}
+        <div class="relative -z-16 mt-5 flex flex-col-reverse gap-5 lg:mt-0">
+            <div class="flex items-end justify-center">
+                <div class="grid w-100">
+                    {{-- Macbook --}}
+                    <img
+                        src="{{ Vite::asset('resources/images/home/macbook.webp') }}"
+                        alt=""
+                        class="relative z-0 w-full self-center justify-self-center [grid-area:1/-1] dark:brightness-80 dark:contrast-150"
+                        width="400"
+                        height="250"
+                        loading="lazy"
+                    />
+                    {{-- Window --}}
                     <div
-                        class="relative flex h-3 items-center bg-gray-800 px-1"
+                        class="2xs:scale-75 xs:scale-100 relative -top-3 z-1 flex h-40 w-70 scale-60 flex-col self-center justify-self-center overflow-hidden rounded-md [grid-area:1/-1]"
                     >
-                        {{-- Traffic lights --}}
-                        <div class="flex items-center gap-[3px]">
-                            <div
-                                class="size-[3px] rounded-full bg-green-400"
-                            ></div>
-                            <div
-                                class="size-[3px] rounded-full bg-amber-400"
-                            ></div>
-                            <div
-                                class="size-[3px] rounded-full bg-red-400"
-                            ></div>
-                        </div>
-
-                        {{-- Label --}}
+                        {{-- Header --}}
                         <div
-                            class="absolute top-1/2 right-1/2 translate-x-1/2 -translate-y-1/2 text-[5px] text-gray-300"
+                            class="relative flex h-3 items-center bg-gray-800 px-1"
                         >
-                            NativePHP App
+                            {{-- Traffic lights --}}
+                            <div class="flex items-center gap-[3px]">
+                                <div
+                                    class="size-[3px] rounded-full bg-green-400"
+                                ></div>
+                                <div
+                                    class="size-[3px] rounded-full bg-amber-400"
+                                ></div>
+                                <div
+                                    class="size-[3px] rounded-full bg-red-400"
+                                ></div>
+                            </div>
+                            {{-- Label --}}
+                            <div
+                                class="absolute top-1/2 right-1/2 translate-x-1/2 -translate-y-1/2 text-[5px] text-gray-300"
+                            >
+                                NativePHP App
+                            </div>
                         </div>
-                    </div>
-
-                    {{-- Page --}}
-                    <div
-                        class="grid grow place-items-center bg-[#fdfdfc] dark:bg-[#0a0a0a]"
-                    >
-                        <img
-                            src="{{ Vite::asset('resources/images/home/laravel_welcome_light.webp') }}"
-                            alt=""
-                            class="w-55 self-center justify-self-center [grid-area:1/-1] dark:opacity-0"
-                        />
-                        <img
-                            src="{{ Vite::asset('resources/images/home/laravel_welcome_dark.webp') }}"
-                            alt=""
-                            class="w-55 self-center justify-self-center opacity-0 [grid-area:1/-1] dark:opacity-100"
-                        />
+                        {{-- Page --}}
+                        <div
+                            class="grid grow place-items-center bg-[#fdfdfc] dark:bg-[#0a0a0a]"
+                        >
+                            <img
+                                src="{{ Vite::asset('resources/images/home/laravel_welcome_light.webp') }}"
+                                alt=""
+                                class="w-55 self-center justify-self-center [grid-area:1/-1] dark:opacity-0"
+                            />
+                            <img
+                                src="{{ Vite::asset('resources/images/home/laravel_welcome_dark.webp') }}"
+                                alt=""
+                                class="w-55 self-center justify-self-center opacity-0 [grid-area:1/-1] dark:opacity-100"
+                            />
+                        </div>
                     </div>
                 </div>
+                {{-- Iphone --}}
+                <img
+                    src="{{ Vite::asset('resources/images/home/iphone.webp') }}"
+                    alt=""
+                    class="relative z-2 -ml-15 w-18 sm:-ml-18 sm:w-23 dark:brightness-80 dark:contrast-150"
+                    width="92"
+                    height="190"
+                    loading="lazy"
+                />
             </div>
-
-            {{-- Iphone --}}
-            <img
-                src="{{ Vite::asset('resources/images/home/iphone.webp') }}"
-                alt=""
-                class="relative z-2 -ml-15 w-18 sm:-ml-18 sm:w-23 dark:brightness-80 dark:contrast-150"
-                width="92"
-                height="190"
-                loading="lazy"
-            />
 
             {{-- Feature list (infinite vertical marquee) --}}
             @php
@@ -163,12 +161,24 @@
                         transform: translateY(-50%);
                     }
                 }
+                @keyframes nphp-hmarquee {
+                    to {
+                        transform: translateX(-50%);
+                    }
+                }
                 .nphp-marquee-track {
                     animation: nphp-vmarquee var(--marquee-duration, 22s) linear
                         infinite;
                 }
+                .nphp-hmarquee-track {
+                    animation: nphp-hmarquee var(--marquee-duration, 18s) linear
+                        infinite;
+                }
                 @media (prefers-reduced-motion: reduce) {
                     .nphp-marquee-track {
+                        animation: none !important;
+                    }
+                    .nphp-hmarquee-track {
                         animation: none !important;
                     }
                 }
@@ -200,6 +210,50 @@
                     {{-- Set B (clone) --}}
                     <div
                         class="flex flex-col gap-3"
+                        aria-hidden="true"
+                    >
+                        @foreach ($features as $feature)
+                            <div class="flex items-center gap-2 text-sm">
+                                <x-dynamic-component
+                                    :component="$feature['icon']"
+                                    class="size-5"
+                                />
+                                <div class="text-gray-700 dark:text-slate-300">
+                                    {{ $feature['label'] }}
+                                </div>
+                            </div>
+                        @endforeach
+                    </div>
+                </div>
+            </div>
+
+            {{-- Feature list (horizontal marquee on small screens) --}}
+            <div
+                class="group z-1 block w-full overflow-hidden mask-x-from-70% md:hidden"
+            >
+                {{-- Track (two sets for seamless loop) --}}
+                <div
+                    class="nphp-hmarquee-track flex items-center gap-3 will-change-transform [--icon-bg:#D3EDF1] [--icon-dot:#F9F9F9] [--icon-stroke:#4197A5] group-hover:[animation-play-state:paused] dark:[--icon-bg:--alpha(var(--color-slate-400)/30%)] dark:[--icon-dot:--alpha(var(--color-white)/30%)] dark:[--icon-stroke:--alpha(var(--color-white)/60%)]"
+                    style="--marquee-duration: 18s"
+                >
+                    {{-- Set A --}}
+                    <div class="flex items-center gap-3 whitespace-nowrap">
+                        @foreach ($features as $feature)
+                            <div class="flex items-center gap-2 text-sm">
+                                <x-dynamic-component
+                                    :component="$feature['icon']"
+                                    class="size-5"
+                                />
+                                <div class="text-gray-700 dark:text-slate-300">
+                                    {{ $feature['label'] }}
+                                </div>
+                            </div>
+                        @endforeach
+                    </div>
+
+                    {{-- Set B (clone) --}}
+                    <div
+                        class="flex items-center gap-3 whitespace-nowrap"
                         aria-hidden="true"
                     >
                         @foreach ($features as $feature)
