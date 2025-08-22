@@ -667,13 +667,13 @@
 
         {{-- Green blur --}}
         <div
-            class="pointer-events-none absolute -right-20 bottom-1/2 -z-19 size-70 rounded-full bg-emerald-100 blur-[100px] dark:bg-emerald-500/20"
+            class="pointer-events-none absolute -top-20 -right-20 -z-19 size-70 rounded-full bg-emerald-100 blur-[100px] dark:bg-emerald-500/20"
             aria-hidden="true"
         ></div>
 
         {{-- Cyan blur --}}
         <div
-            class="pointer-events-none absolute top-1/2 -left-20 -z-20 size-100 rounded-full bg-cyan-100 blur-[100px] dark:bg-cyan-500/20"
+            class="pointer-events-none absolute -bottom-50 -left-20 -z-20 size-100 rounded-full bg-cyan-100 blur-[100px] dark:bg-cyan-500/20"
             aria-hidden="true"
         ></div>
     </div>
