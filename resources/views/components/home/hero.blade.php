@@ -556,21 +556,17 @@
                         <div
                             x-init="
                                 () => {
-                                    motion.animate(
-                                        $el,
-                                        {
+                                    gsap.to($el, {
+                                        duration: 10,
+                                        repeat: -1,
+                                        ease: 'power1.inOut',
+                                        keyframes: {
                                             x: [0, 20, -100, 0],
                                             y: [0, 5, 0],
                                             scale: [1, 0.7, 1],
                                             rotate: [0, 10, 0],
                                         },
-                                        {
-                                            duration: 10,
-                                            repeat: Infinity,
-                                            repeatType: 'loop',
-                                            ease: motion.easeInOut,
-                                        },
-                                    )
+                                    })
                                 }
                             "
                             class="absolute -bottom-12 left-14 -z-10 h-20 w-44 rounded-full bg-transparent blur-xl will-change-transform dark:bg-blue-500/30"
@@ -579,20 +575,16 @@
                         <div
                             x-init="
                                 () => {
-                                    motion.animate(
-                                        $el,
-                                        {
+                                    gsap.to($el, {
+                                        duration: 5,
+                                        repeat: -1,
+                                        ease: 'power1.inOut',
+                                        keyframes: {
                                             x: [0, -10, 0],
                                             y: [0, 10, 0],
                                             scale: [1, 1.2, 1],
                                         },
-                                        {
-                                            duration: 5,
-                                            repeat: Infinity,
-                                            repeatType: 'loop',
-                                            ease: motion.easeInOut,
-                                        },
-                                    )
+                                    })
                                 }
                             "
                             class="absolute -bottom-12 -left-5 -z-20 h-20 w-44 rounded-full bg-transparent blur-xl will-change-transform dark:bg-cyan-500/30"
@@ -617,21 +609,16 @@
                     >
                         <x-icons.play-button
                             x-init="
-                            () => {
-                                motion.animate(
-                                    $el,
-                                    {
-                                        x: [0, 3],
-                                    },
-                                    {
+                                () => {
+                                    gsap.to($el, {
+                                        x: 3,
                                         duration: 0.6,
-                                        repeat: Infinity,
-                                        repeatType: 'mirror',
-                                        ease: motion.easeInOut,
-                                    },
-                                )
-                            }
-                        "
+                                        repeat: -1,
+                                        yoyo: true,
+                                        ease: 'power1.inOut',
+                                    })
+                                }
+                            "
                             class="size-7"
                             aria-hidden="true"
                         />
