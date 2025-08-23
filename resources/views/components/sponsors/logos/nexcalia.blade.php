@@ -1,10 +1,9 @@
 <svg
-    id="Calque_1"
+    {{ $attributes }}
     xmlns="http://www.w3.org/2000/svg"
     version="1.1"
     viewBox="0 0 566.93 226.77"
 >
-    <!-- Generator: Adobe Illustrator 29.5.1, SVG Export Plug-In . SVG Version: 2.1.0 Build 141)  -->
     <defs>
         <style>
             .st0 {

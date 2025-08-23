@@ -19,16 +19,17 @@
             {{-- Featured partners --}}
             <div
                 class="grid grid-cols-[repeat(auto-fill,minmax(15rem,1fr))] gap-5"
+                aria-label="Featured partners of the NativePHP project"
             >
-                <x-home.featured-sponsor-card
-                    sponsorName="BeyondCode"
+                <x-home.featured-partner-card
+                    partnerName="BeyondCode"
                     tagline="Essential tools for web developers"
                     href="https://beyondco.de/?utm_source=nativephp&utm_medium=logo&utm_campaign=nativephp"
                 >
                     <x-slot:logo>
                         <img
                             src="/img/sponsors/beyondcode.webp"
-                            class="block h-auto max-h-20 max-w-full dark:hidden"
+                            class="block dark:hidden"
                             loading="lazy"
                             alt="BeyondCode logo - PHP development tools and packages"
                             width="160"
@@ -36,7 +37,7 @@
                         />
                         <img
                             src="/img/sponsors/beyondcode-dark.webp"
-                            class="hidden h-auto max-h-20 max-w-full dark:block"
+                            class="hidden dark:block"
                             loading="lazy"
                             alt="BeyondCode logo - PHP development tools and packages"
                             width="160"
@@ -49,15 +50,15 @@
                         platforms, we provide the tools for building your next
                         great app.
                     </x-slot>
-                </x-home.featured-sponsor-card>
-                <x-home.featured-sponsor-card
-                    sponsorName="Laradevs"
+                </x-home.featured-partner-card>
+                <x-home.featured-partner-card
+                    partnerName="Laradevs"
                     tagline="Hire the best Laravel developers anywhere"
                     href="https://laradevs.com/?ref=nativephp"
                 >
                     <x-slot:logo>
                         <x-sponsors.logos.laradevs
-                            class="block h-auto max-h-10 max-w-full text-black dark:text-white"
+                            class="text-black dark:text-white"
                             aria-hidden="true"
                         />
                     </x-slot>
@@ -67,15 +68,15 @@
                         Filter by skills, experience, location, availability,
                         and pay.
                     </x-slot>
-                </x-home.featured-sponsor-card>
-                <x-home.featured-sponsor-card
-                    sponsorName="Nexcalia"
+                </x-home.featured-partner-card>
+                <x-home.featured-partner-card
+                    partnerName="Nexcalia"
                     tagline="Hire the best Laravel developers anywhere"
                     href="https://www.nexcalia.com/?ref=nativephp"
                 >
                     <x-slot:logo>
                         <x-sponsors.logos.nexcalia
-                            class="block h-auto max-h-10 max-w-full text-black dark:text-white"
+                            class="text-black dark:text-white"
                             aria-hidden="true"
                         />
                     </x-slot>
@@ -85,64 +86,11 @@
                         Filter by skills, experience, location, availability,
                         and pay.
                     </x-slot>
-                </x-home.featured-sponsor-card>
+                </x-home.featured-partner-card>
             </div>
         </div>
     </div>
     <div class="divide-y divide-[#242A2E]/20 *:py-8">
-        {{-- Featured sponsors --}}
-        <div
-            class="flex flex-col items-center justify-between gap-x-10 gap-y-5 md:flex-row md:items-start"
-            aria-labelledby="featured-sponsors-title"
-        >
-            <h3
-                id="featured-sponsors-title"
-                x-init="
-                    () => {
-                        motion.inView($el, (element) => {
-                            motion.animate(
-                                $el,
-                                {
-                                    opacity: [0, 1],
-                                    x: [-10, 0],
-                                },
-                                {
-                                    duration: 0.7,
-                                    ease: motion.circOut,
-                                },
-                            )
-                        })
-                    }
-                "
-                class="shrink-0 text-xl font-medium opacity-0"
-            >
-                Featured Sponsors
-            </h3>
-            <div
-                x-init="
-                    () => {
-                        motion.inView($el, (element) => {
-                            motion.animate(
-                                $refAll('sponsor'),
-                                {
-                                    scale: [0, 1],
-                                    opacity: [0, 1],
-                                },
-                                {
-                                    duration: 0.7,
-                                    ease: motion.backOut,
-                                    delay: motion.stagger(0.1),
-                                },
-                            )
-                        })
-                    }
-                "
-                class="flex grow flex-wrap items-center justify-center gap-5 md:justify-end"
-                aria-label="Featured sponsors of the NativePHP project"
-            >
-                <x-sponsors.lists.home.featured-sponsors />
-            </div>
-        </div>
         {{-- Corporate sponsors --}}
         <div
             class="flex flex-col items-center justify-between gap-x-10 gap-y-5 md:flex-row md:items-start"
