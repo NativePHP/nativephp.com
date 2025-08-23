@@ -89,7 +89,7 @@
                 </x-home.featured-partner-card>
             </div>
 
-            <div class="flex flex-wrap gap-5">
+            <div class="flex flex-wrap items-start gap-5">
                 <a
                     href="/docs/getting-started/sponsoring"
                     aria-label="Learn about sponsoring the NativePHP project"
@@ -107,62 +107,51 @@
                     </div>
                 </a>
 
-                <div class=""></div>
-            </div>
-        </div>
-    </div>
-    <div class="divide-y divide-[#242A2E]/20 *:py-8">
-        {{-- Corporate sponsors --}}
-        <div
-            class="flex flex-col items-center justify-between gap-x-10 gap-y-5 md:flex-row md:items-start"
-            aria-labelledby="corporate-sponsors-title"
-        >
-            <h3
-                id="corporate-sponsors-title"
-                x-init="
-                    () => {
-                        motion.inView($el, (element) => {
-                            motion.animate(
-                                $el,
-                                {
-                                    opacity: [0, 1],
-                                    x: [-10, 0],
-                                },
-                                {
-                                    duration: 0.7,
-                                    ease: motion.circOut,
-                                },
-                            )
-                        })
-                    }
-                "
-                class="shrink-0 text-xl font-medium opacity-0"
-            >
-                Corporate Sponsors
-            </h3>
-            <div
-                x-init="
-                    () => {
-                        motion.inView($el, (element) => {
-                            motion.animate(
-                                $refAll('sponsor'),
-                                {
-                                    scale: [0, 1],
-                                    opacity: [0, 1],
-                                },
-                                {
-                                    duration: 0.7,
-                                    ease: motion.backOut,
-                                    delay: motion.stagger(0.1),
-                                },
-                            )
-                        })
-                    }
-                "
-                class="flex grow flex-wrap items-center justify-center gap-5 md:justify-end"
-                aria-label="Corporate sponsors of the NativePHP project"
-            >
-                <x-sponsors.lists.home.corporate-sponsors />
+                {{-- Partners --}}
+                <div
+                    class="grid grid-cols-[repeat(auto-fill,minmax(10rem,1fr))] gap-3"
+                    aria-label="Partners of the NativePHP project"
+                >
+                    <x-home.partner-card
+                        partnerName="RedGalaxy"
+                        href="https://www.redgalaxy.co.uk/"
+                    >
+                        <x-sponsors.logos.redgalaxy
+                            alt="RedGalaxy logo"
+                            loading="lazy"
+                        />
+                    </x-home.partner-card>
+                    <x-home.partner-card
+                        partnerName="Sevalla"
+                        href="https://sevalla.com/?utm_source=nativephp&utm_medium=Referral&utm_campaign=homepage"
+                    >
+                        <x-sponsors.logos.sevalla
+                            class="text-black dark:text-white"
+                            alt="Sevalla logo"
+                            loading="lazy"
+                        />
+                    </x-home.partner-card>
+                    <x-home.partner-card
+                        partnerName="KaasHosting"
+                        href="https://www.kaashosting.nl/?lang=en"
+                    >
+                        <x-sponsors.logos.kaashosting
+                            class="fill-[#042340] dark:fill-white"
+                            alt="KaasHosting logo"
+                            loading="lazy"
+                        />
+                    </x-home.partner-card>
+                    <x-home.partner-card
+                        partnerName="Quantumweb"
+                        href="https://www.quantumweb.co/"
+                    >
+                        <x-sponsors.logos.quantumweb
+                            class="fill-[#042340] dark:fill-white"
+                            alt="Quantumweb logo"
+                            loading="lazy"
+                        />
+                    </x-home.partner-card>
+                </div>
             </div>
         </div>
     </div>
