@@ -2,7 +2,7 @@
     class="mt-5"
     aria-labelledby="sponsors-title"
 >
-    <div class="dark:bg-mirage rounded-2xl bg-gray-200/60 p-10">
+    <div class="dark:bg-mirage rounded-2xl bg-gray-200/60 p-8 md:p-10">
         <div class="flex flex-col gap-1">
             <h2
                 id="sponsors-title"
@@ -15,10 +15,10 @@
             </h3>
         </div>
 
-        <div class="mt-7 flex gap-5">
+        <div class="mt-7 flex flex-wrap gap-5 lg:flex-nowrap">
             {{-- Featured partners --}}
             <div
-                class="grid w-full grid-cols-[repeat(auto-fill,minmax(15rem,1fr))] gap-5 2xl:grid-cols-1"
+                class="grid w-full grid-cols-[repeat(auto-fill,minmax(15rem,1fr))] gap-5 lg:w-auto lg:grid-cols-1"
                 aria-label="Featured partners of the NativePHP project"
             >
                 <x-home.featured-partner-card
@@ -89,9 +89,11 @@
                 </x-home.featured-partner-card>
             </div>
 
+            {{-- Right side --}}
             <div
-                class="flex flex-wrap items-start gap-5 2xl:w-1/2 2xl:flex-col 2xl:items-stretch 2xl:justify-start"
+                class="flex w-full flex-wrap items-start gap-5 lg:w-1/2 lg:flex-col lg:items-stretch lg:justify-start"
             >
+                {{-- Become a partner button --}}
                 <a
                     href="/docs/getting-started/sponsoring"
                     aria-label="Learn about sponsoring the NativePHP project"
@@ -109,9 +111,9 @@
                     </div>
                 </a>
 
-                {{-- Partners --}}
+                {{-- Partners list --}}
                 <div
-                    class="grid grid-cols-2 gap-3.5"
+                    class="grid w-full grid-cols-[repeat(auto-fill,minmax(10rem,1fr))] gap-3.5 lg:w-auto lg:grid-cols-1 xl:grid-cols-2"
                     aria-label="Partners of the NativePHP project"
                 >
                     <x-home.partner-card
