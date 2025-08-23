@@ -63,13 +63,16 @@
         {{-- Right side --}}
         <div class="relative z-10">
             <div class="grid">
+                {{-- Phone wireframe --}}
                 <x-illustrations.phone-wireframe
                     class="w-58 self-center justify-self-center text-[#333333] [grid-area:1/-1] dark:text-gray-500"
                 />
 
+                {{-- Schema --}}
                 <div
-                    class="relative top-10 z-12 flex w-51 flex-col gap-3 self-start justify-self-center rounded-lg bg-white/50 p-2 text-xs ring-1 [grid-area:1/-1] dark:bg-slate-950/80 dark:ring-gray-500"
+                    class="relative top-11 z-12 flex w-51 flex-col gap-3 self-start justify-self-center rounded-lg bg-white/50 p-3 text-xs ring-1 [grid-area:1/-1] dark:bg-slate-950/80 dark:ring-gray-500"
                 >
+                    {{-- Header --}}
                     <div>
                         <div
                             class="text-sm font-medium text-gray-800 dark:text-white"
@@ -81,15 +84,15 @@
                         </div>
                     </div>
 
+                    {{-- Php runtime --}}
                     <style>
                         .php-dashed-border {
                             background-image: url("data:image/svg+xml,%3csvg width='100%25' height='100%25' xmlns='http://www.w3.org/2000/svg'%3e%3crect width='100%25' height='100%25' fill='none' rx='8' ry='8' stroke='%23333' stroke-width='3' stroke-dasharray='4%2c 10' stroke-dashoffset='0' stroke-linecap='square'/%3e%3c/svg%3e");
                             border-radius: 8px;
                         }
                     </style>
-
                     <div
-                        class="php-dashed-border grid place-items-center gap-3 rounded-lg border-black/20 px-2 pt-4 pb-2"
+                        class="php-dashed-border grid place-items-center gap-3 rounded-lg px-2 pt-4 pb-2"
                     >
                         <div class="font-medium text-gray-800 dark:text-white">
                             PHP Runtime
@@ -103,6 +106,45 @@
                             >
                                 Custom PHP Extension
                             </div>
+                        </div>
+                    </div>
+
+                    {{-- Core --}}
+                    <div class="flex items-center gap-2">
+                        <div
+                            class="relative grid w-1/2 place-items-center rounded-lg bg-purple-200/60 px-3 py-7 dark:bg-violet-400/20"
+                        >
+                            <div
+                                class="flex flex-col gap-0.5 text-center font-medium text-gray-700 capitalize dark:text-white"
+                            >
+                                <div>Native</div>
+                                <div>mobile</div>
+                                <div>functions</div>
+                            </div>
+                        </div>
+                        <div
+                            class="relative grid w-1/2 place-items-center rounded-lg bg-lime-200/60 px-3 py-7 dark:bg-[#d7ff83]/30"
+                        >
+                            <div
+                                class="flex flex-col gap-0.5 text-center font-medium text-gray-700 capitalize dark:text-white"
+                            >
+                                <div>Custom</div>
+                                <div>Swift/Kotlin</div>
+                                <div>Bridges</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {{-- WebView --}}
+                    <div
+                        class="grid place-items-center gap-3 rounded-lg p-4 ring-1"
+                    >
+                        <div class="font-medium text-gray-800 dark:text-white">
+                            Native WebView
+                        </div>
+
+                        <div class="text-gray-600 dark:text-zinc-400">
+                            HTML/CSS + JavaScript
                         </div>
                     </div>
                 </div>
