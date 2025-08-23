@@ -3,7 +3,7 @@
     aria-labelledby="sponsors-title"
 >
     <div
-        class="dark:bg-mirage relative flex max-w-160 items-center gap-10 overflow-hidden rounded-2xl bg-gray-200/60 p-8 md:p-10"
+        class="dark:bg-mirage relative flex max-w-165 items-center gap-10 overflow-hidden rounded-2xl bg-gray-200/60 p-8 md:p-10"
     >
         {{-- Left side --}}
         <div class="relative z-10 flex flex-col gap-5 pl-5">
@@ -64,8 +64,48 @@
         <div class="relative z-10">
             <div class="grid">
                 <x-illustrations.phone-wireframe
-                    class="w-52 text-[#333333] dark:text-gray-400"
+                    class="w-58 self-center justify-self-center text-[#333333] [grid-area:1/-1] dark:text-gray-500"
                 />
+
+                <div
+                    class="relative top-10 z-12 flex w-51 flex-col gap-3 self-start justify-self-center rounded-lg bg-white/50 p-2 text-xs ring-1 [grid-area:1/-1] dark:bg-slate-950/80 dark:ring-gray-500"
+                >
+                    <div>
+                        <div
+                            class="text-sm font-medium text-gray-800 dark:text-white"
+                        >
+                            Swift or Kotlin
+                        </div>
+                        <div class="text-gray-600 dark:text-zinc-400">
+                            Shell app
+                        </div>
+                    </div>
+
+                    <style>
+                        .php-dashed-border {
+                            background-image: url("data:image/svg+xml,%3csvg width='100%25' height='100%25' xmlns='http://www.w3.org/2000/svg'%3e%3crect width='100%25' height='100%25' fill='none' rx='8' ry='8' stroke='%23333' stroke-width='3' stroke-dasharray='4%2c 10' stroke-dashoffset='0' stroke-linecap='square'/%3e%3c/svg%3e");
+                            border-radius: 8px;
+                        }
+                    </style>
+
+                    <div
+                        class="php-dashed-border grid place-items-center gap-3 rounded-lg border-black/20 px-2 pt-4 pb-2"
+                    >
+                        <div class="font-medium text-gray-800 dark:text-white">
+                            PHP Runtime
+                        </div>
+
+                        <div
+                            class="grid w-full place-items-center rounded-lg bg-gray-200 px-2 py-7 dark:bg-gray-800"
+                        >
+                            <div
+                                class="font-medium text-gray-700 dark:text-white"
+                            >
+                                Custom PHP Extension
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
 
