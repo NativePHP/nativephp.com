@@ -3,7 +3,7 @@
     aria-labelledby="sponsors-title"
 >
     <div
-        class="dark:bg-mirage relative flex max-w-165 items-center gap-10 overflow-hidden rounded-2xl bg-gray-200/60 p-8 md:p-10"
+        class="dark:bg-mirage relative flex max-w-165 flex-col items-center gap-5 overflow-hidden rounded-2xl bg-gray-200/60 p-8 sm:flex-row sm:p-10"
     >
         {{-- Left side --}}
         <div class="relative z-10 flex flex-col gap-5 pl-5">
@@ -21,7 +21,7 @@
             </div>
 
             {{-- Description --}}
-            <p class="max-w-75 text-pretty text-gray-600 dark:text-zinc-400">
+            <p class="text-pretty text-gray-600 sm:max-w-75 dark:text-zinc-400">
                 <span class="font-medium text-gray-700 dark:text-zinc-300">
                     NativePHP
                 </span>
@@ -61,7 +61,7 @@
         </div>
 
         {{-- Right side --}}
-        <div class="relative z-10">
+        <div class="relative z-10 pl-5 sm:pl-0">
             <div class="grid">
                 {{-- Phone wireframe --}}
                 <x-illustrations.phone-wireframe
