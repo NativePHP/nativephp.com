@@ -6,7 +6,7 @@
         class="dark:bg-mirage relative flex max-w-160 items-center gap-10 overflow-hidden rounded-2xl bg-gray-200/60 p-8 md:p-10"
     >
         {{-- Left side --}}
-        <div class="flex flex-col gap-5 pl-5">
+        <div class="relative z-10 flex flex-col gap-5 pl-5">
             {{-- Header --}}
             <div class="flex flex-col gap-1">
                 <h3 class="text-lg text-gray-600 lg:text-xl dark:text-zinc-400">
@@ -61,7 +61,7 @@
         </div>
 
         {{-- Right side --}}
-        <div class="">
+        <div class="relative z-10">
             <div class="grid">
                 <x-illustrations.phone-wireframe
                     class="w-52 text-[#333333] dark:text-gray-400"
@@ -71,17 +71,17 @@
 
         {{-- Grid illustration --}}
         <div
-            class="pointer-events-none absolute inset-y-0 right-0 -z-10 h-full w-[520px] text-gray-400 md:w-[620px] dark:text-zinc-700"
+            class="pointer-events-none absolute inset-y-0 right-0 z-0 h-full w-[520px] text-gray-300 md:w-[620px] dark:text-white/7"
             aria-hidden="true"
         >
             <div
-                class="h-full w-full [background-image:linear-gradient(to_right,currentColor_0_1px,transparent_1px),linear-gradient(to_bottom,currentColor_0_1px,transparent_1px)] [mask-image:linear-gradient(to_left,rgba(0,0,0,1)_30%,rgba(0,0,0,0)_100%)] [background-size:24px_100%,100%_24px] [background-position:0.5px_0,0_0.5px] bg-repeat [mask-repeat:no-repeat] [-webkit-mask-image:linear-gradient(to_left,rgba(0,0,0,1)_30%,rgba(0,0,0,0)_100%)] [-webkit-mask-repeat:no-repeat]"
+                class="h-full w-full [background-image:linear-gradient(to_right,currentColor_0_1px,transparent_1px),linear-gradient(to_bottom,currentColor_0_1px,transparent_1px)] mask-l-from-30% [background-size:20px_100%,100%_20px] [background-position:0.5px_0,0_0.5px] bg-repeat [mask-repeat:no-repeat] [-webkit-mask-repeat:no-repeat]"
             ></div>
         </div>
 
         {{-- Dashed vertical line --}}
         <div
-            class="pointer-events-none absolute inset-y-0 left-6 z-0 w-px text-gray-300 dark:text-zinc-600"
+            class="pointer-events-none absolute inset-y-0 left-6 z-20 w-px text-gray-300 dark:text-white/10"
             aria-hidden="true"
         >
             <div
@@ -91,7 +91,7 @@
 
         {{-- Solid vertical line --}}
         <div
-            class="pointer-events-none absolute inset-y-0 left-10 z-0 w-px text-gray-300 dark:text-zinc-700"
+            class="pointer-events-none absolute inset-y-0 left-10 z-20 w-px text-gray-300 dark:text-white/10"
             aria-hidden="true"
         >
             <div
@@ -101,7 +101,7 @@
 
         {{-- Dashed horizontal line --}}
         <div
-            class="pointer-events-none absolute inset-x-0 top-8 z-0 h-px text-gray-300 dark:text-zinc-600"
+            class="pointer-events-none absolute inset-x-0 top-8 z-20 h-px text-gray-300 dark:text-white/10"
             aria-hidden="true"
         >
             <div
