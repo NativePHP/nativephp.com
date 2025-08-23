@@ -18,7 +18,7 @@
         <div class="mt-7 flex flex-wrap gap-5 lg:flex-nowrap">
             {{-- Featured partners --}}
             <div
-                class="grid w-full grid-cols-[repeat(auto-fill,minmax(15rem,1fr))] gap-5 lg:w-auto lg:grid-cols-1"
+                class="grid w-full grid-cols-1 gap-5 md:grid-cols-[repeat(auto-fill,minmax(15rem,1fr))] lg:w-auto lg:grid-cols-1"
                 aria-label="Featured partners of the NativePHP project"
             >
                 <x-home.featured-partner-card
@@ -94,22 +94,36 @@
                 class="flex w-full flex-wrap items-start gap-5 lg:w-1/2 lg:flex-col lg:items-stretch lg:justify-start"
             >
                 {{-- Become a partner button --}}
-                <a
-                    href="/docs/getting-started/sponsoring"
-                    aria-label="Learn about sponsoring the NativePHP project"
-                    class="flex items-center gap-5 rounded-xl bg-gradient-to-t from-gray-800 to-gray-950 p-6 text-indigo-100"
-                >
-                    <div class="flex flex-col gap-1">
-                        <div class="">
-                            Get more from NativePHP as a partner!
+                <div class="w-full lg:w-auto">
+                    <div
+                        class="flex flex-col items-center gap-5 rounded-xl bg-gradient-to-tl from-[#d7ff83] to-[#ebeeb7] p-6 text-gray-800 sm:flex-row lg:flex-col"
+                    >
+                        <div
+                            class="flex flex-col gap-1 text-center text-pretty"
+                        >
+                            <div class="text-lg font-semibold">
+                                Get more from NativePHP as a partner!
+                            </div>
+                            <p class="text-sm opacity-70">
+                                Our Partners are helping us bring NativePHP to
+                                everyone and getting some incredible benefits to
+                                boot
+                            </p>
                         </div>
-                        <p class="text-sm opacity-70">
-                            Our Partners are helping us bring NativePHP to
-                            everyone and getting some incredible benefits to
-                            boot
-                        </p>
+
+                        <a
+                            href="/docs/getting-started/sponsoring"
+                            aria-label="Learn about sponsoring the NativePHP project"
+                            class="group flex w-full items-center justify-center gap-2.5 rounded-xl bg-white/50 px-6 py-2.5 transition duration-300 hover:bg-white/80 sm:w-auto"
+                        >
+                            <div>Join</div>
+
+                            <x-icons.right-arrow
+                                class="w-3 shrink-0 transition duration-200 will-change-transform group-hover:translate-x-0.5"
+                            />
+                        </a>
                     </div>
-                </a>
+                </div>
 
                 {{-- Partners list --}}
                 <div
