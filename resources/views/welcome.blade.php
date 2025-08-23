@@ -2,9 +2,9 @@
     {{-- Hero --}}
     <x-home.hero />
 
-    {{-- Marcel talk --}}
-    <x-home.marcel-talk />
-
     {{-- Partners --}}
     <x-home.partners />
+
+    {{-- Marcel talk --}}
+    <x-home.marcel-talk />
 </x-layout>

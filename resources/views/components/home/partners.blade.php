@@ -1,13 +1,94 @@
 <section
-    class="mx-auto mt-20 max-w-5xl"
+    class="mt-5"
     aria-labelledby="sponsors-title"
 >
-    <h2
-        id="sponsors-title"
-        class="sr-only"
-    >
-        NativePHP Sponsors
-    </h2>
+    <div class="dark:bg-mirage rounded-2xl bg-gray-200/60 p-8">
+        <div class="flex flex-col gap-1">
+            <h2
+                id="sponsors-title"
+                class="text-2xl font-bold text-gray-800 lg:text-3xl dark:text-white"
+            >
+                Our Partners
+            </h2>
+            <h3 class="text-lg text-gray-600 lg:text-xl dark:text-zinc-400">
+                NativePHP wouldn't be possible without amazing Partners
+            </h3>
+        </div>
+
+        <div class="mt-5 flex flex-wrap">
+            {{-- Featured partners --}}
+            <div
+                class="grid grid-cols-[repeat(auto-fill,minmax(15rem,1fr))] gap-5"
+            >
+                <x-home.featured-sponsor-card
+                    sponsorName="BeyondCode"
+                    tagline="Essential tools for web developers"
+                    href="https://beyondco.de/?utm_source=nativephp&utm_medium=logo&utm_campaign=nativephp"
+                >
+                    <x-slot:logo>
+                        <img
+                            src="/img/sponsors/beyondcode.webp"
+                            class="block h-auto max-h-20 max-w-full dark:hidden"
+                            loading="lazy"
+                            alt="BeyondCode logo - PHP development tools and packages"
+                            width="160"
+                            height="40"
+                        />
+                        <img
+                            src="/img/sponsors/beyondcode-dark.webp"
+                            class="hidden h-auto max-h-20 max-w-full dark:block"
+                            loading="lazy"
+                            alt="BeyondCode logo - PHP development tools and packages"
+                            width="160"
+                            height="40"
+                        />
+                    </x-slot>
+
+                    <x-slot:description>
+                        From local full stack development to cutting-edge AI
+                        platforms, we provide the tools for building your next
+                        great app.
+                    </x-slot>
+                </x-home.featured-sponsor-card>
+                <x-home.featured-sponsor-card
+                    sponsorName="Laradevs"
+                    tagline="Hire the best Laravel developers anywhere"
+                    href="https://laradevs.com/?ref=nativephp"
+                >
+                    <x-slot:logo>
+                        <x-sponsors.logos.laradevs
+                            class="block h-auto max-h-10 max-w-full text-black dark:text-white"
+                            aria-hidden="true"
+                        />
+                    </x-slot>
+
+                    <x-slot:description>
+                        Need a freelancer or engineer? Laradevs has you covered.
+                        Filter by skills, experience, location, availability,
+                        and pay.
+                    </x-slot>
+                </x-home.featured-sponsor-card>
+                <x-home.featured-sponsor-card
+                    sponsorName="Nexcalia"
+                    tagline="Hire the best Laravel developers anywhere"
+                    href="https://www.nexcalia.com/?ref=nativephp"
+                >
+                    <x-slot:logo>
+                        <x-sponsors.logos.nexcalia
+                            class="block h-auto max-h-10 max-w-full text-black dark:text-white"
+                            aria-hidden="true"
+                        />
+                    </x-slot>
+
+                    <x-slot:description>
+                        Need a freelancer or engineer? Laradevs has you covered.
+                        Filter by skills, experience, location, availability,
+                        and pay.
+                    </x-slot>
+                </x-home.featured-sponsor-card>
+            </div>
+        </div>
+    </div>
     <div class="divide-y divide-[#242A2E]/20 *:py-8">
         {{-- Featured sponsors --}}
         <div

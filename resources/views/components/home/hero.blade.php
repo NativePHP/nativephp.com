@@ -3,7 +3,7 @@
     aria-labelledby="hero-title"
 >
     <div
-        class="relative z-0 flex flex-col overflow-hidden rounded-2xl bg-gradient-to-t from-[#E0E5EB] to-[#F9F9F9] px-5 pt-8 pb-10 ring-1 ring-zinc-200/50 lg:px-10 lg:pt-8 lg:pb-17 dark:from-slate-950 dark:to-slate-900 dark:ring-slate-800"
+        class="relative z-0 flex flex-col overflow-hidden rounded-2xl bg-gradient-to-t from-[#E0E5EB] to-[#F9F9F9] px-5 pt-8 pb-10 ring-1 ring-zinc-200/50 lg:px-10 lg:pt-8 lg:pb-17 xl:pt-10 dark:from-slate-950 dark:to-slate-900 dark:ring-slate-800"
     >
         {{-- Demo app --}}
         <div
