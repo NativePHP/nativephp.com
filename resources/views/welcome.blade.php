@@ -2,6 +2,9 @@
     {{-- Hero --}}
     <x-home.hero />
 
+    {{-- Explainer --}}
+    <x-home.explainer />
+
     {{-- Partners --}}
     <x-home.partners />
 
