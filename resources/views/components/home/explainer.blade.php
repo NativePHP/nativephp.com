@@ -3,7 +3,7 @@
     aria-labelledby="sponsors-title"
 >
     <div
-        class="dark:bg-mirage relative flex max-w-160 items-center gap-10 rounded-2xl bg-gray-200/60 p-8 md:p-10"
+        class="dark:bg-mirage relative flex max-w-160 items-center gap-10 overflow-hidden rounded-2xl bg-gray-200/60 p-8 md:p-10"
     >
         {{-- Left side --}}
         <div class="flex flex-col gap-5">
@@ -65,6 +65,16 @@
                     class="w-52 text-[#333333] dark:text-gray-400"
                 />
             </div>
+        </div>
+
+        {{-- Grid illustration --}}
+        <div
+            class="pointer-events-none absolute inset-y-0 right-0 -z-10 h-full w-[520px] text-gray-400 md:w-[620px] dark:text-zinc-700"
+            aria-hidden="true"
+        >
+            <div
+                class="h-full w-full [background-image:linear-gradient(to_right,currentColor_0_1px,transparent_1px),linear-gradient(to_bottom,currentColor_0_1px,transparent_1px)] [mask-image:linear-gradient(to_left,rgba(0,0,0,1)_30%,rgba(0,0,0,0)_100%)] [background-size:24px_100%,100%_24px] [background-position:0.5px_0,0_0.5px] bg-repeat [mask-repeat:no-repeat] [-webkit-mask-image:linear-gradient(to_left,rgba(0,0,0,1)_30%,rgba(0,0,0,0)_100%)] [-webkit-mask-repeat:no-repeat]"
+            ></div>
         </div>
     </div>
 </section>
