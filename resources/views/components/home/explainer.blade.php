@@ -70,7 +70,7 @@
 
                 {{-- Schema --}}
                 <div
-                    class="relative top-11 z-12 flex w-51 flex-col gap-3 self-start justify-self-center rounded-lg bg-white/50 p-3 text-xs ring-1 [grid-area:1/-1] dark:bg-slate-950/80 dark:ring-gray-500"
+                    class="relative top-11 z-12 flex w-51 flex-col gap-3 self-start justify-self-center rounded-lg bg-white/50 p-3 text-xs whitespace-nowrap ring-1 [grid-area:1/-1] dark:bg-slate-950/80 dark:ring-gray-500"
                 >
                     {{-- Header --}}
                     <div>
@@ -94,7 +94,9 @@
                     <div
                         class="php-dashed-border grid place-items-center gap-3 rounded-lg px-2 pt-4 pb-2"
                     >
-                        <div class="font-medium text-gray-800 dark:text-white">
+                        <div
+                            class="text-sm font-medium text-gray-800 dark:text-white"
+                        >
                             PHP Runtime
                         </div>
 
@@ -111,8 +113,9 @@
 
                     {{-- Core --}}
                     <div class="flex items-center gap-2">
+                        {{-- Left --}}
                         <div
-                            class="relative grid w-1/2 place-items-center rounded-lg bg-purple-200/60 px-3 py-7 dark:bg-violet-400/20"
+                            class="relative grid w-1/2 place-items-center rounded-lg bg-purple-200 px-3 py-7 dark:bg-violet-400/60"
                         >
                             <div
                                 class="flex flex-col gap-0.5 text-center font-medium text-gray-700 capitalize dark:text-white"
@@ -122,8 +125,10 @@
                                 <div>functions</div>
                             </div>
                         </div>
+
+                        {{-- Right --}}
                         <div
-                            class="relative grid w-1/2 place-items-center rounded-lg bg-lime-200/60 px-3 py-7 dark:bg-[#d7ff83]/30"
+                            class="relative grid w-1/2 place-items-center rounded-lg bg-[#d7f7a0] px-3 py-7 dark:bg-teal-300/70"
                         >
                             <div
                                 class="flex flex-col gap-0.5 text-center font-medium text-gray-700 capitalize dark:text-white"
@@ -137,9 +142,11 @@
 
                     {{-- WebView --}}
                     <div
-                        class="grid place-items-center gap-3 rounded-lg p-4 ring-1"
+                        class="grid place-items-center gap-2 rounded-lg p-5 ring-1 dark:ring-white/25"
                     >
-                        <div class="font-medium text-gray-800 dark:text-white">
+                        <div
+                            class="text-sm font-medium text-gray-800 dark:text-white"
+                        >
                             Native WebView
                         </div>
 
