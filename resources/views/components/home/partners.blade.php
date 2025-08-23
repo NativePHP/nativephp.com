@@ -96,25 +96,27 @@
                 {{-- Become a partner button --}}
                 <div class="w-full lg:w-auto">
                     <div
-                        class="flex flex-col items-center gap-5 rounded-xl bg-gradient-to-tl from-[#d7ff83] to-[#ebeeb7] p-6 text-gray-800 sm:flex-row lg:flex-col"
+                        class="flex flex-col items-center gap-5 rounded-xl bg-gradient-to-tl from-[#d7ff83] to-[#ebeeb7] p-6 sm:flex-row lg:flex-col xl:flex-row dark:from-black dark:via-gray-950 dark:to-gray-900"
                     >
                         <div
-                            class="flex flex-col gap-1 text-center text-pretty"
+                            class="flex flex-col gap-1 text-center text-pretty xl:text-left"
                         >
-                            <div class="text-lg font-semibold">
+                            <div
+                                class="text-lg font-semibold text-gray-800 dark:text-white"
+                            >
                                 Get more from NativePHP as a partner!
                             </div>
-                            <p class="text-sm opacity-70">
+                            <p class="text-sm text-gray-600 dark:text-zinc-400">
                                 Our Partners are helping us bring NativePHP to
                                 everyone and getting some incredible benefits to
-                                boot
+                                boot.
                             </p>
                         </div>
 
                         <a
                             href="/docs/getting-started/sponsoring"
                             aria-label="Learn about sponsoring the NativePHP project"
-                            class="group flex w-full items-center justify-center gap-2.5 rounded-xl bg-white/50 px-6 py-2.5 transition duration-300 hover:bg-white/80 sm:w-auto"
+                            class="group flex w-full items-center justify-center gap-2.5 rounded-xl bg-white/50 px-6 py-2.5 transition duration-300 hover:bg-white/80 sm:w-auto dark:bg-[#d7ff83] dark:text-black dark:hover:bg-lime-300"
                         >
                             <div>Join</div>
 
