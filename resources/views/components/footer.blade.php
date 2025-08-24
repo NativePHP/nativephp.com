@@ -37,12 +37,10 @@
                 <a
                     href="/"
                     class="transition duration-200 will-change-transform hover:scale-[1.02]"
-                    aria-label="NativePHP homepage"
                 >
                     <x-logo
                         class="h-6"
                         aria-hidden="true"
-                        alt="NativePHP Logo"
                     />
                     <span class="sr-only">NativePHP homepage</span>
                 </a>
@@ -107,14 +105,17 @@
                     <div class="flex items-center gap-5 text-sm">
                         <div class="flex flex-col items-center gap-2">
                             {{-- Icon --}}
-                            <x-icons.email-document class="size-7 shrink-0" />
+                            <x-icons.email-document
+                                aria-hidden="true"
+                                class="size-7 shrink-0"
+                            />
 
                             {{-- Title --}}
-                            <h2
+                            <span
                                 class="transition duration-300 will-change-transform group-hover:scale-105"
                             >
                                 Newsletter
-                            </h2>
+                            </span>
                         </div>
 
                         {{-- Message --}}
@@ -145,6 +146,7 @@
                             )
                         }
                     "
+                        aria-hidden="true"
                         class="size-4 shrink-0"
                     />
                 </a>
@@ -175,15 +177,22 @@
             "
         >
             {{-- Column --}}
-            <div class="flex grow flex-col items-start gap-1 sm:grow-0">
-                <h2 class="font-medium">Explore</h2>
+            <section
+                class="flex grow flex-col items-start gap-1 sm:grow-0"
+                aria-labelledby="footer-explore-heading"
+            >
+                <h3
+                    id="footer-explore-heading"
+                    class="font-medium"
+                >
+                    Explore
+                </h3>
                 <ul
                     class="flex flex-col items-start text-sm text-gray-500 dark:text-gray-400"
                 >
                     <li>
                         <a
                             href="{{ route('welcome') }}"
-                            aria-label="Home"
                             class="inline-block px-px py-1.5 transition duration-300 will-change-transform hover:translate-x-1 hover:text-gray-700 dark:hover:text-gray-300"
                         >
                             Home
@@ -192,7 +201,6 @@
                     <li>
                         <a
                             href="{{ route('blog') }}"
-                            aria-label="Blog"
                             class="inline-block px-px py-1.5 transition duration-300 will-change-transform hover:translate-x-1 hover:text-gray-700 dark:hover:text-gray-300"
                         >
                             Blog
@@ -201,7 +209,6 @@
                     <li>
                         <a
                             href="https://shop.nativephp.com/"
-                            aria-label="NativePHP Shop"
                             class="inline-block px-px py-1.5 transition duration-300 will-change-transform hover:translate-x-1 hover:text-gray-700 dark:hover:text-gray-300"
                         >
                             Shop
@@ -210,7 +217,6 @@
                     <li>
                         <a
                             href="https://bifrost.nativephp.com/"
-                            aria-label="Bifrost"
                             class="inline-block px-px py-1.5 transition duration-300 will-change-transform hover:translate-x-1 hover:text-gray-700 dark:hover:text-gray-300"
                         >
                             Bifrost
@@ -219,7 +225,6 @@
                     <li>
                         <a
                             href="{{ route('privacy-policy') }}"
-                            aria-label="Privacy Policy"
                             class="inline-block px-px py-1.5 transition duration-300 will-change-transform hover:translate-x-1 hover:text-gray-700 dark:hover:text-gray-300"
                         >
                             Privacy Policy
@@ -228,25 +233,31 @@
                     <li>
                         <a
                             href="{{ route('terms-of-service') }}"
-                            aria-label="Terms of Service"
                             class="inline-block px-px py-1.5 transition duration-300 will-change-transform hover:translate-x-1 hover:text-gray-700 dark:hover:text-gray-300"
                         >
                             Terms of Service
                         </a>
                     </li>
                 </ul>
-            </div>
+            </section>
 
             {{-- Column --}}
-            <div class="flex grow flex-col items-start gap-1 sm:grow-0">
-                <h2 class="font-medium">Mobile</h2>
+            <section
+                class="flex grow flex-col items-start gap-1 sm:grow-0"
+                aria-labelledby="footer-mobile-heading"
+            >
+                <h3
+                    id="footer-mobile-heading"
+                    class="font-medium"
+                >
+                    Mobile
+                </h3>
                 <ul
                     class="flex flex-col items-start text-sm text-gray-500 dark:text-gray-400"
                 >
                     <li>
                         <a
                             href="/docs/mobile/1/getting-started/introduction"
-                            aria-label="Mobile Documentation"
                             class="inline-block px-px py-1.5 transition duration-300 will-change-transform hover:translate-x-1 hover:text-gray-700 dark:hover:text-gray-300"
                         >
                             Documentation
@@ -255,7 +266,6 @@
                     <li>
                         <a
                             href="{{ route('pricing') }}"
-                            aria-label="Pricing"
                             class="inline-block px-px py-1.5 transition duration-300 will-change-transform hover:translate-x-1 hover:text-gray-700 dark:hover:text-gray-300"
                         >
                             Pricing
@@ -264,25 +274,31 @@
                     <li>
                         <a
                             href="https://github.com/nativephp"
-                            aria-label="GitHub"
                             class="inline-block px-px py-1.5 transition duration-300 will-change-transform hover:translate-x-1 hover:text-gray-700 dark:hover:text-gray-300"
                         >
                             GitHub
                         </a>
                     </li>
                 </ul>
-            </div>
+            </section>
 
             {{-- Column --}}
-            <div class="flex grow flex-col items-start gap-1 sm:grow-0">
-                <h2 class="font-medium">Desktop</h2>
+            <section
+                class="flex grow flex-col items-start gap-1 sm:grow-0"
+                aria-labelledby="footer-desktop-heading"
+            >
+                <h3
+                    id="footer-desktop-heading"
+                    class="font-medium"
+                >
+                    Desktop
+                </h3>
                 <ul
                     class="flex flex-col items-start text-sm text-gray-500 dark:text-gray-400"
                 >
                     <li>
                         <a
                             href="/docs/desktop/1/getting-started/introduction"
-                            aria-label="Desktop Documentation"
                             class="inline-block px-px py-1.5 transition duration-300 will-change-transform hover:translate-x-1 hover:text-gray-700 dark:hover:text-gray-300"
                         >
                             Documentation
@@ -291,7 +307,6 @@
                     <li>
                         <a
                             href="{{ route('sponsoring') }}"
-                            aria-label="Sponsoring"
                             class="inline-block px-px py-1.5 transition duration-300 will-change-transform hover:translate-x-1 hover:text-gray-700 dark:hover:text-gray-300"
                         >
                             Sponsoring
@@ -300,14 +315,13 @@
                     <li>
                         <a
                             href="https://github.com/nativephp"
-                            aria-label="GitHub"
                             class="inline-block px-px py-1.5 transition duration-300 will-change-transform hover:translate-x-1 hover:text-gray-700 dark:hover:text-gray-300"
                         >
                             GitHub
                         </a>
                     </li>
                 </ul>
-            </div>
+            </section>
         </nav>
     </div>
 
@@ -351,8 +365,8 @@
                 <a
                     href="https://zahirnia.com"
                     target="_blank"
+                    rel="noopener noreferrer"
                     class="group relative font-medium text-black/80 transition duration-200 hover:text-black dark:text-white/80 dark:hover:text-white"
-                    aria-label="Hassan's website"
                 >
                     Hassan Zahirnia
                     <div
@@ -369,7 +383,6 @@
                     href="https://x.com/caneco"
                     target="_blank"
                     class="group relative font-medium text-black/80 transition duration-200 hover:text-black dark:text-white/80 dark:hover:text-white"
-                    aria-label="Caneco's Twitter profile"
                     rel="noopener noreferrer"
                 >
                     Caneco
