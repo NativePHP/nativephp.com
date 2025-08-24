@@ -423,12 +423,15 @@
             </p>
 
             <div
-                class="flex flex-wrap items-start gap-x-2.5 gap-y-3 2xl:gap-x-3"
+                class="flex flex-wrap items-start gap-x-2.5 gap-y-3 [--icon-bg:#F9FBF0] [--icon-stroke:#717838] 2xl:gap-x-3 dark:[--icon-bg:--alpha(var(--color-slate-400)/30%)] dark:[--icon-stroke:--alpha(var(--color-white)/60%)]"
             >
                 @php
                     $categories = [
                         ['name' => 'SaaS clients', 'icon' => 'icons.home.web'],
                         ['name' => 'Games', 'icon' => 'icons.home.game'],
+                        ['name' => 'eCommerce', 'icon' => 'icons.home.shop'],
+                        ['name' => 'Social apps', 'icon' => 'icons.home.social'],
+                        ['name' => 'Field services', 'icon' => 'icons.home.wrench'],
                     ];
                 @endphp
 
