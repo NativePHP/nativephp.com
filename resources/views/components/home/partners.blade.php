@@ -3,9 +3,9 @@
     aria-labelledby="sponsors-title"
     role="region"
 >
-    <div class="dark:bg-mirage rounded-2xl bg-gray-200/60 p-8 md:p-10">
+    <div class="rounded-2xl bg-gray-200/60 p-8 md:p-10 dark:bg-mirage">
         <div
-            class="2xs:text-left 2xs:items-start flex flex-col items-center gap-1 text-center text-pretty"
+            class="flex flex-col items-center gap-1 text-center text-pretty 2xs:items-start 2xs:text-left"
         >
             <h2
                 id="sponsors-title"
@@ -99,7 +99,7 @@
                 {{-- Become a partner button --}}
                 <div class="w-full lg:w-auto">
                     <div
-                        class="flex flex-col items-center gap-5 rounded-xl bg-gradient-to-tl from-[#d7ff83] to-[#ebeeb7] p-6 sm:flex-row lg:flex-col xl:flex-row dark:from-black dark:via-gray-950 dark:to-gray-900"
+                        class="flex flex-col items-center gap-5 rounded-xl bg-gradient-to-tl from-[#d7ff83] to-[#ebeeb7] p-6 sm:flex-row lg:flex-col xl:flex-row dark:from-black dark:via-gray-950 dark:to-gray-800/50"
                     >
                         <div
                             class="flex flex-col gap-1 text-center text-pretty xl:text-left"

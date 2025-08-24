@@ -107,5 +107,37 @@
                 accurately.
             </p>
         </header>
+
+        {{-- List --}}
+        <div
+            class="mx-auto mt-10 flex w-full max-w-md flex-col items-stretch gap-5"
+        >
+            {{-- Primary logo --}}
+            <div class="flex flex-col items-center gap-5">
+                {{-- Asset --}}
+                <div
+                    class="grid h-50 w-full place-items-center rounded-xl bg-white p-5 ring-1 ring-gray-300"
+                >
+                    <img
+                        src="/brand-assets/logo/nativephp.svg"
+                        alt=""
+                        loading="lazy"
+                        class="h-8"
+                    />
+                </div>
+
+                {{-- Download button --}}
+                <div class="flex w-full justify-center">
+                    <a
+                        href="/brand-assets/logo/nativephp.svg"
+                        download
+                        class="inline-flex items-center gap-2 rounded-xl bg-haiti py-3 pr-5 pl-3.5 text-sm font-medium text-white shadow-sm transition duration-200 hover:bg-gray-800"
+                    >
+                        <x-icons.download class="size-5" />
+                        <div>Download</div>
+                    </a>
+                </div>
+            </div>
+        </div>
     </section>
 </x-layout>
