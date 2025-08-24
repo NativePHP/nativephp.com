@@ -2,6 +2,7 @@
     class="mt-5"
     aria-labelledby="sponsors-title"
 >
+    {{-- Part 1 --}}
     <div class="flex flex-col gap-5 lg:flex-row">
         {{-- How does it work --}}
         <div
@@ -324,6 +325,69 @@
                             <x-dynamic-component :component="$skill['icon']" />
                         </x-home.skill-pill>
                     @endforeach
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {{-- Part 2 --}}
+    <div class="mt-5 flex gap-5">
+        {{-- Left side --}}
+        <div
+            class="dark:bg-mirage w-full max-w-md rounded-2xl bg-gray-200/60 p-8 md:p-10"
+        >
+            {{-- Header --}}
+            <div
+                class="2xs:items-start 2xs:text-left flex flex-col items-center gap-1 text-center text-pretty"
+            >
+                <h3 class="text-lg text-gray-600 lg:text-xl dark:text-zinc-400">
+                    Step by step
+                </h3>
+                <h2
+                    class="text-xl font-bold text-gray-800 lg:text-2xl dark:text-white"
+                >
+                    How do I get it?
+                </h2>
+            </div>
+
+            {{-- Steps --}}
+            <div class="mt-5 flex flex-col gap-3">
+                <div
+                    class="flex items-center gap-3 rounded-2xl bg-white/50 p-3 font-medium dark:bg-slate-950/30"
+                >
+                    <div
+                        class="grid size-10 place-items-center rounded-xl bg-blue-100 dark:bg-blue-500/20"
+                    >
+                        <x-icons.home.document class="size-5" />
+                    </div>
+                    <h6 class="text-gray-400 dark:text-zinc-400">1.</h6>
+                    <h5 class="text-gray-800 dark:text-white">Read the docs</h5>
+                </div>
+                <div
+                    class="flex items-center gap-3 rounded-2xl bg-white/50 p-3 font-medium dark:bg-slate-950/30"
+                >
+                    <div
+                        class="grid size-10 place-items-center rounded-xl bg-violet-100 dark:bg-violet-500/20"
+                    >
+                        <x-icons.home.browser class="size-5" />
+                    </div>
+                    <h6 class="text-gray-400 dark:text-zinc-400">2.</h6>
+                    <h5 class="text-gray-800 dark:text-white">
+                        Install the package.
+                    </h5>
+                </div>
+                <div
+                    class="flex items-center gap-3 rounded-2xl bg-white/50 p-3 font-medium dark:bg-slate-950/30"
+                >
+                    <div
+                        class="grid size-10 place-items-center rounded-xl bg-cyan-100 dark:bg-cyan-500/20"
+                    >
+                        <x-icons.home.startup class="size-5" />
+                    </div>
+                    <h6 class="text-gray-400 dark:text-zinc-400">3.</h6>
+                    <h5 class="text-gray-800 dark:text-white">
+                        Build your app.
+                    </h5>
                 </div>
             </div>
         </div>
