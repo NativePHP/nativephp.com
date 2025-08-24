@@ -227,38 +227,119 @@
             </div>
         </div>
 
-        {{-- Performance --}}
-        <div class="grid grid-cols-2 items-center gap-5">
-            <div
-                class="dark:from-mirage flex flex-col gap-3 rounded-2xl bg-gradient-to-tl from-[#FEF3C6] to-[#FFFBEB] p-6 dark:to-slate-700/40"
-            >
-                <x-icons.home.charging-thunder
-                    class="size-12 text-yellow-400"
-                />
-                <div class="flex flex-col gap-1">
-                    <h3
-                        class="text-xl font-semibold text-gray-800 dark:text-white"
-                    >
-                        Fast apps
-                    </h3>
-                    <h4 class="text-gray-600 dark:text-zinc-400">
-                        Laravel running at native speed
-                    </h4>
+        <div class="flex flex-col gap-5">
+            {{-- Performance --}}
+            <div class="grid grid-cols-2 items-center gap-5">
+                <div
+                    class="dark:from-mirage flex flex-col gap-3 rounded-2xl bg-gradient-to-tl from-[#FEF3C6] to-[#FFFBEB] p-6 dark:to-slate-700/40"
+                >
+                    <x-icons.home.charging-thunder
+                        class="size-12 text-yellow-400"
+                    />
+                    <div class="flex flex-col gap-1">
+                        <h3
+                            class="text-xl font-semibold text-gray-800 dark:text-white"
+                        >
+                            Fast apps
+                        </h3>
+                        <h4 class="text-gray-600 dark:text-zinc-400">
+                            Laravel running at native speed
+                        </h4>
+                    </div>
+                </div>
+                <div
+                    class="dark:from-mirage flex flex-col gap-3 rounded-2xl bg-gradient-to-tl from-[#ECFCCA] to-[#F7FEE7] p-6 dark:to-slate-700/40"
+                >
+                    <x-icons.home.rocket class="size-12 text-lime-400" />
+                    <div class="flex flex-col gap-1">
+                        <h3
+                            class="text-xl font-semibold text-gray-800 dark:text-white"
+                        >
+                            Tiny apps
+                        </h3>
+                        <h4 class="text-gray-600 dark:text-zinc-400">
+                            Mobile apps under 50mb
+                        </h4>
+                    </div>
                 </div>
             </div>
+
+            {{-- Tools --}}
             <div
-                class="dark:from-mirage flex flex-col gap-3 rounded-2xl bg-gradient-to-tl from-[#ECFCCA] to-[#F7FEE7] p-6 dark:to-slate-700/40"
+                class="dark:from-mirage flex flex-col gap-4 rounded-2xl bg-gradient-to-tl from-[#DBDCFB] to-[#F9FAFB] p-6 dark:to-slate-700/40"
             >
-                <x-icons.home.rocket class="size-12 text-lime-400" />
                 <div class="flex flex-col gap-1">
                     <h3
                         class="text-xl font-semibold text-gray-800 dark:text-white"
                     >
-                        Tiny apps
+                        Bring your favorite tools
                     </h3>
                     <h4 class="text-gray-600 dark:text-zinc-400">
-                        Mobile apps under 50mb
+                        Use any Composer packages and front-end frameworks
                     </h4>
+                </div>
+
+                <div class="flex flex-wrap items-start gap-x-2.5 gap-y-3">
+                    <x-home.skill-pill
+                        name="Laravel"
+                        link="https://laravel.com/"
+                    >
+                        <x-icons.skills.laravel />
+                    </x-home.skill-pill>
+                    <x-home.skill-pill
+                        name="React"
+                        link="https://reactjs.org/"
+                    >
+                        <x-icons.skills.reactjs />
+                    </x-home.skill-pill>
+                    <x-home.skill-pill
+                        name="Next.js"
+                        link="https://nextjs.org/"
+                    >
+                        <x-icons.skills.nextjs />
+                    </x-home.skill-pill>
+                    <x-home.skill-pill
+                        name="Nuxt"
+                        link="https://nuxtjs.org/"
+                    >
+                        <x-icons.skills.nuxtjs />
+                    </x-home.skill-pill>
+                    <x-home.skill-pill
+                        name="Vue.js"
+                        link="https://vuejs.org/"
+                    >
+                        <x-icons.skills.vuejs />
+                    </x-home.skill-pill>
+                    <x-home.skill-pill
+                        name="Livewire"
+                        link="https://livewire.laravel.com"
+                    >
+                        <x-icons.skills.livewire />
+                    </x-home.skill-pill>
+                    <x-home.skill-pill
+                        name="Alpine.js"
+                        link="https://alpinejs.dev/"
+                    >
+                        <x-icons.skills.alpinejs />
+                    </x-home.skill-pill>
+                    <x-home.skill-pill
+                        name="TailwindCSS"
+                        link="https://tailwindcss.com/"
+                    >
+                        <x-icons.skills.tailwind-css />
+                    </x-home.skill-pill>
+                    <x-home.skill-pill
+                        name="FilamentPHP"
+                        link="https://filamentphp.com/"
+                    >
+                        <x-icons.skills.filamentphp />
+                    </x-home.skill-pill>
+                    <x-home.skill-pill
+                        name="Inertia.js"
+                        link="https://inertiajs.com/"
+                    >
+                        <x-icons.skills.inertiajs />
+                    </x-home.skill-pill>
                 </div>
             </div>
         </div>
