@@ -236,7 +236,7 @@
             {{-- Performance --}}
             <div class="xs:grid-cols-2 grid items-stretch gap-5">
                 <div
-                    class="dark:from-mirage 2xs:items-start flex flex-col items-center gap-3 rounded-2xl bg-gradient-to-tl from-[#FEF3C6] to-[#FFFBEB] p-7 2xl:gap-4 2xl:p-8 dark:to-slate-700/40"
+                    class="dark:from-mirage 2xs:items-start dark:to-mirage flex flex-col items-center gap-3 rounded-2xl bg-gradient-to-tl from-[#FEF3C6] to-[#FFFBEB] p-7 2xl:gap-4 2xl:p-8"
                 >
                     <x-icons.home.charging-thunder
                         class="size-12 text-yellow-400 2xl:size-14 dark:text-amber-300"
@@ -257,7 +257,7 @@
                     </div>
                 </div>
                 <div
-                    class="dark:from-mirage 2xs:items-start flex flex-col items-center gap-3 rounded-2xl bg-gradient-to-tl from-[#ECFCCA] to-[#F7FEE7] p-7 2xl:gap-4 2xl:p-8 dark:to-slate-700/40"
+                    class="dark:from-mirage 2xs:items-start dark:to-mirage flex flex-col items-center gap-3 rounded-2xl bg-gradient-to-tl from-[#ECFCCA] to-[#F7FEE7] p-7 2xl:gap-4 2xl:p-8"
                 >
                     <x-icons.home.rocket
                         class="size-12 text-lime-400 2xl:size-14 dark:text-lime-300"
@@ -281,7 +281,7 @@
 
             {{-- Tools --}}
             <div
-                class="dark:from-mirage flex flex-col gap-4 rounded-2xl bg-gradient-to-tl from-[#DBDCFB] to-[#F9FAFB] p-7 2xl:p-8 dark:to-slate-700/40"
+                class="dark:from-mirage dark:to-mirage flex flex-col gap-4 rounded-2xl bg-gradient-to-tl from-[#DBDCFB] to-[#F9FAFB] p-7 2xl:p-8"
             >
                 <div
                     class="2xs:items-start 2xs:text-left flex flex-col items-center gap-1 text-center text-pretty"
@@ -297,7 +297,7 @@
                 </div>
 
                 <div
-                    class="flex flex-wrap items-start gap-x-2.5 gap-y-3 2xl:gap-x-3"
+                    class="flex flex-wrap items-start gap-x-2.5 gap-y-3 lg:pt-2 2xl:gap-x-3"
                 >
                     @php
                         $skills = [
