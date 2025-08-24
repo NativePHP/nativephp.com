@@ -9,7 +9,7 @@
         Footer
     </h2>
     <div
-        class="flex flex-col flex-wrap items-end gap-x-6 gap-y-4 md:flex-row md:justify-between"
+        class="flex flex-col flex-wrap gap-x-6 gap-y-4 md:flex-row md:items-end md:justify-between"
     >
         {{-- Left side --}}
         <div class="flex flex-col items-center gap-6 md:items-start">
@@ -95,7 +95,7 @@
             >
                 <a
                     href="/newsletter"
-                    class="group dark:bg-mirage dark:hover:bg-haiti dark:hover:ring-cloud relative z-0 flex items-center gap-6 overflow-hidden rounded-2xl bg-cyan-50/50 py-5 pr-7 pl-6 ring-1 ring-black/5 transition duration-300 ease-in-out hover:bg-cyan-50 hover:ring-black/10 md:max-w-lg"
+                    class="group dark:bg-mirage dark:hover:bg-haiti dark:hover:ring-cloud relative z-0 flex max-w-105 items-center gap-6 overflow-hidden rounded-2xl bg-cyan-50/50 py-5 pr-7 pl-6 ring-1 ring-black/5 transition duration-300 ease-in-out hover:bg-cyan-50 hover:ring-black/10"
                 >
                     {{-- Decorative circle --}}
                     <div
@@ -119,7 +119,7 @@
 
                         {{-- Message --}}
                         <p
-                            class="leading-relaxed opacity-50 transition duration-300 will-change-transform group-hover:translate-x-0.5"
+                            class="leading-relaxed opacity-70 transition duration-300 will-change-transform group-hover:translate-x-0.5"
                         >
                             Get the latest NativePHP updates and news delivered
                             to your inbox.
@@ -153,7 +153,7 @@
 
         {{-- Right side --}}
         <nav
-            class="flex flex-1 flex-wrap justify-center gap-x-10 gap-y-3 lg:justify-around"
+            class="flex w-full flex-wrap justify-center gap-x-5 gap-y-3 sm:w-auto lg:justify-around"
             aria-label="Footer navigation"
         >
             {{-- Column --}}
@@ -187,6 +187,33 @@
                             class="inline-block px-px py-1.5 transition duration-300 will-change-transform hover:translate-x-1 hover:text-gray-300"
                         >
                             Shop
+                        </a>
+                    </li>
+                    <li>
+                        <a
+                            href="https://bifrost.nativephp.com/"
+                            aria-label="Bifrost"
+                            class="inline-block px-px py-1.5 transition duration-300 will-change-transform hover:translate-x-1 hover:text-gray-300"
+                        >
+                            Bifrost
+                        </a>
+                    </li>
+                    <li>
+                        <a
+                            href="{{ route('privacy-policy') }}"
+                            aria-label="Privacy Policy"
+                            class="inline-block px-px py-1.5 transition duration-300 will-change-transform hover:translate-x-1 hover:text-gray-300"
+                        >
+                            Privacy Policy
+                        </a>
+                    </li>
+                    <li>
+                        <a
+                            href="{{ route('terms-of-service') }}"
+                            aria-label="Terms of Service"
+                            class="inline-block px-px py-1.5 transition duration-300 will-change-transform hover:translate-x-1 hover:text-gray-300"
+                        >
+                            Terms of Service
                         </a>
                     </li>
                 </ul>
@@ -259,42 +286,6 @@
                             class="inline-block px-px py-1.5 transition duration-300 will-change-transform hover:translate-x-1 hover:text-gray-300"
                         >
                             GitHub
-                        </a>
-                    </li>
-                </ul>
-            </div>
-
-            {{-- Column --}}
-            <div class="flex grow flex-col items-start gap-1 sm:grow-0">
-                <h2 class="text-lg font-medium">Company</h2>
-                <ul
-                    class="flex flex-col items-start text-sm text-gray-500 dark:text-gray-400"
-                >
-                    <li>
-                        <a
-                            href="https://bifrost.nativephp.com/"
-                            aria-label="Bifrost"
-                            class="inline-block px-px py-1.5 transition duration-300 will-change-transform hover:translate-x-1 hover:text-gray-300"
-                        >
-                            Bifrost
-                        </a>
-                    </li>
-                    <li>
-                        <a
-                            href="{{ route('privacy-policy') }}"
-                            aria-label="Privacy Policy"
-                            class="inline-block px-px py-1.5 transition duration-300 will-change-transform hover:translate-x-1 hover:text-gray-300"
-                        >
-                            Privacy Policy
-                        </a>
-                    </li>
-                    <li>
-                        <a
-                            href="{{ route('terms-of-service') }}"
-                            aria-label="Terms of Service"
-                            class="inline-block px-px py-1.5 transition duration-300 will-change-transform hover:translate-x-1 hover:text-gray-300"
-                        >
-                            Terms of Service
                         </a>
                     </li>
                 </ul>
