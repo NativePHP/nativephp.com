@@ -10,7 +10,9 @@
             {{-- Left side --}}
             <div class="relative z-10 flex flex-col gap-5 pl-5">
                 {{-- Header --}}
-                <div class="flex flex-col gap-1">
+                <div
+                    class="2xs:items-start 2xs:text-left flex flex-col items-center gap-1 text-center text-pretty"
+                >
                     <h3
                         class="text-lg text-gray-600 lg:text-xl dark:text-zinc-400"
                     >
@@ -232,12 +234,14 @@
             {{-- Performance --}}
             <div class="xs:grid-cols-2 grid items-stretch gap-5">
                 <div
-                    class="dark:from-mirage flex flex-col gap-3 rounded-2xl bg-gradient-to-tl from-[#FEF3C6] to-[#FFFBEB] p-7 2xl:gap-4 2xl:p-8 dark:to-slate-700/40"
+                    class="dark:from-mirage 2xs:items-start flex flex-col items-center gap-3 rounded-2xl bg-gradient-to-tl from-[#FEF3C6] to-[#FFFBEB] p-7 2xl:gap-4 2xl:p-8 dark:to-slate-700/40"
                 >
                     <x-icons.home.charging-thunder
                         class="size-12 text-yellow-400 2xl:size-14"
                     />
-                    <div class="flex flex-col gap-1">
+                    <div
+                        class="2xs:items-start 2xs:text-left flex flex-col items-center gap-1 text-center text-pretty"
+                    >
                         <h3
                             class="text-xl font-semibold text-gray-800 2xl:text-2xl dark:text-white"
                         >
@@ -251,12 +255,14 @@
                     </div>
                 </div>
                 <div
-                    class="dark:from-mirage flex flex-col gap-3 rounded-2xl bg-gradient-to-tl from-[#ECFCCA] to-[#F7FEE7] p-7 2xl:gap-4 2xl:p-8 dark:to-slate-700/40"
+                    class="dark:from-mirage 2xs:items-start flex flex-col items-center gap-3 rounded-2xl bg-gradient-to-tl from-[#ECFCCA] to-[#F7FEE7] p-7 2xl:gap-4 2xl:p-8 dark:to-slate-700/40"
                 >
                     <x-icons.home.rocket
                         class="size-12 text-lime-400 2xl:size-14"
                     />
-                    <div class="flex flex-col gap-1">
+                    <div
+                        class="2xs:items-start 2xs:text-left flex flex-col items-center gap-1 text-center text-pretty"
+                    >
                         <h3
                             class="text-xl font-semibold text-gray-800 2xl:text-2xl dark:text-white"
                         >
@@ -275,7 +281,9 @@
             <div
                 class="dark:from-mirage flex flex-col gap-4 rounded-2xl bg-gradient-to-tl from-[#DBDCFB] to-[#F9FAFB] p-7 2xl:p-8 dark:to-slate-700/40"
             >
-                <div class="flex flex-col gap-1">
+                <div
+                    class="2xs:items-start 2xs:text-left flex flex-col items-center gap-1 text-center text-pretty"
+                >
                     <h3
                         class="text-xl font-semibold text-gray-800 2xl:text-2xl dark:text-white"
                     >

@@ -3,7 +3,9 @@
     aria-labelledby="sponsors-title"
 >
     <div class="dark:bg-mirage rounded-2xl bg-gray-200/60 p-8 md:p-10">
-        <div class="flex flex-col gap-1">
+        <div
+            class="2xs:text-left 2xs:items-start flex flex-col items-center gap-1 text-center text-pretty"
+        >
             <h2
                 id="sponsors-title"
                 class="text-2xl font-bold text-gray-800 lg:text-3xl dark:text-white"
@@ -15,7 +17,7 @@
             </h3>
         </div>
 
-        <div class="mt-7 flex flex-wrap gap-5 lg:flex-nowrap">
+        <div class="mt-5 flex flex-wrap gap-5 lg:mt-7 lg:flex-nowrap">
             {{-- Featured partners --}}
             <div
                 class="grid w-full grid-cols-1 gap-5 md:grid-cols-[repeat(auto-fill,minmax(15rem,1fr))] lg:w-auto lg:grid-cols-1"
