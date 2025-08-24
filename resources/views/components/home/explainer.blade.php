@@ -232,10 +232,10 @@
             {{-- Performance --}}
             <div class="xs:grid-cols-2 grid items-stretch gap-5">
                 <div
-                    class="dark:from-mirage flex flex-col gap-3 rounded-2xl bg-gradient-to-tl from-[#FEF3C6] to-[#FFFBEB] p-7 dark:to-slate-700/40"
+                    class="dark:from-mirage flex flex-col gap-3 rounded-2xl bg-gradient-to-tl from-[#FEF3C6] to-[#FFFBEB] p-7 2xl:gap-4 2xl:p-8 dark:to-slate-700/40"
                 >
                     <x-icons.home.charging-thunder
-                        class="size-12 text-yellow-400"
+                        class="size-12 text-yellow-400 2xl:size-14"
                     />
                     <div class="flex flex-col gap-1">
                         <h3
@@ -251,9 +251,11 @@
                     </div>
                 </div>
                 <div
-                    class="dark:from-mirage flex flex-col gap-3 rounded-2xl bg-gradient-to-tl from-[#ECFCCA] to-[#F7FEE7] p-7 dark:to-slate-700/40"
+                    class="dark:from-mirage flex flex-col gap-3 rounded-2xl bg-gradient-to-tl from-[#ECFCCA] to-[#F7FEE7] p-7 2xl:gap-4 2xl:p-8 dark:to-slate-700/40"
                 >
-                    <x-icons.home.rocket class="size-12 text-lime-400" />
+                    <x-icons.home.rocket
+                        class="size-12 text-lime-400 2xl:size-14"
+                    />
                     <div class="flex flex-col gap-1">
                         <h3
                             class="text-xl font-semibold text-gray-800 2xl:text-2xl dark:text-white"
@@ -271,7 +273,7 @@
 
             {{-- Tools --}}
             <div
-                class="dark:from-mirage flex flex-col gap-4 rounded-2xl bg-gradient-to-tl from-[#DBDCFB] to-[#F9FAFB] p-7 dark:to-slate-700/40"
+                class="dark:from-mirage flex flex-col gap-4 rounded-2xl bg-gradient-to-tl from-[#DBDCFB] to-[#F9FAFB] p-7 2xl:p-8 dark:to-slate-700/40"
             >
                 <div class="flex flex-col gap-1">
                     <h3
@@ -284,7 +286,9 @@
                     </h4>
                 </div>
 
-                <div class="flex flex-wrap items-start gap-x-2.5 gap-y-3">
+                <div
+                    class="flex flex-wrap items-start gap-x-2.5 gap-y-3 2xl:gap-x-3 2xl:gap-y-3.5"
+                >
                     @php
                         $skills = [
                             ['name' => 'Laravel', 'link' => 'https://laravel.com/', 'icon' => 'icons.skills.laravel'],
@@ -297,6 +301,10 @@
                             ['name' => 'Alpine.js', 'link' => 'https://alpinejs.dev/', 'icon' => 'icons.skills.alpinejs'],
                             ['name' => 'Inertia.js', 'link' => 'https://inertiajs.com/', 'icon' => 'icons.skills.inertiajs'],
                             ['name' => 'TailwindCSS', 'link' => 'https://tailwindcss.com/', 'icon' => 'icons.skills.tailwind-css'],
+                            ['name' => 'TypeScript', 'link' => 'https://www.typescriptlang.org/', 'icon' => 'icons.skills.typescript'],
+                            ['name' => 'JavaScript', 'link' => 'https://www.javascript.com/', 'icon' => 'icons.skills.javascript'],
+                            ['name' => 'Pest', 'link' => 'https://pestphp.com/', 'icon' => 'icons.skills.pest'],
+                            ['name' => 'PHPUnit', 'link' => 'https://phpunit.de/', 'icon' => 'icons.skills.phpunit'],
                         ];
                     @endphp
 
