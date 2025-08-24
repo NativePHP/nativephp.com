@@ -1,5 +1,5 @@
 <footer
-    class="mx-auto max-w-5xl px-5 pb-5 pt-20 xl:max-w-7xl 2xl:max-w-360"
+    class="mx-auto max-w-5xl px-5 pt-20 pb-5 xl:max-w-7xl 2xl:max-w-360"
     aria-labelledby="footer-heading"
 >
     <h2
@@ -9,7 +9,7 @@
         Footer
     </h2>
     <div
-        class="flex flex-col flex-wrap items-center gap-x-6 gap-y-4 md:flex-row md:justify-between"
+        class="flex flex-col flex-wrap items-end gap-x-6 gap-y-4 md:flex-row md:justify-between"
     >
         {{-- Left side --}}
         <div class="flex flex-col items-center gap-6 md:items-start">
@@ -72,64 +72,63 @@
             >
                 <x-social-networks-all />
             </nav>
-        </div>
 
-        {{-- Newsletter --}}
-        <div
-            x-init="
-                () => {
-                    motion.inView($el, (element) => {
-                        motion.animate(
-                            $el,
-                            {
-                                opacity: [0, 1],
-                                x: [10, 0],
-                            },
-                            {
-                                duration: 0.7,
-                                ease: motion.circOut,
-                            },
-                        )
-                    })
-                }
-            "
-        >
-            <a
-                href="/newsletter"
-                class="group relative z-0 flex items-center gap-6 overflow-hidden rounded-2xl bg-cyan-50/50 py-5 pl-6 pr-7 ring-1 ring-black/5 transition duration-300 ease-in-out hover:bg-cyan-50 hover:ring-black/10 md:max-w-lg dark:bg-mirage dark:hover:bg-haiti dark:hover:ring-cloud"
+            {{-- Newsletter --}}
+            <div
+                x-init="
+                    () => {
+                        motion.inView($el, (element) => {
+                            motion.animate(
+                                $el,
+                                {
+                                    opacity: [0, 1],
+                                    x: [10, 0],
+                                },
+                                {
+                                    duration: 0.7,
+                                    ease: motion.circOut,
+                                },
+                            )
+                        })
+                    }
+                "
             >
-                {{-- Decorative circle --}}
-                <div
-                    class="absolute left-3 top-1/2 -z-10 size-16 -translate-y-1/2 rounded-full bg-cyan-400/60 blur-2xl dark:block"
-                    aria-hidden="true"
-                ></div>
+                <a
+                    href="/newsletter"
+                    class="group dark:bg-mirage dark:hover:bg-haiti dark:hover:ring-cloud relative z-0 flex items-center gap-6 overflow-hidden rounded-2xl bg-cyan-50/50 py-5 pr-7 pl-6 ring-1 ring-black/5 transition duration-300 ease-in-out hover:bg-cyan-50 hover:ring-black/10 md:max-w-lg"
+                >
+                    {{-- Decorative circle --}}
+                    <div
+                        class="absolute top-1/2 left-3 -z-10 size-16 -translate-y-1/2 rounded-full bg-cyan-400/60 blur-2xl dark:block"
+                        aria-hidden="true"
+                    ></div>
 
-                {{-- Content --}}
-                <div class="flex items-center gap-5 text-sm">
-                    <div class="flex flex-col items-center gap-2">
-                        {{-- Icon --}}
-                        <x-icons.email-document class="size-7 shrink-0" />
+                    {{-- Content --}}
+                    <div class="flex items-center gap-5 text-sm">
+                        <div class="flex flex-col items-center gap-2">
+                            {{-- Icon --}}
+                            <x-icons.email-document class="size-7 shrink-0" />
 
-                        {{-- Title --}}
-                        <h2
-                            class="transition duration-300 will-change-transform group-hover:scale-105"
+                            {{-- Title --}}
+                            <h2
+                                class="transition duration-300 will-change-transform group-hover:scale-105"
+                            >
+                                Newsletter
+                            </h2>
+                        </div>
+
+                        {{-- Message --}}
+                        <p
+                            class="leading-relaxed opacity-50 transition duration-300 will-change-transform group-hover:translate-x-0.5"
                         >
-                            Newsletter
-                        </h2>
+                            Get the latest NativePHP updates and news delivered
+                            to your inbox.
+                        </p>
                     </div>
 
-                    {{-- Message --}}
-                    <p
-                        class="leading-relaxed opacity-50 transition duration-300 will-change-transform group-hover:translate-x-0.5"
-                    >
-                        Get the latest NativePHP updates and news delivered to
-                        your inbox.
-                    </p>
-                </div>
-
-                {{-- Right arrow --}}
-                <x-icons.right-arrow
-                    x-init="
+                    {{-- Right arrow --}}
+                    <x-icons.right-arrow
+                        x-init="
                         () => {
                             motion.animate(
                                 $el,
@@ -146,15 +145,166 @@
                             )
                         }
                     "
-                    class="size-4 shrink-0"
-                />
-            </a>
+                        class="size-4 shrink-0"
+                    />
+                </a>
+            </div>
         </div>
+
+        {{-- Right side --}}
+        <nav
+            class="flex flex-1 flex-wrap justify-center gap-x-10 gap-y-3 lg:justify-around"
+            aria-label="Footer navigation"
+        >
+            {{-- Column --}}
+            <div class="flex grow flex-col items-start gap-1 sm:grow-0">
+                <h2 class="text-lg font-medium">Explore</h2>
+                <ul
+                    class="flex flex-col items-start text-sm text-gray-500 dark:text-gray-400"
+                >
+                    <li>
+                        <a
+                            href="{{ route('welcome') }}"
+                            aria-label="Home"
+                            class="inline-block px-px py-1.5 transition duration-300 will-change-transform hover:translate-x-1 hover:text-gray-300"
+                        >
+                            Home
+                        </a>
+                    </li>
+                    <li>
+                        <a
+                            href="{{ route('blog') }}"
+                            aria-label="Blog"
+                            class="inline-block px-px py-1.5 transition duration-300 will-change-transform hover:translate-x-1 hover:text-gray-300"
+                        >
+                            Blog
+                        </a>
+                    </li>
+                    <li>
+                        <a
+                            href="https://shop.nativephp.com/"
+                            aria-label="NativePHP Shop"
+                            class="inline-block px-px py-1.5 transition duration-300 will-change-transform hover:translate-x-1 hover:text-gray-300"
+                        >
+                            Shop
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+            {{-- Column --}}
+            <div class="flex grow flex-col items-start gap-1 sm:grow-0">
+                <h2 class="text-lg font-medium">Mobile</h2>
+                <ul
+                    class="flex flex-col items-start text-sm text-gray-500 dark:text-gray-400"
+                >
+                    <li>
+                        <a
+                            href="/docs/mobile/1/getting-started/introduction"
+                            aria-label="Mobile Documentation"
+                            class="inline-block px-px py-1.5 transition duration-300 will-change-transform hover:translate-x-1 hover:text-gray-300"
+                        >
+                            Documentation
+                        </a>
+                    </li>
+                    <li>
+                        <a
+                            href="{{ route('pricing') }}"
+                            aria-label="Pricing"
+                            class="inline-block px-px py-1.5 transition duration-300 will-change-transform hover:translate-x-1 hover:text-gray-300"
+                        >
+                            Pricing
+                        </a>
+                    </li>
+                    <li>
+                        <a
+                            href="https://github.com/nativephp"
+                            aria-label="GitHub"
+                            class="inline-block px-px py-1.5 transition duration-300 will-change-transform hover:translate-x-1 hover:text-gray-300"
+                        >
+                            GitHub
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+            {{-- Column --}}
+            <div class="flex grow flex-col items-start gap-1 sm:grow-0">
+                <h2 class="text-lg font-medium">Desktop</h2>
+                <ul
+                    class="flex flex-col items-start text-sm text-gray-500 dark:text-gray-400"
+                >
+                    <li>
+                        <a
+                            href="/docs/desktop/1/getting-started/introduction"
+                            aria-label="Desktop Documentation"
+                            class="inline-block px-px py-1.5 transition duration-300 will-change-transform hover:translate-x-1 hover:text-gray-300"
+                        >
+                            Documentation
+                        </a>
+                    </li>
+                    <li>
+                        <a
+                            href="{{ route('sponsoring') }}"
+                            aria-label="Sponsoring"
+                            class="inline-block px-px py-1.5 transition duration-300 will-change-transform hover:translate-x-1 hover:text-gray-300"
+                        >
+                            Sponsoring
+                        </a>
+                    </li>
+                    <li>
+                        <a
+                            href="https://github.com/nativephp"
+                            aria-label="GitHub"
+                            class="inline-block px-px py-1.5 transition duration-300 will-change-transform hover:translate-x-1 hover:text-gray-300"
+                        >
+                            GitHub
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+            {{-- Column --}}
+            <div class="flex grow flex-col items-start gap-1 sm:grow-0">
+                <h2 class="text-lg font-medium">Company</h2>
+                <ul
+                    class="flex flex-col items-start text-sm text-gray-500 dark:text-gray-400"
+                >
+                    <li>
+                        <a
+                            href="https://bifrost.nativephp.com/"
+                            aria-label="Bifrost"
+                            class="inline-block px-px py-1.5 transition duration-300 will-change-transform hover:translate-x-1 hover:text-gray-300"
+                        >
+                            Bifrost
+                        </a>
+                    </li>
+                    <li>
+                        <a
+                            href="{{ route('privacy-policy') }}"
+                            aria-label="Privacy Policy"
+                            class="inline-block px-px py-1.5 transition duration-300 will-change-transform hover:translate-x-1 hover:text-gray-300"
+                        >
+                            Privacy Policy
+                        </a>
+                    </li>
+                    <li>
+                        <a
+                            href="{{ route('terms-of-service') }}"
+                            aria-label="Terms of Service"
+                            class="inline-block px-px py-1.5 transition duration-300 will-change-transform hover:translate-x-1 hover:text-gray-300"
+                        >
+                            Terms of Service
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
     </div>
 
     {{-- Divider --}}
     <div
-        class="flex items-center pb-3 pt-3"
+        class="flex items-center pt-3 pb-3"
         aria-hidden="true"
     >
         <div class="size-1.5 rotate-45 bg-gray-200/90 dark:bg-[#242734]"></div>
