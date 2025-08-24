@@ -8,7 +8,7 @@
             }
         }
     ],
-    "tailwindConfig": "./tailwind.config.js",
+    "tailwindStylesheet": "./resources/css/app.css",
     "singleQuote": true,
     "semi": false,
     "trailingComma": "all",

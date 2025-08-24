@@ -7,13 +7,13 @@
     <div class="flex flex-col gap-5 lg:flex-row">
         {{-- How does it work --}}
         <div
-            class="dark:bg-mirage relative flex flex-col items-center gap-5 overflow-hidden rounded-2xl bg-gray-200/60 p-8 sm:flex-row sm:justify-between sm:p-10 lg:max-w-165 xl:shrink-0"
+            class="relative flex flex-col items-center gap-5 overflow-hidden rounded-2xl bg-gray-200/60 p-8 sm:flex-row sm:justify-between sm:p-10 lg:max-w-165 xl:shrink-0 dark:bg-mirage"
         >
             {{-- Left side --}}
             <div class="relative z-10 flex flex-col gap-5 pl-5">
                 {{-- Header --}}
                 <div
-                    class="2xs:items-start 2xs:text-left flex flex-col items-center gap-1 text-center text-pretty"
+                    class="flex flex-col items-center gap-1 text-center text-pretty 2xs:items-start 2xs:text-left"
                 >
                     <p
                         class="text-lg text-gray-600 lg:text-xl dark:text-zinc-400"
@@ -36,9 +36,9 @@
                     </span>
                     bundles PHP with your app and lets it run inside a
                     <span class="font-medium text-gray-700 dark:text-zinc-300">
-                        Swift
+                        Swift,
                     </span>
-                    ,
+
                     <span class="font-medium text-gray-700 dark:text-zinc-300">
                         Kotlin
                     </span>
@@ -52,9 +52,9 @@
                     </span>
                     to talk directly to the device and show your app in a
                     <span class="font-medium text-gray-700 dark:text-zinc-300">
-                        native web view
+                        native web view.
                     </span>
-                    .
+
                     <br />
                     <br />
                     You still write PHP like you’re used to—just with a few
@@ -63,9 +63,9 @@
                     <br />
                     That’s it. It feels like
                     <span class="font-medium text-gray-700 dark:text-zinc-300">
-                        magic
+                        magic,
                     </span>
-                    , but it’s just PHP... on your user's device!
+                    but it’s just PHP... on your user's device!
                 </p>
             </div>
 
@@ -240,15 +240,15 @@
         {{-- Right side --}}
         <div class="flex flex-col gap-5 lg:max-w-sm xl:max-w-max">
             {{-- Performance --}}
-            <div class="xs:grid-cols-2 grid items-stretch gap-5">
+            <div class="grid items-stretch gap-5 xs:grid-cols-2">
                 <div
-                    class="dark:from-mirage 2xs:items-start dark:to-mirage flex flex-col items-center gap-3 rounded-2xl bg-gradient-to-tl from-[#FEF3C6] to-[#FFFBEB] p-7 2xl:gap-4 2xl:p-8"
+                    class="flex flex-col items-center gap-3 rounded-2xl bg-gradient-to-tl from-[#FEF3C6] to-[#FFFBEB] p-7 2xs:items-start 2xl:gap-4 2xl:p-8 dark:from-mirage dark:to-mirage"
                 >
                     <x-icons.home.charging-thunder
                         class="size-12 text-yellow-400 2xl:size-14 dark:text-amber-300"
                     />
                     <div
-                        class="2xs:items-start 2xs:text-left flex flex-col items-center gap-1 text-center text-pretty"
+                        class="flex flex-col items-center gap-1 text-center text-pretty 2xs:items-start 2xs:text-left"
                     >
                         <h3
                             class="text-xl font-semibold text-gray-800 2xl:text-2xl dark:text-white"
@@ -263,13 +263,13 @@
                     </div>
                 </div>
                 <div
-                    class="dark:from-mirage 2xs:items-start dark:to-mirage flex flex-col items-center gap-3 rounded-2xl bg-gradient-to-tl from-[#ECFCCA] to-[#F7FEE7] p-7 2xl:gap-4 2xl:p-8"
+                    class="flex flex-col items-center gap-3 rounded-2xl bg-gradient-to-tl from-[#ECFCCA] to-[#F7FEE7] p-7 2xs:items-start 2xl:gap-4 2xl:p-8 dark:from-mirage dark:to-mirage"
                 >
                     <x-icons.home.rocket
                         class="size-12 text-lime-400 2xl:size-14 dark:text-lime-300"
                     />
                     <div
-                        class="2xs:items-start 2xs:text-left flex flex-col items-center gap-1 text-center text-pretty"
+                        class="flex flex-col items-center gap-1 text-center text-pretty 2xs:items-start 2xs:text-left"
                     >
                         <h3
                             class="text-xl font-semibold text-gray-800 2xl:text-2xl dark:text-white"
@@ -287,10 +287,10 @@
 
             {{-- Tools --}}
             <div
-                class="dark:from-mirage dark:to-mirage flex flex-col gap-4 rounded-2xl bg-gradient-to-tl from-[#DBDCFB] to-[#F9FAFB] p-7 2xl:p-8"
+                class="flex flex-col gap-4 rounded-2xl bg-gradient-to-tl from-[#DBDCFB] to-[#F9FAFB] p-7 2xl:p-8 dark:from-mirage dark:to-mirage"
             >
                 <div
-                    class="2xs:items-start 2xs:text-left flex flex-col items-center gap-1 text-center text-pretty"
+                    class="flex flex-col items-center gap-1 text-center text-pretty 2xs:items-start 2xs:text-left"
                 >
                     <h3
                         class="text-xl font-semibold text-gray-800 2xl:text-2xl dark:text-white"
@@ -341,11 +341,11 @@
     <div class="mt-5 flex flex-col gap-5 lg:flex-row">
         {{-- Left side --}}
         <div
-            class="dark:bg-mirage w-full rounded-2xl bg-gray-200/60 p-8 md:p-10 lg:max-w-md xl:max-w-lg"
+            class="w-full rounded-2xl bg-gray-200/60 p-8 md:p-10 lg:max-w-md xl:max-w-lg dark:bg-mirage"
         >
             {{-- Header --}}
             <div
-                class="2xs:items-start 2xs:text-left flex flex-col items-center gap-1 text-center text-pretty"
+                class="flex flex-col items-center gap-1 text-center text-pretty 2xs:items-start 2xs:text-left"
             >
                 <p class="text-lg text-gray-600 lg:text-xl dark:text-zinc-400">
                     Step by step
@@ -412,10 +412,10 @@
 
         {{-- Right side --}}
         <div
-            class="dark:bg-mirage relative z-0 flex flex-col justify-center gap-4 overflow-hidden rounded-2xl bg-[#F0F2E7] p-7 2xl:p-8"
+            class="relative z-0 flex flex-col justify-center gap-4 overflow-hidden rounded-2xl bg-[#F0F2E7] p-7 2xl:p-8 dark:bg-mirage"
         >
             <div
-                class="2xs:items-start 2xs:text-left flex flex-col items-center gap-1 text-center text-pretty"
+                class="flex flex-col items-center gap-1 text-center text-pretty 2xs:items-start 2xs:text-left"
             >
                 <p class="text-lg text-[#9FA382] lg:text-xl dark:text-zinc-400">
                     Your next app starts here
@@ -429,7 +429,7 @@
 
             {{-- Description --}}
             <p
-                class="2xs:text-left text-center text-pretty text-gray-600 dark:text-zinc-400"
+                class="text-center text-pretty text-gray-600 2xs:text-left dark:text-zinc-400"
             >
                 Whether you're building tools for your team, apps for your
                 customers, or your next big idea —
@@ -440,7 +440,7 @@
             </p>
 
             <div
-                class="2xs:justify-start flex flex-wrap items-start justify-center gap-x-2.5 gap-y-3 [--icon-bg:#F9FBF0] [--icon-stroke:#717838] 2xl:gap-x-3 dark:[--icon-bg:--alpha(var(--color-cyan-500)/30%)] dark:[--icon-stroke:--alpha(var(--color-cyan-400)/80%)]"
+                class="flex flex-wrap items-start justify-center gap-x-2.5 gap-y-3 [--icon-bg:#F9FBF0] [--icon-stroke:#717838] 2xs:justify-start 2xl:gap-x-3 dark:[--icon-bg:--alpha(var(--color-cyan-500)/30%)] dark:[--icon-stroke:--alpha(var(--color-cyan-400)/80%)]"
             >
                 @php
                     $categories = [
