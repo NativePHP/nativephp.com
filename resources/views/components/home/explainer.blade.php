@@ -332,10 +332,10 @@
     </div>
 
     {{-- Part 2 --}}
-    <div class="mt-5 flex gap-5">
+    <div class="mt-5 flex flex-col gap-5 lg:flex-row">
         {{-- Left side --}}
         <div
-            class="dark:bg-mirage w-full max-w-md rounded-2xl bg-gray-200/60 p-8 md:p-10"
+            class="dark:bg-mirage w-full rounded-2xl bg-gray-200/60 p-8 md:p-10 lg:max-w-md"
         >
             {{-- Header --}}
             <div
@@ -354,10 +354,10 @@
             {{-- Steps --}}
             <div class="mt-5 flex flex-col gap-3">
                 <div
-                    class="flex items-center gap-3 rounded-2xl bg-white/50 p-3 font-medium dark:bg-slate-950/30"
+                    class="flex items-center gap-3 rounded-2xl bg-white/50 py-3 pr-5 pl-3 font-medium dark:bg-slate-950/30"
                 >
                     <div
-                        class="grid size-10 place-items-center rounded-xl bg-blue-100 dark:bg-blue-500/20"
+                        class="grid size-10 shrink-0 place-items-center rounded-xl bg-blue-100 dark:bg-blue-500/20"
                     >
                         <x-icons.home.document class="size-5" />
                     </div>
@@ -365,10 +365,10 @@
                     <h5 class="text-gray-800 dark:text-white">Read the docs</h5>
                 </div>
                 <div
-                    class="flex items-center gap-3 rounded-2xl bg-white/50 p-3 font-medium dark:bg-slate-950/30"
+                    class="flex items-center gap-3 rounded-2xl bg-white/50 py-3 pr-5 pl-3 font-medium dark:bg-slate-950/30"
                 >
                     <div
-                        class="grid size-10 place-items-center rounded-xl bg-violet-100 dark:bg-violet-500/20"
+                        class="grid size-10 shrink-0 place-items-center rounded-xl bg-violet-100 dark:bg-violet-500/20"
                     >
                         <x-icons.home.browser class="size-5" />
                     </div>
@@ -378,10 +378,10 @@
                     </h5>
                 </div>
                 <div
-                    class="flex items-center gap-3 rounded-2xl bg-white/50 p-3 font-medium dark:bg-slate-950/30"
+                    class="flex items-center gap-3 rounded-2xl bg-white/50 py-3 pr-5 pl-3 font-medium dark:bg-slate-950/30"
                 >
                     <div
-                        class="grid size-10 place-items-center rounded-xl bg-cyan-100 dark:bg-cyan-500/20"
+                        class="grid size-10 shrink-0 place-items-center rounded-xl bg-cyan-100 dark:bg-cyan-500/20"
                     >
                         <x-icons.home.startup class="size-5" />
                     </div>
@@ -413,7 +413,9 @@
             </div>
 
             {{-- Description --}}
-            <p class="text-pretty text-gray-600 dark:text-zinc-400">
+            <p
+                class="2xs:text-left text-center text-pretty text-gray-600 dark:text-zinc-400"
+            >
                 Whether you're building tools for your team, apps for your
                 customers, or your next big idea —
                 <span class="font-medium text-gray-700 dark:text-zinc-300">
@@ -423,7 +425,7 @@
             </p>
 
             <div
-                class="flex flex-wrap items-start gap-x-2.5 gap-y-3 [--icon-bg:#F9FBF0] [--icon-stroke:#717838] 2xl:gap-x-3 dark:[--icon-bg:--alpha(var(--color-slate-400)/30%)] dark:[--icon-stroke:--alpha(var(--color-white)/60%)]"
+                class="2xs:justify-start flex flex-wrap items-start justify-center gap-x-2.5 gap-y-3 [--icon-bg:#F9FBF0] [--icon-stroke:#717838] 2xl:gap-x-3 dark:[--icon-bg:--alpha(var(--color-slate-400)/30%)] dark:[--icon-stroke:--alpha(var(--color-white)/60%)]"
             >
                 @php
                     $categories = [
