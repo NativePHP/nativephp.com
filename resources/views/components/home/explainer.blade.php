@@ -231,6 +231,7 @@
             </div>
         </div>
 
+        {{-- Right side --}}
         <div class="flex flex-col gap-5 lg:max-w-sm xl:max-w-max">
             {{-- Performance --}}
             <div class="xs:grid-cols-2 grid items-stretch gap-5">
@@ -390,6 +391,58 @@
                     </h5>
                 </div>
             </div>
+        </div>
+
+        {{-- Right side --}}
+        <div
+            class="dark:bg-mirage relative z-0 flex flex-col justify-center gap-4 overflow-hidden rounded-2xl bg-[#F0F2E7] p-7 2xl:p-8"
+        >
+            <div
+                class="2xs:items-start 2xs:text-left flex flex-col items-center gap-1 text-center text-pretty"
+            >
+                <h3
+                    class="text-lg text-[#9FA382] lg:text-xl dark:text-zinc-400"
+                >
+                    Your next app starts here
+                </h3>
+                <h2
+                    class="text-xl font-bold text-gray-800 lg:text-2xl dark:text-white"
+                >
+                    What can I build?
+                </h2>
+            </div>
+
+            {{-- Description --}}
+            <p class="text-pretty text-gray-600 dark:text-zinc-400">
+                Whether you're building tools for your team, apps for your
+                customers, or your next big idea —
+                <span class="font-medium text-gray-700 dark:text-zinc-300">
+                    NativePHP
+                </span>
+                gives you the flexibility and performance to bring it to life.
+            </p>
+
+            <div
+                class="flex flex-wrap items-start gap-x-2.5 gap-y-3 2xl:gap-x-3"
+            >
+                @php
+                    $categories = [
+                        ['name' => 'SaaS clients', 'icon' => 'icons.home.web'],
+                        ['name' => 'Games', 'icon' => 'icons.home.game'],
+                    ];
+                @endphp
+
+                @foreach ($categories as $category)
+                    <x-home.category-pill :name="$category['name']">
+                        <x-dynamic-component :component="$category['icon']" />
+                    </x-home.category-pill>
+                @endforeach
+            </div>
+
+            {{-- Decorative circle --}}
+            <div
+                class="absolute -top-20 -right-20 -z-10 size-60 rounded-full bg-gradient-to-r from-[#C1D2AF]/25 to-[#E8F9EE]/0 dark:hidden"
+            ></div>
         </div>
     </div>
 </section>
