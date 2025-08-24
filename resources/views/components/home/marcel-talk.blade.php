@@ -1,5 +1,5 @@
 <section
-    class="mx-auto mt-20 max-w-5xl"
+    class="mx-auto mt-13 max-w-5xl"
     aria-labelledby="laracon-talk-title"
     role="region"
 >
