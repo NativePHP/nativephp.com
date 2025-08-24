@@ -341,7 +341,7 @@
     <div class="mt-5 flex flex-col gap-5 lg:flex-row">
         {{-- Left side --}}
         <div
-            class="dark:bg-mirage w-full rounded-2xl bg-gray-200/60 p-8 md:p-10 lg:max-w-md"
+            class="dark:bg-mirage w-full rounded-2xl bg-gray-200/60 p-8 md:p-10 lg:max-w-md xl:max-w-lg"
         >
             {{-- Header --}}
             <div
@@ -449,6 +449,7 @@
                         ['name' => 'eCommerce', 'icon' => 'icons.home.shop'],
                         ['name' => 'Social apps', 'icon' => 'icons.home.social'],
                         ['name' => 'Field services', 'icon' => 'icons.home.wrench'],
+                        ['name' => 'Health', 'icon' => 'icons.home.health'],
                     ];
                 @endphp
 
