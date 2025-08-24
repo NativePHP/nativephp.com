@@ -24,6 +24,7 @@ Route::redirect('/discord', 'https://discord.gg/X62tWNStZK');
 
 Route::view('/', 'welcome')->name('welcome');
 Route::view('pricing', 'pricing')->name('pricing');
+Route::view('brand', 'brand')->name('brand');
 Route::redirect('mobile', 'pricing');
 Route::view('laracon-us-2025-giveaway', 'laracon-us-2025-giveaway')->name('laracon-us-2025-giveaway');
 Route::redirect('ios', 'pricing');

@@ -37,6 +37,7 @@
                 <a
                     href="/"
                     class="transition duration-200 will-change-transform hover:scale-[1.02]"
+                    x-on:contextmenu.prevent="window.location.href = @js(route('brand'))"
                 >
                     <x-logo
                         class="h-6"
@@ -216,10 +217,10 @@
                     </li>
                     <li>
                         <a
-                            href="https://bifrost.nativephp.com/"
+                            href="{{ route('brand') }}"
                             class="inline-block px-px py-1.5 transition duration-300 will-change-transform hover:translate-x-1 hover:text-gray-700 dark:hover:text-gray-300"
                         >
-                            Bifrost
+                            Brand assets
                         </a>
                     </li>
                     <li>
