@@ -104,11 +104,13 @@
                             class="flex flex-col gap-1 text-center text-pretty xl:text-left"
                         >
                             <div
-                                class="text-lg font-semibold text-gray-800 dark:text-white"
+                                class="text-lg font-semibold text-gray-800 2xl:text-2xl 2xl:font-bold dark:text-white"
                             >
                                 Get more from NativePHP as a partner!
                             </div>
-                            <p class="text-sm text-gray-600 dark:text-zinc-400">
+                            <p
+                                class="text-sm text-gray-600 2xl:text-base dark:text-zinc-400"
+                            >
                                 Our Partners are helping us bring NativePHP to
                                 everyone and getting some incredible benefits to
                                 boot.

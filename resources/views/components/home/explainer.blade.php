@@ -295,7 +295,7 @@
                 </div>
 
                 <div
-                    class="flex flex-wrap items-start gap-x-2.5 gap-y-3 2xl:gap-x-3 2xl:gap-y-3.5"
+                    class="flex flex-wrap items-start gap-x-2.5 gap-y-3 2xl:gap-x-3"
                 >
                     @php
                         $skills = [
