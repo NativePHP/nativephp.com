@@ -186,7 +186,7 @@
             </style>
 
             <div
-                class="group absolute top-0 left-5 hidden h-60 overflow-hidden mask-y-from-75% lg:block xl:left-1/7 2xl:left-1/6 2xl:h-70"
+                class="group absolute top-0 left-5 hidden h-60 overflow-hidden mask-y-from-75% lg:block xl:left-1/7 2xl:left-1/7 2xl:h-75"
             >
                 {{-- Track (two sets for seamless loop) --}}
                 <div
@@ -196,10 +196,12 @@
                     {{-- Set A --}}
                     <div class="flex flex-col gap-3">
                         @foreach ($features as $feature)
-                            <div class="flex items-center gap-2 text-sm">
+                            <div
+                                class="flex items-center gap-2 text-sm 2xl:text-base"
+                            >
                                 <x-dynamic-component
                                     :component="$feature['icon']"
-                                    class="size-5"
+                                    class="size-5 2xl:size-6"
                                 />
                                 <div class="text-gray-700 dark:text-slate-300">
                                     {{ $feature['label'] }}
@@ -214,10 +216,12 @@
                         aria-hidden="true"
                     >
                         @foreach ($features as $feature)
-                            <div class="flex items-center gap-2 text-sm">
+                            <div
+                                class="flex items-center gap-2 text-sm 2xl:text-base"
+                            >
                                 <x-dynamic-component
                                     :component="$feature['icon']"
-                                    class="size-5"
+                                    class="size-5 2xl:size-6"
                                 />
                                 <div class="text-gray-700 dark:text-slate-300">
                                     {{ $feature['label'] }}
@@ -240,10 +244,12 @@
                     {{-- Set A --}}
                     <div class="flex items-center gap-3 whitespace-nowrap">
                         @foreach ($features as $feature)
-                            <div class="flex items-center gap-2 text-sm">
+                            <div
+                                class="flex items-center gap-2 text-sm 2xl:text-base"
+                            >
                                 <x-dynamic-component
                                     :component="$feature['icon']"
-                                    class="size-5"
+                                    class="size-5 2xl:size-6"
                                 />
                                 <div class="text-gray-700 dark:text-slate-300">
                                     {{ $feature['label'] }}
@@ -258,10 +264,12 @@
                         aria-hidden="true"
                     >
                         @foreach ($features as $feature)
-                            <div class="flex items-center gap-2 text-sm">
+                            <div
+                                class="flex items-center gap-2 text-sm 2xl:text-base"
+                            >
                                 <x-dynamic-component
                                     :component="$feature['icon']"
-                                    class="size-5"
+                                    class="size-5 2xl:size-6"
                                 />
                                 <div class="text-gray-700 dark:text-slate-300">
                                     {{ $feature['label'] }}
