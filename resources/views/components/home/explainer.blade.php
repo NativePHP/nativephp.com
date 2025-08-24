@@ -303,7 +303,7 @@
                 </div>
 
                 <div
-                    class="flex flex-wrap items-start gap-x-2.5 gap-y-3 lg:pt-2 2xl:gap-x-3"
+                    class="flex flex-wrap items-start gap-x-2.5 gap-y-3.5 lg:pt-2 2xl:gap-x-3"
                 >
                     @php
                         $skills = [
@@ -440,7 +440,7 @@
             </p>
 
             <div
-                class="2xs:justify-start flex flex-wrap items-start justify-center gap-x-2.5 gap-y-3 [--icon-bg:#F9FBF0] [--icon-stroke:#717838] 2xl:gap-x-3 dark:[--icon-bg:--alpha(var(--color-teal-500)/30%)] dark:[--icon-stroke:--alpha(var(--color-teal-400)/80%)]"
+                class="2xs:justify-start flex flex-wrap items-start justify-center gap-x-2.5 gap-y-3 [--icon-bg:#F9FBF0] [--icon-stroke:#717838] 2xl:gap-x-3 dark:[--icon-bg:--alpha(var(--color-cyan-500)/30%)] dark:[--icon-stroke:--alpha(var(--color-cyan-400)/80%)]"
             >
                 @php
                     $categories = [

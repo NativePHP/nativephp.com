@@ -74,7 +74,7 @@
                 </x-home.featured-partner-card>
                 <x-home.featured-partner-card
                     partnerName="Nexcalia"
-                    tagline="Hire the best Laravel developers anywhere"
+                    tagline="Smart tools for scheduling & visitor management"
                     href="https://www.nexcalia.com/?ref=nativephp"
                 >
                     <x-slot:logo>
@@ -85,9 +85,9 @@
                     </x-slot>
 
                     <x-slot:description>
-                        Need a freelancer or engineer? Laradevs has you covered.
-                        Filter by skills, experience, location, availability,
-                        and pay.
+                        From online booking to interactive kiosks, Nexcalia
+                        helps businesses streamline appointments and improve
+                        customer experiences.
                     </x-slot>
                 </x-home.featured-partner-card>
             </div>
