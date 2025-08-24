@@ -153,12 +153,30 @@
 
         {{-- Right side --}}
         <nav
-            class="flex w-full flex-wrap justify-center gap-x-5 gap-y-3 sm:w-auto lg:justify-around"
+            class="flex w-full flex-wrap justify-center gap-x-5 gap-y-3 sm:w-auto lg:justify-around xl:gap-x-10"
             aria-label="Footer navigation"
+            x-init="
+                () => {
+                    motion.inView($el, (element) => {
+                        motion.animate(
+                            Array.from($el.children),
+                            {
+                                x: [-10, 0],
+                                opacity: [0, 1],
+                            },
+                            {
+                                duration: 0.7,
+                                ease: motion.backOut,
+                                delay: motion.stagger(0.1),
+                            },
+                        )
+                    })
+                }
+            "
         >
             {{-- Column --}}
             <div class="flex grow flex-col items-start gap-1 sm:grow-0">
-                <h2 class="text-lg font-medium">Explore</h2>
+                <h2 class="font-medium">Explore</h2>
                 <ul
                     class="flex flex-col items-start text-sm text-gray-500 dark:text-gray-400"
                 >
@@ -221,7 +239,7 @@
 
             {{-- Column --}}
             <div class="flex grow flex-col items-start gap-1 sm:grow-0">
-                <h2 class="text-lg font-medium">Mobile</h2>
+                <h2 class="font-medium">Mobile</h2>
                 <ul
                     class="flex flex-col items-start text-sm text-gray-500 dark:text-gray-400"
                 >
@@ -257,7 +275,7 @@
 
             {{-- Column --}}
             <div class="flex grow flex-col items-start gap-1 sm:grow-0">
-                <h2 class="text-lg font-medium">Desktop</h2>
+                <h2 class="font-medium">Desktop</h2>
                 <ul
                     class="flex flex-col items-start text-sm text-gray-500 dark:text-gray-400"
                 >
@@ -305,7 +323,7 @@
 
     {{-- Copyright --}}
     <section
-        class="flex flex-col flex-wrap items-center gap-x-5 gap-y-3 text-center text-sm text-gray-500 md:flex-row md:justify-between md:text-left dark:text-gray-400/80"
+        class="flex flex-col flex-wrap items-center gap-x-5 gap-y-3 text-center text-sm text-gray-500 md:flex-row md:justify-between md:text-left xl:gap-x-10 dark:text-gray-400/80"
         aria-label="Credits and copyright information"
     >
         <div
