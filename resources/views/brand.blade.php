@@ -149,6 +149,27 @@
                         'height' => 'h-16',
                         'isDarkSurface' => true,
                     ],
+                    [
+                        'src' => '/brand-assets/desktop/nativephp-desktop-for-light-background.svg',
+                        'alt' => 'NativePHP For Desktop logo',
+                        'download' => '/brand-assets/desktop/nativephp-desktop-for-light-background.svg',
+                        'height' => 'h-16',
+                        'isDarkSurface' => false,
+                    ],
+                    [
+                        'src' => '/brand-assets/desktop/nativephp-desktop-for-dark-background.svg',
+                        'alt' => 'NativePHP For Desktop logo',
+                        'download' => '/brand-assets/desktop/nativephp-desktop-for-dark-background.svg',
+                        'height' => 'h-16',
+                        'isDarkSurface' => true,
+                    ],
+                    [
+                        'src' => '/brand-assets/desktop/nativephp-desktop-in-grayscale.svg',
+                        'alt' => 'NativePHP For Desktop logo',
+                        'download' => '/brand-assets/desktop/nativephp-desktop-in-grayscale.svg',
+                        'height' => 'h-16',
+                        'isDarkSurface' => true,
+                    ],
                 ];
             @endphp
 
