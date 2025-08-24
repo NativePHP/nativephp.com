@@ -227,9 +227,9 @@
             </div>
         </div>
 
-        <div class="flex flex-col gap-5">
+        <div class="flex max-w-md flex-col gap-5">
             {{-- Performance --}}
-            <div class="grid grid-cols-2 items-center gap-5">
+            <div class="grid grid-cols-2 items-stretch gap-5">
                 <div
                     class="dark:from-mirage flex flex-col gap-3 rounded-2xl bg-gradient-to-tl from-[#FEF3C6] to-[#FFFBEB] p-6 dark:to-slate-700/40"
                 >
@@ -258,7 +258,7 @@
                             Tiny apps
                         </h3>
                         <h4 class="text-gray-600 dark:text-zinc-400">
-                            Mobile apps under 50mb
+                            Mobile apps under 50MB
                         </h4>
                     </div>
                 </div>
@@ -280,66 +280,29 @@
                 </div>
 
                 <div class="flex flex-wrap items-start gap-x-2.5 gap-y-3">
-                    <x-home.skill-pill
-                        name="Laravel"
-                        link="https://laravel.com/"
-                    >
-                        <x-icons.skills.laravel />
-                    </x-home.skill-pill>
-                    <x-home.skill-pill
-                        name="React"
-                        link="https://reactjs.org/"
-                    >
-                        <x-icons.skills.reactjs />
-                    </x-home.skill-pill>
-                    <x-home.skill-pill
-                        name="Next.js"
-                        link="https://nextjs.org/"
-                    >
-                        <x-icons.skills.nextjs />
-                    </x-home.skill-pill>
-                    <x-home.skill-pill
-                        name="Nuxt"
-                        link="https://nuxtjs.org/"
-                    >
-                        <x-icons.skills.nuxtjs />
-                    </x-home.skill-pill>
-                    <x-home.skill-pill
-                        name="Vue.js"
-                        link="https://vuejs.org/"
-                    >
-                        <x-icons.skills.vuejs />
-                    </x-home.skill-pill>
-                    <x-home.skill-pill
-                        name="Livewire"
-                        link="https://livewire.laravel.com"
-                    >
-                        <x-icons.skills.livewire />
-                    </x-home.skill-pill>
-                    <x-home.skill-pill
-                        name="Alpine.js"
-                        link="https://alpinejs.dev/"
-                    >
-                        <x-icons.skills.alpinejs />
-                    </x-home.skill-pill>
-                    <x-home.skill-pill
-                        name="TailwindCSS"
-                        link="https://tailwindcss.com/"
-                    >
-                        <x-icons.skills.tailwind-css />
-                    </x-home.skill-pill>
-                    <x-home.skill-pill
-                        name="FilamentPHP"
-                        link="https://filamentphp.com/"
-                    >
-                        <x-icons.skills.filamentphp />
-                    </x-home.skill-pill>
-                    <x-home.skill-pill
-                        name="Inertia.js"
-                        link="https://inertiajs.com/"
-                    >
-                        <x-icons.skills.inertiajs />
-                    </x-home.skill-pill>
+                    @php
+                        $skills = [
+                            ['name' => 'Laravel', 'link' => 'https://laravel.com/', 'icon' => 'icons.skills.laravel'],
+                            ['name' => 'React', 'link' => 'https://reactjs.org/', 'icon' => 'icons.skills.reactjs'],
+                            ['name' => 'Vue.js', 'link' => 'https://vuejs.org/', 'icon' => 'icons.skills.vuejs'],
+                            ['name' => 'Next.js', 'link' => 'https://nextjs.org/', 'icon' => 'icons.skills.nextjs'],
+                            ['name' => 'Nuxt', 'link' => 'https://nuxtjs.org/', 'icon' => 'icons.skills.nuxtjs'],
+                            ['name' => 'Livewire', 'link' => 'https://livewire.laravel.com', 'icon' => 'icons.skills.livewire'],
+                            ['name' => 'FilamentPHP', 'link' => 'https://filamentphp.com/', 'icon' => 'icons.skills.filamentphp'],
+                            ['name' => 'TailwindCSS', 'link' => 'https://tailwindcss.com/', 'icon' => 'icons.skills.tailwind-css'],
+                            ['name' => 'Inertia.js', 'link' => 'https://inertiajs.com/', 'icon' => 'icons.skills.inertiajs'],
+                            ['name' => 'Alpine.js', 'link' => 'https://alpinejs.dev/', 'icon' => 'icons.skills.alpinejs'],
+                        ];
+                    @endphp
+
+                    @foreach ($skills as $skill)
+                        <x-home.skill-pill
+                            :name="$skill['name']"
+                            :link="$skill['link']"
+                        >
+                            <x-dynamic-component :component="$skill['icon']" />
+                        </x-home.skill-pill>
+                    @endforeach
                 </div>
             </div>
         </div>
