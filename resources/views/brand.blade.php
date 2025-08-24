@@ -110,40 +110,57 @@
 
         {{-- List --}}
         <div
-            class="mx-auto mt-10 flex w-full max-w-md flex-col items-stretch gap-5"
+            class="mx-auto mt-10 flex w-full max-w-md flex-col items-stretch gap-10"
         >
-            {{-- Primary logo --}}
-            <div
-                x-data="{ isHovered: false }"
-                class="flex flex-col items-center gap-5"
-            >
-                {{-- Asset --}}
-                <div
-                    class="grid h-50 w-full place-items-center rounded-xl bg-gray-100 p-5 ring-1 ring-gray-300"
-                >
-                    <img
-                        src="/brand-assets/logo/nativephp.svg"
-                        alt=""
-                        loading="lazy"
-                        class="h-8 transition duration-200 will-change-transform"
-                        x-bind:class="{
-                            'scale-105': isHovered,
-                        }"
-                    />
-                </div>
+            @php
+                $assets = [
+                    [
+                        'src' => '/brand-assets/logo/nativephp-for-light-background.svg',
+                        'alt' => 'NativePHP logo',
+                        'download' => '/brand-assets/logo/nativephp-for-light-background.svg',
+                        'height' => 'h-8',
+                        'isDarkSurface' => false,
+                    ],
+                    [
+                        'src' => '/brand-assets/logo/nativephp-for-dark-background.svg',
+                        'alt' => 'NativePHP logo',
+                        'download' => '/brand-assets/logo/nativephp-for-dark-background.svg',
+                        'height' => 'h-8',
+                        'isDarkSurface' => true,
+                    ],
+                    [
+                        'src' => '/brand-assets/mobile/nativephp-mobile-for-light-background.svg',
+                        'alt' => 'NativePHP For Mobile logo',
+                        'download' => '/brand-assets/mobile/nativephp-mobile-for-light-background.svg',
+                        'height' => 'h-16',
+                        'isDarkSurface' => false,
+                    ],
+                    [
+                        'src' => '/brand-assets/mobile/nativephp-mobile-for-dark-background.svg',
+                        'alt' => 'NativePHP For Mobile logo',
+                        'download' => '/brand-assets/mobile/nativephp-mobile-for-dark-background.svg',
+                        'height' => 'h-16',
+                        'isDarkSurface' => true,
+                    ],
+                    [
+                        'src' => '/brand-assets/mobile/nativephp-mobile-in-grayscale.svg',
+                        'alt' => 'NativePHP For Mobile logo',
+                        'download' => '/brand-assets/mobile/nativephp-mobile-in-grayscale.svg',
+                        'height' => 'h-16',
+                        'isDarkSurface' => true,
+                    ],
+                ];
+            @endphp
 
-                {{-- Download button --}}
-                <a
-                    download
-                    href="/brand-assets/logo/nativephp.svg"
-                    class="inline-flex items-center gap-2 rounded-xl bg-white py-3 pr-5 pl-3.5 text-sm font-medium ring-1 ring-gray-300 transition duration-200 ring-inset hover:bg-gray-100 dark:bg-cloud/60 dark:text-white dark:ring-transparent dark:hover:bg-cloud"
-                    x-on:mouseenter="isHovered = true"
-                    x-on:mouseleave="isHovered = false"
-                >
-                    <x-icons.download class="size-5" />
-                    <div>Download</div>
-                </a>
-            </div>
+            @foreach ($assets as $asset)
+                <x-brand.asset-card
+                    :src="$asset['src']"
+                    :download-href="$asset['download'] ?? null"
+                    :height="$asset['height'] ?? 'h-8'"
+                    :alt="$asset['alt'] ?? ''"
+                    :is-dark-surface="$asset['isDarkSurface'] ?? false"
+                />
+            @endforeach
         </div>
     </section>
 </x-layout>
