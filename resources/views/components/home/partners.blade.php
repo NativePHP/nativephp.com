@@ -104,7 +104,7 @@
                             class="flex flex-col gap-1 text-center text-pretty xl:text-left"
                         >
                             <div
-                                class="text-lg font-semibold text-gray-800 2xl:text-2xl 2xl:font-bold dark:text-white"
+                                class="text-xl font-semibold text-gray-800 2xl:text-2xl 2xl:font-bold dark:text-white"
                             >
                                 Get more from NativePHP as a partner!
                             </div>
