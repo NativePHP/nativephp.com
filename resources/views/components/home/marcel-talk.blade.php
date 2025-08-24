@@ -1,13 +1,14 @@
 <section
     class="mx-auto mt-20 max-w-5xl"
     aria-labelledby="laracon-talk-title"
+    role="region"
 >
     <div
         class="flex flex-col items-center gap-5 lg:flex-row lg:justify-between"
     >
         {{-- Left side --}}
         <div class="text-center lg:max-w-96 lg:text-left">
-            <div
+            <p
                 x-init="
                     () => {
                         motion.inView($el, (element) => {
@@ -28,7 +29,7 @@
                 class="inline-block rounded-full px-3 py-1 text-sm font-medium uppercase ring-1 ring-black dark:ring-white/15"
             >
                 Laracon US Talk
-            </div>
+            </p>
             <h2
                 id="laracon-talk-title"
                 x-init="
@@ -84,7 +85,7 @@
             <a
                 href="https://www.youtube.com/watch?v=iG7VscBFnqo"
                 target="_blank"
-                rel="noopener"
+                rel="noopener noreferrer"
                 class="group relative"
                 title="Marcel Pociot at Laracon US - Building Desktop Applications with PHP"
                 aria-label="Watch Marcel Pociot's talk at Laracon US 2023"

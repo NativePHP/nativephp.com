@@ -1,6 +1,7 @@
 <section
     class="mt-2"
     aria-labelledby="hero-title"
+    role="region"
 >
     <div
         class="relative z-0 flex flex-col overflow-hidden rounded-2xl bg-gradient-to-t from-[#E0E5EB] to-[#F9F9F9] px-5 pt-8 pb-10 ring-1 ring-zinc-200/50 lg:px-10 lg:pt-8 lg:pb-17 xl:pt-10 dark:from-slate-950 dark:to-slate-900 dark:ring-slate-800"
@@ -29,20 +30,24 @@
                 "
                 class="flex flex-wrap justify-center gap-2 lg:flex-col lg:items-end lg:gap-1.5"
             >
-                <h5
+                <p
                     class="w-full text-center font-light lg:w-auto dark:font-extralight"
                 >
                     Try our
                     <span class="font-medium">Demo</span>
                     app:
-                </h5>
+                </p>
                 <div>
                     <a
                         href="https://play.google.com/store/apps/details?id=com.nativephp.kitchensinkapp"
                         target="_blank"
+                        rel="noopener noreferrer"
                         class="flex items-center gap-2 rounded-xl bg-white/70 px-3 py-2.5 backdrop-blur-md transition duration-200 will-change-transform hover:scale-98 hover:bg-white dark:bg-slate-500/25 dark:hover:bg-slate-500/40"
                     >
-                        <x-icons.play-store class="h-4.5 2xl:h-5" />
+                        <x-icons.play-store
+                            class="h-4.5 2xl:h-5"
+                            aria-hidden="true"
+                        />
                         <div>Play Store</div>
                     </a>
                 </div>
@@ -50,9 +55,13 @@
                     <a
                         href="https://play.google.com/store/apps/details?id=com.nativephp.kitchensinkapp"
                         target="_blank"
+                        rel="noopener noreferrer"
                         class="flex items-center gap-2 rounded-xl bg-white/70 px-3 py-2.5 backdrop-blur-md transition duration-200 will-change-transform hover:scale-98 hover:bg-white dark:bg-slate-500/25 dark:hover:bg-slate-500/40"
                     >
-                        <x-icons.app-store class="h-4.5 2xl:h-5" />
+                        <x-icons.app-store
+                            class="h-4.5 2xl:h-5"
+                            aria-hidden="true"
+                        />
                         <div>App Store</div>
                     </a>
                 </div>
@@ -60,9 +69,13 @@
                     <a
                         href="https://github.com/nativephp"
                         target="_blank"
+                        rel="noopener noreferrer"
                         class="flex items-center gap-2 rounded-xl bg-white/70 px-3 py-2.5 backdrop-blur-md transition duration-200 will-change-transform hover:scale-98 hover:bg-white dark:bg-slate-500/25 dark:hover:bg-slate-500/40"
                     >
-                        <x-icons.github class="h-4.5 2xl:h-5" />
+                        <x-icons.github
+                            class="h-4.5 2xl:h-5"
+                            aria-hidden="true"
+                        />
                         <div>Source code</div>
                     </a>
                 </div>
@@ -77,6 +90,7 @@
                     <img
                         src="{{ Vite::asset('resources/images/home/macbook.webp') }}"
                         alt=""
+                        aria-hidden="true"
                         class="relative z-0 w-full self-center justify-self-center [grid-area:1/-1] dark:brightness-80 dark:contrast-150"
                         width="400"
                         height="250"
@@ -116,11 +130,13 @@
                             <img
                                 src="{{ Vite::asset('resources/images/home/laravel_welcome_light.webp') }}"
                                 alt=""
+                                aria-hidden="true"
                                 class="w-55 self-center justify-self-center [grid-area:1/-1] dark:opacity-0"
                             />
                             <img
                                 src="{{ Vite::asset('resources/images/home/laravel_welcome_dark.webp') }}"
                                 alt=""
+                                aria-hidden="true"
                                 class="w-55 self-center justify-self-center opacity-0 [grid-area:1/-1] dark:opacity-100"
                             />
                         </div>
@@ -131,6 +147,7 @@
                 <img
                     src="{{ Vite::asset('resources/images/home/iphone.webp') }}"
                     alt=""
+                    aria-hidden="true"
                     class="relative z-2 -ml-15 w-18 sm:-ml-18 sm:w-23 2xl:-ml-25 2xl:w-30 dark:brightness-80 dark:contrast-150"
                     width="92"
                     height="190"
@@ -202,6 +219,7 @@
                                 <x-dynamic-component
                                     :component="$feature['icon']"
                                     class="size-5 2xl:size-6"
+                                    aria-hidden="true"
                                 />
                                 <div class="text-gray-700 dark:text-slate-300">
                                     {{ $feature['label'] }}
@@ -222,6 +240,7 @@
                                 <x-dynamic-component
                                     :component="$feature['icon']"
                                     class="size-5 2xl:size-6"
+                                    aria-hidden="true"
                                 />
                                 <div class="text-gray-700 dark:text-slate-300">
                                     {{ $feature['label'] }}
@@ -250,6 +269,7 @@
                                 <x-dynamic-component
                                     :component="$feature['icon']"
                                     class="size-5 2xl:size-6"
+                                    aria-hidden="true"
                                 />
                                 <div class="text-gray-700 dark:text-slate-300">
                                     {{ $feature['label'] }}
@@ -270,6 +290,7 @@
                                 <x-dynamic-component
                                     :component="$feature['icon']"
                                     class="size-5 2xl:size-6"
+                                    aria-hidden="true"
                                 />
                                 <div class="text-gray-700 dark:text-slate-300">
                                     {{ $feature['label'] }}
@@ -341,6 +362,7 @@
                             }
                         "
                         class="size-4 text-gray-500"
+                        aria-hidden="true"
                     />
                 </div>
 
@@ -416,7 +438,7 @@
                         <a
                             href="https://www.youtube.com/watch?v=WOTSjPFXQ2k"
                             target="_blank"
-                            rel="noopener"
+                            rel="noopener noreferrer"
                             class="relative -top-5 grid size-10 place-items-center rounded-full bg-black/20 text-white ring-1 ring-white/10 backdrop-blur-sm transition duration-300 ease-in-out will-change-transform group-hover:scale-110 group-hover:text-[#d4fd7d] dark:bg-slate-500/20 dark:group-hover:text-[#9c90f0]"
                             aria-label="Watch NativePHP introduction video on YouTube"
                         >
@@ -451,7 +473,7 @@
                         <a
                             href="https://www.youtube.com/watch?v=WOTSjPFXQ2k"
                             target="_blank"
-                            rel="noopener"
+                            rel="noopener noreferrer"
                             aria-label="Watch Simon Hamp's Laracon EU talk about building mobile apps with PHP"
                         >
                             <img
@@ -490,7 +512,7 @@
                 <a
                     href="https://www.php.net"
                     target="_blank"
-                    rel="noopener"
+                    rel="noopener noreferrer"
                     class="inline-block font-medium text-gray-900 transition duration-200 will-change-transform hover:-translate-y-0.5 dark:text-white"
                     aria-label="Learn more about PHP programming language"
                 >
@@ -500,7 +522,7 @@
                 <a
                     href="https://laravel.com"
                     target="_blank"
-                    rel="noopener"
+                    rel="noopener noreferrer"
                     class="inline-block font-medium text-gray-900 transition duration-200 will-change-transform hover:-translate-y-0.5 dark:text-white"
                     aria-label="Learn more about Laravel framework"
                 >
@@ -606,7 +628,7 @@
                 <a
                     href="https://www.youtube.com/watch?v=WOTSjPFXQ2k"
                     target="_blank"
-                    rel="noopener"
+                    rel="noopener noreferrer"
                     class="group relative"
                     aria-label="Watch introduction to NativePHP for Mobile"
                 >

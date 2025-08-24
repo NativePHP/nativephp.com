@@ -1,6 +1,7 @@
 <section
     class="mt-5"
     aria-labelledby="sponsors-title"
+    role="region"
 >
     <div class="dark:bg-mirage rounded-2xl bg-gray-200/60 p-8 md:p-10">
         <div
@@ -12,9 +13,9 @@
             >
                 Our Partners
             </h2>
-            <h3 class="text-lg text-gray-600 lg:text-xl dark:text-zinc-400">
+            <p class="text-lg text-gray-600 lg:text-xl dark:text-zinc-400">
                 NativePHP wouldn't be possible without amazing Partners
-            </h3>
+            </p>
         </div>
 
         <div class="mt-5 flex flex-wrap gap-5 lg:mt-7 lg:flex-nowrap">
