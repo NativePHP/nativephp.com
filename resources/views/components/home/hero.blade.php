@@ -7,7 +7,7 @@
     >
         {{-- Demo app --}}
         <div
-            class="order-last mt-7 flex justify-center text-xs lg:order-first lg:mt-0 lg:-mb-20 lg:justify-end"
+            class="order-last mt-7 flex justify-center text-xs lg:order-first lg:mt-0 lg:-mb-20 lg:justify-end 2xl:text-sm"
         >
             <div
                 x-init="
@@ -42,7 +42,7 @@
                         target="_blank"
                         class="flex items-center gap-2 rounded-xl bg-white/70 px-3 py-2.5 backdrop-blur-md transition duration-200 will-change-transform hover:scale-98 hover:bg-white dark:bg-slate-500/25 dark:hover:bg-slate-500/40"
                     >
-                        <x-icons.play-store class="h-4.5" />
+                        <x-icons.play-store class="h-4.5 2xl:h-5" />
                         <div>Play Store</div>
                     </a>
                 </div>
@@ -52,7 +52,7 @@
                         target="_blank"
                         class="flex items-center gap-2 rounded-xl bg-white/70 px-3 py-2.5 backdrop-blur-md transition duration-200 will-change-transform hover:scale-98 hover:bg-white dark:bg-slate-500/25 dark:hover:bg-slate-500/40"
                     >
-                        <x-icons.app-store class="h-4.5" />
+                        <x-icons.app-store class="h-4.5 2xl:h-5" />
                         <div>App Store</div>
                     </a>
                 </div>
@@ -62,7 +62,7 @@
                         target="_blank"
                         class="flex items-center gap-2 rounded-xl bg-white/70 px-3 py-2.5 backdrop-blur-md transition duration-200 will-change-transform hover:scale-98 hover:bg-white dark:bg-slate-500/25 dark:hover:bg-slate-500/40"
                     >
-                        <x-icons.github class="h-4.5" />
+                        <x-icons.github class="h-4.5 2xl:h-5" />
                         <div>Source code</div>
                     </a>
                 </div>

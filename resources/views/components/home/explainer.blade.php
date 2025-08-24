@@ -2,10 +2,10 @@
     class="mt-5"
     aria-labelledby="sponsors-title"
 >
-    <div class="flex gap-5">
+    <div class="flex flex-col gap-5 lg:flex-row">
         {{-- How does it work --}}
         <div
-            class="dark:bg-mirage relative flex max-w-165 flex-col items-center gap-5 overflow-hidden rounded-2xl bg-gray-200/60 p-8 sm:flex-row sm:p-10"
+            class="dark:bg-mirage relative flex flex-col items-center gap-5 overflow-hidden rounded-2xl bg-gray-200/60 p-8 sm:flex-row sm:justify-between sm:p-10 lg:max-w-165 xl:shrink-0"
         >
             {{-- Left side --}}
             <div class="relative z-10 flex flex-col gap-5 pl-5">
@@ -63,6 +63,7 @@
                     , but it’s just PHP... on your user's device!
                 </p>
             </div>
+
             {{-- Right side --}}
             <div class="relative z-10 pl-5 sm:pl-0">
                 <div class="grid">
@@ -227,37 +228,41 @@
             </div>
         </div>
 
-        <div class="flex max-w-md flex-col gap-5">
+        <div class="flex flex-col gap-5 lg:max-w-sm xl:max-w-max">
             {{-- Performance --}}
-            <div class="grid grid-cols-2 items-stretch gap-5">
+            <div class="xs:grid-cols-2 grid items-stretch gap-5">
                 <div
-                    class="dark:from-mirage flex flex-col gap-3 rounded-2xl bg-gradient-to-tl from-[#FEF3C6] to-[#FFFBEB] p-6 dark:to-slate-700/40"
+                    class="dark:from-mirage flex flex-col gap-3 rounded-2xl bg-gradient-to-tl from-[#FEF3C6] to-[#FFFBEB] p-7 dark:to-slate-700/40"
                 >
                     <x-icons.home.charging-thunder
                         class="size-12 text-yellow-400"
                     />
                     <div class="flex flex-col gap-1">
                         <h3
-                            class="text-xl font-semibold text-gray-800 dark:text-white"
+                            class="text-xl font-semibold text-gray-800 2xl:text-2xl dark:text-white"
                         >
                             Fast apps
                         </h3>
-                        <h4 class="text-gray-600 dark:text-zinc-400">
+                        <h4
+                            class="text-gray-600 2xl:text-lg dark:text-zinc-400"
+                        >
                             Laravel running at native speed
                         </h4>
                     </div>
                 </div>
                 <div
-                    class="dark:from-mirage flex flex-col gap-3 rounded-2xl bg-gradient-to-tl from-[#ECFCCA] to-[#F7FEE7] p-6 dark:to-slate-700/40"
+                    class="dark:from-mirage flex flex-col gap-3 rounded-2xl bg-gradient-to-tl from-[#ECFCCA] to-[#F7FEE7] p-7 dark:to-slate-700/40"
                 >
                     <x-icons.home.rocket class="size-12 text-lime-400" />
                     <div class="flex flex-col gap-1">
                         <h3
-                            class="text-xl font-semibold text-gray-800 dark:text-white"
+                            class="text-xl font-semibold text-gray-800 2xl:text-2xl dark:text-white"
                         >
                             Tiny apps
                         </h3>
-                        <h4 class="text-gray-600 dark:text-zinc-400">
+                        <h4
+                            class="text-gray-600 2xl:text-lg dark:text-zinc-400"
+                        >
                             Mobile apps under 50MB
                         </h4>
                     </div>
@@ -266,15 +271,15 @@
 
             {{-- Tools --}}
             <div
-                class="dark:from-mirage flex flex-col gap-4 rounded-2xl bg-gradient-to-tl from-[#DBDCFB] to-[#F9FAFB] p-6 dark:to-slate-700/40"
+                class="dark:from-mirage flex flex-col gap-4 rounded-2xl bg-gradient-to-tl from-[#DBDCFB] to-[#F9FAFB] p-7 dark:to-slate-700/40"
             >
                 <div class="flex flex-col gap-1">
                     <h3
-                        class="text-xl font-semibold text-gray-800 dark:text-white"
+                        class="text-xl font-semibold text-gray-800 2xl:text-2xl dark:text-white"
                     >
                         Bring your favorite tools
                     </h3>
-                    <h4 class="text-gray-600 dark:text-zinc-400">
+                    <h4 class="text-gray-600 2xl:text-lg dark:text-zinc-400">
                         Use any Composer packages and front-end frameworks
                     </h4>
                 </div>
@@ -289,9 +294,9 @@
                             ['name' => 'Nuxt', 'link' => 'https://nuxtjs.org/', 'icon' => 'icons.skills.nuxtjs'],
                             ['name' => 'Livewire', 'link' => 'https://livewire.laravel.com', 'icon' => 'icons.skills.livewire'],
                             ['name' => 'FilamentPHP', 'link' => 'https://filamentphp.com/', 'icon' => 'icons.skills.filamentphp'],
-                            ['name' => 'TailwindCSS', 'link' => 'https://tailwindcss.com/', 'icon' => 'icons.skills.tailwind-css'],
-                            ['name' => 'Inertia.js', 'link' => 'https://inertiajs.com/', 'icon' => 'icons.skills.inertiajs'],
                             ['name' => 'Alpine.js', 'link' => 'https://alpinejs.dev/', 'icon' => 'icons.skills.alpinejs'],
+                            ['name' => 'Inertia.js', 'link' => 'https://inertiajs.com/', 'icon' => 'icons.skills.inertiajs'],
+                            ['name' => 'TailwindCSS', 'link' => 'https://tailwindcss.com/', 'icon' => 'icons.skills.tailwind-css'],
                         ];
                     @endphp
 
