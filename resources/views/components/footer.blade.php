@@ -82,7 +82,7 @@
                                 $el,
                                 {
                                     opacity: [0, 1],
-                                    x: [10, 0],
+                                    y: [-10, 0],
                                 },
                                 {
                                     duration: 0.7,
@@ -184,7 +184,7 @@
                         <a
                             href="{{ route('welcome') }}"
                             aria-label="Home"
-                            class="inline-block px-px py-1.5 transition duration-300 will-change-transform hover:translate-x-1 hover:text-gray-300"
+                            class="inline-block px-px py-1.5 transition duration-300 will-change-transform hover:translate-x-1 hover:text-gray-700 dark:hover:text-gray-300"
                         >
                             Home
                         </a>
@@ -193,7 +193,7 @@
                         <a
                             href="{{ route('blog') }}"
                             aria-label="Blog"
-                            class="inline-block px-px py-1.5 transition duration-300 will-change-transform hover:translate-x-1 hover:text-gray-300"
+                            class="inline-block px-px py-1.5 transition duration-300 will-change-transform hover:translate-x-1 hover:text-gray-700 dark:hover:text-gray-300"
                         >
                             Blog
                         </a>
@@ -202,7 +202,7 @@
                         <a
                             href="https://shop.nativephp.com/"
                             aria-label="NativePHP Shop"
-                            class="inline-block px-px py-1.5 transition duration-300 will-change-transform hover:translate-x-1 hover:text-gray-300"
+                            class="inline-block px-px py-1.5 transition duration-300 will-change-transform hover:translate-x-1 hover:text-gray-700 dark:hover:text-gray-300"
                         >
                             Shop
                         </a>
@@ -211,7 +211,7 @@
                         <a
                             href="https://bifrost.nativephp.com/"
                             aria-label="Bifrost"
-                            class="inline-block px-px py-1.5 transition duration-300 will-change-transform hover:translate-x-1 hover:text-gray-300"
+                            class="inline-block px-px py-1.5 transition duration-300 will-change-transform hover:translate-x-1 hover:text-gray-700 dark:hover:text-gray-300"
                         >
                             Bifrost
                         </a>
@@ -220,7 +220,7 @@
                         <a
                             href="{{ route('privacy-policy') }}"
                             aria-label="Privacy Policy"
-                            class="inline-block px-px py-1.5 transition duration-300 will-change-transform hover:translate-x-1 hover:text-gray-300"
+                            class="inline-block px-px py-1.5 transition duration-300 will-change-transform hover:translate-x-1 hover:text-gray-700 dark:hover:text-gray-300"
                         >
                             Privacy Policy
                         </a>
@@ -229,7 +229,7 @@
                         <a
                             href="{{ route('terms-of-service') }}"
                             aria-label="Terms of Service"
-                            class="inline-block px-px py-1.5 transition duration-300 will-change-transform hover:translate-x-1 hover:text-gray-300"
+                            class="inline-block px-px py-1.5 transition duration-300 will-change-transform hover:translate-x-1 hover:text-gray-700 dark:hover:text-gray-300"
                         >
                             Terms of Service
                         </a>
@@ -247,7 +247,7 @@
                         <a
                             href="/docs/mobile/1/getting-started/introduction"
                             aria-label="Mobile Documentation"
-                            class="inline-block px-px py-1.5 transition duration-300 will-change-transform hover:translate-x-1 hover:text-gray-300"
+                            class="inline-block px-px py-1.5 transition duration-300 will-change-transform hover:translate-x-1 hover:text-gray-700 dark:hover:text-gray-300"
                         >
                             Documentation
                         </a>
@@ -256,7 +256,7 @@
                         <a
                             href="{{ route('pricing') }}"
                             aria-label="Pricing"
-                            class="inline-block px-px py-1.5 transition duration-300 will-change-transform hover:translate-x-1 hover:text-gray-300"
+                            class="inline-block px-px py-1.5 transition duration-300 will-change-transform hover:translate-x-1 hover:text-gray-700 dark:hover:text-gray-300"
                         >
                             Pricing
                         </a>
@@ -265,7 +265,7 @@
                         <a
                             href="https://github.com/nativephp"
                             aria-label="GitHub"
-                            class="inline-block px-px py-1.5 transition duration-300 will-change-transform hover:translate-x-1 hover:text-gray-300"
+                            class="inline-block px-px py-1.5 transition duration-300 will-change-transform hover:translate-x-1 hover:text-gray-700 dark:hover:text-gray-300"
                         >
                             GitHub
                         </a>
@@ -283,7 +283,7 @@
                         <a
                             href="/docs/desktop/1/getting-started/introduction"
                             aria-label="Desktop Documentation"
-                            class="inline-block px-px py-1.5 transition duration-300 will-change-transform hover:translate-x-1 hover:text-gray-300"
+                            class="inline-block px-px py-1.5 transition duration-300 will-change-transform hover:translate-x-1 hover:text-gray-700 dark:hover:text-gray-300"
                         >
                             Documentation
                         </a>
@@ -292,7 +292,7 @@
                         <a
                             href="{{ route('sponsoring') }}"
                             aria-label="Sponsoring"
-                            class="inline-block px-px py-1.5 transition duration-300 will-change-transform hover:translate-x-1 hover:text-gray-300"
+                            class="inline-block px-px py-1.5 transition duration-300 will-change-transform hover:translate-x-1 hover:text-gray-700 dark:hover:text-gray-300"
                         >
                             Sponsoring
                         </a>
@@ -301,7 +301,7 @@
                         <a
                             href="https://github.com/nativephp"
                             aria-label="GitHub"
-                            class="inline-block px-px py-1.5 transition duration-300 will-change-transform hover:translate-x-1 hover:text-gray-300"
+                            class="inline-block px-px py-1.5 transition duration-300 will-change-transform hover:translate-x-1 hover:text-gray-700 dark:hover:text-gray-300"
                         >
                             GitHub
                         </a>
