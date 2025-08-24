@@ -239,7 +239,7 @@
                     class="dark:from-mirage 2xs:items-start flex flex-col items-center gap-3 rounded-2xl bg-gradient-to-tl from-[#FEF3C6] to-[#FFFBEB] p-7 2xl:gap-4 2xl:p-8 dark:to-slate-700/40"
                 >
                     <x-icons.home.charging-thunder
-                        class="size-12 text-yellow-400 2xl:size-14"
+                        class="size-12 text-yellow-400 2xl:size-14 dark:text-amber-300"
                     />
                     <div
                         class="2xs:items-start 2xs:text-left flex flex-col items-center gap-1 text-center text-pretty"
@@ -260,7 +260,7 @@
                     class="dark:from-mirage 2xs:items-start flex flex-col items-center gap-3 rounded-2xl bg-gradient-to-tl from-[#ECFCCA] to-[#F7FEE7] p-7 2xl:gap-4 2xl:p-8 dark:to-slate-700/40"
                 >
                     <x-icons.home.rocket
-                        class="size-12 text-lime-400 2xl:size-14"
+                        class="size-12 text-lime-400 2xl:size-14 dark:text-lime-300"
                     />
                     <div
                         class="2xs:items-start 2xs:text-left flex flex-col items-center gap-1 text-center text-pretty"
@@ -425,7 +425,7 @@
             </p>
 
             <div
-                class="2xs:justify-start flex flex-wrap items-start justify-center gap-x-2.5 gap-y-3 [--icon-bg:#F9FBF0] [--icon-stroke:#717838] 2xl:gap-x-3 dark:[--icon-bg:--alpha(var(--color-slate-400)/30%)] dark:[--icon-stroke:--alpha(var(--color-white)/60%)]"
+                class="2xs:justify-start flex flex-wrap items-start justify-center gap-x-2.5 gap-y-3 [--icon-bg:#F9FBF0] [--icon-stroke:#717838] 2xl:gap-x-3 dark:[--icon-bg:--alpha(var(--color-teal-500)/30%)] dark:[--icon-stroke:--alpha(var(--color-teal-400)/80%)]"
             >
                 @php
                     $categories = [
