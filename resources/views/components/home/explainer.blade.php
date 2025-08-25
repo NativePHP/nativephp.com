@@ -445,10 +445,14 @@
                     <div
                         class="grid size-10 shrink-0 place-items-center rounded-xl bg-blue-100 dark:bg-blue-500/20"
                     >
-                        <x-icons.home.document
-                            class="size-5"
-                            aria-hidden="true"
-                        />
+                        <div
+                            class="[--icon-bg:#F9FBF0] [--icon-dot:#BEDBFF] [--icon-stroke:#155DFC] dark:[--icon-bg:--alpha(var(--color-blue-400)/30%)] dark:[--icon-dot:--alpha(var(--color-blue-400)/70%)] dark:[--icon-stroke:--alpha(var(--color-blue-300)/80%)]"
+                        >
+                            <x-icons.home.document
+                                class="size-5"
+                                aria-hidden="true"
+                            />
+                        </div>
                     </div>
                     <span class="text-gray-400 dark:text-zinc-400">1.</span>
                     <span class="text-gray-800 dark:text-white">
@@ -461,10 +465,14 @@
                     <div
                         class="grid size-10 shrink-0 place-items-center rounded-xl bg-violet-100 dark:bg-violet-500/20"
                     >
-                        <x-icons.home.browser
-                            class="size-5"
-                            aria-hidden="true"
-                        />
+                        <div
+                            class="[--icon-bg:#fff] [--icon-dot:#DDD6FF] [--icon-stroke:#7F22FE] dark:[--icon-bg:--alpha(var(--color-violet-400)/30%)] dark:[--icon-dot:--alpha(var(--color-violet-400)/70%)] dark:[--icon-stroke:--alpha(var(--color-violet-300)/80%)]"
+                        >
+                            <x-icons.home.browser
+                                class="size-5"
+                                aria-hidden="true"
+                            />
+                        </div>
                     </div>
                     <span class="text-gray-400 dark:text-zinc-400">2.</span>
                     <span class="text-gray-800 dark:text-white">
@@ -477,10 +485,14 @@
                     <div
                         class="grid size-10 shrink-0 place-items-center rounded-xl bg-cyan-100 dark:bg-cyan-500/20"
                     >
-                        <x-icons.home.startup
-                            class="size-5"
-                            aria-hidden="true"
-                        />
+                        <div
+                            class="[--icon-bg:#fff] [--icon-dot:#CEFAFE] [--icon-stroke:#0092B8] dark:[--icon-bg:--alpha(var(--color-sky-400)/30%)] dark:[--icon-dot:--alpha(var(--color-sky-400)/70%)] dark:[--icon-stroke:--alpha(var(--color-sky-300)/80%)]"
+                        >
+                            <x-icons.home.startup
+                                class="size-5"
+                                aria-hidden="true"
+                            />
+                        </div>
                     </div>
                     <span class="text-gray-400 dark:text-zinc-400">3.</span>
                     <span class="text-gray-800 dark:text-white">
