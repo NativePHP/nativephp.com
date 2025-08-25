@@ -1,7 +1,7 @@
 <x-layout title="Blog">
     {{-- Hero --}}
     <section
-        class="mt-10 px-5 md:mt-14"
+        class="mt-10 md:mt-14"
         aria-labelledby="hero-heading"
     >
         <header class="relative z-0 grid place-items-center text-center">

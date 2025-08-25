@@ -9,7 +9,6 @@
         "build": "vite build"
     },
     "devDependencies": {
-        "@tailwindcss/vite": "^4.1.11",
         "@alpinejs/collapse": "^3.14.9",
         "@alpinejs/persist": "^3.14.9",
         "@alpinejs/resize": "^3.14.9",
@@ -17,6 +16,7 @@
         "@fontsource/poppins": "^5.2.6",
         "@tailwindcss/forms": "^0.5.10",
         "@tailwindcss/typography": "^0.5.16",
+        "@tailwindcss/vite": "^4.1.12",
         "alpinejs": "^3.14.9",
         "atropos": "^2.0.2",
         "axios": "^1.11.0",
@@ -29,6 +29,6 @@
         "prettier-plugin-blade": "^2.1.21",
         "prettier-plugin-tailwindcss": "^0.6.14",
         "tailwindcss": "^4.1.12",
-        "vite": "^7.1.2"
+        "vite": "^7.1.3"
     }
 }

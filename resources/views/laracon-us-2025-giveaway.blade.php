@@ -5,7 +5,7 @@
         }
     </style>
     {{-- Hero Section --}}
-    <section class="mx-auto mt-2 max-w-7xl px-5">
+    <section class="mx-auto mt-2 max-w-7xl">
         <div
             x-ref="ticketEvent"
             class="grid place-items-center py-10 text-center"
@@ -248,7 +248,7 @@
     </section>
 
     {{-- Prizes --}}
-    <section class="mx-auto mt-20 max-w-5xl px-5">
+    <section class="mx-auto mt-20 max-w-5xl">
         {{-- Header --}}
         <h2
             id="hero-heading"
@@ -469,7 +469,7 @@
     {{-- How to enter --}}
     <section
         id="how-to-enter"
-        class="mx-auto mt-20 max-w-5xl scroll-mt-32 px-5"
+        class="mx-auto mt-20 max-w-5xl scroll-mt-32"
     >
         <div
             x-init="
@@ -667,7 +667,7 @@
     </section>
 
     {{-- Legal --}}
-    <section class="mx-auto mt-20 max-w-4xl px-5">
+    <section class="mx-auto mt-20 max-w-4xl">
         <div
             x-init="
                 () => {

@@ -71,7 +71,7 @@
             "
         >
             <div
-                class="overflow-hidden rounded-xl bg-white p-6 shadow-lg dark:bg-mirage"
+                class="dark:bg-mirage overflow-hidden rounded-xl bg-white p-6 shadow-lg"
             >
                 <div class="flex flex-col items-center gap-5 text-center">
                     <div
@@ -94,7 +94,7 @@
                         </svg>
 
                         <div
-                            class="absolute right-1/2 top-1/2 hidden size-24 -translate-y-1/2 translate-x-1/2 rounded-full bg-emerald-400/20 blur-2xl dark:block"
+                            class="absolute top-1/2 right-1/2 hidden size-24 translate-x-1/2 -translate-y-1/2 rounded-full bg-emerald-400/20 blur-2xl dark:block"
                             aria-hidden="true"
                         ></div>
                     </div>
@@ -138,7 +138,7 @@
                             }"
                         >
                             <div
-                                class="absolute right-2 top-3 flex items-center space-x-2"
+                                class="absolute top-3 right-2 flex items-center space-x-2"
                             >
                                 <div
                                     x-show="showMessage"
@@ -202,7 +202,7 @@
                                 }"
                             >
                                 <div
-                                    class="absolute right-2 top-3 flex items-center space-x-2"
+                                    class="absolute top-3 right-2 flex items-center space-x-2"
                                 >
                                     <div
                                         x-show="showMessage"
@@ -405,7 +405,7 @@
             >
                 <a
                     href="/docs/mobile/1/getting-started/installation"
-                    class="rounded-2xl bg-gray-100 p-6 transition duration-200 hover:bg-gray-200/70 hover:ring-1 hover:ring-black/60 dark:bg-mirage dark:hover:bg-haiti dark:hover:ring-cloud"
+                    class="dark:bg-mirage dark:hover:bg-haiti dark:hover:ring-cloud rounded-2xl bg-gray-100 p-6 transition duration-200 hover:bg-gray-200/70 hover:ring-1 hover:ring-black/60"
                 >
                     <div
                         class="mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-violet-100 dark:bg-violet-900"
@@ -434,7 +434,7 @@
 
                 <a
                     href="https://discord.gg/X62tWNStZK"
-                    class="rounded-2xl bg-gray-100 p-6 transition duration-200 hover:bg-gray-200/70 hover:ring-1 hover:ring-black/60 dark:bg-mirage dark:hover:bg-haiti dark:hover:ring-cloud"
+                    class="dark:bg-mirage dark:hover:bg-haiti dark:hover:ring-cloud rounded-2xl bg-gray-100 p-6 transition duration-200 hover:bg-gray-200/70 hover:ring-1 hover:ring-black/60"
                 >
                     <div
                         class="mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-indigo-100 dark:bg-indigo-900"
@@ -469,7 +469,7 @@
                 </a>
 
                 <div
-                    class="rounded-2xl bg-gray-100 p-6 transition duration-200 hover:bg-gray-200/70 hover:ring-1 hover:ring-black/60 dark:bg-mirage dark:hover:bg-haiti dark:hover:ring-cloud"
+                    class="dark:bg-mirage dark:hover:bg-haiti dark:hover:ring-cloud rounded-2xl bg-gray-100 p-6 transition duration-200 hover:bg-gray-200/70 hover:ring-1 hover:ring-black/60"
                 >
                     <div
                         class="mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-emerald-100 dark:bg-emerald-900"
@@ -498,12 +498,12 @@
 
                 @if ($subscription === \App\Enums\Subscription::Max)
                     <div
-                        class="rounded-2xl bg-gray-100 p-6 transition duration-200 hover:bg-gray-200/70 hover:ring-1 hover:ring-black/60 dark:bg-mirage dark:hover:bg-haiti dark:hover:ring-cloud"
+                        class="dark:bg-mirage dark:hover:bg-haiti dark:hover:ring-cloud rounded-2xl bg-gray-100 p-6 transition duration-200 hover:bg-gray-200/70 hover:ring-1 hover:ring-black/60"
                     >
                         <div
                             class="mb-4 flex h-12 w-12 items-center justify-center rounded-full"
                         >
-                            <x-icons.github class="dark:fill-white" />
+                            <x-icons.github class="dark:text-white" />
                         </div>
                         <h4 class="text-lg font-medium">Access the Repo</h4>
                         <p class="mt-2 text-gray-600 dark:text-gray-400">

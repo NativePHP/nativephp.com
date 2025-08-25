@@ -1,5 +1,5 @@
 <section
-    class="mx-auto mt-24 max-w-6xl px-5"
+    class="mx-auto mt-24 max-w-6xl"
     aria-labelledby="pricing-heading"
 >
     <header class="relative z-10 grid place-items-center text-center">

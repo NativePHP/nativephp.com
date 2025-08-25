@@ -1,3 +1,14 @@
-<svg {{ $attributes }} xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
-    <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 1.5H8.25A2.25 2.25 0 0 0 6 3.75v16.5a2.25 2.25 0 0 0 2.25 2.25h7.5A2.25 2.25 0 0 0 18 20.25V3.75a2.25 2.25 0 0 0-2.25-2.25H13.5m-3 0V3h3V1.5m-3 0h3m-3 18.75h3" />
+<svg
+    {{ $attributes }}
+    xmlns="http://www.w3.org/2000/svg"
+    viewBox="0 0 16 24"
+    fill="none"
+>
+    <path
+        d="M6.5 2H4.25C3.65326 2 3.08097 2.23705 2.65901 2.65901C2.23705 3.08097 2 3.65326 2 4.25V19.75C2 20.3467 2.23705 20.919 2.65901 21.341C3.08097 21.7629 3.65326 22 4.25 22H11.75C12.3467 22 12.919 21.7629 13.341 21.341C13.7629 20.919 14 20.3467 14 19.75V4.25C14 3.65326 13.7629 3.08097 13.341 2.65901C12.919 2.23705 12.3467 2 11.75 2H9.5M6.5 2V4.5H9.5V2M6.5 2H9.5M6.5 19.75H9.5"
+        stroke="currentColor"
+        stroke-width="1.4"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+    />
 </svg>

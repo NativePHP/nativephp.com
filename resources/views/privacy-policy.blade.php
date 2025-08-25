@@ -1,13 +1,13 @@
 <x-layout title="Blog">
     {{-- Hero --}}
     <section
-        class="mx-auto mt-10 w-full max-w-3xl px-5 md:mt-14"
+        class="mx-auto mt-10 w-full max-w-3xl md:mt-14"
         aria-labelledby="article-title"
     >
         <header class="relative grid place-items-center text-center">
             {{-- Blurred circle - Decorative --}}
             <div
-                class="absolute right-1/2 top-0 -z-30 h-60 w-60 translate-x-1/2 rounded-full blur-[150px] md:w-80 dark:bg-slate-500/50"
+                class="absolute top-0 right-1/2 -z-30 h-60 w-60 translate-x-1/2 rounded-full blur-[150px] md:w-80 dark:bg-slate-500/50"
                 aria-hidden="true"
             ></div>
 
@@ -74,7 +74,7 @@
                     })
                 }
             "
-            class="flex items-center pb-3 pt-3.5 will-change-transform"
+            class="flex items-center pt-3.5 pb-3 will-change-transform"
             aria-hidden="true"
         >
             <div
@@ -105,7 +105,7 @@
                     })
                 }
             "
-            class="prose mt-2 max-w-none text-gray-600 will-change-transform dark:text-gray-400 dark:prose-headings:text-white"
+            class="prose dark:prose-headings:text-white mt-2 max-w-none text-gray-600 will-change-transform dark:text-gray-400"
             aria-labelledby="article-title"
         >
             <p>
