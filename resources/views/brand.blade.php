@@ -110,6 +110,23 @@
 
         {{-- List --}}
         <div
+            x-init="
+                () => {
+                    motion.inView($el, (element) => {
+                        gsap.fromTo(
+                            Array.from($el.children),
+                            { x: -10, autoAlpha: 0 },
+                            {
+                                x: 0,
+                                autoAlpha: 1,
+                                stagger: 0.1,
+                                duration: 0.7,
+                                ease: 'power2.out',
+                            },
+                        )
+                    })
+                }
+            "
             class="mx-auto mt-10 flex w-full max-w-md flex-col items-stretch gap-10"
         >
             @php
