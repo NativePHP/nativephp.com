@@ -244,7 +244,7 @@
             </div>
             {{-- Dashed horizontal line --}}
             <div
-                class="pointer-events-none absolute inset-x-0 top-8 z-20 h-px text-gray-300 dark:text-white/10"
+                class="pointer-events-none absolute inset-x-0 top-7 z-20 h-px text-gray-300 dark:text-white/10"
                 aria-hidden="true"
             >
                 <div
@@ -354,15 +354,15 @@
                 class="flex flex-col gap-4 rounded-2xl bg-gradient-to-tl from-[#DBDCFB] to-[#F9FAFB] p-7 2xl:p-8 dark:from-mirage dark:to-mirage"
             >
                 <div
-                    class="flex flex-col items-center gap-1 text-center text-pretty 2xs:items-start 2xs:text-left"
+                    class="flex flex-col items-center gap-1.5 text-center text-pretty 2xs:items-start 2xs:text-left"
                 >
                     <h3
-                        class="text-xl font-semibold text-gray-800 2xl:text-2xl dark:text-white"
+                        class="text-2xl font-bold text-gray-800 dark:text-white"
                     >
                         Bring your favorite tools
                     </h3>
                     <h4 class="text-gray-600 2xl:text-lg dark:text-zinc-400">
-                        Use any Composer packages and front-end frameworks
+                        Use any Composer packages and front-end frameworks.
                     </h4>
                 </div>
 
