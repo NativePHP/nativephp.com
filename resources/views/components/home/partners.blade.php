@@ -3,7 +3,25 @@
     aria-labelledby="sponsors-title"
     role="region"
 >
-    <div class="rounded-2xl bg-gray-200/60 p-8 md:p-10 dark:bg-mirage">
+    <div
+        x-init="
+            () => {
+                motion.inView($el, (element) => {
+                    gsap.fromTo(
+                        $el,
+                        { y: 10, autoAlpha: 0 },
+                        {
+                            y: 0,
+                            autoAlpha: 1,
+                            duration: 0.7,
+                            ease: 'power2.out',
+                        },
+                    )
+                })
+            }
+        "
+        class="rounded-2xl bg-gray-200/60 p-8 md:p-10 dark:bg-mirage"
+    >
         <div
             class="flex flex-col items-center gap-1 text-center text-pretty 2xs:items-start 2xs:text-left"
         >

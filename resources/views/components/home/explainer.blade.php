@@ -7,6 +7,22 @@
     <div class="flex flex-col gap-5 lg:flex-row">
         {{-- How does it work --}}
         <div
+            x-init="
+                () => {
+                    motion.inView($el, (element) => {
+                        gsap.fromTo(
+                            $el,
+                            { x: -10, autoAlpha: 0 },
+                            {
+                                x: 0,
+                                autoAlpha: 1,
+                                duration: 0.7,
+                                ease: 'power2.out',
+                            },
+                        )
+                    })
+                }
+            "
             class="relative flex flex-col items-center gap-5 overflow-hidden rounded-2xl bg-gray-200/60 p-8 sm:flex-row sm:justify-between sm:p-10 lg:max-w-165 xl:shrink-0 dark:bg-mirage"
         >
             {{-- Left side --}}
@@ -242,6 +258,22 @@
             {{-- Performance --}}
             <div class="grid items-stretch gap-5 xs:grid-cols-2">
                 <div
+                    x-init="
+                        () => {
+                            motion.inView($el, (element) => {
+                                gsap.fromTo(
+                                    $el,
+                                    { y: -10, autoAlpha: 0 },
+                                    {
+                                        y: 0,
+                                        autoAlpha: 1,
+                                        duration: 0.7,
+                                        ease: 'power2.out',
+                                    },
+                                )
+                            })
+                        }
+                    "
                     class="flex flex-col items-center gap-3 rounded-2xl bg-gradient-to-tl from-[#FEF3C6] to-[#FFFBEB] p-7 2xs:items-start 2xl:gap-4 2xl:p-8 dark:from-mirage dark:to-mirage"
                 >
                     <x-icons.home.charging-thunder
@@ -263,6 +295,22 @@
                     </div>
                 </div>
                 <div
+                    x-init="
+                        () => {
+                            motion.inView($el, (element) => {
+                                gsap.fromTo(
+                                    $el,
+                                    { y: 10, autoAlpha: 0 },
+                                    {
+                                        y: 0,
+                                        autoAlpha: 1,
+                                        duration: 0.7,
+                                        ease: 'power2.out',
+                                    },
+                                )
+                            })
+                        }
+                    "
                     class="flex flex-col items-center gap-3 rounded-2xl bg-gradient-to-tl from-[#ECFCCA] to-[#F7FEE7] p-7 2xs:items-start 2xl:gap-4 2xl:p-8 dark:from-mirage dark:to-mirage"
                 >
                     <x-icons.home.rocket
@@ -287,6 +335,22 @@
 
             {{-- Tools --}}
             <div
+                x-init="
+                    () => {
+                        motion.inView($el, (element) => {
+                            gsap.fromTo(
+                                $el,
+                                { x: 10, autoAlpha: 0 },
+                                {
+                                    x: 0,
+                                    autoAlpha: 1,
+                                    duration: 0.7,
+                                    ease: 'power2.out',
+                                },
+                            )
+                        })
+                    }
+                "
                 class="flex flex-col gap-4 rounded-2xl bg-gradient-to-tl from-[#DBDCFB] to-[#F9FAFB] p-7 2xl:p-8 dark:from-mirage dark:to-mirage"
             >
                 <div
@@ -341,6 +405,22 @@
     <div class="mt-5 flex flex-col gap-5 lg:flex-row">
         {{-- Left side --}}
         <div
+            x-init="
+                () => {
+                    motion.inView($el, (element) => {
+                        gsap.fromTo(
+                            $el,
+                            { x: -10, autoAlpha: 0 },
+                            {
+                                x: 0,
+                                autoAlpha: 1,
+                                duration: 0.7,
+                                ease: 'power2.out',
+                            },
+                        )
+                    })
+                }
+            "
             class="w-full rounded-2xl bg-gray-200/60 p-8 md:p-10 lg:max-w-md xl:max-w-lg dark:bg-mirage"
         >
             {{-- Header --}}
@@ -412,6 +492,22 @@
 
         {{-- Right side --}}
         <div
+            x-init="
+                () => {
+                    motion.inView($el, (element) => {
+                        gsap.fromTo(
+                            $el,
+                            { x: 10, autoAlpha: 0 },
+                            {
+                                x: 0,
+                                autoAlpha: 1,
+                                duration: 0.7,
+                                ease: 'power2.out',
+                            },
+                        )
+                    })
+                }
+            "
             class="relative z-0 flex flex-col justify-center gap-4 overflow-hidden rounded-2xl bg-[#F0F2E7] p-7 2xl:p-8 dark:bg-mirage"
         >
             <div
