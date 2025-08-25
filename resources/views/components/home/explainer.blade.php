@@ -430,9 +430,7 @@
                 <p class="text-lg text-gray-600 lg:text-xl dark:text-zinc-400">
                     Step by step
                 </p>
-                <h2
-                    class="text-xl font-bold text-gray-800 lg:text-2xl dark:text-white"
-                >
+                <h2 class="text-2xl font-bold text-gray-800 dark:text-white">
                     How do I get it?
                 </h2>
             </div>
@@ -528,9 +526,7 @@
                 <p class="text-lg text-[#9FA382] lg:text-xl dark:text-zinc-400">
                     Your next app starts here
                 </p>
-                <h2
-                    class="text-xl font-bold text-gray-800 lg:text-2xl dark:text-white"
-                >
+                <h2 class="text-2xl font-bold text-gray-800 dark:text-white">
                     What can I build?
                 </h2>
             </div>

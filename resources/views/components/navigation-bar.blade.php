@@ -22,10 +22,12 @@
             <a
                 href="/"
                 aria-label="NativePHP Homepage"
-                class="hidden min-[500px]:block"
                 x-on:contextmenu.prevent="window.location.href = @js(route('brand'))"
             >
-                <x-logo class="h-4 min-[400px]:h-5 sm:h-6" />
+                <x-logo
+                    class="hidden h-4 min-[400px]:h-5 min-[500px]:block sm:h-6"
+                />
+                <x-mini-logo class="block h-6 min-[500px]:hidden" />
                 <span class="sr-only">NativePHP</span>
             </a>
 
