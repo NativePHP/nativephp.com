@@ -53,7 +53,7 @@
                 </div>
                 <div>
                     <a
-                        href="https://play.google.com/store/apps/details?id=com.nativephp.kitchensinkapp"
+                        href="https://testflight.apple.com/join/vm9Qtshy"
                         target="_blank"
                         rel="noopener noreferrer"
                         class="flex items-center gap-2 rounded-xl bg-white/70 px-3 py-2.5 backdrop-blur-md transition duration-200 will-change-transform hover:scale-98 hover:bg-white dark:bg-slate-500/25 dark:hover:bg-slate-500/40"
@@ -62,7 +62,7 @@
                             class="h-4.5 2xl:h-5"
                             aria-hidden="true"
                         />
-                        <div>App Store</div>
+                        <div>TestFlight</div>
                     </a>
                 </div>
                 <div>
