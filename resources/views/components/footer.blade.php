@@ -272,14 +272,16 @@
                             Pricing
                         </a>
                     </li>
+                    {{--
                     <li>
                         <a
-                            href="https://github.com/nativephp"
+                            href="https://github.com/nativephp/mobile"
                             class="inline-block px-px py-1.5 transition duration-300 will-change-transform hover:translate-x-1 hover:text-gray-700 dark:hover:text-gray-300"
                         >
                             GitHub
                         </a>
                     </li>
+                    --}}
                 </ul>
             </section>
 

@@ -18,12 +18,14 @@
             icon="dollar-circle"
             icon-class="size-5.5"
         />
+        {{--
         <x-navbar.device-dropdown-item
-            href="https://github.com/nativephp"
+            href="https://github.com/nativephp/mobile"
             title="GitHub"
             subtitle="Visit our GitHub repository"
             icon="github"
         />
+        --}}
     </x-navbar.device-dropdown>
 
     {{-- Desktop dropdown --}}
