@@ -53,7 +53,7 @@
 
     {{-- Bifrost --}}
     <div
-        class="flex items-center gap-2.5 translate-y-[2.8px] transition duration-200 ease-in-out will-change-transform group-hover:-translate-x-0.5"
+        class="flex translate-y-[2.8px] items-center gap-2.5 transition duration-200 ease-in-out will-change-transform group-hover:-translate-x-0.5"
     >
         <x-logos.bifrost class="h-4" />
     </div>
@@ -95,7 +95,7 @@
             <div
                 class="gradient-text bg-clip-text text-center tracking-tight text-pretty text-transparent"
             >
-                The fastest way to compile, sign and distribute your apps for every platform
+                Join Early Access — from $9/month. Plus a FREE Mobile Mini license
             </div>
         </div>
 

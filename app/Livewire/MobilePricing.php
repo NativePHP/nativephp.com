@@ -61,7 +61,7 @@ class MobilePricing extends Component
             ->allowPromotionCodes()
             ->checkout([
                 'success_url' => $this->successUrl(),
-                'cancel_url' => route('early-adopter'),
+                'cancel_url' => route('pricing'),
                 'consent_collection' => [
                     'terms_of_service' => 'required',
                 ],

@@ -1,0 +1,270 @@
+<div
+    x-init="
+        () => {
+            // Sync Popover ➜ Alpine
+            $refs.mobilePopover.addEventListener('toggle', () => {
+                showMobileMenu = $refs.mobilePopover.matches(':popover-open')
+            })
+
+            // Sync Alpine ➜ Popover
+            $watch('showMobileMenu', (open) => {
+                if (open && ! $refs.mobilePopover.matches(':popover-open')) {
+                    $refs.mobilePopover.showPopover()
+                } else if (! open && $refs.mobilePopover.matches(':popover-open')) {
+                    $refs.mobilePopover.hidePopover()
+                }
+            })
+        }
+    "
+    class="relative z-40 lg:hidden"
+>
+    <button
+        type="button"
+        popovertarget="mobile-menu-popover"
+        popovertargetaction="toggle"
+        class="-m-1.5 grid size-9 place-items-center overflow-hidden focus:ring-0 focus:outline-none"
+        :aria-expanded="showMobileMenu"
+        aria-controls="mobile-menu-popover"
+        aria-label="Toggle mobile menu"
+        aria-haspopup="true"
+        title="Open main navigation"
+    >
+        <div class="flex flex-col items-end gap-1 [grid-area:1/-1]">
+            <div
+                class="h-0.5 w-5 rounded-full bg-current transition duration-300 ease-in-out"
+                :class="{'translate-x-2 opacity-0': showMobileMenu}"
+            ></div>
+            <div
+                class="h-0.5 w-5 rounded-full bg-current transition delay-50 duration-300 ease-in-out"
+                :class="{'translate-x-2 opacity-0': showMobileMenu}"
+            ></div>
+            <div
+                class="h-0.5 w-3.5 rounded-full bg-current transition delay-100 duration-300 ease-in-out"
+                :class="{'translate-x-2 opacity-0': showMobileMenu}"
+            ></div>
+        </div>
+        <div class="flex items-center gap-2 [grid-area:1/-1]">
+            <div
+                class="h-5 w-0.5 rotate-45 rounded-full bg-current transition duration-300 ease-in-out"
+                :class="{
+                    'scale-y-100': showMobileMenu,
+                    'opacity-0 scale-y-0 -translate-y-4 translate-x-4': !showMobileMenu
+                }"
+            ></div>
+            <div
+                class="-ml-2.5 h-5 w-0.5 -rotate-45 rounded-full bg-current transition duration-300 ease-in-out"
+                :class="{
+                    'scale-y-100': showMobileMenu,
+                    'opacity-0 scale-y-0 -translate-y-4 -translate-x-4': !showMobileMenu
+                }"
+            ></div>
+        </div>
+    </button>
+
+    <div
+        popover
+        x-ref="mobilePopover"
+        id="mobile-menu-popover"
+        role="dialog"
+        aria-modal="true"
+        aria-label="Site menu"
+        class="fixed top-23 right-3 bottom-3.5 left-3 h-auto w-auto origin-top -translate-y-2 scale-y-90 overflow-y-scroll overscroll-contain rounded-2xl bg-gray-100/50 opacity-0 ring-1 ring-gray-200/80 backdrop-blur-2xl transition transition-discrete duration-300 open:translate-y-0 open:scale-y-100 open:opacity-100 min-[500px]:right-3.5 min-[500px]:left-3.5 dark:bg-black/50 dark:text-white dark:ring-gray-700/70 starting:open:-translate-y-2 starting:open:scale-y-0 starting:open:opacity-0"
+    >
+        <div class="flex h-full flex-col overflow-hidden p-6">
+            <nav
+                class="flex flex-1 flex-col items-start text-xl"
+                aria-label="Primary"
+            >
+                @php
+                    $isHomeActive = request()->routeIs('welcome*');
+                    $isPricingActive = request()->routeIs('pricing*');
+                    $isDocsActive = request()->is('docs*');
+                    $isBlogActive = request()->routeIs('blog*');
+                    $isSponsorActive = request()->routeIs('sponsoring*');
+                @endphp
+
+                {{-- Home Link --}}
+                <div class="w-full">
+                    <a
+                        href="/"
+                        @class([
+                            'flex items-center justify-between py-3 transition duration-200',
+                            'font-medium' => $isHomeActive,
+                            'opacity-50 hover:translate-x-1 hover:opacity-100' => ! $isHomeActive,
+                        ])
+                        aria-current="{{ $isHomeActive ? 'page' : 'false' }}"
+                    >
+                        <div>Home</div>
+                        @if ($isHomeActive)
+                            <x-icons.right-arrow
+                                class="size-4 shrink-0"
+                                aria-hidden="true"
+                                focusable="false"
+                            />
+                        @endif
+                    </a>
+                </div>
+
+                <div
+                    class="h-0.5 w-full rounded-full bg-current opacity-5"
+                    role="presentation"
+                ></div>
+
+                {{-- Mobile Link --}}
+                <div class="w-full">
+                    <a
+                        href="{{ route('pricing') }}"
+                        @class([
+                            'flex items-center justify-between py-3 transition duration-200',
+                            'font-medium' => $isPricingActive,
+                            'opacity-50 hover:translate-x-1 hover:opacity-100' => ! $isPricingActive,
+                        ])
+                        aria-current="{{ $isPricingActive ? 'page' : 'false' }}"
+                    >
+                        <div>Mobile pricing</div>
+                        @if ($isPricingActive)
+                            <x-icons.right-arrow
+                                class="size-4 shrink-0"
+                                aria-hidden="true"
+                                focusable="false"
+                            />
+                        @endif
+                    </a>
+                </div>
+
+                <div
+                    class="h-0.5 w-full rounded-full bg-current opacity-5"
+                    role="presentation"
+                ></div>
+
+                {{-- Docs Link --}}
+                <div class="w-full">
+                    <a
+                        href="/docs/"
+                        @class([
+                            'flex items-center justify-between py-3 transition duration-200',
+                            'font-medium' => $isDocsActive,
+                            'opacity-50 hover:translate-x-1 hover:opacity-100' => ! $isDocsActive,
+                        ])
+                        aria-current="{{ $isDocsActive ? 'page' : 'false' }}"
+                    >
+                        <div>Docs</div>
+                        @if ($isDocsActive)
+                            <x-icons.right-arrow
+                                class="size-4 shrink-0"
+                                aria-hidden="true"
+                                focusable="false"
+                            />
+                        @endif
+                    </a>
+                </div>
+
+                <div
+                    class="h-0.5 w-full rounded-full bg-current opacity-5"
+                    role="presentation"
+                ></div>
+
+                {{-- Blog Link --}}
+                <div class="w-full">
+                    <a
+                        href="{{ route('blog') }}"
+                        @class([
+                            'flex items-center justify-between py-3 transition duration-200',
+                            'font-medium' => $isBlogActive,
+                            'opacity-50 hover:translate-x-1 hover:opacity-100' => ! $isBlogActive,
+                        ])
+                        aria-current="{{ $isBlogActive ? 'page' : 'false' }}"
+                    >
+                        <div>Blog</div>
+                        @if ($isBlogActive)
+                            <x-icons.right-arrow
+                                class="size-4 shrink-0"
+                                aria-hidden="true"
+                                focusable="false"
+                            />
+                        @endif
+                    </a>
+                </div>
+
+                <div
+                    class="h-0.5 w-full rounded-full bg-current opacity-5"
+                    role="presentation"
+                ></div>
+
+                {{-- Shop Link --}}
+                <div class="w-full">
+                    <a
+                        href="https://shop.nativephp.com/"
+                        class="flex items-center justify-between py-3 opacity-50 transition duration-200 hover:translate-x-1 hover:opacity-100"
+                        aria-label="NativePHP Shop"
+                    >
+                        <div>Shop</div>
+                    </a>
+                </div>
+            </nav>
+
+            <div
+                class="mb-2 flex w-full items-center justify-between gap-2 pb-2"
+            >
+                <div>Theme:</div>
+                <div
+                    class="flex h-10 items-center gap-0.5 rounded-full bg-gray-100 p-1 text-sm ring-1 ring-black/5 dark:bg-black/20 dark:ring-white/10"
+                    role="radiogroup"
+                    aria-label="Theme preference"
+                >
+                    <button
+                        type="button"
+                        role="radio"
+                        :aria-checked="themePreference === 'light'"
+                        x-on:click="themePreference = 'light'; showMobileMenu = false"
+                        class="rounded-full px-3 py-1.5 transition duration-300 ease-in-out"
+                        :class="{
+                            'bg-zinc-300/70': themePreference === 'light',
+                        }"
+                        title="Use light theme"
+                    >
+                        Light
+                    </button>
+                    <button
+                        type="button"
+                        role="radio"
+                        :aria-checked="themePreference === 'system'"
+                        x-on:click="themePreference = 'system'; showMobileMenu = false"
+                        class="rounded-full px-3 py-1.5 transition duration-300 ease-in-out"
+                        :class="{
+                            'bg-zinc-300/50 dark:bg-gray-200/10': themePreference === 'system',
+                        }"
+                        title="Use system theme"
+                    >
+                        System
+                    </button>
+                    <button
+                        type="button"
+                        role="radio"
+                        :aria-checked="themePreference === 'dark'"
+                        x-on:click="themePreference = 'dark'; showMobileMenu = false"
+                        class="rounded-full px-3 py-1.5 transition duration-300 ease-in-out"
+                        :class="{
+                            'bg-gray-200/10': themePreference === 'dark',
+                        }"
+                        title="Use dark theme"
+                    >
+                        Dark
+                    </button>
+                </div>
+            </div>
+
+            <div
+                class="h-0.5 w-full rounded-full bg-current opacity-5"
+                role="presentation"
+            ></div>
+
+            <nav
+                class="mt-4 flex flex-wrap items-center justify-center gap-2.5"
+                aria-label="Social media"
+            >
+                <x-social-networks-all />
+            </nav>
+        </div>
+    </div>
+</div>

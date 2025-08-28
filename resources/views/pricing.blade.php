@@ -1,7 +1,7 @@
 <x-layout title="NativePHP for iOS and Android">
     {{-- Hero Section --}}
     <section
-        class="mt-10 px-5 md:mt-14"
+        class="mt-10 md:mt-14"
         aria-labelledby="hero-heading"
     >
         <header class="relative z-10 grid place-items-center text-center">
@@ -197,7 +197,7 @@
 
     {{-- Quick Instructions Section --}}
     <section
-        class="mt-20 px-5"
+        class="mt-20"
         aria-labelledby="instructions-heading"
     >
         <header class="relative z-10 grid place-items-center text-center">
@@ -611,7 +611,7 @@
 
     {{-- Ultra Section --}}
     <section
-        class="mx-auto mt-16 max-w-4xl px-5"
+        class="mx-auto mt-10 max-w-2xl"
         aria-labelledby="ultra-tier-heading"
     >
         <div
@@ -632,7 +632,7 @@
                     })
                 }
             "
-            class="dark:bg-mirage space-y-6 rounded-2xl bg-gray-100 p-7"
+            class="dark:bg-mirage space-y-3 rounded-2xl bg-gray-100 p-7 text-center"
         >
             {{-- Plan Name --}}
             <h3
@@ -659,7 +659,7 @@
             <div>
                 <a
                     href="{{ route('partners') }}"
-                    class="mt-5 block w-full max-w-xs rounded-2xl bg-zinc-200 py-4 text-center text-sm font-medium transition duration-200 ease-in-out hover:bg-zinc-800 hover:text-white dark:bg-slate-700/30 dark:hover:bg-slate-700/40"
+                    class="mx-auto mt-5 block w-full max-w-xs rounded-2xl bg-zinc-200 py-4 text-center text-sm font-medium transition duration-200 ease-in-out hover:bg-zinc-800 hover:text-white dark:bg-slate-700/30 dark:hover:bg-slate-700/40"
                 >
                     Learn More
                 </a>
@@ -672,7 +672,7 @@
 
     {{-- FAQ Section --}}
     <section
-        class="mx-auto mt-24 max-w-5xl px-5"
+        class="mt-24"
         aria-labelledby="faq-heading"
     >
         {{-- Section Heading --}}
