@@ -48,7 +48,7 @@
             icon-class="size-4"
         />
         <x-navbar.device-dropdown-item
-            href="https://github.com/nativephp"
+            href="https://github.com/nativephp/laravel"
             title="GitHub"
             subtitle="Visit our GitHub repository"
             icon="github"
