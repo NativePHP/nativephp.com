@@ -10,6 +10,7 @@
     $base = $id ?? \Illuminate\Support\Str::slug($label) . '-' . \Illuminate\Support\Str::random(6);
     $buttonId = $base . '-btn';
     $menuId = $base . '-menu';
+    $align = $align ?? 'left'; // 'left', 'center'
 @endphp
 
 <div
@@ -126,7 +127,7 @@
         id="{{ $menuId }}"
         role="menu"
         aria-labelledby="{{ $buttonId }}"
-        class="dark:bg-mirage absolute top-full left-0 mt-2 w-max max-w-[calc(100vw-1rem)] min-w-[16rem] origin-top overflow-y-auto overscroll-contain rounded-xl bg-white shadow-xl ring-1 shadow-black/5 ring-zinc-200/80 sm:right-auto sm:left-0 dark:text-white dark:ring-zinc-700/70"
+        class="{{ $align === 'left' ? 'left-0' : 'left-1/2 -translate-x-1/2 sm:left-0 sm:translate-x-0' }} absolute top-full mt-2 w-max max-w-[calc(100vw-1rem)] min-w-[16rem] origin-top overflow-y-auto overscroll-contain rounded-xl bg-white shadow-xl ring-1 shadow-black/5 ring-zinc-200/80 sm:right-auto dark:bg-mirage dark:text-white dark:ring-zinc-700/70"
         @mouseenter="pointerFine && (closeTimeout && clearTimeout(closeTimeout))"
         @keydown.tab="closeMenu()"
         @keydown.arrow-down.prevent="(() => {

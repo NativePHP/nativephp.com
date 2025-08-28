@@ -18,13 +18,14 @@
             icon="dollar-circle"
             icon-class="size-5.5"
         />
+        {{-- 👇 Hidden temporarily --}}
         {{--
-        <x-navbar.device-dropdown-item
+            <x-navbar.device-dropdown-item
             href="https://github.com/nativephp/mobile"
             title="GitHub"
             subtitle="Visit our GitHub repository"
             icon="github"
-        />
+            />
         --}}
     </x-navbar.device-dropdown>
 
@@ -33,6 +34,7 @@
         label="Desktop"
         icon="pc"
         id="desktop-dropdown"
+        align="center"
     >
         <x-navbar.device-dropdown-item
             href="/docs/desktop/1/getting-started/introduction"
