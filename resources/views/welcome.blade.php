@@ -7,7 +7,4 @@
 
     {{-- Partners --}}
     <x-home.partners />
-
-    {{-- Marcel talk --}}
-    <x-home.marcel-talk />
 </x-layout>
