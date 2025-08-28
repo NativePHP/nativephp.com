@@ -137,7 +137,7 @@
                         </div>
 
                         <a
-                            href="/docs/getting-started/sponsoring"
+                            href="/partners"
                             aria-label="Learn about sponsoring the NativePHP project"
                             class="group flex w-full items-center justify-center gap-2.5 rounded-xl bg-white/50 px-6 py-2.5 transition duration-300 hover:bg-white/80 sm:w-auto dark:bg-[#d7ff83] dark:text-black dark:hover:bg-lime-300"
                         >
