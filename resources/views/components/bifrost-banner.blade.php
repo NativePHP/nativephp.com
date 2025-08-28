@@ -95,8 +95,7 @@
             <div
                 class="gradient-text bg-clip-text text-center tracking-tight text-pretty text-transparent"
             >
-                The fastest way to compile, sign and distribute your apps for
-                every platform
+                Join Early Access — from $9/month. Plus a FREE Mobile Mini license
             </div>
         </div>
 
