@@ -3,7 +3,7 @@
     lang="{{ str_replace('_', '-', app()->getLocale()) }}"
     x-data="{
         // Persisted theme preference: 'light' | 'dark' | 'system'
-        themePreference: $persist('system').as('theme'),
+        themePreference: $persist('system').as('themeMode'),
         // Effective dark-mode flag derived from preference + OS
         isDark: false,
         prefersDarkQuery: window.matchMedia('(prefers-color-scheme: dark)'),
