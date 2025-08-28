@@ -65,9 +65,10 @@
                         <div>TestFlight</div>
                     </a>
                 </div>
+                {{--
                 <div>
                     <a
-                        href="https://github.com/nativephp"
+                        href="https://github.com/nativephp/kitchen-sink-mobile"
                         target="_blank"
                         rel="noopener noreferrer"
                         class="flex items-center gap-2 rounded-xl bg-white/70 px-3 py-2.5 backdrop-blur-md transition duration-200 will-change-transform hover:scale-98 hover:bg-white dark:bg-slate-500/25 dark:hover:bg-slate-500/40"
@@ -79,6 +80,7 @@
                         <div>Source code</div>
                     </a>
                 </div>
+                --}}
             </div>
         </div>
 
