@@ -6,7 +6,7 @@ export default () => ({
             // Get the current page URL and convert it to .md URL
             const currentUrl = window.location.href
             const mdUrl = currentUrl.replace(
-                /\/docs\/([^\/]+\/[^\/]+\/[^\/]+)$/,
+                /\/docs\/([^\/]+\/[^\/]+\/.*)$/,
                 '/docs/$1.md',
             )
 
