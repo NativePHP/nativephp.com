@@ -7,7 +7,7 @@
     <button
         type="button"
         x-on:click="showDocsMenu = !showDocsMenu"
-        class="mb-2 flex w-full items-center gap-2.5 rounded-xl bg-gradient-to-tl from-transparent to-violet-100 px-3.5 py-3 focus:ring-0 focus:outline-none dark:to-indigo-400/30"
+        class="mb-2 flex w-full items-center gap-2.5 rounded-xl bg-gradient-to-tl from-transparent to-violet-100 px-3.5 py-3 focus:ring-0 focus:outline-none dark:from-slate-900/30 dark:to-indigo-400/30"
         :aria-expanded="showDocsMenu"
         aria-label="Toggle docs menu"
         aria-haspopup="true"
