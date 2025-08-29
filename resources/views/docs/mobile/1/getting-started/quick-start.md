@@ -1,6 +1,6 @@
 ---
 title: Quick Start
-order: 099
+order: 2
 ---
 
 ## Let's go!
@@ -13,7 +13,8 @@ Make sure you have an [active license](/mobile) before you install.
 
 </aside>
 
-Get your first mobile app running in minutes:
+If you've already got your [environment set up](environment-setup) to build mobile apps using Xcode and/or Android Studio, then you can
+get building your first mobile app with NativePHP in minutes:
 
 ```bash
 # Install NativePHP for Mobile into a new Laravel app
@@ -29,7 +30,8 @@ php artisan native:run
 ## Need help?
 
 - **Community** - Join our [Discord](/discord) for support and discussions.
-- **Examples** - Check out the [Kitchen Sink demo app](https://play.google.com/store/apps/details?id=com.nativephp.kitchensinkapp)
-    on Android (coming soon to iOS!)
+- **Examples** - Check out the Kitchen Sink demo app
+    on [Android](https://play.google.com/store/apps/details?id=com.nativephp.kitchensinkapp) and
+    [iOS](https://testflight.apple.com/join/vm9Qtshy)!
 
-Ready to build your first mobile app with PHP? [Let's get started! 🚀](/docs/getting-started/introduction)
+
