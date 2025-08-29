@@ -4,90 +4,33 @@
     $desktopHref = '/docs/desktop/1';
 @endphp
 
-<div
-    {{ $attributes }}
-    class="mx-1 mb-3 rounded-xl bg-zinc-100/80 transition-all duration-300 ease-in-out dark:bg-mirage"
-    :class="{
-        'pb-4 pl-4 pr-5 pt-5' : showPlatformSwitcherHeader,
-        'pb-2 pl-2 pr-3 pt-3' : !showPlatformSwitcherHeader
-    }"
+<a
+    href="{{ $isMobile ? $desktopHref : $mobileHref }}"
+    class="group relative mx-0.5 mb-3 w-full rounded-xl bg-gradient-to-tl from-transparent to-violet-100 px-3.5 py-4 dark:from-slate-900/30 dark:to-indigo-900/35"
 >
     <div
-        x-show="showPlatformSwitcherHeader"
-        x-collapse
-        class="space-y-1.5"
+        class="flex items-center gap-3 transition group-hover:translate-y-3 group-hover:opacity-0"
     >
-        <div class="space-y-1 pl-1">
-            {{-- Title --}}
-            <div class="text-sm">Choose your platform</div>
-            {{-- Description --}}
-            <div class="text-xs opacity-60">
-                Switch between mobile and desktop documentation.
+        @if ($isMobile)
+            <x-icons.device-mobile-phone class="size-6 shrink-0" />
+        @else
+            <x-icons.pc class="size-6 shrink-0" />
+        @endif
+        <div class="text-left">
+            <div class="text-xs opacity-50">You're reading the</div>
+            <div class="text-sm leading-6 capitalize">
+                {{ $isMobile ? 'Mobile' : 'Desktop' }} Documentation
             </div>
         </div>
-        {{-- Separator --}}
+    </div>
+
+    <div class="absolute top-1/2 right-1/2 translate-x-1/2 -translate-y-1/2">
         <div
-            class="h-px w-full rounded-full bg-current opacity-5 dark:opacity-15"
-        ></div>
+            class="flex -translate-y-3 items-center justify-center gap-2 opacity-0 transition group-hover:translate-y-0 group-hover:opacity-100"
+        >
+            {{ $isMobile ? 'Mobile' : 'Desktop' }}
+            <x-icons.right-arrow class="size-3" />
+            {{ $isMobile ? 'Desktop' : 'Mobile' }}
+        </div>
     </div>
-
-    {{-- Switcher --}}
-    <div
-        class="flex items-center gap-3 text-xs"
-        :class="{ 'mt-2.5': showPlatformSwitcherHeader }"
-    >
-        {{-- Desktop --}}
-        <a
-            href="{{ $desktopHref }}"
-            @class([
-                'flex w-1/2 items-center justify-center gap-x-1.5 gap-y-1 rounded-xl transition duration-300 ease-in-out',
-                'bg-white dark:bg-slate-700/30' => ! $isMobile,
-                'hover:bg-zinc-200/50 dark:text-gray-400/80 dark:hover:bg-gray-900/80 dark:hover:text-white' => $isMobile,
-            ])
-            :class="{ 'flex-col p-2.5': showPlatformSwitcherHeader, 'flex-row p-2': !showPlatformSwitcherHeader }"
-        >
-            <div
-                @class([
-                    'grid h-9 w-10 place-items-center rounded-lg',
-                    'bg-blue-50 text-blue-500 dark:bg-haiti dark:text-blue-400' => ! $isMobile,
-                ])
-            >
-                <x-icons.pc class="size-6 shrink-0" />
-            </div>
-            <div>Desktop</div>
-        </a>
-
-        {{-- Center icon --}}
-        <svg
-            xmlns="http://www.w3.org/2000/svg"
-            class="size-6 dark:text-gray-400/80"
-            viewBox="0 0 256 256"
-        >
-            <path
-                fill="currentColor"
-                d="M144 128a16 16 0 1 1-16-16a16 16 0 0 1 16 16m-84-16a16 16 0 1 0 16 16a16 16 0 0 0-16-16m136 0a16 16 0 1 0 16 16a16 16 0 0 0-16-16"
-            />
-        </svg>
-
-        {{-- Mobile --}}
-        <a
-            href="{{ $mobileHref }}"
-            @class([
-                'flex w-1/2 items-center justify-center gap-x-1.5 gap-y-1 rounded-xl transition duration-300 ease-in-out',
-                'bg-white dark:bg-slate-700/30' => $isMobile,
-                'hover:bg-zinc-200/50 dark:text-gray-400/80 dark:hover:bg-gray-900/80 dark:hover:text-white' => ! $isMobile,
-            ])
-            :class="{ 'flex-col p-2.5': showPlatformSwitcherHeader, 'flex-row p-2': !showPlatformSwitcherHeader }"
-        >
-            <div
-                @class([
-                    'grid h-9 w-10 place-items-center rounded-lg',
-                    'bg-blue-50 text-blue-500 dark:bg-haiti dark:text-blue-400' => $isMobile,
-                ])
-            >
-                <x-icons.device-mobile-phone class="size-5 shrink-0" />
-            </div>
-            <div>Mobile</div>
-        </a>
-    </div>
-</div>
+</a>
