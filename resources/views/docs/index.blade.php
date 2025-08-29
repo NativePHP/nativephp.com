@@ -14,8 +14,11 @@
     <x-docs.separator class="mt-4" />
 
     {{-- Table of contents --}}
-    <div class="xl:hidden">
-        <h3 class="inline-flex items-center gap-1.5 pt-5 text-sm opacity-50">
+    <div class="xl:hidden pt-5">
+        {{-- Copy as Markdown Button --}}
+        <x-docs.copy-markdown-button class="mt-4" />
+    
+        <h3 class="inline-flex items-center gap-1.5 text-sm opacity-50">
             {{-- Icon --}}
             <x-icons.stacked-lines class="size-[18px]" />
             {{-- Label --}}

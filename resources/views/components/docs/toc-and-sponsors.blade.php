@@ -1,3 +1,6 @@
+{{-- Copy as Markdown Button --}}
+<x-docs.copy-markdown-button />
+
 {{-- On this page --}}
 <h3 class="flex items-center gap-1.5 text-sm opacity-60">
     {{-- Icon --}}
