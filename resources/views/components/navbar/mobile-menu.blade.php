@@ -110,33 +110,6 @@
                     role="presentation"
                 ></div>
 
-                {{-- Mobile Link --}}
-                <div class="w-full">
-                    <a
-                        href="{{ route('pricing') }}"
-                        @class([
-                            'flex items-center justify-between py-3 transition duration-200',
-                            'font-medium' => $isPricingActive,
-                            'opacity-50 hover:translate-x-1 hover:opacity-100' => ! $isPricingActive,
-                        ])
-                        aria-current="{{ $isPricingActive ? 'page' : 'false' }}"
-                    >
-                        <div>Mobile pricing</div>
-                        @if ($isPricingActive)
-                            <x-icons.right-arrow
-                                class="size-4 shrink-0"
-                                aria-hidden="true"
-                                focusable="false"
-                            />
-                        @endif
-                    </a>
-                </div>
-
-                <div
-                    class="h-0.5 w-full rounded-full bg-current opacity-5"
-                    role="presentation"
-                ></div>
-
                 {{-- Docs Link --}}
                 <div class="w-full">
                     <a
