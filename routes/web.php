@@ -38,6 +38,12 @@ Route::view('sponsor', 'sponsoring')->name('sponsoring');
 Route::get('blog', [ShowBlogController::class, 'index'])->name('blog');
 Route::get('blog/{article}', [ShowBlogController::class, 'show'])->name('article');
 
+Route::get('/docs/{platform}/{version}/{page}.md', [ShowDocumentationController::class, 'serveRawMarkdown'])
+    ->where('page', '(.*)')
+    ->where('platform', '[a-z]+')
+    ->where('version', '[0-9]+')
+    ->name('docs.raw');
+
 Route::get('/docs/{platform}/{version}/{page?}', ShowDocumentationController::class)
     ->where('page', '(.*)')
     ->where('platform', '[a-z]+')
