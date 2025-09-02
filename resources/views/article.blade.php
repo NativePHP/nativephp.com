@@ -1,7 +1,7 @@
 <x-layout title="Blog">
     {{-- Hero --}}
     <section
-        class="mx-auto mt-10 w-full max-w-3xl md:mt-14"
+        class="mx-auto mt-10 w-full max-w-5xl"
         aria-labelledby="article-title"
     >
         <header class="relative grid place-items-center text-center">
@@ -100,23 +100,59 @@
             ></div>
         </div>
 
-        {{-- Content --}}
-        <article
-            x-init="
-                () => {
-                    motion.inView($el, () => {
-                        gsap.fromTo(
-                            $el,
-                            { autoAlpha: 0, y: 5 },
-                            { autoAlpha: 1, y: 0, duration: 0.7, ease: 'power1.out' },
-                        )
-                    })
-                }
-            "
-            class="prose mt-2 max-w-none text-gray-600 dark:text-gray-400 dark:prose-headings:text-white"
-            aria-labelledby="article-title"
-        >
-            {!! App\Support\CommonMark\CommonMark::convertToHtml($article->content) !!}
-        </article>
+        <div class="mt-2 flex items-start gap-5">
+            {{-- Content --}}
+            <article
+                x-init="
+                    () => {
+                        motion.inView($el, () => {
+                            gsap.fromTo(
+                                $el,
+                                { autoAlpha: 0, y: 5 },
+                                { autoAlpha: 1, y: 0, duration: 0.7, ease: 'power1.out' },
+                            )
+                        })
+                    }
+                "
+                class="prose max-w-none grow text-gray-600 dark:text-gray-400 dark:prose-headings:text-white"
+                aria-labelledby="article-title"
+            >
+                {!! App\Support\CommonMark\CommonMark::convertToHtml($article->content) !!}
+            </article>
+
+            {{-- Sidebar --}}
+            <div
+                x-init="
+                    () => {
+                        motion.inView($el, () => {
+                            gsap.fromTo(
+                                $el,
+                                { autoAlpha: 0, x: 5 },
+                                { autoAlpha: 1, x: 0, duration: 0.7, ease: 'power1.out' },
+                            )
+                        })
+                    }
+                "
+                class="sticky top-20 right-0 hidden max-w-52 shrink-0 min-[850px]:block"
+            >
+                {{-- Sponsors --}}
+                <h3 class="flex items-center gap-1.5 opacity-60">
+                    {{-- Icon --}}
+                    <x-icons.star-circle class="size-6" />
+                    {{-- Label --}}
+                    <div>Sponsors</div>
+                </h3>
+
+                {{-- List --}}
+                <div class="space-y-3 pt-2.5">
+                    <x-sponsors.lists.docs.featured-sponsors />
+                </div>
+
+                {{-- List --}}
+                <div class="space-y-3 pt-2.5">
+                    <x-sponsors.lists.docs.corporate-sponsors />
+                </div>
+            </div>
+        </div>
     </section>
 </x-layout>
