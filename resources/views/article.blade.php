@@ -15,17 +15,11 @@
             <div
                 x-init="
                     () => {
-                        motion.inView($el, (element) => {
-                            motion.animate(
+                        motion.inView($el, () => {
+                            gsap.fromTo(
                                 $el,
-                                {
-                                    opacity: [0, 1],
-                                    x: [5, 0],
-                                },
-                                {
-                                    duration: 0.7,
-                                    ease: motion.easeOut,
-                                },
+                                { autoAlpha: 0, x: 5 },
+                                { autoAlpha: 1, x: 0, duration: 0.7, ease: 'power1.out' },
                             )
                         })
                     }
@@ -33,7 +27,7 @@
             >
                 <a
                     href="{{ route('blog') }}"
-                    class="inline-flex items-center gap-2 opacity-60 transition duration-200 will-change-transform hover:-translate-x-0.5 hover:opacity-100"
+                    class="inline-flex items-center gap-2 opacity-60 transition duration-200 hover:-translate-x-0.5 hover:opacity-100"
                     aria-label="Return to blog listing"
                 >
                     <x-icons.right-arrow
@@ -49,22 +43,16 @@
                 id="article-title"
                 x-init="
                     () => {
-                        motion.inView($el, (element) => {
-                            motion.animate(
+                        motion.inView($el, () => {
+                            gsap.fromTo(
                                 $el,
-                                {
-                                    opacity: [0, 1],
-                                    x: [-5, 0],
-                                },
-                                {
-                                    duration: 0.7,
-                                    ease: motion.easeOut,
-                                },
+                                { autoAlpha: 0, x: -5 },
+                                { autoAlpha: 1, x: 0, duration: 0.7, ease: 'power1.out' },
                             )
                         })
                     }
                 "
-                class="mt-8 text-3xl font-extrabold will-change-transform sm:text-4xl"
+                class="mt-8 text-3xl font-bold sm:text-4xl"
             >
                 {{ $article->title }}
             </h1>
@@ -91,22 +79,16 @@
         <div
             x-init="
                 () => {
-                    motion.inView($el, (element) => {
-                        motion.animate(
+                    motion.inView($el, () => {
+                        gsap.fromTo(
                             $el,
-                            {
-                                opacity: [0, 1],
-                                x: [5, 0],
-                            },
-                            {
-                                duration: 0.7,
-                                ease: motion.easeOut,
-                            },
+                            { autoAlpha: 0, x: 5 },
+                            { autoAlpha: 1, x: 0, duration: 0.7, ease: 'power1.out' },
                         )
                     })
                 }
             "
-            class="flex items-center pt-3.5 pb-3 will-change-transform"
+            class="flex items-center pt-3.5 pb-3"
             aria-hidden="true"
         >
             <div
@@ -122,22 +104,16 @@
         <article
             x-init="
                 () => {
-                    motion.inView($el, (element) => {
-                        motion.animate(
+                    motion.inView($el, () => {
+                        gsap.fromTo(
                             $el,
-                            {
-                                opacity: [0, 1],
-                                y: [5, 0],
-                            },
-                            {
-                                duration: 0.7,
-                                ease: motion.easeOut,
-                            },
+                            { autoAlpha: 0, y: 5 },
+                            { autoAlpha: 1, y: 0, duration: 0.7, ease: 'power1.out' },
                         )
                     })
                 }
             "
-            class="prose mt-2 max-w-none text-gray-600 will-change-transform dark:text-gray-400 dark:prose-headings:text-white"
+            class="prose mt-2 max-w-none text-gray-600 dark:text-gray-400 dark:prose-headings:text-white"
             aria-labelledby="article-title"
         >
             {!! App\Support\CommonMark\CommonMark::convertToHtml($article->content) !!}
