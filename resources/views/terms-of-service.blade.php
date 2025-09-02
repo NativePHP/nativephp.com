@@ -56,35 +56,7 @@
         </header>
 
         {{-- Divider --}}
-        <div
-            x-init="
-                () => {
-                    motion.inView($el, (element) => {
-                        motion.animate(
-                            $el,
-                            {
-                                opacity: [0, 1],
-                                x: [5, 0],
-                            },
-                            {
-                                duration: 0.7,
-                                ease: motion.easeOut,
-                            },
-                        )
-                    })
-                }
-            "
-            class="flex items-center pt-3.5 pb-3 will-change-transform"
-            aria-hidden="true"
-        >
-            <div
-                class="size-1.5 rotate-45 bg-gray-200/90 dark:bg-[#242734]"
-            ></div>
-            <div class="h-0.5 w-full bg-gray-200/90 dark:bg-[#242734]"></div>
-            <div
-                class="size-1.5 rotate-45 bg-gray-200/90 dark:bg-[#242734]"
-            ></div>
-        </div>
+        <x-divider />
 
         {{-- Content --}}
         <article
@@ -105,7 +77,7 @@
                     })
                 }
             "
-            class="prose dark:prose-headings:text-white mt-2 max-w-none text-gray-600 will-change-transform dark:text-gray-400"
+            class="prose mt-2 max-w-none text-gray-600 will-change-transform dark:text-gray-400 dark:prose-headings:text-white"
             aria-labelledby="article-title"
         >
             <p>

@@ -94,7 +94,7 @@
             >
                 <a
                     href="/newsletter"
-                    class="group dark:bg-mirage dark:hover:bg-haiti dark:hover:ring-cloud relative z-0 flex max-w-105 items-center gap-6 overflow-hidden rounded-2xl bg-cyan-50/50 py-5 pr-7 pl-6 ring-1 ring-black/5 transition duration-300 ease-in-out hover:bg-cyan-50 hover:ring-black/10"
+                    class="group relative z-0 flex max-w-105 items-center gap-6 overflow-hidden rounded-2xl bg-cyan-50/50 py-5 pr-7 pl-6 ring-1 ring-black/5 transition duration-300 ease-in-out hover:bg-cyan-50 hover:ring-black/10 dark:bg-mirage dark:hover:bg-haiti dark:hover:ring-cloud"
                 >
                     {{-- Decorative circle --}}
                     <div
@@ -273,14 +273,14 @@
                         </a>
                     </li>
                     {{--
-                    <li>
+                        <li>
                         <a
-                            href="https://github.com/nativephp/mobile"
-                            class="inline-block px-px py-1.5 transition duration-300 will-change-transform hover:translate-x-1 hover:text-gray-700 dark:hover:text-gray-300"
+                        href="https://github.com/nativephp/mobile"
+                        class="inline-block px-px py-1.5 transition duration-300 will-change-transform hover:translate-x-1 hover:text-gray-700 dark:hover:text-gray-300"
                         >
-                            GitHub
+                        GitHub
                         </a>
-                    </li>
+                        </li>
                     --}}
                 </ul>
             </section>
@@ -329,14 +329,7 @@
     </div>
 
     {{-- Divider --}}
-    <div
-        class="flex items-center pt-3 pb-3"
-        aria-hidden="true"
-    >
-        <div class="size-1.5 rotate-45 bg-gray-200/90 dark:bg-[#242734]"></div>
-        <div class="h-0.5 w-full bg-gray-200/90 dark:bg-[#242734]"></div>
-        <div class="size-1.5 rotate-45 bg-gray-200/90 dark:bg-[#242734]"></div>
-    </div>
+    <x-divider />
 
     {{-- Copyright --}}
     <section
