@@ -137,7 +137,7 @@
                     })
                 }
             "
-            class="prose dark:prose-headings:text-white mt-2 max-w-none text-gray-600 will-change-transform dark:text-gray-400"
+            class="prose mt-2 max-w-none text-gray-600 will-change-transform dark:text-gray-400 dark:prose-headings:text-white"
             aria-labelledby="article-title"
         >
             {!! App\Support\CommonMark\CommonMark::convertToHtml($article->content) !!}

@@ -10,21 +10,21 @@
     aria-labelledby="article-title-{{ Str::slug($title) }}"
 >
     <article
-        class="group relative z-0 block overflow-hidden rounded-2xl bg-gray-200/40 p-7 transition duration-300 hover:bg-violet-100 dark:bg-mirage/50 dark:hover:bg-violet-500/10"
+        class="group relative z-0 block overflow-hidden rounded-2xl bg-zinc-200/60 p-7 transition duration-300 hover:bg-violet-200/60 dark:bg-mirage dark:hover:bg-violet-500/10"
     >
         {{-- Header --}}
         <div class="flex items-start justify-between gap-10">
             {{-- Title --}}
             <h3
                 id="article-title-{{ Str::slug($title) }}"
-                class="line-clamp-4 max-w-xs text-xl font-semibold leading-relaxed"
+                class="line-clamp-4 max-w-xs text-xl leading-relaxed font-semibold"
             >
                 {{ $title }}
             </h3>
 
             {{-- Arrow --}}
             <x-icons.right-arrow
-                class="-ml-5 mt-2 size-3.5 shrink-0 transition duration-300 will-change-transform group-hover:translate-x-1"
+                class="mt-2 -ml-5 size-3.5 shrink-0 transition duration-300 will-change-transform group-hover:translate-x-1"
                 aria-hidden="true"
             />
         </div>
@@ -53,7 +53,7 @@
 
         {{-- Blur decoration --}}
         <div
-            class="absolute -left-10 -top-10 -z-50 h-3/4 w-40 rounded-full bg-violet-50 opacity-0 blur-3xl transition duration-300 group-hover:opacity-100 dark:bg-white/15"
+            class="absolute -top-10 -left-10 -z-50 h-3/4 w-40 rounded-full bg-white opacity-0 blur-3xl transition duration-300 group-hover:opacity-100 dark:bg-white/15"
         ></div>
     </article>
 </a>

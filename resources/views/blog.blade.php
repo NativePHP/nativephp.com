@@ -11,21 +11,23 @@
                 x-init="
                     () => {
                         motion.inView($el, (element) => {
-                            motion.animate(
+                            gsap.fromTo(
                                 $el,
                                 {
-                                    opacity: [0, 1],
-                                    y: [-10, 0],
+                                    autoAlpha: 0,
+                                    y: -10,
                                 },
                                 {
+                                    autoAlpha: 1,
+                                    y: 0,
                                     duration: 0.7,
-                                    ease: motion.easeOut,
+                                    ease: 'power1.out',
                                 },
                             )
                         })
                     }
                 "
-                class="text-3xl font-extrabold will-change-transform sm:text-4xl"
+                class="text-3xl font-bold sm:text-4xl"
             >
                 Blog
             </h1>
@@ -35,38 +37,28 @@
                 x-init="
                     () => {
                         motion.inView($el, (element) => {
-                            motion.animate(
+                            gsap.fromTo(
                                 $el,
                                 {
-                                    opacity: [0, 1],
-                                    y: [10, 0],
+                                    autoAlpha: 0,
+                                    y: 10,
                                 },
                                 {
+                                    autoAlpha: 1,
+                                    y: 0,
                                     duration: 0.7,
-                                    ease: motion.easeOut,
+                                    ease: 'power1.out',
                                 },
                             )
                         })
                     }
                 "
-                class="mx-auto max-w-2xl pt-4 text-base/relaxed text-gray-600 will-change-transform sm:text-lg/relaxed dark:text-gray-400"
+                class="mx-auto max-w-2xl pt-4 text-base/relaxed text-gray-600 sm:text-lg/relaxed dark:text-gray-400"
             >
                 Welcome to our blog! Here, we share insights, updates, and
                 stories from our community. Stay tuned for the latest news and
                 articles.
             </h2>
-
-            {{-- Blurred circle - Decorative --}}
-            <div
-                class="absolute -top-1/2 right-0 -z-20 h-60 w-60 rounded-full bg-violet-300/60 blur-[150px] md:right-1/2 md:w-80 dark:bg-violet-500/20"
-                aria-hidden="true"
-            ></div>
-
-            {{-- Blurred circle - Decorative --}}
-            <div
-                class="absolute top-1/2 left-0 -z-30 h-60 w-60 rounded-full bg-orange-200/60 blur-[150px] md:left-1/2 md:w-80 dark:bg-slate-500/50"
-                aria-hidden="true"
-            ></div>
         </header>
     </section>
 
@@ -88,16 +80,18 @@
             x-init="
                 () => {
                     motion.inView($el, (element) => {
-                        motion.animate(
-                            Array.from($el.children),
+                        gsap.fromTo(
+                            $el.children,
                             {
-                                x: [-50, 0],
-                                opacity: [0, 1],
+                                x: -50,
+                                autoAlpha: 0,
                             },
                             {
+                                x: 0,
+                                autoAlpha: 1,
                                 duration: 0.7,
-                                ease: motion.circOut,
-                                delay: motion.stagger(0.1),
+                                ease: 'circ.out',
+                                stagger: 0.1,
                             },
                         )
                     })
@@ -126,21 +120,22 @@
                 x-init="
                     () => {
                         motion.inView($el, (element) => {
-                            motion.animate(
+                            gsap.fromTo(
                                 $el,
                                 {
-                                    opacity: [0, 1],
-                                    x: [-10, 0],
+                                    autoAlpha: 0,
+                                    x: -10,
                                 },
                                 {
+                                    autoAlpha: 1,
+                                    x: 0,
                                     duration: 0.7,
-                                    ease: motion.easeOut,
+                                    ease: 'power1.out',
                                 },
                             )
                         })
                     }
                 "
-                class="will-change-transform"
             >
                 @if (! $articles->onFirstPage())
                     <a
@@ -160,21 +155,22 @@
                 x-init="
                     () => {
                         motion.inView($el, (element) => {
-                            motion.animate(
+                            gsap.fromTo(
                                 $el,
                                 {
-                                    opacity: [0, 1],
-                                    x: [10, 0],
+                                    autoAlpha: 0,
+                                    x: 10,
                                 },
                                 {
+                                    autoAlpha: 1,
+                                    x: 0,
                                     duration: 0.7,
-                                    ease: motion.easeOut,
+                                    ease: 'power1.out',
                                 },
                             )
                         })
                     }
                 "
-                class="will-change-transform"
             >
                 @if (! $articles->onLastPage())
                     <a
