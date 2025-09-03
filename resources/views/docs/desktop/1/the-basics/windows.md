@@ -394,6 +394,29 @@ Window::open()
 
 This is particularly useful for always-on-top utility windows or menubar applications that should not be visible in Mission Control.
 
+### Restrict navigation within a window
+
+When opening windows that display content outside your control that is not under your control (such as external
+websites), you may want to restrict the user's navigation options. NativePHP provides two handy methods for this on the
+`Window` facade:
+
+```php
+Window::open()
+    ->url('https://nativephp.com/')
+    ->preventLeaveDomain();
+
+Window::open()
+    ->url('https://laravel-news.com/bifrost')
+    ->preventLeavePage();
+```
+
+The `preventLeaveDomain()` method allows navigation within the same domain but blocks any attempt to navigate away to a
+different domain, scheme or port.
+
+With `preventLeavePage()` you can strictly confine the user to the initially rendered page. Any attempt to navigate to a
+different path (even within the same domain) will be blocked. However, in-page navigation via anchors (e.g. "#section")
+and updates to the query string remain permitted.
+
 ## Window Title Styles
 
 ### Default Title Style
