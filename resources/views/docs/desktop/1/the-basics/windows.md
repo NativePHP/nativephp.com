@@ -396,9 +396,8 @@ This is particularly useful for always-on-top utility windows or menubar applica
 
 ### Restrict navigation within a window
 
-When opening windows that display content outside your control that is not under your control (such as external
-websites), you may want to restrict the user's navigation options. NativePHP provides two handy methods for this on the
-`Window` facade:
+When opening windows that display content that is not under your control (such as external websites), you may want to
+restrict the user's navigation options. NativePHP provides two handy methods for this on the `Window` facade:
 
 ```php
 Window::open()
