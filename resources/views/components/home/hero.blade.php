@@ -4,7 +4,7 @@
     role="region"
 >
     <div
-        class="relative z-0 flex flex-col overflow-hidden rounded-2xl bg-gradient-to-t from-[#E0E5EB] to-[#F9F9F9] px-5 pt-8 pb-10 ring-1 ring-zinc-200/50 lg:px-10 lg:pt-8 lg:pb-17 xl:pt-10 dark:from-slate-950 dark:to-slate-900 dark:ring-slate-800"
+        class="relative z-0 flex flex-col overflow-hidden rounded-2xl bg-gradient-to-t from-[#E0E5EB] to-[#F9F9F9] px-5 pt-8 pb-10 ring-1 ring-zinc-200/50 lg:px-10 lg:pt-10 lg:pb-17 xl:pt-13 2xl:px-15 dark:from-slate-950 dark:to-slate-900 dark:ring-slate-800"
     >
         {{-- Demo app --}}
         <div
@@ -28,7 +28,7 @@
                         })
                     }
                 "
-                class="flex flex-wrap justify-center gap-2 lg:flex-col lg:items-end lg:gap-1.5"
+                class="flex flex-wrap justify-center gap-2 lg:flex-col lg:items-end lg:gap-1.5 xl:gap-2"
             >
                 <p
                     class="w-full text-center font-light lg:w-auto dark:font-extralight"
@@ -42,10 +42,10 @@
                         href="https://play.google.com/store/apps/details?id=com.nativephp.kitchensinkapp"
                         target="_blank"
                         rel="noopener noreferrer"
-                        class="flex items-center gap-2 rounded-xl bg-white/70 px-3 py-2.5 backdrop-blur-md transition duration-200 will-change-transform hover:scale-98 hover:bg-white dark:bg-slate-500/25 dark:hover:bg-slate-500/40"
+                        class="flex items-center gap-2.5 rounded-xl bg-white/70 px-3 py-2.5 backdrop-blur-md transition duration-200 will-change-transform hover:scale-98 hover:bg-white dark:bg-slate-500/25 dark:hover:bg-slate-500/40"
                     >
                         <x-icons.play-store
-                            class="h-4.5 2xl:h-5"
+                            class="h-4.5"
                             aria-hidden="true"
                         />
                         <div>Play Store</div>
@@ -56,7 +56,7 @@
                         href="https://testflight.apple.com/join/vm9Qtshy"
                         target="_blank"
                         rel="noopener noreferrer"
-                        class="flex items-center gap-2 rounded-xl bg-white/70 px-3 py-2.5 backdrop-blur-md transition duration-200 will-change-transform hover:scale-98 hover:bg-white dark:bg-slate-500/25 dark:hover:bg-slate-500/40"
+                        class="flex items-center gap-2.5 rounded-xl bg-white/70 px-3 py-2.5 backdrop-blur-md transition duration-200 will-change-transform hover:scale-98 hover:bg-white dark:bg-slate-500/25 dark:hover:bg-slate-500/40"
                     >
                         <x-icons.app-store
                             class="h-4.5 2xl:h-5"
@@ -66,20 +66,20 @@
                     </a>
                 </div>
                 {{--
-                <div>
+                    <div>
                     <a
-                        href="https://github.com/nativephp/kitchen-sink-mobile"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        class="flex items-center gap-2 rounded-xl bg-white/70 px-3 py-2.5 backdrop-blur-md transition duration-200 will-change-transform hover:scale-98 hover:bg-white dark:bg-slate-500/25 dark:hover:bg-slate-500/40"
+                    href="https://github.com/nativephp/kitchen-sink-mobile"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="flex items-center gap-2 rounded-xl bg-white/70 px-3 py-2.5 backdrop-blur-md transition duration-200 will-change-transform hover:scale-98 hover:bg-white dark:bg-slate-500/25 dark:hover:bg-slate-500/40"
                     >
-                        <x-icons.github
-                            class="h-4.5 2xl:h-5"
-                            aria-hidden="true"
-                        />
-                        <div>Source code</div>
+                    <x-icons.github
+                    class="h-4.5 2xl:h-5"
+                    aria-hidden="true"
+                    />
+                    <div>Source code</div>
                     </a>
-                </div>
+                    </div>
                 --}}
             </div>
         </div>
@@ -100,7 +100,7 @@
                     />
                     {{-- Window --}}
                     <div
-                        class="2xs:scale-75 xs:scale-100 relative -top-3 z-1 flex h-40 w-70 scale-60 flex-col self-center justify-self-center overflow-hidden rounded-md [grid-area:1/-1] 2xl:scale-120"
+                        class="relative -top-3 z-1 flex h-40 w-70 scale-60 flex-col self-center justify-self-center overflow-hidden rounded-md [grid-area:1/-1] 2xs:scale-75 xs:scale-100 2xl:scale-120"
                     >
                         {{-- Header --}}
                         <div
@@ -323,7 +323,7 @@
                         )
                     }
                 "
-                class="xs:text-3xl 2xs:text-2xl relative text-xl font-bold text-gray-700 lg:text-4xl 2xl:text-5xl dark:text-white"
+                class="relative text-xl font-bold text-gray-700 2xs:text-2xl xs:text-3xl lg:text-4xl 2xl:text-5xl dark:text-white"
             >
                 Build
 
@@ -507,7 +507,7 @@
                         )
                     }
                 "
-                class="xs:text-lg xs:mt-5 mx-auto mt-4 max-w-4xl text-center leading-relaxed text-gray-600 2xl:text-xl dark:text-zinc-400"
+                class="mx-auto mt-4 max-w-4xl text-center leading-relaxed text-gray-600 xs:mt-5 xs:text-lg 2xl:text-xl dark:text-zinc-400"
                 aria-describedby="hero-title"
             >
                 Bring your
@@ -561,7 +561,7 @@
                 <div class="transition duration-300">
                     <a
                         href="/docs/mobile/1/getting-started/introduction"
-                        class="group dark:bg-haiti relative isolate z-0 flex h-15 items-center justify-between gap-3 overflow-hidden rounded-3xl bg-gray-900 px-5 leading-snug text-white transition duration-200 ease-in-out will-change-transform hover:bg-gray-800 2xl:h-17 2xl:px-7 dark:hover:bg-indigo-900/50"
+                        class="group relative isolate z-0 flex h-15 items-center justify-between gap-3 overflow-hidden rounded-3xl bg-gray-900 px-5 leading-snug text-white transition duration-200 ease-in-out will-change-transform hover:bg-gray-800 2xl:h-17 2xl:px-7 dark:bg-haiti dark:hover:bg-indigo-900/50"
                         aria-label="Get started with NativePHP documentation for mobile apps"
                     >
                         {{-- Label --}}
