@@ -1,13 +1,13 @@
 <x-layout title="Blog">
     {{-- Hero --}}
     <section
-        class="mx-auto mt-10 w-full max-w-3xl px-5 md:mt-14"
+        class="mx-auto mt-10 w-full max-w-3xl md:mt-14"
         aria-labelledby="article-title"
     >
         <header class="relative grid place-items-center text-center">
             {{-- Blurred circle - Decorative --}}
             <div
-                class="absolute right-1/2 top-0 -z-30 h-60 w-60 translate-x-1/2 rounded-full blur-[150px] md:w-80 dark:bg-slate-500/50"
+                class="absolute top-0 right-1/2 -z-30 h-60 w-60 translate-x-1/2 rounded-full blur-[150px] md:w-80 dark:bg-slate-500/50"
                 aria-hidden="true"
             ></div>
 
@@ -56,35 +56,7 @@
         </header>
 
         {{-- Divider --}}
-        <div
-            x-init="
-                () => {
-                    motion.inView($el, (element) => {
-                        motion.animate(
-                            $el,
-                            {
-                                opacity: [0, 1],
-                                x: [5, 0],
-                            },
-                            {
-                                duration: 0.7,
-                                ease: motion.easeOut,
-                            },
-                        )
-                    })
-                }
-            "
-            class="flex items-center pb-3 pt-3.5 will-change-transform"
-            aria-hidden="true"
-        >
-            <div
-                class="size-1.5 rotate-45 bg-gray-200/90 dark:bg-[#242734]"
-            ></div>
-            <div class="h-0.5 w-full bg-gray-200/90 dark:bg-[#242734]"></div>
-            <div
-                class="size-1.5 rotate-45 bg-gray-200/90 dark:bg-[#242734]"
-            ></div>
-        </div>
+        <x-divider />
 
         {{-- Content --}}
         <article

@@ -1,6 +1,6 @@
 ---
 title: Versioning Policy
-order: 50
+order: 500
 ---
 
 NativePHP for Mobile follows [semantic versioning](https://semver.org) with a mobile-specific approach that distinguishes between

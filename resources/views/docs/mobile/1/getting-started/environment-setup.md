@@ -18,7 +18,8 @@ Windows is with [Laravel Herd](https://herd.laravel.com). It's fast and free!
 
 #### Heads up!
 
-You cannot build iOS apps on Windows or Linux. This is a limitation imposed by Apple.
+You cannot build iOS apps on Windows or Linux. This is a limitation imposed by Apple. But we've got you covered with
+[Bifrost](https://bifrost.nativephp.com)!
 
 </aside>
 

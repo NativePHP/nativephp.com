@@ -23,18 +23,26 @@ Route::redirect('/docs/desktop/1/getting-started/sponsoring', '/sponsor');
 Route::redirect('/discord', 'https://discord.gg/X62tWNStZK');
 
 Route::view('/', 'welcome')->name('welcome');
-Route::view('mobile', 'early-adopter')->name('early-adopter');
+Route::view('pricing', 'pricing')->name('pricing');
+Route::view('brand', 'brand')->name('brand');
+Route::redirect('mobile', 'pricing');
 Route::view('laracon-us-2025-giveaway', 'laracon-us-2025-giveaway')->name('laracon-us-2025-giveaway');
-Route::redirect('ios', 'mobile');
-Route::redirect('t-shirt', 'mobile');
-Route::redirect('tshirt', 'mobile');
-Route::view('privacy-policy', 'privacy-policy');
-Route::view('terms-of-service', 'terms-of-service');
+Route::redirect('ios', 'pricing');
+Route::redirect('t-shirt', 'pricing');
+Route::redirect('tshirt', 'pricing');
+Route::view('privacy-policy', 'privacy-policy')->name('privacy-policy');
+Route::view('terms-of-service', 'terms-of-service')->name('terms-of-service');
 Route::view('partners', 'partners')->name('partners');
 Route::view('sponsor', 'sponsoring')->name('sponsoring');
 
 Route::get('blog', [ShowBlogController::class, 'index'])->name('blog');
 Route::get('blog/{article}', [ShowBlogController::class, 'show'])->name('article');
+
+Route::get('/docs/{platform}/{version}/{page}.md', [ShowDocumentationController::class, 'serveRawMarkdown'])
+    ->where('page', '(.*)')
+    ->where('platform', '[a-z]+')
+    ->where('version', '[0-9]+')
+    ->name('docs.raw');
 
 Route::get('/docs/{platform}/{version}/{page?}', ShowDocumentationController::class)
     ->where('page', '(.*)')

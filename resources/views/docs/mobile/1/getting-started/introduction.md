@@ -1,6 +1,6 @@
 ---
 title: Introduction
-order: 001
+order: 1
 ---
 
 ## Welcome to the revolution!

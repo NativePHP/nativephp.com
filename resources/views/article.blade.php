@@ -1,7 +1,7 @@
 <x-layout title="Blog">
     {{-- Hero --}}
     <section
-        class="mx-auto mt-10 w-full max-w-3xl px-5 md:mt-14"
+        class="mx-auto mt-10 w-full max-w-5xl"
         aria-labelledby="article-title"
     >
         <header class="relative grid place-items-center text-center">
@@ -15,17 +15,11 @@
             <div
                 x-init="
                     () => {
-                        motion.inView($el, (element) => {
-                            motion.animate(
+                        motion.inView($el, () => {
+                            gsap.fromTo(
                                 $el,
-                                {
-                                    opacity: [0, 1],
-                                    x: [5, 0],
-                                },
-                                {
-                                    duration: 0.7,
-                                    ease: motion.easeOut,
-                                },
+                                { autoAlpha: 0, x: 5 },
+                                { autoAlpha: 1, x: 0, duration: 0.7, ease: 'power1.out' },
                             )
                         })
                     }
@@ -33,7 +27,7 @@
             >
                 <a
                     href="{{ route('blog') }}"
-                    class="inline-flex items-center gap-2 opacity-60 transition duration-200 will-change-transform hover:-translate-x-0.5 hover:opacity-100"
+                    class="inline-flex items-center gap-2 opacity-60 transition duration-200 hover:-translate-x-0.5 hover:opacity-100"
                     aria-label="Return to blog listing"
                 >
                     <x-icons.right-arrow
@@ -49,22 +43,16 @@
                 id="article-title"
                 x-init="
                     () => {
-                        motion.inView($el, (element) => {
-                            motion.animate(
+                        motion.inView($el, () => {
+                            gsap.fromTo(
                                 $el,
-                                {
-                                    opacity: [0, 1],
-                                    x: [-5, 0],
-                                },
-                                {
-                                    duration: 0.7,
-                                    ease: motion.easeOut,
-                                },
+                                { autoAlpha: 0, x: -5 },
+                                { autoAlpha: 1, x: 0, duration: 0.7, ease: 'power1.out' },
                             )
                         })
                     }
                 "
-                class="mt-8 text-3xl font-extrabold will-change-transform sm:text-4xl"
+                class="mt-8 text-3xl font-bold sm:text-4xl"
             >
                 {{ $article->title }}
             </h1>
@@ -88,59 +76,30 @@
         </header>
 
         {{-- Divider --}}
-        <div
-            x-init="
-                () => {
-                    motion.inView($el, (element) => {
-                        motion.animate(
-                            $el,
-                            {
-                                opacity: [0, 1],
-                                x: [5, 0],
-                            },
-                            {
-                                duration: 0.7,
-                                ease: motion.easeOut,
-                            },
-                        )
-                    })
-                }
-            "
-            class="flex items-center pt-3.5 pb-3 will-change-transform"
-            aria-hidden="true"
-        >
-            <div
-                class="size-1.5 rotate-45 bg-gray-200/90 dark:bg-[#242734]"
-            ></div>
-            <div class="h-0.5 w-full bg-gray-200/90 dark:bg-[#242734]"></div>
-            <div
-                class="size-1.5 rotate-45 bg-gray-200/90 dark:bg-[#242734]"
-            ></div>
-        </div>
+        <x-divider />
 
-        {{-- Content --}}
-        <article
-            x-init="
-                () => {
-                    motion.inView($el, (element) => {
-                        motion.animate(
-                            $el,
-                            {
-                                opacity: [0, 1],
-                                y: [5, 0],
-                            },
-                            {
-                                duration: 0.7,
-                                ease: motion.easeOut,
-                            },
-                        )
-                    })
-                }
-            "
-            class="prose dark:prose-headings:text-white mt-2 max-w-none text-gray-600 will-change-transform dark:text-gray-400"
-            aria-labelledby="article-title"
-        >
-            {!! App\Support\CommonMark\CommonMark::convertToHtml($article->content) !!}
-        </article>
+        <div class="mt-2 flex items-start gap-5">
+            {{-- Content --}}
+            <article
+                x-init="
+                    () => {
+                        motion.inView($el, () => {
+                            gsap.fromTo(
+                                $el,
+                                { autoAlpha: 0, y: 5 },
+                                { autoAlpha: 1, y: 0, duration: 0.7, ease: 'power1.out' },
+                            )
+                        })
+                    }
+                "
+                class="prose max-w-none grow text-gray-600 dark:text-gray-400 dark:prose-headings:text-white"
+                aria-labelledby="article-title"
+            >
+                {!! App\Support\CommonMark\CommonMark::convertToHtml($article->content) !!}
+            </article>
+
+            {{-- Sidebar --}}
+            <x-blog.sidebar />
+        </div>
     </section>
 </x-layout>

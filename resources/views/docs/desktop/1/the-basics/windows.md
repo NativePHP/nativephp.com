@@ -407,6 +407,20 @@ Window::open()
     ->suppressNewWindows();
 ```
 
+### Zoom factor
+
+In certain cases, you may want to set a zoom factor for a window.
+This can be particularly helpful in cases where you have no control over the content displayed (e.g. when showing external websites).
+You may use the `zoomFactor` method to define a zoom factor.
+
+```php
+Window::open()
+    ->zoomFactor(1.25);
+```
+
+The zoom factor is the zoom percent divided by 100.
+This means that you need to pass the value `1.25` if you want the window to be displayed at 125% size.
+
 ## Window Title Styles
 
 ### Default Title Style

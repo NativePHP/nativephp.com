@@ -7,6 +7,7 @@ import {
     Alpine,
 } from '../../vendor/livewire/livewire/dist/livewire.esm'
 import codeBlock from './alpine/codeBlock.js'
+import copyMarkdown from './alpine/copyMarkdown.js'
 import docsearch from '@docsearch/js'
 import Atropos from 'atropos'
 import '@docsearch/css'
@@ -60,6 +61,7 @@ window.gsap = gsap
 
 // Alpine
 Alpine.data('codeBlock', codeBlock)
+Alpine.data('copyMarkdown', copyMarkdown)
 Alpine.magic('refAll', (el) => {
     return (refName) => {
         return Array.from(el.querySelectorAll(`[x-ref="${refName}"]`))
