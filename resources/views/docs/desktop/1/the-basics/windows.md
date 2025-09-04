@@ -416,6 +416,33 @@ With `preventLeavePage()` you can strictly confine the user to the initially ren
 different path (even within the same domain) will be blocked. However, in-page navigation via anchors (e.g. "#section")
 and updates to the query string remain permitted.
 
+#### Preventing new windows from popping up
+
+By default, Electron allows additional windows to be opened from a window that was previously opened programmatically.
+This is the case, for example, with `a` elements that have the target attribute set to `_blank` or when the user clicks on a link with the middle mouse button.
+This behaviour is potentially undesirable in a desktop application, as it enables the user to "break out" of a window.
+
+To prevent additional windows from opening, you can apply the `suppressNewWindows()` method when opening a new window.
+
+```php
+Window::open()
+    ->suppressNewWindows();
+```
+
+### Zoom factor
+
+In certain cases, you may want to set a zoom factor for a window.
+This can be particularly helpful in cases where you have no control over the content displayed (e.g. when showing external websites).
+You may use the `zoomFactor` method to define a zoom factor.
+
+```php
+Window::open()
+    ->zoomFactor(1.25);
+```
+
+The zoom factor is the zoom percent divided by 100.
+This means that you need to pass the value `1.25` if you want the window to be displayed at 125% size.
+
 ## Window Title Styles
 
 ### Default Title Style
