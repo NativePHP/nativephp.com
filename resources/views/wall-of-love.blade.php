@@ -204,7 +204,7 @@
                 })
             }
         "
-        class="relative z-10 mt-10 grid place-items-center 2xs:block 2xs:columns-[10rem] xl:columns-[13rem]"
+        class="relative z-10 mt-10 grid place-items-center 2xs:block 2xs:columns-[10rem] xl:columns-[12rem]"
     >
         @foreach ($earlyAdopters as $adopter)
             <x-wall-of-love.early-adopter-card

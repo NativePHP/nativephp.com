@@ -11,24 +11,10 @@
     itemscope
 >
     <figure class="grid">
-        {{-- Image --}}
-        <img
-            src="{{ $image }}"
-            alt="{{ $title ? $name . ', ' . $title : $name }}"
-            loading="lazy"
-            decoding="async"
-            itemprop="image"
-            @class([
-                'self-center justify-self-center object-cover brightness-80 transition duration-300 [grid-area:1/-1] group-hover:brightness-100',
-                'aspect-[1/1.3] xl:aspect-[1/1.5]' => $featured,
-                'aspect-square max-h-50 grayscale group-hover:grayscale-0 xl:max-h-none' => ! $featured,
-            ])
-        />
-
         {{-- Name & Title --}}
         <figcaption
             @class([
-                'relative z-0 w-full self-end justify-self-start truncate bg-gradient-to-t px-4 pt-13 pb-4 text-white [grid-area:1/-1]',
+                'relative z-20 w-full self-end justify-self-start truncate bg-gradient-to-t px-4 pt-13 pb-4 text-white [grid-area:1/-1]',
                 'from-blue-500 to-transparent' => $featured,
                 'from-black to-transparent' => ! $featured,
             ])
@@ -57,6 +43,28 @@
             </div>
         </figcaption>
 
+        {{-- Image --}}
+        <img
+            src="{{ $image }}"
+            alt="{{ $title ? $name . ', ' . $title : $name }}"
+            height="187"
+            width="187"
+            loading="lazy"
+            decoding="async"
+            itemprop="image"
+            @class([
+                'relative z-10 self-center justify-self-center object-cover brightness-80 transition duration-300 [grid-area:1/-1] group-hover:brightness-100',
+                'aspect-[1/1.3] xl:aspect-[1/1.5]' => $featured,
+                'aspect-square max-h-50 grayscale group-hover:grayscale-0 xl:max-h-none' => ! $featured,
+            ])
+        />
+
+        {{-- Loading placeholder --}}
+        <div
+            class="relative z-0 size-full animate-pulse self-center justify-self-center bg-gray-300 [grid-area:1/-1] dark:bg-slate-900"
+            aria-hidden="true"
+        ></div>
+
         {{-- External link --}}
         @if ($url)
             <a
@@ -66,7 +74,7 @@
                 title="Visit {{ $name }}’s website"
                 aria-label="Visit {{ $name }}’s website"
                 itemprop="url"
-                class="group/link mt-3 mr-3 flex items-center gap-2 self-start justify-self-end rounded-xl bg-white/70 px-3 py-1.5 opacity-0 backdrop-blur-sm transition duration-300 [grid-area:1/-1] group-hover:opacity-100 hover:bg-white/100 dark:bg-black/70 dark:hover:bg-black/100"
+                class="group/link relative z-30 mt-3 mr-3 flex items-center gap-2 self-start justify-self-end rounded-xl bg-white/70 px-3 py-1.5 opacity-0 backdrop-blur-sm transition duration-300 [grid-area:1/-1] group-hover:opacity-100 hover:bg-white/100 dark:bg-black/70 dark:hover:bg-black/100"
             >
                 <span class="text-sm">Visit</span>
                 <x-icons.right-arrow
