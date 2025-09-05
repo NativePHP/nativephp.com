@@ -142,6 +142,7 @@
                 'name' => 'Bob Brown',
                 'url' => 'https://example.io',
                 'image' => 'https://i.pravatar.cc/300?img=11',
+                'featured' => true,
             ],
             [
                 'name' => 'Frank Miller',
@@ -165,6 +166,7 @@
             [
                 'name' => 'Jack Thomas',
                 'image' => 'https://i.pravatar.cc/300?img=32',
+                'featured' => true,
             ],
             [
                 'name' => 'Kathy Martinez',
@@ -175,7 +177,7 @@
     @endphp
 
     <div
-        class="relative z-10 mt-10 grid grid-cols-[repeat(auto-fill,minmax(13rem,1fr))] items-start justify-center gap-7"
+        class="relative z-10 mt-10 grid place-items-center 2xs:block 2xs:columns-[10rem] xl:columns-[13rem]"
     >
         @foreach ($earlyAdopters as $adopter)
             <x-wall-of-love.early-adopter-card
