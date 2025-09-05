@@ -177,6 +177,33 @@
     @endphp
 
     <div
+        x-init="
+            () => {
+                motion.inView($el, (element) => {
+                    const children = Array.from($el.children)
+
+                    children.forEach((child, i) => {
+                        const range = 20 // px
+                        const xFrom = (Math.random() * 2 - 1) * range
+                        const yFrom = (Math.random() * 2 - 1) * range
+
+                        motion.animate(
+                            child,
+                            {
+                                x: [xFrom, 0],
+                                y: [yFrom, 0],
+                                opacity: [0, 1],
+                            },
+                            {
+                                duration: 0.7,
+                                ease: motion.backOut,
+                                delay: i * 0.06,
+                            },
+                        )
+                    })
+                })
+            }
+        "
         class="relative z-10 mt-10 grid place-items-center 2xs:block 2xs:columns-[10rem] xl:columns-[13rem]"
     >
         @foreach ($earlyAdopters as $adopter)

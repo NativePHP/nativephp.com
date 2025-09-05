@@ -1,13 +1,13 @@
 @props([
-    "name" => "",
-    "title" => "",
-    "url" => "",
-    "image" => "",
-    "featured" => false,
+    'name' => '',
+    'title' => '',
+    'url' => '',
+    'image' => '',
+    'featured' => false,
 ])
 
 <div
-    class="group mt-3 inline-block break-inside-avoid overflow-hidden rounded-2xl text-center transition duration-300 ease-out will-change-transform hover:scale-102 xl:mt-5"
+    class="group mt-3 inline-block break-inside-avoid overflow-hidden rounded-2xl text-center opacity-0 transition duration-300 ease-out will-change-transform hover:scale-102 xl:mt-5"
 >
     <div class="grid">
         {{-- Image --}}
@@ -15,26 +15,21 @@
             src="{{ $image }}"
             alt="{{ $name }}"
             loading="lazy"
-            @if ($featured)
-                width="229"
-                height="275"
-            @else
-                width="229"
-                height="120"
-            @endif
+            width="auto"
+            height="auto"
             @class([
-                "self-center justify-self-center object-cover brightness-80 transition duration-300 [grid-area:1/-1] group-hover:brightness-100",
-                "aspect-[1/1.3] xl:aspect-[1/1.5]" => $featured,
-                "aspect-square max-h-50 grayscale group-hover:grayscale-0 xl:max-h-none" => ! $featured,
+                'self-center justify-self-center object-cover brightness-80 transition duration-300 [grid-area:1/-1] group-hover:brightness-100',
+                'aspect-[1/1.3] xl:aspect-[1/1.5]' => $featured,
+                'aspect-square max-h-50 grayscale group-hover:grayscale-0 xl:max-h-none' => ! $featured,
             ])
         />
 
         {{-- Name & Title --}}
         <div
             @class([
-                "relative z-0 w-full self-end justify-self-start bg-gradient-to-t px-4 pt-13 pb-4 text-white [grid-area:1/-1]",
-                "from-blue-500 to-transparent" => $featured,
-                "from-black to-transparent" => ! $featured,
+                'relative z-0 w-full self-end justify-self-start bg-gradient-to-t px-4 pt-13 pb-4 text-white [grid-area:1/-1]',
+                'from-blue-500 to-transparent' => $featured,
+                'from-black to-transparent' => ! $featured,
             ])
         >
             <div
@@ -42,17 +37,17 @@
             >
                 <h3
                     @class([
-                        "truncate capitalize",
-                        "text-lg font-medium" => $featured,
+                        'truncate capitalize',
+                        'text-lg font-medium' => $featured,
                     ])
                 >
                     {{ $name }}
                 </h3>
                 <h4
                     @class([
-                        "truncate capitalize opacity-50",
-                        "text-sm" => $featured,
-                        "text-xs" => ! $featured,
+                        'truncate capitalize opacity-50',
+                        'text-sm' => $featured,
+                        'text-xs' => ! $featured,
                     ])
                 >
                     {{ $title }}
