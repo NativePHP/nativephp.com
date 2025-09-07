@@ -1,18 +1,19 @@
 <a
     href="https://www.producthunt.com/"
     onclick="fathom.trackEvent('alert_click');"
-    class="group relative z-30 flex flex-wrap items-center justify-center gap-x-2 gap-y-2.5 overflow-hidden bg-gray-100 px-5 py-2.5 text-center text-sm tracking-tight text-pretty select-none [--blue-ribbon:#3B63FE] [--product-hunt:#FF6154] sm:text-base dark:bg-gray-950/50"
+    class="group relative z-30 flex flex-wrap items-center justify-center gap-x-2 gap-y-2.5 overflow-hidden bg-gray-100 px-5 py-2 text-center text-sm tracking-tight text-pretty select-none [--blue-ribbon:#3B63FE] [--product-hunt:#FF6154] sm:text-base dark:bg-gray-950/50"
+    aria-label="Bifrost dropped on Product Hunt. Please upvote."
 >
-    {{-- Left arrows --}}
-    <div class="hidden flex-row-reverse gap-2 min-[31rem]:flex">
+    {{-- Decorative left arrows --}}
+    <div
+        class="hidden flex-row-reverse gap-2 min-[31rem]:flex"
+        aria-hidden="true"
+    >
         <svg
             x-data="{
                 init() {
                     gsap.to($el, {
-                        keyframes: {
-                            autoAlpha: [0, 1, 0],
-                            y: [0, -10],
-                        },
+                        keyframes: { autoAlpha: [0, 1, 0], y: [0, -10] },
                         repeat: -1,
                         ease: 'sine.in',
                         duration: 2,
@@ -23,6 +24,8 @@
             class="w-2.5 mask-b-from-20% text-[var(--product-hunt)]"
             viewBox="0 0 9 16"
             fill="none"
+            aria-hidden="true"
+            focusable="false"
         >
             <path
                 d="M4.5 0.749999L0.169873 8.25L8.83013 8.25L4.5 0.749999ZM4.5 15.75L5.25 15.75L5.25 7.5L4.5 7.5L3.75 7.5L3.75 15.75L4.5 15.75Z"
@@ -33,10 +36,7 @@
             x-data="{
                 init() {
                     gsap.to($el, {
-                        keyframes: {
-                            autoAlpha: [0, 1, 0],
-                            y: [8, 0],
-                        },
+                        keyframes: { autoAlpha: [0, 1, 0], y: [8, 0] },
                         repeat: -1,
                         ease: 'sine.in',
                         duration: 2,
@@ -47,6 +47,8 @@
             class="w-3 mask-b-from-20% text-[var(--blue-ribbon)]"
             viewBox="0 0 9 16"
             fill="none"
+            aria-hidden="true"
+            focusable="false"
         >
             <path
                 d="M4.5 0.749999L0.169873 8.25L8.83013 8.25L4.5 0.749999ZM4.5 15.75L5.25 15.75L5.25 7.5L4.5 7.5L3.75 7.5L3.75 15.75L4.5 15.75Z"
@@ -55,15 +57,15 @@
         </svg>
     </div>
 
-    {{-- Label --}}
-    <div
+    {{-- Text: part 1 --}}
+    <span
         class="transition duration-200 ease-out will-change-transform group-hover:translate-x-0.5 dark:text-slate-200"
     >
         Bifrost dropped on
-    </div>
+    </span>
 
-    {{-- Product Hunt --}}
-    <div
+    {{-- Product Hunt badge --}}
+    <span
         class="flex items-center gap-1.5 rounded-full bg-white/50 py-1 pr-3 pl-1 transition duration-200 ease-out will-change-transform group-hover:scale-95 dark:bg-black/50"
     >
         <svg
@@ -71,6 +73,8 @@
             class="size-6 shrink-0"
             viewBox="0 0 21 20"
             fill="none"
+            aria-hidden="true"
+            focusable="false"
         >
             <path
                 fill-rule="evenodd"
@@ -89,25 +93,25 @@
         <span class="font-medium whitespace-nowrap text-[var(--product-hunt)]">
             Product Hunt
         </span>
-    </div>
+    </span>
 
-    {{-- Label --}}
-    <div
+    {{-- Text: part 2 --}}
+    <span
         class="w-full transition duration-200 ease-out will-change-transform group-hover:-translate-x-0.5 xs:w-auto dark:text-slate-200"
     >
         Please upvote!
-    </div>
+    </span>
 
-    {{-- Right arrows --}}
-    <div class="hidden gap-2 min-[31rem]:flex">
+    {{-- Decorative right arrows --}}
+    <div
+        class="hidden gap-2 min-[31rem]:flex"
+        aria-hidden="true"
+    >
         <svg
             x-data="{
                 init() {
                     gsap.to($el, {
-                        keyframes: {
-                            autoAlpha: [0, 1, 0],
-                            y: [0, -10],
-                        },
+                        keyframes: { autoAlpha: [0, 1, 0], y: [0, -10] },
                         repeat: -1,
                         ease: 'sine.in',
                         duration: 2,
@@ -118,6 +122,8 @@
             class="w-2.5 mask-b-from-20% text-[var(--product-hunt)]"
             viewBox="0 0 9 16"
             fill="none"
+            aria-hidden="true"
+            focusable="false"
         >
             <path
                 d="M4.5 0.749999L0.169873 8.25L8.83013 8.25L4.5 0.749999ZM4.5 15.75L5.25 15.75L5.25 7.5L4.5 7.5L3.75 7.5L3.75 15.75L4.5 15.75Z"
@@ -128,10 +134,7 @@
             x-data="{
                 init() {
                     gsap.to($el, {
-                        keyframes: {
-                            autoAlpha: [0, 1, 0],
-                            y: [8, 0],
-                        },
+                        keyframes: { autoAlpha: [0, 1, 0], y: [8, 0] },
                         repeat: -1,
                         ease: 'sine.in',
                         duration: 2,
@@ -142,6 +145,8 @@
             class="w-3 mask-b-from-20% text-[var(--blue-ribbon)]"
             viewBox="0 0 9 16"
             fill="none"
+            aria-hidden="true"
+            focusable="false"
         >
             <path
                 d="M4.5 0.749999L0.169873 8.25L8.83013 8.25L4.5 0.749999ZM4.5 15.75L5.25 15.75L5.25 7.5L4.5 7.5L3.75 7.5L3.75 15.75L4.5 15.75Z"
@@ -150,15 +155,19 @@
         </svg>
     </div>
 
-    {{-- Left blur --}}
-    <div class="absolute -top-5 right-1/2 -z-10 translate-x-1/2">
+    {{-- Decorative blurs --}}
+    <div
+        class="absolute -top-5 right-1/2 -z-10 translate-x-1/2"
+        aria-hidden="true"
+    >
         <div
             class="h-12 w-40 -translate-x-20 rotate-30 rounded-full bg-[var(--product-hunt)] blur-[30px] dark:bg-red-500/60"
         ></div>
     </div>
-
-    {{-- Right blur --}}
-    <div class="absolute -top-5 right-1/2 -z-10 translate-x-1/2">
+    <div
+        class="absolute -top-5 right-1/2 -z-10 translate-x-1/2"
+        aria-hidden="true"
+    >
         <div
             class="h-12 w-40 translate-x-20 rotate-30 rounded-full bg-[var(--blue-ribbon)] blur-[30px] dark:bg-blue-400/60"
         ></div>
