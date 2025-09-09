@@ -1,8 +1,9 @@
 <a
-    href="https://www.producthunt.com/"
+    href="https://www.producthunt.com/products/nativephp?launch=bifrost-3"
+    target="_blank"
     onclick="fathom.trackEvent('alert_click');"
     class="group relative z-30 flex flex-wrap items-center justify-center gap-x-2 gap-y-2.5 overflow-hidden bg-gray-100 px-5 py-2 text-center text-sm tracking-tight text-pretty select-none [--blue-ribbon:#3B63FE] [--product-hunt:#FF6154] sm:text-base dark:bg-gray-950/50"
-    aria-label="Bifrost dropped on Product Hunt. Please upvote."
+    aria-label="Bifrost is on Product Hunt. Please give us an upvote."
 >
     {{-- Decorative left arrows --}}
     <div
@@ -61,7 +62,7 @@
     <span
         class="transition duration-200 ease-out will-change-transform group-hover:translate-x-0.5 dark:text-slate-200"
     >
-        Bifrost dropped on
+        Bifrost is on
     </span>
 
     {{-- Product Hunt badge --}}
@@ -99,7 +100,7 @@
     <span
         class="w-full transition duration-200 ease-out will-change-transform group-hover:-translate-x-0.5 xs:w-auto dark:text-slate-200"
     >
-        Please upvote!
+        Please give us an upvote!
     </span>
 
     {{-- Decorative right arrows --}}
@@ -161,7 +162,7 @@
         aria-hidden="true"
     >
         <div
-            class="h-12 w-40 -translate-x-20 rotate-30 rounded-full bg-[var(--product-hunt)] blur-[30px] dark:bg-red-500/60"
+            class="h-12 w-40 -translate-x-36 rotate-30 rounded-full bg-[var(--product-hunt)] blur-[30px] dark:bg-red-500/60"
         ></div>
     </div>
     <div
@@ -169,7 +170,7 @@
         aria-hidden="true"
     >
         <div
-            class="h-12 w-40 translate-x-20 rotate-30 rounded-full bg-[var(--blue-ribbon)] blur-[30px] dark:bg-blue-400/60"
+            class="h-12 w-40 translate-x-4 rotate-30 rounded-full bg-[var(--blue-ribbon)] blur-[30px] dark:bg-blue-400/60"
         ></div>
     </div>
 </a>
