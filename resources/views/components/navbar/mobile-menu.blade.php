@@ -174,6 +174,21 @@
                         <div>Shop</div>
                     </a>
                 </div>
+
+                <div
+                    class="h-0.5 w-full rounded-full bg-current opacity-5"
+                    role="presentation"
+                ></div>
+
+                <div class="w-full">
+                    <a
+                        href="/partners"
+                        class="flex items-center justify-between py-3 opacity-50 transition duration-200 hover:translate-x-1 hover:opacity-100"
+                        aria-label="NativePHP Partners"
+                    >
+                        <div>Partners</div>
+                    </a>
+                </div>
             </nav>
 
             <div
