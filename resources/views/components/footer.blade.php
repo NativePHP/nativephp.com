@@ -156,7 +156,7 @@
 
         {{-- Right side --}}
         <nav
-            class="flex w-full flex-wrap justify-center gap-x-5 gap-y-3 sm:w-auto lg:justify-around xl:gap-x-10"
+            class="flex flex-wrap w-full justify-around gap-x-5 gap-y-3 sm:w-auto lg:justify-around xl:gap-x-10"
             aria-label="Footer navigation"
             x-init="
                 () => {
@@ -179,7 +179,7 @@
         >
             {{-- Column --}}
             <section
-                class="flex grow flex-col items-start gap-1 sm:grow-0"
+                class="flex flex-col items-start gap-1"
                 aria-labelledby="footer-explore-heading"
             >
                 <h3
@@ -250,89 +250,91 @@
                 </ul>
             </section>
 
-            {{-- Column --}}
-            <section
-                class="flex grow flex-col items-start gap-1 sm:grow-0"
-                aria-labelledby="footer-mobile-heading"
-            >
-                <h3
-                    id="footer-mobile-heading"
-                    class="font-medium"
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-10 w-auto lg:justify-around">
+                {{-- Column --}}
+                <section
+                    class="flex grow flex-col items-start gap-1 sm:grow-0"
+                    aria-labelledby="footer-mobile-heading"
                 >
-                    Mobile
-                </h3>
-                <ul
-                    class="flex flex-col items-start text-sm text-gray-500 dark:text-gray-400"
-                >
-                    <li>
-                        <a
-                            href="/docs/mobile/1/getting-started/introduction"
-                            class="inline-block px-px py-1.5 transition duration-300 will-change-transform hover:translate-x-1 hover:text-gray-700 dark:hover:text-gray-300"
-                        >
-                            Documentation
-                        </a>
-                    </li>
-                    <li>
-                        <a
-                            href="{{ route('pricing') }}"
-                            class="inline-block px-px py-1.5 transition duration-300 will-change-transform hover:translate-x-1 hover:text-gray-700 dark:hover:text-gray-300"
-                        >
-                            Pricing
-                        </a>
-                    </li>
-                    {{--
+                    <h3
+                        id="footer-mobile-heading"
+                        class="font-medium"
+                    >
+                        Mobile
+                    </h3>
+                    <ul
+                        class="flex flex-col items-start text-sm text-gray-500 dark:text-gray-400"
+                    >
                         <li>
-                        <a
-                        href="https://github.com/nativephp/mobile"
-                        class="inline-block px-px py-1.5 transition duration-300 will-change-transform hover:translate-x-1 hover:text-gray-700 dark:hover:text-gray-300"
-                        >
-                        GitHub
-                        </a>
+                            <a
+                                href="/docs/mobile/1/getting-started/introduction"
+                                class="inline-block px-px py-1.5 transition duration-300 will-change-transform hover:translate-x-1 hover:text-gray-700 dark:hover:text-gray-300"
+                            >
+                                Documentation
+                            </a>
                         </li>
-                    --}}
-                </ul>
-            </section>
-
-            {{-- Column --}}
-            <section
-                class="flex grow flex-col items-start gap-1 sm:grow-0"
-                aria-labelledby="footer-desktop-heading"
-            >
-                <h3
-                    id="footer-desktop-heading"
-                    class="font-medium"
-                >
-                    Desktop
-                </h3>
-                <ul
-                    class="flex flex-col items-start text-sm text-gray-500 dark:text-gray-400"
-                >
-                    <li>
-                        <a
-                            href="/docs/desktop/1/getting-started/introduction"
+                        <li>
+                            <a
+                                href="{{ route('pricing') }}"
+                                class="inline-block px-px py-1.5 transition duration-300 will-change-transform hover:translate-x-1 hover:text-gray-700 dark:hover:text-gray-300"
+                            >
+                                Pricing
+                            </a>
+                        </li>
+                        {{--
+                            <li>
+                            <a
+                            href="https://github.com/nativephp/mobile"
                             class="inline-block px-px py-1.5 transition duration-300 will-change-transform hover:translate-x-1 hover:text-gray-700 dark:hover:text-gray-300"
-                        >
-                            Documentation
-                        </a>
-                    </li>
-                    <li>
-                        <a
-                            href="{{ route('sponsoring') }}"
-                            class="inline-block px-px py-1.5 transition duration-300 will-change-transform hover:translate-x-1 hover:text-gray-700 dark:hover:text-gray-300"
-                        >
-                            Sponsoring
-                        </a>
-                    </li>
-                    <li>
-                        <a
-                            href="https://github.com/nativephp/laravel"
-                            class="inline-block px-px py-1.5 transition duration-300 will-change-transform hover:translate-x-1 hover:text-gray-700 dark:hover:text-gray-300"
-                        >
+                            >
                             GitHub
-                        </a>
-                    </li>
-                </ul>
-            </section>
+                            </a>
+                            </li>
+                        --}}
+                    </ul>
+                </section>
+
+                {{-- Column --}}
+                <section
+                    class="flex grow flex-col items-start gap-1 sm:grow-0"
+                    aria-labelledby="footer-desktop-heading"
+                >
+                    <h3
+                        id="footer-desktop-heading"
+                        class="font-medium"
+                    >
+                        Desktop
+                    </h3>
+                    <ul
+                        class="flex flex-col items-start text-sm text-gray-500 dark:text-gray-400"
+                    >
+                        <li>
+                            <a
+                                href="/docs/desktop/1/getting-started/introduction"
+                                class="inline-block px-px py-1.5 transition duration-300 will-change-transform hover:translate-x-1 hover:text-gray-700 dark:hover:text-gray-300"
+                            >
+                                Documentation
+                            </a>
+                        </li>
+                        <li>
+                            <a
+                                href="{{ route('sponsoring') }}"
+                                class="inline-block px-px py-1.5 transition duration-300 will-change-transform hover:translate-x-1 hover:text-gray-700 dark:hover:text-gray-300"
+                            >
+                                Sponsoring
+                            </a>
+                        </li>
+                        <li>
+                            <a
+                                href="https://github.com/nativephp/laravel"
+                                class="inline-block px-px py-1.5 transition duration-300 will-change-transform hover:translate-x-1 hover:text-gray-700 dark:hover:text-gray-300"
+                            >
+                                GitHub
+                            </a>
+                        </li>
+                    </ul>
+                </section>
+            </div>
         </nav>
     </div>
 
