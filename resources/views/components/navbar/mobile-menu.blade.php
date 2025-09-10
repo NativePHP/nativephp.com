@@ -248,10 +248,12 @@
             ></div>
 
             <nav
-                class="mt-4 flex flex-wrap items-center justify-center gap-2.5"
+                class="mt-4 mx-auto flex"
                 aria-label="Social media"
             >
-                <x-social-networks-all />
+                <div class="grid grid-cols-4 justify-items-center gap-4">
+                    <x-social-networks-all />
+                </div>
             </nav>
         </div>
     </div>
