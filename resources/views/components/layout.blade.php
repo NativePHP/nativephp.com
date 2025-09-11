@@ -56,7 +56,7 @@
         @endphp
 
         @if ($seoTitle === $defaultSeoTitle || empty($seoTitle))
-            <title>NativePHP{{ isset($title) ? ' | ' . $title : '' }}</title>
+            <title>{{ isset($title) ? $title . ' - ' : '' }}NativePHP</title>
         @endif
 
         {{-- Favicon --}}
