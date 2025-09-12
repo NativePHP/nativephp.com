@@ -27,11 +27,13 @@ class LicenseExpiryWarning extends Notification implements ShouldQueue
         $subject = $this->getSubject();
         $renewalUrl = route('license.renewal', ['license' => $this->license->key]);
 
+        $licenseName = $this->license->name ?: $this->license->policy_name;
+
         return (new MailMessage)
             ->subject($subject)
             ->greeting("Hi {$notifiable->name},")
             ->line($this->getMainMessage())
-            ->line("**License:** {$this->license->name ?: $this->license->policy_name}")
+            ->line("**License:** {$licenseName}")
             ->line("**License Key:** {$this->license->key}")
             ->line("**Expires:** {$this->license->expires_at->format('F j, Y \\a\\t g:i A T')}")
             ->line('To ensure uninterrupted access to NativePHP, you need to set up a subscription for automatic renewal.')

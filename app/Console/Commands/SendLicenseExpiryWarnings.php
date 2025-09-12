@@ -4,7 +4,6 @@ namespace App\Console\Commands;
 
 use App\Models\License;
 use App\Notifications\LicenseExpiryWarning;
-use Carbon\Carbon;
 use Illuminate\Console\Command;
 
 class SendLicenseExpiryWarnings extends Command
@@ -21,7 +20,7 @@ class SendLicenseExpiryWarnings extends Command
         foreach ($warningDays as $days) {
             $sent = $this->sendWarningsForDays($days);
             $totalSent += $sent;
-            
+
             $this->info("Sent {$sent} warning emails for licenses expiring in {$days} day(s)");
         }
 
@@ -44,7 +43,7 @@ class SendLicenseExpiryWarnings extends Command
             ->whereNull('subscription_item_id') // Legacy licenses without subscriptions
             ->whereDoesntHave('expiryWarnings', function ($query) use ($days) {
                 $query->where('warning_days', $days)
-                      ->where('sent_at', '>=', now()->subHours(23)); // Prevent duplicate emails within 23 hours
+                    ->where('sent_at', '>=', now()->subHours(23)); // Prevent duplicate emails within 23 hours
             })
             ->with('user')
             ->get();
@@ -52,15 +51,15 @@ class SendLicenseExpiryWarnings extends Command
         foreach ($licenses as $license) {
             if ($license->user) {
                 $license->user->notify(new LicenseExpiryWarning($license, $days));
-                
+
                 // Track that we sent this warning
                 $license->expiryWarnings()->create([
                     'warning_days' => $days,
                     'sent_at' => now(),
                 ]);
-                
+
                 $sent++;
-                
+
                 $this->line("Sent {$days}-day warning to {$license->user->email} for license {$license->key}");
             }
         }
