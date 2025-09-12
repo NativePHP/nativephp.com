@@ -105,8 +105,4 @@ class SubLicense extends Model
         return $this->update(['is_suspended' => true]);
     }
 
-    public function unsuspend(): bool
-    {
-        return $this->update(['is_suspended' => false]);
-    }
 }

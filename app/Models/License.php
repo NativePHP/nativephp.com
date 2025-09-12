@@ -91,7 +91,7 @@ class License extends Model
             return null; // Unlimited
         }
 
-        $used = $this->subLicenses()->count();
+        $used = $this->subLicenses()->where('is_suspended', false)->count();
 
         return max(0, $limit - $used);
     }
@@ -115,14 +115,10 @@ class License extends Model
         return $remaining === null || $remaining > 0;
     }
 
+
     public function suspendAllSubLicenses(): int
     {
         return $this->subLicenses()->update(['is_suspended' => true]);
-    }
-
-    public function unsuspendAllSubLicenses(): int
-    {
-        return $this->subLicenses()->update(['is_suspended' => false]);
     }
 
     protected static function boot(): void

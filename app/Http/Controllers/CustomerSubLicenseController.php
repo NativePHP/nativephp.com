@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Actions\SubLicenses\DeleteSubLicense;
 use App\Actions\SubLicenses\SuspendSubLicense;
-use App\Actions\SubLicenses\UnsuspendSubLicense;
 use App\Http\Requests\CreateSubLicenseRequest;
 use App\Jobs\CreateAnystackSubLicenseJob;
 use App\Jobs\UpdateAnystackContactAssociationJob;
@@ -105,21 +104,6 @@ class CustomerSubLicenseController extends Controller
             ->with('success', 'Sub-license suspended successfully!');
     }
 
-    public function unsuspend(string $licenseKey, SubLicense $subLicense): RedirectResponse
-    {
-        $user = Auth::user();
-        $license = $user->licenses()->where('key', $licenseKey)->firstOrFail();
-
-        // Verify the sub-license belongs to this license
-        if ($subLicense->parent_license_id !== $license->id) {
-            abort(404);
-        }
-
-        app(UnsuspendSubLicense::class)->handle($subLicense);
-
-        return redirect()->route('customer.licenses.show', $licenseKey)
-            ->with('success', 'Sub-license unsuspended successfully!');
-    }
 
     public function sendEmail(string $licenseKey, SubLicense $subLicense): RedirectResponse
     {

@@ -33,12 +33,6 @@
                         <a href="{{ route('customer.billing-portal') }}" class="inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
                             Billing
                         </a>
-                        <form method="POST" action="{{ route('customer.logout') }}">
-                            @csrf
-                            <button type="submit" class="inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-                                Sign out
-                            </button>
-                        </form>
                     </div>
                 </div>
             </div>
@@ -181,7 +175,7 @@
                                 <h3 class="text-lg leading-6 font-medium text-gray-900 dark:text-white">
                                     Keys
                                     <span class="ml-2 text-sm text-gray-500 dark:text-gray-400">
-                                        ({{ $license->subLicenses->count() }}{{ $license->subLicenseLimit ? '/' . $license->subLicenseLimit : '' }})
+                                        ({{ $license->subLicenses->where('is_suspended', false)->count() }}{{ $license->subLicenseLimit ? '/' . $license->subLicenseLimit : '' }})
                                     </span>
                                 </h3>
                                 <p class="mt-1 max-w-2xl text-sm text-gray-500 dark:text-gray-400">
@@ -264,7 +258,7 @@
                                                         >
                                                             Edit
                                                         </button>
-                                                        <form method="POST" action="{{ route('customer.licenses.sub-licenses.suspend', [$license->key, $subLicense]) }}" class="inline">
+                                                        <form method="POST" action="{{ route('customer.licenses.sub-licenses.suspend', [$license->key, $subLicense]) }}" class="inline" onsubmit="return confirmSuspension(event)">
                                                             @csrf
                                                             @method('PATCH')
                                                             <button type="submit" class="text-yellow-600 hover:text-yellow-500 text-sm">
@@ -294,7 +288,7 @@
                                                 </span>
                                             </h3>
                                             <p class="mt-1 max-w-2xl text-sm text-gray-500 dark:text-gray-400">
-                                                These keys are currently suspended and cannot be used.
+                                                These keys are permanently suspended and cannot be used or reactivated.
                                             </p>
                                         </div>
                                     </div>
@@ -331,22 +325,6 @@
                                                                     <span class="text-xs">Assigned to: {{ $subLicense->assigned_email }}</span>
                                                                 </div>
                                                             @endif
-                                                        </div>
-                                                        <div class="ml-4 flex items-center space-x-2">
-                                                            <button
-                                                                type="button"
-                                                                onclick="showEditSubLicenseModal({{ $subLicense->id }}, '{{ $subLicense->name }}', '{{ $subLicense->assigned_email }}')"
-                                                                class="text-blue-600 hover:text-blue-500 text-sm"
-                                                            >
-                                                                Edit
-                                                            </button>
-                                                            <form method="POST" action="{{ route('customer.licenses.sub-licenses.unsuspend', [$license->key, $subLicense]) }}" class="inline">
-                                                                @csrf
-                                                                @method('PATCH')
-                                                                <button type="submit" class="text-green-600 hover:text-green-500 text-sm">
-                                                                    Unsuspend
-                                                                </button>
-                                                            </form>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -697,5 +675,22 @@
                 hideEditLicenseNameModal();
             }
         });
+
+        // Confirm suspension with warning about permanence
+        function confirmSuspension(event) {
+            const confirmed = confirm(
+                'Are you sure you want to suspend this license?\n\n' +
+                'WARNING: Once suspended, this license cannot be reactivated. ' +
+                'You will need to create a new license instead.\n\n' +
+                'This action is permanent and cannot be undone.'
+            );
+
+            if (!confirmed) {
+                event.preventDefault();
+                return false;
+            }
+
+            return true;
+        }
     </script>
 </x-layout>

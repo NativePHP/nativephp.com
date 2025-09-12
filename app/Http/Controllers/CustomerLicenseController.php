@@ -25,7 +25,10 @@ class CustomerLicenseController extends Controller
     public function show(string $licenseKey): View
     {
         $user = Auth::user();
-        $license = $user->licenses()->with('subLicenses')->where('key', $licenseKey)->firstOrFail();
+        $license = $user->licenses()
+            ->with('subLicenses')
+            ->where('key', $licenseKey)
+            ->firstOrFail();
 
         return view('customer.licenses.show', compact('license'));
     }
