@@ -84,7 +84,7 @@ enum Subscription: string
     public function subLicenseLimit(): ?int
     {
         return match ($this) {
-            self::Pro => 10,
+            self::Pro => 9,
             self::Max, self::Forever => null, // Unlimited
             default => 0,
         };
