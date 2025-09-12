@@ -50,6 +50,12 @@ class LicenseRenewalController extends Controller
         }
 
         $subscriptionType = Subscription::from($license->policy_name);
+        $user = $license->user;
+
+        // Ensure the user has a Stripe customer ID
+        if (! $user->hasStripeId()) {
+            $user->createAsStripeCustomer();
+        }
 
         // Create Stripe checkout session
         $stripe = new \Stripe\StripeClient(config('cashier.secret'));
@@ -61,8 +67,13 @@ class LicenseRenewalController extends Controller
                 'quantity' => 1,
             ]],
             'mode' => 'subscription',
-            'success_url' => route('license.renewal.success', ['license' => $licenseKey]) . '?session_id={CHECKOUT_SESSION_ID}',
+            'success_url' => route('license.renewal.success', ['license' => $licenseKey]).'?session_id={CHECKOUT_SESSION_ID}',
             'cancel_url' => route('license.renewal', ['license' => $licenseKey]),
+            'customer' => $user->stripe_id, // Use existing customer ID
+            'customer_update' => [
+                'name' => 'auto', // Allow Stripe to update customer name for tax ID collection
+                'address' => 'auto', // Allow Stripe to update customer address for tax ID collection
+            ],
             'metadata' => [
                 'license_key' => $licenseKey,
                 'license_id' => $license->id,
@@ -74,7 +85,6 @@ class LicenseRenewalController extends Controller
             'tax_id_collection' => [
                 'enabled' => true,
             ],
-            'customer_email' => $license->user->email,
             'subscription_data' => [
                 'metadata' => [
                     'license_key' => $licenseKey,
