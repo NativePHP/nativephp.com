@@ -75,4 +75,18 @@ enum Subscription: string
     {
         return config("subscriptions.plans.{$this->value}.anystack_policy_id");
     }
+
+    public function supportsSubLicenses(): bool
+    {
+        return in_array($this, [self::Pro, self::Max, self::Forever]);
+    }
+
+    public function subLicenseLimit(): ?int
+    {
+        return match ($this) {
+            self::Pro => 10,
+            self::Max, self::Forever => null, // Unlimited
+            default => 0,
+        };
+    }
 }

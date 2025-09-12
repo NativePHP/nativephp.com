@@ -1,5 +1,8 @@
 <?php
 
+use App\Http\Controllers\Auth\CustomerAuthController;
+use App\Http\Controllers\CustomerLicenseController;
+use App\Http\Controllers\CustomerSubLicenseController;
 use App\Http\Controllers\ShowBlogController;
 use App\Http\Controllers\ShowDocumentationController;
 use Illuminate\Support\Facades\Route;
@@ -82,3 +85,30 @@ Route::get('docs/{page?}', function ($page = null) {
 })->name('docs')->where('page', '.*');
 
 Route::get('order/{checkoutSessionId}', App\Livewire\OrderSuccess::class)->name('order.success');
+// Customer authentication routes
+Route::middleware('guest')->group(function () {
+    Route::get('login', [CustomerAuthController::class, 'showLogin'])->name('customer.login');
+    Route::post('login', [CustomerAuthController::class, 'login']);
+
+    Route::get('forgot-password', [CustomerAuthController::class, 'showForgotPassword'])->name('password.request');
+    Route::post('forgot-password', [CustomerAuthController::class, 'sendPasswordResetLink'])->name('password.email');
+
+    Route::get('reset-password/{token}', [CustomerAuthController::class, 'showResetPassword'])->name('password.reset');
+    Route::post('reset-password', [CustomerAuthController::class, 'resetPassword'])->name('password.update');
+});
+
+Route::post('logout', [CustomerAuthController::class, 'logout'])->name('customer.logout');
+
+// Customer license management routes
+Route::middleware('auth')->prefix('customer')->name('customer.')->group(function () {
+    Route::get('licenses', [CustomerLicenseController::class, 'index'])->name('licenses');
+    Route::get('licenses/{licenseKey}', [CustomerLicenseController::class, 'show'])->name('licenses.show');
+    Route::patch('licenses/{licenseKey}', [CustomerLicenseController::class, 'update'])->name('licenses.update');
+
+    // Sub-license management routes
+    Route::post('licenses/{licenseKey}/sub-licenses', [CustomerSubLicenseController::class, 'store'])->name('licenses.sub-licenses.store');
+    Route::patch('licenses/{licenseKey}/sub-licenses/{subLicense}', [CustomerSubLicenseController::class, 'update'])->name('licenses.sub-licenses.update');
+    Route::delete('licenses/{licenseKey}/sub-licenses/{subLicense}', [CustomerSubLicenseController::class, 'destroy'])->name('licenses.sub-licenses.destroy');
+    Route::patch('licenses/{licenseKey}/sub-licenses/{subLicense}/suspend', [CustomerSubLicenseController::class, 'suspend'])->name('licenses.sub-licenses.suspend');
+    Route::patch('licenses/{licenseKey}/sub-licenses/{subLicense}/unsuspend', [CustomerSubLicenseController::class, 'unsuspend'])->name('licenses.sub-licenses.unsuspend');
+});
