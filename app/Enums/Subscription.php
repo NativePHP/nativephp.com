@@ -53,10 +53,10 @@ enum Subscription: string
         return config("subscriptions.plans.{$this->value}.name");
     }
 
-    public function stripePriceId(): string
+    public function stripePriceId(bool $forceEap = false): string
     {
         // EAP ends June 1st at midnight UTC
-        return now()->isBefore('2025-06-01 00:00:00')
+        return now()->isBefore('2025-06-01 00:00:00') || $forceEap
             ? config("subscriptions.plans.{$this->value}.stripe_price_id_eap")
             : config("subscriptions.plans.{$this->value}.stripe_price_id");
     }

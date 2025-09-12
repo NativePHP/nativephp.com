@@ -30,7 +30,7 @@ class LicenseRenewalController extends Controller
             'license' => $license,
             'subscriptionType' => $subscriptionType,
             'isNearExpiry' => $isNearExpiry,
-            'stripePriceId' => $subscriptionType->stripePriceId(), // Will use EAP pricing
+            'stripePriceId' => $subscriptionType->stripePriceId(forceEap: true), // Will use EAP pricing
             'stripePublishableKey' => config('cashier.key'),
         ]);
     }
@@ -50,14 +50,14 @@ class LicenseRenewalController extends Controller
         }
 
         $subscriptionType = Subscription::from($license->policy_name);
-        
+
         // Create Stripe checkout session
         $stripe = new \Stripe\StripeClient(config('cashier.secret'));
-        
+
         $checkoutSession = $stripe->checkout->sessions->create([
             'payment_method_types' => ['card'],
             'line_items' => [[
-                'price' => $subscriptionType->stripePriceId(), // Uses EAP pricing
+                'price' => $subscriptionType->stripePriceId(forceEap: true), // Uses EAP pricing
                 'quantity' => 1,
             ]],
             'mode' => 'subscription',
@@ -67,6 +67,12 @@ class LicenseRenewalController extends Controller
                 'license_key' => $licenseKey,
                 'license_id' => $license->id,
                 'renewal' => 'true', // Flag this as a renewal, not a new purchase
+            ],
+            'consent_collection' => [
+                'terms_of_service' => 'required',
+            ],
+            'tax_id_collection' => [
+                'enabled' => true,
             ],
             'customer_email' => $license->user->email,
             'subscription_data' => [
@@ -84,7 +90,7 @@ class LicenseRenewalController extends Controller
     public function success(Request $request, string $licenseKey): View
     {
         $sessionId = $request->get('session_id');
-        
+
         if (!$sessionId) {
             return redirect()->route('license.renewal', ['license' => $licenseKey])
                 ->with('error', 'Invalid session.');
