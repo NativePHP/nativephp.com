@@ -111,6 +111,18 @@ Route::middleware('auth')->prefix('customer')->name('customer.')->group(function
     Route::get('licenses/{licenseKey}', [CustomerLicenseController::class, 'show'])->name('licenses.show');
     Route::patch('licenses/{licenseKey}', [CustomerLicenseController::class, 'update'])->name('licenses.update');
 
+    // Billing portal
+    Route::get('billing-portal', function (Illuminate\Http\Request $request) {
+        $user = $request->user();
+        
+        // Check if user exists in Stripe, create if they don't
+        if (!$user->hasStripeId()) {
+            $user->createAsStripeCustomer();
+        }
+        
+        return $user->redirectToBillingPortal(route('customer.licenses'));
+    })->name('billing-portal');
+
     // Sub-license management routes
     Route::post('licenses/{licenseKey}/sub-licenses', [CustomerSubLicenseController::class, 'store'])->name('licenses.sub-licenses.store');
     Route::patch('licenses/{licenseKey}/sub-licenses/{subLicense}', [CustomerSubLicenseController::class, 'update'])->name('licenses.sub-licenses.update');
