@@ -85,6 +85,12 @@ Route::get('docs/{page?}', function ($page = null) {
 })->name('docs')->where('page', '.*');
 
 Route::get('order/{checkoutSessionId}', App\Livewire\OrderSuccess::class)->name('order.success');
+
+// License renewal routes
+Route::get('license/{license}/renewal', [App\Http\Controllers\LicenseRenewalController::class, 'show'])->name('license.renewal');
+Route::post('license/{license}/renewal/checkout', [App\Http\Controllers\LicenseRenewalController::class, 'createCheckoutSession'])->name('license.renewal.checkout');
+Route::get('license/{license}/renewal/success', [App\Http\Controllers\LicenseRenewalController::class, 'success'])->name('license.renewal.success');
+
 // Customer authentication routes
 Route::middleware('guest')->group(function () {
     Route::get('login', [CustomerAuthController::class, 'showLogin'])->name('customer.login');
