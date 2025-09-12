@@ -1,5 +1,5 @@
 <x-layout title="Renewal Successful">
-    <div class="min-h-screen bg-gray-50 dark:bg-gray-900 py-12">
+    <div class="min-h-screen py-12">
         <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="bg-white dark:bg-gray-800 shadow overflow-hidden sm:rounded-lg">
                 <div class="px-4 py-5 sm:px-6 text-center">
@@ -8,13 +8,14 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
                         </svg>
                     </div>
-                    
+
                     <h3 class="text-lg leading-6 font-medium text-gray-900 dark:text-white mb-2">
                         License Renewal Successful!
                     </h3>
-                    
+
                     <p class="max-w-2xl text-sm text-gray-500 dark:text-gray-400">
-                        Your automatic renewal has been set up successfully. Your license will now automatically renew before it expires.
+                        Your automatic renewal has been set up successfully.<br>
+                        Your license will now automatically renew before it expires.
                     </p>
                 </div>
 

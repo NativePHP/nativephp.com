@@ -1,7 +1,7 @@
 <x-layout title="License Details">
-    <div class="min-h-screen bg-gray-50 dark:bg-gray-900">
+    <header class="min-h-screen">
         {{-- Header --}}
-        <div class="bg-white dark:bg-gray-800 shadow">
+        <header>
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="flex justify-between items-center py-6">
                     <div>
@@ -159,7 +159,7 @@
                                 </dd>
                             </div>
                         @else
-                            <div class="bg-white dark:bg-gray-800 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                            <div class="bg-gray-50 dark:bg-gray-700 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
                                 <dt class="text-sm font-medium text-gray-500 dark:text-gray-400 flex items-center">
                                     Expires
                                 </dt>
