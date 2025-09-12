@@ -104,7 +104,6 @@ class CustomerSubLicenseController extends Controller
             ->with('success', 'Sub-license suspended successfully!');
     }
 
-
     public function sendEmail(string $licenseKey, SubLicense $subLicense): RedirectResponse
     {
         $user = Auth::user();
@@ -123,10 +122,10 @@ class CustomerSubLicenseController extends Controller
 
         // Rate limiting: max 1 email per minute per sub-license
         $rateLimiterKey = "send-license-email.{$subLicense->id}";
-        
+
         if (RateLimiter::tooManyAttempts($rateLimiterKey, 1)) {
             $secondsUntilAvailable = RateLimiter::availableIn($rateLimiterKey);
-            
+
             return redirect()->route('customer.licenses.show', $licenseKey)
                 ->withErrors(['rate_limit' => "Please wait {$secondsUntilAvailable} seconds before sending another email for this license."]);
         }

@@ -115,7 +115,6 @@ class License extends Model
         return $remaining === null || $remaining > 0;
     }
 
-
     public function suspendAllSubLicenses(): int
     {
         return $this->subLicenses()->update(['is_suspended' => true]);
