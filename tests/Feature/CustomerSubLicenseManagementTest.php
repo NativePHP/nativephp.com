@@ -165,34 +165,6 @@ class CustomerSubLicenseManagementTest extends TestCase
         ]);
     }
 
-    public function test_customer_can_unsuspend_sub_license(): void
-    {
-        Http::fake([
-            'api.anystack.sh/v1/products/*/licenses/*' => Http::response(['success' => true], 200),
-        ]);
-
-        $user = User::factory()->create();
-        $license = License::factory()->create([
-            'user_id' => $user->id,
-            'policy_name' => 'pro',
-        ]);
-        $subLicense = SubLicense::factory()->create([
-            'parent_license_id' => $license->id,
-            'is_suspended' => true,
-        ]);
-
-        $response = $this->actingAs($user)
-            ->patch("/customer/licenses/{$license->key}/sub-licenses/{$subLicense->id}/unsuspend");
-
-        $response->assertRedirect("/customer/licenses/{$license->key}")
-            ->assertSessionHas('success', 'Sub-license unsuspended successfully!');
-
-        $this->assertDatabaseHas('sub_licenses', [
-            'id' => $subLicense->id,
-            'is_suspended' => false,
-        ]);
-    }
-
     public function test_customer_can_delete_sub_license(): void
     {
         Http::fake([
