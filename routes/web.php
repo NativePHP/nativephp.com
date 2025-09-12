@@ -87,9 +87,9 @@ Route::get('docs/{page?}', function ($page = null) {
 Route::get('order/{checkoutSessionId}', App\Livewire\OrderSuccess::class)->name('order.success');
 
 // License renewal routes
+Route::get('license/{license:key}/renewal/success', App\Livewire\LicenseRenewalSuccess::class)->name('license.renewal.success');
 Route::get('license/{license}/renewal', [App\Http\Controllers\LicenseRenewalController::class, 'show'])->name('license.renewal');
 Route::post('license/{license}/renewal/checkout', [App\Http\Controllers\LicenseRenewalController::class, 'createCheckoutSession'])->name('license.renewal.checkout');
-Route::get('license/{license}/renewal/success', [App\Http\Controllers\LicenseRenewalController::class, 'success'])->name('license.renewal.success');
 
 // Customer authentication routes
 Route::middleware('guest')->group(function () {
@@ -114,12 +114,12 @@ Route::middleware('auth')->prefix('customer')->name('customer.')->group(function
     // Billing portal
     Route::get('billing-portal', function (Illuminate\Http\Request $request) {
         $user = $request->user();
-        
+
         // Check if user exists in Stripe, create if they don't
-        if (!$user->hasStripeId()) {
+        if (! $user->hasStripeId()) {
             $user->createAsStripeCustomer();
         }
-        
+
         return $user->redirectToBillingPortal(route('customer.licenses'));
     })->name('billing-portal');
 

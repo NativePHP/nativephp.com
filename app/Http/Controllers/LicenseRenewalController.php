@@ -86,21 +86,4 @@ class LicenseRenewalController extends Controller
 
         return redirect($checkoutSession->url);
     }
-
-    public function success(Request $request, string $licenseKey): View
-    {
-        $sessionId = $request->get('session_id');
-
-        if (!$sessionId) {
-            return redirect()->route('license.renewal', ['license' => $licenseKey])
-                ->with('error', 'Invalid session.');
-        }
-
-        $license = License::where('key', $licenseKey)->firstOrFail();
-
-        return view('license.renewal-success', [
-            'license' => $license,
-            'sessionId' => $sessionId,
-        ]);
-    }
 }
