@@ -12,7 +12,11 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule): void
     {
-        // $schedule->command('inspire')->hourly();
+        // Send license expiry warnings daily at 9 AM UTC
+        $schedule->command('licenses:send-expiry-warnings')
+            ->dailyAt('09:00')
+            ->onOneServer()
+            ->runInBackground();
     }
 
     /**

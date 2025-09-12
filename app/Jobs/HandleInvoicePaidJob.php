@@ -27,11 +27,83 @@ class HandleInvoicePaidJob implements ShouldQueue
     public function handle(): void
     {
         match ($this->invoice->billing_reason) {
-            Invoice::BILLING_REASON_SUBSCRIPTION_CREATE => $this->createLicense(),
+            Invoice::BILLING_REASON_SUBSCRIPTION_CREATE => $this->handleSubscriptionCreated(),
             Invoice::BILLING_REASON_SUBSCRIPTION_UPDATE => null, // TODO: Handle subscription update
-            Invoice::BILLING_REASON_SUBSCRIPTION_CYCLE => null, // TODO: Handle subscription renewal
+            Invoice::BILLING_REASON_SUBSCRIPTION_CYCLE => $this->handleSubscriptionRenewal(),
             default => null,
         };
+    }
+
+    private function handleSubscriptionCreated(): void
+    {
+        // Get the subscription to check for renewal metadata
+        $subscription = Cashier::stripe()->subscriptions->retrieve($this->invoice->subscription);
+
+        // Check if this is our "renewal" process (new subscription for existing legacy license)
+        $isRenewal = isset($subscription->metadata['renewal']) && $subscription->metadata['renewal'] === 'true';
+        $licenseKey = $subscription->metadata['license_key'] ?? null;
+        $licenseId = $subscription->metadata['license_id'] ?? null;
+
+        if ($isRenewal && $licenseKey && $licenseId) {
+            $this->handleLegacyLicenseRenewal($subscription, $licenseKey, $licenseId);
+
+            return;
+        }
+
+        // Normal flow - create a new license
+        $this->createLicense();
+    }
+
+    private function handleLegacyLicenseRenewal($subscription, string $licenseKey, string $licenseId): void
+    {
+        $user = $this->billable();
+
+        // Find the existing legacy license
+        $license = License::where('id', $licenseId)
+            ->where('key', $licenseKey)
+            ->where('user_id', $user->id) // Ensure user owns the license
+            ->first();
+
+        if (! $license) {
+            logger('Legacy license renewal failed - license not found', [
+                'license_key' => $licenseKey,
+                'license_id' => $licenseId,
+                'user_id' => $user->id,
+                'subscription_id' => $subscription->id,
+            ]);
+            // Fallback to creating a new license
+            $this->createLicense();
+
+            return;
+        }
+
+        // Get the subscription item
+        if (blank($subscriptionItemId = $this->invoice->lines->first()->subscription_item)) {
+            throw new UnexpectedValueException('Failed to retrieve the Stripe subscription item id from invoice lines.');
+        }
+
+        $subscriptionItemModel = SubscriptionItem::query()->where('stripe_id', $subscriptionItemId)->firstOrFail();
+
+        // Calculate new expiry date from subscription period end
+        $newExpiryDate = \Carbon\Carbon::createFromTimestamp($subscription->current_period_end);
+
+        // Link the subscription to the existing license (expiry will be updated by Anystack job)
+        $license->update([
+            'subscription_item_id' => $subscriptionItemModel->id,
+        ]);
+
+        // Update the Anystack license expiry date (which will also update the database on success)
+        dispatch(new UpdateAnystackLicenseExpiryJob($license, $newExpiryDate));
+
+        logger('Legacy license renewal completed', [
+            'license_id' => $license->id,
+            'license_key' => $license->key,
+            'user_id' => $user->id,
+            'subscription_item_id' => $subscriptionItemModel->id,
+            'subscription_id' => $subscription->id,
+            'old_expiry' => $license->getOriginal('expires_at'),
+            'new_expiry' => $newExpiryDate,
+        ]);
     }
 
     private function createLicense(): void
@@ -61,6 +133,45 @@ class HandleInvoicePaidJob implements ShouldQueue
             $user->first_name,
             $user->last_name,
         ));
+    }
+
+    private function handleSubscriptionRenewal(): void
+    {
+        // Get the subscription item ID from the invoice line
+        if (blank($subscriptionItemId = $this->invoice->lines->first()->subscription_item)) {
+            throw new UnexpectedValueException('Failed to retrieve the Stripe subscription item id from invoice lines.');
+        }
+
+        // Find the subscription item model
+        $subscriptionItemModel = SubscriptionItem::query()->where('stripe_id', $subscriptionItemId)->firstOrFail();
+
+        // Find the license associated with this subscription item
+        $license = License::query()->whereBelongsTo($subscriptionItemModel)->first();
+
+        if (! $license) {
+            // No existing license found - this might be a new subscription, handle as create
+            $this->createLicense();
+
+            return;
+        }
+
+        // Get the subscription to find the current period end
+        $subscription = Cashier::stripe()->subscriptions->retrieve($this->invoice->subscription);
+
+        // Update the license expiry date to match the subscription's current period end
+        $newExpiryDate = \Carbon\Carbon::createFromTimestamp($subscription->current_period_end);
+
+        // Update the Anystack license expiry date (which will also update the database on success)
+        dispatch(new UpdateAnystackLicenseExpiryJob($license, $newExpiryDate));
+
+        logger('License renewal processed', [
+            'license_id' => $license->id,
+            'license_key' => $license->key,
+            'old_expiry' => $license->getOriginal('expires_at'),
+            'new_expiry' => $newExpiryDate,
+            'subscription_id' => $this->invoice->subscription,
+            'invoice_id' => $this->invoice->id,
+        ]);
     }
 
     private function billable(): User

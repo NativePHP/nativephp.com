@@ -275,6 +275,18 @@ class StripePurchaseHandlingTest extends TestCase
             }
         };
 
+        $mockStripeClient->subscriptions = new class
+        {
+            public function retrieve($subscriptionId)
+            {
+                return \Stripe\Subscription::constructFrom([
+                    'id' => $subscriptionId,
+                    'metadata' => [], // No renewal metadata for normal tests
+                    'current_period_end' => now()->addYear()->timestamp,
+                ]);
+            }
+        };
+
         $this->app->bind(StripeClient::class, function ($app, $parameters) use ($mockStripeClient) {
             return $mockStripeClient;
         });
