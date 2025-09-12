@@ -15,6 +15,7 @@ class CreateSubLicenseRequest extends FormRequest
     {
         return [
             'name' => ['nullable', 'string', 'max:255'],
+            'assigned_email' => ['nullable', 'email', 'max:255'],
         ];
     }
 
@@ -22,6 +23,8 @@ class CreateSubLicenseRequest extends FormRequest
     {
         return [
             'name.max' => 'The name cannot be longer than 255 characters.',
+            'assigned_email.email' => 'Please enter a valid email address.',
+            'assigned_email.max' => 'The email address cannot be longer than 255 characters.',
         ];
     }
 }

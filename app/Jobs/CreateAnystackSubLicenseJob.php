@@ -17,6 +17,7 @@ class CreateAnystackSubLicenseJob implements ShouldQueue
     public function __construct(
         public License $parentLicense,
         public ?string $name = null,
+        public ?string $assignedEmail = null,
     ) {}
 
     public function handle(): void
@@ -27,8 +28,14 @@ class CreateAnystackSubLicenseJob implements ShouldQueue
             'anystack_id' => $licenseData['id'],
             'name' => $this->name,
             'key' => $licenseData['key'],
+            'assigned_email' => $this->assignedEmail,
             'expires_at' => $licenseData['expires_at'],
         ]);
+
+        // If an email was assigned, update the contact association in Anystack
+        if ($this->assignedEmail) {
+            UpdateAnystackContactAssociationJob::dispatch($subLicense, $this->assignedEmail);
+        }
     }
 
     private function createSubLicenseInAnystack(): array

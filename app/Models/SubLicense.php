@@ -18,6 +18,16 @@ class SubLicense extends Model
         'is_suspended' => 'boolean',
     ];
 
+    protected $fillable = [
+        'parent_license_id',
+        'anystack_id',
+        'name',
+        'key',
+        'assigned_email',
+        'is_suspended',
+        'expires_at',
+    ];
+
     protected static function boot(): void
     {
         parent::boot();

@@ -200,6 +200,11 @@
                         </div>
                     </div>
 
+                    @php
+                        $activeSubLicenses = $license->subLicenses->where('is_suspended', false);
+                        $suspendedSubLicenses = $license->subLicenses->where('is_suspended', true);
+                    @endphp
+
                     @if($license->subLicenses->isEmpty())
                         <div class="border-t border-gray-200 dark:border-gray-700 px-4 py-8 text-center">
                             <div class="text-gray-500 dark:text-gray-400">
@@ -208,26 +213,23 @@
                             </div>
                         </div>
                     @else
-                        <div class="border-t border-gray-200 dark:border-gray-700">
-                            <ul role="list" class="divide-y divide-gray-200 dark:divide-gray-700">
-                                @foreach($license->subLicenses as $subLicense)
+                        {{-- Active Sub-Licenses --}}
+                        @if($activeSubLicenses->isNotEmpty())
+                            <div class="border-t border-gray-200 dark:border-gray-700">
+                                <ul role="list" class="divide-y divide-gray-200 dark:divide-gray-700">
+                                    @foreach($activeSubLicenses as $subLicense)
                                     <li class="px-4 py-4">
                                         <div class="flex items-center justify-between">
                                             <div class="flex-1">
                                                 <div class="flex items-center">
                                                     <div class="flex-1">
-                                                        <div class="flex items-center">
-                                                            <p class="text-sm font-medium text-gray-900 dark:text-white">
-                                                                {{ $subLicense->name ?: 'Unnamed Key' }}
-                                                            </p>
-                                                            <span class="ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
-                                                                {{ $subLicense->status === 'Active' ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200' : '' }}
-                                                                {{ $subLicense->status === 'Suspended' ? 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200' : '' }}
-                                                                {{ $subLicense->status === 'Expired' ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200' : '' }}
-                                                            ">
-                                                                {{ $subLicense->status }}
-                                                            </span>
-                                                        </div>
+                                                        @if($subLicense->name)
+                                                            <div>
+                                                                <p class="text-sm font-medium text-gray-900 dark:text-white">
+                                                                    {{ $subLicense->name }}
+                                                                </p>
+                                                            </div>
+                                                        @endif
                                                         <div class="mt-1 flex items-center text-sm text-gray-500 dark:text-gray-400">
                                                             <code class="bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded text-xs font-mono">
                                                                 {{ $subLicense->key }}
@@ -240,16 +242,104 @@
                                                                 Copy
                                                             </button>
                                                         </div>
+                                                        @if($subLicense->assigned_email)
+                                                            <div class="mt-1 flex items-center text-sm text-gray-500 dark:text-gray-400">
+                                                                <span class="text-xs">Assigned to: {{ $subLicense->assigned_email }}</span>
+                                                            </div>
+                                                        @endif
                                                     </div>
                                                     <div class="ml-4 flex items-center space-x-2">
+                                                        @if($subLicense->assigned_email)
+                                                            <form method="POST" action="{{ route('customer.licenses.sub-licenses.send-email', [$license->key, $subLicense]) }}" class="inline">
+                                                                @csrf
+                                                                <button type="submit" class="text-green-600 hover:text-green-500 text-sm">
+                                                                    Send License
+                                                                </button>
+                                                            </form>
+                                                        @endif
                                                         <button
                                                             type="button"
-                                                            onclick="showEditSubLicenseModal({{ $subLicense->id }}, '{{ $subLicense->name }}')"
+                                                            onclick="showEditSubLicenseModal({{ $subLicense->id }}, '{{ $subLicense->name }}', '{{ $subLicense->assigned_email }}')"
                                                             class="text-blue-600 hover:text-blue-500 text-sm"
                                                         >
                                                             Edit
                                                         </button>
-                                                        @if($subLicense->is_suspended)
+                                                        <form method="POST" action="{{ route('customer.licenses.sub-licenses.suspend', [$license->key, $subLicense]) }}" class="inline">
+                                                            @csrf
+                                                            @method('PATCH')
+                                                            <button type="submit" class="text-yellow-600 hover:text-yellow-500 text-sm">
+                                                                Suspend
+                                                            </button>
+                                                        </form>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </li>
+                                    @endforeach
+                                </ul>
+                            </div>
+                        @endif
+
+                        {{-- Suspended Sub-Licenses --}}
+                        @if($suspendedSubLicenses->isNotEmpty())
+                            <div class="mt-6 bg-white dark:bg-gray-800 shadow overflow-hidden sm:rounded-lg">
+                                <div class="px-4 py-5 sm:px-6">
+                                    <div class="flex items-center justify-between">
+                                        <div>
+                                            <h3 class="text-lg leading-6 font-medium text-gray-900 dark:text-white">
+                                                Suspended Keys
+                                                <span class="ml-2 text-sm text-gray-500 dark:text-gray-400">
+                                                    ({{ $suspendedSubLicenses->count() }})
+                                                </span>
+                                            </h3>
+                                            <p class="mt-1 max-w-2xl text-sm text-gray-500 dark:text-gray-400">
+                                                These keys are currently suspended and cannot be used.
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="border-t border-gray-200 dark:border-gray-700">
+                                    <ul role="list" class="divide-y divide-gray-200 dark:divide-gray-700">
+                                        @foreach($suspendedSubLicenses as $subLicense)
+                                        <li class="px-4 py-4 bg-red-50 dark:bg-red-900/20">
+                                            <div class="flex items-center justify-between">
+                                                <div class="flex-1">
+                                                    <div class="flex items-center">
+                                                        <div class="flex-1">
+                                                            @if($subLicense->name)
+                                                                <div>
+                                                                    <p class="text-sm font-medium text-gray-900 dark:text-white">
+                                                                        {{ $subLicense->name }}
+                                                                    </p>
+                                                                </div>
+                                                            @endif
+                                                            <div class="mt-1 flex items-center text-sm text-gray-500 dark:text-gray-400">
+                                                                <code class="bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded text-xs font-mono">
+                                                                    {{ $subLicense->key }}
+                                                                </code>
+                                                                <button
+                                                                    type="button"
+                                                                    onclick="copyToClipboard('{{ $subLicense->key }}')"
+                                                                    class="ml-2 text-xs text-blue-600 hover:text-blue-500"
+                                                                >
+                                                                    Copy
+                                                                </button>
+                                                            </div>
+                                                            @if($subLicense->assigned_email)
+                                                                <div class="mt-1 flex items-center text-sm text-gray-500 dark:text-gray-400">
+                                                                    <span class="text-xs">Assigned to: {{ $subLicense->assigned_email }}</span>
+                                                                </div>
+                                                            @endif
+                                                        </div>
+                                                        <div class="ml-4 flex items-center space-x-2">
+                                                            <button
+                                                                type="button"
+                                                                onclick="showEditSubLicenseModal({{ $subLicense->id }}, '{{ $subLicense->name }}', '{{ $subLicense->assigned_email }}')"
+                                                                class="text-blue-600 hover:text-blue-500 text-sm"
+                                                            >
+                                                                Edit
+                                                            </button>
                                                             <form method="POST" action="{{ route('customer.licenses.sub-licenses.unsuspend', [$license->key, $subLicense]) }}" class="inline">
                                                                 @csrf
                                                                 @method('PATCH')
@@ -257,23 +347,16 @@
                                                                     Unsuspend
                                                                 </button>
                                                             </form>
-                                                        @else
-                                                            <form method="POST" action="{{ route('customer.licenses.sub-licenses.suspend', [$license->key, $subLicense]) }}" class="inline">
-                                                                @csrf
-                                                                @method('PATCH')
-                                                                <button type="submit" class="text-yellow-600 hover:text-yellow-500 text-sm">
-                                                                    Suspend
-                                                                </button>
-                                                            </form>
-                                                        @endif
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
-                                        </div>
-                                    </li>
-                                @endforeach
-                            </ul>
-                        </div>
+                                        </li>
+                                        @endforeach
+                                    </ul>
+                                </div>
+                            </div>
+                        @endif
                     @endif
 
                     @if(!$license->canCreateSubLicense())
@@ -408,6 +491,20 @@
                         />
                         <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Give your key a descriptive name to help identify its purpose.</p>
                     </div>
+                    <div class="mb-4">
+                        <label for="create_assigned_email" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                            Assign to Email (Optional)
+                        </label>
+                        <input
+                            type="email"
+                            id="create_assigned_email"
+                            name="assigned_email"
+                            autocomplete="email"
+                            class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
+                            placeholder="e.g., john@company.com"
+                        />
+                        <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Assign this license to a team member. They'll receive usage instructions via email.</p>
+                    </div>
                     <div class="flex justify-end space-x-3">
                         <button type="button" onclick="hideCreateKeyModal()" class="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-600 hover:bg-gray-200 dark:hover:bg-gray-500 border border-gray-300 dark:border-gray-500 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
                             Cancel
@@ -452,6 +549,20 @@
                             placeholder="e.g., Development Team, John's Machine"
                         />
                         <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Give your key a descriptive name to help identify its purpose.</p>
+                    </div>
+                    <div class="mb-4">
+                        <label for="edit_assigned_email" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                            Assign to Email (Optional)
+                        </label>
+                        <input
+                            type="email"
+                            id="edit_assigned_email"
+                            name="assigned_email"
+                            autocomplete="email"
+                            class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
+                            placeholder="e.g., john@company.com"
+                        />
+                        <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Assign this license to a team member. They'll receive usage instructions via email.</p>
                     </div>
                     <div class="flex justify-end space-x-3">
                         <button type="button" onclick="hideEditSubLicenseModal()" class="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-600 hover:bg-gray-200 dark:hover:bg-gray-500 border border-gray-300 dark:border-gray-500 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
@@ -530,15 +641,18 @@
         function hideCreateKeyModal() {
             document.getElementById('createKeyModal').classList.add('hidden');
             document.getElementById('create_name').value = '';
+            document.getElementById('create_assigned_email').value = '';
         }
 
-        function showEditSubLicenseModal(subLicenseId, currentName) {
+        function showEditSubLicenseModal(subLicenseId, currentName, currentEmail) {
             const modal = document.getElementById('editSubLicenseModal');
             const form = document.getElementById('editSubLicenseForm');
             const nameInput = document.getElementById('edit_name');
+            const emailInput = document.getElementById('edit_assigned_email');
 
             form.action = '/customer/licenses/{{ $license->key }}/sub-licenses/' + subLicenseId;
             nameInput.value = currentName || '';
+            emailInput.value = currentEmail || '';
             modal.classList.remove('hidden');
             nameInput.focus();
         }
@@ -546,6 +660,7 @@
         function hideEditSubLicenseModal() {
             document.getElementById('editSubLicenseModal').classList.add('hidden');
             document.getElementById('edit_name').value = '';
+            document.getElementById('edit_assigned_email').value = '';
         }
 
         function showEditLicenseNameModal() {

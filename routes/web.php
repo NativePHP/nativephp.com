@@ -129,4 +129,5 @@ Route::middleware('auth')->prefix('customer')->name('customer.')->group(function
     Route::delete('licenses/{licenseKey}/sub-licenses/{subLicense}', [CustomerSubLicenseController::class, 'destroy'])->name('licenses.sub-licenses.destroy');
     Route::patch('licenses/{licenseKey}/sub-licenses/{subLicense}/suspend', [CustomerSubLicenseController::class, 'suspend'])->name('licenses.sub-licenses.suspend');
     Route::patch('licenses/{licenseKey}/sub-licenses/{subLicense}/unsuspend', [CustomerSubLicenseController::class, 'unsuspend'])->name('licenses.sub-licenses.unsuspend');
+    Route::post('licenses/{licenseKey}/sub-licenses/{subLicense}/send-email', [CustomerSubLicenseController::class, 'sendEmail'])->name('licenses.sub-licenses.send-email');
 });
