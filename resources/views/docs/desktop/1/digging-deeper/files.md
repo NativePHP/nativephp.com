@@ -53,6 +53,7 @@ Storage::disk('music')->get('file.txt');
 Storage::disk('pictures')->get('file.txt');
 Storage::disk('videos')->get('file.txt');
 Storage::disk('recent')->get('file.txt');
+Storage::disk('extras')->get('file.txt');
 ```
 
 Note that the PHP process which runs your application operates with the same privileges as the logged-in user, this
@@ -91,5 +92,52 @@ However, in a NativePHP app, this approach is less applicable. The entire applic
 
 We recommend avoiding symlinks within your NativePHP app. Instead, consider either:
 
--   Placing files directly in their intended locations
--   Using Laravel's Storage facade to mount directories outside your application
+- Placing files directly in their intended locations
+- Using Laravel's Storage facade to mount directories outside your application
+
+## Bundling Application Resources
+
+NativePHP allows you to bundle additional files with your application that can be accessed at runtime. This is useful for including pre-compiled executables or other resources that need to be distributed with your app.
+
+### Adding Files
+
+To include extra files with your application, place them in a `extras/` directory at the root of your Laravel project:
+
+```
+your-project/
+├── extras/
+│   ├── my-tool.sh
+│   ├── my-tool.exe
+│   └── sample.csv
+├── app/
+└── ...
+```
+
+These files will be automatically bundled with your application during the build process.
+
+The `extras` disk is read-only. Any files you write to this directory will be overwritten when your application is updated.
+
+### Accessing Files
+
+You can access bundled extra files using Laravel's Storage facade with the `extras` disk:
+
+```php
+use Illuminate\Support\Facades\Storage;
+
+$toolPath = Storage::disk('extras')->path('my-tool.exe');
+```
+
+### Using Bundled Tools
+
+```php
+use Illuminate\Support\Facades\Storage;
+use Native\Laravel\Facades\ChildProcess;
+
+// Get the path to a bundled executable
+$toolPath = Storage::disk('extras')->path('my-tool.sh');
+
+ChildProcess::start(
+    cmd: $toolPath,
+    alias: 'my-tool'
+);
+```
