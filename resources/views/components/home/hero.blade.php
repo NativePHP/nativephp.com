@@ -34,7 +34,7 @@
                     class="w-full text-center font-light lg:w-auto dark:font-extralight"
                 >
                     Try our
-                    <span class="font-medium">Demo</span>
+                    <span class="font-medium">Mobile</span>
                     app:
                 </p>
                 <div>
