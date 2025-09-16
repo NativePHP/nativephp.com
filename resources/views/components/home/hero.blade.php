@@ -28,7 +28,7 @@
                         })
                     }
                 "
-                class="flex flex-wrap justify-center gap-2 lg:flex-col lg:items-end lg:gap-1.5 xl:gap-2"
+                class="flex flex-wrap justify-center gap-2 lg:flex-col lg:gap-1.5 xl:gap-2"
             >
                 <p
                     class="w-full text-center font-light lg:w-auto dark:font-extralight"
@@ -65,22 +65,20 @@
                         <div>TestFlight</div>
                     </a>
                 </div>
-                {{--
-                    <div>
+                <div>
                     <a
-                    href="https://github.com/nativephp/kitchen-sink-mobile"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    class="flex items-center gap-2 rounded-xl bg-white/70 px-3 py-2.5 backdrop-blur-md transition duration-200 will-change-transform hover:scale-98 hover:bg-white dark:bg-slate-500/25 dark:hover:bg-slate-500/40"
+                        href="https://github.com/nativephp/kitchen-sink-mobile"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        class="flex items-center gap-2 rounded-xl bg-white/70 px-3 py-2.5 backdrop-blur-md transition duration-200 will-change-transform hover:scale-98 hover:bg-white dark:bg-slate-500/25 dark:hover:bg-slate-500/40"
                     >
-                    <x-icons.github
-                    class="h-4.5 2xl:h-5"
-                    aria-hidden="true"
-                    />
-                    <div>Source code</div>
+                        <x-icons.github
+                            class="h-4.5 2xl:h-5"
+                            aria-hidden="true"
+                        />
+                        <div>Source</div>
                     </a>
-                    </div>
-                --}}
+                </div>
             </div>
         </div>
 
