@@ -55,7 +55,7 @@
             $defaultSeoTitle = config('seotools.meta.defaults.title');
         @endphp
 
-        @if ($seoTitle === $defaultSeoTitle || empty($seoTitle))
+        @if ($seoTitle === $defaultSeoTitle)
             <title>{{ isset($title) ? $title . ' - ' : '' }}NativePHP</title>
         @endif
 
