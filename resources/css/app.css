@@ -133,7 +133,7 @@ nav.docs-navigation > ul > li {
     & > a {
         @apply font-semibold;
         @apply mb-1.5 px-3 py-2.5 no-underline;
-        @apply rounded-xl border dark:border-white/15;
+        @apply rounded-3xl border dark:border-white/15;
     }
 }
 
