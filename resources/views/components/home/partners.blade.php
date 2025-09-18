@@ -29,10 +29,11 @@
                 id="sponsors-title"
                 class="text-2xl font-bold text-gray-800 lg:text-3xl dark:text-white"
             >
-                Our Partners
+                Partners get more
             </h2>
             <p class="text-lg text-gray-600 lg:text-xl dark:text-zinc-400">
-                NativePHP wouldn't be possible without amazing Partners
+                Our Partner Program enables the best development teams and technology vendors to excel in delivering
+                world class native apps.
             </p>
         </div>
 
@@ -42,6 +43,42 @@
                 class="grid w-full grid-cols-1 gap-5 md:grid-cols-[repeat(auto-fill,minmax(15rem,1fr))] lg:w-auto lg:grid-cols-1"
                 aria-label="Featured partners of the NativePHP project"
             >
+                <x-home.featured-partner-card
+                    partnerName="Nexcalia"
+                    tagline="Smart tools for scheduling & visitor management"
+                    href="https://www.nexcalia.com/?ref=nativephp"
+                >
+                    <x-slot:logo>
+                        <x-sponsors.logos.nexcalia
+                            class="text-black dark:text-white"
+                            aria-hidden="true"
+                        />
+                    </x-slot>
+
+                    <x-slot:description>
+                        From online booking to interactive kiosks, Nexcalia
+                        helps businesses streamline appointments and improve
+                        customer experiences.
+                    </x-slot>
+                </x-home.featured-partner-card>
+                <x-home.featured-partner-card
+                    partnerName="Laradevs"
+                    tagline="Hire the best Laravel developers anywhere"
+                    href="https://laradevs.com/?ref=nativephp"
+                >
+                    <x-slot:logo>
+                        <x-sponsors.logos.laradevs
+                            class="text-black dark:text-white"
+                            aria-hidden="true"
+                        />
+                    </x-slot>
+
+                    <x-slot:description>
+                        Need a freelancer or engineer? Laradevs has you covered.
+                        Filter by skills, experience, location, availability,
+                        and pay.
+                    </x-slot>
+                </x-home.featured-partner-card>
                 <x-home.featured-partner-card
                     partnerName="BeyondCode"
                     tagline="Essential tools for web developers"
@@ -70,42 +107,6 @@
                         From local full stack development to cutting-edge AI
                         platforms, we provide the tools for building your next
                         great app.
-                    </x-slot>
-                </x-home.featured-partner-card>
-                <x-home.featured-partner-card
-                    partnerName="Laradevs"
-                    tagline="Hire the best Laravel developers anywhere"
-                    href="https://laradevs.com/?ref=nativephp"
-                >
-                    <x-slot:logo>
-                        <x-sponsors.logos.laradevs
-                            class="text-black dark:text-white"
-                            aria-hidden="true"
-                        />
-                    </x-slot>
-
-                    <x-slot:description>
-                        Need a freelancer or engineer? Laradevs has you covered.
-                        Filter by skills, experience, location, availability,
-                        and pay.
-                    </x-slot>
-                </x-home.featured-partner-card>
-                <x-home.featured-partner-card
-                    partnerName="Nexcalia"
-                    tagline="Smart tools for scheduling & visitor management"
-                    href="https://www.nexcalia.com/?ref=nativephp"
-                >
-                    <x-slot:logo>
-                        <x-sponsors.logos.nexcalia
-                            class="text-black dark:text-white"
-                            aria-hidden="true"
-                        />
-                    </x-slot>
-
-                    <x-slot:description>
-                        From online booking to interactive kiosks, Nexcalia
-                        helps businesses streamline appointments and improve
-                        customer experiences.
                     </x-slot>
                 </x-home.featured-partner-card>
             </div>
