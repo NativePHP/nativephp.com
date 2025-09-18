@@ -80,7 +80,7 @@
         {{-- Icon --}}
         <x-icons.star-circle class="size-6" />
         {{-- Label --}}
-        <div>Sponsors</div>
+        <div>Partners</div>
     </h3>
     {{-- List --}}
     <div class="space-y-3 pt-2.5">
