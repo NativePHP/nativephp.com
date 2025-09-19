@@ -2,14 +2,24 @@
 
 namespace Tests\Feature;
 
+use App\Features\ShowAuthButtons;
 use App\Models\License;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Laravel\Pennant\Feature;
 use Tests\TestCase;
 
 class CustomerLicenseManagementTest extends TestCase
 {
     use RefreshDatabase;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        // Enable the auth feature flag for all license management tests
+        Feature::define(ShowAuthButtons::class, true);
+    }
 
     public function test_customer_can_view_licenses_page(): void
     {

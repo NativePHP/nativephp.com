@@ -2,14 +2,24 @@
 
 namespace Tests\Feature;
 
+use App\Features\ShowAuthButtons;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Hash;
+use Laravel\Pennant\Feature;
 use Tests\TestCase;
 
 class CustomerAuthenticationTest extends TestCase
 {
     use RefreshDatabase;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        // Enable the auth feature flag for all authentication tests
+        Feature::define(ShowAuthButtons::class, true);
+    }
 
     public function test_customer_can_view_login_page(): void
     {

@@ -2,17 +2,27 @@
 
 namespace Tests\Feature;
 
+use App\Features\ShowAuthButtons;
 use App\Models\License;
 use App\Models\SubLicense;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Queue;
+use Laravel\Pennant\Feature;
 use Tests\TestCase;
 
 class CustomerSubLicenseManagementTest extends TestCase
 {
     use RefreshDatabase;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        // Enable the auth feature flag for all sub-license management tests
+        Feature::define(ShowAuthButtons::class, true);
+    }
 
     public function test_customer_can_create_sub_license_when_license_supports_it(): void
     {
