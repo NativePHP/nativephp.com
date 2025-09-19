@@ -55,8 +55,8 @@
             $defaultSeoTitle = config('seotools.meta.defaults.title');
         @endphp
 
-        @if ($seoTitle === $defaultSeoTitle || empty($seoTitle))
-            <title>NativePHP{{ isset($title) ? ' | ' . $title : '' }}</title>
+        @if ($seoTitle === $defaultSeoTitle)
+            <title>{{ isset($title) ? $title . ' - ' : '' }}NativePHP</title>
         @endif
 
         {{-- Favicon --}}

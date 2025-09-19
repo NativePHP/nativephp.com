@@ -95,7 +95,7 @@
             <div
                 class="gradient-text bg-clip-text text-center tracking-tight text-pretty text-transparent"
             >
-                Join Early Access — from $9/month. Plus a FREE Mobile Mini license
+                Build your NativePHP apps in the cloud. Plans from $19/month + a FREE Mobile Mini license
             </div>
         </div>
 

@@ -1,4 +1,4 @@
-<x-layout>
+<x-layout title="Join our Partner Program">
     <div class="mx-auto max-w-5xl">
         {{-- Hero Section --}}
         <section class="mt-12">

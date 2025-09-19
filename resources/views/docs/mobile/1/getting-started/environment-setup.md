@@ -67,7 +67,7 @@ to develop and test your apps on a Simulator. However, you will need to enroll w
 ## Android Requirements
 
 1. [Android Studio 2024.2.1 or later](https://developer.android.com/studio)
-2. Android SDK with API 23 or higher
+2. Android SDK with API 33 or higher
 3. **Windows only**: You must have [7zip](https://www.7-zip.org/) installed.
 
 <aside class="relative z-0 mt-5 overflow-hidden rounded-2xl bg-pink-50 px-5 ring-1 ring-black/5 dark:bg-pink-600/10">
@@ -88,7 +88,7 @@ proper JDK for you.
 2. **Install Android SDK**
    - Open Android Studio
    - Navigate to **Tools → SDK Manager**
-   - In the **SDK Platforms** tab, install at least one Android SDK platform for API 23 or higher
+   - In the **SDK Platforms** tab, install at least one Android SDK platform for API 33 or higher
      - Latest stable version: Android 15 (API 35)
      - You only need to install one API version to get started
    - In the **SDK Tools** tab, ensure **Android SDK Build-Tools** and **Android SDK Platform-Tools** are installed

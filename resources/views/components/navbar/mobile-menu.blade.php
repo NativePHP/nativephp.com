@@ -174,6 +174,47 @@
                         <div>Shop</div>
                     </a>
                 </div>
+
+                <div
+                    class="h-0.5 w-full rounded-full bg-current opacity-5"
+                    role="presentation"
+                ></div>
+
+                <div class="w-full">
+                    <a
+                        href="/partners"
+                        class="flex items-center justify-between py-3 opacity-50 transition duration-200 hover:translate-x-1 hover:opacity-100"
+                        aria-label="NativePHP Partners"
+                    >
+                        <div>Partners</div>
+                    </a>
+                </div>
+
+                <div
+                    class="h-0.5 w-full rounded-full bg-current opacity-5"
+                    role="presentation"
+                ></div>
+
+                {{-- Login/Logout --}}
+                @feature(App\Features\ShowAuthButtons::class)
+                    <div class="w-full">
+                        @auth
+                            <form method="POST" action="{{ route('customer.logout') }}" class="w-full">
+                                @csrf
+                                <button type="submit" class="flex w-full items-center justify-between py-3 opacity-50 transition duration-200 hover:translate-x-1 hover:opacity-100">
+                                    <div>Log out</div>
+                                </button>
+                            </form>
+                        @else
+                            <a
+                                href="{{ route('customer.login') }}"
+                                class="flex items-center justify-between py-3 opacity-50 transition duration-200 hover:translate-x-1 hover:opacity-100"
+                            >
+                                <div>Log in</div>
+                            </a>
+                        @endauth
+                    </div>
+                @endfeature
             </nav>
 
             <div
@@ -233,10 +274,12 @@
             ></div>
 
             <nav
-                class="mt-4 flex flex-wrap items-center justify-center gap-2.5"
+                class="mt-4 mx-auto flex"
                 aria-label="Social media"
             >
-                <x-social-networks-all />
+                <div class="grid grid-cols-4 justify-items-center gap-4">
+                    <x-social-networks-all />
+                </div>
             </nav>
         </div>
     </div>

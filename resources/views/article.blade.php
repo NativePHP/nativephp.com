@@ -1,4 +1,4 @@
-<x-layout title="Blog">
+<x-layout title="{{ $article->title }} - Blog">
     {{-- Hero --}}
     <section
         class="mx-auto mt-10 w-full max-w-5xl"

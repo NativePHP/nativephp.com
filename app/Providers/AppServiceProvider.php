@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Features\ShowAuthButtons;
 use App\Support\GitHub;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Queue\Events\JobFailed;
@@ -9,6 +10,7 @@ use Illuminate\Support\Facades\Queue;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
+use Laravel\Pennant\Feature;
 use Sentry\State\Scope;
 
 use function Sentry\captureException;
@@ -32,6 +34,8 @@ class AppServiceProvider extends ServiceProvider
         $this->registerSharedViewVariables();
 
         $this->sendFailingJobsToSentry();
+
+        $this->registerFeatureFlags();
 
         RateLimiter::for('anystack', function () {
             return Limit::perMinute(30);
@@ -66,5 +70,10 @@ class AppServiceProvider extends ServiceProvider
                 captureException($event->exception);
             }
         });
+    }
+
+    private function registerFeatureFlags(): void
+    {
+        Feature::define(ShowAuthButtons::class);
     }
 }
