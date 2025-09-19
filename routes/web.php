@@ -1,5 +1,6 @@
 <?php
 
+use App\Features\ShowAuthButtons;
 use App\Http\Controllers\Auth\CustomerAuthController;
 use App\Http\Controllers\CustomerLicenseController;
 use App\Http\Controllers\CustomerSubLicenseController;
@@ -7,6 +8,7 @@ use App\Http\Controllers\ShowBlogController;
 use App\Http\Controllers\ShowDocumentationController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Str;
+use Laravel\Pennant\Middleware\EnsureFeaturesAreActive;
 
 /*
 |--------------------------------------------------------------------------
@@ -92,7 +94,7 @@ Route::get('license/{license}/renewal', [App\Http\Controllers\LicenseRenewalCont
 Route::post('license/{license}/renewal/checkout', [App\Http\Controllers\LicenseRenewalController::class, 'createCheckoutSession'])->name('license.renewal.checkout');
 
 // Customer authentication routes
-Route::middleware('guest')->group(function () {
+Route::middleware(['guest', EnsureFeaturesAreActive::using(ShowAuthButtons::class)])->group(function () {
     Route::get('login', [CustomerAuthController::class, 'showLogin'])->name('customer.login');
     Route::post('login', [CustomerAuthController::class, 'login']);
 
@@ -103,10 +105,12 @@ Route::middleware('guest')->group(function () {
     Route::post('reset-password', [CustomerAuthController::class, 'resetPassword'])->name('password.update');
 });
 
-Route::post('logout', [CustomerAuthController::class, 'logout'])->name('customer.logout');
+Route::post('logout', [CustomerAuthController::class, 'logout'])
+    ->middleware(EnsureFeaturesAreActive::using(ShowAuthButtons::class))
+    ->name('customer.logout');
 
 // Customer license management routes
-Route::middleware('auth')->prefix('customer')->name('customer.')->group(function () {
+Route::middleware(['auth', EnsureFeaturesAreActive::using(ShowAuthButtons::class)])->prefix('customer')->name('customer.')->group(function () {
     Route::get('licenses', [CustomerLicenseController::class, 'index'])->name('licenses');
     Route::get('licenses/{licenseKey}', [CustomerLicenseController::class, 'show'])->name('licenses.show');
     Route::patch('licenses/{licenseKey}', [CustomerLicenseController::class, 'update'])->name('licenses.update');

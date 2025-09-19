@@ -151,21 +151,23 @@
                 ></div>
 
                 {{-- Login/Logout --}}
-                @auth
-                    <form method="POST" action="{{ route('customer.logout') }}" class="inline">
-                        @csrf
-                        <button type="submit" class="opacity-60 transition duration-200 hover:opacity-100">
-                            Log out
-                        </button>
-                    </form>
-                @else
-                    <a
-                        href="{{ route('customer.login') }}"
-                        class="opacity-60 transition duration-200 hover:opacity-100"
-                    >
-                        Log in
-                    </a>
-                @endauth
+                @feature(App\Features\ShowAuthButtons::class)
+                    @auth
+                        <form method="POST" action="{{ route('customer.logout') }}" class="inline">
+                            @csrf
+                            <button type="submit" class="opacity-60 transition duration-200 hover:opacity-100">
+                                Log out
+                            </button>
+                        </form>
+                    @else
+                        <a
+                            href="{{ route('customer.login') }}"
+                            class="opacity-60 transition duration-200 hover:opacity-100"
+                        >
+                            Log in
+                        </a>
+                    @endauth
+                @endfeature
 
                 {{-- Theme toggle --}}
                 <x-navbar.theme-toggle />

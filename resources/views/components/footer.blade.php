@@ -223,14 +223,16 @@
                             Partners
                         </a>
                     </li>
-                    <li>
-                            <a
-                                href="{{ route('customer.login') }}"
-                                class="inline-block px-px py-1.5 transition duration-300 will-change-transform hover:translate-x-1 hover:text-gray-700 dark:hover:text-gray-300"
-                            >
-                                License Management
-                            </a>
-                    </li>
+                    @feature(App\Features\ShowAuthButtons::class)
+                        <li>
+                                <a
+                                    href="{{ route('customer.login') }}"
+                                    class="inline-block px-px py-1.5 transition duration-300 will-change-transform hover:translate-x-1 hover:text-gray-700 dark:hover:text-gray-300"
+                                >
+                                    License Management
+                                </a>
+                        </li>
+                    @endfeature
                     <li>
                         <a
                             href="{{ route('brand') }}"

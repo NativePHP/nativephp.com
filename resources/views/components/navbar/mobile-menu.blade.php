@@ -196,23 +196,25 @@
                 ></div>
 
                 {{-- Login/Logout --}}
-                <div class="w-full">
-                    @auth
-                        <form method="POST" action="{{ route('customer.logout') }}" class="w-full">
-                            @csrf
-                            <button type="submit" class="flex w-full items-center justify-between py-3 opacity-50 transition duration-200 hover:translate-x-1 hover:opacity-100">
-                                <div>Log out</div>
-                            </button>
-                        </form>
-                    @else
-                        <a
-                            href="{{ route('customer.login') }}"
-                            class="flex items-center justify-between py-3 opacity-50 transition duration-200 hover:translate-x-1 hover:opacity-100"
-                        >
-                            <div>Log in</div>
-                        </a>
-                    @endauth
-                </div>
+                @feature(App\Features\ShowAuthButtons::class)
+                    <div class="w-full">
+                        @auth
+                            <form method="POST" action="{{ route('customer.logout') }}" class="w-full">
+                                @csrf
+                                <button type="submit" class="flex w-full items-center justify-between py-3 opacity-50 transition duration-200 hover:translate-x-1 hover:opacity-100">
+                                    <div>Log out</div>
+                                </button>
+                            </form>
+                        @else
+                            <a
+                                href="{{ route('customer.login') }}"
+                                class="flex items-center justify-between py-3 opacity-50 transition duration-200 hover:translate-x-1 hover:opacity-100"
+                            >
+                                <div>Log in</div>
+                            </a>
+                        @endauth
+                    </div>
+                @endfeature
             </nav>
 
             <div
