@@ -116,6 +116,9 @@ Route::middleware(['auth', EnsureFeaturesAreActive::using(ShowAuthButtons::class
     Route::get('licenses/{licenseKey}', [CustomerLicenseController::class, 'show'])->name('licenses.show');
     Route::patch('licenses/{licenseKey}', [CustomerLicenseController::class, 'update'])->name('licenses.update');
 
+    // Wall of Love submission
+    Route::get('wall-of-love/create', [App\Http\Controllers\WallOfLoveSubmissionController::class, 'create'])->name('wall-of-love.create');
+
     // Billing portal
     Route::get('billing-portal', function (Illuminate\Http\Request $request) {
         $user = $request->user();
