@@ -111,109 +111,78 @@
 
     {{-- List --}}
     @php
-        $earlyAdopters = [
-            [
-                'name' => 'Sara Johnson',
-                'url' => 'https://example.com',
-                'image' => 'https://i.pravatar.cc/300?img=31',
-                'title' => 'Founder at Example Co',
-            ],
-            [
-                'name' => 'Jane Smith',
-                'image' => 'https://i.pravatar.cc/300?img=5',
-                'title' => 'CEO at Example Inc',
-                'featured' => true,
-            ],
-            [
-                'name' => 'Alice Johnson',
-                'url' => 'https://example.net',
-                'image' => 'https://i.pravatar.cc/300?img=7',
-            ],
-            [
-                'name' => 'Eve Wilson',
-                'url' => 'https://example.edu',
-                'image' => 'https://i.pravatar.cc/300?img=9',
-            ],
-            [
-                'name' => 'Charlie Davis',
-                'image' => 'https://i.pravatar.cc/300?img=10',
-            ],
-            [
-                'name' => 'Bob Brown',
-                'url' => 'https://example.io',
-                'image' => 'https://i.pravatar.cc/300?img=11',
-                'featured' => true,
-            ],
-            [
-                'name' => 'Frank Miller',
-                'url' => 'https://example.dev',
-                'image' => 'https://i.pravatar.cc/300?img=12',
-            ],
-            [
-                'name' => 'Grace Lee',
-                'image' => 'https://i.pravatar.cc/300?img=16',
-            ],
-            [
-                'name' => 'Tara Adams',
-                'url' => 'https://example.app',
-                'image' => 'https://i.pravatar.cc/300?img=24',
-            ],
-            [
-                'name' => 'Ivy Anderson',
-                'url' => 'https://example.site',
-                'image' => 'https://i.pravatar.cc/300?img=65',
-            ],
-            [
-                'name' => 'Jack Thomas',
-                'image' => 'https://i.pravatar.cc/300?img=32',
-                'featured' => true,
-            ],
-            [
-                'name' => 'Kathy Martinez',
-                'url' => 'https://example.tech',
-                'image' => 'https://i.pravatar.cc/300?img=33',
-            ],
-        ];
+        // Get approved submissions
+        $approvedSubmissions = App\Models\WallOfLoveSubmission::whereNotNull('approved_at')
+            ->orderBy('approved_at', 'desc')
+            ->get();
+
+        // Convert approved submissions to the format expected by the component
+        $earlyAdopters = $approvedSubmissions->map(function ($submission) {
+            return [
+                'name' => $submission->name,
+                'title' => $submission->company,
+                'url' => $submission->url,
+                'image' => $submission->photo_path
+                    ? asset('storage/' . $submission->photo_path)
+                    : 'https://i.pravatar.cc/300?img=' . rand(1, 70),
+                'featured' => rand(0, 4) === 0, // Randomly feature about 20% of submissions
+                'testimonial' => $submission->testimonial,
+            ];
+        })->toArray();
     @endphp
 
-    <div
-        x-init="
-            () => {
-                motion.inView($el, (element) => {
-                    const children = Array.from($el.children)
+    @if(count($earlyAdopters) > 0)
+        <div
+            x-init="
+                () => {
+                    motion.inView($el, (element) => {
+                        const children = Array.from($el.children)
 
-                    children.forEach((child, i) => {
-                        const range = 20 // px
-                        const xFrom = (Math.random() * 2 - 1) * range
-                        const yFrom = (Math.random() * 2 - 1) * range
+                        children.forEach((child, i) => {
+                            const range = 20 // px
+                            const xFrom = (Math.random() * 2 - 1) * range
+                            const yFrom = (Math.random() * 2 - 1) * range
 
-                        motion.animate(
-                            child,
-                            {
-                                x: [xFrom, 0],
-                                y: [yFrom, 0],
-                                opacity: [0, 1],
-                            },
-                            {
-                                duration: 0.7,
-                                ease: motion.backOut,
-                                delay: i * 0.06,
-                            },
-                        )
+                            motion.animate(
+                                child,
+                                {
+                                    x: [xFrom, 0],
+                                    y: [yFrom, 0],
+                                    opacity: [0, 1],
+                                },
+                                {
+                                    duration: 0.7,
+                                    ease: motion.backOut,
+                                    delay: i * 0.06,
+                                },
+                            )
+                        })
                     })
-                })
-            }
-        "
-        class="relative z-10 mt-10 grid place-items-center 2xs:block 2xs:columns-[10rem] xl:columns-[12rem]"
-    >
-        @foreach ($earlyAdopters as $adopter)
-            <x-wall-of-love.early-adopter-card
-                :name="$adopter['name']"
-                :image="$adopter['image']"
-                :url="$adopter['url'] ?? null"
-                :title="$adopter['title'] ?? null"
-                :featured="$adopter['featured'] ?? false"
-            />
-        @endforeach
-    </div>
+                }
+            "
+            class="relative z-10 mt-10 grid place-items-center 2xs:block 2xs:columns-[10rem] xl:columns-[12rem]"
+        >
+            @foreach ($earlyAdopters as $adopter)
+                <x-wall-of-love.early-adopter-card
+                    :name="$adopter['name']"
+                    :image="$adopter['image']"
+                    :url="$adopter['url'] ?? null"
+                    :title="$adopter['title'] ?? null"
+                    :featured="$adopter['featured'] ?? false"
+                />
+            @endforeach
+        </div>
+    @else
+        <div class="relative z-10 mt-10 text-center">
+            <div class="bg-white dark:bg-gray-800/50 backdrop-blur-sm rounded-2xl p-8 mx-auto max-w-md border border-gray-200 dark:border-gray-700">
+                <div class="text-6xl mb-4">🚀</div>
+                <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-2">
+                    Coming Soon!
+                </h3>
+                <p class="text-gray-600 dark:text-gray-400">
+                    Our early adopters will appear here soon.
+                </p>
+            </div>
+        </div>
+    @endif
 </x-layout>
