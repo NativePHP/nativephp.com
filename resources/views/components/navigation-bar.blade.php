@@ -144,6 +144,31 @@
                     Partners
                 </a>
 
+                {{-- Decorative circle --}}
+                <div
+                    class="size-[3px] rotate-45 rounded-xs bg-gray-400 transition duration-200 dark:opacity-60"
+                    aria-hidden="true"
+                ></div>
+
+                {{-- Login/Logout --}}
+                @feature(App\Features\ShowAuthButtons::class)
+                    @auth
+                        <form method="POST" action="{{ route('customer.logout') }}" class="inline">
+                            @csrf
+                            <button type="submit" class="opacity-60 transition duration-200 hover:opacity-100">
+                                Log out
+                            </button>
+                        </form>
+                    @else
+                        <a
+                            href="{{ route('customer.login') }}"
+                            class="opacity-60 transition duration-200 hover:opacity-100"
+                        >
+                            Log in
+                        </a>
+                    @endauth
+                @endfeature
+
                 {{-- Theme toggle --}}
                 <x-navbar.theme-toggle />
 

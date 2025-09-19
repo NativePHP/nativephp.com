@@ -1,9 +1,14 @@
 <?php
 
+use App\Features\ShowAuthButtons;
+use App\Http\Controllers\Auth\CustomerAuthController;
+use App\Http\Controllers\CustomerLicenseController;
+use App\Http\Controllers\CustomerSubLicenseController;
 use App\Http\Controllers\ShowBlogController;
 use App\Http\Controllers\ShowDocumentationController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Str;
+use Laravel\Pennant\Middleware\EnsureFeaturesAreActive;
 
 /*
 |--------------------------------------------------------------------------
@@ -82,3 +87,50 @@ Route::get('docs/{page?}', function ($page = null) {
 })->name('docs')->where('page', '.*');
 
 Route::get('order/{checkoutSessionId}', App\Livewire\OrderSuccess::class)->name('order.success');
+
+// License renewal routes
+Route::get('license/{license:key}/renewal/success', App\Livewire\LicenseRenewalSuccess::class)->name('license.renewal.success');
+Route::get('license/{license}/renewal', [App\Http\Controllers\LicenseRenewalController::class, 'show'])->name('license.renewal');
+Route::post('license/{license}/renewal/checkout', [App\Http\Controllers\LicenseRenewalController::class, 'createCheckoutSession'])->name('license.renewal.checkout');
+
+// Customer authentication routes
+Route::middleware(['guest', EnsureFeaturesAreActive::using(ShowAuthButtons::class)])->group(function () {
+    Route::get('login', [CustomerAuthController::class, 'showLogin'])->name('customer.login');
+    Route::post('login', [CustomerAuthController::class, 'login']);
+
+    Route::get('forgot-password', [CustomerAuthController::class, 'showForgotPassword'])->name('password.request');
+    Route::post('forgot-password', [CustomerAuthController::class, 'sendPasswordResetLink'])->name('password.email');
+
+    Route::get('reset-password/{token}', [CustomerAuthController::class, 'showResetPassword'])->name('password.reset');
+    Route::post('reset-password', [CustomerAuthController::class, 'resetPassword'])->name('password.update');
+});
+
+Route::post('logout', [CustomerAuthController::class, 'logout'])
+    ->middleware(EnsureFeaturesAreActive::using(ShowAuthButtons::class))
+    ->name('customer.logout');
+
+// Customer license management routes
+Route::middleware(['auth', EnsureFeaturesAreActive::using(ShowAuthButtons::class)])->prefix('customer')->name('customer.')->group(function () {
+    Route::get('licenses', [CustomerLicenseController::class, 'index'])->name('licenses');
+    Route::get('licenses/{licenseKey}', [CustomerLicenseController::class, 'show'])->name('licenses.show');
+    Route::patch('licenses/{licenseKey}', [CustomerLicenseController::class, 'update'])->name('licenses.update');
+
+    // Billing portal
+    Route::get('billing-portal', function (Illuminate\Http\Request $request) {
+        $user = $request->user();
+
+        // Check if user exists in Stripe, create if they don't
+        if (! $user->hasStripeId()) {
+            $user->createAsStripeCustomer();
+        }
+
+        return $user->redirectToBillingPortal(route('customer.licenses'));
+    })->name('billing-portal');
+
+    // Sub-license management routes
+    Route::post('licenses/{licenseKey}/sub-licenses', [CustomerSubLicenseController::class, 'store'])->name('licenses.sub-licenses.store');
+    Route::patch('licenses/{licenseKey}/sub-licenses/{subLicense}', [CustomerSubLicenseController::class, 'update'])->name('licenses.sub-licenses.update');
+    Route::delete('licenses/{licenseKey}/sub-licenses/{subLicense}', [CustomerSubLicenseController::class, 'destroy'])->name('licenses.sub-licenses.destroy');
+    Route::patch('licenses/{licenseKey}/sub-licenses/{subLicense}/suspend', [CustomerSubLicenseController::class, 'suspend'])->name('licenses.sub-licenses.suspend');
+    Route::post('licenses/{licenseKey}/sub-licenses/{subLicense}/send-email', [CustomerSubLicenseController::class, 'sendEmail'])->name('licenses.sub-licenses.send-email');
+});
