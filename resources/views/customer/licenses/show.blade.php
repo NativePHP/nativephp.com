@@ -6,18 +6,18 @@
                 <div class="flex justify-between items-center py-6">
                     <div>
                         <nav class="flex" aria-label="Breadcrumb">
-                            <ol class="flex items-center space-x-4">
+                            <ol class="flex items-center space-x-2">
                                 <li>
                                     <a href="{{ route('customer.licenses') }}" class="text-gray-400 hover:text-gray-500 dark:text-gray-500 dark:hover:text-gray-400">
-                                        Your Licenses
+                                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clip-rule="evenodd"></path>
+                                        </svg>
+                                        <span class="sr-only">Back to Licenses</span>
                                     </a>
                                 </li>
                                 <li>
                                     <div class="flex items-center">
-                                        <svg class="flex-shrink-0 h-5 w-5 text-gray-300" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
-                                            <path d="M5.555 17.776l8-16 .894.448-8 16-.894-.448z" />
-                                        </svg>
-                                        <span class="ml-4 text-sm font-medium text-gray-500 dark:text-gray-400">License Details</span>
+                                        <span class="text-sm font-medium text-gray-500 dark:text-gray-400">License Details</span>
                                     </div>
                                 </li>
                             </ol>
@@ -31,7 +31,7 @@
                     </div>
                     <div class="flex items-center space-x-3">
                         <a href="{{ route('customer.billing-portal') }}" class="inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-                            Billing
+                            Manage Your Subscription
                         </a>
                     </div>
                 </div>
