@@ -570,4 +570,77 @@
             ></div>
         </div>
     </div>
+
+    {{-- Bifrost --}}
+    <div class="mt-5">
+        <div
+            x-init="
+                () => {
+                    motion.inView($el, (element) => {
+                        gsap.fromTo(
+                            $el,
+                            { y: 10, autoAlpha: 0 },
+                            {
+                                y: 0,
+                                autoAlpha: 1,
+                                duration: 0.7,
+                                ease: 'power2.out',
+                            },
+                        )
+                    })
+                }
+            "
+            class="relative overflow-hidden rounded-2xl bg-gray-200/60 p-8 md:p-10 dark:bg-mirage"
+        >
+            {{-- Illustration --}}
+            <x-illustrations.bifrost-diagram />
+
+            {{-- Header --}}
+            <div
+                class="mt-7 flex flex-col items-center gap-1.5 text-center text-pretty"
+            >
+                <h2
+                    id="sponsors-title"
+                    class="text-xl font-bold text-slate-800 lg:text-2xl dark:text-white"
+                >
+                    And when you've built your app... Ship it!
+                </h2>
+                <p class="text-lg text-slate-600 dark:text-zinc-400">
+                    Get it to the stores and into the hands of users as fast as
+                    humanly possible with Bifrost
+                </p>
+            </div>
+
+            {{-- Button --}}
+            <div class="mt-5 mb-15 grid place-items-center">
+                <x-bifrost-button />
+            </div>
+
+            {{-- Top gradient line --}}
+            <div
+                class="absolute top-0 left-0 -z-10 h-1.5 w-full bg-gradient-to-r from-[#FF8F5E] via-[#1D51F2] to-[#5CDFFC]"
+                aria-hidden="true"
+            ></div>
+
+            {{-- Left blur --}}
+            <div
+                class="absolute right-1/2 -bottom-11 -z-10 translate-x-1/2"
+                aria-hidden="true"
+            >
+                <div
+                    class="h-10 w-36 -translate-x-14 -rotate-15 rounded-full bg-[#FB6C41]/70 blur-xl dark:bg-slate-400/60"
+                ></div>
+            </div>
+
+            {{-- Right blur --}}
+            <div
+                class="absolute right-1/2 -bottom-11 -z-10 translate-x-1/2"
+                aria-hidden="true"
+            >
+                <div
+                    class="0 h-10 w-36 translate-x-14 -rotate-15 rounded-full bg-indigo-300 blur-xl dark:bg-indigo-500/60"
+                ></div>
+            </div>
+        </div>
+    </div>
 </section>
