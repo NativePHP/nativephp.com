@@ -603,11 +603,11 @@
                     id="sponsors-title"
                     class="text-xl font-bold text-slate-800 lg:text-2xl dark:text-white"
                 >
-                    And when you've built your app, Ship it!
+                    And when you've built your app... Ship it!
                 </h2>
                 <p class="text-lg text-slate-600 dark:text-zinc-400">
                     Get it to the stores and into the hands of users as fast as
-                    humanly possible with Bifrost"
+                    humanly possible with Bifrost
                 </p>
             </div>
 

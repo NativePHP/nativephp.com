@@ -94,7 +94,7 @@
         <span
             class="self-center justify-self-center whitespace-nowrap [grid-area:1/-1]"
         >
-            {{ $small ? 'Ship' : 'Ship your app!' }}
+            {{ $small ? 'Ship' : 'Ship it!' }}
         </span>
     </span>
 </a>
