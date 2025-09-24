@@ -29,7 +29,7 @@
         </div>
 
         <div
-            class="grid h-23 w-35 place-items-center overflow-hidden rounded-2xl bg-gradient-to-tl from-transparent to-blue-500/50 p-[3px] xs:w-40 sm:h-27 sm:w-47"
+            class="grid h-23 w-35 place-items-center overflow-hidden rounded-2xl bg-gradient-to-tl from-transparent to-blue-500/50 p-[3px] xs:w-40 sm:h-27 sm:w-47 dark:from-blue-300/20"
         >
             <div
                 class="grid h-full w-full place-items-center rounded-[calc(var(--radius-2xl)-2px)] bg-white dark:bg-slate-950"
