@@ -17,7 +17,7 @@
         class="mx-auto flex w-full max-w-5xl items-center justify-between gap-5 rounded-2xl py-4 pr-4 pl-3.5 xl:max-w-7xl 2xl:max-w-360"
     >
         {{-- Left side --}}
-        <div class="flex items-center gap-3">
+        <div class="flex items-center gap-2.5">
             {{-- Logo --}}
             <a
                 href="/"
@@ -75,13 +75,13 @@
         </div>
 
         {{-- Right side --}}
-        <div class="flex items-center gap-3.5">
+        <div class="flex items-center gap-3">
             {{-- Mobile menu --}}
             <x-navbar.mobile-menu />
 
             {{-- Desktop menu --}}
             <div
-                class="hidden items-center gap-3.5 text-sm lg:flex"
+                class="hidden items-center gap-3 text-sm lg:flex"
                 aria-label="Primary navigation"
             >
                 {{-- Link --}}
@@ -143,12 +143,6 @@
                 >
                     Partners
                 </a>
-
-                {{-- Decorative circle --}}
-                <div
-                    class="size-[3px] rotate-45 rounded-xs bg-gray-400 transition duration-200 dark:opacity-60"
-                    aria-hidden="true"
-                ></div>
 
                 {{-- Login/Logout --}}
                 @feature(App\Features\ShowAuthButtons::class)

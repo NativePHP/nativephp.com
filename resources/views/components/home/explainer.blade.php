@@ -614,17 +614,24 @@
             {{-- Top gradient line --}}
             <div
                 class="absolute top-0 left-0 -z-10 h-1.5 w-full bg-gradient-to-r from-[#FF8F5E] via-[#1D51F2] to-[#5CDFFC]"
+                aria-hidden="true"
             ></div>
 
             {{-- Left blur --}}
-            <div class="absolute right-1/2 -bottom-11 -z-10 translate-x-1/2">
+            <div
+                class="absolute right-1/2 -bottom-11 -z-10 translate-x-1/2"
+                aria-hidden="true"
+            >
                 <div
                     class="h-10 w-36 -translate-x-10 -rotate-15 rounded-full bg-sky-300 blur-xl dark:bg-sky-500/60"
                 ></div>
             </div>
 
             {{-- Right blur --}}
-            <div class="absolute right-1/2 -bottom-11 -z-10 translate-x-1/2">
+            <div
+                class="absolute right-1/2 -bottom-11 -z-10 translate-x-1/2"
+                aria-hidden="true"
+            >
                 <div
                     class="h-10 w-36 translate-x-10 -rotate-15 rounded-full bg-pink-300 blur-xl dark:bg-slate-400/60"
                 ></div>
