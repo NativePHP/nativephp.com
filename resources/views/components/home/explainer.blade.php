@@ -612,7 +612,7 @@
             </div>
 
             {{-- Button --}}
-            <div class="mt-5 mb-10 grid place-items-center">
+            <div class="mt-5 mb-15 grid place-items-center">
                 <x-bifrost-button />
             </div>
 
@@ -628,7 +628,7 @@
                 aria-hidden="true"
             >
                 <div
-                    class="h-10 w-36 -translate-x-10 -rotate-15 rounded-full bg-orange-300 blur-xl dark:bg-indigo-500/60"
+                    class="h-10 w-36 -translate-x-14 -rotate-15 rounded-full bg-[#FB6C41]/70 blur-xl dark:bg-slate-400/60"
                 ></div>
             </div>
 
@@ -638,7 +638,7 @@
                 aria-hidden="true"
             >
                 <div
-                    class="h-10 w-36 translate-x-10 -rotate-15 rounded-full bg-indigo-300 blur-xl dark:bg-slate-400/60"
+                    class="0 h-10 w-36 translate-x-14 -rotate-15 rounded-full bg-indigo-300 blur-xl dark:bg-indigo-500/60"
                 ></div>
             </div>
         </div>
