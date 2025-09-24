@@ -5,7 +5,7 @@
 <a
     href="https://bifrost.nativephp.com/"
     @class([
-        'group relative z-0 hidden items-center overflow-hidden rounded-full bg-gray-200 transition duration-200 will-change-transform hover:scale-x-105 lg:inline-flex dark:bg-slate-800',
+        'group relative z-0 inline-flex items-center overflow-hidden rounded-full bg-gray-200 transition duration-200 will-change-transform hover:scale-x-105 dark:bg-slate-800',
 
         'px-4 py-2 text-sm' => $small,
 

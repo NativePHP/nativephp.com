@@ -75,13 +75,13 @@
         </div>
 
         {{-- Right side --}}
-        <div class="flex items-center gap-3">
+        <div class="flex items-center gap-2.5">
             {{-- Mobile menu --}}
             <x-navbar.mobile-menu />
 
             {{-- Desktop menu --}}
             <div
-                class="hidden items-center gap-3 text-sm lg:flex"
+                class="hidden items-center gap-2.5 text-sm lg:flex"
                 aria-label="Primary navigation"
             >
                 {{-- Link --}}
