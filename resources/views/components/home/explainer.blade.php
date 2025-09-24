@@ -570,4 +570,65 @@
             ></div>
         </div>
     </div>
+
+    {{-- Bifrost --}}
+    <div class="mt-5">
+        <div
+            x-init="
+                () => {
+                    motion.inView($el, (element) => {
+                        gsap.fromTo(
+                            $el,
+                            { y: 10, autoAlpha: 0 },
+                            {
+                                y: 0,
+                                autoAlpha: 1,
+                                duration: 0.7,
+                                ease: 'power2.out',
+                            },
+                        )
+                    })
+                }
+            "
+            class="relative overflow-hidden rounded-2xl bg-gray-200/60 p-8 md:p-10 dark:bg-mirage"
+        >
+            <div
+                class="flex flex-col items-center gap-1 text-center text-pretty"
+            >
+                <h2
+                    id="sponsors-title"
+                    class="text-2xl font-bold text-gray-800 lg:text-3xl dark:text-white"
+                >
+                    And when you've built your app, Ship it!
+                </h2>
+                <p class="text-lg text-gray-600 lg:text-xl dark:text-zinc-400">
+                    Get it to the stores and into the hands of users as fast as
+                    humanly possible with Bifrost"
+                </p>
+            </div>
+
+            <div class="mt-4 grid place-items-center">
+                <x-bifrost-button />
+            </div>
+
+            {{-- Top gradient line --}}
+            <div
+                class="absolute top-0 left-0 -z-10 h-1.5 w-full bg-gradient-to-r from-[#FF8F5E] via-[#1D51F2] to-[#5CDFFC]"
+            ></div>
+
+            {{-- Left blur --}}
+            <div class="absolute right-1/2 -bottom-11 -z-10 translate-x-1/2">
+                <div
+                    class="h-10 w-36 -translate-x-10 -rotate-15 rounded-full bg-sky-300 blur-xl dark:bg-sky-500/60"
+                ></div>
+            </div>
+
+            {{-- Right blur --}}
+            <div class="absolute right-1/2 -bottom-11 -z-10 translate-x-1/2">
+                <div
+                    class="h-10 w-36 translate-x-10 -rotate-15 rounded-full bg-pink-300 blur-xl dark:bg-slate-400/60"
+                ></div>
+            </div>
+        </div>
+    </div>
 </section>

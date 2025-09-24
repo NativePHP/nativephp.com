@@ -153,9 +153,16 @@
                 {{-- Login/Logout --}}
                 @feature(App\Features\ShowAuthButtons::class)
                     @auth
-                        <form method="POST" action="{{ route('customer.logout') }}" class="inline">
+                        <form
+                            method="POST"
+                            action="{{ route('customer.logout') }}"
+                            class="inline"
+                        >
                             @csrf
-                            <button type="submit" class="opacity-60 transition duration-200 hover:opacity-100">
+                            <button
+                                type="submit"
+                                class="opacity-60 transition duration-200 hover:opacity-100"
+                            >
                                 Log out
                             </button>
                         </form>
@@ -185,6 +192,8 @@
                         aria-label="Search documentation"
                     ></div>
                 </div>
+
+                <x-bifrost-button small />
             </div>
         </div>
     </div>
