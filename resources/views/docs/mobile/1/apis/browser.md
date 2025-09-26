@@ -22,12 +22,12 @@ Opens a URL in an embedded browser within your app using Custom Tabs (Android) o
 Browser::inApp('https://nativephp.com/mobile');
 ```
 
-### `system()`
+### `open()`
 
 Opens a URL in the device's default browser app, leaving your application entirely.
 
 ```php
-Browser::system('https://nativephp.com/mobile');
+Browser::open('https://nativephp.com/mobile');
 ```
 
 ### `auth()`
