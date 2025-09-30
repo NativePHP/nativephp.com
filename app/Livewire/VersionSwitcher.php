@@ -31,10 +31,19 @@ class VersionSwitcher extends Component
 
     public function updatedVersion()
     {
+        if (! $this->pageExists($this->platform, $this->version, $this->page)) {
+            $this->page = 'introduction';
+        }
+
         return redirect()->route('docs.show', [
             'platform' => $this->platform,
             'version' => $this->version,
             'page' => $this->page,
         ]);
+    }
+
+    protected function pageExists(string $platform, int $version, string $page): bool
+    {
+        return file_exists(resource_path("views/docs/{$platform}/{$version}/{$page}.md"));
     }
 }
