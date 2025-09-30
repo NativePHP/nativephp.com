@@ -17,6 +17,10 @@ class VersionSwitcher extends Component
 
     public function mount(array $versions)
     {
+        // Since the props are always bound to the uri we fetch them
+        // from the route instead of prop drilling or adding
+        // single-use view data to the controller
+
         throw_unless(
             request()->route()->named('docs.show'),
             ViewException::class,
