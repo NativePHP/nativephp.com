@@ -317,10 +317,15 @@ Sometimes you may want to listen and react to these events in real-time, which i
 Child Process events to the `nativephp` broadcast channel. Any events broadcasted this way also get dispatched over IPC, enabling you to react to them on the front-end without using websockets.
 
 ```js
-Native.on('Native\\Desktop\\Events\\ChildProcess\\MessageReceived', (event) => {
-    if (event.alias === 'tail') {
-        container.append(event.data)
-    }
+window.addEventListener('native:init', () => {
+
+    Native.on('Native\\Desktop\\Events\\ChildProcess\\MessageReceived', (event) => {
+        if (event.alias === 'tail') {
+            container.append(event.data)
+        }
+    })
+
+    //
 })
 ```
 

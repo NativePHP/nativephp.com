@@ -46,13 +46,17 @@ NativePHP injects a `window.Native` object into every window. The `on()` method 
 the second parameter that will run when the event specified in the first parameter is fired:
 
 ```js
-Native.on(
-    'Native\\Desktop\\Events\\Windows\\WindowBlurred',
-    (payload, event) => {
+window.addEventListener('native:init', () => {
+
+    Native.on('Native\\Desktop\\Events\\Windows\\WindowBlurred', (payload, event) => {
         //
-    },
-)
+    })
+
+    // 
+})
 ```
+
+Make sure you declare the listener inside a `native:init` handler, otherwise there is a possibility the `Native` object is not injected inside your window yet.
 
 ## Listening with Livewire
 
