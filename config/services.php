@@ -34,4 +34,8 @@ return [
     'anystack' => [
         'key' => env('ANYSTACK_API_KEY'),
     ],
+
+    'bifrost' => [
+        'api_key' => env('BIFROST_API_KEY'),
+    ],
 ];

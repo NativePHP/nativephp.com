@@ -46,11 +46,28 @@ class ShowDocumentationController extends Controller
         } catch (InvalidArgumentException $e) {
             return $this->redirectToFirstNavigationPage($navigation, $page);
         }
-
         SEOTools::setTitle($pageProperties['title'].' - NativePHP '.$platform.' v'.$version);
         SEOTools::setDescription(Arr::exists($pageProperties, 'description') ? $pageProperties['description'] : '');
 
         return view('docs.index')->with($pageProperties);
+    }
+
+    public function serveRawMarkdown(Request $request, string $platform, string $version, string $page)
+    {
+        abort_unless(is_dir(resource_path('views/docs/'.$platform.'/'.$version)), 404);
+
+        $filePath = resource_path("views/docs/{$platform}/{$version}/{$page}.md");
+
+        if (! file_exists($filePath)) {
+            abort(404);
+        }
+
+        $content = file_get_contents($filePath);
+
+        return response($content, 200, [
+            'Content-Type' => 'text/plain; charset=utf-8',
+            'Content-Disposition' => 'inline; filename="'.basename($filePath).'"',
+        ]);
     }
 
     protected function getPageProperties($platform, $version, $page = null): array
@@ -65,7 +82,8 @@ class ShowDocumentationController extends Controller
         $pageProperties = $document->matter();
 
         $versionProperties = YamlFrontMatter::parseFile(resource_path("views/docs/{$platform}/{$version}/_index.md"));
-        $pageProperties = array_merge($pageProperties, $versionProperties->matter());
+
+        $pageProperties = array_merge($versionProperties->matter(), $pageProperties);
 
         $pageProperties['platform'] = $platform;
         $pageProperties['version'] = $version;

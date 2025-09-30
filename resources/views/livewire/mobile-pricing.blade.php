@@ -1,5 +1,5 @@
 <section
-    class="mx-auto mt-24 max-w-6xl px-5"
+    class="mx-auto mt-24 max-w-6xl"
     aria-labelledby="pricing-heading"
 >
     <header class="relative z-10 grid place-items-center text-center">
@@ -53,6 +53,88 @@
         </p>
     </header>
 
+    {{-- Bifrost banner --}}
+    <div
+        x-init="
+            () => {
+                motion.inView($el, (element) => {
+                    motion.animate(
+                        $el,
+                        {
+                            x: [-10, 0],
+                            opacity: [0, 1],
+                        },
+                        {
+                            duration: 0.7,
+                            ease: motion.circOut,
+                        },
+                    )
+                })
+            }
+        "
+    >
+        <a
+            href="https://bifrost.nativephp.com/"
+            class="group relative z-0 mt-10 flex flex-col-reverse items-center justify-between gap-x-10 gap-y-3 overflow-hidden rounded-2xl bg-slate-50 px-5 pt-6 pb-5 ring-6 ring-slate-100 transition duration-300 hover:bg-slate-100/80 sm:flex-row sm:px-8 sm:py-2 dark:bg-slate-800/30 dark:ring-slate-800/35 dark:hover:bg-slate-900/30 dark:hover:ring-slate-900/30"
+        >
+            {{-- Left side --}}
+            <div
+                class="flex items-center gap-5 transition duration-300 will-change-transform group-hover:translate-x-1"
+            >
+                {{-- Shush --}}
+                <x-illustrations.shushing
+                    class="h-20 shrink-0 rotate-15 sm:h-28"
+                />
+                {{-- Left side --}}
+                <div class="space-y-1">
+                    <div class="font-medium sm:text-lg">
+                        Psst... want a free Mini license?
+                    </div>
+                    <div class="text-sm text-zinc-500 sm:text-base">
+                        Just grab a Bifrost subscription
+                    </div>
+                </div>
+            </div>
+            {{-- Right side --}}
+            <div
+                class="transition duration-300 will-change-transform group-hover:-translate-x-1"
+            >
+                {{-- Bifrost logo --}}
+                <x-logos.bifrost class="h-5 sm:h-6" />
+            </div>
+            {{-- Star 1 --}}
+            <x-icons.star
+                class="absolute top-6 right-3 z-10 w-4 -rotate-7 text-white dark:w-3 dark:text-slate-300"
+            />
+            {{-- Star 2 --}}
+            <x-icons.star
+                class="absolute top-3 right-14 z-10 w-3 rotate-5 text-white dark:w-2 dark:text-slate-300"
+            />
+            {{-- Star 3 --}}
+            <x-icons.star
+                class="absolute top-2.5 right-7.5 z-10 w-2.5 text-white dark:w-2 dark:text-slate-300"
+            />
+            {{-- White blur --}}
+            <div class="absolute top-5 -right-10 -z-5">
+                <div
+                    class="h-5 w-36 rotate-30 rounded-full bg-white/80 blur-md dark:bg-white/5"
+                ></div>
+            </div>
+            {{-- Sky blur --}}
+            <div class="absolute top-5 -right-20 -z-10">
+                <div
+                    class="h-15 w-36 rotate-30 rounded-full bg-sky-300 blur-xl dark:bg-sky-500/30"
+                ></div>
+            </div>
+            {{-- Violet blur --}}
+            <div class="absolute -top-10 -right-5 -z-10">
+                <div
+                    class="h-15 w-36 rotate-30 rounded-full bg-violet-300 blur-xl dark:bg-violet-400/30"
+                ></div>
+            </div>
+        </a>
+    </div>
+
     {{-- Pricing Plans --}}
     <div
         x-init="
@@ -78,7 +160,7 @@
     >
         {{-- Mini Plan --}}
         <div
-            class="h-full rounded-2xl bg-gray-100 p-7 opacity-0 dark:bg-mirage"
+            class="dark:bg-mirage h-full rounded-2xl bg-gray-100 p-7 opacity-0"
             aria-labelledby="pro-plan-heading"
         >
             {{-- Plan Name --}}
@@ -92,10 +174,10 @@
             {{-- Price --}}
             <div
                 class="flex items-start gap-1.5 pt-5"
-                aria-label="Price: $100 per year"
+                aria-label="Price: $50 per year"
             >
                 <div class="text-5xl font-semibold">
-                    ${{ number_format(100) }}
+                    ${{ number_format(50) }}
                 </div>
                 <div class="self-end pb-1.5 text-zinc-500">per year</div>
             </div>
@@ -223,7 +305,7 @@
 
         {{-- Pro Plan --}}
         <div
-            class="h-full rounded-2xl bg-gray-100 p-7 opacity-0 dark:bg-mirage"
+            class="dark:bg-mirage h-full rounded-2xl bg-gray-100 p-7 opacity-0"
             aria-labelledby="teams-plan-heading"
         >
             {{-- Plan Name --}}
@@ -237,10 +319,10 @@
             {{-- Price --}}
             <div
                 class="flex items-start gap-1.5 pt-5"
-                aria-label="Price: $750 per year"
+                aria-label="Price: $250 per year"
             >
                 <div class="text-5xl font-semibold">
-                    ${{ number_format(750) }}
+                    ${{ number_format(250) }}
                 </div>
                 <div class="self-end pb-1.5 text-zinc-500">per year</div>
             </div>
@@ -373,7 +455,7 @@
         >
             {{-- Popular badge --}}
             <div
-                class="absolute -right-3 -top-5 rounded-xl bg-linear-to-tr from-[#6886FF] to-[#B8C1FF] px-5 py-2 text-sm text-white dark:from-gray-900 dark:to-black dark:ring-1 dark:ring-white/10"
+                class="absolute -top-5 -right-3 rounded-xl bg-linear-to-tr from-[#6886FF] to-[#B8C1FF] px-5 py-2 text-sm text-white dark:from-gray-900 dark:to-black dark:ring-1 dark:ring-white/10"
                 aria-label="Most popular plan"
             >
                 Most Popular
@@ -390,10 +472,10 @@
             {{-- Price --}}
             <div
                 class="flex items-start gap-1.5 pt-5"
-                aria-label="Price: $2,500 per year"
+                aria-label="Price: $1,000 per year"
             >
                 <div class="text-5xl font-semibold">
-                    ${{ number_format(2500) }}
+                    ${{ number_format(1000) }}
                 </div>
                 <div class="self-end pb-1.5 text-zinc-500">per year</div>
             </div>
@@ -510,7 +592,9 @@
                     >
                         <x-icons.checkmark class="size-5 shrink-0" />
                     </div>
-                    <div class="font-medium">Business hours email support (GMT)</div>
+                    <div class="font-medium">
+                        Business hours email support (GMT)
+                    </div>
                 </div>
             </div>
         </div>

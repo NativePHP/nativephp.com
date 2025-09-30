@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\LicenseController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -14,6 +15,11 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
+Route::middleware('auth.api_key')->group(function () {
+    Route::post('/licenses', [LicenseController::class, 'store']);
+    Route::get('/licenses/{key}', [LicenseController::class, 'show']);
+});
+
+Route::middleware('auth:sanctum')->group(function () {
+    Route::get('/user', fn (Request $request) => $request->user());
 });

@@ -1,19 +1,20 @@
 import { defineConfig } from 'vite'
 import laravel from 'laravel-vite-plugin'
+import tailwindcss from '@tailwindcss/vite'
 
 export default defineConfig({
-    server: {
-        cors: {
-            origin: [
-                /^https?:\/\/(?:(?:[^:]+\.)?localhost|127\.0\.0\.1|\[::1\])(?::\d+)?$/,
-                /^https?:\/\/.*\.test(:\d+)?$/, // Valet / Herd    (SCHEME://*.test:PORT)
-            ],
-        },
-    },
     plugins: [
         laravel({
-            input: ['resources/css/app.css', 'resources/js/app.js', 'resources/css/docsearch.css'],
+            input: [
+                'resources/css/app.css',
+                'resources/js/app.js',
+                'resources/css/docsearch.css',
+            ],
             refresh: true,
         }),
+        tailwindcss(),
     ],
+    server: {
+        cors: true,
+    },
 })

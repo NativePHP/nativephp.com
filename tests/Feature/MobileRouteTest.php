@@ -12,7 +12,7 @@ class MobileRouteTest extends TestCase
     {
         $this
             ->withoutVite()
-            ->get(route('early-adopter'))
+            ->get(route('pricing'))
             ->assertDontSee('buy.stripe.com');
     }
 
@@ -21,7 +21,7 @@ class MobileRouteTest extends TestCase
     {
         $this
             ->withoutVite()
-            ->get(route('early-adopter'))
+            ->get(route('pricing'))
             ->assertSeeLivewire('mobile-pricing');
     }
 }

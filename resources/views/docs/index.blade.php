@@ -4,20 +4,21 @@
     </x-slot>
 
     <x-slot name="sidebarRight">
-        <x-toc-and-sponsors :tableOfContents="$tableOfContents" />
+        <x-docs.toc-and-sponsors :tableOfContents="$tableOfContents" />
     </x-slot>
 
     <h1 class="text-4xl font-semibold">
         {{ $title }}
     </h1>
 
-    <x-separator class="mt-4" />
-
-    <x-alert-v1-announcement />
+    <x-docs.separator class="mt-4" />
 
     {{-- Table of contents --}}
-    <div class="xl:hidden">
-        <h3 class="inline-flex items-center gap-1.5 pt-5 text-sm opacity-50">
+    <div class="xl:hidden pt-5">
+        {{-- Copy as Markdown Button --}}
+        <x-docs.copy-markdown-button class="mt-4" />
+    
+        <h3 class="inline-flex items-center gap-1.5 text-sm opacity-50">
             {{-- Icon --}}
             <x-icons.stacked-lines class="size-[18px]" />
             {{-- Label --}}
@@ -49,18 +50,18 @@
         {!! $content !!}
     </div>
 
-    <x-separator class="mt-8" />
+    <x-docs.separator class="mt-8" />
 
     @php
         $linkAlign = $previousPage === null ? 'right' : 'between';
     @endphp
 
-    <x-flex-list-of-links
+    <x-docs.flex-list-of-links
         align="{{$linkAlign}}"
         class="mt-5"
     >
         @if ($previousPage !== null)
-            <x-link-button href="{{ $previousPage['path'] }}">
+            <x-docs.link-button href="{{ $previousPage['path'] }}">
                 <div class="self-center justify-self-start">
                     <div
                         class="flex items-center justify-start gap-1.5 opacity-60"
@@ -72,11 +73,11 @@
                     </div>
                     <div class="pt-1">{{ $previousPage['title'] }}</div>
                 </div>
-            </x-link-button>
+            </x-docs.link-button>
         @endif
 
         @if ($nextPage !== null)
-            <x-link-button href="{{ $nextPage['path'] }}">
+            <x-docs.link-button href="{{ $nextPage['path'] }}">
                 <div class="self-center justify-self-end">
                     <div
                         class="flex items-center justify-end gap-1.5 opacity-60"
@@ -86,17 +87,17 @@
                     </div>
                     <div class="pt-1">{{ $nextPage['title'] }}</div>
                 </div>
-            </x-link-button>
+            </x-docs.link-button>
         @endif
-    </x-flex-list-of-links>
+    </x-docs.flex-list-of-links>
 
     <div class="pt-5 text-center sm:text-left">
-        <x-link-subtle
+        <x-docs.link-subtle
             href="{{ $editUrl }}"
             target="_blank"
             rel="noopener"
         >
             Edit this page on GitHub
-        </x-link-subtle>
+        </x-docs.link-subtle>
     </div>
 </x-docs-layout>
