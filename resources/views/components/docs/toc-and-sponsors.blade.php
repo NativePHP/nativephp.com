@@ -31,7 +31,7 @@
 @endif
 
 <div
-    class="mt-7 max-w-52 border-t border-t-black/20 pt-5 dark:border-t-white/15"
+    class="mt-3 max-w-52 border-t border-t-black/20 pt-5 dark:border-t-white/15"
 >
     {{-- Sponsors --}}
     <h3 class="flex items-center gap-1.5 text-sm opacity-60">
