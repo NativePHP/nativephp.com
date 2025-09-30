@@ -4,6 +4,14 @@
     </x-slot>
 
     <x-slot name="sidebarRight">
+        {{-- Version switcher --}}
+        @if($platform === 'desktop')
+            <livewire:version-switcher :versions="[
+                1 => 'v1.x',
+                2 => 'v2.x'
+            ]" />
+        @endif
+
         <x-docs.toc-and-sponsors :tableOfContents="$tableOfContents" />
     </x-slot>
 
@@ -15,6 +23,15 @@
 
     {{-- Table of contents --}}
     <div class="xl:hidden pt-5">
+
+        {{-- Version switcher --}}
+        @if($platform === 'desktop')
+            <livewire:version-switcher :versions="[
+                1 => 'v1.x',
+                2 => 'v2.x'
+            ]" />
+        @endif
+
         {{-- Copy as Markdown Button --}}
         <x-docs.copy-markdown-button class="mt-4" />
     
