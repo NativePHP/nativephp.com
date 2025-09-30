@@ -2,13 +2,14 @@
 title: Queue Worker
 order: 100
 ---
+
 # Fake Queue Worker
 
 ## Example test case
 
 ```php
-use Native\Laravel\Facades\QueueWorker;
-use Native\Laravel\DTOs\QueueConfig;
+use Native\Desktop\Facades\QueueWorker;
+use Native\Desktop\DTOs\QueueConfig;
 
 #[\PHPUnit\Framework\Attributes\Test]
 public function example(): void
@@ -22,5 +23,6 @@ public function example(): void
 ```
 
 ## Available assertions
+
 - `assertUp`
 - `assertDown`

@@ -2,12 +2,13 @@
 title: Global Shortcut
 order: 100
 ---
+
 # Fake Global Shortcuts
 
 ## Example test case
 
 ```php
-use Native\Laravel\Facades\GlobalShortcut;
+use Native\Desktop\Facades\GlobalShortcut;
 
 #[\PHPUnit\Framework\Attributes\Test]
 public function example(): void
@@ -23,6 +24,7 @@ public function example(): void
 ```
 
 ## Available assertions
+
 - `assertKey`
 - `assertRegisteredCount`
 - `assertUnregisteredCount`

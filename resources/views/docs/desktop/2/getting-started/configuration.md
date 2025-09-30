@@ -3,8 +3,7 @@ title: Configuration
 order: 200
 ---
 
-
-The `native:install` command publishes a configuration file to `config/nativephp.php`. 
+The `native:install` command publishes a configuration file to `config/nativephp.php`.
 This file contains all the configuration options for NativePHP.
 
 ## Default Configuration File
@@ -40,12 +39,12 @@ return [
      * The author of your application.
      */
     'author' => env('NATIVEPHP_APP_AUTHOR'),
-    
+
     /**
      * The copyright notice for your application.
      */
     'copyright' => env('NATIVEPHP_APP_COPYRIGHT'),
-    
+
     /**
      * The description of your application.
      */
@@ -152,8 +151,8 @@ This method should return an array of php.ini directives to be set.
 ```php
 namespace App\Providers;
 
-use Native\Laravel\Facades\Window;
-use Native\Laravel\Contracts\ProvidesPhpIni;
+use Native\Desktop\Facades\Window;
+use Native\Desktop\Contracts\ProvidesPhpIni;
 
 class NativeAppServiceProvider implements ProvidesPhpIni
 {

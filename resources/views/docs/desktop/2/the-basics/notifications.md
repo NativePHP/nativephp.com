@@ -12,7 +12,7 @@ When used sparingly, notifications can be a great way to inform the user about e
 Notifications are sent using the `Notification` facade.
 
 ```php
-use Native\Laravel\Facades\Notification;
+use Native\Desktop\Facades\Notification;
 ```
 
 ### Sending Notifications
@@ -29,7 +29,7 @@ This will show a system-wide notification to the user with the given title and m
 
 ### Handling clicks on notifications
 
-You may register a custom event along with your NativePHP notification. 
+You may register a custom event along with your NativePHP notification.
 This event will be fired when a user clicks on the notification, so that you may add some custom logic within your application in this scenario.
 
 To attach an event to your notification, you may use the `event` method. The argument passed to this method is the class name of the event that should get dispatched upon clicking on the notification.
@@ -111,7 +111,7 @@ Notification::title('Hello from NativePHP')
 
 ### Notification Reply
 
-On macOS, you can allow the user to reply to a notification using the `hasReply()` method. 
+On macOS, you can allow the user to reply to a notification using the `hasReply()` method.
 
 ```php
 Notification::title('Hello from NativePHP')
@@ -129,7 +129,7 @@ Notification::title('Hello from NativePHP')
 
 ### Notification Actions
 
-On macOS, you can add action buttons to a notification using the `addAction()` method. 
+On macOS, you can add action buttons to a notification using the `addAction()` method.
 
 ```php
 Notification::title('Hello from NativePHP')
@@ -151,7 +151,7 @@ When an action button is clicked, it will trigger the [`NotificationActionClicke
 This event contains an `$index` property, which refers to the index of the action button that was clicked. Action button indexes start at `0`:
 
 ```php
-use Native\Laravel\Events\Notifications\NotificationActionClicked;
+use Native\Desktop\Events\Notifications\NotificationActionClicked;
 
 Notification::title('Do you accept?')
     ->addAction('Accept')  // This action will be $index = 0
@@ -170,13 +170,17 @@ Event::listen(NotificationActionClicked::class, function (NotificationActionClic
 ## Events
 
 ### `NotificationClicked`
-The `Native\Laravel\Events\Notifications\NotificationClicked` event is dispatched when a user clicks on a notification.
+
+The `Native\Desktop\Events\Notifications\NotificationClicked` event is dispatched when a user clicks on a notification.
 
 ### `NotificationClosed`
-The `Native\Laravel\Events\Notifications\NotificationClosed` event is dispatched when a user closes a notification.
+
+The `Native\Desktop\Events\Notifications\NotificationClosed` event is dispatched when a user closes a notification.
 
 ### `NotificationReply`
-The `Native\Laravel\Events\Notifications\NotificationReply` event is dispatched when a user replies to a notification.
+
+The `Native\Desktop\Events\Notifications\NotificationReply` event is dispatched when a user replies to a notification.
 
 ### `NotificationActionClicked`
-The `Native\Laravel\Events\Notifications\NotificationActionClicked` event is dispatched when a user clicks an action button on a notification.
+
+The `Native\Desktop\Events\Notifications\NotificationActionClicked` event is dispatched when a user clicks an action button on a notification.

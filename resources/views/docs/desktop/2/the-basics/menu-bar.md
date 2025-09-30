@@ -7,7 +7,6 @@ order: 200
 
 ![Menu Bar Example on macOS](/img/docs/menubar.png)
 
-
 NativePHP allows you to create a native application menu bar for your application. This can be used as an addition to
 your existing application that already uses windows, or as a standalone (menu-bar only) application.
 
@@ -17,14 +16,14 @@ The configuration of your MenuBar should happen in the `boot` method of your `Na
 
 ### Creating a stand-alone Menu Bar application
 
-To create a menu bar for your application, you may use the `MenuBar` facade. 
+To create a menu bar for your application, you may use the `MenuBar` facade.
 When creating the menu bar, NativePHP will automatically open the root URL of your application.
 By default, adding a menu bar will automatically hide the dock icon of your application.
 
 ```php
 namespace App\Providers;
 
-use Native\Laravel\Facades\MenuBar;
+use Native\Desktop\Facades\MenuBar;
 
 class NativeAppServiceProvider
 {
@@ -37,14 +36,14 @@ class NativeAppServiceProvider
 
 ### Creating a Menu Bar for an application that already uses windows
 
-You may also create a menu bar for an application that already uses windows. Usually you will want to show the 
+You may also create a menu bar for an application that already uses windows. Usually you will want to show the
 dock icon of your application in this case.
 To do so, you may use the `MenuBar::create()` method, but this time call the `showDockIcon()` method.
 
 ```php
 namespace App\Providers;
 
-use Native\Laravel\Facades\MenuBar;
+use Native\Desktop\Facades\MenuBar;
 
 class NativeAppServiceProvider
 {
@@ -76,7 +75,6 @@ MenuBar::hide();
 
 ![Menu Bar Labels](/img/docs/menubar-labels.png)
 
-
 By default, the menu bar will only show the configured [menu bar icon](#menu-bar-icon).
 Additionally, you may add a label to the menu bar that will be shown next to the icon.
 
@@ -102,6 +100,7 @@ MenuBar::label('');
 ### Tooltip
 
 Add a tooltip to the menu bar icon:
+
 ```php
 MenuBar::tooltip('Click to open');
 ```
@@ -111,7 +110,6 @@ MenuBar::tooltip('Click to open');
 ### Menu Bar URL
 
 ![Menu Bar Window](/img/docs/menubar-window.png)
-
 
 By default, the `MenuBar::create()` method will configure your menu bar to show the root URL of your application when clicked.
 If you would like to open a different URL, you may use the `route()` method to specify the route name to open.
@@ -130,8 +128,6 @@ MenuBar::create()
 
 ### Menu Bar Icon
 
-
-
 The default menu bar icon is the NativePHP logo. You may change this icon by using the `icon()` method.
 This method accepts an absolute path to an image file.
 
@@ -147,7 +143,7 @@ menuBarIcon.png
 menuBarIcon@2x.png
 ```
 
-On macOS, it is recommended to use a so-called "Template Image".  
+On macOS, it is recommended to use a so-called "Template Image".
 This is an image that is rendered as a white or black image with a transparent background.
 
 ![Menu Bar Icon Light Mode](/img/docs/menubar-icon-light.png)
@@ -172,23 +168,25 @@ MenuBar::create()
 ### Vibrancy and Background Color
 
 For macOS, you may use the `vibrancy` method to apply window vibrancy effects:
+
 ```php
 MenuBar::create()->vibrancy('light');
 ```
 
 To create a solid background color instead:
+
 ```php
 MenuBar::create()->backgroundColor('#ffffff');
 ```
+
 ### Menu Bar Window Sizes
 
 ![Menu Bar Window Sizes](/img/docs/menubar-window-size.png)
 
-
 The default size of the menu bar window is **400x400 pixels**.
 You may use the `width()` and `height()` methods to specify the size of the window that will be opened when the user clicks on the menu bar icon.
 
-```php 
+```php
 MenuBar::create()
     ->width(800)
     ->height(600);
@@ -197,6 +195,7 @@ MenuBar::create()
 ### Resizable Window
 
 Allow or prevent resizing of the menu bar window:
+
 ```php
 MenuBar::resizable(false);
 ```
@@ -204,6 +203,7 @@ MenuBar::resizable(false);
 ### Positioning
 
 You may manually set the position of the menu bar window:
+
 ```php
 MenuBar::create()
     ->x(100)
@@ -232,10 +232,10 @@ You may add a context menu to your menu bar icon. This context menu will be show
 
 To add a context menu to your Menu Bar app, you may use the `withContextMenu()` method on the `MenuBar`.
 
-This method accepts a `Native\Laravel\Menu\Menu` instance, which can be created using the `Menu::make()` method of the `Menu` facade.
+This method accepts a `Native\Desktop\Menu\Menu` instance, which can be created using the `Menu::make()` method of the `Menu` facade.
 
 ```php
-use Native\Laravel\Facades\Menu;
+use Native\Desktop\Facades\Menu;
 
 MenuBar::create()
     ->withContextMenu(
@@ -265,6 +265,7 @@ To learn more about NativePHP's broadcasting capabilities, please refer to the [
 ### Listening for Custom Events
 
 Attach a custom event that should be fired when the menu bar icon is clicked. This only works when combined with [`onlyShowContextMenu()`](#context-menu-only):
+
 ```php
 MenuBar::create()->event(MenuBarClicked::class);
 
@@ -281,21 +282,22 @@ class MenuBarClicked
 
 ### `MenuBarShown`
 
-The `Native\Laravel\Events\MenuBar\MenuBarShown` event will be dispatched when the user clicks on the menu bar icon and the menu bar window opens, or when
+The `Native\Desktop\Events\MenuBar\MenuBarShown` event will be dispatched when the user clicks on the menu bar icon and the menu bar window opens, or when
 the menu bar gets shown by using the `MenuBar::show()` method.
 
 ### `MenuBarHidden`
 
-The `Native\Laravel\Events\MenuBar\MenuBarHidden` event will be dispatched when the user clicks out of the menu bar window and the menu bar window closes, or when
+The `Native\Desktop\Events\MenuBar\MenuBarHidden` event will be dispatched when the user clicks out of the menu bar window and the menu bar window closes, or when
 the menu bar gets hidden by using the `MenuBar::hide()` method.
 
 ### `MenuBarContextMenuOpened`
 
-The `Native\Laravel\Events\MenuBar\MenuBarContextMenuOpened` event will be dispatched when the user right-clicks on the menu bar icon and the context menu opens.
+The `Native\Desktop\Events\MenuBar\MenuBarContextMenuOpened` event will be dispatched when the user right-clicks on the menu bar icon and the context menu opens.
 
 ### Context Menu Only
 
 Show only the context menu without opening a window when the menu bar icon is clicked:
+
 ```php
 MenuBar::onlyShowContextMenu();
 ```

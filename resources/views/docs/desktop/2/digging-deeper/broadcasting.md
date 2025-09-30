@@ -46,9 +46,12 @@ NativePHP injects a `window.Native` object into every window. The `on()` method 
 the second parameter that will run when the event specified in the first parameter is fired:
 
 ```js
-Native.on("Native\\Laravel\\Events\\Windows\\WindowBlurred", (payload, event) => {
-    //
-});
+Native.on(
+    'Native\\Desktop\\Events\\Windows\\WindowBlurred',
+    (payload, event) => {
+        //
+    },
+)
 ```
 
 ## Listening with Livewire
@@ -64,13 +67,13 @@ class AppSettings extends Component
 {
     public $windowFocused = true;
 
-    #[On('native:\\Native\\Laravel\\Events\\Windows\\WindowFocused')]
+    #[On('native:\\Native\\Desktop\\Events\\Windows\\WindowFocused')]
     public function windowFocused()
     {
         $this->windowFocused = true;
     }
 
-    #[On('native:\\Native\\Laravel\\Events\\Windows\\WindowBlurred')]
+    #[On('native:\\Native\\Desktop\\Events\\Windows\\WindowBlurred')]
     public function windowBlurred()
     {
         $this->windowFocused = false;
@@ -81,8 +84,8 @@ class AppSettings extends Component
 You may find it more convenient to use PHP's class name resolution keyword, `::class`:
 
 ```php
-use Native\Laravel\Events\Windows\WindowBlurred;
-use Native\Laravel\Events\Windows\WindowFocused;
+use Native\Desktop\Events\Windows\WindowBlurred;
+use Native\Desktop\Events\Windows\WindowFocused;
 
 class AppSettings extends Component
 {

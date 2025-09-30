@@ -11,7 +11,7 @@ report an error.
 Alerts are created using the `Alert` facade.
 
 ```php
-use Native\Laravel\Facades\Alert;
+use Native\Desktop\Facades\Alert;
 ```
 
 ### Showing Alerts

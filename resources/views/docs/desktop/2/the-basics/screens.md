@@ -6,7 +6,7 @@ order: 850
 The `Screen` facade lets you get information about the screens currently connected to the computer.
 
 ```php
-use Native\Laravel\Facades\Screen;
+use Native\Desktop\Facades\Screen;
 ```
 
 ## Displays
@@ -42,14 +42,13 @@ $screens = Screen::displays();
       'width' => 2560,
       'height' => 1345,
     ],
-    // ... 
+    // ...
   ],
-  // ... 
+  // ...
 ]
 ```
 
 The screen bounds are the desktop area that the screen covers. The `x` and `y` values are the top-left corner of the screen relative to the primary display, and the `width` and `height` values are the width and height of the screen.
-
 
 ## Cursor position
 
@@ -63,6 +62,7 @@ $position = Screen::cursorPosition();
    'y' => 168,
 ]
 ```
+
 The position of the cursor is relative to the top-left corner of the primary display. These values can be
 negative as well as positive.
 

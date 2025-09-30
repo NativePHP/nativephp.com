@@ -2,12 +2,13 @@
 title: Child Process
 order: 100
 ---
+
 # Fake Child Processes
 
 ## Example test case
 
 ```php
-use Native\Laravel\Facades\ChildProcess;
+use Native\Desktop\Facades\ChildProcess;
 
 #[\PHPUnit\Framework\Attributes\Test]
 public function example(): void
@@ -22,6 +23,7 @@ public function example(): void
 ```
 
 ## Available assertions
+
 - `assertGet`
 - `assertStarted`
 - `assertPhp`

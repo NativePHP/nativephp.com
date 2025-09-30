@@ -5,7 +5,7 @@ order: 100
 
 ## Working with Windows
 
-NativePHP allows you to open native application Windows. 
+NativePHP allows you to open native application Windows.
 While this usually happens in your `NativeAppServiceProvider`, you are free to open a window anywhere in your application.
 
 ### Opening Windows
@@ -15,7 +15,7 @@ To open a window, you may use the `Window` facade.
 ```php
 namespace App\Providers;
 
-use Native\Laravel\Facades\Window;
+use Native\Desktop\Facades\Window;
 
 class NativeAppServiceProvider
 {
@@ -184,6 +184,7 @@ Window::open('settings')
 ```
 
 ## Configuring Windows
+
 ### Window URLs
 
 By default, all calls to `Window::open()` will open up the root URL of your application.
@@ -256,7 +257,7 @@ Please note that NativePHP only allows you to remember the state of one window a
 
 ### Resizable Windows
 
-By default, all windows created with the `Window` facade are resizable. 
+By default, all windows created with the `Window` facade are resizable.
 If you would like to disable resizing, you may use the `resizable()` method and pass `false` as the first argument.
 
 ```php
@@ -333,7 +334,7 @@ Window::open()
     ->alwaysOnTop();
 ```
 
-If you would like to toggle the always on top state of a window, you may use the `alwaysOnTop()` method on the `Window` facade 
+If you would like to toggle the always on top state of a window, you may use the `alwaysOnTop()` method on the `Window` facade
 directly and pass the window ID as the second argument.
 
 If you do not specify a window ID, NativePHP will try to detect the window ID automatically based on the current route.
@@ -344,12 +345,12 @@ Window::alwaysOnTop(true, 'settings');
 
 ### Window Background Color
 
-By default, all windows created with the `Window` facade have a white background color. 
+By default, all windows created with the `Window` facade have a white background color.
 This color is visible when resizing the window, right before the content is rendered.
 
 You may use the `backgroundColor()` method to change the background color of the window.
-This method accepts a hex color code as its first argument.  
-You may also pass a hex color code with an alpha channel to make the background color semi-transparent. 
+This method accepts a hex color code as its first argument.
+You may also pass a hex color code with an alpha channel to make the background color semi-transparent.
 
 ```php
 Window::open()
@@ -475,7 +476,7 @@ All events get dispatched as regular Laravel events, so you may use your `EventS
 
 ```php
 protected $listen = [
-    'Native\Laravel\Events\Windows\WindowShown' => [
+    'Native\Desktop\Events\Windows\WindowShown' => [
         'App\Listeners\WindowWasShownListener',
     ],
     // ...
@@ -483,42 +484,41 @@ protected $listen = [
 ```
 
 Sometimes you may want to listen and react to window events in real-time, which is why NativePHP also broadcasts all
-window events to the `nativephp` broadcast channel. 
+window events to the `nativephp` broadcast channel.
 
 To learn more about NativePHP's broadcasting capabilities, please refer to the [Broadcasting](/docs/digging-deeper/broadcasting) section.
 
 ### `WindowShown`
 
-The `Native\Laravel\Events\Windows\WindowShown` event will be dispatched when a window is shown to the user.
+The `Native\Desktop\Events\Windows\WindowShown` event will be dispatched when a window is shown to the user.
 The payload of this event contains the window ID.
 
 ### `WindowClosed`
 
-The `Native\Laravel\Events\Windows\WindowClosed` event will be dispatched when a window is closed.
+The `Native\Desktop\Events\Windows\WindowClosed` event will be dispatched when a window is closed.
 The payload of this event contains the window ID.
 
 ### `WindowFocused`
 
-The `Native\Laravel\Events\Windows\WindowFocused` event will be dispatched when a window is focused.
+The `Native\Desktop\Events\Windows\WindowFocused` event will be dispatched when a window is focused.
 The payload of this event contains the window ID.
 
 ### `WindowBlurred`
 
-The `Native\Laravel\Events\Windows\WindowBlurred` event will be dispatched when a window is blurred.
+The `Native\Desktop\Events\Windows\WindowBlurred` event will be dispatched when a window is blurred.
 The payload of this event contains the window ID.
 
 ### `WindowMinimized`
 
-The `Native\Laravel\Events\Windows\WindowMinimized` event will be dispatched when a window is minimized.
+The `Native\Desktop\Events\Windows\WindowMinimized` event will be dispatched when a window is minimized.
 The payload of this event contains the window ID.
 
 ### `WindowMaximized`
 
-The `Native\Laravel\Events\Windows\WindowMaximized` event will be dispatched when a window is maximized.
+The `Native\Desktop\Events\Windows\WindowMaximized` event will be dispatched when a window is maximized.
 The payload of this event contains the window ID.
 
 ### `WindowResized`
 
-The `Native\Laravel\Events\Windows\WindowResized` event will be dispatched after a window has been resized.
+The `Native\Desktop\Events\Windows\WindowResized` event will be dispatched after a window has been resized.
 The payload of this event contains the window ID and the new window `$width` and `$height`.
-

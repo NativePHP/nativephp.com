@@ -12,7 +12,7 @@ Note: Some methods are only available on specific operating systems and are labe
 To use the `App` facade, add the following to the top of your file:
 
 ```php
-use Native\Laravel\Facades\App;
+use Native\Desktop\Facades\App;
 ```
 
 ### Quit the app
@@ -24,6 +24,7 @@ App::quit();
 ```
 
 ### Relaunch the app
+
 To relaunch the app, use the `relaunch` method. This will quit the app and relaunch it.
 
 ```php
@@ -42,6 +43,7 @@ App::focus();
 ```
 
 ### Hide the app
+
 _Only available on macOS_
 
 The `hide` method will hide all application windows without minimizing them. This method is only available on macOS.
@@ -51,6 +53,7 @@ App::hide();
 ```
 
 ### Check if the app is hidden
+
 _Only available on macOS_
 
 To check if the app is hidden, use the `isHidden` method. This method is only available on macOS.
@@ -91,8 +94,8 @@ This information is pulled from native OS APIs. If it is not possible to detect 
 With `getSystemLocale` you can access the system-wide locale setting. This is the locale set at the operating system level, not necessarily what the app is using.
 Under Windows and Linux, Chromium's `i18n` library is used to evaluate this information. macOS will use `[NSLocale currentLocale]`.
 
-
 ### App Badge Count
+
 _Only available on macOS and Linux_
 
 You can set the app's badge count.
@@ -114,9 +117,10 @@ To get the badge count, use the `badgeCount` method without any arguments:
 
 ```php
 $badgeCount = App::badgeCount();
-``` 
+```
 
 ### Recent documents list
+
 _Only available on macOS and Windows_
 
 The recent documents list is a list of files that the user has recently opened. This list is available on macOS and
@@ -135,6 +139,7 @@ App::clearRecentDocuments();
 ```
 
 ### Open at login
+
 _Only available on macOS and Windows_
 
 To enable 'open at login', use the `openAtLogin` method:
@@ -154,4 +159,3 @@ To check if the app is set to open at login, use the `openAtLogin` method withou
 ```php
 $isOpenAtLogin = App::openAtLogin();
 ```
-

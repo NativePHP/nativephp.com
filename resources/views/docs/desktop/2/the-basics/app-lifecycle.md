@@ -10,14 +10,14 @@ When your NativePHP application starts - whether it's in development or producti
 1. The native shell (Electron or Tauri) is started.
 2. NativePHP runs `php artisan migrate` to ensure your database is up-to-date.
 3. NativePHP runs `php artisan serve` to start the PHP development server.
-4. NativePHP boots your application by running the `boot()` method on your `NativeAppServiceProvider`. 
+4. NativePHP boots your application by running the `boot()` method on your `NativeAppServiceProvider`.
 5. NativePHP also dispatches a `ApplicationBooted` event.
 
 ## The NativeAppServiceProvider
 
 When running `php artisan native:install`, NativePHP publishes a `NativeAppServiceProvider` to `app/Providers/NativeAppServiceProvider.php`.
 
-You may use this service provider to boostrap your application. 
+You may use this service provider to boostrap your application.
 For example, you may want to open a window, register global shortcuts, or configure your application menu.
 
 The default `NativeAppServiceProvider` looks like this:
@@ -25,8 +25,8 @@ The default `NativeAppServiceProvider` looks like this:
 ```php
 namespace App\Providers;
 
-use Native\Laravel\Facades\Window;
-use Native\Laravel\Contracts\ProvidesPhpIni;
+use Native\Desktop\Facades\Window;
+use Native\Desktop\Contracts\ProvidesPhpIni;
 
 class NativeAppServiceProvider implements ProvidesPhpIni
 {
@@ -53,4 +53,5 @@ class NativeAppServiceProvider implements ProvidesPhpIni
 ## Events
 
 ### `ApplicationBooted`
-As mentioned above, the `Native\Laravel\Events\App\ApplicationBooted` event is dispatched when your application has been booted.
+
+As mentioned above, the `Native\Desktop\Events\App\ApplicationBooted` event is dispatched when your application has been booted.

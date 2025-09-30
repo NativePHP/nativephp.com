@@ -22,7 +22,7 @@ about whether something is Linux-, Mac-, or Windows-only.
 Most of the system-related features are available through the `System` facade.
 
 ```php
-use Native\Laravel\Facades\System;
+use Native\Desktop\Facades\System;
 ```
 
 ## Encryption / Decryption
@@ -81,11 +81,11 @@ TouchID users are familiar with:
 
 ![TouchID Prompt Example on macOS](/img/docs/touchid.png)
 
-Using this, you can gate certain parts of your app, or your *entire* application, allowing you to offer an extra layer
+Using this, you can gate certain parts of your app, or your _entire_ application, allowing you to offer an extra layer
 of protection for your user's data.
 
-**Note: Despite the name, TouchID only gives you greater *confidence* that the person using your app is the same as the
-person who has unlocked the device your app is installed on. It does not allow you to *identify* that user, nor does
+**Note: Despite the name, TouchID only gives you greater _confidence_ that the person using your app is the same as the
+person who has unlocked the device your app is installed on. It does not allow you to _identify_ that user, nor does
 it give you any special privileges to their system.**
 
 ## Printing
@@ -93,14 +93,11 @@ it give you any special privileges to their system.**
 You can list all available printers:
 
 ```blade
-@@use(Native\Laravel\Facades\System)
-
-@@foreach(System::printers() as $printer)
-    @{{ $printer->displayName }}
-@@endforeach
+@@use(Native\Desktop\Facades\System) @@foreach(System::printers() as $printer)
+@{{ $printer->displayName }} @@endforeach
 ```
 
-Each item in the printers array is a `\Native\Laravel\DataObjects\Printer` which contains various device details and
+Each item in the printers array is a `\Native\Desktop\DataObjects\Printer` which contains various device details and
 default configuration.
 
 You can send some HTML to be printed like this:

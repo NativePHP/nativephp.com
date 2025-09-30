@@ -11,10 +11,9 @@ You can check if the system is idle with the `getSystemIdleState` method.
 
 It expects a `int $threshold` argument, which is the number of seconds the system must be idle before it is considered idle. And it'll return an enum value of `SystemIdleStatesEnum`.
 
-
 ```php
-use Native\Laravel\Enums\SystemIdleStatesEnum;
-use Native\Laravel\Facades\PowerMonitor;
+use Native\Desktop\Enums\SystemIdleStatesEnum;
+use Native\Desktop\Facades\PowerMonitor;
 
 $state = PowerMonitor::getSystemIdleState(60);
 
@@ -35,7 +34,7 @@ The possible values for the `SystemIdleStatesEnum` enum are:
 You can get the number of seconds the system has been idle with the `getSystemIdleTime` method.
 
 ```php
-use Native\Laravel\Facades\PowerMonitor;
+use Native\Desktop\Facades\PowerMonitor;
 
 $seconds = PowerMonitor::getSystemIdleTime();
 ```
@@ -45,8 +44,8 @@ $seconds = PowerMonitor::getSystemIdleTime();
 You can get the current thermal state of the system with the `getCurrentThermalState` method. It'll return an enum value of `ThermalStatesEnum`.
 
 ```php
-use Native\Laravel\Enums\ThermalStatesEnum;
-use Native\Laravel\Facades\PowerMonitor;
+use Native\Desktop\Enums\ThermalStatesEnum;
+use Native\Desktop\Facades\PowerMonitor;
 
 $thermalState = PowerMonitor::getCurrentThermalState();
 
@@ -68,7 +67,7 @@ The possible values for the `ThermalStatesEnum` enum are:
 You can determine if the device is running on battery power or AC power with the `isOnBatteryPower` method.
 
 ```php
-use Native\Laravel\Facades\PowerMonitor;
+use Native\Desktop\Facades\PowerMonitor;
 
 if (PowerMonitor::isOnBatteryPower()) {
     // The device is running on battery power.
@@ -83,18 +82,18 @@ You can listen to the following events to get handle when the system's power sta
 
 ### `PowerStateChanged`
 
-This `Native\Laravel\Events\PowerStateChanged` event is fired whenever the power state of the system changes. For example, when the system goes from battery power to AC power, or vice versa.
+This `Native\Desktop\Events\PowerStateChanged` event is fired whenever the power state of the system changes. For example, when the system goes from battery power to AC power, or vice versa.
 
-The event contains a public `$state` property which is an enum value of `Native\Laravel\Enums\PowerStatesEnum`.
+The event contains a public `$state` property which is an enum value of `Native\Desktop\Enums\PowerStatesEnum`.
 
 ### `SpeedLimitChanged`
 
-This `Native\Laravel\Events\SpeedLimitChanged` event is fired whenever the CPU speed limit changes, usually due to thermal throttling or low battery.
+This `Native\Desktop\Events\SpeedLimitChanged` event is fired whenever the CPU speed limit changes, usually due to thermal throttling or low battery.
 
 The event contains a public `$limit` property which is the percentage of the maximum CPU speed that is currently allowed.
 
 ### `ThermalStateChanged`
 
-The `Native\Laravel\Events\ThermalStateChanged` event is fired whenever the thermal state of the system changes.
+The `Native\Desktop\Events\ThermalStateChanged` event is fired whenever the thermal state of the system changes.
 
-The event contains a public `$state` property which is an enum value of `Native\Laravel\Enums\ThermalStatesEnum`.
+The event contains a public `$state` property which is an enum value of `Native\Desktop\Enums\ThermalStatesEnum`.

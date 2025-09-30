@@ -8,8 +8,9 @@ order: 400
 NativePHP allows you to open native file dialogs. They can be used to give the user the ability to select a file or folder, or to save a file.
 
 Dialogs are created using the `Dialog` facade.
+
 ```php
-use Native\Laravel\Dialog;
+use Native\Desktop\Dialog;
 ```
 
 ### Opening File Dialogs
@@ -113,7 +114,7 @@ Dialog::new()
 
 ### Resolving Symbolic Links
 
-By default, the file dialog will always resolve symbolic links. 
+By default, the file dialog will always resolve symbolic links.
 This means that if you select a symbolic link, the dialog will return the path to the file or folder that the symbolic link points to.
 
 You may change this behavior using the `dontResolveSymlinks()` method.

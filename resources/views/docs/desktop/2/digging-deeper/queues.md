@@ -2,6 +2,7 @@
 title: Queues
 order: 500
 ---
+
 # Queues
 
 Queueing tasks to be run in the background is a critical part of creating a great user experience.
@@ -9,18 +10,21 @@ Queueing tasks to be run in the background is a critical part of creating a grea
 NativePHP has built-in support for Laravel's [Queues](https://laravel.com/docs/queues).
 
 ## Queueing a job
+
 If you're familiar with queueing jobs in Laravel, you should feel right at home. There's nothing special you need to do.
 
 Jobs live in the SQLite [database](/docs/digging-deeper/databases) that your app uses by default and the `jobs` table
 migration will have been created and migrated for you.
 
 ## Processing Jobs / Working the Queue
+
 By default, NativePHP will boot up a single queue worker which will consume jobs from the `default` queue.
 
 If you wish to modify the configuration of this worker or run more workers, see [Configuring workers](#configuring-workers).
 
 ### Configuring workers
-Once you publish the NativePHP config file using `php artisan vendor:publish`, you will find a `queue_workers` key in 
+
+Once you publish the NativePHP config file using `php artisan vendor:publish`, you will find a `queue_workers` key in
 `config/nativephp.php`. Here are some acceptable values to get you started:
 
 ```php
@@ -65,7 +69,7 @@ and stop workers, should you need to.
 
 ```php
 use Native\DTOs\QueueConfig;
-use Native\Laravel\Facades\QueueWorker;
+use Native\Desktop\Facades\QueueWorker;
 
 $queueConfig = new QueueConfig(alias: 'manual', queuesToConsume: ['default'], memoryLimit: 1024, timeout: 600);
 
@@ -79,6 +83,7 @@ QueueWorker::down(alias: 'manual');
 ```
 
 ## When to Queue
+
 Given that your database and application typically exist on the same machine (i.e. there's no network involved),
 queueing background tasks can mostly be left for very intense operations and when making API calls over the network.
 

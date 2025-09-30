@@ -9,7 +9,7 @@ NativePHP allows you to easily read from and write to the system clipboard using
 facade.
 
 ```php
-use Native\Laravel\Facades\Clipboard;
+use Native\Desktop\Facades\Clipboard;
 ```
 
 ### Reading from the Clipboard

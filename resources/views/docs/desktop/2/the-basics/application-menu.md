@@ -9,7 +9,7 @@ NativePHP allows you to configure the native menu of your application, as well a
 single, unified and expressive Menu API, available through the `Menu` facade. Use this for building all of your app's menus.
 
 ```php
-use Native\Laravel\Facades\Menu;
+use Native\Desktop\Facades\Menu;
 ```
 
 The configuration of your application menu should happen in the `boot` method of your `NativeAppServiceProvider`.
@@ -24,8 +24,8 @@ You can customize the items that appear in the menu by passing them as parameter
 ```php
 namespace App\Providers;
 
-use Native\Laravel\Facades\Menu;
-use Native\Laravel\Facades\Window;
+use Native\Desktop\Facades\Menu;
+use Native\Desktop\Facades\Window;
 
 class NativeAppServiceProvider
 {
@@ -88,7 +88,6 @@ shortcuts yourself.**
 
 **On macOS, the first item in your application menu will _always_ use the name of your application as its label,
 overriding any custom label you set, regardless of which type of submenu you place first.**
-
 
 ### The App menu
 
@@ -162,7 +161,7 @@ The window menu uses "Window" as its label by default.
 ## Custom Submenus
 
 You may use the `Menu::make()` method to build a custom menu. Rather than registering this menu as the main application
-menu, the `make()` method returns an instance of the `Native\Laravel\Menu\Menu` object, which you can pass into places
+menu, the `make()` method returns an instance of the `Native\Desktop\Menu\Menu` object, which you can pass into places
 where `Menu` instances are accepted.
 
 `Menu` instances are also a `MenuItem`, so they can be nested within other menus to create submenus:
@@ -192,7 +191,7 @@ Menu::make(
 );
 ```
 
-Each is a subclass of the `Native\Laravel\Menu\Items\MenuItem` class which provides many useful methods to help you
+Each is a subclass of the `Native\Desktop\Menu\Items\MenuItem` class which provides many useful methods to help you
 build the perfect menu:
 
 ```php
@@ -218,7 +217,7 @@ Menu::label('Click me!')
     ->event(MyCustomMenuItemEvent::class)
 ```
 
-Your custom event class should extend the default `Native\Laravel\Events\Menu\MenuItemClicked` class.
+Your custom event class should extend the default `Native\Desktop\Events\Menu\MenuItemClicked` class.
 
 If you do not provide a custom event to fire, the default event will be used. By default, this event is
 [broadcast](/docs/digging-deeper/broadcasting) across your app so you can listen for it either in your Laravel back-end,
@@ -345,6 +344,7 @@ commonly associated with them in any web browser. Therefore, they do not fire an
 You may only override their labels.
 
 ### Separators
+
 You may add separators to your menu by using the `Menu::separator()` method.
 
 A separator is a horizontal line that visually separates menu items.
@@ -360,6 +360,7 @@ Menu::make(
 As already noted, they also aid in logically grouping radio items.
 
 ### Undo and Redo
+
 If you have chosen not to include the [default Edit menu](#the-edit-menu) in your application menu,
 you may add the default undo and redo functionality to your app by using the `Menu::undo()` and
 `Menu::redo()` methods.
@@ -376,6 +377,7 @@ but for more complex undo/redo workflows, you may wish to implement your own log
 these items.**
 
 ### Cut, Copy, and Paste
+
 If you have chosen not to include the [default Edit menu](#the-edit-menu) in your application menu,
 you may add the default cut, copy and paste functionality to your app by using the `Menu::cut()`, `Menu::copy()` and
 `Menu::paste()` methods.
@@ -393,6 +395,7 @@ but for more complex cut, copy and paste workflows, you may wish to implement yo
 not use these items.**
 
 ### Fullscreen
+
 You may add a fullscreen item to your menu by using the `Menu::fullscreen()` method.
 
 When the user clicks on the fullscreen item, the application will attempt to enter fullscreen mode. This will only work
@@ -405,6 +408,7 @@ Menu::make()
 ```
 
 ### Minimize
+
 You may add a minimize item to your menu by using the `Menu::minimize()` method.
 
 When the user clicks on the minimize item, the currently-focused window will be minimized.
@@ -416,6 +420,7 @@ Menu::make()
 ```
 
 ### Quit
+
 You may add a quit item to your menu by using the `Menu::quit()` method.
 
 When the user clicks on the quit item, the application will attempt to quit.
@@ -432,7 +437,7 @@ You may wish to add a custom native context menu to the elements in the views of
 
 You can use the `Native` JavaScript helper provided by NativePHP's preload script.
 
-This object exposes the `contextMenu()` method which takes an array of objects that matches the 
+This object exposes the `contextMenu()` method which takes an array of objects that matches the
 [MenuItem](https://www.electronjs.org/docs/latest/api/menu-item) constructor's `options` argument.
 
 ```js
@@ -445,40 +450,40 @@ Native.contextMenu([
         },
     },
     // Other options
-]);
+])
 ```
 
 You can listen for the `contextmenu` event to show your custom context menu:
 
 ```js
-const element = document.getElementById('your-element');
+const element = document.getElementById('your-element')
 
 element.addEventListener('contextmenu', (event) => {
-    event.preventDefault();
+    event.preventDefault()
 
     Native.contextMenu([
         {
             label: 'Duplicate',
             accelerator: 'd',
             click() {
-                duplicateEntry(element.dataset.id);
+                duplicateEntry(element.dataset.id)
             },
         },
         {
             label: 'Edit',
             accelerator: 'e',
             click() {
-                showEditForm(element.dataset.id);
+                showEditForm(element.dataset.id)
             },
         },
         {
             label: 'Delete',
             click() {
                 if (confirm('Are you sure you want to delete this entry?')) {
-                    deleteEntry(element.dataset.id);
+                    deleteEntry(element.dataset.id)
                 }
             },
         },
-    ]);
-});
+    ])
+})
 ```

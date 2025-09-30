@@ -62,15 +62,15 @@ only be able to run while your application is running.**
 
 PHP has good built-in support for running arbitrary programs in separate processes. For example:
 
--   [`shell_exec`](https://www.php.net/manual/en/function.shell-exec.php) allows you to run commands and return their
-    output to your application.
--   [`proc_open`](https://www.php.net/manual/en/function.proc-open.php) allows you to spin up a command with more control
-    over how its input and output streams are handled.
+- [`shell_exec`](https://www.php.net/manual/en/function.shell-exec.php) allows you to run commands and return their
+  output to your application.
+- [`proc_open`](https://www.php.net/manual/en/function.proc-open.php) allows you to spin up a command with more control
+  over how its input and output streams are handled.
 
 While these can be used in your NativePHP application, consider that they:
 
--   May block the script that is executing them until the sub-process has finished.
--   May become orphaned from your application, allowing them to continue running after your app has quit.
+- May block the script that is executing them until the sub-process has finished.
+- May become orphaned from your application, allowing them to continue running after your app has quit.
 
 Runaway orphaned processes could negatively impact your user's system and can become tricky to manage without user
 intervention. You should be cautious about starting processes this way.
@@ -85,7 +85,7 @@ throughout your application.
 You may start a process using the `ChildProcess` facade:
 
 ```php
-use Native\Laravel\Facades\ChildProcess;
+use Native\Desktop\Facades\ChildProcess;
 
 ChildProcess::start(
     cmd: 'tail -f storage/logs/laravel.log',
@@ -93,7 +93,7 @@ ChildProcess::start(
 );
 ```
 
-The `start` method will return a `Native\Laravel\ChildProcess` instance, which represents the process. You may interact
+The `start` method will return a `Native\Desktop\ChildProcess` instance, which represents the process. You may interact
 directly with this instance to make changes to that process, but this does not necessarily mean that the
 process was started.
 
@@ -157,7 +157,7 @@ You can use the `ChildProcess` facade's `get` method to get a running process wi
 $tail = ChildProcess::get('tail');
 ```
 
-This will return a `Native\Laravel\ChildProcess` instance.
+This will return a `Native\Desktop\ChildProcess` instance.
 
 ### Getting all processes
 
@@ -167,14 +167,14 @@ You can use the `ChildProcess` facade's `all` method to get all running processe
 $processes = ChildProcess::all();
 ```
 
-This will return an array of `Native\Laravel\ChildProcess` instances.
+This will return an array of `Native\Desktop\ChildProcess` instances.
 
 ## Stopping a Child Process
 
 Your child processes will shut down when your application exits. However, you may also choose to stop them manually or
 provide this control to your user.
 
-If you have a `Native\Laravel\ChildProcess` instance, you may call the `stop` method on it:
+If you have a `Native\Desktop\ChildProcess` instance, you may call the `stop` method on it:
 
 ```php
 $tail->stop();
@@ -196,7 +196,7 @@ Note that [persistent processes](/docs/digging-deeper/child-processes#persistent
 As a convenience, you may simply restart a Child Process using the `restart` method. This may be useful in cases where
 the program has become unresponsive and you simply need to "reboot" it.
 
-If you have a `Native\Laravel\ChildProcess` instance, you may call the `restart` method on it:
+If you have a `Native\Desktop\ChildProcess` instance, you may call the `restart` method on it:
 
 ```php
 $tail->restart();
@@ -212,10 +212,10 @@ ChildProcess::restart('tail');
 
 There are multiple ways to provide input to your Child Process:
 
--   The environment.
--   Arguments to the command.
--   Its standard input stream (`STDIN`).
--   A custom interface, e.g. a network socket.
+- The environment.
+- Arguments to the command.
+- Its standard input stream (`STDIN`).
+- A custom interface, e.g. a network socket.
 
 Which you use will depend on what the program is capable of handling.
 
@@ -266,10 +266,10 @@ The message format and how they are handled will be determined by the program yo
 
 A Child Process may send output via any of the following interfaces:
 
--   Its standard output stream (`STDOUT`).
--   Its standard error stream (`STDERR`).
--   A custom interface, e.g. a network socket.
--   Broadcasting a Custom Event
+- Its standard output stream (`STDOUT`).
+- Its standard error stream (`STDERR`).
+- A custom interface, e.g. a network socket.
+- Broadcasting a Custom Event
 
 `STDOUT`, `STDERR` & [Custom Events](/docs/digging-deeper/broadcasting#custom-events) are dispatched using
 Laravel's event system.
@@ -297,7 +297,7 @@ All events get dispatched as regular Laravel events, so you may use your `AppSer
 
 ```php
 use Illuminate\Support\Facades\Event;
-use Native\Laravel\Events\ChildProcess\MessageReceived;
+use Native\Desktop\Events\ChildProcess\MessageReceived;
 
 /**
  * Bootstrap any application services.
@@ -317,11 +317,11 @@ Sometimes you may want to listen and react to these events in real-time, which i
 Child Process events to the `nativephp` broadcast channel. Any events broadcasted this way also get dispatched over IPC, enabling you to react to them on the front-end without using websockets.
 
 ```js
-Native.on("Native\\Laravel\\Events\\ChildProcess\\MessageReceived", (event) => {
-    if (event.alias === "tail") {
-        container.append(event.data);
+Native.on('Native\\Desktop\\Events\\ChildProcess\\MessageReceived', (event) => {
+    if (event.alias === 'tail') {
+        container.append(event.data)
     }
-});
+})
 ```
 
 To learn more about NativePHP's broadcasting capabilities, please refer to the
@@ -329,7 +329,7 @@ To learn more about NativePHP's broadcasting capabilities, please refer to the
 
 ### `ProcessSpawned`
 
-This `Native\Laravel\Events\ChildProcess\ProcessSpawned` event will be dispatched when a Child Process has successfully
+This `Native\Desktop\Events\ChildProcess\ProcessSpawned` event will be dispatched when a Child Process has successfully
 been spawned. The payload of the event contains the `$alias` and the `$pid` of the process.
 
 **In Electron, the `$pid` here will be the Process ID of an Electron Helper process which spawns the underlying
@@ -337,17 +337,17 @@ process.**
 
 ### `ProcessExited`
 
-This `Native\Laravel\Events\ChildProcess\ProcessExited` event will be dispatched when a Child Process exits. The
+This `Native\Desktop\Events\ChildProcess\ProcessExited` event will be dispatched when a Child Process exits. The
 payload of the event contains the `$alias` of the process and its exit `$code`.
 
 ### `MessageReceived`
 
-This `Native\Laravel\Events\ChildProcess\MessageReceived` event will be dispatched when the Child Process emits some
+This `Native\Desktop\Events\ChildProcess\MessageReceived` event will be dispatched when the Child Process emits some
 output via its standard output stream (`STDOUT`). The payload of the event contains the `$alias` of the process and the
 message `$data`.
 
 ### `ErrorReceived`
 
-This `Native\Laravel\Events\ChildProcess\ErrorReceived` event will be dispatched when the Child Process emits an error
+This `Native\Desktop\Events\ChildProcess\ErrorReceived` event will be dispatched when the Child Process emits an error
 via its standard error stream (`STDERR`). The payload of the event contains the `$alias` of the process and the
 error `$data`.

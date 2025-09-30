@@ -3,7 +3,7 @@ title: Global Hotkeys
 order: 600
 ---
 
-## Global Hotkeys 
+## Global Hotkeys
 
 In your NativePHP application, you may define multiple global hotkeys.
 Unlike hotkeys that you may define in your application via JavaScript, these hotkeys are globally registered.
@@ -16,7 +16,7 @@ the `NativeAppServiceProvider` class.
 ```php
 namespace App\Providers;
 
-use Native\Laravel\Facades\GlobalShortcut;
+use Native\Desktop\Facades\GlobalShortcut;
 
 class NativeAppServiceProvider
 {
@@ -25,7 +25,7 @@ class NativeAppServiceProvider
         GlobalShortcut::key('CmdOrCtrl+Shift+A')
             ->event(\App\Events\MyShortcutEvent::class)
             ->register();
-            
+
         // Additional code, such as registering a menu, opening windows, etc.
     }
 }
@@ -62,33 +62,34 @@ GlobalShortcut::key('Cmd+Shift+D')
 ```
 
 ### Available modifiers
-* `Command` or `Cmd`
-* `Control` or `Ctrl`
-* `CommandOrControl` or `CmdOrCtrl`
-* `Alt`
-* `Option`
-* `AltGr`
-* `Shift`
-* `Super`
-* `Meta`
+
+- `Command` or `Cmd`
+- `Control` or `Ctrl`
+- `CommandOrControl` or `CmdOrCtrl`
+- `Alt`
+- `Option`
+- `AltGr`
+- `Shift`
+- `Super`
+- `Meta`
 
 ### Available key codes
 
-* `0` to `9`
-* `A` to `Z`
-* `F1` to `F24`
-* `Backspace`
-* `Delete`
-* `Insert`
-* `Return` or `Enter`
-* `Up`, `Down`, `Left` and `Right`
-* `Home` and `End`
-* `PageUp` and `PageDown`
-* `Escape` or `Esc`
-* `VolumeUp`, `VolumeDown` and `VolumeMute`
-* `MediaNextTrack`, `MediaPreviousTrack`, `MediaStop` and `MediaPlayPause`
-* `PrintScreen`
-* `Numlock`
-* `Scrolllock`
-* `Space`
-* `Plus`
+- `0` to `9`
+- `A` to `Z`
+- `F1` to `F24`
+- `Backspace`
+- `Delete`
+- `Insert`
+- `Return` or `Enter`
+- `Up`, `Down`, `Left` and `Right`
+- `Home` and `End`
+- `PageUp` and `PageDown`
+- `Escape` or `Esc`
+- `VolumeUp`, `VolumeDown` and `VolumeMute`
+- `MediaNextTrack`, `MediaPreviousTrack`, `MediaStop` and `MediaPlayPause`
+- `PrintScreen`
+- `Numlock`
+- `Scrolllock`
+- `Space`
+- `Plus`

@@ -12,51 +12,65 @@ Settings are managed using the `Settings` facade and are stored in a file named 
 [`appdata`](/docs/getting-started/debugging#start-from-scratch) directory of your application.
 
 ```php
-use Native\Laravel\Facades\Settings;
+use Native\Desktop\Facades\Settings;
 ```
 
 ### Setting a value
+
 It's as simple as calling the `set` method. The key must be a string.
+
 ```php
 Settings::set('key', 'value');
 ```
 
 ### Getting a value
+
 To retrieve a setting, use the `get` method.
+
 ```php
 $value = Settings::get('key');
 ```
 
 You may also provide a default value to return if the setting does not exist. You can provide either a static default value, or a closure:
+
 ```php
 $value = Settings::get('key', 'default');
 ```
+
 ```php
 $value = Settings::get('key', function () {
         return 'default';
     });
 ```
+
 If the setting does not exist, and no default value is provided, `null` will be returned.
 
 ### Forgetting a value
+
 If you want to remove a setting altogether, use the `forget` method.
+
 ```php
 Settings::forget('key');
 ```
 
 ### Clearing all settings
+
 To remove all settings, use the `clear` method.
+
 ```php
 Settings::clear();
 ```
+
 This will remove all settings from the `config.json` file.
 
 ## Events
 
 ### `SettingChanged`
-The `Native\Laravel\Events\Notifications\SettingChanged` event is dispatched when a setting is changed.
+
+The `Native\Desktop\Events\Notifications\SettingChanged` event is dispatched when a setting is changed.
 
 Example usage:
+
 ```php
 Event::listen(SettingChanged::class, function (SettingChanged $event) {
     $key = $event->key; // Key of the setting that was changed
@@ -65,9 +79,10 @@ Event::listen(SettingChanged::class, function (SettingChanged $event) {
 ```
 
 This event can also be listened with Livewire to refresh your settings page:
+
 ```php
 use Livewire\Component;
-use Native\Laravel\Events\Notifications\SettingChanged;
+use Native\Desktop\Events\Notifications\SettingChanged;
 
 class Settings extends Component
 {
@@ -76,4 +91,3 @@ class Settings extends Component
     ];
 }
 ```
-

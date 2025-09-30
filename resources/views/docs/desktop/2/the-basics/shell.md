@@ -2,14 +2,16 @@
 title: Shell
 order: 850
 ---
+
 ## Shell operations
 
 The `Shell` facade lets you perform some basic operations with files on the user's system in the context of the system's
 default behaviour.
 
 To use the `Shell` facade, add the following to the top of your file:
+
 ```php
-use Native\Laravel\Facades\Shell;
+use Native\Desktop\Facades\Shell;
 ```
 
 ### Showing a file

@@ -82,9 +82,9 @@ How to setup your storage and generate the relevant API credentials:
 - Amazon S3 - See [this video](https://www.youtube.com/watch?v=FLIp6BLtwjk&ab_channel=CloudCasts) by Chris Fidao or
   this [Step 2](https://www.twilio.com/docs/video/tutorials/storing-aws-s3#step-2) of this article by Twilio
 
-  If you got the error message "The bucket does not allow ACLs" you can follow this guide
-  from [Learn AWS](https://www.learnaws.org/2023/08/26/aws-s3-bucket-does-not-allow-acls)
-  on how to setup your bucket correctly.
+    If you got the error message "The bucket does not allow ACLs" you can follow this guide
+    from [Learn AWS](https://www.learnaws.org/2023/08/26/aws-s3-bucket-does-not-allow-acls)
+    on how to setup your bucket correctly.
 
 ## Disabling the updater
 
@@ -100,7 +100,7 @@ NATIVEPHP_UPDATER_ENABLED=false
 You can manually check for updates by calling the `checkForUpdates` method on the `AutoUpdater` facade:
 
 ```php
-use Native\Laravel\Facades\AutoUpdater;
+use Native\Desktop\Facades\AutoUpdater;
 
 AutoUpdater::checkForUpdates();
 ```
@@ -113,7 +113,7 @@ will download the update two times.
 You can quit the application and install the update by calling the `quitAndInstall` method on the `AutoUpdater` facade:
 
 ```php
-use Native\Laravel\Facades\AutoUpdater;
+use Native\Desktop\Facades\AutoUpdater;
 
 AutoUpdater::quitAndInstall();
 ```
@@ -127,21 +127,21 @@ application starts.
 
 ### `CheckingForUpdate`
 
-The `Native\Laravel\Events\AutoUpdater\CheckingForUpdate` event is dispatched when checking for an available update has
+The `Native\Desktop\Events\AutoUpdater\CheckingForUpdate` event is dispatched when checking for an available update has
 started.
 
 ### `UpdateAvailable`
 
-The `Native\Laravel\Events\AutoUpdater\UpdateAvailable` event is dispatched when there is an available update. The
+The `Native\Desktop\Events\AutoUpdater\UpdateAvailable` event is dispatched when there is an available update. The
 update is downloaded automatically.
 
 ### `UpdateNotAvailable`
 
-The `Native\Laravel\Events\AutoUpdater\UpdateNotAvailable` event is dispatched when there is no available update.
+The `Native\Desktop\Events\AutoUpdater\UpdateNotAvailable` event is dispatched when there is no available update.
 
 ### `DownloadProgress`
 
-The `Native\Laravel\Events\AutoUpdater\DownloadProgress` event is dispatched when the update is being downloaded.
+The `Native\Desktop\Events\AutoUpdater\DownloadProgress` event is dispatched when the update is being downloaded.
 
 The event contains the following properties:
 
@@ -153,7 +153,7 @@ The event contains the following properties:
 
 ### `UpdateDownloaded`
 
-The `Native\Laravel\Events\AutoUpdater\UpdateDownloaded` event is dispatched when the update has been downloaded.
+The `Native\Desktop\Events\AutoUpdater\UpdateDownloaded` event is dispatched when the update has been downloaded.
 
 The event contains the following properties:
 
@@ -165,7 +165,7 @@ The event contains the following properties:
 
 ### `Error`
 
-The `Native\Laravel\Events\AutoUpdater\Error` event is dispatched when there is an error while updating.
+The `Native\Desktop\Events\AutoUpdater\Error` event is dispatched when there is an error while updating.
 
 The event contains the following properties:
 

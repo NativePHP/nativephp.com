@@ -2,12 +2,13 @@
 title: Windows
 order: 100
 ---
+
 # Fake Windows
 
 ## Example test case
 
 ```php
-use Native\Laravel\Facades\Window;
+use Native\Desktop\Facades\Window;
 use Illuminate\Support\Facades\Http;
 
  #[\PHPUnit\Framework\Attributes\Test]
@@ -25,6 +26,7 @@ public function example(): void
 ```
 
 ## Available assertions
+
 - `assertOpened`
 - `assertClosed`
 - `assertHidden`
@@ -33,8 +35,8 @@ public function example(): void
 
 ```php
 use Illuminate\Support\Facades\Http;
-use Native\Laravel\Facades\Window;
-use Native\Laravel\Windows\Window as WindowImplementation;
+use Native\Desktop\Facades\Window;
+use Native\Desktop\Windows\Window as WindowImplementation;
 use Mockery;
 
 #[\PHPUnit\Framework\Attributes\Test]
