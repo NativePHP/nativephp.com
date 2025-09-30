@@ -469,6 +469,36 @@ In order to keep the window draggable, you should add an HTML element with the f
 </div>
 ```
 
+### Setting webpage features
+
+You may control various web page features by passing an optional `webPreferences` configuration array. This allows you to customize how the Electron window behaves and what features are available to the web content.
+
+```php
+Window::open()
+    ->webPreferences([
+        'nodeIntegration' => true,
+        'spellcheck' => true,
+        'backgroundThrottling' => true,
+    ]);
+```
+
+#### Default Settings
+
+NativePHP sets the following defaults for security and compatibility:
+
+```php
+[
+    'sandbox' => false, // locked
+    'preload' => '{preload-path}', // locked
+    'contextIsolation' => true, // locked
+    'spellcheck' => false,
+    'nodeIntegration' => false,
+    'backgroundThrottling' => false,
+]
+```
+
+The `preload`, `contextIsolation`, and `sandbox` options are locked and cannot be changed for security reasons. All other options from the [Electron WebPreferences documentation](https://www.electronjs.org/docs/latest/api/structures/web-preferences) may be passed and will override the defaults.
+
 ## Events
 
 NativePHP provides a simple way to listen for native window events.

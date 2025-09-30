@@ -252,21 +252,6 @@ MenuBar::create()
 
 To learn more about the `Menu` facade, please refer to the [Application Menu](/docs/the-basics/application-menu) documentation.
 
-### Setting webpage features
-
-You may control various web page features by passing an optional `webPreferences` configuration array, similar to how it works with [Windows](/docs/the-basics/windows#setting-webpage-features). This allows you to customize how the menu bar window behaves and what features are available to the web content.
-
-```php
-MenuBar::create()
-    ->webPreferences([
-        'nodeIntegration' => true,
-        'spellcheck' => true,
-        'backgroundThrottling' => true,
-    ]);
-```
-
-The same defaults and restrictions apply as with Windows. For more details about available options and default settings, see the [Windows documentation](/docs/the-basics/windows#setting-webpage-features).
-
 ## Events
 
 NativePHP provides a simple way to listen for menu bar events.
