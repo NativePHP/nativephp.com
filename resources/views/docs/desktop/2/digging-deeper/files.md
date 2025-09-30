@@ -131,7 +131,7 @@ $toolPath = Storage::disk('extras')->path('my-tool.exe');
 
 ```php
 use Illuminate\Support\Facades\Storage;
-use Native\Laravel\Facades\ChildProcess;
+use Native\Desktop\Facades\ChildProcess;
 
 // Get the path to a bundled executable
 $toolPath = Storage::disk('extras')->path('my-tool.sh');
