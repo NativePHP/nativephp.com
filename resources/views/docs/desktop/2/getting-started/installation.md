@@ -14,16 +14,14 @@ order: 100
 
 The best development experience for NativePHP is to have PHP and Node running on your development machine directly.
 
-If you're using Mac or Windows, the most painless way to get PHP and Node up and running on your system is with
-[Laravel Herd](https://herd.laravel.com). It's fast and free!
+If you're using Mac or Windows, the most painless way to get PHP and Node up and running on your system is with <a href="https://herd.laravel.com" target="_blank" rel="noopener">Laravel Herd</a>. It's fast and free!
 
-Please note that, whilst it's possible to develop and run your application from a virtualized environment or container,
+Please note that, while it's possible to develop and run your application from a virtualized environment or container,
 you may encounter more unexpected issues and have more manual steps to create working builds.
 
 ### Laravel
 
-NativePHP is built to work with Laravel. You can install it into an existing Laravel application, or
-[start a new one](https://laravel.com/docs/installation).
+NativePHP is built to work with Laravel. You can install it into an existing Laravel application, or <a href="https://laravel.com/docs/installation" target="_blank" rel="noopener">start a new one</a>.
 
 ## Install NativePHP
 
@@ -45,9 +43,9 @@ dependencies for your application to work with the Electron runtime.
 
 It also publishes the NativePHP configuration file to `config/nativephp.php`.
 
-It adds the `composer native:dev` script to your `composer.json`, which you are free to modify to suit your needs.
+It adds the `native:dev` script to your `composer.json`, which you are free to modify to suit your needs.
 
-Then it installs the `php artisan native:install` script as a `post-update-cmd` so your environment is always up to date after a `composer update`.
+Then it registers the `php artisan native:install` command as a `post-update-cmd` so your environment is always up to date after a `composer update`.
 
 Finally, it installs any other dependencies needed to run Electron.
 
@@ -56,9 +54,9 @@ necessary dependencies are in place to build your application.**
 
 ### Publishing the Electron project
 
-If you need to make any specific adjustments to the underlying Electron app, you are free to publish it using `php artisan native:install --publish`. This will export the Electron project to `{project-root}/nativephp/electron` and allow you to fully control all of NativePHP's inner workings.
+If you need to make any specific adjustments to the underlying Electron app, you can publish it using `php artisan native:install --publish`. This will export the Electron project to `{project-root}/nativephp/electron` and allow you to fully control all of NativePHP's inner workings.
 
-Additionally this will modify your `post-update-cmd` script to keep your project up to date, but mind it's possible you'll need to cherry-pick any adjustments you've made after a `composer update`.
+Additionally, this will modify your `post-update-cmd` script to keep your project up to date, but note that you may need to cherry-pick any adjustments you've made after a `composer update`.
 
 ## Start the development server
 
