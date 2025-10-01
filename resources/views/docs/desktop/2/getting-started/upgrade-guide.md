@@ -7,7 +7,7 @@ order: 1200
 
 - [New package name `nativephp/desktop`](#upgrading-to-20-from-1x)
 - [Root namespace updated to `Native\Desktop`](#update-class-imports)
-- [Drop macOS **_Catalina_** and **_Big Sur_** support](#macos-support)
+- [Dropped macOS **_Catalina_** and **_Big Sur_** support](#macos-support)
 
 ### Medium Impact Changes
 
