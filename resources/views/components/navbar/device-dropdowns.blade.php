@@ -37,7 +37,7 @@
         align="center"
     >
         <x-navbar.device-dropdown-item
-            href="/docs/desktop/1/getting-started/introduction"
+            href="/docs/desktop/2/getting-started/introduction"
             title="Documentation"
             subtitle="Get started with Desktop"
             icon="docs"
@@ -50,7 +50,7 @@
             icon-class="size-4"
         />
         <x-navbar.device-dropdown-item
-            href="https://github.com/nativephp/laravel"
+            href="https://github.com/nativephp/desktop"
             title="GitHub"
             subtitle="Visit our GitHub repository"
             icon="github"
