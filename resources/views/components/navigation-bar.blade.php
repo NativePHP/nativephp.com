@@ -3,7 +3,7 @@
     x-show="!showMobileMenu"
 >
     {{-- Announcement banner goes here --}}
-    <x-bifrost-product-hunt-banner />
+    <x-bifrost-banner />
 </div>
 <nav
     class="sticky top-0 z-50 flex flex-col items-center justify-center border-b px-2 transition duration-200 ease-out min-[500px]:px-3"
@@ -17,7 +17,7 @@
         class="mx-auto flex w-full max-w-5xl items-center justify-between gap-5 rounded-2xl py-4 pr-4 pl-3.5 xl:max-w-7xl 2xl:max-w-360"
     >
         {{-- Left side --}}
-        <div class="flex items-center gap-3">
+        <div class="flex items-center gap-2.5">
             {{-- Logo --}}
             <a
                 href="/"
@@ -75,13 +75,13 @@
         </div>
 
         {{-- Right side --}}
-        <div class="flex items-center gap-3.5">
+        <div class="flex items-center gap-2.5">
             {{-- Mobile menu --}}
             <x-navbar.mobile-menu />
 
             {{-- Desktop menu --}}
             <div
-                class="hidden items-center gap-3.5 text-sm lg:flex"
+                class="hidden items-center gap-2.5 text-sm lg:flex"
                 aria-label="Primary navigation"
             >
                 {{-- Link --}}
@@ -130,6 +130,46 @@
                     Shop
                 </a>
 
+                {{-- Decorative circle --}}
+                <div
+                    class="size-[3px] rotate-45 rounded-xs bg-gray-400 transition duration-200 dark:opacity-60"
+                    aria-hidden="true"
+                ></div>
+
+                {{-- Link --}}
+                <a
+                    href="/partners"
+                    class="opacity-60 transition duration-200 hover:opacity-100"
+                >
+                    Partners
+                </a>
+
+                {{-- Login/Logout --}}
+                @feature(App\Features\ShowAuthButtons::class)
+                    @auth
+                        <form
+                            method="POST"
+                            action="{{ route('customer.logout') }}"
+                            class="inline"
+                        >
+                            @csrf
+                            <button
+                                type="submit"
+                                class="opacity-60 transition duration-200 hover:opacity-100"
+                            >
+                                Log out
+                            </button>
+                        </form>
+                    @else
+                        <a
+                            href="{{ route('customer.login') }}"
+                            class="opacity-60 transition duration-200 hover:opacity-100"
+                        >
+                            Log in
+                        </a>
+                    @endauth
+                @endfeature
+
                 {{-- Theme toggle --}}
                 <x-navbar.theme-toggle />
 
@@ -146,6 +186,8 @@
                         aria-label="Search documentation"
                     ></div>
                 </div>
+
+                <x-bifrost-button small />
             </div>
         </div>
     </div>

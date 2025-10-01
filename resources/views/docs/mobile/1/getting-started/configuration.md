@@ -104,4 +104,36 @@ You may enable the features you intend to use simply by changing the value of th
     may deny this and any push notification functions will then result in a no-op.
 - `location` - Allows your application to request access to the device's GPS receiver, if present. Note that the user
     may deny this and any location functions will then result in a no-op.
+- `vibrate` - In modern Android devices this is a requirement for most haptic feedback.
+- `storage_read` - Grants your app access to read from device storage locations.
+- `storage_write` - Allows your app to write to device storage.
+
+## Orientation
+
+NativePHP (as of v1.10.3) allows users to custom specific orientations per device through the config file. The config allows for granularity for iPad, iPhone and Android devices. Options for each device can be seen below.
+
+NOTE: if you want to disable iPad support completely simply apply `false` for each option.
+
+```php
+'orientation' => [
+    'iPhone' => [
+        'portrait' => true,
+        'upside_down' => false,
+        'landscape_left' => false,
+        'landscape_right' => false,
+    ],
+    'iPad' => [
+        'portrait' => true,
+        'upside_down' => false,
+        'landscape_left' => false,
+        'landscape_right' => false,
+    ],
+    'android' => [
+        'portrait' => true,
+        'upside_down' => false,
+        'landscape_left' => false,
+        'landscape_right' => false,
+    ],
+],
+```
 

@@ -39,7 +39,7 @@
         <x-icons.star-circle class="size-[18px]" />
 
         {{-- Label --}}
-        <div>Sponsors</div>
+        <div>Partners</div>
     </h3>
 
     {{-- List --}}

@@ -46,8 +46,20 @@ class ShowDocumentationController extends Controller
         } catch (InvalidArgumentException $e) {
             return $this->redirectToFirstNavigationPage($navigation, $page);
         }
-        SEOTools::setTitle($pageProperties['title'].' - NativePHP '.$platform.' v'.$version);
-        SEOTools::setDescription(Arr::exists($pageProperties, 'description') ? $pageProperties['description'] : '');
+        $title = $pageProperties['title'].' - NativePHP '.$platform.' v'.$version;
+        $description = Arr::exists($pageProperties, 'description') ? $pageProperties['description'] : 'NativePHP documentation for '.$platform.' v'.$version;
+
+        SEOTools::setTitle($title);
+        SEOTools::setDescription($description);
+
+        // Set OpenGraph metadata
+        SEOTools::opengraph()->setTitle($pageProperties['title']);
+        SEOTools::opengraph()->setDescription($description);
+        SEOTools::opengraph()->setType('article');
+
+        // Set Twitter Card metadata
+        SEOTools::twitter()->setTitle($pageProperties['title']);
+        SEOTools::twitter()->setDescription($description);
 
         return view('docs.index')->with($pageProperties);
     }
