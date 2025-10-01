@@ -6,7 +6,7 @@ order: 300
 ## Development
 
 ```shell
-php artisan native:serve
+php artisan native:run
 ```
 
 NativePHP isn't prescriptive about how you develop your application. You can build it in the way you're most comfortable
