@@ -68,7 +68,7 @@ which need addressing before you can run your app natively, and may be trickier 
 Once you're ready:
 
 ```shell
-php artisan native:serve
+php artisan native:run
 ```
 
 And that's it! You should now see your Laravel application running in a native desktop window. 🎉

@@ -6,21 +6,21 @@ order: 300
 ## Development
 
 ```shell
-php artisan native:serve
+php artisan native:run
 ```
 
 NativePHP isn't prescriptive about how you develop your application. You can build it in the way you're most comfortable
 and familiar with, just as if you were building a traditional web application.
 
 The only difference comes in the feedback cycle. Instead of switching to and refreshing your browser, you'll need to
-be serving your application using `php artisan native:serve` and refreshing (and in some cases restarting) your
+be serving your application using `php artisan native:run` and refreshing (and in some cases restarting) your
 application to see changes.
 
 This is known as 'running a dev build'.
 
-### What does the `native:serve` command do?
+### What does the `native:run` command do?
 
-The `native:serve` command runs the Electron/Tauri 'debug build' commands, which build your application with various
+The `native:run` command runs the Electron 'debug build' commands, which build your application with various
 debug options set to help make debugging easier, such as allowing you to show the Dev Tools in the embedded web view.
 
 It also keeps the connection to the terminal open so you can see and inspect useful output from your app, such as logs,
@@ -34,7 +34,7 @@ A major part of the build process, even for debug builds, involves _copying_ you
 build environment. This means that changes you make to your application code _will not_ be reflected in your running
 application until you restart it.
 
-You can stop the `native:serve` command by pressing `Ctrl-C` on your keyboard in the terminal window it's running in.
+You can stop the `native:run` command by pressing `Ctrl-C` on your keyboard in the terminal window it's running in.
 It will also terminate when you quit your application.
 
 ## Hot Reloading
@@ -49,7 +49,7 @@ If you're using Vite, hot reloading will just work inside your app as long as yo
 
 You can do this easily in Blade using the `@@vite` directive.
 
-Then, in a separate terminal session to your `php artisan native:serve`, from the root folder of your application, run:
+Then, in a separate terminal session to your `php artisan native:run`, from the root folder of your application, run:
 
 ```shell
 npm run dev
@@ -61,7 +61,7 @@ Which files trigger reloads will depend on your Vite configuration.
 
 ### `composer native:dev`
 
-You may find the `native:dev` script convenient. By default, it is setup to run both `native:serve` and `npm run dev`
+You may find the `native:dev` script convenient. By default, it is setup to run both `native:run` and `npm run dev`
 concurrently in a single command:
 
 ```shell
@@ -99,7 +99,7 @@ For more details, see the [Databases](/docs/digging-deeper/databases) section.
 
 ## App Icon
 
-The `native:serve` and `native:build` commands look for the following icon files when building your application:
+The `native:run` and `native:build` commands look for the following icon files when building your application:
 
 - `public/icon.png` - your main icon, used on the Desktop, Dock and app switcher.
 - `public/icon.ico` - if it exists, it is used as an icon file for Windows (optional).

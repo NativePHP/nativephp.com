@@ -54,8 +54,8 @@ v2 drops support for macOS **_Catalina_** and **_Big Sur_**. This change comes f
 
 ## Renamed `native:serve` command
 
-The `artisan native:serve` command has been renamed to `artisan native:dev` for better symmetry with the mobile package.
-Please update the `composer native:dev` command to use the new name.
+The `artisan native:serve` command has been renamed to `artisan native:run` for better symmetry with the mobile package.
+Please update the `composer native:dev` script to reference the new run command.
 
 ## Security defaults
 

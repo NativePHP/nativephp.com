@@ -19,7 +19,7 @@ This means that while some issues can be solved within NativePHP it's also very 
 ### The layers
 
 - Your application, built on Laravel, using your local installations of PHP & Node.
-- NativePHP's development tools (`native:serve` and `native:build`) manage the Electron/Tauri build processes - this is
+- NativePHP's development tools (`native:run` and `native:build`) manage the Electron/Tauri build processes - this is
   what creates your Application Bundle.
 - NativePHP moves the appropriate version of a statically-compiled binary of PHP into your application's bundle - when
   your app boots, it's _this_ version of PHP that is being used to execute your PHP code, not your system's version of
@@ -51,7 +51,7 @@ runs in either a dev build or a prod build.
 Having a clear understanding about what context you're in when issues occur will help you to solve the problem faster.
 
 ### Verbose output
-Use `-v`, `-vv` or `-vvv` when running `native:serve` or `native:build` as this will provide more detail as to what's 
+Use `-v`, `-vv` or `-vvv` when running `native:run` or `native:build` as this will provide more detail as to what's 
 happening at each stage of a process.
 
 ### Check the logs
