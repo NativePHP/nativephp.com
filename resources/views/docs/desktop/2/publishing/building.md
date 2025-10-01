@@ -16,7 +16,7 @@ Before you prepare a distributable build, please make sure you've been through t
 ## Building
 
 The build process compiles your app for one platform at a time. It compiles your application along with the
-Electron/Tauri runtime into a single executable.
+Electron runtime into a single executable.
 
 Once built, you can distribute your app however you prefer, but NativePHP also provides a [publish command](publishing)
 that will automatically upload your build artifacts to your chosen [provider](/docs/publishing/updating) - this allows

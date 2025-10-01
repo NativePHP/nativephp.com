@@ -22,10 +22,10 @@ you may encounter more unexpected issues and have more manual steps to create wo
 
 ### Laravel
 
-NativePHP is built to work best with Laravel. You can install it into an existing Laravel application, or
+NativePHP is built to work with Laravel. You can install it into an existing Laravel application, or
 [start a new one](https://laravel.com/docs/installation).
 
-## Install a NativePHP runtime
+## Install NativePHP
 
 ```shell
 composer require nativephp/desktop
@@ -41,7 +41,7 @@ php artisan native:install
 ```
 
 The NativePHP installer takes care of publishing the NativePHP service provider, which bootstraps the necessary
-dependencies for your application to work with the runtime you're using: Electron or Tauri.
+dependencies for your application to work with the Electron runtime.
 
 It also publishes the NativePHP configuration file to `config/nativephp.php`.
 
@@ -56,7 +56,7 @@ necessary dependencies are in place to build your application.**
 
 ### Publishing the Electron project
 
-If you need to make any specific adjustments to the underlying Electron app, you are free to publish it using `php artisan native:install --publish`. This will export the Electron project to `{project-root}/nativephp/electron` and allow you to fully control all of NativePHP's inner workings. 
+If you need to make any specific adjustments to the underlying Electron app, you are free to publish it using `php artisan native:install --publish`. This will export the Electron project to `{project-root}/nativephp/electron` and allow you to fully control all of NativePHP's inner workings.
 
 Additionally this will modify your `post-update-cmd` script to keep your project up to date, but mind it's possible you'll need to cherry-pick any adjustments you've made after a `composer update`.
 

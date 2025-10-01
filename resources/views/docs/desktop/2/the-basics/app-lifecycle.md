@@ -7,7 +7,7 @@ order: 1
 
 When your NativePHP application starts - whether it's in development or production - it performs a series of steps to get your application up and running.
 
-1. The native shell (Electron or Tauri) is started.
+1. The native shell (Electron) is started.
 2. NativePHP runs `php artisan migrate` to ensure your database is up-to-date.
 3. NativePHP runs `php artisan serve` to start the PHP development server.
 4. NativePHP boots your application by running the `boot()` method on your `NativeAppServiceProvider`.
