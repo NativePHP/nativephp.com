@@ -153,8 +153,8 @@ NativePHP provides a convenient method to execute JavaScript files using the bun
 
 ```php
 ChildProcess::node(
-    cmd: 'resources/js/websocket-server.js',
-    alias: 'websocket-server'
+    cmd: 'resources/js/filesystem-watcher.js',
+    alias: 'filesystem-watcher'
 );
 ```
 
