@@ -147,6 +147,24 @@ NativePHP provides a similar method convenience for Artisan commands:
 ChildProcess::artisan('smtp:serve', alias: 'smtp-server');
 ```
 
+### Node scripts
+
+NativePHP provides a convenient method to execute JavaScript files using the bundled Node.js runtime:
+
+```php
+ChildProcess::node(
+    cmd: 'resources/js/websocket-server.js',
+    alias: 'websocket-server'
+);
+```
+
+This method automatically uses the Node.js runtime that ships with your NativePHP application, ensuring consistency across different environments.
+
+**Key benefits:**
+- No need to compile JavaScript files beforehand
+- Dependencies can be used directly without bundling for browser compatibility
+- Leverages the same Node.js version across all platforms
+
 ## Getting running processes
 
 ### Getting a single process
