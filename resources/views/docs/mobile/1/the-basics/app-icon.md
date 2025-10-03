@@ -13,6 +13,7 @@ Place a single high-resolution icon file at: `public/icon.png`.
 - Format: PNG
 - Size: 1024 × 1024 pixels
 - Background: Transparent or solid — your choice
+- GD PHP extension must be enabled, ensure it has enough memory (~2GB should be enough)
 
 This image will be automatically resized for all Android densities and used as the base iOS app icon.
 You must have the GD extension installed in your development machine's PHP environment for this to work.
