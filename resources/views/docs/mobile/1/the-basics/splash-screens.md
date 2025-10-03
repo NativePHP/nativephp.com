@@ -15,3 +15,4 @@ Place the relevant files in the locations specified:
 ### Requirements
 - Format: PNG
 - Minimum Size/Ratio: 1080 × 1920 pixels
+- GD PHP extension must be enabled, ensure it has enough memory (~2GB should be enough) 
