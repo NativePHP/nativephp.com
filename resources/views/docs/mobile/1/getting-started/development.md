@@ -111,6 +111,37 @@ changes to any files in your Laravel app, the web view will be reloaded and your
 
 The proper way to implement this is to first `run` your app on your device/emulator, then start HMR with `npm run dev` then in a separate terminal run the `native:watch` command. This will reload any Blade/Livewire files as well as any recompiled assets (css/js etc).
 
+<aside class="relative z-0 mt-5 overflow-hidden rounded-2xl bg-pink-50 px-5 ring-1 ring-black/5 dark:bg-pink-600/10">
+
+#### Note
+
+ 
+
+```php
+'hot_reload' => [
+    'watch_paths' => [
+        'app',
+        'routes',
+        'config',
+        'database',
+        // Make sure "public" is listed in your config [tl! highlight:1]
+        'public',  
+    ],
+]
+```
+```js
+// And update your vite.config.ts
+server: {
+    port: 5173,
+    cors: true,
+    hmr: {
+        host: '127.0.0.1',
+    },
+},
+```
+
+</aside>
+
 ## Releasing
 
 To prepare your app for release, you should set the version number to a new version number that you have not used
