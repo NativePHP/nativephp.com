@@ -146,6 +146,12 @@
 
                 {{-- Login/Logout --}}
                 @feature(App\Features\ShowAuthButtons::class)
+                    {{-- Decorative circle --}}
+                    <div
+                        class="size-[3px] rotate-45 rounded-xs bg-gray-400 transition duration-200 dark:opacity-60"
+                        aria-hidden="true"
+                    ></div>
+
                     @auth
                         <form
                             method="POST"
