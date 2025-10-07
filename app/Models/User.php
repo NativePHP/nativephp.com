@@ -12,7 +12,6 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Collection;
 use Laravel\Cashier\Billable;
 use Laravel\Sanctum\HasApiTokens;
-use Stripe\Customer;
 
 class User extends Authenticatable implements FilamentUser
 {
@@ -46,6 +45,14 @@ class User extends Authenticatable implements FilamentUser
     public function licenses(): HasMany
     {
         return $this->hasMany(License::class);
+    }
+
+    /**
+     * @return HasMany<WallOfLoveSubmission>
+     */
+    public function wallOfLoveSubmissions(): HasMany
+    {
+        return $this->hasMany(WallOfLoveSubmission::class);
     }
 
     public function getFirstNameAttribute(): ?string

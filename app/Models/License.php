@@ -118,7 +118,7 @@ class License extends Model
 
     public function isLegacy(): bool
     {
-        return !$this->subscription_item_id
+        return ! $this->subscription_item_id
             && $this->created_at->lt(Carbon::create(2025, 5, 8));
     }
 
