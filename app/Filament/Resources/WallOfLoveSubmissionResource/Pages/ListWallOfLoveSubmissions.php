@@ -3,7 +3,6 @@
 namespace App\Filament\Resources\WallOfLoveSubmissionResource\Pages;
 
 use App\Filament\Resources\WallOfLoveSubmissionResource;
-use Filament\Actions;
 use Filament\Resources\Pages\ListRecords;
 
 class ListWallOfLoveSubmissions extends ListRecords

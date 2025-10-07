@@ -12,7 +12,6 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Collection;
 use Laravel\Cashier\Billable;
 use Laravel\Sanctum\HasApiTokens;
-use Stripe\Customer;
 
 class User extends Authenticatable implements FilamentUser
 {

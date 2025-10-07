@@ -184,7 +184,7 @@ class WallOfLoveSubmissionResource extends Resource
     {
         return [
             'index' => Pages\ListWallOfLoveSubmissions::route('/'),
-            //'create' => Pages\CreateWallOfLoveSubmission::route('/create'),
+            // 'create' => Pages\CreateWallOfLoveSubmission::route('/create'),
             'edit' => Pages\EditWallOfLoveSubmission::route('/{record}/edit'),
         ];
     }
