@@ -91,28 +91,57 @@ If you're familiar with these tools, you can easily open the projects using the 
 php artisan native:open
 ```
 
-## Hot Reloading (Experimental)
+## Hot Reloading
 
 We've tried to make compiling your apps as fast as possible, but when coming from the 'make a change; hit refresh'-world
 of PHP development that we all love, compiling apps can feel like a slow and time-consuming process.
 
-So we've released an early version of hot reloading, which aims to make your development experience feel just like home. 
+So we've released hot reloading, which aims to make your development experience feel just like home. 
 
-You can enable hot reloading by adding the `--watch` flag when running the `native:run` command:
+You can enable hot reloading by running the following command:
 
 ```shell
-php artisan native:run --watch
+php artisan native:watch {platform:ios|android}
 ```
 
 This is useful during development for quickly testing changes without re-compiling your entire app. When you make
 changes to any files in your Laravel app, the web view will be reloaded and your changes should show almost immediately.
 
-### Caveats
+### Implementation
 
-For now, hot reloading only works in emulators, not on real devices.
+The proper way to implement this is to first `run` your app on your device/emulator, then start HMR with `npm run dev` then in a separate terminal run the `native:watch` command. This will reload any Blade/Livewire files as well as any recompiled assets (css/js etc).
 
-Also, it's currently best suited for **Blade** and **Livewire** applications. It doesn't work so well if you're
-also trying to hot reload compiled frontends using something like Vite's hot reloading.
+<aside class="relative z-0 mt-5 overflow-hidden rounded-2xl bg-pink-50 px-5 ring-1 ring-black/5 dark:bg-pink-600/10">
+
+#### Note
+
+ 
+
+```php
+'hot_reload' => [
+    'watch_paths' => [
+        'app',
+        'routes',
+        'config',
+        'database',
+        // Make sure "public" is listed in your config [tl! highlight:1]
+        'public',  
+    ],
+]
+```
+```js
+// And update your vite.config.ts
+server: {
+    port: 5173,
+    cors: true,
+    hmr: {
+        host: '127.0.0.1',
+    },
+},
+```
+
+</aside>
+
 
 ## Releasing
 

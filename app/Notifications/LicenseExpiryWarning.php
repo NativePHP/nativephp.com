@@ -59,7 +59,7 @@ class LicenseExpiryWarning extends Notification implements ShouldQueue
         return match ($this->daysUntilExpiry) {
             30 => 'This is a friendly reminder that your NativePHP license will expire in 30 days.',
             7 => 'Your NativePHP license will expire in just 7 days. This is an important reminder to set up your renewal.',
-            1 => 'Your NativePHP license expires tomorrow! Please take immediate action to avoid service interruption.',
+            1 => 'Your NativePHP license expires tomorrow! Please take immediate action to avoid interruption.',
             0 => 'Your NativePHP license expires today. Renew now to maintain access.',
             default => "Your NativePHP license will expire in {$this->daysUntilExpiry} days.",
         };

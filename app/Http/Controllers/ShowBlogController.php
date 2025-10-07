@@ -23,7 +23,7 @@ class ShowBlogController extends Controller
         abort_unless($article->isPublished() || auth()->user()?->isAdmin(), 404);
 
         // Set SEO metadata for the article
-        SEOTools::setTitle($article->title . ' - Blog');
+        SEOTools::setTitle($article->title.' - Blog');
         SEOTools::setDescription($article->excerpt ?: 'Read this article on the NativePHP blog.');
 
         // Set OpenGraph metadata

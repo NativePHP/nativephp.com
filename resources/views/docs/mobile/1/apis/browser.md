@@ -22,12 +22,12 @@ Opens a URL in an embedded browser within your app using Custom Tabs (Android) o
 Browser::inApp('https://nativephp.com/mobile');
 ```
 
-### `system()`
+### `open()`
 
 Opens a URL in the device's default browser app, leaving your application entirely.
 
 ```php
-Browser::system('https://nativephp.com/mobile');
+Browser::open('https://nativephp.com/mobile');
 ```
 
 ### `auth()`
@@ -47,7 +47,7 @@ Browser::auth('https://provider.com/oauth/authorize?client_id=123&redirect_uri=n
 - External content that relates to your app
 - When you want users to easily return to your app
 
-**`system()`** - Full browser experience needed:
+**`open()`** - Full browser experience needed:
 - Complex web applications
 - Content requiring specific browser features
 - When users need bookmarking or sharing capabilities

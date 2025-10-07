@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Carbon;
 use Laravel\Cashier\SubscriptionItem;
 
 class License extends Model
@@ -113,6 +114,12 @@ class License extends Model
         $remaining = $this->remainingSubLicenses;
 
         return $remaining === null || $remaining > 0;
+    }
+
+    public function isLegacy(): bool
+    {
+        return !$this->subscription_item_id
+            && $this->created_at->lt(Carbon::create(2025, 5, 8));
     }
 
     public function suspendAllSubLicenses(): int

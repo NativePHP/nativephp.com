@@ -17,7 +17,7 @@
         class="mx-auto flex w-full max-w-5xl items-center justify-between gap-5 rounded-2xl py-4 pr-2 pl-2 3xs:pr-4 3xs:pl-3.5 xl:max-w-7xl 2xl:max-w-360"
     >
         {{-- Left side --}}
-        <div class="flex items-center gap-3">
+        <div class="flex items-center gap-2.5">
             {{-- Logo --}}
             <a
                 href="/"
@@ -76,13 +76,13 @@
         </div>
 
         {{-- Right side --}}
-        <div class="flex items-center gap-3.5">
+        <div class="flex items-center gap-2.5">
             {{-- Mobile menu --}}
             <x-navbar.mobile-menu />
 
             {{-- Desktop menu --}}
             <div
-                class="hidden items-center gap-3.5 text-sm lg:flex"
+                class="hidden items-center gap-2.5 text-sm lg:flex"
                 aria-label="Primary navigation"
             >
                 {{-- Link --}}
@@ -145,18 +145,25 @@
                     Partners
                 </a>
 
-                {{-- Decorative circle --}}
-                <div
-                    class="size-[3px] rotate-45 rounded-xs bg-gray-400 transition duration-200 dark:opacity-60"
-                    aria-hidden="true"
-                ></div>
-
                 {{-- Login/Logout --}}
                 @feature(App\Features\ShowAuthButtons::class)
+                    {{-- Decorative circle --}}
+                    <div
+                        class="size-[3px] rotate-45 rounded-xs bg-gray-400 transition duration-200 dark:opacity-60"
+                        aria-hidden="true"
+                    ></div>
+
                     @auth
-                        <form method="POST" action="{{ route('customer.logout') }}" class="inline">
+                        <form
+                            method="POST"
+                            action="{{ route('customer.logout') }}"
+                            class="inline"
+                        >
                             @csrf
-                            <button type="submit" class="opacity-60 transition duration-200 hover:opacity-100">
+                            <button
+                                type="submit"
+                                class="opacity-60 transition duration-200 hover:opacity-100"
+                            >
                                 Log out
                             </button>
                         </form>
@@ -186,6 +193,8 @@
                         aria-label="Search documentation"
                     ></div>
                 </div>
+
+                <x-bifrost-button small />
             </div>
         </div>
     </div>

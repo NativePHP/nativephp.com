@@ -28,8 +28,13 @@
                 <div class="bg-white dark:bg-gray-800 shadow overflow-hidden sm:rounded-md">
                     <ul class="divide-y divide-gray-200 dark:divide-gray-700">
                         @foreach($licenses as $license)
-                            <li>
-                                <a href="{{ route('customer.licenses.show', $license->key) }}" class="block hover:bg-gray-50 dark:hover:bg-gray-700">
+                            @php
+                                $isLegacyLicense = $license->isLegacy();
+                                $daysUntilExpiry = $license->expires_at ? $license->expires_at->diffInDays(now()) : null;
+                                $needsRenewal = $isLegacyLicense && $daysUntilExpiry !== null && $daysUntilExpiry <= 30 && !$license->expires_at->isPast();
+                            @endphp
+                            <li class="{{ $needsRenewal ? 'bg-blue-50 dark:bg-blue-900/20' : '' }}">
+                                <a href="{{ route('customer.licenses.show', $license->key) }}" class="block hover:bg-gray-50 dark:hover:bg-gray-700 {{ $needsRenewal ? 'hover:bg-blue-100 dark:hover:bg-blue-900/30' : '' }}">
                                     <div class="px-4 py-4 sm:px-6">
                                         <div class="flex items-center justify-between">
                                             <div class="flex items-center">
@@ -38,12 +43,14 @@
                                                         <div class="w-3 h-3 bg-red-400 rounded-full"></div>
                                                     @elseif($license->expires_at && $license->expires_at->isPast())
                                                         <div class="w-3 h-3 bg-yellow-400 rounded-full"></div>
+                                                    @elseif($needsRenewal)
+                                                        <div class="w-3 h-3 bg-blue-400 rounded-full animate-pulse"></div>
                                                     @else
                                                         <div class="w-3 h-3 bg-green-400 rounded-full"></div>
                                                     @endif
                                                 </div>
                                                 <div class="ml-4">
-                                                    <div class="flex items-center">
+                                                    <div class="flex items-start">
                                                         <div class="flex flex-col">
                                                             @if($license->name)
                                                                 <p class="text-sm font-medium text-blue-600 dark:text-blue-400 truncate">
@@ -66,6 +73,10 @@
                                                             <span class="ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200">
                                                                 Expired
                                                             </span>
+                                                        @elseif($needsRenewal)
+                                                            <span class="ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
+                                                                Needs Renewal
+                                                            </span>
                                                         @else
                                                             <span class="ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
                                                                 Active
@@ -78,16 +89,28 @@
                                                 </div>
                                             </div>
                                             <div class="flex flex-col items-end">
-                                                <p class="text-sm text-gray-900 dark:text-white">
-                                                    @if($license->expires_at)
-                                                        Expires {{ $license->expires_at->format('M j, Y') }}
-                                                    @else
-                                                        No expiration
+                                                @if($needsRenewal)
+                                                    <p class="text-sm font-medium text-blue-600 dark:text-blue-400">
+                                                        Expires in {{ $daysUntilExpiry }} day{{ $daysUntilExpiry === 1 ? '' : 's' }}
+                                                    </p>
+
+                                                    @if($isLegacyLicense)
+                                                        <p class="text-xs text-blue-500 dark:text-blue-300">
+                                                            Lock in Early Access Pricing
+                                                        </p>
                                                     @endif
-                                                </p>
-                                                <p class="text-xs text-gray-500 dark:text-gray-400">
-                                                    Created {{ $license->created_at->format('M j, Y') }}
-                                                </p>
+                                                @else
+                                                    <p class="text-sm text-gray-900 dark:text-white">
+                                                        @if($license->expires_at)
+                                                            Expires {{ $license->expires_at->format('M j, Y') }}
+                                                        @else
+                                                            No expiration
+                                                        @endif
+                                                    </p>
+                                                    <p class="text-xs text-gray-500 dark:text-gray-400">
+                                                        Created {{ $license->created_at->format('M j, Y') }}
+                                                    </p>
+                                                @endif
                                             </div>
                                         </div>
                                     </div>

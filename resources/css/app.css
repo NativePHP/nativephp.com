@@ -194,11 +194,16 @@ nav.docs-navigation > ul > li > ul {
 }
 
 .prose pre code {
-    @apply text-gray-50;
+    @apply bg-transparent p-0 text-sm font-normal text-gray-50;
 }
 
 .prose code {
-    @apply px-1;
+    @apply rounded bg-gray-200 px-1.5 py-0.5 text-sm font-medium text-purple-600;
+}
+
+.prose code::before,
+.prose code::after {
+    content: none;
 }
 
 .prose a {
@@ -263,5 +268,5 @@ nav.docs-navigation > ul > li > ul {
 }
 
 .dark .prose code {
-    @apply text-gray-300;
+    @apply bg-gray-800 text-purple-300;
 }

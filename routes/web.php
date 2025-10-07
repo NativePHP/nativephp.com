@@ -95,7 +95,7 @@ Route::get('license/{license}/renewal', [App\Http\Controllers\LicenseRenewalCont
 Route::post('license/{license}/renewal/checkout', [App\Http\Controllers\LicenseRenewalController::class, 'createCheckoutSession'])->name('license.renewal.checkout');
 
 // Customer authentication routes
-Route::middleware(['guest', EnsureFeaturesAreActive::using(ShowAuthButtons::class)])->group(function () {
+Route::middleware(['guest'])->group(function () {
     Route::get('login', [CustomerAuthController::class, 'showLogin'])->name('customer.login');
     Route::post('login', [CustomerAuthController::class, 'login']);
 
