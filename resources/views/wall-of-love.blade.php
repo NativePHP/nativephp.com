@@ -113,7 +113,7 @@
     @php
         // Get approved submissions
         $approvedSubmissions = App\Models\WallOfLoveSubmission::whereNotNull('approved_at')
-            ->orderBy('approved_at', 'desc')
+            ->inRandomOrder()
             ->get();
 
         // Convert approved submissions to the format expected by the component
@@ -124,7 +124,7 @@
                 'url' => $submission->url,
                 'image' => $submission->photo_path
                     ? asset('storage/' . $submission->photo_path)
-                    : 'https://i.pravatar.cc/300?img=' . rand(1, 70),
+                    : 'https://avatars.laravel.cloud/' . rand(1, 70) . '?vibe=' . array_rand(['ocean', 'crystal', 'bubble', 'forest', 'sunset']),
                 'featured' => rand(0, 4) === 0, // Randomly feature about 20% of submissions
                 'testimonial' => $submission->testimonial,
             ];
