@@ -87,25 +87,6 @@
             >
                 {{-- Link --}}
                 <a
-                    href="/"
-                    @class([
-                        'transition duration-200',
-                        'font-medium' => request()->routeIs('welcome*'),
-                        'opacity-60 hover:opacity-100' => ! request()->routeIs('welcome*'),
-                    ])
-                    aria-current="{{ request()->routeIs('welcome*') ? 'page' : 'false' }}"
-                >
-                    Home
-                </a>
-
-                {{-- Decorative circle --}}
-                <div
-                    class="size-[3px] rotate-45 rounded-xs bg-gray-400 transition duration-200 dark:opacity-60"
-                    aria-hidden="true"
-                ></div>
-
-                {{-- Link --}}
-                <a
                     href="{{ route('blog') }}"
                     @class([
                         'transition duration-200',
