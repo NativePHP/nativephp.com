@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Collection;
 use Laravel\Cashier\Billable;
 use Laravel\Sanctum\HasApiTokens;
 
@@ -46,6 +47,14 @@ class User extends Authenticatable implements FilamentUser
         return $this->hasMany(License::class);
     }
 
+    /**
+     * @return HasMany<WallOfLoveSubmission>
+     */
+    public function wallOfLoveSubmissions(): HasMany
+    {
+        return $this->hasMany(WallOfLoveSubmission::class);
+    }
+
     public function getFirstNameAttribute(): ?string
     {
         if (empty($this->name)) {
@@ -66,5 +75,14 @@ class User extends Authenticatable implements FilamentUser
         $nameParts = explode(' ', $this->name, 2);
 
         return $nameParts[1] ?? null;
+    }
+
+    public function findStripeCustomerRecords(): Collection
+    {
+        $search = static::stripe()->customers->search([
+            'query' => 'email:"'.$this->email.'"',
+        ]);
+
+        return collect($search->data);
     }
 }

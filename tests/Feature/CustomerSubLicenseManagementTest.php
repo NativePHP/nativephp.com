@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Features\ShowAuthButtons;
+use App\Livewire\SubLicenseManager;
 use App\Models\License;
 use App\Models\SubLicense;
 use App\Models\User;
@@ -10,6 +11,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Queue;
 use Laravel\Pennant\Feature;
+use Livewire\Livewire;
 use Tests\TestCase;
 
 class CustomerSubLicenseManagementTest extends TestCase
@@ -350,5 +352,77 @@ class CustomerSubLicenseManagementTest extends TestCase
             ]);
 
         $response->assertSessionHasErrors(['name']);
+    }
+
+    public function test_livewire_component_starts_polling_when_create_key_button_clicked(): void
+    {
+        $user = User::factory()->create();
+        $license = License::factory()->create([
+            'user_id' => $user->id,
+            'policy_name' => 'pro',
+        ]);
+
+        $this->actingAs($user);
+
+        Livewire::test(SubLicenseManager::class, ['license' => $license])
+            ->assertSet('isPolling', false)
+            ->call('startPolling')
+            ->assertSet('isPolling', true);
+    }
+
+    public function test_livewire_component_stops_polling_when_new_sublicense_appears(): void
+    {
+        $user = User::factory()->create();
+        $license = License::factory()->create([
+            'user_id' => $user->id,
+            'policy_name' => 'pro',
+        ]);
+
+        $this->actingAs($user);
+
+        $component = Livewire::test(SubLicenseManager::class, ['license' => $license])
+            ->assertSet('isPolling', false)
+            ->assertSet('initialSubLicenseCount', 0)
+            ->call('startPolling')
+            ->assertSet('isPolling', true);
+
+        // Create a new sublicense
+        SubLicense::factory()->create([
+            'parent_license_id' => $license->id,
+        ]);
+
+        // Re-render the component (simulating a poll)
+        $component->call('$refresh')
+            ->assertSet('isPolling', false)
+            ->assertSet('initialSubLicenseCount', 1);
+    }
+
+    public function test_livewire_component_displays_sublicenses(): void
+    {
+        $user = User::factory()->create();
+        $license = License::factory()->create([
+            'user_id' => $user->id,
+            'policy_name' => 'pro',
+        ]);
+
+        $activeSubLicense = SubLicense::factory()->create([
+            'parent_license_id' => $license->id,
+            'name' => 'Active Key',
+            'is_suspended' => false,
+        ]);
+
+        $suspendedSubLicense = SubLicense::factory()->create([
+            'parent_license_id' => $license->id,
+            'name' => 'Suspended Key',
+            'is_suspended' => true,
+        ]);
+
+        $this->actingAs($user);
+
+        Livewire::test(SubLicenseManager::class, ['license' => $license])
+            ->assertSee('Active Key')
+            ->assertSee('Suspended Key')
+            ->assertSee($activeSubLicense->key)
+            ->assertSee($suspendedSubLicense->key);
     }
 }

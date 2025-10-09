@@ -56,7 +56,7 @@
                                         Action Required
                                     </h3>
                                     <div class="mt-2 text-sm text-yellow-700 dark:text-yellow-300">
-                                        <p>Your license expires soon. Set up automatic renewal now to avoid service interruption.</p>
+                                        <p>Your license expires soon. Set up automatic renewal now to avoid interruption.</p>
                                     </div>
                                 </div>
                             </div>

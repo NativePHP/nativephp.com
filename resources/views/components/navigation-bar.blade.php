@@ -14,7 +14,7 @@
     }"
 >
     <div
-        class="mx-auto flex w-full max-w-5xl items-center justify-between gap-5 rounded-2xl py-4 pr-4 pl-3.5 xl:max-w-7xl 2xl:max-w-360"
+        class="mx-auto flex w-full max-w-5xl items-center justify-between gap-5 rounded-2xl py-4 pr-2 pl-2 3xs:pr-4 3xs:pl-3.5 xl:max-w-7xl 2xl:max-w-360"
     >
         {{-- Left side --}}
         <div class="flex items-center gap-2.5">
@@ -23,6 +23,7 @@
                 href="/"
                 aria-label="NativePHP Homepage"
                 x-on:contextmenu.prevent="window.location.href = @js(route('brand'))"
+                class="hidden 3xs:block"
             >
                 <x-logo
                     class="hidden h-4 min-[400px]:h-5 min-[500px]:block sm:h-6"
@@ -146,6 +147,12 @@
 
                 {{-- Login/Logout --}}
                 @feature(App\Features\ShowAuthButtons::class)
+                    {{-- Decorative circle --}}
+                    <div
+                        class="size-[3px] rotate-45 rounded-xs bg-gray-400 transition duration-200 dark:opacity-60"
+                        aria-hidden="true"
+                    ></div>
+
                     @auth
                         <form
                             method="POST"
