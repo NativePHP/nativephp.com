@@ -17,13 +17,13 @@ public function example(): void
 
     $this->get('/whatever-action');
 
-    Shell::assertOpenExternal('https://some-url.test');
+    Shell::assertOpenedExternal('https://some-url.test');
 }
 ```
 
 ## Available assertions
 
 - `assertShowInFolder`
-- `assertOpenFile`
-- `assertTrashFile`
-- `assertOpenExternal`
+- `assertOpenedFile`
+- `assertTrashedFile`
+- `assertOpenedExternal`
