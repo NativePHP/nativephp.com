@@ -40,8 +40,6 @@ class PurchaseModal extends Component
             'email' => $this->email,
             'plan' => $this->selectedPlan,
         ]);
-
-        $this->closeModal();
     }
 
     public function render()
