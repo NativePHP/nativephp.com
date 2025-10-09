@@ -33,7 +33,13 @@ Please replace `nativephp/electron` in your `composer.json` with the new package
 ```
 
 If you're requiring `nativephp/laravel` as well, please remove that too.
-Then run `composer update` and `php artisan native:install` and you're good to go.
+
+Then update the package:
+
+```sh
+composer update
+php artisan native:install
+```
 
 After installation, the `native:install` script will be automatically registered as a `post-update-cmd`, so you won't have to manually run it after a composer update.
 
