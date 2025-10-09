@@ -36,6 +36,10 @@
     @apply mt-1 ml-1 hidden min-w-[auto] text-sm leading-none sm:flex;
 }
 
+.DocSearch-Button-Placeholder {
+    @apply inline!;
+}
+
 .DocSearch-Button-Key {
     background: none;
     box-shadow: none;

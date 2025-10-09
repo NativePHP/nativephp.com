@@ -119,6 +119,15 @@ docsearch({
     apiKey: '9be495a1aaf367b47c873d30a8e7ccf5',
     indexName: 'nativephp',
     insights: true,
-    container: '#docsearch',
+    container: '#docsearch-desktop',
+    debug: false,
+})
+
+docsearch({
+    appId: 'ZNII9QZ8WI',
+    apiKey: '9be495a1aaf367b47c873d30a8e7ccf5',
+    indexName: 'nativephp',
+    insights: true,
+    container: '#docsearch-mobile',
     debug: false,
 })

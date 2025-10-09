@@ -218,9 +218,21 @@
             </nav>
 
             <div
-                class="mb-2 flex w-full items-center justify-between gap-2 pb-2"
+                class="mt-6 mb-2 flex w-full items-center justify-between gap-2 pb-2"
             >
-                <div>Theme:</div>
+
+                {{-- Doc search --}}
+                <div class="transition-all duration-200 ease-in-out will-change-transform">
+                    <div
+                        id="docsearch-mobile"
+                        x-on:click="
+                            window.scrollTo({ top: 0, behavior: 'instant' })
+                            showMobileMenu = false
+                        "
+                        aria-label="Search documentation"
+                    ></div>
+                </div>
+
                 <div
                     class="flex h-10 items-center gap-0.5 rounded-full bg-gray-100 p-1 text-sm ring-1 ring-black/5 dark:bg-black/20 dark:ring-white/10"
                     role="radiogroup"
