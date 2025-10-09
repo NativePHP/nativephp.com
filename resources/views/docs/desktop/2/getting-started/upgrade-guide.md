@@ -17,6 +17,7 @@ order: 1200
 ### Low Impact Changes
 
 - [Modifying the Electron backend](#modifying-the-electron-backend)
+- [New build output location][#new-dist-location]
 
 ## Upgrading To 2.0 From 1.x
 
@@ -54,8 +55,12 @@ v2 drops support for macOS **_Catalina_** and **_Big Sur_**. This change comes f
 
 ## Renamed `native:serve` command
 
-The `artisan native:serve` command has been renamed to `artisan native:run` for better symmetry with the mobile package.
+The `artisan native:serve` command has been deprecated and renamed to `artisan native:run` for better symmetry with the mobile package.
 Please update the `composer native:dev` script to reference the new run command.
+
+## New `dist` location
+
+The build output has moved to `nativephp/electron/dist`
 
 ## Security defaults
 
