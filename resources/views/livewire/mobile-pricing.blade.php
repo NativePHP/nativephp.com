@@ -2,138 +2,140 @@
     class="mx-auto mt-24 max-w-6xl"
     aria-labelledby="pricing-heading"
 >
-    <header class="relative z-10 grid place-items-center text-center">
-        {{-- Section Heading --}}
-        <h2
-            id="pricing-heading"
-            x-init="
-                () => {
-                    motion.inView($el, (element) => {
-                        motion.animate(
-                            $el,
-                            {
-                                opacity: [0, 1],
-                                x: [-10, 0],
-                            },
-                            {
-                                duration: 0.7,
-                                ease: motion.easeOut,
-                            },
-                        )
-                    })
-                }
-            "
-            class="text-3xl font-semibold opacity-0"
-        >
-            Purchase a license
-        </h2>
-
-        {{-- Section Description --}}
-        <p
-            x-init="
-                () => {
-                    motion.inView($el, (element) => {
-                        motion.animate(
-                            $el,
-                            {
-                                opacity: [0, 1],
-                                x: [10, 0],
-                            },
-                            {
-                                duration: 0.7,
-                                ease: motion.easeOut,
-                            },
-                        )
-                    })
-                }
-            "
-            class="mx-auto max-w-xl pt-2 text-base/relaxed text-gray-600 opacity-0"
-        >
-            Start your journey to become a mobile developer
-        </p>
-    </header>
-
-    {{-- Bifrost banner --}}
-    <div
-        x-init="
-            () => {
-                motion.inView($el, (element) => {
-                    motion.animate(
-                        $el,
-                        {
-                            x: [-10, 0],
-                            opacity: [0, 1],
-                        },
-                        {
-                            duration: 0.7,
-                            ease: motion.circOut,
-                        },
-                    )
-                })
-            }
-        "
-    >
-        <a
-            href="https://bifrost.nativephp.com/"
-            class="group relative z-0 mt-10 flex flex-col-reverse items-center justify-between gap-x-10 gap-y-3 overflow-hidden rounded-2xl bg-slate-50 px-5 pt-6 pb-5 ring-6 ring-slate-100 transition duration-300 hover:bg-slate-100/80 sm:flex-row sm:px-8 sm:py-2 dark:bg-slate-800/30 dark:ring-slate-800/35 dark:hover:bg-slate-900/30 dark:hover:ring-slate-900/30"
-        >
-            {{-- Left side --}}
-            <div
-                class="flex items-center gap-5 transition duration-300 will-change-transform group-hover:translate-x-1"
+    @if(! $discounted)
+        <header class="relative z-10 grid place-items-center text-center">
+            {{-- Section Heading --}}
+            <h2
+                id="pricing-heading"
+                x-init="
+                    () => {
+                        motion.inView($el, (element) => {
+                            motion.animate(
+                                $el,
+                                {
+                                    opacity: [0, 1],
+                                    x: [-10, 0],
+                                },
+                                {
+                                    duration: 0.7,
+                                    ease: motion.easeOut,
+                                },
+                            )
+                        })
+                    }
+                "
+                class="text-3xl font-semibold opacity-0"
             >
-                {{-- Shush --}}
-                <x-illustrations.shushing
-                    class="h-20 shrink-0 rotate-15 sm:h-28"
-                />
+                Purchase a license
+            </h2>
+
+            {{-- Section Description --}}
+            <p
+                x-init="
+                    () => {
+                        motion.inView($el, (element) => {
+                            motion.animate(
+                                $el,
+                                {
+                                    opacity: [0, 1],
+                                    x: [10, 0],
+                                },
+                                {
+                                    duration: 0.7,
+                                    ease: motion.easeOut,
+                                },
+                            )
+                        })
+                    }
+                "
+                class="mx-auto max-w-xl pt-2 text-base/relaxed text-gray-600 opacity-0"
+            >
+                Start your journey to become a mobile developer
+            </p>
+        </header>
+
+        {{-- Bifrost banner --}}
+        <div
+            x-init="
+                () => {
+                    motion.inView($el, (element) => {
+                        motion.animate(
+                            $el,
+                            {
+                                x: [-10, 0],
+                                opacity: [0, 1],
+                            },
+                            {
+                                duration: 0.7,
+                                ease: motion.circOut,
+                            },
+                        )
+                    })
+                }
+            "
+        >
+            <a
+                href="https://bifrost.nativephp.com/"
+                class="group relative z-0 mt-10 flex flex-col-reverse items-center justify-between gap-x-10 gap-y-3 overflow-hidden rounded-2xl bg-slate-50 px-5 pt-6 pb-5 ring-6 ring-slate-100 transition duration-300 hover:bg-slate-100/80 sm:flex-row sm:px-8 sm:py-2 dark:bg-slate-800/30 dark:ring-slate-800/35 dark:hover:bg-slate-900/30 dark:hover:ring-slate-900/30"
+            >
                 {{-- Left side --}}
-                <div class="space-y-1">
-                    <div class="font-medium sm:text-lg">
-                        Psst... want a free Mini license?
-                    </div>
-                    <div class="text-sm text-zinc-500 sm:text-base">
-                        Just grab a Bifrost subscription
+                <div
+                    class="flex items-center gap-5 transition duration-300 will-change-transform group-hover:translate-x-1"
+                >
+                    {{-- Shush --}}
+                    <x-illustrations.shushing
+                        class="h-20 shrink-0 rotate-15 sm:h-28"
+                    />
+                    {{-- Left side --}}
+                    <div class="space-y-1">
+                        <div class="font-medium sm:text-lg">
+                            Psst... want a free Mini license?
+                        </div>
+                        <div class="text-sm text-zinc-500 sm:text-base">
+                            Just grab a Bifrost subscription
+                        </div>
                     </div>
                 </div>
-            </div>
-            {{-- Right side --}}
-            <div
-                class="transition duration-300 will-change-transform group-hover:-translate-x-1"
-            >
-                {{-- Bifrost logo --}}
-                <x-logos.bifrost class="h-5 sm:h-6" />
-            </div>
-            {{-- Star 1 --}}
-            <x-icons.star
-                class="absolute top-6 right-3 z-10 w-4 -rotate-7 text-white dark:w-3 dark:text-slate-300"
-            />
-            {{-- Star 2 --}}
-            <x-icons.star
-                class="absolute top-3 right-14 z-10 w-3 rotate-5 text-white dark:w-2 dark:text-slate-300"
-            />
-            {{-- Star 3 --}}
-            <x-icons.star
-                class="absolute top-2.5 right-7.5 z-10 w-2.5 text-white dark:w-2 dark:text-slate-300"
-            />
-            {{-- White blur --}}
-            <div class="absolute top-5 -right-10 -z-5">
+                {{-- Right side --}}
                 <div
-                    class="h-5 w-36 rotate-30 rounded-full bg-white/80 blur-md dark:bg-white/5"
-                ></div>
-            </div>
-            {{-- Sky blur --}}
-            <div class="absolute top-5 -right-20 -z-10">
-                <div
-                    class="h-15 w-36 rotate-30 rounded-full bg-sky-300 blur-xl dark:bg-sky-500/30"
-                ></div>
-            </div>
-            {{-- Violet blur --}}
-            <div class="absolute -top-10 -right-5 -z-10">
-                <div
-                    class="h-15 w-36 rotate-30 rounded-full bg-violet-300 blur-xl dark:bg-violet-400/30"
-                ></div>
-            </div>
-        </a>
-    </div>
+                    class="transition duration-300 will-change-transform group-hover:-translate-x-1"
+                >
+                    {{-- Bifrost logo --}}
+                    <x-logos.bifrost class="h-5 sm:h-6" />
+                </div>
+                {{-- Star 1 --}}
+                <x-icons.star
+                    class="absolute top-6 right-3 z-10 w-4 -rotate-7 text-white dark:w-3 dark:text-slate-300"
+                />
+                {{-- Star 2 --}}
+                <x-icons.star
+                    class="absolute top-3 right-14 z-10 w-3 rotate-5 text-white dark:w-2 dark:text-slate-300"
+                />
+                {{-- Star 3 --}}
+                <x-icons.star
+                    class="absolute top-2.5 right-7.5 z-10 w-2.5 text-white dark:w-2 dark:text-slate-300"
+                />
+                {{-- White blur --}}
+                <div class="absolute top-5 -right-10 -z-5">
+                    <div
+                        class="h-5 w-36 rotate-30 rounded-full bg-white/80 blur-md dark:bg-white/5"
+                    ></div>
+                </div>
+                {{-- Sky blur --}}
+                <div class="absolute top-5 -right-20 -z-10">
+                    <div
+                        class="h-15 w-36 rotate-30 rounded-full bg-sky-300 blur-xl dark:bg-sky-500/30"
+                    ></div>
+                </div>
+                {{-- Violet blur --}}
+                <div class="absolute -top-10 -right-5 -z-10">
+                    <div
+                        class="h-15 w-36 rotate-30 rounded-full bg-violet-300 blur-xl dark:bg-violet-400/30"
+                    ></div>
+                </div>
+            </a>
+        </div>
+    @endif
 
     {{-- Pricing Plans --}}
     <div
@@ -155,11 +157,12 @@
                 })
             }
         "
-        class="mt-10 grid grid-cols-[repeat(auto-fill,minmax(19rem,1fr))] items-start gap-x-6 gap-y-8"
+        class="mt-10 grid {{ $discounted ? 'grid-cols-1 md:grid-cols-2' : 'grid-cols-[repeat(auto-fill,minmax(19rem,1fr))]' }} items-start gap-x-6 gap-y-8"
         aria-label="Pricing plans"
     >
-        {{-- Mini Plan --}}
-        <div
+        @if(! $discounted)
+            {{-- Mini Plan --}}
+            <div
             class="dark:bg-mirage h-full rounded-2xl bg-gray-100 p-7 opacity-0"
             aria-labelledby="pro-plan-heading"
         >
@@ -302,6 +305,7 @@
                 </div>
             </div>
         </div>
+        @endif
 
         {{-- Pro Plan --}}
         <div
@@ -319,10 +323,10 @@
             {{-- Price --}}
             <div
                 class="flex items-start gap-1.5 pt-5"
-                aria-label="Price: $250 per year"
+                aria-label="Price: ${{ number_format($discounted ? 150 : 250) }} per year"
             >
                 <div class="text-5xl font-semibold">
-                    ${{ number_format(250) }}
+                    ${{ number_format($discounted ? 150 : 250) }}
                 </div>
                 <div class="self-end pb-1.5 text-zinc-500">per year</div>
             </div>
@@ -339,7 +343,11 @@
             @else
                 <button
                     type="button"
-                    @click="$dispatch('open-purchase-modal', { plan: 'pro' })"
+                    @if($discounted)
+                        wire:click="handlePurchaseRequest({ plan: 'pro' })"
+                    @else
+                        @click="$dispatch('open-purchase-modal', { plan: 'pro' })"
+                    @endif
                     class="my-5 block w-full rounded-2xl bg-zinc-200 py-4 text-center text-sm font-medium transition duration-200 ease-in-out hover:bg-zinc-800 hover:text-white dark:bg-slate-700/30 dark:hover:bg-slate-700/40"
                     aria-label="Get started with Pro plan"
                 >
@@ -472,10 +480,10 @@
             {{-- Price --}}
             <div
                 class="flex items-start gap-1.5 pt-5"
-                aria-label="Price: $1,000 per year"
+                aria-label="Price: ${{ number_format($discounted ? 350 : 1000) }} per year"
             >
                 <div class="text-5xl font-semibold">
-                    ${{ number_format(1000) }}
+                    ${{ number_format($discounted ? 350 : 1000) }}
                 </div>
                 <div class="self-end pb-1.5 text-zinc-500">per year</div>
             </div>
@@ -492,7 +500,11 @@
             @else
                 <button
                     type="button"
-                    @click="$dispatch('open-purchase-modal', { plan: 'max' })"
+                    @if($discounted)
+                        wire:click="handlePurchaseRequest({ plan: 'max' })"
+                    @else
+                        @click="$dispatch('open-purchase-modal', { plan: 'max' })"
+                    @endif
                     class="my-5 block w-full rounded-2xl bg-zinc-800 py-4 text-center text-sm font-medium text-white transition duration-200 ease-in-out hover:bg-zinc-900 dark:bg-[#d68ffe] dark:text-black dark:hover:bg-[#e1acff]"
                     aria-label="Get started with Max plan"
                 >

@@ -34,6 +34,7 @@ Route::redirect('tshirt', 'pricing');
 
 Route::view('/', 'welcome')->name('welcome');
 Route::view('pricing', 'pricing')->name('pricing');
+Route::view('alt-pricing', 'alt-pricing')->name('alt-pricing')->middleware('signed');
 Route::view('wall-of-love', 'wall-of-love')->name('wall-of-love');
 Route::view('brand', 'brand')->name('brand');
 Route::view('laracon-us-2025-giveaway', 'laracon-us-2025-giveaway')->name('laracon-us-2025-giveaway');

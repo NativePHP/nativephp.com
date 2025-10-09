@@ -9,19 +9,35 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
+use Livewire\Attributes\Locked;
 use Livewire\Component;
 
 class MobilePricing extends Component
 {
+    #[Locked]
+    public bool $discounted = false;
+
+    #[Locked]
+    public $user;
+
     protected $listeners = [
         'purchase-request-submitted' => 'handlePurchaseRequest',
     ];
 
+    public function mount()
+    {
+        if (request()->has('email')) {
+            $this->user = $this->findOrCreateUser(request()->query('email'));
+        }
+    }
+
     public function handlePurchaseRequest(array $data)
     {
-        $user = $this->findOrCreateUser($data['email']);
+        if (!$this->user) {
+            $user = $this->findOrCreateUser($data['email']);
+        }
 
-        return $this->createCheckoutSession($data['plan'], $user);
+        return $this->createCheckoutSession($data['plan'], $this->user ?? $user);
     }
 
     public function createCheckoutSession(?string $plan, ?User $user = null)
@@ -57,7 +73,7 @@ class MobilePricing extends Component
         $user->createOrGetStripeCustomer();
 
         $checkout = $user
-            ->newSubscription('default', $subscription->stripePriceId())
+            ->newSubscription('default', $subscription->stripePriceId(discounted: $this->discounted))
             ->allowPromotionCodes()
             ->checkout([
                 'success_url' => $this->successUrl(),
