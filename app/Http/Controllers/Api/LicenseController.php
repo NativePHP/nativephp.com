@@ -16,6 +16,19 @@ use Illuminate\Validation\Rules\Enum;
 
 class LicenseController extends Controller
 {
+    public function index(Request $request)
+    {
+        $email = $request->query('email');
+
+        $user = User::where('email', $email)->firstOrFail();
+
+        if ($request->has('source')) {
+            $licenses = $user->licenses()->where('source', $request->query('source'))->get();
+        }
+
+        return LicenseResource::collection($licenses ?? $user->licenses);
+    }
+
     public function store(Request $request)
     {
         $validated = $request->validate([
