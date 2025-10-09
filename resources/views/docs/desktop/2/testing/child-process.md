@@ -28,6 +28,7 @@ public function example(): void
 - `assertStarted`
 - `assertPhp`
 - `assertArtisan`
+- `assertNode`
 - `assertStop`
 - `assertRestart`
 - `assertMessage`
