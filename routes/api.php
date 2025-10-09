@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\LicenseController;
+use App\Http\Controllers\Api\TemporaryLinkController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -19,6 +20,7 @@ Route::middleware('auth.api_key')->group(function () {
     Route::post('/licenses', [LicenseController::class, 'store']);
     Route::get('/licenses/{key}', [LicenseController::class, 'show']);
     Route::get('/licenses', [LicenseController::class, 'index']);
+    Route::post('/temp-links', [TemporaryLinkController::class, 'store']);
 });
 
 Route::middleware('auth:sanctum')->group(function () {
