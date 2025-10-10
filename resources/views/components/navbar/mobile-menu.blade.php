@@ -70,9 +70,9 @@
         aria-label="Site menu"
         class="fixed top-20 right-3 bottom-3.5 left-3 w-auto origin-top -translate-y-2 scale-y-90 overflow-y-scroll overscroll-contain rounded-2xl bg-gray-200/50 opacity-0 ring-1 ring-gray-200/80 backdrop-blur-2xl transition transition-discrete duration-300 open:translate-y-0 open:scale-y-100 open:opacity-100 min-[500px]:right-3.5 min-[500px]:left-3.5 dark:bg-black/50 dark:text-white dark:ring-gray-700/70 starting:open:-translate-y-2 starting:open:scale-y-0 starting:open:opacity-0"
     >
-        <div class="flex flex-col overflow-hidden px-6 pt-4 pb-6">
+        <div class="@container flex flex-col overflow-hidden px-6 pt-4 pb-6">
             <nav
-                class="grid grid-cols-2 text-xl"
+                class="@md:grid-cols-3 grid grid-cols-2 text-xl"
                 aria-label="Primary"
             >
                 @php
@@ -230,12 +230,10 @@
             </nav>
 
             <div
-                class="mt-6 mb-2 flex w-full items-center justify-between gap-2 pb-2"
+                class="mt-6 mb-2 flex w-full flex-wrap items-center justify-between gap-2 pb-2"
             >
                 {{-- Doc search --}}
-                <div
-                    class="transition-all duration-200 ease-in-out will-change-transform"
-                >
+                <div class="contrast-150 dark:contrast-100">
                     <div
                         id="docsearch-mobile"
                         x-on:click="
@@ -247,7 +245,7 @@
                 </div>
 
                 <div
-                    class="flex h-10 items-center gap-0.5 rounded-full bg-gray-100 p-1 text-sm ring-1 ring-black/5 dark:bg-black/20 dark:ring-white/10"
+                    class="flex h-10 items-center rounded-full bg-gray-100/90 p-1 text-sm ring-1 ring-black/5 dark:bg-black/20 dark:ring-white/10"
                     role="radiogroup"
                     aria-label="Theme preference"
                 >
@@ -256,7 +254,7 @@
                         role="radio"
                         :aria-checked="themePreference === 'light'"
                         x-on:click="themePreference = 'light'; showMobileMenu = false"
-                        class="rounded-full px-3 py-1.5 transition duration-300 ease-in-out"
+                        class="rounded-full px-2.5 py-1.5 transition duration-300 ease-in-out"
                         :class="{
                             'bg-zinc-300/70': themePreference === 'light',
                         }"
@@ -269,7 +267,7 @@
                         role="radio"
                         :aria-checked="themePreference === 'system'"
                         x-on:click="themePreference = 'system'; showMobileMenu = false"
-                        class="rounded-full px-3 py-1.5 transition duration-300 ease-in-out"
+                        class="rounded-full px-2.5 py-1.5 transition duration-300 ease-in-out"
                         :class="{
                             'bg-zinc-300/50 dark:bg-gray-200/10': themePreference === 'system',
                         }"
@@ -282,7 +280,7 @@
                         role="radio"
                         :aria-checked="themePreference === 'dark'"
                         x-on:click="themePreference = 'dark'; showMobileMenu = false"
-                        class="rounded-full px-3 py-1.5 transition duration-300 ease-in-out"
+                        class="rounded-full px-2.5 py-1.5 transition duration-300 ease-in-out"
                         :class="{
                             'bg-gray-200/10': themePreference === 'dark',
                         }"
@@ -302,7 +300,9 @@
                 class="mx-auto mt-4 flex"
                 aria-label="Social media"
             >
-                <div class="grid grid-cols-4 justify-items-center gap-4">
+                <div
+                    class="flex flex-wrap justify-center-safe gap-4 contrast-120"
+                >
                     <x-social-networks-all />
                 </div>
             </nav>

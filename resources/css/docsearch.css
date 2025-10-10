@@ -29,7 +29,7 @@
 }
 
 .DocSearch-Button-Placeholder {
-    @apply px-1 text-sm text-black/60 transition duration-300 xl:pr-5 dark:text-white/60;
+    @apply pr-2 pl-1 text-sm text-black/60 transition duration-300 xl:pr-5 dark:text-white/60;
 }
 
 .DocSearch-Button-Keys {
