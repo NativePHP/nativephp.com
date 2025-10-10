@@ -164,12 +164,9 @@
                 {{-- Doc search --}}
                 <div
                     class="-mr-0.5 transition-all duration-200 ease-in-out will-change-transform"
-                    :class="{
-                    'pr-0.5': showMobileMenu,
-                }"
                 >
                     <div
-                        id="docsearch"
+                        id="docsearch-desktop"
                         x-on:click="if (window.innerWidth < 640) window.scrollTo({ top: 0, behavior: 'instant' })"
                         aria-label="Search documentation"
                     ></div>

@@ -11,7 +11,7 @@
 }
 
 .DocSearch-Button {
-    @apply m-0 flex items-center rounded-full bg-gray-50/50 font-normal ring-1 ring-slate-600/30 transition duration-300 ease-out ring-inset dark:bg-black/30;
+    @apply m-0 flex h-10 items-center rounded-full bg-gray-50/50 font-normal ring-1 ring-slate-600/30 transition duration-300 ease-out ring-inset min-[1024px]:h-9 dark:bg-black/30;
 }
 
 .DocSearch-Button:hover {
@@ -29,11 +29,15 @@
 }
 
 .DocSearch-Button-Placeholder {
-    @apply px-1 text-sm text-black/60 transition duration-300 xl:pr-5 dark:text-white/60;
+    @apply pr-2 pl-1 text-sm text-black/60 transition duration-300 xl:pr-5 dark:text-white/60;
 }
 
 .DocSearch-Button-Keys {
     @apply mt-1 ml-1 hidden min-w-[auto] text-sm leading-none sm:flex;
+}
+
+.DocSearch-Button-Placeholder {
+    @apply inline!;
 }
 
 .DocSearch-Button-Key {

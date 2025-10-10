@@ -68,11 +68,11 @@
         role="dialog"
         aria-modal="true"
         aria-label="Site menu"
-        class="fixed top-21 right-3 bottom-3.5 left-3 h-auto w-auto origin-top -translate-y-2 scale-y-90 overflow-y-scroll overscroll-contain rounded-2xl bg-gray-100/50 opacity-0 ring-1 ring-gray-200/80 backdrop-blur-2xl transition transition-discrete duration-300 open:translate-y-0 open:scale-y-100 open:opacity-100 min-[500px]:right-3.5 min-[500px]:left-3.5 dark:bg-black/50 dark:text-white dark:ring-gray-700/70 starting:open:-translate-y-2 starting:open:scale-y-0 starting:open:opacity-0"
+        class="fixed top-20 right-3 bottom-3.5 left-3 w-auto origin-top -translate-y-2 scale-y-90 overflow-y-scroll overscroll-contain rounded-2xl bg-gray-200/50 opacity-0 ring-1 ring-gray-200/80 backdrop-blur-2xl transition transition-discrete duration-300 open:translate-y-0 open:scale-y-100 open:opacity-100 min-[500px]:right-3.5 min-[500px]:left-3.5 dark:bg-black/50 dark:text-white dark:ring-gray-700/70 starting:open:-translate-y-2 starting:open:scale-y-0 starting:open:opacity-0"
     >
-        <div class="flex h-full flex-col overflow-hidden p-6">
+        <div class="@container flex flex-col overflow-hidden px-6 pt-4 pb-6">
             <nav
-                class="flex flex-1 flex-col items-start text-xl"
+                class="@md:grid-cols-3 grid grid-cols-2 text-xl"
                 aria-label="Primary"
             >
                 @php
@@ -80,21 +80,22 @@
                     $isPricingActive = request()->routeIs('pricing*');
                     $isDocsActive = request()->is('docs*');
                     $isBlogActive = request()->routeIs('blog*');
+                    $isPartnersActive = request()->routeIs('partners*');
                     $isSponsorActive = request()->routeIs('sponsoring*');
+                    $isLoginActive = request()->routeIs('customer.login*');
                 @endphp
 
                 {{-- Home Link --}}
-                <div class="w-full">
+                <div>
                     <a
                         href="/"
                         @class([
-                            'flex items-center justify-between py-3 transition duration-200',
+                            'flex items-center gap-2 py-3 transition duration-200',
                             'font-medium' => $isHomeActive,
                             'opacity-50 hover:translate-x-1 hover:opacity-100' => ! $isHomeActive,
                         ])
                         aria-current="{{ $isHomeActive ? 'page' : 'false' }}"
                     >
-                        <div>Home</div>
                         @if ($isHomeActive)
                             <x-icons.right-arrow
                                 class="size-4 shrink-0"
@@ -102,26 +103,22 @@
                                 focusable="false"
                             />
                         @endif
+
+                        <div>Home</div>
                     </a>
                 </div>
 
-                <div
-                    class="h-0.5 w-full rounded-full bg-current opacity-5"
-                    role="presentation"
-                ></div>
-
                 {{-- Docs Link --}}
-                <div class="w-full">
+                <div>
                     <a
                         href="/docs/"
                         @class([
-                            'flex items-center justify-between py-3 transition duration-200',
+                            'flex items-center gap-2 py-3 transition duration-200',
                             'font-medium' => $isDocsActive,
                             'opacity-50 hover:translate-x-1 hover:opacity-100' => ! $isDocsActive,
                         ])
                         aria-current="{{ $isDocsActive ? 'page' : 'false' }}"
                     >
-                        <div>Docs</div>
                         @if ($isDocsActive)
                             <x-icons.right-arrow
                                 class="size-4 shrink-0"
@@ -129,26 +126,22 @@
                                 focusable="false"
                             />
                         @endif
+
+                        <div>Docs</div>
                     </a>
                 </div>
 
-                <div
-                    class="h-0.5 w-full rounded-full bg-current opacity-5"
-                    role="presentation"
-                ></div>
-
                 {{-- Blog Link --}}
-                <div class="w-full">
+                <div>
                     <a
                         href="{{ route('blog') }}"
                         @class([
-                            'flex items-center justify-between py-3 transition duration-200',
+                            'flex items-center gap-2 py-3 transition duration-200',
                             'font-medium' => $isBlogActive,
                             'opacity-50 hover:translate-x-1 hover:opacity-100' => ! $isBlogActive,
                         ])
                         aria-current="{{ $isBlogActive ? 'page' : 'false' }}"
                     >
-                        <div>Blog</div>
                         @if ($isBlogActive)
                             <x-icons.right-arrow
                                 class="size-4 shrink-0"
@@ -156,60 +149,79 @@
                                 focusable="false"
                             />
                         @endif
+
+                        <div>Blog</div>
                     </a>
                 </div>
 
-                <div
-                    class="h-0.5 w-full rounded-full bg-current opacity-5"
-                    role="presentation"
-                ></div>
-
                 {{-- Shop Link --}}
-                <div class="w-full">
+                <div>
                     <a
                         href="https://shop.nativephp.com/"
-                        class="flex items-center justify-between py-3 opacity-50 transition duration-200 hover:translate-x-1 hover:opacity-100"
+                        class="flex items-center gap-2 py-3 opacity-50 transition duration-200 hover:translate-x-1 hover:opacity-100"
                         aria-label="NativePHP Shop"
                     >
                         <div>Shop</div>
                     </a>
                 </div>
 
-                <div
-                    class="h-0.5 w-full rounded-full bg-current opacity-5"
-                    role="presentation"
-                ></div>
-
-                <div class="w-full">
+                <div>
                     <a
-                        href="/partners"
-                        class="flex items-center justify-between py-3 opacity-50 transition duration-200 hover:translate-x-1 hover:opacity-100"
-                        aria-label="NativePHP Partners"
+                        href="{{ route('partners') }}"
+                        @class([
+                            'flex items-center gap-2 py-3 transition duration-200',
+                            'font-medium' => $isPartnersActive,
+                            'opacity-50 hover:translate-x-1 hover:opacity-100' => ! $isPartnersActive,
+                        ])
+                        aria-current="{{ $isPartnersActive ? 'page' : 'false' }}"
                     >
+                        @if ($isPartnersActive)
+                            <x-icons.right-arrow
+                                class="size-4 shrink-0"
+                                aria-hidden="true"
+                                focusable="false"
+                            />
+                        @endif
+
                         <div>Partners</div>
                     </a>
                 </div>
 
-                <div
-                    class="h-0.5 w-full rounded-full bg-current opacity-5"
-                    role="presentation"
-                ></div>
-
                 {{-- Login/Logout --}}
                 @feature(App\Features\ShowAuthButtons::class)
-                    <div class="w-full">
+                    <div>
                         @auth
-                            <form method="POST" action="{{ route('customer.logout') }}" class="w-full">
+                            <form
+                                method="POST"
+                                action="{{ route('customer.logout') }}"
+                                class="w-full"
+                            >
                                 @csrf
-                                <button type="submit" class="flex w-full items-center justify-between py-3 opacity-50 transition duration-200 hover:translate-x-1 hover:opacity-100">
+                                <button
+                                    type="submit"
+                                    class="flex w-full items-center justify-between py-3 opacity-50 transition duration-200 hover:translate-x-1 hover:opacity-100"
+                                >
                                     <div>Log out</div>
                                 </button>
                             </form>
                         @else
                             <a
                                 href="{{ route('customer.login') }}"
-                                class="flex items-center justify-between py-3 opacity-50 transition duration-200 hover:translate-x-1 hover:opacity-100"
+                                @class([
+                                    'flex items-center gap-2 py-3 transition duration-200',
+                                    'font-medium' => $isLoginActive,
+                                    'opacity-50 hover:translate-x-1 hover:opacity-100' => ! $isLoginActive,
+                                ])
+                                aria-current="{{ $isLoginActive ? 'page' : 'false' }}"
                             >
+                                @if ($isLoginActive)
+                                    <x-icons.right-arrow
+                                        class="size-4 shrink-0"
+                                        aria-hidden="true"
+                                        focusable="false"
+                                    />
+                                @endif
+
                                 <div>Log in</div>
                             </a>
                         @endauth
@@ -218,11 +230,22 @@
             </nav>
 
             <div
-                class="mb-2 flex w-full items-center justify-between gap-2 pb-2"
+                class="mt-6 mb-2 flex w-full flex-wrap items-center justify-between gap-2 pb-2"
             >
-                <div>Theme:</div>
+                {{-- Doc search --}}
+                <div class="contrast-150 dark:contrast-100">
+                    <div
+                        id="docsearch-mobile"
+                        x-on:click="
+                            window.scrollTo({ top: 0, behavior: 'instant' })
+                            showMobileMenu = false
+                        "
+                        aria-label="Search documentation"
+                    ></div>
+                </div>
+
                 <div
-                    class="flex h-10 items-center gap-0.5 rounded-full bg-gray-100 p-1 text-sm ring-1 ring-black/5 dark:bg-black/20 dark:ring-white/10"
+                    class="flex h-10 items-center rounded-full bg-gray-100/90 p-1 text-sm ring-1 ring-black/5 dark:bg-black/20 dark:ring-white/10"
                     role="radiogroup"
                     aria-label="Theme preference"
                 >
@@ -231,7 +254,7 @@
                         role="radio"
                         :aria-checked="themePreference === 'light'"
                         x-on:click="themePreference = 'light'; showMobileMenu = false"
-                        class="rounded-full px-3 py-1.5 transition duration-300 ease-in-out"
+                        class="rounded-full px-2.5 py-1.5 transition duration-300 ease-in-out"
                         :class="{
                             'bg-zinc-300/70': themePreference === 'light',
                         }"
@@ -244,7 +267,7 @@
                         role="radio"
                         :aria-checked="themePreference === 'system'"
                         x-on:click="themePreference = 'system'; showMobileMenu = false"
-                        class="rounded-full px-3 py-1.5 transition duration-300 ease-in-out"
+                        class="rounded-full px-2.5 py-1.5 transition duration-300 ease-in-out"
                         :class="{
                             'bg-zinc-300/50 dark:bg-gray-200/10': themePreference === 'system',
                         }"
@@ -257,7 +280,7 @@
                         role="radio"
                         :aria-checked="themePreference === 'dark'"
                         x-on:click="themePreference = 'dark'; showMobileMenu = false"
-                        class="rounded-full px-3 py-1.5 transition duration-300 ease-in-out"
+                        class="rounded-full px-2.5 py-1.5 transition duration-300 ease-in-out"
                         :class="{
                             'bg-gray-200/10': themePreference === 'dark',
                         }"
@@ -274,10 +297,12 @@
             ></div>
 
             <nav
-                class="mt-4 mx-auto flex"
+                class="mx-auto mt-4 flex"
                 aria-label="Social media"
             >
-                <div class="grid grid-cols-4 justify-items-center gap-4">
+                <div
+                    class="flex flex-wrap justify-center-safe gap-4 contrast-120"
+                >
                     <x-social-networks-all />
                 </div>
             </nav>

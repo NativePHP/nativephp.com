@@ -1,11 +1,8 @@
 {
     "mcpServers": {
         "laravel-boost": {
-            "command": "/usr/bin/php8.4",
-            "args": [
-                "/home/hassan/code/nativephp.com/artisan",
-                "boost:mcp"
-            ]
+            "command": "php",
+            "args": ["./artisan", "boost:mcp"]
         }
     }
 }
