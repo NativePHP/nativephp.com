@@ -325,8 +325,16 @@
                 class="flex items-start gap-1.5 pt-5"
                 aria-label="Price: ${{ number_format($discounted ? 150 : 250) }} per year"
             >
-                <div class="text-5xl font-semibold">
-                    ${{ number_format($discounted ? 150 : 250) }}
+
+                <div>
+                    @if($discounted)
+                        <strike class="text-2xl font-semibold">
+                            ${{ number_format(250) }}
+                        </strike>
+                    @endif
+                    <div class="text-5xl font-semibold">
+                        ${{ number_format($discounted ? 150 : 250) }}
+                    </div>
                 </div>
                 <div class="self-end pb-1.5 text-zinc-500">per year</div>
             </div>
@@ -480,10 +488,17 @@
             {{-- Price --}}
             <div
                 class="flex items-start gap-1.5 pt-5"
-                aria-label="Price: ${{ number_format($discounted ? 350 : 1000) }} per year"
+                aria-label="Price: ${{ number_format($discounted ? 250 : 1000) }} per year"
             >
-                <div class="text-5xl font-semibold">
-                    ${{ number_format($discounted ? 350 : 1000) }}
+                <div>
+                    @if($discounted)
+                        <strike class="text-2xl font-semibold">
+                            ${{ number_format(1000) }}
+                        </strike>
+                    @endif
+                    <div class="text-5xl font-semibold">
+                        ${{ number_format($discounted ? 250 : 1000) }}
+                    </div>
                 </div>
                 <div class="self-end pb-1.5 text-zinc-500">per year</div>
             </div>
