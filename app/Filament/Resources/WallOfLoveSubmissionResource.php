@@ -49,25 +49,6 @@ class WallOfLoveSubmissionResource extends Resource
                             ->maxLength(1000)
                             ->rows(4),
                     ]),
-
-                Forms\Components\Section::make('Review Information')
-                    ->schema([
-                        Forms\Components\Select::make('user_id')
-                            ->relationship('user', 'name')
-                            ->required()
-                            ->disabled(),
-
-                        Forms\Components\DateTimePicker::make('approved_at')
-                            ->label('Approved At'),
-
-                        Forms\Components\Select::make('approved_by')
-                            ->relationship('approvedBy', 'name')
-                            ->label('Approved By'),
-
-                        Forms\Components\Placeholder::make('created_at')
-                            ->label('Submitted At')
-                            ->content(fn (WallOfLoveSubmission $record): ?string => $record->created_at?->diffForHumans()),
-                    ]),
             ]);
     }
 

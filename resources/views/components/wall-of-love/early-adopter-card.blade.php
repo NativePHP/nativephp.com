@@ -16,7 +16,7 @@
             @class([
                 'relative z-20 w-full self-end justify-self-start truncate bg-gradient-to-t px-4 pt-13 pb-4 text-white [grid-area:1/-1]',
                 'from-blue-500 to-transparent' => $featured,
-                'from-black to-transparent' => ! $featured,
+                'from-black/70 to-transparent' => ! $featured,
             ])
         >
             <div

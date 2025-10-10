@@ -38,7 +38,7 @@
             >
                 <div class="mb-6 text-center">
                     <h3 class="text-xl font-semibold dark:text-white">
-                        Get Started with NativePHP
+                        Get started with NativePHP
                     </h3>
                     <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">
                         Enter your email to continue to checkout
