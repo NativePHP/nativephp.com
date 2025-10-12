@@ -56,7 +56,7 @@ If you experience a cURL error when running this command, make sure you are runn
 
 #### Windows Performance Tip
 
-Add `C:\temp` to your Windows Defender exclusions list to significantly speed up Composer
+Add `C:\temp` as well as the project folder to your Windows Defender exclusions list to significantly speed up Composer
 installs during app compilation. This prevents its real-time scanning from processing the many temporary files created
 during the build process, which slows the process considerably.
 
