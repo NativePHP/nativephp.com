@@ -74,8 +74,11 @@ to develop and test your apps on a Simulator. However, you will need to enroll w
 
 #### Note
 
-You do not need to separately install the Java Development Kit (JDK). Android Studio will automatically install the
-proper JDK for you.
+You might need to install the Java Development Kit (JDK) separately. Recent versions of Android Studio no longer install it automatically.
+If you encounter Gradle errors, check the [Gradle JDK Compatibility Matrix](https://docs.gradle.org/current/userguide/compatibility.html).
+The latest JDK version may not be supported yet.
+
+To check the installed Gradle version, examine the ``nativephp/android/.gradle`` folder after running ``php artisan native:install``.
 
 </aside> 
 
@@ -110,6 +113,8 @@ export PATH=$PATH:$JAVA_HOME/bin:$ANDROID_HOME/emulator:$ANDROID_HOME/tools:$AND
 ```
 
 #### On Windows
+The example below assumes default installation paths for the Android SDK and JDK:
+
 ```shell
 set ANDROID_HOME=C:\Users\yourname\AppData\Local\Android\Sdk
 set PATH=%PATH%;%JAVA_HOME%\bin;%ANDROID_HOME%\platform-tools
@@ -117,6 +122,10 @@ set PATH=%PATH%;%JAVA_HOME%\bin;%ANDROID_HOME%\platform-tools
 # This isn't required if JAVA_HOME is already set in the Windows Env Variables
 set JAVA_HOME=C:\Program Files\Microsoft\jdk-17.0.8.7-hotspot
 ```
+
+### "No AVDs found" error
+If you encounter this error, it means no Virtual Devices are configured in Android Studio.
+To resolve it, open Android Studio, navigate to Virtual Devices, and create at least one device.
 
 ## Testing on Real Devices
 
