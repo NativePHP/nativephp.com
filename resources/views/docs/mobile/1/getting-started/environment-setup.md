@@ -78,6 +78,8 @@ You might need to install the Java Development Kit (JDK) separately. Recent vers
 If you encounter Gradle errors, check the [Gradle JDK Compatibility Matrix](https://docs.gradle.org/current/userguide/compatibility.html).
 The latest JDK version may not be supported yet.
 
+To check the installed Gradle version, examine the ``nativephp/android/.gradle`` folder after running ``php artisan native:install``.
+
 </aside> 
 
 ### Setting up Android Studio and SDK
