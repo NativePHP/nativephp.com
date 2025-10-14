@@ -22,6 +22,8 @@
         {{-- Wall of Love Callout for Early Adopters --}}
         <livewire:wall-of-love-banner />
 
+        <x-discounts-banner />
+
         {{-- Content --}}
         <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
             @if($licenses->count() > 0)
