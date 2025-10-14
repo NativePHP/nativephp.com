@@ -4,10 +4,11 @@
     'url' => '',
     'image' => '',
     'featured' => false,
+    'hasUserImage' => false,
 ])
 
 <article
-    class="group mt-3 inline-block break-inside-avoid overflow-hidden rounded-2xl text-center transition duration-300 ease-out will-change-transform hover:scale-102 xl:mt-5"
+    class="group w-full break-inside-avoid overflow-hidden rounded-2xl text-center transition duration-300 ease-out will-change-transform not-last:mb-3 hover:scale-102 xl:not-last:mb-5"
     itemscope
 >
     <figure class="grid">
@@ -32,7 +33,7 @@
                 </h3>
                 <p
                     @class([
-                        'opacity-50',
+                        'truncate opacity-50',
                         'text-sm' => $featured,
                         'text-xs' => ! $featured,
                     ])
@@ -53,9 +54,10 @@
             decoding="async"
             itemprop="image"
             @class([
-                'relative z-10 self-center justify-self-center object-cover brightness-80 transition duration-300 [grid-area:1/-1] group-hover:brightness-100',
+                'relative z-10 w-full self-center justify-self-center object-cover brightness-80 transition duration-300 [grid-area:1/-1] group-hover:brightness-100',
                 'aspect-[1/1.3] xl:aspect-[1/1.5]' => $featured,
                 'aspect-square max-h-50 xl:max-h-none' => ! $featured,
+                'grayscale-50 dark:brightness-50' => ! $hasUserImage,
             ])
         />
 

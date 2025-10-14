@@ -116,17 +116,24 @@
             ->inRandomOrder()
             ->get();
 
+        // Check if any submissions have user-uploaded images
+        $hasAnyUserImages = $approvedSubmissions->contains(fn ($s) => ! empty($s->photo_path));
+
         // Convert approved submissions to the format expected by the component
         $earlyAdopters = $approvedSubmissions
-            ->map(function ($submission) {
+            ->map(function ($submission) use ($hasAnyUserImages) {
+                $hasUserImage = ! empty($submission->photo_path);
+
                 return [
                     'name' => $submission->name,
                     'title' => $submission->company,
                     'url' => $submission->url,
-                    'image' => $submission->photo_path
+                    'image' => $hasUserImage
                         ? asset('storage/' . $submission->photo_path)
-                        : 'https://avatars.laravel.cloud/' . rand(1, 70) . '?vibe=' . array_rand(['ocean', 'crystal', 'bubble', 'forest', 'sunset']),
-                    'featured' => rand(0, 4) === 0, // Randomly feature about 20% of submissions
+                        : 'https://avatars.laravel.cloud/' . rand(1, 70) . '?vibe=' . array_rand(['ocean', 'stealth', 'bubble', 'ice']),
+                    'hasUserImage' => $hasUserImage,
+                    // Only allow featured if has user image (unless no submissions have images)
+                    'featured' => ($hasAnyUserImages ? $hasUserImage : true) && rand(0, 4) === 0,
                     'testimonial' => $submission->testimonial,
                 ];
             })
@@ -144,6 +151,7 @@
                     :url="$adopter['url'] ?? null"
                     :title="$adopter['title'] ?? null"
                     :featured="$adopter['featured'] ?? false"
+                    :hasUserImage="$adopter['hasUserImage'] ?? false"
                 />
             @endforeach
         </div>
