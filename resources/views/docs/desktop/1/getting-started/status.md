@@ -15,7 +15,7 @@ with NativePHP.
 But we always need your help! If you spot any bugs or feel that there are any features missing, be sure to share
 your ideas and questions through the [forum](https://github.com/orgs/nativephp/discussions), by
 [raising issues](https://github.com/nativephp/laravel/issues/new/choose)/reporting bugs, and discussing on
-[Discord](https://discord.gg/X62tWNStZK).
+[Discord]({{ $discordLink }}).
 
 <aside class="relative z-0 mt-5 overflow-hidden rounded-2xl bg-pink-50 px-5 ring-1 ring-black/5 dark:bg-pink-600/10">
 

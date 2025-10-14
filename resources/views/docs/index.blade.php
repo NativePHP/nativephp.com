@@ -4,6 +4,14 @@
     </x-slot>
 
     <x-slot name="sidebarRight">
+        {{-- Version switcher --}}
+        @if($platform === 'desktop')
+            <livewire:version-switcher :versions="[
+                1 => '1.x',
+                2 => '2.x'
+            ]" />
+        @endif
+
         <x-docs.toc-and-sponsors :tableOfContents="$tableOfContents" />
     </x-slot>
 
@@ -14,34 +22,46 @@
     <x-docs.separator class="mt-4" />
 
     {{-- Table of contents --}}
-    <div class="xl:hidden pt-5">
-        {{-- Copy as Markdown Button --}}
-        <x-docs.copy-markdown-button class="mt-4" />
-    
-        <h3 class="inline-flex items-center gap-1.5 text-sm opacity-50">
-            {{-- Icon --}}
-            <x-icons.stacked-lines class="size-[18px]" />
-            {{-- Label --}}
-            <div>On this page</div>
-        </h3>
-        @if (count($tableOfContents) > 0)
-            <div
-                class="mt-2 flex flex-col space-y-2 border-l text-xs dark:border-l-white/15"
-            >
-                @foreach ($tableOfContents as $item)
-                    <a
-                        href="#{{ $item['anchor'] }}"
-                        @class([
-                            'transition duration-300 ease-in-out will-change-transform hover:translate-x-0.5 hover:text-violet-400 hover:opacity-100 dark:text-white/80',
-                            'pb-1 pl-3' => $item['level'] == 2,
-                            'py-1 pl-6' => $item['level'] == 3,
-                        ])
-                    >
-                        {{ $item['title'] }}
-                    </a>
-                @endforeach
-            </div>
+    <div class="xl:hidden pt-9 space-y-4">
+
+        {{-- Version switcher --}}
+        @if($platform === 'desktop')
+            <livewire:version-switcher :versions="[
+                1 => '1.x',
+                2 => '2.x'
+            ]" />
         @endif
+
+        {{-- Copy as Markdown Button --}}
+        <x-docs.copy-markdown-button />
+
+        <div>
+            <h3 class="inline-flex items-center gap-1.5 text-sm opacity-50">
+                {{-- Icon --}}
+                <x-icons.stacked-lines class="size-[18px]" />
+                {{-- Label --}}
+                <div>On this page</div>
+            </h3>
+            @if (count($tableOfContents) > 0)
+                <div
+                    class="mt-2 flex flex-col space-y-2 border-l text-xs dark:border-l-white/15"
+                >
+                    @foreach ($tableOfContents as $item)
+                        <a
+                            href="#{{ $item['anchor'] }}"
+                            @class([
+                                'transition duration-300 ease-in-out will-change-transform hover:translate-x-0.5 hover:text-violet-400 hover:opacity-100 dark:text-white/80',
+                                'pb-1 pl-3' => $item['level'] == 2,
+                                'py-1 pl-6' => $item['level'] == 3,
+                            ])
+                        >
+                            {{ $item['title'] }}
+                        </a>
+                    @endforeach
+                </div>
+            @endif
+        </div>
+
     </div>
 
     <div

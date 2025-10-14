@@ -24,7 +24,7 @@
 
 <div>
     <a
-        href="https://github.com/nativephp"
+        href="{{ $githubLink }}"
         title="Source code of NativePHP"
         class="group dark:hover:bg-haiti inline-grid size-10 place-items-center rounded-xl bg-zinc-200/80 transition duration-200 hover:bg-gray-200/70 dark:bg-gray-700/40"
     >
@@ -36,7 +36,7 @@
 
 <div>
     <a
-        href="https://discord.gg/X62tWNStZK"
+        href="{{ $discordLink }}"
         title="Go to discord server"
         class="group dark:hover:bg-haiti inline-grid size-10 place-items-center rounded-xl bg-zinc-200/80 transition duration-200 hover:bg-gray-200/70 dark:bg-gray-700/40"
     >
@@ -48,7 +48,7 @@
 
 <div>
     <a
-        href="https://opencollective.com/nativephp"
+        href="{{ $openCollectiveLink }}"
         title="NativePHP on Open Collective"
         class="group dark:hover:bg-haiti inline-grid size-10 place-items-center rounded-xl bg-zinc-200/80 transition duration-200 hover:bg-gray-200/70 dark:bg-gray-700/40"
     >
@@ -60,7 +60,7 @@
 
 <div>
     <a
-        href="https://bsky.app/profile/nativephp.com"
+        href="{{ $bskyLink }}"
         title="Bluesky"
         class="group dark:hover:bg-haiti inline-grid size-10 place-items-center rounded-xl bg-zinc-200/80 transition duration-200 hover:bg-gray-200/70 dark:bg-gray-700/40"
     >
