@@ -117,49 +117,24 @@
             ->get();
 
         // Convert approved submissions to the format expected by the component
-        $earlyAdopters = $approvedSubmissions->map(function ($submission) {
-            return [
-                'name' => $submission->name,
-                'title' => $submission->company,
-                'url' => $submission->url,
-                'image' => $submission->photo_path
-                    ? asset('storage/' . $submission->photo_path)
-                    : 'https://avatars.laravel.cloud/' . rand(1, 70) . '?vibe=' . array_rand(['ocean', 'crystal', 'bubble', 'forest', 'sunset']),
-                'featured' => rand(0, 4) === 0, // Randomly feature about 20% of submissions
-                'testimonial' => $submission->testimonial,
-            ];
-        })->toArray();
+        $earlyAdopters = $approvedSubmissions
+            ->map(function ($submission) {
+                return [
+                    'name' => $submission->name,
+                    'title' => $submission->company,
+                    'url' => $submission->url,
+                    'image' => $submission->photo_path
+                        ? asset('storage/' . $submission->photo_path)
+                        : 'https://avatars.laravel.cloud/' . rand(1, 70) . '?vibe=' . array_rand(['ocean', 'crystal', 'bubble', 'forest', 'sunset']),
+                    'featured' => rand(0, 4) === 0, // Randomly feature about 20% of submissions
+                    'testimonial' => $submission->testimonial,
+                ];
+            })
+            ->toArray();
     @endphp
 
-    @if(count($earlyAdopters) > 0)
+    @if (count($earlyAdopters) > 0)
         <div
-            x-init="
-                () => {
-                    motion.inView($el, (element) => {
-                        const children = Array.from($el.children)
-
-                        children.forEach((child, i) => {
-                            const range = 20 // px
-                            const xFrom = (Math.random() * 2 - 1) * range
-                            const yFrom = (Math.random() * 2 - 1) * range
-
-                            motion.animate(
-                                child,
-                                {
-                                    x: [xFrom, 0],
-                                    y: [yFrom, 0],
-                                    opacity: [0, 1],
-                                },
-                                {
-                                    duration: 0.7,
-                                    ease: motion.backOut,
-                                    delay: i * 0.06,
-                                },
-                            )
-                        })
-                    })
-                }
-            "
             class="relative z-10 mt-10 grid place-items-center 2xs:block 2xs:columns-[10rem] xl:columns-[12rem]"
         >
             @foreach ($earlyAdopters as $adopter)
@@ -174,9 +149,13 @@
         </div>
     @else
         <div class="relative z-10 mt-10 text-center">
-            <div class="bg-white dark:bg-gray-800/50 backdrop-blur-sm rounded-2xl p-8 mx-auto max-w-md border border-gray-200 dark:border-gray-700">
-                <div class="text-6xl mb-4">🚀</div>
-                <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-2">
+            <div
+                class="mx-auto max-w-md rounded-2xl border border-gray-200 bg-white p-8 backdrop-blur-sm dark:border-gray-700 dark:bg-gray-800/50"
+            >
+                <div class="mb-4 text-6xl">🚀</div>
+                <h3
+                    class="mb-2 text-xl font-semibold text-gray-900 dark:text-white"
+                >
                     Coming Soon!
                 </h3>
                 <p class="text-gray-600 dark:text-gray-400">

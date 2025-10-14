@@ -7,7 +7,7 @@
 ])
 
 <article
-    class="group mt-3 inline-block break-inside-avoid overflow-hidden rounded-2xl text-center opacity-0 transition duration-300 ease-out will-change-transform hover:scale-102 xl:mt-5"
+    class="group mt-3 inline-block break-inside-avoid overflow-hidden rounded-2xl text-center transition duration-300 ease-out will-change-transform hover:scale-102 xl:mt-5"
     itemscope
 >
     <figure class="grid">
@@ -55,7 +55,7 @@
             @class([
                 'relative z-10 self-center justify-self-center object-cover brightness-80 transition duration-300 [grid-area:1/-1] group-hover:brightness-100',
                 'aspect-[1/1.3] xl:aspect-[1/1.5]' => $featured,
-                'aspect-square max-h-50 grayscale group-hover:grayscale-0 xl:max-h-none' => ! $featured,
+                'aspect-square max-h-50 xl:max-h-none' => ! $featured,
             ])
         />
 
