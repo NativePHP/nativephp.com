@@ -13,7 +13,7 @@ Laravel application as you normally would or in the [JavaScript](#listening-with
 
 NativePHP fires various events during its operations, such as `WindowBlurred` & `NotificationClicked`. A full list
 of all events fired and broadcast by NativePHP can be found in the
-[`src/Events`](https://github.com/nativephp/laravel/tree/main/src/Events) folder.
+[`src/Events`](https://github.com/nativephp/desktop/tree/main/src/Events) folder.
 
 ## Custom events
 
