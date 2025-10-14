@@ -32,6 +32,6 @@ NativePHP provides methods of bundling your own static PHP binaries. Support is 
 [Laravel: Support Policy](https://laravel.com/docs/master/releases#support-policy)
 
 ## Requesting Support
-Support can be obtained by opening an issue on the [NativePHP/laravel]({{ $githubLink }}/laravel/issues) repository or by joining the [Discord]({{ $discordLink }}).
+Support can be obtained by opening an issue on the [NativePHP/desktop]({{ $githubLink }}/desktop/issues) repository or by joining the [Discord]({{ $discordLink }}).
 
 When requesting support, it is requested that you are using a supported version. If you are not, you will be asked to upgrade to a supported version before any support is provided.

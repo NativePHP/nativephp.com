@@ -25,7 +25,7 @@ Laravel Facades for ease of access and testing:
 
 #### Found a bug?
 
-Community support is available to all at no cost via [Discord](/discord). Higher priority support directly from the
+Community support is available to all at no cost via [Discord]({{ $discordLink }}). Higher priority support directly from the
 NativePHP team is available to **Max** and **Ultra** license holders.
 
 </aside>

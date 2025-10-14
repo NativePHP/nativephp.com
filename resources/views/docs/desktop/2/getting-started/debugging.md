@@ -134,9 +134,9 @@ C:\path\to\your\app\dist\win-unpacked\resources\app.asar.unpacked\resources\php\
 ```
 
 ## Still stuck?
-If you've found a bug, please [open an issue](https://github.com/nativephp/laravel/issues/new) on GitHub.
+If you've found a bug, please [open an issue](https://github.com/nativephp/desktop/issues/new) on GitHub.
 
 There's also [Discussions](https://github.com/orgs/NativePHP/discussions) and
-[Discord](https://discord.gg/X62tWNStZK) for live chat.
+[Discord]({{ $discordLink }}) for live chat.
 
 Come join us! We want you to succeed.

@@ -27,7 +27,7 @@ The extensions that are included in the default binaries are defined in the
 [`php-extensions.txt`](https://github.com/NativePHP/php-bin/blob/main/php-extensions.txt) in the `php-bin` repo.
 
 If you think an extension is missing that would make sense as a default extension, feel free to
-[make a feature request](https://github.com/nativephp/laravel/issues/new/choose) for it.
+[make a feature request](https://github.com/nativephp/desktop/issues/new/choose) for it.
 
 ## Building custom binaries
 

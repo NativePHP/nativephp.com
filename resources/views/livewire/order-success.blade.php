@@ -433,7 +433,7 @@
                 </a>
 
                 <a
-                    href="https://discord.gg/X62tWNStZK"
+                    href="{{ $discordLink }}"
                     class="dark:bg-mirage dark:hover:bg-haiti dark:hover:ring-cloud rounded-2xl bg-gray-100 p-6 transition duration-200 hover:bg-gray-200/70 hover:ring-1 hover:ring-black/60"
                 >
                     <div

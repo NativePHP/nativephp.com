@@ -48,10 +48,10 @@ class AppServiceProvider extends ServiceProvider
             ? GitHub::electron()->latestVersion()
             : 'dev'
         );
-        View::share('discordLink', 'https://discord.gg/X62tWNStZK');
+        View::share('discordLink', 'https://discord.gg/nativephp');
         View::share('bskyLink', 'https://bsky.app/profile/nativephp.bsky.social');
         View::share('openCollectiveLink', 'https://opencollective.com/nativephp');
-        View::share('githubLink', 'https://github.com/NativePHP');
+        View::share('githubLink', 'https://github.com/nativephp');
     }
 
     private function sendFailingJobsToSentry(): void
