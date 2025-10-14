@@ -29,7 +29,7 @@ application is running on (Mac/Linux vs Windows).**
 **Where possible, you should explicitly reference binaries by their full path name, unless you can reliably assume that
 the executable you're trying to spawn is available in the user's `PATH`.**
 
-Child Processes are managed by the runtime (Electron/Tauri) but are fully accessible to the Laravel side of your
+Child Processes are managed by the runtime (Electron) but are fully accessible to the Laravel side of your
 application.
 
 ---

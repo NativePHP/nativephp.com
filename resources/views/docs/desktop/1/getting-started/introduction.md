@@ -89,7 +89,6 @@ NativePHP wouldn't be possible without the following projects and the hard work 
 
 - [PHP](https://php.net)
 - [Electron](https://electronjs.org)
-- [Tauri](https://tauri.app)
 - [Laravel](https://laravel.com)
 - [Symfony](https://symfony.com)
 - [Static PHP CLI](https://github.com/crazywhalecc/static-php-cli/)
