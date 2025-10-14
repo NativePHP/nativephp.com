@@ -9,8 +9,8 @@
                         </svg>
                     </div>
                     <div class="ml-4 flex-1">
-                        <h3 class="text-sm font-medium text-blue-800 dark:text-blue-200">
-                            Join our Wall of Love! 💙
+                        <h3 class="font-medium text-blue-800 dark:text-blue-200">
+                            Join our Wall of Love!
                         </h3>
                         <p class="mt-1 text-sm text-blue-700 dark:text-blue-300">
                             As an early adopter who purchased a license before June 1st, 2025, we'd love to feature you on

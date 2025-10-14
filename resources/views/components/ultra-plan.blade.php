@@ -20,29 +20,24 @@
                     })
                 }
             "
-        class="dark:bg-mirage space-y-3 rounded-2xl bg-gray-100 p-7 text-center"
+        class="dark:bg-mirage space-y-3 rounded-2xl bg-gray-100 p-7"
     >
         {{-- Plan Name --}}
         <h3
             id="ultra-tier-heading"
-            class="text-2xl font-semibold"
+            class="text-3xl font-semibold flex gap-4 items-center"
         >
-            Ultra
+            <span class="rounded-full bg-zinc-300 dark:bg-zinc-600 px-4 py-1">
+                Ultra
+            </span>
+            <span class="text-zinc-600 dark:text-zinc-300 text-xl font-normal">Partners get even more!</span>
         </h3>
 
-        {{-- Price --}}
-        {{-- <div --}}
-        {{-- class="flex items-start gap-1.5 pt-5" --}}
-        {{-- aria-label="Price: $10,000+ per year" --}}
-        {{-- > --}}
-        {{-- <div class="text-5xl font-semibold">$20,000</div> --}}
-        {{-- <div class="self-end pb-1.5 text-zinc-500">per year</div> --}}
-        {{-- </div> --}}
-
         <p class="dark:text-gray-400">
-            Partners get even more! <b>Ultra</b> is our Partnership Program, offering dedicated support,
-            feature development, training, license management, marketing opportunities, and other
-            enterprise-oriented services for teams of any size.
+            <span class="font-semibold">Ultra</span> is our Partnership Program, offering
+            <span class="font-medium">dedicated support</span>, <span class="font-medium">feature development</span>,
+            <span class="font-medium">training</span>, <span class="font-medium">marketing opportunities</span>
+            and other enterprise-oriented services for teams of any size.
         </p>
         <div>
             <a
