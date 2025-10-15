@@ -17,7 +17,7 @@ order: 1200
 ### Low Impact Changes
 
 - [Modifying the Electron backend](#modifying-the-electron-backend)
-- [New build output location][#new-dist-location]
+- [New build output location](#new-codedistcode-location)
 
 ## Upgrading To 2.0 From 1.x
 
