@@ -742,7 +742,7 @@
             <x-faq-card
                 question="Is it possible to purchase additional developer seats or released apps?"
             >
-                <p>You can purchase more Mini or Pro licenses as needed.</p>
+                <p>You can purchase more Pro licenses as needed.</p>
             </x-faq-card>
 
             <x-faq-card question="What was the EAP and when did it end?">
