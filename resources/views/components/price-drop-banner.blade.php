@@ -45,7 +45,7 @@
             <div
                 class="gradient-text bg-clip-text tracking-tight text-pretty text-transparent sm:text-center"
             >
-                Mobile <b>Pro</b> and <b>Max</b> licenses now even <em>lower</em>!
+                Mobile <b>Pro</b> and <b>Max</b> licenses now up to <em>65% cheaper</em>!
             </div>
         </div>
     </div>
