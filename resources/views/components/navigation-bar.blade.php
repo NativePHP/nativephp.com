@@ -3,7 +3,6 @@
     x-show="!showMobileMenu"
 >
     {{-- Announcement banner goes here --}}
-    {{-- <x-bifrost-banner /> --}}
     <x-price-drop-banner />
 </div>
 <nav
