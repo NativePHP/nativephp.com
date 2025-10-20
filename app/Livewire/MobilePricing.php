@@ -33,7 +33,7 @@ class MobilePricing extends Component
 
     public function handlePurchaseRequest(array $data)
     {
-        if (!$this->user) {
+        if (! $this->user) {
             $user = $this->findOrCreateUser($data['email']);
         }
 
