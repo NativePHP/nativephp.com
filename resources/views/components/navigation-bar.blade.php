@@ -3,7 +3,7 @@
     x-show="!showMobileMenu"
 >
     {{-- Announcement banner goes here --}}
-    <x-bifrost-banner />
+    <x-price-drop-banner />
 </div>
 <nav
     class="sticky top-0 z-50 flex flex-col items-center justify-center border-b px-2 transition duration-200 ease-out min-[500px]:px-3"

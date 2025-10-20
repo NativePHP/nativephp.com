@@ -2,18 +2,9 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Enums\LicenseSource;
-use App\Enums\Subscription;
 use App\Http\Controllers\Controller;
-use App\Http\Resources\Api\LicenseResource;
-use App\Jobs\CreateAnystackLicenseJob;
-use App\Models\License;
-use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\URL;
-use Illuminate\Support\Str;
-use Illuminate\Validation\Rules\Enum;
 
 class TemporaryLinkController extends Controller
 {
@@ -28,7 +19,7 @@ class TemporaryLinkController extends Controller
             $validated['route'],
             now()->addMinutes($request->integer('expiration', 30)),
             [
-                'email' => $validated['email']
+                'email' => $validated['email'],
             ]
         );
 

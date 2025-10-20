@@ -1,8 +1,9 @@
 <section
+    id="pricing"
     class="mx-auto mt-24 max-w-6xl"
     aria-labelledby="pricing-heading"
 >
-    @if(! $discounted)
+    @if (! $discounted)
         <header class="relative z-10 grid place-items-center text-center">
             {{-- Section Heading --}}
             <h2
@@ -75,13 +76,13 @@
                 })
             }
         "
-        class="mt-10 grid {{ $discounted ? 'grid-cols-1 md:grid-cols-2' : 'grid-cols-[repeat(auto-fill,minmax(19rem,1fr))]' }} items-start gap-x-6 gap-y-8"
+        class="{{ $discounted ? 'grid-cols-1 md:grid-cols-2' : 'grid-cols-[repeat(auto-fill,minmax(19rem,1fr))]' }} mt-10 grid items-start gap-x-6 gap-y-8"
         aria-label="Pricing plans"
     >
-        @if(! $discounted)
+        @if (! $discounted)
             {{-- Mini Plan --}}
             <div
-                class="dark:bg-mirage h-full rounded-2xl bg-gray-100 p-7 opacity-0"
+                class="h-full rounded-2xl bg-gray-100 p-7 opacity-0 dark:bg-mirage"
                 aria-labelledby="pro-plan-heading"
             >
                 {{-- Plan Name --}}
@@ -89,7 +90,9 @@
                     id="pro-plan-heading"
                     class="text-3xl font-semibold"
                 >
-                    <span class="rounded-full bg-zinc-300 dark:bg-zinc-600 px-4">
+                    <span
+                        class="rounded-full bg-zinc-300 px-4 dark:bg-zinc-600"
+                    >
                         Mini
                     </span>
                 </h3>
@@ -99,14 +102,14 @@
                     class="flex items-start gap-1.5 pt-5"
                     aria-label="Price: FREE (with Bifrost subscription)"
                 >
-                    <div class="text-5xl font-semibold">
-                        FREE
-                    </div>
+                    <div class="text-5xl font-semibold">FREE</div>
                     <div class="self-end pb-1.5 text-zinc-500">
                         with
-                        <a href="/bifrost"
-                           target="_blank"
-                           class="dark:text-zinc-300 underline underline-offset-2 hover:text-zinc-400 dark:hover:text-zinc-100 transition-colors">
+                        <a
+                            href="/bifrost"
+                            target="_blank"
+                            class="underline underline-offset-2 transition-colors hover:text-zinc-400 dark:text-zinc-300 dark:hover:text-zinc-100"
+                        >
                             Bifrost
                         </a>
                     </div>
