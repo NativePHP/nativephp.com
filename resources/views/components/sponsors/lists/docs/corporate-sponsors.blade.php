@@ -1,15 +1,6 @@
 @php
     $sponsors = [
         [
-            'url' => 'https://www.redgalaxy.co.uk/',
-            'title' => 'Learn more about RedGalaxy',
-            'label' => 'Visit RedGalaxy website',
-            'component' => 'sponsors.logos.redgalaxy',
-            'class' => 'h-auto max-h-8 max-w-full',
-            'alt' => 'RedGalaxy logo',
-            'name' => 'RedGalaxy',
-        ],
-        [
             'url' => 'https://sevalla.com/?utm_source=nativephp&utm_medium=Referral&utm_campaign=homepage',
             'title' => 'Learn more about Sevalla',
             'label' => 'Visit Sevalla website',

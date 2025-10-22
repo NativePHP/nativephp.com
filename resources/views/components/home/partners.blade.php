@@ -157,15 +157,6 @@
                     aria-label="Partners of the NativePHP project"
                 >
                     <x-home.partner-card
-                        partnerName="RedGalaxy"
-                        href="https://www.redgalaxy.co.uk/"
-                    >
-                        <x-sponsors.logos.redgalaxy
-                            alt="RedGalaxy logo"
-                            loading="lazy"
-                        />
-                    </x-home.partner-card>
-                    <x-home.partner-card
                         partnerName="Sevalla"
                         href="https://sevalla.com/?utm_source=nativephp&utm_medium=Referral&utm_campaign=homepage"
                     >
