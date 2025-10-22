@@ -1,4 +1,4 @@
-<div
+{{--<div
     x-ref="sponsor"
     class="opacity-0"
 >
@@ -17,6 +17,7 @@
         <span class="sr-only">RedGalaxy</span>
     </a>
 </div>
+--}}
 
 <div
     x-ref="sponsor"
