@@ -93,8 +93,11 @@ it give you any special privileges to their system.**
 You can list all available printers:
 
 ```blade
-@@use(Native\Desktop\Facades\System) @@foreach(System::printers() as $printer)
-@{{ $printer->displayName }} @@endforeach
+@@use(Native\Desktop\Facades\System) 
+
+@@foreach(System::printers() as $printer)
+    @{{ $printer->displayName }} 
+@@endforeach
 ```
 
 Each item in the printers array is a `\Native\Desktop\DataObjects\Printer` which contains various device details and

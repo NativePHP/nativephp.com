@@ -13,6 +13,7 @@ order: 1200
 
 - [Serve command renamed](#renamed-codenativeservecode-command)
 - [Node integration disabled by default](#security-defaults)
+- [Changes to the Printer object](#changes-to-the-codeprintercode-object)
 
 ### Low Impact Changes
 
@@ -63,6 +64,12 @@ v2 drops support for macOS **_Catalina_** and **_Big Sur_**. This change comes f
 
 The `artisan native:serve` command has been deprecated and renamed to `artisan native:run` for better symmetry with the mobile package.
 Please update the `composer native:dev` script to reference the new run command.
+
+## Changes to the `Printer` object
+
+Electron removed the `isDefault` and `status` properties from their `PrinterInfo` object. See their docs regarding this change (here)[https://www.electronjs.org/docs/latest/breaking-changes#removed-isdefault-and-status-properties-on-printerinfo].
+
+To stay in step we had to remove these properties from our `\Native\Desktop\DataObjects\Printer` class as well. If you are using `System::printers()` make sure you are not referencing the `isDefault` and `status` properties.
 
 ## New `dist` location
 
