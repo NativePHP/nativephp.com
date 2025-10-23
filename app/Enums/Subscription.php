@@ -28,9 +28,11 @@ enum Subscription: string
         return match ($priceId) {
             config('subscriptions.plans.mini.stripe_price_id'),
             config('subscriptions.plans.mini.stripe_price_id_eap') => self::Mini,
+            'price_1RoZeVAyFo6rlwXqtnOViUCf',
             config('subscriptions.plans.pro.stripe_price_id'),
             config('subscriptions.plans.pro.stripe_price_id_discounted'),
             config('subscriptions.plans.pro.stripe_price_id_eap') => self::Pro,
+            'price_1RoZk0AyFo6rlwXqjkLj4hZ0',
             config('subscriptions.plans.max.stripe_price_id'),
             config('subscriptions.plans.max.stripe_price_id_discounted'),
             config('subscriptions.plans.max.stripe_price_id_eap') => self::Max,
