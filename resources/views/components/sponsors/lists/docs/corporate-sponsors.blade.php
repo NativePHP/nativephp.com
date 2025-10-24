@@ -27,27 +27,6 @@
             'alt' => 'Quantumweb logo',
             'name' => 'Quantumweb',
         ],
-        // Uncomment these if you want to include the commented sponsors
-        /*
-                                    [
-                                        'url' => 'https://serverauth.com/',
-                                        'title' => 'Learn more about ServerAuth',
-                                        'label' => 'Visit ServerAuth website',
-                                        'component' => 'sponsors.logos.serverauth',
-                                        'class' => 'block h-auto max-h-8 max-w-full fill-[#042340] dark:fill-white',
-                                        'alt' => 'ServerAuth logo',
-                                        'name' => 'ServerAuth'
-                                    ],
-                                    [
-                                        'url' => 'https://borah.digital/',
-                                        'title' => 'Learn more about Borah Digital Labs',
-                                        'label' => 'Visit Borah Digital Labs website',
-                                        'component' => 'sponsors.logos.borah',
-                                        'class' => 'block h-auto max-h-8 max-w-full dark:brightness-125',
-                                        'alt' => 'Borah Digital Labs logo',
-                                        'name' => 'Borah Digital Labs'
-                                    ],
-                                */
     ];
 
     $randomSponsor = $sponsors[array_rand($sponsors)];
