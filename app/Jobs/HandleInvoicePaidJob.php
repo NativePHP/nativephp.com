@@ -108,6 +108,9 @@ class HandleInvoicePaidJob implements ShouldQueue
 
     private function createLicense(): void
     {
+        // Add some delay to allow all the Stripe events to come in
+        sleep(10);
+
         // Assert the invoice line item is for a price_id that relates to a license plan.
         $plan = Subscription::fromStripePriceId($this->invoice->lines->first()->price->id);
 
