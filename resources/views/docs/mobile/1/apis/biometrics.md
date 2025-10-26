@@ -35,9 +35,9 @@ use Livewire\Attributes\On;
 use Native\Mobile\Events\Biometric\Completed;
 
 #[On('native:'.Completed::class)]
-public function handleBiometricAuth(bool $success)
+public function handle(Completed $event)
 {
-    if ($success) {
+    if ($event->success) {
         // User authenticated successfully
         $this->unlockSecureFeature();
     } else {
