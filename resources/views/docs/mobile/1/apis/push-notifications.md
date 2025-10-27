@@ -13,15 +13,15 @@ use Native\Mobile\Facades\PushNotifications;
 
 ## Methods
 
-### `enrollForPushNotifications()`
+### `enroll()`
 
 Requests permission and enrolls the device for push notifications.
 
 **Returns:** `void`
 
-### `getPushNotificationsToken()`
+### `getToken()`
 
-Retrieves the current FCM token for this device.
+Retrieves the current push notification token for this device.
 
 **Returns:** `string|null` - The FCM token, or `null` if not available
 
@@ -48,7 +48,7 @@ public function handlePushToken(string $token)
 ## Permission Flow
 
 1. User taps "Enable Notifications"
-2. App calls `enrollForPushNotifications()`
+2. App calls `enroll()`
 3. System shows permission dialog
 4. If granted, FCM generates token
 5. `TokenGenerated` event fires with token

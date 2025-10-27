@@ -52,12 +52,12 @@ It's common practice to request push notification permissions during app bootup 
 - The app is updated
 - Other internal FCM operations
 
-To request a token, use the `PushNotifications::getPushNotificationsToken()` method:
+To request a token, use the `PushNotifications::getToken()` method:
 
 ```php
 use Native\Mobile\Facades\PushNotifications;
 
-PushNotifications::getPushNotificationsToken();
+PushNotifications::getToken();
 ```
 
 If the user has approved your app to use push notifications and the request to FCM succeeded, a `TokenGenerated` event

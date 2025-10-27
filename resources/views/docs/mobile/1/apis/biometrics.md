@@ -14,14 +14,14 @@ use Native\Mobile\Facades\Biometrics;
 
 ## Methods
 
-### `promptForBiometricID()`
+### `prompt()`
 
 Prompts the user for biometric authentication.
 
 ```php
 use Native\Mobile\Facades\Biometrics;
 
-Biometrics::promptForBiometricID();
+Biometrics::prompt();
 ```
 
 ## Events
