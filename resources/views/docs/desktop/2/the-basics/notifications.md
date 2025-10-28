@@ -141,11 +141,11 @@ Notification::title('Hello from NativePHP')
     ->show();
 ```
 
-You can also provide a custom audio file. If you pass a relative path, prefix it with `file://`; absolute paths don't need the prefix.
+You can also provide a custom audio file.
 
 ```php
 Notification::title('Hello from NativePHP')
-    ->sound('file://' . resource_path('example.mp3'))
+    ->sound(resource_path('example.mp3'))
     ->show();
 ```
 
