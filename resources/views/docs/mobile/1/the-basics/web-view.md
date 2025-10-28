@@ -85,7 +85,8 @@ And it may be even worse in landscape view:
 
 ![](/img/docs/viewport-default-landscape.png)
 
-But by adding a few simple adjustments to our page, we can make it beautiful again:
+But by adding a few simple adjustments to our page, we can make it beautiful again (Well, maybe we should lose the
+red...):
 
 ```html
 <body class="nativephp-safe-area">
@@ -96,7 +97,36 @@ But by adding a few simple adjustments to our page, we can make it beautiful aga
 
 ![](/img/docs/viewport-fit-cover-landscape.png)
 
-(Well, maybe we should lose the red...)
+### Status Bar Style
 
-With just a few simple adjustments, we've been able to define a layout that will work well on a multitude of devices
+On Android, the icons in the Status Bar do not change color automatically based on the background color in your app.
+By default, they change based on whether the device is in Light/Dark Mode.
+
+If you have a consistent background color in both light and dark mode, you may use the `nativephp.status_bar_style`
+config key to set the appropriate status bar style for your app to give users the best experience.
+
+The possible options are:
+
+- `auto` - the default, which changes based on the device's Dark Mode setting
+- `light` - ideal if your app's background is dark-colored
+- `dark` - better if your app's background is light-colored
+
+<aside class="relative z-0 mt-5 overflow-hidden rounded-2xl bg-pink-50 px-5 ring-1 ring-black/5 dark:bg-pink-600/10">
+
+#### Missing Config Keys?
+
+If your `config/nativephp.php` file is missing newer config keys, you can simply add them in! Reference them from the
+default version of this config file in `vendor/nativephp/mobile/config/nativephp.php`.
+
+Alternatively, you can force-publish the config file by running:
+
+```shell
+php artisan vendor:publish --tag=nativephp-mobile-config --force
+```
+
+But note that this will overwrite any changes you've made to your copy of this config file.
+
+</aside>
+
+With just a few small changes, we've been able to define a layout that will work well on a multitude of devices
 without having to add complex calculations or lots of device-specific CSS rules to our code.
