@@ -49,7 +49,7 @@ class AppServiceProvider extends ServiceProvider
             : 'dev'
         );
         View::share('discordLink', 'https://discord.gg/nativephp');
-        View::share('bskyLink', 'https://bsky.app/profile/nativephp.bsky.social');
+        View::share('bskyLink', 'https://bsky.app/profile/nativephp.com');
         View::share('openCollectiveLink', 'https://opencollective.com/nativephp');
         View::share('githubLink', 'https://github.com/nativephp');
     }
