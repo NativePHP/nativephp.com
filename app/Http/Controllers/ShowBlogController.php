@@ -31,9 +31,17 @@ class ShowBlogController extends Controller
         SEOTools::opengraph()->setDescription($article->excerpt ?: 'Read this article on the NativePHP blog.');
         SEOTools::opengraph()->setType('article');
 
+        if ($article->og_image) {
+            SEOTools::opengraph()->addImage($article->og_image);
+        }
+
         // Set Twitter Card metadata
         SEOTools::twitter()->setTitle($article->title);
         SEOTools::twitter()->setDescription($article->excerpt ?: 'Read this article on the NativePHP blog.');
+
+        if ($article->og_image) {
+            SEOTools::twitter()->setImage($article->og_image);
+        }
 
         return view('article', [
             'article' => $article,
