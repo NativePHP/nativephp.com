@@ -69,12 +69,12 @@ class BlogTest extends TestCase
     }
 
     #[Test]
-    public function scheduled_articles_return_a_404()
+    public function scheduled_articles_are_visitable_via_direct_link()
     {
         $article = Article::factory()->scheduled()->create();
 
         $this->get(route('article', $article))
-            ->assertStatus(404);
+            ->assertOk();
     }
 
     #[Test]

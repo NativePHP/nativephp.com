@@ -62,6 +62,11 @@ class Article extends Model
         return $this->published_at && $this->published_at->isPast();
     }
 
+    public function isScheduled(): bool
+    {
+        return $this->published_at && $this->published_at->isFuture();
+    }
+
     public function publish(?DateTime $on = null)
     {
         if (! $on) {
