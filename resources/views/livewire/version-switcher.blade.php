@@ -3,7 +3,6 @@
     class="
         inline-flex items-center
         opacity-60 hover:opacity-100 transition-opacity duration-200
-        focus-within:outline-2 focus-within:rounded-xs focus-within:outline-offset-2
     "
 >
 
@@ -14,9 +13,10 @@
         wire:model.live="version"
         class="
             -ml-1 py-0 pr-8
-            bg-transparent border-0
+            border-0
             text-sm whitespace-nowrap
             focus:ring-0
+            dark:bg-black
         "
     >
 
