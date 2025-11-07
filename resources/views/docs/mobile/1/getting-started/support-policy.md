@@ -12,8 +12,8 @@ the platforms, with a focus on the current major release as a priority.**
 In practical terms, as of September 2025, this means we intend for NativePHP to be compatible — in part or in whole —
 with:
 
-- iOS 18
-- Android 13, 14, 15, 16
+- iOS 18+
+- Android 13+
 
 We do not guarantee support of all features across these versions, and whilst NativePHP may work in part on even older
 versions than the currently-supported ones, we do not provide support for these under this standard policy.
