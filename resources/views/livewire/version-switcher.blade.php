@@ -3,6 +3,7 @@
     class="
         inline-flex items-center
         opacity-60 hover:opacity-100 transition-opacity duration-200
+        focus-within:outline-2 focus-within:rounded-xs focus-within:outline-offset-2
     "
 >
 
