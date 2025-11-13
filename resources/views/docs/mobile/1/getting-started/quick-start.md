@@ -13,8 +13,29 @@ Make sure you have an [active license](/mobile) before you install.
 
 </aside>
 
-If you've already got your [environment set up](environment-setup) to build mobile apps using Xcode and/or Android Studio, then you can
-get building your first mobile app with NativePHP in minutes:
+If you've already got your [environment set up](environment-setup) to build mobile apps using Xcode and/or Android
+Studio, then you can get building your first mobile app with NativePHP in minutes:
+
+### 1. Update your `composer.json`
+Add the NativePHP Composer repository:
+
+```json
+"repositories": [
+    {
+        "type": "composer",
+        "url": "https://nativephp.composer.sh"
+    }
+]
+```
+
+### 2. Set your app's identifier
+You must set a `NATIVEPHP_APP_ID` in your `.env` file:
+
+```dotenv
+NATIVEPHP_APP_ID=com.cocacola.cokezero
+```
+
+### 3. Install & run
 
 ```bash
 # Install NativePHP for Mobile into a new Laravel app
@@ -33,5 +54,3 @@ php artisan native:run
 - **Examples** - Check out the Kitchen Sink demo app
     on [Android](https://play.google.com/store/apps/details?id=com.nativephp.kitchensinkapp) and
     [iOS](https://testflight.apple.com/join/vm9Qtshy)!
-
-
