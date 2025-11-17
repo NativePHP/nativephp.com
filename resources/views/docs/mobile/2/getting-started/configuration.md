@@ -97,8 +97,8 @@ You may enable the features you intend to use simply by changing the value of th
 
 - `biometric` - Allows your application to use fingerprint or face-recognition hardware (with a fallback to PIN code)
     to secure parts of your application.
-- `camera` - Allows your application to request access to the device's camera, if present. Note that the user may deny 
-    access and any camera functions will then result in a no-op.
+- `camera` - Allows your application to request access to the device's camera, if present. Required for taking photos and
+    recording video. Note that the user may deny access and any camera functions will then result in a no-op.
 - `nfc` - Allows your application to request access to the device's NFC reader, if present.
 - `push_notifications` - Allows your application to request permissions to send push notifications. Note that the user
     may deny this and any push notification functions will then result in a no-op.
@@ -107,6 +107,12 @@ You may enable the features you intend to use simply by changing the value of th
 - `vibrate` - In modern Android devices this is a requirement for most haptic feedback.
 - `storage_read` - Grants your app access to read from device storage locations.
 - `storage_write` - Allows your app to write to device storage.
+- `microphone` - Allows your application to request access to the device's microphone, if present. Required for audio
+    recording functionality. Note that the user may deny access and any microphone functions will then result in a no-op.
+- `qr-code` - Allows your application to scan QR codes and barcodes. Note that the user may deny camera access and any
+    scanning functions will then result in a no-op.
+- `network_state` - Allows your application to access information about the device's network connectivity status. This
+    permission is enabled by default as it's commonly needed for basic network state detection.
 
 ## Orientation
 

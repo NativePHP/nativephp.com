@@ -8,6 +8,24 @@ order: 500
 NativePHP for Mobile provides robust CLI commands designed for automated CI/CD environments. With proper configuration,
 you can build, package, and deploy mobile apps without manual intervention.
 
+<aside class="relative z-0 mt-5 overflow-hidden rounded-2xl bg-pink-50 px-5 ring-1 ring-black/5 dark:bg-pink-600/10">
+
+#### There's an Easier Way
+
+Setting up and maintaining CI/CD pipelines for mobile apps is complex and time-consuming. Managing build servers, signing credentials, environment variables, and deployment workflows requires significant DevOps expertise.
+
+That's why we built [Bifrost](https://bifrost.nativephp.com) - a platform that handles all of this complexity for you:
+
+- **Set credentials once per app** - No more managing certificates and profiles in CI
+- **Auto-deploy** - Push to your repo and Bifrost builds and deploys automatically
+- **Team collaboration** - Share apps with your team and manage access easily
+- **Over-the-air updates** - Deploy changes to users instantly without app store approval
+- **Low monthly cost** - Simple, affordable pricing
+
+While these CI/CD commands give you complete control, Bifrost eliminates the need for custom pipelines and infrastructure management.
+
+</aside>
+
 ## Key Commands for CI/CD
 
 ### Installation Command

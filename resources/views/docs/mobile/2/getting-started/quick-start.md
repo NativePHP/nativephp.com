@@ -35,6 +35,14 @@ You must set a `NATIVEPHP_APP_ID` in your `.env` file:
 NATIVEPHP_APP_ID=com.cocacola.cokezero
 ```
 
+<aside class="relative z-0 mt-5 overflow-hidden rounded-2xl bg-pink-50 px-5 ring-1 ring-black/5 dark:bg-pink-600/10">
+
+#### Note
+
+Use only lowercase letters, numbers, and periods. Special characters (like hyphens, underscores, or spaces) will cause the build to fail.
+
+</aside>
+
 ### 3. Install & run
 
 ```bash

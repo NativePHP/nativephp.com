@@ -26,3 +26,23 @@ All files must be accessed using _relative_ paths from the root of your app. Use
 Note that the `storage_path()` helper points to a location _outside_ of your Laravel application's root.
 
 </aside>
+
+## Pro tip! 
+
+Use the `asset()` helper method to access files in the public directory. Additionally, update your filesystems.php public url to the following:
+
+```php
+'public' => [
+    'driver' => 'local',
+    'root' => storage_path('app/public'),
+    'url' => env('APP_URL').'/_assets/storage',
+    'visibility' => 'public',
+    'throw' => false,
+    'report' => false,
+],
+```
+
+Now you can use Laravel's Storage facade to display media in the webview, like so: 
+```php
+Storage::disk('public')->url('/file.jpg)
+```

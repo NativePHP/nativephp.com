@@ -7,11 +7,9 @@ NativePHP for Mobile is stable and already deployed in production apps released 
 days. We haven't yet built interfaces to all of the available mobile APIs.
 
 We're working on adding more and more features, including (in no particular order):
- - Microphone access
  - Bluetooth
  - SMS (Android only)
  - File picker
- - Video camera access
  - Document scanner
  - Background tasks
  - Geofencing
@@ -27,11 +25,8 @@ We're working on adding more and more features, including (in no particular orde
  - Accelerometer
  - Screen brightness
  - More Haptic feedback
- - Network info access
- - Battery status 
- - CPU/Device information
  - Ads
- - In-app billing
+ - In-app purchases and wallet payments
 
 <aside class="relative z-0 mt-5 overflow-hidden rounded-2xl bg-pink-50 px-5 ring-1 ring-black/5 dark:bg-pink-600/10">
 

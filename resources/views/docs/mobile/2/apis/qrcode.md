@@ -83,9 +83,9 @@ public function handleScan($data, $format, $id = null)
 }
 ```
 
-## Platform Support
+## Notes
 
-- **Android:** ML Kit Barcode Scanning (API 21+)
-- **iOS:** AVFoundation (iOS 13.0+)
-
-Camera permissions are handled automatically on both platforms.
+- **Platform Support:**
+  - **Android:** ML Kit Barcode Scanning (API 21+)
+  - **iOS:** AVFoundation (iOS 13.0+)
+- **Permissions:** You must enable the `qr_code` permission in `config/nativephp.php` to use the scanner. Camera permissions are then handled automatically, and users will be prompted for permission the first time the scanner is used.

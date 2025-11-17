@@ -54,6 +54,14 @@ If you experience a cURL error when running this command, make sure you are runn
 
 <aside class="relative z-0 mt-5 overflow-hidden rounded-2xl bg-pink-50 px-5 ring-1 ring-black/5 dark:bg-pink-600/10">
 
+#### WSL Not Supported
+
+NativePHP does NOT work in WSL (Windows Subsystem for Linux). You must install and run NativePHP directly on Windows.
+
+</aside>
+
+<aside class="relative z-0 mt-5 overflow-hidden rounded-2xl bg-pink-50 px-5 ring-1 ring-black/5 dark:bg-pink-600/10">
+
 #### Windows Performance Tip
 
 Add `C:\temp` as well as the project folder to your Windows Defender exclusions list to significantly speed up Composer

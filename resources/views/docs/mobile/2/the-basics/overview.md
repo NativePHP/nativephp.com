@@ -50,9 +50,7 @@ Each native app "shell" runs a number of steps to prepare the environment each t
 including:
 
 - Checking to see if the bundled version of your Laravel app is newer than the installed version
-  - Installing the newer version if necessary 
+- Installing the newer version if necessary 
 - Running migrations
 - Clearing caches
-
-Normally, this process takes just a couple of seconds in normal use. After your app has been updated, it will take a
-few seconds longer.
+- Creating storage symlinks

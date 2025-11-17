@@ -50,7 +50,7 @@ with a full minimum patch release defined in your `composer.json`:
 ```json
 {
     "require": {
-        "nativephp/mobile": "~1.1.0"
+        "nativephp/mobile": "~2.0.0"
     }
 }
 ```

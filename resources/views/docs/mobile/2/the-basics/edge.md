@@ -24,14 +24,14 @@ Write familiar Blade components in your layouts:
 
 @verbatim
 ```blade
-<x-native:bottom-nav>
-    <x-native:bottom-nav-item
+<native:bottom-nav>
+    <native:bottom-nav-item
         id="home"
         icon="home"
         label="Home"
         url="/home"
     />
-</x-native:bottom-nav>
+</native:bottom-nav>
 ```
 @endverbatim
 
