@@ -270,3 +270,12 @@ nav.docs-navigation > ul > li > ul {
 .dark .prose code {
     @apply bg-gray-800 text-purple-300;
 }
+
+.prose table {
+    @apply w-full;
+}
+
+.prose :where(table):not(:where([class~='not-prose'] *)) {
+    display: block;
+    overflow-x: auto;
+}
