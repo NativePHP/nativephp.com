@@ -14,9 +14,10 @@
         wire:model.live="version"
         class="
             -ml-1 py-0 pr-8
-            bg-transparent border-0
+            border-0
             text-sm whitespace-nowrap
             focus:ring-0
+            dark:bg-black
         "
     >
 
