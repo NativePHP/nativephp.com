@@ -2,7 +2,7 @@
 
 return [
 
-    'users' => str_getcsv(env('FILAMENT_USERS') ?: ''),
+    'users' => str_getcsv(env('FILAMENT_USERS') ?: '', escape: ''),
 
     /*
     |--------------------------------------------------------------------------
