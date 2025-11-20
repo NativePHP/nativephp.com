@@ -10,6 +10,11 @@
                 1 => '1.x',
                 2 => '2.x'
             ]" />
+        @elseif($platform === 'mobile')
+            <livewire:version-switcher :versions="[
+                1 => '1.x',
+                2 => '2.x'
+            ]" />
         @endif
 
         <x-docs.toc-and-sponsors :tableOfContents="$tableOfContents" />
@@ -26,6 +31,11 @@
 
         {{-- Version switcher --}}
         @if($platform === 'desktop')
+            <livewire:version-switcher :versions="[
+                1 => '1.x',
+                2 => '2.x'
+            ]" />
+        @elseif($platform === 'mobile')
             <livewire:version-switcher :versions="[
                 1 => '1.x',
                 2 => '2.x'
