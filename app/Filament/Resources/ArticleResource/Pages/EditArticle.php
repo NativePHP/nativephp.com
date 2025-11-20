@@ -26,6 +26,40 @@ class EditArticle extends EditRecord
     protected function getHeaderActions(): array
     {
         return [
+            Actions\Action::make('preview')
+                ->label('Preview')
+                ->icon('heroicon-o-eye')
+                ->url(fn () => route('article', $this->record))
+                ->openUrlInNewTab(),
+            Actions\Action::make('publish')
+                ->label('Publish')
+                ->icon('heroicon-o-newspaper')
+                ->visible(fn () => ! $this->record->isPublished())
+                ->form([
+                    \Filament\Forms\Components\Radio::make('publish_type')
+                        ->label('Publish Options')
+                        ->options([
+                            'now' => 'Publish Now',
+                            'schedule' => 'Schedule for Later',
+                        ])
+                        ->default('now')
+                        ->live()
+                        ->required(),
+                    \Filament\Forms\Components\DateTimePicker::make('published_at')
+                        ->label('Published At')
+                        ->displayFormat('M j, Y H:i')
+                        ->seconds(false)
+                        ->afterOrEqual('now')
+                        ->visible(fn ($get) => $get('publish_type') === 'schedule')
+                        ->required(fn ($get) => $get('publish_type') === 'schedule'),
+                ])
+                ->action(function (array $data) {
+                    if ($data['publish_type'] === 'now') {
+                        $this->record->publish();
+                    } else {
+                        $this->record->publish(\Illuminate\Support\Carbon::parse($data['published_at']));
+                    }
+                }),
             Actions\DeleteAction::make(),
         ];
     }

@@ -4,7 +4,6 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\ArticleResource\Actions\PreviewAction;
 use App\Filament\Resources\ArticleResource\Actions\PublishAction;
-use App\Filament\Resources\ArticleResource\Actions\ScheduleAction;
 use App\Filament\Resources\ArticleResource\Actions\UnpublishAction;
 use App\Filament\Resources\ArticleResource\Pages;
 use App\Models\Article;
@@ -80,10 +79,6 @@ class ArticleResource extends Resource
                     ->searchable()
                     ->sortable(),
 
-                TextColumn::make('excerpt')
-                    ->searchable()
-                    ->limit(50),
-
                 TextColumn::make('author.name')
                     ->label('Author')
                     ->searchable()
@@ -106,7 +101,6 @@ class ArticleResource extends Resource
                     Tables\Actions\EditAction::make()->url(fn ($record) => static::getUrl('edit', ['record' => $record->id])),
                     UnpublishAction::make('unpublish'),
                     PublishAction::make('publish'),
-                    ScheduleAction::make('schedule'),
                 ]),
             ])
             ->bulkActions([
