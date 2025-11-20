@@ -270,3 +270,10 @@ nav.docs-navigation > ul > li > ul {
 .dark .prose code {
     @apply bg-gray-800 text-purple-300;
 }
+
+/* Responsive embedded content */
+@layer components {
+    .aspect-video iframe {
+        @apply absolute inset-0 w-full h-full;
+    }
+}
