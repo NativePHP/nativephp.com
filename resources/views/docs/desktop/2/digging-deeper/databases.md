@@ -86,7 +86,7 @@ When developing, it's especially useful to seed your database with sample data. 
 [Database Seeders](https://laravel.com/docs/seeding), you can run these using the `native:db:seed` command:
 
 ```shell
-php artisan native:db:seed
+php artisan native:seed
 ```
 
 ## When not to use a database
