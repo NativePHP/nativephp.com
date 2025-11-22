@@ -29,6 +29,14 @@ You cannot build iOS apps on Windows or Linux. This is a limitation imposed by A
 4. Homebrew & CocoaPods
 5. _Optional_ iOS device for testing
 
+<aside class="relative z-0 mt-5 overflow-hidden rounded-2xl bg-pink-50 px-5 ring-1 ring-black/5 dark:bg-pink-600/10">
+
+#### Note
+
+The iOS simulator is not supported on Intel Macs (x86_64 architecture). It requires an Apple Silicon Mac (ARM64 architecture).
+
+</aside> 
+
 ### Setting up iOS Development Environment
 
 1. **Install Xcode**
