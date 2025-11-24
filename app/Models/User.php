@@ -55,6 +55,15 @@ class User extends Authenticatable implements FilamentUser
         return $this->hasMany(WallOfLoveSubmission::class);
     }
 
+    public function hasActiveMaxLicense(): bool
+    {
+        return $this->licenses()
+            ->where('policy_name', 'max')
+            ->where('is_suspended', false)
+            ->whereActive()
+            ->exists();
+    }
+
     public function getFirstNameAttribute(): ?string
     {
         if (empty($this->name)) {
