@@ -38,4 +38,8 @@ return [
     'bifrost' => [
         'api_key' => env('BIFROST_API_KEY'),
     ],
+
+    'opencollective' => [
+        'webhook_secret' => env('OPENCOLLECTIVE_WEBHOOK_SECRET'),
+    ],
 ];
