@@ -279,3 +279,21 @@ nav.docs-navigation > ul > li > ul {
     display: block;
     overflow-x: auto;
 }
+
+/*
+  Blur and dim the lines that don't have the `.line-focus` class,
+  but are within a code block that contains any focus lines.
+*/
+.torchlight.has-focus-lines .line:not(.line-focus) {
+    transition: filter 0.35s, opacity 0.35s;
+    filter: blur(.095rem);
+    opacity: .65;
+}
+
+/*
+  When the code block is hovered, bring all the lines into focus.
+*/
+.torchlight.has-focus-lines:hover .line:not(.line-focus) {
+    filter: blur(0px);
+    opacity: 1;
+}

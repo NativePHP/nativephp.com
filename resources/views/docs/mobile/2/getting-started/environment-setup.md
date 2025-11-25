@@ -14,7 +14,7 @@ Windows is with [Laravel Herd](https://herd.laravel.com). It's fast and free!
 
 ## iOS Requirements
 
-<aside class="relative z-0 mt-5 overflow-hidden rounded-2xl bg-pink-50 px-5 ring-1 ring-black/5 dark:bg-pink-600/10">
+<aside class="relative z-0 mt-5 overflow-hidden rounded-2xl bg-gradient-to-tl from-transparent to-violet-100/75 px-5 ring-1 ring-black/5 dark:from-slate-900/30 dark:to-indigo-900/35">
 
 #### Heads up!
 
@@ -71,7 +71,7 @@ to develop and test your apps on a Simulator. However, you will need to enroll w
 2. Android SDK with API 33 or higher
 3. **Windows only**: You must have [7zip](https://www.7-zip.org/) installed.
 
-<aside class="relative z-0 mt-5 overflow-hidden rounded-2xl bg-pink-50 px-5 ring-1 ring-black/5 dark:bg-pink-600/10">
+<aside class="relative z-0 mt-5 overflow-hidden rounded-2xl bg-gradient-to-tl from-transparent to-violet-100/75 px-5 ring-1 ring-black/5 dark:from-slate-900/30 dark:to-indigo-900/35">
 
 #### JDK Version Compatibility
 

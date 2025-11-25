@@ -6,7 +6,7 @@ order: 200
 ## Overview
 
 NativePHP for Mobile is designed so that most configuration happens **inside your Laravel application**, without
-requiring you to manually open Xcode or Android Studio.
+requiring you to open Xcode or Android Studio and manually update config files.
 
 This page explains the key configuration points you can control through Laravel.
 
@@ -17,19 +17,8 @@ The `config/nativephp.php` config file contains a number of useful options.
 NativePHP uses sensible defaults and makes several assumptions based on default installations for tools required to
 build and run apps from your computer. 
 
-You can override these defaults by editing the `nativephp.php` config file in your Laravel project, and in many case
+You can override these defaults by editing the `nativephp.php` config file in your Laravel project, and in many cases
 simply by changing environment variables.
-
-```dotenv
-NATIVEPHP_APP_VERSION 
-NATIVEPHP_APP_VERSION_CODE 
-NATIVEPHP_APP_ID 
-NATIVEPHP_DEEPLINK_SCHEME 
-NATIVEPHP_DEEPLINK_HOST 
-NATIVEPHP_APP_AUTHOR 
-NATIVEPHP_GRADLE_PATH 
-NATIVEPHP_ANDROID_SDK_LOCATION
-```
 
 ## `NATIVEPHP_APP_ID`
 
@@ -69,13 +58,14 @@ end users once an app is published.
 
 ## Cleanup `env` keys
 
-The `cleanup_env_keys` array in the config file allows you to specify keys that should be removed from the `.env` file before bundling. 
-This is useful for removing sensitive information like API keys or other secrets.
+The `cleanup_env_keys` array in the config file allows you to specify keys that should be removed from the `.env` file
+before bundling. This is useful for removing sensitive information like API keys or other secrets.
 
 ## Cleanup `exclude_files`
 
-The `cleanup_exclude_files` array in the config file allows you to specify files and folders that should be removed before bundling. 
-This is useful for removing files like logs or other temporary files.
+The `cleanup_exclude_files` array in the config file allows you to specify files and folders that should be removed
+before bundling. This is useful for removing files like logs or other temporary files that aren't required for your app
+to function and bloat your downloads.
 
 ## Permissions
 In general, the app stores don't want your app to have permissions (a.k.a entitlements) it doesn't need. 
@@ -85,11 +75,23 @@ By default, all optional permissions are disabled.
 You may enable the features you intend to use simply by changing the value of the appropriate permission to `true`:
 
 ```php
-
     'permissions' => [
-
         'biometric' => true,
+        //...
+    ],
+```
 
+For iOS, this will provide a sensible default description.
+
+### Custom permission descriptions
+
+For iOS, it's possible to define custom permission descriptions. In most cases, you are required to provide clear
+reasons why your app needs certain permissions. You can do this easily from the config file:
+
+```php
+    'permissions' => [
+        'biometric' => 'Access to the biometric sensor is needed to secure user resources',
+        //...
     ],
 ```
 
@@ -119,19 +121,14 @@ You may enable the features you intend to use simply by changing the value of th
 
 ## Orientation
 
-NativePHP (as of v1.10.3) allows users to custom specific orientations per device through the config file. The config allows for granularity for iPad, iPhone and Android devices. Options for each device can be seen below.
+NativePHP (as of v1.10.3) allows users to custom specific orientations per device through the config file. The config
+allows for granularity for iPad, iPhone and Android devices. Options for each device can be seen below.
 
 NOTE: if you want to disable iPad support completely simply apply `false` for each option.
 
 ```php
 'orientation' => [
-    'iPhone' => [
-        'portrait' => true,
-        'upside_down' => false,
-        'landscape_left' => false,
-        'landscape_right' => false,
-    ],
-    'iPad' => [
+    'iphone' => [
         'portrait' => true,
         'upside_down' => false,
         'landscape_left' => false,
@@ -146,3 +143,23 @@ NOTE: if you want to disable iPad support completely simply apply `false` for ea
 ],
 ```
 
+Regardless of these orientation settings, if your app supports iPad, it will be available in all orientations.
+
+## iPad Support
+
+With NativePHP, your app can work on iPad too! If you wish to support iPad, simply set the `ipad` config option to `true`:
+
+```php
+'ipad' => true,
+```
+
+Using standard CSS responsive design principles, you can make your app work beautifully across all screen sizes. 
+
+<aside class="relative z-0 mt-5 overflow-hidden rounded-2xl bg-gradient-to-tl from-transparent to-violet-100/75 px-5 ring-1 ring-black/5 dark:from-slate-900/30 dark:to-indigo-900/35">
+
+#### Once iPad, Always iPad
+
+Once you've published an app with iPad support, it cannot be undone. If you wish to remove iPad support, you
+will need to change your `NATIVEPHP_APP_ID` and publish the app under a new App Store listing.
+
+</aside>

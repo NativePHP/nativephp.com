@@ -17,7 +17,7 @@ your ideas and questions through the [forum](https://github.com/orgs/nativephp/d
 [raising issues](https://github.com/nativephp/laravel/issues/new/choose)/reporting bugs, and discussing on
 [Discord]({{ $discordLink }}).
 
-<aside class="relative z-0 mt-5 overflow-hidden rounded-2xl bg-pink-50 px-5 ring-1 ring-black/5 dark:bg-pink-600/10">
+<aside class="relative z-0 mt-5 overflow-hidden rounded-2xl bg-gradient-to-tl from-transparent to-violet-100/75 px-5 ring-1 ring-black/5 dark:from-slate-900/30 dark:to-indigo-900/35">
 
 #### Can you sponsor?
 

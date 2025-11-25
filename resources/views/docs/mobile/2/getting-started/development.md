@@ -1,6 +1,6 @@
 ---
 title: Development
-order: 300
+order: 250
 ---
 
 Developing your NativePHP apps can be done in the browser, using workflows with which you're already familiar.
@@ -8,12 +8,11 @@ Developing your NativePHP apps can be done in the browser, using workflows with 
 This allows you to iterate rapidly on parts like the UI and major functionality, even using your favorite tools for
 testing etc.
 
-But when you want to test _native_ features, then you must run your app on a real/emulated device.
+But when you want to test _native_ features, then you must run your app on a real or emulated device.
 
-Whether you run your native app on an emulated or real device, it will always require compilation after changes have
-been made.
+Whether you run your native app on an emulated or real device, it will require compilation after changes have been made.
 
-<aside class="relative z-0 mt-5 overflow-hidden rounded-2xl bg-pink-50 px-5 ring-1 ring-black/5 dark:bg-pink-600/10">
+<aside class="relative z-0 mt-5 overflow-hidden rounded-2xl bg-gradient-to-tl from-transparent to-violet-100/75 px-5 ring-1 ring-black/5 dark:from-slate-900/30 dark:to-indigo-900/35">
 
 #### Platforms
 
@@ -35,27 +34,35 @@ System::isAndroid() // -> `true` on Android
 If you're using Vite or similar tooling to build any part of your UI (e.g. for React/Vue, Tailwind etc), you'll need
 to run your asset build command _before_ compiling your app.
 
-### Inertia on iOS
+To facilitate ease of development, you should install the `nativephpMobile` Vite plugin.
 
-Due to the way your apps are configured to work on iOS, we need to patch the Axios package to make Inertia work.
+### The `nativephpMobile` Vite plugin
 
-We've tried to make this as straightforward as possible. Simply run:
+To make your frontend build process work well with NativePHP, simply add the `nativephpMobile` plugin to your
+`vite.config.js`:
 
-```shell
-php artisan native:patch-inertia
+```js
+import { nativephpMobile } from './vendor/nativephp/mobile/resources/js/vite-plugin.js'; // [tl! focus]
+
+export default defineConfig({
+    plugins: [
+        laravel({
+            input: ['resources/css/app.css', 'resources/js/app.js'],
+            refresh: true,
+        }),
+        tailwindcss(),
+        nativephpMobile(), // [tl! focus]
+    ]
+});
 ```
 
-This will backup your current `vite.config.js` and replace it with one that 'fixes' Axios.
-
-You will just need to copy over any specific config (plugins etc) from your old Vite config to this new one.
-
-Once that's done, you'll need to adjust your Vite build command for when you're creating iOS builds. _Only_ for iOS
-builds. (If you try to run these builds on Android they probably won't work.)
-
-Add the `--mode=ios` to your build command. Run it before compiling your app for iOS. Here's an example using `npm`:
+Once that's done, you'll need to adjust your Vite build command when creating builds for each platform — simply add the
+`--mode=` option. Run these before compiling your app for each platform in turn:
 
 ```shell
 npm run build -- --mode=ios
+
+npm run build -- --mode=android
 ```
 
 ## Compile your app
@@ -63,13 +70,13 @@ npm run build -- --mode=ios
 To compile and run your app, simply run:
 
 ```shell
-php artisan native:run --build=debug
+php artisan native:run
 ```
 
 This single command takes care of everything and allows you to run new builds of your application without having to
 learn any new editors or platform-specific tools.
 
-<aside class="relative z-0 mt-5 overflow-hidden rounded-2xl bg-pink-50 px-5 ring-1 ring-black/5 dark:bg-pink-600/10">
+<aside class="relative z-0 mt-5 overflow-hidden rounded-2xl bg-gradient-to-tl from-transparent to-violet-100/75 px-5 ring-1 ring-black/5 dark:from-slate-900/30 dark:to-indigo-900/35">
 
 #### Rule of thumb
 
@@ -96,26 +103,52 @@ php artisan native:open
 We've tried to make compiling your apps as fast as possible, but when coming from the 'make a change; hit refresh'-world
 of PHP development that we all love, compiling apps can feel like a slow and time-consuming process.
 
-So we've released hot reloading, which aims to make your development experience feel just like home. 
+Hot reloading aims to make your app development experience feel just like home.
 
-You can enable hot reloading by running the following command:
+You can start hot reloading by running the following command:
 
 ```shell
-php artisan native:watch {platform:ios|android}
+php artisan native:watch
+```
+
+You can also pass the `--watch` option to the `native:run` command.
+
+This will start a long-lived process that watches your application's source files for changes, pushing them into the
+emulator after any updates and reloading the current screen.
+
+Use this in tandem with Vite's own HMR for the platform you wish to test on:
+
+```shell
+npm run dev -- --mode=ios
+
+npm run dev -- --mode=android
 ```
 
 This is useful during development for quickly testing changes without re-compiling your entire app. When you make
 changes to any files in your Laravel app, the web view will be reloaded and your changes should show almost immediately.
 
-### Implementation
+Vite HMR is perfect for apps that use SPA frameworks like Vue or React to build the UI. It even works on real devices,
+not just simulators! As long as the device is on the same network as the development machine.
 
-The proper way to implement this is to first `run` your app on your device/emulator, then start HMR with `npm run dev` then in a separate terminal run the `native:watch` command. This will reload any Blade/Livewire files as well as any recompiled assets (css/js etc).
+<aside class="relative z-0 mt-5 overflow-hidden rounded-2xl bg-gradient-to-tl from-transparent to-violet-100/75 px-5 ring-1 ring-black/5 dark:from-slate-900/30 dark:to-indigo-900/35">
 
-<aside class="relative z-0 mt-5 overflow-hidden rounded-2xl bg-pink-50 px-5 ring-1 ring-black/5 dark:bg-pink-600/10">
+#### Livewire and HMR on real devices
 
-#### Note
+Full hot reloading support for Livewire on real devices is not yet available.
 
- 
+</aside>
+
+### Order matters
+
+Depending on which order you run these commands, you may find that hot reloading doesn't work immediately. It's often
+best to get the commands running, get your app open, and then make a request to a new screen to allow your app to pick
+up the `hot` file's presence and connect to the HMR server.
+
+<aside class="relative z-0 mt-5 overflow-hidden rounded-2xl bg-gradient-to-tl from-transparent to-violet-100/75 px-5 ring-1 ring-black/5 dark:from-slate-900/30 dark:to-indigo-900/35">
+
+#### Hot reloading config
+
+You can configure the folders that the `watch` command pays attention to in your `config/nativephp.php` file:
 
 ```php
 'hot_reload' => [
@@ -129,19 +162,8 @@ The proper way to implement this is to first `run` your app on your device/emula
     ],
 ]
 ```
-```js
-// And update your vite.config.ts
-server: {
-    port: 5173,
-    cors: true,
-    hmr: {
-        host: '127.0.0.1',
-    },
-},
-```
 
 </aside>
-
 
 ## Releasing
 
@@ -186,7 +208,7 @@ submit it to the stores for approval and distribution.
 - [Google Play Store submission guidelines](https://support.google.com/googleplay/android-developer/answer/9859152?hl=en-GB#zippy=%2Cmaximum-size-limit)
 - [Apple App Store submission guidelines](https://developer.apple.com/ios/submit/)
 
-<aside class="relative z-0 mt-5 overflow-hidden rounded-2xl bg-pink-50 px-5 ring-1 ring-black/5 dark:bg-pink-600/10">
+<aside class="relative z-0 mt-5 overflow-hidden rounded-2xl bg-gradient-to-tl from-transparent to-violet-100/75 px-5 ring-1 ring-black/5 dark:from-slate-900/30 dark:to-indigo-900/35">
 
 #### Skip the prompts
 
