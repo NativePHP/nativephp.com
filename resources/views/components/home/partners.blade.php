@@ -40,7 +40,7 @@
         <div class="mt-5 flex flex-wrap gap-5 lg:mt-7 lg:flex-nowrap">
             {{-- Featured partners --}}
             <div
-                class="grid w-full grid-cols-1 gap-5 md:grid-cols-[repeat(auto-fill,minmax(15rem,1fr))] lg:w-auto lg:grid-cols-1"
+                class="grid w-full grid-cols-1 gap-5 md:grid-cols-[repeat(auto-fill,minmax(15rem,1fr))] lg:w-4/5 lg:grid-cols-1"
                 aria-label="Featured partners of the NativePHP project"
             >
                 <x-home.featured-partner-card
@@ -59,6 +59,24 @@
                         From online booking to interactive kiosks, Nexcalia
                         helps businesses streamline appointments and improve
                         customer experiences.
+                    </x-slot>
+                </x-home.featured-partner-card>
+
+                <x-home.featured-partner-card
+                    partnerName="Web Mavens"
+                    tagline="Build Secure, Scalable Web Apps"
+                    href="https://www.webmavens.com/?ref=nativephp"
+                >
+                    <x-slot:logo>
+                        <x-sponsors.logos.webmavens
+                            class="dark:fill-white"
+                            aria-hidden="true"
+                        />
+                    </x-slot>
+
+                    <x-slot:description>
+                        Laravel Partners crafting secure, SOC 2–ready apps with NativePHP and modern web technologies.
+                        Trusted by healthcare and enterprise teams, and friendly to startups too.
                     </x-slot>
                 </x-home.featured-partner-card>
                 <x-home.featured-partner-card

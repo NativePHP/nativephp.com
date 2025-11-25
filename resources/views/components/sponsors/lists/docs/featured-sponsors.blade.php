@@ -13,6 +13,20 @@
 </a>
 
 <a
+    href="https://www.webmavens.com/?ref=nativephp"
+    title="Learn more about Web Mavens"
+    aria-label="Visit Web Mavens website"
+    class="inline-grid h-16 w-full shrink-0 place-items-center rounded-2xl bg-gray-100 px-5 transition duration-200 hover:bg-gray-200/70 hover:ring-1 hover:ring-black/60 dark:bg-mirage dark:hover:bg-haiti dark:hover:ring-cloud"
+    rel="noopener sponsored"
+>
+    <x-sponsors.logos.webmavens
+        class="block h-auto max-h-8 max-w-full dark:fill-white"
+        aria-hidden="true"
+    />
+    <span class="sr-only">Web Mavens</span>
+</a>
+
+<a
     href="https://laradevs.com/?ref=nativephp"
     title="Learn more about Laradevs"
     aria-label="Visit Laradevs website"
