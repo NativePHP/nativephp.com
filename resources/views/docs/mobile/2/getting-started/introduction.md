@@ -3,7 +3,7 @@ title: Introduction
 order: 1
 ---
 
-## Welcome to the revolution!
+## Enjoy building mobile apps!
 
 NativePHP for Mobile is the first library of its kind that lets you run full PHP applications natively on mobile
 devices — no web server required.
@@ -18,8 +18,9 @@ experiences using the tools you already know.
 
 - 📱 **Native performance**  
     Your app runs natively through an embedded PHP runtime optimized for each platform.  
-- 🔥 **True mobile APIs**  
-    Access camera, biometrics, push notifications, and more. One cohesive library that does it all.
+- 🔥 **True native APIs**  
+    Access camera, biometrics, push notifications, and more. Build beautiful UIs with native components. All from one
+    cohesive library that does it all.
 - ⚡ **Laravel powered**  
     Leverage the entire Laravel ecosystem and your existing skillset.
 - 🚫 **No web server required**  
@@ -35,16 +36,15 @@ No new languages. No unfamiliar build tools. No fighting with Gradle or Xcode.
 Just PHP.
 
 Developers around the world are using the skills they already have to build and ship real mobile apps — faster than
-ever. In just a few hours, you can go from code to app store submission.
+ever. In just a few minutes, you can go from code to app store submission.
 
 ## How does it work?
-
-On the simplest level:
 
 1. A pre-compiled version of PHP is bundled with your code into a Swift/Kotlin shell application.
 2. NativePHP's custom Swift/Kotlin bridges manage the PHP environment, running your PHP code directly.
 3. A custom PHP extension is compiled into PHP, that exposes PHP interfaces to native functions.
-4. Your app renders in a native web view, so you can continue developing your UI the way you're used to.
+4. Build with HTML, JavaScript, Tailwind, Blade, Livewire, React, Vue, Svelte — whatever you're most comfortable with!
+5. And now in v2: use truly native UI components too with [EDGE](/docs/mobile/2/edge-components/)!
 
 You simply interact with an easy-to-use set of functions from PHP and everything just works!
 

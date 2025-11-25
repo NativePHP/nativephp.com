@@ -28,6 +28,14 @@ Add the NativePHP Composer repository:
 ]
 ```
 
+#### Running Composer 2.9+?
+
+If you're running Composer 2.9 or above, you can just use a single command, instead of copy-pasting the above:
+
+```shell
+composer repo add nativephp composer https://nativephp.composer.sh
+```
+
 ### 2. Set your app's identifier
 You must set a `NATIVEPHP_APP_ID` in your `.env` file:
 
@@ -37,9 +45,10 @@ NATIVEPHP_APP_ID=com.cocacola.cokezero
 
 <aside class="relative z-0 mt-5 overflow-hidden rounded-2xl bg-pink-50 px-5 ring-1 ring-black/5 dark:bg-pink-600/10">
 
-#### Note
+#### App ID Rules
 
-Use only lowercase letters, numbers, and periods. Special characters (like hyphens, underscores, or spaces) will cause the build to fail.
+Use only lowercase letters, numbers, and periods. Special characters (like hyphens, underscores, spaces or emoji) will
+cause the build to fail.
 
 </aside>
 
@@ -54,6 +63,22 @@ php artisan native:install
 
 # Run your app on a mobile device
 php artisan native:run
+```
+
+#### The `native` command
+
+When you run `native:install`, NativePHP installs a `native` script helper that can be used as a convenient wrapper to
+the `native` Artisan command namespace. Once this is installed you can do the following:
+
+```shell
+# Instead of...
+php artisan native:run
+
+# Do
+php native run
+
+# Or
+./native run
 ```
 
 ## Need help?

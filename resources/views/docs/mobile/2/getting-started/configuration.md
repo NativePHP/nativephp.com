@@ -109,7 +109,10 @@ You may enable the features you intend to use simply by changing the value of th
 - `storage_write` - Allows your app to write to device storage.
 - `microphone` - Allows your application to request access to the device's microphone, if present. Required for audio
     recording functionality. Note that the user may deny access and any microphone functions will then result in a no-op.
-- `qr-code` - Allows your application to scan QR codes and barcodes. Note that the user may deny camera access and any
+- `microphone_background` - Allows your application to request access to the device's microphone, if present. Required
+  for audio recording functionality. Note that the user may deny access and any microphone functions will then result in
+  a no-op.
+- `scanner` - Allows your application to scan QR codes and barcodes. Note that the user may deny camera access and any
     scanning functions will then result in a no-op.
 - `network_state` - Allows your application to access information about the device's network connectivity status. This
     permission is enabled by default as it's commonly needed for basic network state detection.

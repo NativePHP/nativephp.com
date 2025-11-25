@@ -23,7 +23,7 @@ You cannot build iOS apps on Windows or Linux. This is a limitation imposed by A
 
 </aside>
 
-1. macOS (required - iOS development is only possible on a Mac)
+1. macOS (required - iOS development is only possible on an Apple silicon Mac, M1+)
 2. [Xcode 16.0 or later](https://apps.apple.com/app/xcode/id497799835)
 3. Xcode Command Line Tools
 4. Homebrew & CocoaPods
@@ -63,6 +63,7 @@ You **do not** need to enroll in the [Apple Developer Program](https://developer
 to develop and test your apps on a Simulator. However, you will need to enroll when you want to:
 - Test your apps on real devices
 - Distribute your apps via the App Store
+- Test features that rely on a paid Apple Developer accounts, such as Push Notifications
 
 ## Android Requirements
 
@@ -72,7 +73,7 @@ to develop and test your apps on a Simulator. However, you will need to enroll w
 
 <aside class="relative z-0 mt-5 overflow-hidden rounded-2xl bg-pink-50 px-5 ring-1 ring-black/5 dark:bg-pink-600/10">
 
-#### Note
+#### JDK Version Compatibility
 
 You might need to install the Java Development Kit (JDK) separately. Recent versions of Android Studio no longer install it automatically.
 If you encounter Gradle errors, check the [Gradle JDK Compatibility Matrix](https://docs.gradle.org/current/userguide/compatibility.html).
