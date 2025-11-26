@@ -20,6 +20,12 @@
         <x-docs.toc-and-sponsors :tableOfContents="$tableOfContents" />
     </x-slot>
 
+    <x-docs.old-version-notice
+        :platform="$platform"
+        :version="$version"
+        :page="request()->route('page')"
+    />
+
     <h1 class="text-4xl font-semibold">
         {{ $title }}
     </h1>
