@@ -138,15 +138,7 @@ Full hot reloading support for Livewire on real devices is not yet available.
 
 </aside>
 
-### Order matters
-
-Depending on which order you run these commands, you may find that hot reloading doesn't work immediately. It's often
-best to get the commands running, get your app open, and then make a request to a new screen to allow your app to pick
-up the `hot` file's presence and connect to the HMR server.
-
-<aside>
-
-#### Hot reloading config
+### Configuration
 
 You can configure the folders that the `watch` command pays attention to in your `config/nativephp.php` file:
 
@@ -163,58 +155,19 @@ You can configure the folders that the `watch` command pays attention to in your
 ]
 ```
 
-</aside>
+### Order matters
 
-## Releasing
+Depending on which order you run these commands, you may find that hot reloading doesn't work immediately. It's often
+best to get the commands running, get your app open, and then make a request to a new screen to allow your app to pick
+up the `hot` file's presence and connect to the HMR server.
 
-To prepare your app for release, you should set the version number to a new version number that you have not used
-before and increment the build number:
-
-```dotenv
-NATIVEPHP_APP_VERSION=1.2.3
-NATIVEPHP_APP_VERSION_CODE=48
-```
-
-### Versioning
-
-You have complete freedom in how you version your applications. You may use semantic versioning, codenames,
-date-based versions, or any scheme that works for your project, team or business.
-
-Remember that your app versions are usually public-facing (e.g. in store listings and on-device settings and update
-screens) and can be useful for customers to reference if they need to contact you for help and support.
-
-The build number is managed via the `NATIVEPHP_APP_VERSION` key in your `.env`.
-
-### Build numbers
-
-Both the Google Play Store and Apple App Store require your app's build number to increase for each release you submit. 
-
-The build number is managed via the `NATIVEPHP_APP_VERSION_CODE` key in your `.env`.
-
-### Run a `release` build
-
-Then run a release build:
-
-```shell
-php artisan native:run --build=release
-```
-
-This builds your application with various optimizations that reduce its overall size and improve its performance, such
-as removing debugging code and unnecessary features (i.e. Composer dev dependencies).
-
-**You should test this build on a real device.** Once you're happy that everything is working as intended you can then
-submit it to the stores for approval and distribution.
-
-- [Google Play Store submission guidelines](https://support.google.com/googleplay/android-developer/answer/9859152?hl=en-GB#zippy=%2Cmaximum-size-limit)
-- [Apple App Store submission guidelines](https://developer.apple.com/ios/submit/)
 
 <aside>
 
 #### Skip the prompts
 
-If you are tired of prompts, you can run most commands - like `native:run` - with the arguments and options that will
-allow you to skip through the various prompts. Use the `--help` flag on a command to find out what values you can 
-pass directly to it:
+If you are tired of prompts, you can run most commands - like `native:run` - with arguments and options that allow you
+to skip various prompts. Use the `--help` flag on a command to find out what values you can pass directly to it:
 
 ```shell
 php artisan native:run --help
