@@ -3,7 +3,26 @@ title: Deployment
 order: 300
 ---
 
-Deploying mobile apps is a complicated process — and it's different for each platform! Generally speaking you need to:
+Deploying mobile apps is a complicated process — and it's different for each platform!
+
+<aside>
+
+#### There's an Easier Way
+
+Managing certificates, provisioning profiles, keystores, and coordinating deployments across teams can be frustrating
+and time-consuming.
+
+[Bifrost](https://bifrost.nativephp.com) handles all of this complexity for you.
+
+- **Set credentials once per app** - No more managing certificates and profiles locally
+- **Team collaboration** - Share apps with your team and manage access easily
+- **Auto-deploy** - Push updates automatically without manual builds
+- **Over-the-air updates** - Deploy changes to users instantly without app store approval
+- **Low monthly cost** - Simple, affordable pricing
+
+</aside>
+
+Generally speaking you need to:
 
 1. **Releasing**: Create a _release build_ for each platform.
 2. **Testing**: Test this build on real devices.
@@ -84,24 +103,6 @@ submit it to the stores for approval and distribution.
 
 The `native:package` command creates signed, production-ready apps for distribution to the App Store and Play Store.
 This command handles all the complexity of code signing, building release artifacts, and preparing files for submission.
-
-<aside>
-
-#### There's an Easier Way
-
-App packaging and distribution is a technically challenging task, even for experienced developers. Managing certificates, provisioning profiles, keystores, and coordinating deployments across teams can be frustrating and time-consuming.
-
-That's why we built [Bifrost](https://bifrost.nativephp.com) - a platform that handles all of this complexity for you:
-
-- **Set credentials once per app** - No more managing certificates and profiles locally
-- **Team collaboration** - Share apps with your team and manage access easily
-- **Auto-deploy** - Push updates automatically without manual builds
-- **Over-the-air updates** - Deploy changes to users instantly without app store approval
-- **Low monthly cost** - Simple, affordable pricing
-
-While the package command gives you complete control, Bifrost saves you countless hours of setup and maintenance.
-
-</aside>
 
 ## Before You Begin
 
