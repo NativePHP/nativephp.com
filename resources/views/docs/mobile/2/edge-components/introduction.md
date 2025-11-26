@@ -6,7 +6,9 @@ order: 1
 ## What is EDGE?
 
 EDGE (Element Definition and Generation Engine) is NativePHP for Mobile's component system that transforms Blade
-template syntax into platform-native UI elements.
+template syntax into platform-native UI elements that looks beautiful no matter the device your users use.
+
+![](/img/docs/edge.png)
 
 Instead of rendering in the web view, EDGE components are compiled into truly native elements and live apart from the
 web view's lifecycle. This means they are persistent and performant.
