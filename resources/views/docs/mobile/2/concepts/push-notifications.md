@@ -73,7 +73,7 @@ use Native\Mobile\Events\PushNotification\TokenGenerated;
 
 class PushNotifications extends Component
 {
-    #[On('native:'.TokenGenerated::class)]
+    #[OnNative(TokenGenerated::class)]
     public function storePushToken(APIService $api, string $token)
     {
         $api->storePushToken($token);

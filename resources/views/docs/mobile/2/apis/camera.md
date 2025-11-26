@@ -143,7 +143,7 @@ Fired when a photo is taken with the camera.
 use Livewire\Attributes\On;
 use Native\Mobile\Events\Camera\PhotoTaken;
 
-#[On('native:'.PhotoTaken::class)]
+#[OnNative(PhotoTaken::class)]
 public function handlePhotoTaken(string $path)
 {
     // Process the captured photo
@@ -164,7 +164,7 @@ Fired when a video is successfully recorded.
 use Livewire\Attributes\On;
 use Native\Mobile\Events\Camera\VideoRecorded;
 
-#[On('native:'.VideoRecorded::class)]
+#[OnNative(VideoRecorded::class)]
 public function handleVideoRecorded(string $path, string $mimeType, ?string $id = null)
 {
     // Process the recorded video
@@ -189,7 +189,7 @@ Fired when video recording is cancelled by the user.
 use Livewire\Attributes\On;
 use Native\Mobile\Events\Camera\VideoCancelled;
 
-#[On('native:'.VideoCancelled::class)]
+#[OnNative(VideoCancelled::class)]
 public function handleVideoCancelled(bool $cancelled, ?string $id = null)
 {
     // Handle cancellation
@@ -207,7 +207,7 @@ Fired when media is selected from the gallery.
 use Livewire\Attributes\On;
 use Native\Mobile\Events\Gallery\MediaSelected;
 
-#[On('native:'.MediaSelected::class)]
+#[OnNative(MediaSelected::class)]
 public function handleMediaSelected($success, $files, $count)
 {
     foreach ($files as $file) {

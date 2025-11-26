@@ -37,7 +37,7 @@ Fired when a push notification token is successfully generated.
 use Livewire\Attributes\On;
 use Native\Mobile\Events\PushNotification\TokenGenerated;
 
-#[On('native:'.TokenGenerated::class)]
+#[OnNative(TokenGenerated::class)]
 public function handlePushToken(string $token)
 {
     // Send token to your backend

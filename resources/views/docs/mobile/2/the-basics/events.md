@@ -79,7 +79,7 @@ attribute attached to the method you want to use as its handler:
 ```php
 use Native\Mobile\Events\Camera\PhotoTaken;
 
-#[On('native:'.PhotoTaken::class)]
+#[OnNative(PhotoTaken::class)]
 public function handlePhoto(string $path)
 {
     // Handle captured photo

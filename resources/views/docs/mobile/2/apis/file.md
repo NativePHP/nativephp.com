@@ -72,7 +72,7 @@ use Livewire\Attributes\On;
 use Native\Mobile\Events\Camera\PhotoTaken;
 use Native\Mobile\Facades\File;
 
-#[On('native:'.PhotoTaken::class)]
+#[OnNative(PhotoTaken::class)]
 public function handlePhotoTaken(string $path)
 {
     $destination = storage_path('app/photos/'.basename($path));

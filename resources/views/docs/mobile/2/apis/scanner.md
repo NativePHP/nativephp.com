@@ -1,15 +1,15 @@
 ---
-title: QR Code Scanner
+title: Scanner
 order: 350
 ---
 
 ## Overview
 
-The QR Code Scanner API provides cross-platform barcode scanning capabilities through a native camera interface.
+The Scanner API provides cross-platform barcode and QR code scanning capabilities through a native camera interface.
 
 ```php
 use Native\Mobile\Facades\Scanner;
-use Native\Mobile\Events\QrCode\Scanned;
+use Native\Mobile\Events\Scanner\CodeScanned;
 ```
 
 ## Basic Usage
@@ -19,7 +19,7 @@ use Native\Mobile\Events\QrCode\Scanned;
 Scanner::scan();
 
 // Listen for scan results
-#[On('native:'.Scanned::class)]
+#[OnNative(Scanned::class)]
 public function handleScan($data, $format, $id = null)
 {
     Dialog::toast("Scanned: {$data}");
@@ -64,7 +64,7 @@ Scanner::scan()->id('checkout-scanner');
 
 ## Events
 
-### `Scanned`
+### `CodeScanned`
 
 Fired when a barcode is successfully scanned.
 
@@ -74,7 +74,7 @@ Fired when a barcode is successfully scanned.
 - `string|null $id` - The scan session ID (if set)
 
 ```php
-#[On('native:'.Scanned::class)]
+#[OnNative(CodeScanned::class)]
 public function handleScan($data, $format, $id = null)
 {
     if ($id === 'product-scanner') {
@@ -88,4 +88,6 @@ public function handleScan($data, $format, $id = null)
 - **Platform Support:**
   - **Android:** ML Kit Barcode Scanning (API 21+)
   - **iOS:** AVFoundation (iOS 13.0+)
-- **Permissions:** You must enable the `qr_code` permission in `config/nativephp.php` to use the scanner. Camera permissions are then handled automatically, and users will be prompted for permission the first time the scanner is used.
+- **Permissions:** You must enable the `qr_code` permission in `config/nativephp.php` to use the scanner. Camera 
+  permissions are then handled automatically, and users will be prompted for permission the first time the scanner is
+  used.

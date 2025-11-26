@@ -1,32 +1,34 @@
 ---
-title: Audio
+title: Microphone
 order: 50
 ---
 
 ## Overview
 
-The Audio API provides access to the device's microphone for recording audio. It offers a fluent interface for starting and managing recordings, tracking them with unique identifiers, and responding to completion events.
+The Microphone API provides access to the device's microphone for recording audio. It offers a fluent interface for
+starting and managing recordings, tracking them with unique identifiers, and responding to completion events.
 
 ```php
-use Native\Mobile\Facades\Audio;
+use Native\Mobile\Facades\Microphone;
 ```
 
 ## Methods
 
 ### `record()`
 
-Start an audio recording. Returns a `PendingAudioRecorder` instance that controls the recording lifecycle.
+Start an audio recording. Returns a `PendingMicrophone` instance that controls the recording lifecycle.
 
 ```php
-Audio::record()->start();
+Microphone::record()->start();
 ```
 
 ### `stop()`
 
-Stop the current audio recording. This dispatches the `AudioRecorded` event with the recording file path.
+Stop the current audio recording. If this results in a saved file, this dispatches the `AudioRecorded` event with the
+recording file path.
 
 ```php
-Audio::stop();
+Microphone::stop();
 ```
 
 ### `pause()`
@@ -34,7 +36,7 @@ Audio::stop();
 Pause the current audio recording without ending it.
 
 ```php
-Audio::pause();
+Microphone::pause();
 ```
 
 ### `resume()`
@@ -42,7 +44,7 @@ Audio::pause();
 Resume a paused audio recording.
 
 ```php
-Audio::resume();
+Microphone::resume();
 ```
 
 ### `getStatus()`
@@ -52,7 +54,7 @@ Get the current recording status.
 **Returns:** `string` - One of: `"idle"`, `"recording"`, or `"paused"`
 
 ```php
-$status = Audio::getStatus();
+$status = Microphone::getStatus();
 
 if ($status === 'recording') {
     // A recording is in progress
@@ -66,25 +68,27 @@ Get the file path to the last recorded audio file.
 **Returns:** `string|null` - Path to the last recording, or `null` if none exists
 
 ```php
-$path = Audio::getRecording();
+$path = Microphone::getRecording();
 
 if ($path) {
     // Process the recording file
 }
 ```
 
-## PendingAudioRecorder
+## PendingMicrophone
 
-The `PendingAudioRecorder` provides a fluent interface for configuring and starting audio recordings. Most methods return `$this` for method chaining.
+The `PendingMicrophone` provides a fluent interface for configuring and starting audio recordings. Most methods return
+`$this` for method chaining.
 
 ### `id(string $id)`
 
-Set a unique identifier for this recording. This ID will be included in the `AudioRecorded` event, allowing you to correlate recordings with completion events.
+Set a unique identifier for this recording. This ID will be included in the `AudioRecorded` event, allowing you to
+correlate recordings with completion events.
 
 ```php
 $recorderId = 'message-recording-' . $this->id;
 
-Audio::record()
+Microphone::record()
     ->id($recorderId)
     ->start();
 ```
@@ -94,7 +98,7 @@ Audio::record()
 Get the recorder's unique identifier. If no ID was set, one is automatically generated (UUID v4).
 
 ```php
-$recorder = Audio::record()
+$recorder = Microphone::record()
     ->id('my-recording');
 
 $id = $recorder->getId(); // 'my-recording'
@@ -109,7 +113,7 @@ Set a custom event class to dispatch when recording completes. By default, `Audi
 ```php
 use App\Events\VoiceMessageRecorded;
 
-Audio::record()
+Microphone::record()
     ->event(VoiceMessageRecorded::class)
     ->start();
 ```
@@ -119,7 +123,7 @@ Audio::record()
 Store the recorder's ID in the session for later retrieval. This is useful when the recording completes on the next request.
 
 ```php
-Audio::record()
+Microphone::record()
     ->id('voice-note')
     ->remember()
     ->start();
@@ -130,10 +134,10 @@ Audio::record()
 Retrieve the last remembered audio recorder ID from the session. Use this in event listeners to correlate recordings.
 
 ```php
-use Livewire\Attributes\On;
-use Native\Mobile\Events\Audio\AudioRecorded;
+use Native\Mobile\Attributes\OnNative;
+use Native\Mobile\Events\Microphone\MicrophoneRecorded;
 
-#[On('native:'.AudioRecorded::class)]
+#[OnNative(MicrophoneRecorded::class)]
 public function handleAudioRecorded(string $path, string $mimeType, ?string $id)
 {
     // For comparing with remembered IDs
@@ -150,7 +154,7 @@ Explicitly start the audio recording. This is optional - recordings auto-start i
 **Returns:** `bool` - `true` if recording started successfully, `false` if it failed or was already started
 
 ```php
-$recorder = Audio::record()->id('my-recording');
+$recorder = Microphone::record()->id('my-recording');
 
 if ($recorder->start()) {
     // Recording started
@@ -161,7 +165,7 @@ if ($recorder->start()) {
 
 ## Events
 
-### `AudioRecorded`
+### `MicrophoneRecorded`
 
 Dispatched when an audio recording completes. The event includes the file path and recording ID.
 
@@ -171,10 +175,7 @@ Dispatched when an audio recording completes. The event includes the file path a
 - `?string $id` - The recorder's ID, if one was set
 
 ```php
-use Livewire\Attributes\On;
-use Native\Mobile\Events\Audio\AudioRecorded;
-
-#[On('native:'.AudioRecorded::class)]
+#[OnNative(MicrophoneRecorded::class)]
 public function handleAudioRecorded(string $path, string $mimeType, ?string $id)
 {
     // Store or process the recording
@@ -192,10 +193,6 @@ public function handleAudioRecorded(string $path, string $mimeType, ?string $id)
 
 - **File Format:** Recordings are stored as M4A/AAC audio files (`.m4a`). This format is optimized for small file sizes while maintaining quality.
 
-- **Storage Location:**
-  - **Android:** Recordings are stored in the app's cache directory (`context.cacheDir/audio_{timestamp}.m4a`). These are temporary files and may be deleted by the system.
-  - **iOS:** Recordings are stored persistently in `~/Library/Application Support/Audio/NativePHP_{timestamp}.m4a` and are excluded from iCloud backup.
-
 - **Recording State:** Only one recording can be active at a time. Calling `start()` while a recording is in progress will return `false`.
 
-- **Auto-Start Behavior:** If you don't explicitly call `start()`, the recording will automatically start when the `PendingAudioRecorder` is destroyed. This maintains backward compatibility with earlier versions.
+- **Auto-Start Behavior:** If you don't explicitly call `start()`, the recording will automatically start when the `PendingMicrophone is destroyed. This maintains backward compatibility with earlier versions.

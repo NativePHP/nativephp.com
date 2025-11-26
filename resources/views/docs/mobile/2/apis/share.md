@@ -73,7 +73,7 @@ Share a photo that was captured with the camera.
 use Livewire\Attributes\On;
 use Native\Mobile\Events\Camera\PhotoTaken;
 
-#[On('native:'.PhotoTaken::class)]
+#[OnNative(PhotoTaken::class)]
 public function handlePhotoTaken(string $path)
 {
     Share::file(

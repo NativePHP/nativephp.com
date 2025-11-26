@@ -85,7 +85,7 @@ Fired when a button is pressed in an alert dialog.
 use Livewire\Attributes\On;
 use Native\Mobile\Events\Alert\ButtonPressed;
 
-#[On('native:'.ButtonPressed::class)]
+#[OnNative(ButtonPressed::class)]
 public function handleAlertButton($index, $label)
 {
     switch ($index) {

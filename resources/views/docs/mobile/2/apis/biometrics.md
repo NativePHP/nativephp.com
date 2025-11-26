@@ -34,7 +34,7 @@ Fired when biometric authentication completes (success or failure).
 use Livewire\Attributes\On;
 use Native\Mobile\Events\Biometric\Completed;
 
-#[On('native:'.Completed::class)]
+#[OnNative(Completed::class)]
 public function handle(Completed $event)
 {
     if ($event->success) {

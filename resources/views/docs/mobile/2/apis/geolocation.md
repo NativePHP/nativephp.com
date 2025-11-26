@@ -69,7 +69,7 @@ Fired when location data is requested (success or failure).
 use Livewire\Attributes\On;
 use Native\Mobile\Events\Geolocation\LocationReceived;
 
-#[On('native:'.LocationReceived::class)]
+#[OnNative(LocationReceived::class)]
 public function handleLocationReceived(
     $success = null,
     $latitude = null,
@@ -101,7 +101,7 @@ Fired when permission status is checked.
 use Livewire\Attributes\On;
 use Native\Mobile\Events\Geolocation\PermissionStatusReceived;
 
-#[On('native:'.PermissionStatusReceived::class)]
+#[OnNative(PermissionStatusReceived::class)]
 public function handlePermissionStatus($location, $coarseLocation, $fineLocation)
 {
     // ...
