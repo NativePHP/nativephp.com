@@ -10,23 +10,15 @@ Native device functions are called directly from your PHP code, giving you acces
 maintaining the productivity and familiarity of Laravel development.
 
 These functions are called from your PHP code using an ever-growing list of classes. These classes are also wrapped in
-Laravel Facades for ease of access and testing:
+Laravel Facades for ease of access and testing, such as:
 
-- `Native\Mobile\Facades\Audio`
-- `Native\Mobile\Facades\Biometrics`
-- `Native\Mobile\Facades\Browser`
-- `Native\Mobile\Facades\Camera`
-- `Native\Mobile\Facades\Device`
-- `Native\Mobile\Facades\Dialog`
-- `Native\Mobile\Facades\File`
-- `Native\Mobile\Facades\Geolocation`
-- `Native\Mobile\Facades\Haptics`
-- `Native\Mobile\Facades\Network`
-- `Native\Mobile\Facades\PushNotifications`
-- `Native\Mobile\Facades\Scanner`
-- `Native\Mobile\Facades\SecureStorage`
-- `Native\Mobile\Facades\Share`
-- `Native\Mobile\Facades\System`
+```php
+Native\Mobile\Facades\Biometrics
+Native\Mobile\Facades\Browser
+Native\Mobile\Facades\Camera
+```
+
+Each of these is covered in our [APIs](../apis/) section.
 
 <aside>
 
