@@ -124,7 +124,7 @@ Generating tokens is cheap; leaking personal customer data can get _very_ expens
 
 Use industry-standard tools like OAuth-2.0-based providers, Laravel Passport, or Laravel Sanctum.
 
-<aside class="relative z-0 mt-5 overflow-hidden rounded-2xl bg-gradient-to-tl from-transparent to-violet-100/75 px-5 ring-1 ring-black/5 dark:from-slate-900/30 dark:to-indigo-900/35">
+<aside>
 
 [Laravel Sanctum](https://laravel.com/docs/sanctum) is an ideal solution for API authentication between your mobile app and Laravel backend.
 It provides secure, token-based authentication without the complexity of OAuth.

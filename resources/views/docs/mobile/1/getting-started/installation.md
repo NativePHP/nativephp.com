@@ -22,7 +22,7 @@ Thank you for supporting the project in this way! 🙏
 
 ## Install the Composer package
 
-<aside class="relative z-0 mt-5 overflow-hidden rounded-2xl bg-gradient-to-tl from-transparent to-violet-100/75 px-5 ring-1 ring-black/5 dark:from-slate-900/30 dark:to-indigo-900/35">
+<aside>
 
 #### We love Laravel
 
@@ -46,13 +46,13 @@ Then run:
 ```shell
 composer require nativephp/mobile
 ```
-<aside class="relative z-0 mt-5 overflow-hidden rounded-2xl bg-gradient-to-tl from-transparent to-violet-100/75 px-5 ring-1 ring-black/5 dark:from-slate-900/30 dark:to-indigo-900/35">
+<aside>
 
 If you experience a cURL error when running this command, make sure you are running PHP 8.3+ in your CLI.
 
 </aside>
 
-<aside class="relative z-0 mt-5 overflow-hidden rounded-2xl bg-gradient-to-tl from-transparent to-violet-100/75 px-5 ring-1 ring-black/5 dark:from-slate-900/30 dark:to-indigo-900/35">
+<aside>
 
 #### Windows Performance Tip
 
@@ -81,7 +81,7 @@ NATIVEPHP_APP_VERSION_CODE="1"
 Find out more about these options in
 [Configuration](/docs/getting-started/configuration#codenativephp-app-idcode).
 
-<aside class="relative z-0 mt-5 overflow-hidden rounded-2xl bg-gradient-to-tl from-transparent to-violet-100/75 px-5 ring-1 ring-black/5 dark:from-slate-900/30 dark:to-indigo-900/35">
+<aside>
 
 #### Setting your Apple Developer Team ID
 
@@ -108,7 +108,7 @@ your application relies on the `intl` PHP extension.
 
 If you don't need `intl` or are not sure, choose the default, non-ICU builds.
 
-<aside class="relative z-0 mt-5 overflow-hidden rounded-2xl bg-gradient-to-tl from-transparent to-violet-100/75 px-5 ring-1 ring-black/5 dark:from-slate-900/30 dark:to-indigo-900/35">
+<aside>
 
 #### Planning to use Filament?
 

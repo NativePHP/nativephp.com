@@ -13,7 +13,7 @@ But when you want to test _native_ features, then you must run your app on a rea
 Whether you run your native app on an emulated or real device, it will always require compilation after changes have
 been made.
 
-<aside class="relative z-0 mt-5 overflow-hidden rounded-2xl bg-gradient-to-tl from-transparent to-violet-100/75 px-5 ring-1 ring-black/5 dark:from-slate-900/30 dark:to-indigo-900/35">
+<aside>
 
 #### Platforms
 
@@ -69,7 +69,7 @@ php artisan native:run --build=debug
 This single command takes care of everything and allows you to run new builds of your application without having to
 learn any new editors or platform-specific tools.
 
-<aside class="relative z-0 mt-5 overflow-hidden rounded-2xl bg-gradient-to-tl from-transparent to-violet-100/75 px-5 ring-1 ring-black/5 dark:from-slate-900/30 dark:to-indigo-900/35">
+<aside>
 
 #### Rule of thumb
 
@@ -111,7 +111,7 @@ changes to any files in your Laravel app, the web view will be reloaded and your
 
 The proper way to implement this is to first `run` your app on your device/emulator, then start HMR with `npm run dev` then in a separate terminal run the `native:watch` command. This will reload any Blade/Livewire files as well as any recompiled assets (css/js etc).
 
-<aside class="relative z-0 mt-5 overflow-hidden rounded-2xl bg-gradient-to-tl from-transparent to-violet-100/75 px-5 ring-1 ring-black/5 dark:from-slate-900/30 dark:to-indigo-900/35">
+<aside>
 
 #### Note
 
@@ -186,7 +186,7 @@ submit it to the stores for approval and distribution.
 - [Google Play Store submission guidelines](https://support.google.com/googleplay/android-developer/answer/9859152?hl=en-GB#zippy=%2Cmaximum-size-limit)
 - [Apple App Store submission guidelines](https://developer.apple.com/ios/submit/)
 
-<aside class="relative z-0 mt-5 overflow-hidden rounded-2xl bg-gradient-to-tl from-transparent to-violet-100/75 px-5 ring-1 ring-black/5 dark:from-slate-900/30 dark:to-indigo-900/35">
+<aside>
 
 #### Skip the prompts
 

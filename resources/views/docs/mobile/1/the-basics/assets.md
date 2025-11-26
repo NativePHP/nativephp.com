@@ -16,7 +16,7 @@ latest styles and JavaScript are included, always run `npm run build` before run
 NativePHP will include all files from the root of your Laravel application. So you can store any files that you wish to
 make available to your application wherever makes the most sense for you.
 
-<aside class="relative z-0 mt-5 overflow-hidden rounded-2xl bg-gradient-to-tl from-transparent to-violet-100/75 px-5 ring-1 ring-black/5 dark:from-slate-900/30 dark:to-indigo-900/35">
+<aside>
 
 #### Accessing arbitrary files
 

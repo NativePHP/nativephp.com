@@ -12,7 +12,7 @@ But when you want to test _native_ features, then you must run your app on a rea
 
 Whether you run your native app on an emulated or real device, it will require compilation after changes have been made.
 
-<aside class="relative z-0 mt-5 overflow-hidden rounded-2xl bg-gradient-to-tl from-transparent to-violet-100/75 px-5 ring-1 ring-black/5 dark:from-slate-900/30 dark:to-indigo-900/35">
+<aside>
 
 #### Platforms
 
@@ -76,7 +76,7 @@ php artisan native:run
 This single command takes care of everything and allows you to run new builds of your application without having to
 learn any new editors or platform-specific tools.
 
-<aside class="relative z-0 mt-5 overflow-hidden rounded-2xl bg-gradient-to-tl from-transparent to-violet-100/75 px-5 ring-1 ring-black/5 dark:from-slate-900/30 dark:to-indigo-900/35">
+<aside>
 
 #### Rule of thumb
 
@@ -130,7 +130,7 @@ changes to any files in your Laravel app, the web view will be reloaded and your
 Vite HMR is perfect for apps that use SPA frameworks like Vue or React to build the UI. It even works on real devices,
 not just simulators! As long as the device is on the same network as the development machine.
 
-<aside class="relative z-0 mt-5 overflow-hidden rounded-2xl bg-gradient-to-tl from-transparent to-violet-100/75 px-5 ring-1 ring-black/5 dark:from-slate-900/30 dark:to-indigo-900/35">
+<aside>
 
 #### Livewire and HMR on real devices
 
@@ -144,7 +144,7 @@ Depending on which order you run these commands, you may find that hot reloading
 best to get the commands running, get your app open, and then make a request to a new screen to allow your app to pick
 up the `hot` file's presence and connect to the HMR server.
 
-<aside class="relative z-0 mt-5 overflow-hidden rounded-2xl bg-gradient-to-tl from-transparent to-violet-100/75 px-5 ring-1 ring-black/5 dark:from-slate-900/30 dark:to-indigo-900/35">
+<aside>
 
 #### Hot reloading config
 
@@ -208,7 +208,7 @@ submit it to the stores for approval and distribution.
 - [Google Play Store submission guidelines](https://support.google.com/googleplay/android-developer/answer/9859152?hl=en-GB#zippy=%2Cmaximum-size-limit)
 - [Apple App Store submission guidelines](https://developer.apple.com/ios/submit/)
 
-<aside class="relative z-0 mt-5 overflow-hidden rounded-2xl bg-gradient-to-tl from-transparent to-violet-100/75 px-5 ring-1 ring-black/5 dark:from-slate-900/30 dark:to-indigo-900/35">
+<aside>
 
 #### Skip the prompts
 
