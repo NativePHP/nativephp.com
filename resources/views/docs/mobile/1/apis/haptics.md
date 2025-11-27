@@ -1,6 +1,6 @@
 ---
 title: Haptics
-order: 500
+order: 700
 ---
 
 ## Overview

@@ -1,6 +1,6 @@
 ---
 title: PushNotifications
-order: 600
+order: 800
 ---
 
 ## Overview

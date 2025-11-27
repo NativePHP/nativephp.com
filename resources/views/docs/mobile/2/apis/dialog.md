@@ -1,6 +1,6 @@
 ---
 title: Dialog
-order: 300
+order: 500
 ---
 
 ## Overview
