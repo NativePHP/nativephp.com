@@ -76,8 +76,18 @@ You may enable the features you intend to use simply by changing the value of th
 
 ```php
     'permissions' => [
-        'biometric' => true,
-        //...
+        'biometric' => false,
+        'camera' => false,
+        'microphone' => false,
+        'microphone_background' => false,
+        'nfc' => false,
+        'push_notifications' => false,
+        'location' => false,
+        'vibrate' => false,
+        'storage_read' => false,
+        'storage_write' => false,
+        'scanner' => false,
+        'network_state' => true,
     ],
 ```
 
