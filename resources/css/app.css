@@ -301,3 +301,11 @@ nav.docs-navigation > ul > li > ul {
 .prose aside {
     @apply relative z-0 mt-5 overflow-hidden rounded-2xl bg-gradient-to-tl from-transparent to-violet-100/75 px-5 ring-1 ring-black/5 dark:from-slate-900/30 dark:to-indigo-900/35;
 }
+
+.images-two-up {
+    @apply grid gap-8 mt-0 items-center;
+
+    @variant sm {
+        @apply grid-cols-2;
+    }
+}

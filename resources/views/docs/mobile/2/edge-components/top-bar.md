@@ -4,39 +4,54 @@ order: 50
 ---
 
 ## Overview
+<div class="images-two-up not-prose">
 
-A top app bar with title and action buttons.
+![](/img/docs/edge-top-bar-ios.png)
+
+![](/img/docs/edge-top-bar-android.png)
+
+</div>
+
+A top bar with title and action buttons. This renders at the top of the screen.
 
 @verbatim
 ```blade
-<x-native:top-bar title="Dashboard" subtitle="Welcome back">
-    <x-native:top-bar-action
+<native:top-bar title="Dashboard" subtitle="Welcome back">
+    <native:top-bar-action
         id="search"
         icon="search"
-        event="search-clicked"
+        :url="route('search')"
     />
-    <x-native:top-bar-action
+    <native:top-bar-action
         id="settings"
         icon="settings"
-        url="/settings"
+        url="https://yourapp.com/my-account"
     />
-</x-native:top-bar>
+</native:top-bar>
 ```
 @endverbatim
 
-## TopBar Props
+## Props
 
-- `title` - Bar title (required)
-- `subtitle` - Secondary text (optional)
-- `show-navigation-icon` - Show back/menu button (default: `true`)
-- `background-color` - Background hex color (optional)
-- `text-color` - Text hex color (optional)
-- `elevation` - Shadow depth 0-24 (optional)
+- `title` - The title text
+- `show-navigation-icon` - Show back/menu button (optional, default: `true`)
+- `background-color` - Background color. Hex code (optional)
+- `text-color` - Text color. Hex code (optional)
+- `elevation` - Shadow depth 0-24 (optional) [Android]
 
-## TopBarAction Props
+## Children
 
-- `id` - Unique identifier (required)
-- `icon` - Material icon name (required)
+A `<native:top-bar>` can contain up to 10 `<native:top-bar-action>` elements. These populate the trailing edge,
+collapsing to a menu if there are too many.
+
+### Props
+- `id` - Unique identifier
+- `icon` - A named [icon](icons)
 - `label` - Accessibility label (optional)
-- `url` - Navigation URL (optional)
-- `event` - Event to dispatch (optional)
+- `url` - A URL to navigate to in the web view (optional)
+
+<aside>
+
+Any `url` that doesn't match the web view's domain will open in the user's default browser.
+
+</aside>

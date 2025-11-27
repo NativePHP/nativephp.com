@@ -5,18 +5,26 @@ order: 400
 
 ## Overview
 
+<div class="images-two-up not-prose">
+
+![](/img/docs/edge-side-nav-ios.png)
+
+![](/img/docs/edge-side-nav-android.png)
+
+</div>
+
 A slide-out navigation drawer with support for groups, headers, and dividers.
 
 @verbatim
 ```blade
-<x-native:side-nav gestures-enabled="true">
-    <x-native:side-nav-header
+<native:side-nav gestures-enabled="true">
+    <native:side-nav-header
         title="My App"
         subtitle="user@example.com"
         icon="person"
     />
 
-    <x-native:side-nav-item
+    <native:side-nav-item
         id="home"
         label="Home"
         icon="home"
@@ -24,74 +32,78 @@ A slide-out navigation drawer with support for groups, headers, and dividers.
         :active="true"
     />
 
-    <x-native:side-nav-group heading="Account" :expanded="false">
-        <x-native:side-nav-item
+    <native:side-nav-group heading="Account" :expanded="false">
+        <native:side-nav-item
             id="profile"
             label="Profile"
             icon="person"
             url="/profile"
         />
-        <x-native:side-nav-item
+        <native:side-nav-item
             id="settings"
             label="Settings"
             icon="settings"
             url="/settings"
         />
-    </x-native:side-nav-group>
+    </native:side-nav-group>
 
-    <x-native:horizontal-divider />
+    <native:horizontal-divider />
 
-    <x-native:side-nav-item
+    <native:side-nav-item
         id="help"
         label="Help"
         icon="help"
         url="https://help.example.com"
         open-in-browser="true"
     />
-</x-native:side-nav>
+</native:side-nav>
 ```
 @endverbatim
 
-## SideNav Props
+## Props
 
-- `gestures-enabled` - Swipe to open (default: `false`)
-- `label-visibility` - `"labeled"` (default), `"selected"`, or `"unlabeled"`
+- `gestures-enabled` - Swipe to open (default: `false`) [Android]
 - `dark` - Force dark mode (optional)
 
-## SideNavHeader Props
+<aside>
 
-- `title` - Header title (optional)
-- `subtitle` - Subtext (optional)
-- `icon` - Material icon (optional)
-- `image-url` - Header image URL (optional)
-- `background-color` - Background hex (optional)
-- `event` - Click event (optional)
-- `show-close-button` - Show close X (default: `true`)
-- `pinned` - Keep header visible when scrolling (default: `false`)
+On iOS, gesture support is always enabled for the side nav.
 
-## SideNavItem Props
+</aside>
 
-- `id` - Unique identifier (required)
-- `label` - Display text (required)
-- `icon` - Material icon (required)
-- `url` - Navigation URL (required)
-- `active` - Highlight as active (default: `false`)
+## Children
+
+### `<native:side-nav-header>`
+
+- `title` - Title text (optional)
+- `subtitle` - Subtitle text (optional)
+- `icon` - A named [icon](icons) (optional)
+- `background-color` - Background color. Hex code (optional)
+- `show-close-button` - Show a close &times; (optional, default: `true`) [Android]
+- `pinned` - Keep header visible when scrolling (optional, default: `false`)
+
+### `<native:side-nav-item>`
+
+- `id` - Unique identifier
+- `label` - Display text
+- `icon` - A named [icon](icons)
+- `url` - A URL to navigate to in the web view (optional)
+- `active` - Highlight this item as active (optional, default: `false`)
 - `badge` - Badge text (optional)
-- `badge-color` - Badge color hex (optional)
-- `open-in-browser` - Open URL externally (default: `false`)
+- `badge-color` - Hex code or named color (optional)
 
-## SideNavGroup Props
+<aside>
 
-- `heading` - Group title (required)
-- `expanded` - Initially expanded (default: `false`)
+Any `url` that doesn't match the web view's domain will open in the user's default browser.
+
+</aside>
+
+### `<native:side-nav-group>`
+
+- `heading` - The group's heading
+- `expanded` - Initially expanded (optional, default: `false`)
 - `icon` - Material icon (optional)
 
-## HorizontalDivider
+### `<native:horizontal-divider>`
 
-Add visual separators between navigation items.
-
-@verbatim
-```blade
-<x-native:horizontal-divider />
-```
-@endverbatim
+Add visual separators between navigation items. This item has no properties.

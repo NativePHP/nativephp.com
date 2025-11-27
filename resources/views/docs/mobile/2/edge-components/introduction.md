@@ -67,3 +67,9 @@ It doesn't even rely on the web view!
 Blade is an expressive and straightforward templating language that is very familiar to most Laravel users, and also
 super accessible to anyone who's used to writing HTML. All of our components are Blade components, which allows us to
 use Blade's battle-tested processing engine to rapidly compile the necessary transformation just in time.
+
+## Where to define your native components
+
+They can be defined in any Blade file, but for them to be processed, that Blade file will need to be rendered. We
+recommend putting your components in a Blade component that is likely to be rendered on every request, such as your
+main layout, e.g. `layouts/app.blade.php` or one of its child views/components.
