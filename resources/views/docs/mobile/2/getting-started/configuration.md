@@ -78,16 +78,16 @@ You may enable the features you intend to use simply by changing the value of th
     'permissions' => [
         'biometric' => false,
         'camera' => false,
+        'location' => false,
         'microphone' => false,
         'microphone_background' => false,
+        'network_state' => true,
         'nfc' => false,
         'push_notifications' => false,
-        'location' => false,
-        'vibrate' => false,
         'storage_read' => false,
         'storage_write' => false,
         'scanner' => false,
-        'network_state' => true,
+        'vibrate' => false,
     ],
 ```
 
