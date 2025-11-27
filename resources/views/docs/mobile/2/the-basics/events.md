@@ -24,19 +24,71 @@ Dialog::toast('Hello!');
 ```
 Asynchronous actions trigger operations that may complete later. These return immediately, usually with a `bool` or
 `void`, allowing PHP's execution to finish. In many of these cases, the user interacts directly with a native component.
-When the user has completed their task and the native UI is dismissed, the native app
+
+When the user has completed their task and the native UI is dismissed, the app will emit an event that represents the
+outcome.
+
+The _type_ (the class name) of the event and its properties all help you to choose the appropriate action to take in
+response to the outcome.
 
 ```php
 // These trigger operations and fire events when complete
 Camera::getPhoto(); // → PhotoTaken event
-Biometrics::promptForBiometricID(); // → Completed event
-PushNotifications::enrollForPushNotifications(); // → TokenGenerated event
+Biometrics::prompt(); // → Completed event
+PushNotifications::enroll(); // → TokenGenerated event
 ```
 
 ## Basic Event Structure
 
 All events are standard [Laravel Event classes](https://laravel.com/docs/12.x/events#defining-events). The public
 properties of the events contain the pertinent data coming from the native app side.
+
+## Custom Events
+
+Almost every function that emits events can be customized to emit events that you define. This is a great way to ensure
+only the relevant listeners are executed when these events are fired.
+
+Events are simple PHP classes that receive some parameters. You can extend existing events for convenience.
+
+Let's see a complete example...
+
+### Define your custom event class
+
+```php
+namespace App\Events;
+
+use Native\Mobile\Events\Alert\ButtonPressed;
+
+class MyButtonPressedEvent extends ButtonPressed
+{}
+```
+
+### Pass this class to an async function
+
+```php
+use App\Events\MyButtonPressedEvent;
+
+Dialog::alert('Warning!', 'You are about to delete everything! Are you sure?', [
+        'Cancel',
+        'Do it!'
+    ])
+    ->event(MyButtonPressedEvent::class)
+```
+
+### Handle the event
+
+Here's an example handling a custom event class inside a Livewire component.
+
+```php
+use App\Events\MyButtonPressed;
+use Native\Mobile\Attributes\OnNative;
+
+#[OnNative(MyButtonPressed::class)]
+public function buttonPressed()
+{
+    // Do stuff
+}
+```
 
 ## Event Handling
 
@@ -52,10 +104,18 @@ allows you to listen for these events in the context that best suits your applic
 ### On the frontend
 
 Events are 'broadcast' to the frontend of your application via the web view through a custom `Native` helper. You can
-easily listen for these events in JavaScript in two ways:
+easily listen for these events through JavaScript in a few ways:
 
-- The `Native.on()` helper
-- Livewire's `#[On()]` attribute
+- The globally available `Native.on()` helper
+- Directly importing the `on` function
+- The `#[OnNative()]` PHP attribute Livewire extension
+
+<aside>
+
+Typically, you shouldn't need to use more than one of these approaches. Which one you adopt will depend on which
+frontend stack you're using to build your app.
+
+</aside>
 
 #### The `Native.on()` helper
 
@@ -71,12 +131,49 @@ Register the event listener directly in JavaScript:
 </script>
 ```
 
-#### Livewire's `#[On()]` attribute
+This approach is useful if you're not using any particular frontend JavaScript framework.
 
-Livewire makes listening to 'broadcast' events simple. Just add the event name, prefixed by `native:` to the `#[On()]`
-attribute attached to the method you want to use as its handler:
+#### The `on` import
+
+If you're using a SPA framework like Vue or React, it's more convenient to import the `on` function directly to
+register your event listeners. Here's an example using the amazing Vue:
+
+```js
+import { on, Events } from '#nativephp';
+import { onMounted } from 'vue';
+
+const handleButtonPressed = (index, label) => {};
+
+onMounted(() => {
+    on(Events.Alert.ButtonPressed, handleButtonPressed);
+});
+```
+
+Note how we're also using the `Events` object above to simplify our use of built-in event names. For custom event
+classes, you will need to reference these by their full name:
+
+```js
+on('App\\Events\\MyButtonPressedEvent', handleButtonPressed);
+```
+
+In SPA land, don't forget to de-register your event handlers using the `off` function too:
+
+```js
+import { off, Events } from '#nativephp';
+import { onUnmounted } from 'vue';
+
+onUnmounted(() => {
+    off(Events.Alert.ButtonPressed, handleButtonPressed);
+});
+```
+
+#### The `#[OnNative()]` attribute
+
+Livewire makes listening to 'broadcast' events simple. Just add the `#[OnNative()]` attribute attached to the Livewire
+component method you want to use as its handler:
 
 ```php
+use Native\Mobile\Attributes\OnNative;
 use Native\Mobile\Events\Camera\PhotoTaken;
 
 #[OnNative(PhotoTaken::class)]
