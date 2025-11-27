@@ -135,6 +135,12 @@ This approach is useful if you're not using any particular frontend JavaScript f
 
 #### The `on` import
 
+<aside>
+
+Make sure you've [set up the `Native` plugin](native-functions#install-the-plugin) in your `package.json` first.
+
+</aside>
+
 If you're using a SPA framework like Vue or React, it's more convenient to import the `on` function directly to
 register your event listeners. Here's an example using the amazing Vue:
 
