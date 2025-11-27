@@ -3,17 +3,19 @@ title: Native Components
 order: 150
 ---
 
+![](/img/docs/edge.png)
+
+NativePHP for Mobile also supports rendering native UI components!
+
+Starting with v2, we've introduced a few key navigation components to give your apps an even more native feel.
+
+We call this **EDGE** - Element Generation and Definition Engine.
+
 ## Living on the EDGE
-
-NativePHP for Mobile also supports rendering native UI components! Starting with v2, we've introduced a few key
-navigation components to give your apps an even more native feel.
-
-We call this EDGE - Element Generation and Definition Engine.
 
 EDGE components are **truly native** navigation elements that match each platform's design guidelines.
 
-EDGE gives you the power of native UI components with the simplicity of Blade. What's more, they're fully compatible
-with hot reoloading, which means you can swap them in and out at runtime without needing to recompile your app!
+Built on top of Laravel's Blade, EDGE gives you the power of native UI components with the simplicity you expect.
 
 @verbatim
 ```blade
@@ -22,5 +24,11 @@ with hot reoloading, which means you can swap them in and out at runtime without
 </native:bottom-nav>
 ```
 @endverbatim
+
+We take a single definition and turn it into fully native UI that work beautifully across all the supported mobile OS
+versions.
+
+And they're fully compatible with hot reloading, which means you can swap them in and out at runtime without needing
+to recompile your app!
 
 You can find out all about EDGE and the available components in the [EDGE Components](../edge-components/) section.
