@@ -77,8 +77,8 @@ with inline hints and code completion support.
 
 For the most part, the JavaScript APIs mirror the PHP APIs. Any key differences are noted in our API docs.
 
-This approach uses the PHP interface under the hood, so the two implementations stay in lock-step with each other. So
-you'll never need to worry about whether an API is available only in one place or the other; they're all always
+This approach uses the PHP interface under the hood, meaning the two implementations stay in lock-step with each other.
+So you'll never need to worry about whether an API is available only in one place or the other; they're all always
 available wherever you need them.
 
 <aside>

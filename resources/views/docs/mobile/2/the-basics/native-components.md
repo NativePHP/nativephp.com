@@ -13,7 +13,7 @@ We call this **EDGE** - Element Generation and Definition Engine.
 
 ## Living on the EDGE
 
-EDGE components are **truly native** navigation elements that match each platform's design guidelines.
+EDGE components are **truly native** elements that match each platform's design guidelines.
 
 Built on top of Laravel's Blade, EDGE gives you the power of native UI components with the simplicity you expect.
 
@@ -25,8 +25,8 @@ Built on top of Laravel's Blade, EDGE gives you the power of native UI component
 ```
 @endverbatim
 
-We take a single definition and turn it into fully native UI that work beautifully across all the supported mobile OS
-versions.
+We take a single definition and turn it into fully native UI that works beautifully across all the supported mobile OS
+versions, in both light and dark mode.
 
 And they're fully compatible with hot reloading, which means you can swap them in and out at runtime without needing
 to recompile your app!

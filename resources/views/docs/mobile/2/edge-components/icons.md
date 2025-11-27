@@ -1,6 +1,6 @@
 ---
-title: Icon System
-order: 50
+title: Icons
+order: 9999
 ---
 
 ## Overview

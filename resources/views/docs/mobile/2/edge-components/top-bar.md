@@ -1,6 +1,6 @@
 ---
 title: Top Bar
-order: 200
+order: 50
 ---
 
 ## Overview
