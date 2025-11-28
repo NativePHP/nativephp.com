@@ -66,7 +66,152 @@ Use the `icon` attribute in any EDGE component that supports icons, simply passi
 
 ## Icon Reference
 
-Coming soon!
+All icons listed here are manually mapped and guaranteed to work consistently across iOS and Android.
+
+### Navigation
+
+| Icon | Description |
+|------|-------------|
+| `dashboard` | Grid-style dashboard view |
+| `home` | House/home screen |
+| `menu` | Three-line hamburger menu |
+| `settings` | Gear/settings |
+| `account`, `profile`, `user` | User account or profile |
+| `person` | Single person |
+| `people`, `connections`, `contacts` | Multiple people |
+| `group`, `groups` | Group of people |
+
+### Business & Commerce
+
+| Icon | Description |
+|------|-------------|
+| `orders`, `receipt` | Receipt or order |
+| `cart`, `shopping` | Shopping cart |
+| `shop`, `store` | Store or storefront |
+| `products`, `inventory` | Products or inventory |
+
+### Charts & Data
+
+| Icon | Description |
+|------|-------------|
+| `chart`, `barchart` | Bar chart |
+| `analytics` | Analytics/analysis |
+| `summary`, `report`, `assessment` | Summary or report |
+
+### Time & Scheduling
+
+| Icon | Description |
+|------|-------------|
+| `clock`, `schedule`, `time` | Clock or time |
+| `calendar` | Calendar |
+| `history` | History or recent |
+
+### Actions
+
+| Icon | Description |
+|------|-------------|
+| `add`, `plus` | Add or create new |
+| `edit` | Edit or modify |
+| `delete` | Delete or remove |
+| `save` | Save |
+| `search` | Search |
+| `filter` | Filter |
+| `refresh` | Refresh or reload |
+| `share` | Share |
+| `download` | Download |
+| `upload` | Upload |
+
+### Communication
+
+| Icon | Description |
+|------|-------------|
+| `notifications` | Notifications or alerts |
+| `message` | Message or SMS |
+| `email`, `mail` | Email |
+| `chat` | Chat or conversation |
+| `phone` | Phone or call |
+
+### Navigation Arrows
+
+| Icon | Description |
+|------|-------------|
+| `back` | Back or previous |
+| `forward` | Forward or next |
+| `up` | Up arrow |
+| `down` | Down arrow |
+
+### Status
+
+| Icon | Description |
+|------|-------------|
+| `check`, `done` | Check or complete |
+| `close` | Close or dismiss |
+| `warning` | Warning |
+| `error` | Error |
+| `info` | Information |
+
+### Authentication
+
+| Icon | Description |
+|------|-------------|
+| `login` | Login |
+| `logout`, `exit` | Logout or exit |
+| `lock` | Locked |
+| `unlock` | Unlocked |
+
+### Content
+
+| Icon | Description |
+|------|-------------|
+| `favorite`, `heart` | Favorite or like |
+| `star` | Star or rating |
+| `bookmark` | Bookmark |
+| `image`, `photo` | Image or photo |
+| `image-plus` | Add photo |
+| `video` | Video |
+| `folder` | Folder |
+| `folder-lock` | Locked folder |
+| `file`, `description` | Document or file |
+| `book-open` | Book |
+| `newspaper`, `news`, `article` | News or article |
+
+### Device & Hardware
+
+| Icon | Description |
+|------|-------------|
+| `camera` | Camera |
+| `qr`, `qrcode`, `qr-code` | QR code scanner |
+| `device-phone-mobile`, `smartphone` | Mobile phone |
+| `vibrate` | Vibration |
+| `bell` | Bell or notification |
+| `finger-print`, `fingerprint` | Fingerprint or biometric |
+| `light-bulb`, `lightbulb`, `flashlight` | Light bulb or flashlight |
+| `map`, `location` | Map or location |
+| `globe-alt`, `globe`, `web` | Globe or web |
+| `bolt`, `flash` | Lightning bolt or flash |
+
+### Audio & Volume
+
+| Icon | Description |
+|------|-------------|
+| `speaker`, `speaker-wave` | Speaker with sound |
+| `volume-up` | Volume up |
+| `volume-down` | Volume down |
+| `volume-mute`, `mute` | Muted |
+| `volume-off` | Volume off |
+| `music`, `audio`, `music-note` | Music or audio |
+| `microphone`, `mic` | Microphone |
+
+### Miscellaneous
+
+| Icon | Description |
+|------|-------------|
+| `help` | Help or question |
+| `about`, `information-circle` | Information or about |
+| `more` | More options |
+| `list` | List view |
+| `visibility` | Visible |
+| `visibility_off` | Hidden |
 
 ## Best Practices
 
