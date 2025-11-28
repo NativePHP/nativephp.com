@@ -56,6 +56,12 @@ Dialog::toast('Item saved successfully!');
 
 ### `share()`
 
+<aside>
+
+This API has been deprecated. Use the [`Share`](share) facade instead.
+
+</aside>
+
 Opens the native sharing interface.
 
 **Parameters:**
