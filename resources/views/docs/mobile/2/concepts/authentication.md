@@ -18,7 +18,7 @@ Authenticating the user serves two purposes:
 2. It gives you an opportunity to grant or deny access to certain features of your app based on the authenticated state
    of the user.
 
-Whilst some user data may ne stored on the user's device for convenience, you should not rely on this data to
+Whilst some user data may be stored on the user's device for convenience, you should not rely on this data to
 authenticate the user. This is because **the data is outside of your control**. So you will not be using the typical
 Laravel authentication mechanisms to check for an authenticated user.
 
