@@ -33,7 +33,7 @@ We're working on adding more and more features, including (in no particular orde
  - Ads
  - In-app billing
 
-<aside class="relative z-0 mt-5 overflow-hidden rounded-2xl bg-pink-50 px-5 ring-1 ring-black/5 dark:bg-pink-600/10">
+<aside>
 
 #### Something missing?
 
