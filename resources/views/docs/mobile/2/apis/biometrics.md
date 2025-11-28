@@ -35,9 +35,9 @@ use Native\Mobile\Attributes\OnNative;
 use Native\Mobile\Events\Biometric\Completed;
 
 #[OnNative(Completed::class)]
-public function handle(Completed $event)
+public function handle(bool $success)
 {
-    if ($event->success) {
+    if ($success) {
         // User authenticated successfully
         $this->unlockSecureFeature();
     } else {
