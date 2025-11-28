@@ -13,7 +13,7 @@ use Native\Mobile\Facades\System;
 
 ## Methods
 
-### `flashlight()`
+### `flashlight()` - Deprecated, see [Device](device)
 
 Toggles the device flashlight (camera flash LED) on and off.
 
@@ -34,3 +34,9 @@ Determines if the current device is running iOS.
 Determines if the current device is running Android.
 
 **Returns:** `true` if Android, `false` otherwise
+
+### `isMobile()`
+
+Determines if the current device is running Android or iOS.
+
+**Returns:** `true` if Android or iOS, `false` otherwise

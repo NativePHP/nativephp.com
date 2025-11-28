@@ -148,7 +148,7 @@ register your event listeners. Here's an example using the amazing Vue:
 import { on, Events } from '#nativephp';
 import { onMounted } from 'vue';
 
-const handleButtonPressed = (index, label) => {};
+const handleButtonPressed = (payload: any) => {};
 
 onMounted(() => {
     on(Events.Alert.ButtonPressed, handleButtonPressed);
