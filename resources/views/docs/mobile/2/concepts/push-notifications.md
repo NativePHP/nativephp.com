@@ -67,7 +67,7 @@ Listen for this event to receive the token. Here's an example in a Livewire comp
 
 ```php
 use App\Services\APIService;
-use Livewire\Attributes\On;
+use Native\Mobile\Attributes\OnNative;
 use Native\Mobile\Facades\PushNotifications;
 use Native\Mobile\Events\PushNotification\TokenGenerated;
 

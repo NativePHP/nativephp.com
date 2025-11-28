@@ -68,7 +68,7 @@ if ($success) {
 After capturing media with the camera or audio API, move it from the temporary directory to permanent storage:
 
 ```php
-use Livewire\Attributes\On;
+use Native\Mobile\Attributes\OnNative;
 use Native\Mobile\Events\Camera\PhotoTaken;
 use Native\Mobile\Facades\File;
 

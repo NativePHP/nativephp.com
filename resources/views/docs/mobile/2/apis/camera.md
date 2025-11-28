@@ -140,7 +140,7 @@ Fired when a photo is taken with the camera.
 **Payload:** `string $path` - File path to the captured photo
 
 ```php
-use Livewire\Attributes\On;
+use Native\Mobile\Attributes\OnNative;
 use Native\Mobile\Events\Camera\PhotoTaken;
 
 #[OnNative(PhotoTaken::class)]
@@ -161,7 +161,7 @@ Fired when a video is successfully recorded.
 - `?string $id` - Optional identifier if set via `id()` method
 
 ```php
-use Livewire\Attributes\On;
+use Native\Mobile\Attributes\OnNative;
 use Native\Mobile\Events\Camera\VideoRecorded;
 
 #[OnNative(VideoRecorded::class)]
@@ -186,7 +186,7 @@ Fired when video recording is cancelled by the user.
 - `?string $id` - Optional identifier if set via `id()` method
 
 ```php
-use Livewire\Attributes\On;
+use Native\Mobile\Attributes\OnNative;
 use Native\Mobile\Events\Camera\VideoCancelled;
 
 #[OnNative(VideoCancelled::class)]
@@ -204,7 +204,7 @@ Fired when media is selected from the gallery.
 **Payload:** `array $media` - Array of selected media items
 
 ```php
-use Livewire\Attributes\On;
+use Native\Mobile\Attributes\OnNative;
 use Native\Mobile\Events\Gallery\MediaSelected;
 
 #[OnNative(MediaSelected::class)]

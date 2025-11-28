@@ -34,7 +34,7 @@ Fired when a push notification token is successfully generated.
 **Payload:** `string $token` - The FCM token for this device
 
 ```php
-use Livewire\Attributes\On;
+use Native\Mobile\Attributes\OnNative;
 use Native\Mobile\Events\PushNotification\TokenGenerated;
 
 #[OnNative(TokenGenerated::class)]

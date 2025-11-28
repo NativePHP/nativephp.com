@@ -82,7 +82,7 @@ Fired when a button is pressed in an alert dialog.
 - `string $label` - Label/text of the pressed button
 
 ```php
-use Livewire\Attributes\On;
+use Native\Mobile\Attributes\OnNative;
 use Native\Mobile\Events\Alert\ButtonPressed;
 
 #[OnNative(ButtonPressed::class)]

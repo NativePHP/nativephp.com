@@ -31,7 +31,7 @@ Biometrics::prompt();
 Fired when biometric authentication completes (success or failure).
 
 ```php
-use Livewire\Attributes\On;
+use Native\Mobile\Attributes\OnNative;
 use Native\Mobile\Events\Biometric\Completed;
 
 #[OnNative(Completed::class)]

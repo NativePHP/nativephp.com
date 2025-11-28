@@ -66,7 +66,7 @@ Fired when location data is requested (success or failure).
 - `string $error` - Error message (when unsuccessful)
 
 ```php
-use Livewire\Attributes\On;
+use Native\Mobile\Attributes\OnNative;
 use Native\Mobile\Events\Geolocation\LocationReceived;
 
 #[OnNative(LocationReceived::class)]
@@ -98,7 +98,7 @@ Fired when permission status is checked.
 - `'not_determined'` - Permission not yet requested
 
 ```php
-use Livewire\Attributes\On;
+use Native\Mobile\Attributes\OnNative;
 use Native\Mobile\Events\Geolocation\PermissionStatusReceived;
 
 #[OnNative(PermissionStatusReceived::class)]
@@ -123,7 +123,7 @@ Fired when a permission request completes.
 - `'permanently_denied'` - User has permanently denied permission
 
 ```php
-use Livewire\Attributes\On;
+use Native\Mobile\Attributes\OnNative;
 use Native\Mobile\Events\Geolocation\PermissionRequestResult;
 
 #[On('native:' . PermissionRequestResult::class)]

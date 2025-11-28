@@ -70,7 +70,7 @@ Share::url(
 Share a photo that was captured with the camera.
 
 ```php
-use Livewire\Attributes\On;
+use Native\Mobile\Attributes\OnNative;
 use Native\Mobile\Events\Camera\PhotoTaken;
 
 #[OnNative(PhotoTaken::class)]
