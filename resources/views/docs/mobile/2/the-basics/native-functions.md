@@ -30,7 +30,7 @@ Though this will be optional, so you have total freedom of choice and could even
 When using a web view and using JavaScript you may also interact with the native functions easily from JavaScript using
 our convenient `Native` library.
 
-This is especially useful if you're building applications with an SPA framework, like Vue or React, as you can simply
+This is especially useful if you're building applications with a SPA framework, like Vue or React, as you can simply
 import the functions you need and move a lot of work into the reactive part of your UI.
 
 ### Install the plugin

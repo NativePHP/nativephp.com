@@ -191,6 +191,8 @@ public function handleAudioRecorded(string $path, string $mimeType, ?string $id)
 
 - **Microphone Permission:** The first time your app requests microphone access, users will be prompted for permission. If denied, recording functions will fail silently.
 
+- **Microphone Background Permission:** You can allow your app to record audio while the device is locked by toggling `microphone_background` to true in [the config](../getting-started/configuration)
+
 - **File Format:** Recordings are stored as M4A/AAC audio files (`.m4a`). This format is optimized for small file sizes while maintaining quality.
 
 - **Recording State:** Only one recording can be active at a time. Calling `start()` while a recording is in progress will return `false`.

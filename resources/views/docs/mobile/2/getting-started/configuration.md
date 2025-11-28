@@ -117,8 +117,8 @@ reasons why your app needs certain permissions. You can do this easily from the 
 - `location` - Allows your application to request access to the device's GPS receiver, if present. Note that the user
     may deny this and any location functions will then result in a no-op.
 - `vibrate` - In modern Android devices this is a requirement for most haptic feedback.
-- `storage_read` - Grants your app access to read from device storage locations.
-- `storage_write` - Allows your app to write to device storage.
+- `storage_read` - Grants your app access to read from device storage locations. This is not required for basic app file manipulation.
+- `storage_write` - Allows your app to write to device storage. This is not required for basic app file manipulation.
 - `microphone` - Allows your application to request access to the device's microphone, if present. Required for audio
     recording functionality. Note that the user may deny access and any microphone functions will then result in a no-op.
 - `microphone_background` - Allows your application to request access to the device's microphone, if present. Required

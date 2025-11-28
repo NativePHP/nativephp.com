@@ -73,3 +73,19 @@ use Blade's battle-tested processing engine to rapidly compile the necessary tra
 They can be defined in any Blade file, but for them to be processed, that Blade file will need to be rendered. We
 recommend putting your components in a Blade component that is likely to be rendered on every request, such as your
 main layout, e.g. `layouts/app.blade.php` or one of its child views/components.
+
+## Using Inertia?
+
+Each link in an EDGE component will do a full post back to PHP, which may not be what you want if you are using Inertia. To transform these requests into Inertia `<Link>`, add `router` to your `window` object:
+
+```typescript
+import { router } from '@inertiajs/vue3';
+
+declare global {
+    interface Window {
+        router: typeof router;
+    }
+}
+
+window.router = router;
+```

@@ -3,6 +3,14 @@ title: Haptics
 order: 800
 ---
 
+<aside>
+
+#### Deprecated
+
+The `Haptics` facade is marked deprecated and will be removed in a future release, use [Device](../apis/device) instead.
+
+</aside>
+
 ## Overview
 
 The Haptics API provides access to the device's vibration and haptic feedback system for tactile user interactions.

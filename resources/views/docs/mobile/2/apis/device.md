@@ -25,6 +25,27 @@ Return information about the underlying device/os/platform.
 Returns JSON encoded: `string`
 
 
+### `vibrate()`
+
+Triggers device vibration for tactile feedback.
+
+**Returns:** `void`
+
+```php
+Device::vibrate();
+```
+
+### `flashlight()`
+
+Toggles the device flashlight (camera flash LED) on and off.
+
+**Returns:** `void`
+
+```php
+Device::flashlight(); // Toggle flashlight state
+```
+
+
 ### `getBatteryInfo()`
 
 Return information about the battery.
