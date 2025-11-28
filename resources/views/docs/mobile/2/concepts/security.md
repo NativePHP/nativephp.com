@@ -39,66 +39,60 @@ The device's secure storage encrypts and decrypts data on the fly and that means
 critical things like API tokens, keeping your users and your systems safe.
 
 This data is only accessible by your app and is persisted beyond the lifetime of your app, so it will still be available
-the next time your app is open.
+the next time your app is opened.
 
-### Why not use the Laravel `Crypt` facade?
 
-By default, the `Crypt` facade - and by extension the `encrypt` and `decrypt` helper functions - all rely on the
-`APP_KEY` value set in your `.env` file.
+<aside>
 
-We _will_ use Laravel's underlying `Encryption` class, but you should avoid using these helpers directly.
+Secure Storage is only meant for small amounts of text data, usually no more than a few KBs. If you need to store
+larger amounts of data or files, you should store this in a database or as a file.
 
-In the context of distributed apps, the `APP_KEY` is shipped _with_ your app and therefore isn't secure. Anyone who
-knows where to look for it will be able to find it. Then any data encrypted with it is no better off than if it was
-stored in plain text.
+</aside>
 
-Also, it will be the same key for every user, and this presents a considerable risk.
+### When to use the Laravel `Crypt` facade
 
-What you really want is a **unique key for each user**, and for that you really need to generate your encryption key
-once your app is installed on your user's device.
+When a user first opens your app, NativePHP generates a **unique `APP_KEY` just for their device** and stores it in the
+device's secure storage. This means each instance of your application has its own encryption key that is securely
+stored on the device.
 
-You could do this and update the `.env` file, but it would still be stored in a way that an attacker may be able to
-exploit.
+NativePHP securely reads the `APP_KEY` from secure storage and makes it available to Laravel. So you can safely use the
+`Crypt` facade to encrypt and decrypt data!
 
-A better approach is to generate a secure key the first time your app opens, place that key in Secure Storage, and
-then use that key to encrypt your other data before storage:
+<aside>
+
+Make sure you do not leak the `APP_KEY` or decrypted data inadvertently through error tracking or debug logging tools.
+
+</aside>
+
+This is great for encrypting larger amounts of data that wouldn't easily fit in secure storage. You can encrypt values
+and store them in the file system or in the SQLite database, knowing that they are safe at rest:
 
 ```php
-use Illuminate\Encryption\Encrypter;
-use Illuminate\Support\Facades\Storage;
-use Native\Mobile\Facades\SecureStorage;
+use Illuminate\Support\Facades\Crypt;
 
-function generateRandomKey()
-{
-    return base64_encode(
-        Encrypter::generateKey(config('app.cipher'))
-    );
-}
-
-$encryptionKey = SecureStorage::get('encryption_key');
-
-if (! $encryptionKey) {
-    SecureStorage::set('encryption_key', $encryptionKey = generateRandomKey());
-}
-
-$mobileEncrypter = new Encrypter($encryptionKey);
-
-$encryptedContents = $mobileEncrypter->encrypt(
+$encryptedContents = Crypt::encryptString(
     $request->file('super_private_file')
 );
 
-Storage::put('my_secure_file.pdf', $encryptedContents);
+Storage::put('my_secure_file', $encryptedContents);
 ```
 
 And then decrypt it later:
 
 ```php
-$decryptedContents = $mobileEncrypter->decrypt(
-    Storage::get('my_secure_file.pdf')
+$decryptedContents = Crypt::decryptString(
+    Storage::get('my_secure_file')
 );
 ```
 
-### Secure Storage vs Database/Files
+<aside>
 
-Secure Storage is only meant for small amounts of text data, usually no more than a few KBs. If you need to store
-larger amounts of data or files, you should store this in a database or as a file.
+Data encrypted with the `Crypt` facade should stay on the user's device with your app. Placing it encrypted anywhere
+else risks the chance that it will be unrecoverable. If the user loses their device or deletes your app,
+they will lose the encryption key and the data will be encrypted forever.
+
+If you wish to share data, decrypt it first, transmit securely (e.g. over HTTPS) and re-encrypt it with a different key
+that is safely managed elsewhere.
+
+</aside>
+
