@@ -309,3 +309,11 @@ nav.docs-navigation > ul > li > ul {
         @apply grid-cols-2;
     }
 }
+
+
+/* Responsive embedded content */
+@layer components {
+    .aspect-video iframe {
+        @apply absolute inset-0 w-full h-full;
+    }
+}
