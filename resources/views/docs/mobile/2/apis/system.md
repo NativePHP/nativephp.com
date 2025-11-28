@@ -5,7 +5,7 @@ order: 1500
 
 ## Overview
 
-The System API provides access to basic system functions like flashlight control, platform detection, and network status monitoring.
+The System API provides access to basic system functions like flashlight control and platform detection.
 
 ```php
 use Native\Mobile\Facades\System;
