@@ -4,40 +4,31 @@ order: 2
 ---
 
 ## JavaScript/TypeScript Library
-A brand-new JavaScript bridge library with full TypeScript declarations for Vue, React, Inertia, and vanilla JS apps. This enables calling native device features directly from your frontend code. Read more about it [here](). 
-
----
+A brand-new JavaScript bridge library with full TypeScript declarations for Vue, React, Inertia, and vanilla JS apps.
+This enables calling native device features directly from your frontend code. Read more about it
+[here](../the-basics/native-functions#run-from-anywhere). 
 
 ## EDGE - Element Definition and Generation Engine
 A new native UI system for rendering navigation components natively on device using Blade. Read more about it [here](../edge-components/introduction).
 
----
-
 ## Laravel Boost Support
-Full integration with Laravel Boost for AI-assisted development. Read more about it [here](../getting-started/development#laravel-boost-support).
+Full integration with Laravel Boost for AI-assisted development. Read more about it [here](../getting-started/development#laravel-boost).
 
----
 ## Hot Module Replacement (HMR) Overhauled
 Full Vite HMR for rapid development. Read more about it [here](../getting-started/development#hot-reloading).
 
 Features:
-- Custom vite plugin
+- Custom Vite plugin
 - Automatic HMR server configuration for iOS/Android
-- PHP protocol adapter for axios on iOS (no more inertia patch command!)
-- Automatic WebView reload fallback when Vite isn't running
+- PHP protocol adapter for axios on iOS (no more `patch-inertia` command!)
 - Works over the network even without a physical device plugged in!
 
----
-
 ##  Fluent Pending API (PHP)
-All [Asynchronous Methods](../the-basics/events#understanding-async-vs-sync) now implement a fluent api for better IDE support and ease of use.
+All [Asynchronous Methods](../the-basics/events#understanding-async-vs-sync) now implement a fluent API for better IDE support and ease of use.
 
 ### PHP
 ```php
-// Alerts with correlation IDs
 Dialog::alert('Confirm', 'Delete this?', ['Cancel', 'Delete'])
-    ->id('delete-confirm')
-    ->event(MyCustomEvent::class)
     ->remember()
     ->show();
 ```
@@ -46,7 +37,6 @@ Dialog::alert('Confirm', 'Delete this?', ['Cancel', 'Delete'])
 ```js
 import { dialog, on, off, Events } from '#nativephp';
 const label = ref('');
-
 
 const openAlert = async () => {
     await dialog.alert()
@@ -64,29 +54,31 @@ onMounted(() => {
 });
 ```
 
----
-
 ##  `#[OnNative]` Livewire Attribute
-Learn more about the new OnNative support [here]().
+Forget the silly string concatenation of yesterday; get into today's fashionable attribute usage with this drop-in
+replacement:
 
----
+```php
+use Livewire\Attributes\OnNative; // [tl! remove]
+use Native\Mobile\Attributes\OnNative; // [tl! add]
+
+#[On('native:'.ButtonPressed::class)] // [tl! remove]
+#[OnNative(ButtonPressed::class)] // [tl! add]
+public function handle()
+```
 
 ##  Video Recording
-Learn more about the new Video Recorder support [here]().
+Learn more about the new Video Recorder support [here](../apis/camera#coderecordvideocode).
 
----
 ##  QR/Barcode Scanner
-Learn more about the new QR/Barcode Scanner support [here]().
+Learn more about the new QR/Barcode Scanner support [here](../apis/scanner).
 
----
-##  Microhone
-Learn more about the new Microphone support [here]().
+##  Microphone
+Learn more about the new Microphone support [here](../apis/microphone).
 
----
 ##  Network Detection
-Learn more about the new Network Detection support [here]().
+Learn more about the new Network Detection support [here](../apis/network).
 
----
 ##  Background Audio Recording
 Just update your config and record audio even while the device is locked!
 
@@ -94,19 +86,17 @@ Just update your config and record audio even while the device is locked!
 // config/nativephp.php
 'permissions' => [
     'microphone' => true,
-    'microphone_background' => true, // NEW
+    'microphone_background' => true,
 ],
 ```
----
 ##  Push Notifications API
-New fluent API for push notification enrollment with ID correlation and session tracking:
+New fluent API for push notification enrollment:
 
 ### PHP
 ```php
 use Native\Mobile\Facades\PushNotifications;
 use Native\Mobile\Events\PushNotification\TokenGenerated;
 
-// Simple enrollment (auto-executes)
 PushNotifications::enroll();
 
 #[OnNative(TokenGenerated::class)]
@@ -143,23 +133,22 @@ onUnmounted(() => {
 - `enrollForPushNotifications()` → use `enroll()`
 - `getPushNotificationsToken()` → use `getToken()`
 
----
-
 ##  Platform Improvements
 
 ### iOS
 - **Platform detection** - `nativephp-ios` class on body
 - **Keyboard detection** - `keyboard-visible` class when keyboard shown
 - **iOS 26 Liquid Glass** support
-- **Improved device selector** showing last-used device
-- **Load Times** dramatically decreased by 60-80%!
+- **Improved device selector** on `native:run` showing last-used device
+- **Load Times** dramatically improved. Now 60-80% faster!
 
 ### Android
-- **Android 16+ 16KB page size** compatibility
+- **Complete Android 16+ 16KB page size** compatibility
 - **Jetpack Compose UI** - Migrated from XML layouts
 - **Platform detection** - `nativephp-android` class on body
+- **Keyboard detection** - `keyboard-visible` class when keyboard shown
 - **Parallel zip extraction** for faster installations
-- **Load Times** dramatically decreased by ~40%!
+- **Load Times** dramatically improved. ~40% faster!
 - **Page Load Times** dramatically decreased by ~40%!
 ---
 
@@ -190,20 +179,24 @@ onUnmounted(() => {
 'location' => 'Location is used to find nearby stores.',
 ```
 
----
-
 ##  New Events
 
 - `Camera\VideoRecorded`, `Camera\VideoCancelled`, `Camera\PhotoCancelled`
 - `Microphone\MicrophoneRecorded`, `Microphone\MicrophoneCancelled`
 - `Scanner\CodeScanned`
 
-All events now include optional `$id` parameter for correlation.
+## Custom Events
 
----
+Many native calls now accept custom event classes!
+
+```php
+Dialog::alert('Confirm', 'Delete this?', ['Cancel', 'Delete'])
+    ->event(MyCustomEvent::class)
+```
 
 ##  Better File System Support
-NativePHP now symlinks your filesystems! Persisted storage stays in storage but is symlinked to the public dir for display in the webview! Plus a pre-configured `mobile_public` filesystem disk.
+NativePHP now symlinks your filesystems! Persisted storage stays in storage but is symlinked to the public directory for
+display in the web view! Plus a pre-configured `mobile_public` filesystem disk.
 
 ```dotenv
 FILESYSTEM_DISK=mobile_public
@@ -215,17 +208,12 @@ $imageUrl = Storage::url($path);
 <img :src="$imageurl" />
 ```
 
----
-
-
 ## Bug Fixes
 
-- Fixed infinite recursion in some Laravel setups
+- Fixed infinite recursion during bundling in some Laravel setups
 - Fixed iOS toolbar padding for different device sizes
 - Fixed Android debug mode forcing `APP_DEBUG=true`
 - Fixed orientation config key case sensitivity (`iPhone` vs `iphone`)
-
----
 
 ## Breaking Changes
 
