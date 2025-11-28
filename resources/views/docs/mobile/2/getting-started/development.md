@@ -164,10 +164,6 @@ up the `hot` file's presence and connect to the HMR server.
 
 <aside>
 
-### Laravel Boost Support
-
-NativePHP Mobile now supports [Laravel Boost](https://github.com/laravel/boost) which aims to accelerate AI-assisted development by providing the essential context and structure that AI needs to generate high-quality, Laravel-specific code.
-After installing `nativephp/mobile` and `laravel/boost` simply run `php artisan boost:install` and follow the prompts to activate NativePHP for Laravel Boost!
 
 
 #### Skip the prompts
@@ -180,3 +176,11 @@ php artisan native:run --help
 ```
 
 </aside>
+
+## Laravel Boost
+
+NativePHP for Mobile supports [Laravel Boost](https://github.com/laravel/boost) which aims to accelerate AI-assisted development by providing
+the essential context and structure that AI needs to generate high-quality, Laravel-specific code.
+
+After installing `nativephp/mobile` and `laravel/boost` simply run `php artisan boost:install` and follow the prompts
+to activate NativePHP for Laravel Boost!
