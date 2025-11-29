@@ -49,7 +49,7 @@ section to the JSON:
 }
 ```
 
-Then in your JavaScript, simply import the relevant functions from the plugin:
+Run `npm install`, then in your JavaScript, simply import the relevant functions from the plugin:
 
 ```js
 import { on, off, Microphone, Events } from '#nativephp';
