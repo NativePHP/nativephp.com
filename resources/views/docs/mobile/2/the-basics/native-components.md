@@ -9,7 +9,7 @@ NativePHP for Mobile also supports rendering native UI components!
 
 Starting with v2, we've introduced a few key navigation components to give your apps an even more native feel.
 
-We call this **EDGE** - Element Generation and Definition Engine.
+We call this **EDGE** - Element Definition and Generation Engine.
 
 ## Living on the EDGE
 
