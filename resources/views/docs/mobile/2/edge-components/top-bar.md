@@ -37,7 +37,7 @@ A top bar with title and action buttons. This renders at the top of the screen.
 
 - `title` - The title text
 - `show-navigation-icon` - Show back/menu button (optional, default: `true`)
-- `label` - If more than 3 actions, iOS will display an overflow menu and the labels assigned to each item
+- `label` - If more than 5 actions, iOS will display an overflow menu and the labels assigned to each item
 - `background-color` - Background color. Hex code (optional)
 - `text-color` - Text color. Hex code (optional)
 - `elevation` - Shadow depth 0-24 (optional) [Android]
