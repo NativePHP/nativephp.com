@@ -1,6 +1,7 @@
 <?php
 
 use App\Features\ShowAuthButtons;
+use App\Http\Controllers\ApplinksController;
 use App\Http\Controllers\Auth\CustomerAuthController;
 use App\Http\Controllers\CustomerLicenseController;
 use App\Http\Controllers\CustomerSubLicenseController;
@@ -139,3 +140,6 @@ Route::middleware(['auth', EnsureFeaturesAreActive::using(ShowAuthButtons::class
     Route::patch('licenses/{licenseKey}/sub-licenses/{subLicense}/suspend', [CustomerSubLicenseController::class, 'suspend'])->name('licenses.sub-licenses.suspend');
     Route::post('licenses/{licenseKey}/sub-licenses/{subLicense}/send-email', [CustomerSubLicenseController::class, 'sendEmail'])->name('licenses.sub-licenses.send-email');
 });
+
+
+Route::get('.well-known/assetlinks.json', [ApplinksController::class, 'assetLinks']);
