@@ -3,7 +3,6 @@
 namespace App\Support\CommonMark;
 
 use App\Extensions\TorchlightWithCopyExtension;
-use League\CommonMark\CommonMarkConverter;
 use League\CommonMark\Environment\Environment;
 use League\CommonMark\Extension\CommonMark\CommonMarkCoreExtension;
 use League\CommonMark\Extension\CommonMark\Node\Block\Heading;
