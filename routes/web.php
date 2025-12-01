@@ -112,6 +112,16 @@ Route::post('logout', [CustomerAuthController::class, 'logout'])
     ->middleware(EnsureFeaturesAreActive::using(ShowAuthButtons::class))
     ->name('customer.logout');
 
+Route::get('callback', function (Illuminate\Http\Request $request) {
+    $url = $request->query('url');
+
+    if ($url && str_starts_with($url, 'nativephp://')) {
+        return redirect()->away($url.'?token='.uuid_create());
+    }
+
+    return response('Goodbye');
+})->name('callback');
+
 // Customer license management routes
 Route::middleware(['auth', EnsureFeaturesAreActive::using(ShowAuthButtons::class)])->prefix('customer')->name('customer.')->group(function () {
     Route::get('licenses', [CustomerLicenseController::class, 'index'])->name('licenses');
