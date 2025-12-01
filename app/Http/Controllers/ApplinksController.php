@@ -23,7 +23,7 @@ class ApplinksController extends Controller
             ],
         ];
 
-        return response()->json('[
+        return response('[
   {
     "relation": [
       "delegate_permission/common.handle_all_urls"
