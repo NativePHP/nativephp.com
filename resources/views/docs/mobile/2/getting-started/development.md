@@ -38,7 +38,7 @@ To facilitate ease of development, you should install the `nativephpMobile` Vite
 
 ### The `nativephpMobile` Vite plugin
 
-To make your frontend build process work well with NativePHP, simply add the `nativephpMobile` plugin to your
+To make your frontend build process works well with NativePHP, simply add the `nativephpMobile` plugin to your
 `vite.config.js`:
 
 ```js
@@ -57,7 +57,7 @@ export default defineConfig({
 ```
 
 Once that's done, you'll need to adjust your Vite build command when creating builds for each platform — simply add the
-`--mode=` option. Run these before compiling your app for each platform in turn:
+`--mode=[ios|android]` option. Run these before compiling your app for each platform in turn:
 
 ```shell
 npm run build -- --mode=ios
