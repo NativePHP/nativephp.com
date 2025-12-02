@@ -115,7 +115,7 @@ Route::post('logout', [CustomerAuthController::class, 'logout'])
 Route::get('callback', function (Illuminate\Http\Request $request) {
     $url = $request->query('url');
 
-    if ($url && str_starts_with($url, 'nativephp://')) {
+    if ($url && !str_starts_with($url, 'http')) {
         return redirect()->away($url.'?token='.uuid_create());
     }
 
