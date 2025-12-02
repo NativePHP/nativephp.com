@@ -26,14 +26,19 @@ Features:
 ##  Fluent Pending API (PHP)
 All [Asynchronous Methods](../the-basics/events#understanding-async-vs-sync) now implement a fluent API for better IDE support and ease of use.
 
-### PHP
+<x-snippet title="Fluent APIs">
+
+<x-snippet.tab name="PHP">
+
 ```php
 Dialog::alert('Confirm', 'Delete this?', ['Cancel', 'Delete'])
     ->remember()
     ->show();
 ```
 
-### JS
+</x-snippet.tab>
+<x-snippet.tab name="Vue">
+
 ```js
 import { dialog, on, off, Events } from '#nativephp';
 const label = ref('');
@@ -53,6 +58,9 @@ onMounted(() => {
     on(Events.Alert.ButtonPressed, buttonPressed);
 });
 ```
+
+</x-snippet.tab>
+</x-snippet>
 
 ##  `#[OnNative]` Livewire Attribute
 Forget the silly string concatenation of yesterday; get into today's fashionable attribute usage with this drop-in
@@ -92,7 +100,9 @@ Just update your config and record audio even while the device is locked!
 ##  Push Notifications API
 New fluent API for push notification enrollment:
 
-### PHP
+<x-snippet title="Push Notifications">
+
+<x-snippet.tab name="PHP">
 ```php
 use Native\Mobile\Facades\PushNotifications;
 use Native\Mobile\Events\PushNotification\TokenGenerated;
@@ -105,8 +115,8 @@ public function handlePushNotificationsToken($token)
     $this->token = $token;
 }
 ```
-
-### JS
+</x-snippet.tab>
+<x-snippet.tab name="Vue">
 ```js
 import { pushNotifications, on, off, Events } from '#nativephp';
 
@@ -128,6 +138,8 @@ onUnmounted(() => {
     off(Events.PushNotification.TokenGenerated, handlePushNotificationsToken);
 });
 ```
+</x-snippet.tab>
+</x-snippet>
 
 **Deprecated Methods:**
 - `enrollForPushNotifications()` → use `enroll()`

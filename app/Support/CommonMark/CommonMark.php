@@ -3,7 +3,6 @@
 namespace App\Support\CommonMark;
 
 use App\Extensions\TorchlightWithCopyExtension;
-use League\CommonMark\CommonMarkConverter;
 use League\CommonMark\Environment\Environment;
 use League\CommonMark\Extension\CommonMark\CommonMarkCoreExtension;
 use League\CommonMark\Extension\CommonMark\Node\Block\Heading;
@@ -21,8 +20,11 @@ class CommonMark
 {
     protected static ?MarkdownConverter $converter = null;
 
-    public static function convertToHtml(string $markdown): string
+    public static function convertToHtml(string $markdown, array $data = []): string
     {
+        // Pre-process to render any Blade components in the markdown
+        $markdown = BladeMarkdownPreprocessor::process($markdown, $data);
+
         return static::getConverter()->convert($markdown)->getContent();
     }
 
@@ -45,6 +47,7 @@ class CommonMark
             $environment->addExtension(new GithubFlavoredMarkdownExtension);
             $environment->addRenderer(Heading::class, new HeadingRenderer);
             $environment->addExtension(new TableExtension);
+
             $environment->addExtension(new EmbedExtension);
 
             $environment->addRenderer(
