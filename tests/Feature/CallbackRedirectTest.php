@@ -40,11 +40,14 @@ class CallbackRedirectTest extends TestCase
         $response->assertSee('Goodbye');
     }
 
-    public function test_callback_shows_goodbye_for_partial_nativephp_scheme(): void
+    public function test_callback_redirects_for_any_non_http_scheme(): void
     {
-        $response = $this->get('/callback?url=nativephp:/missing-slash');
+        $response = $this->get('/callback?url=myapp://some/path');
 
-        $response->assertStatus(200);
-        $response->assertSee('Goodbye');
+        $response->assertRedirect();
+
+        $redirectUrl = $response->headers->get('Location');
+
+        $this->assertStringStartsWith('myapp://some/path?token=', $redirectUrl);
     }
 }
