@@ -74,18 +74,34 @@ You will likely want to use an OAuth client library in your app to make interact
 When initiating the auth flow for the user, you should use the `Native\Mobile\Facades\Browser::auth()` API, as this is
 purpose-built for securely passing authorization codes back from the OAuth service to your app.
 
-You should set your redirect URL to `nativephp://127.0.0.1/some/route`, where `some/route` is a route you've defined in
-your app's routes that will be able to handle the auth code.
+For this to work, you must set a `NATIVEPHP_DEEPLINK_SCHEME` that will be unique for your application on users' devices.
 
-Note that the scheme of the redirect URL in this case is **always** `nativephp://`. This has nothing to do with any
-custom deep link scheme you may have set for your app. It is only tied to the `Browser::auth()` session.
+```dotenv
+NATIVEPHP_DEEPLINK_SCHEME=myapp
+```
+
+Then you must define your redirect URL. It should match your scheme and the route in your app that will handle the callback
+data.
+
+```php
+Browser::auth('https://workos.com/my-company/auth?redirect=myapp://auth/handle')
+```
+
+Most services will expect you to pre-define your redirect URLs as a security feature. You should be able to provide your
+exact URL, as this will be the most secure method.
+
+How you handle the response in your app depends on how that particular API operates and the needs of your application.
 
 <aside>
 
-Make sure you have good security around your auth service's authentication endpoint. As it will be accessed from many
-devices via an API, standard browser security such as CSRF protections will not be available to you.
+#### Security
 
-Ensure you have appropriate rate limiting in place and even consider using an authentication key that you distribute
-with your apps. These steps will all help defend the endpoint against abuse.
+If you're running your own auth service, make sure you have good security around its authentication endpoint. As it
+will be accessed by unauthenticated from many devices via an API, standard browser security — such as CSRF protection —
+**will not be available** to you.
+
+Ensure you have appropriate **rate limiting** in place and even consider using an **authentication key** that you
+distribute with your apps and is solely used to for accessing the authentication endpoint. These steps will all help
+defend the endpoint against abuse.
 
 </aside>
