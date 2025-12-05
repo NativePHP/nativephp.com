@@ -18,6 +18,13 @@
             icon="dollar-circle"
             icon-class="size-5.5"
         />
+        <x-navbar.device-dropdown-item
+            href="{{ route('plugins') }}"
+            title="Plugins"
+            subtitle="Extend your mobile apps"
+            icon="puzzle"
+            icon-class="size-5"
+        />
         {{-- 👇 Hidden temporarily --}}
         {{--
             <x-navbar.device-dropdown-item

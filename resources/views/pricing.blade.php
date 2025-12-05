@@ -739,6 +739,17 @@
                 </p>
             </x-faq-card>
 
+            <x-faq-card question="What does 'repo access' mean?">
+                <p>
+                    You will get direct access to our GitHub repository for NativePHP for Mobile. This will allow you
+                    to raise issues directly with the team, which are prioritized higher than issues we see on Discord.
+                </p>
+                <p class="mt-4">
+                    It also means you can try out features that are still in development before they're generally
+                    available and help us to shape and refine them for release.
+                </p>
+            </x-faq-card>
+
             <x-faq-card
                 question="Is it possible to purchase additional developer seats or released apps?"
             >

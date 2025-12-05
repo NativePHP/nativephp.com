@@ -4,7 +4,9 @@ use App\Features\ShowAuthButtons;
 use App\Http\Controllers\ApplinksController;
 use App\Http\Controllers\Auth\CustomerAuthController;
 use App\Http\Controllers\CustomerLicenseController;
+use App\Http\Controllers\CustomerPluginController;
 use App\Http\Controllers\CustomerSubLicenseController;
+use App\Http\Controllers\PluginDirectoryController;
 use App\Http\Controllers\ShowBlogController;
 use App\Http\Controllers\ShowDocumentationController;
 use Illuminate\Support\Facades\Route;
@@ -42,6 +44,8 @@ Route::view('laracon-us-2025-giveaway', 'laracon-us-2025-giveaway')->name('larac
 Route::view('privacy-policy', 'privacy-policy')->name('privacy-policy');
 Route::view('terms-of-service', 'terms-of-service')->name('terms-of-service');
 Route::view('partners', 'partners')->name('partners');
+Route::get('plugins', [PluginDirectoryController::class, 'index'])->name('plugins');
+Route::get('plugins/directory', App\Livewire\PluginDirectory::class)->name('plugins.directory');
 Route::view('sponsor', 'sponsoring')->name('sponsoring');
 
 Route::get('blog', [ShowBlogController::class, 'index'])->name('blog');
@@ -115,7 +119,7 @@ Route::post('logout', [CustomerAuthController::class, 'logout'])
 Route::get('callback', function (Illuminate\Http\Request $request) {
     $url = $request->query('url');
 
-    if ($url && !str_starts_with($url, 'http')) {
+    if ($url && ! str_starts_with($url, 'http')) {
         return redirect()->away($url.'?token='.uuid_create());
     }
 
@@ -130,6 +134,14 @@ Route::middleware(['auth', EnsureFeaturesAreActive::using(ShowAuthButtons::class
 
     // Wall of Love submission
     Route::get('wall-of-love/create', [App\Http\Controllers\WallOfLoveSubmissionController::class, 'create'])->name('wall-of-love.create');
+
+    // Plugin management
+    Route::get('plugins', [CustomerPluginController::class, 'index'])->name('plugins.index');
+    Route::get('plugins/submit', [CustomerPluginController::class, 'create'])->name('plugins.create');
+    Route::post('plugins', [CustomerPluginController::class, 'store'])->name('plugins.store');
+    Route::get('plugins/{plugin}', [CustomerPluginController::class, 'show'])->name('plugins.show');
+    Route::patch('plugins/{plugin}', [CustomerPluginController::class, 'update'])->name('plugins.update');
+    Route::post('plugins/{plugin}/resubmit', [CustomerPluginController::class, 'resubmit'])->name('plugins.resubmit');
 
     // Billing portal
     Route::get('billing-portal', function (Illuminate\Http\Request $request) {
@@ -150,6 +162,5 @@ Route::middleware(['auth', EnsureFeaturesAreActive::using(ShowAuthButtons::class
     Route::patch('licenses/{licenseKey}/sub-licenses/{subLicense}/suspend', [CustomerSubLicenseController::class, 'suspend'])->name('licenses.sub-licenses.suspend');
     Route::post('licenses/{licenseKey}/sub-licenses/{subLicense}/send-email', [CustomerSubLicenseController::class, 'sendEmail'])->name('licenses.sub-licenses.send-email');
 });
-
 
 Route::get('.well-known/assetlinks.json', [ApplinksController::class, 'assetLinks']);

@@ -55,6 +55,14 @@ class User extends Authenticatable implements FilamentUser
         return $this->hasMany(WallOfLoveSubmission::class);
     }
 
+    /**
+     * @return HasMany<Plugin>
+     */
+    public function plugins(): HasMany
+    {
+        return $this->hasMany(Plugin::class);
+    }
+
     public function getFirstNameAttribute(): ?string
     {
         if (empty($this->name)) {
