@@ -202,6 +202,8 @@ changes to any files in your Laravel app, the web view will be reloaded and your
 Vite HMR is perfect for apps that use SPA frameworks like Vue or React to build the UI. It even works on real devices,
 not just simulators! As long as the device is on the same network as the development machine.
 
+**Don't forget to add `public/ios-hot` and `public/android-hot` to your `.gitignore` file!**
+
 <aside>
 
 #### Real iOS Devices Support
