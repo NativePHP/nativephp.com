@@ -7,6 +7,7 @@ use App\Enums\Subscription;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Api\LicenseResource;
 use App\Jobs\CreateAnystackLicenseJob;
+use App\Jobs\UpdateAnystackLicenseExpiryJob;
 use App\Models\License;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -75,6 +76,21 @@ class LicenseController extends Controller
         $license = License::where('key', $key)
             ->with('user')
             ->firstOrFail();
+
+        return new LicenseResource($license);
+    }
+
+    public function renew(string $key): LicenseResource
+    {
+        $license = License::where('key', $key)
+            ->with('user')
+            ->firstOrFail();
+
+        // Update Anystack first, then update database with new expiry date
+        UpdateAnystackLicenseExpiryJob::dispatchSync($license);
+
+        // Refresh to get the updated expiry date
+        $license->refresh();
 
         return new LicenseResource($license);
     }
