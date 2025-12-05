@@ -8,6 +8,7 @@ use App\Http\Controllers\CustomerPluginController;
 use App\Http\Controllers\CustomerSubLicenseController;
 use App\Http\Controllers\OpenCollectiveWebhookController;
 use App\Http\Controllers\PluginDirectoryController;
+use App\Http\Controllers\PluginWebhookController;
 use App\Http\Controllers\ShowBlogController;
 use App\Http\Controllers\ShowDocumentationController;
 use Illuminate\Support\Facades\Route;
@@ -57,6 +58,7 @@ Route::view('partners', 'partners')->name('partners');
 Route::view('build-my-app', 'build-my-app')->name('build-my-app');
 Route::get('plugins', [PluginDirectoryController::class, 'index'])->name('plugins');
 Route::get('plugins/directory', App\Livewire\PluginDirectory::class)->name('plugins.directory');
+Route::get('plugins/{plugin}', [PluginDirectoryController::class, 'show'])->name('plugins.show');
 Route::view('sponsor', 'sponsoring')->name('sponsoring');
 Route::view('vs-react-native-expo', 'vs-react-native-expo')->name('vs-react-native-expo');
 Route::view('vs-flutter', 'vs-flutter')->name('vs-flutter');
@@ -225,3 +227,5 @@ Route::middleware(['auth', EnsureFeaturesAreActive::using(ShowAuthButtons::class
 });
 
 Route::get('.well-known/assetlinks.json', [ApplinksController::class, 'assetLinks']);
+
+Route::post('webhooks/plugins/{secret}', PluginWebhookController::class)->name('webhooks.plugins');
