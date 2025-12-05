@@ -42,13 +42,14 @@ To make your frontend build process works well with NativePHP, simply add the `n
 `vite.config.js`:
 
 ```js
-import { nativephpMobile } from './vendor/nativephp/mobile/resources/js/vite-plugin.js'; // [tl! focus]
+import { nativephpMobile, nativephpHotFile } from './vendor/nativephp/mobile/resources/js/vite-plugin.js'; // [tl! focus]
 
 export default defineConfig({
     plugins: [
         laravel({
             input: ['resources/css/app.css', 'resources/js/app.js'],
             refresh: true,
+            hotFile: nativephpHotFile(),
         }),
         tailwindcss(),
         nativephpMobile(), // [tl! focus]
