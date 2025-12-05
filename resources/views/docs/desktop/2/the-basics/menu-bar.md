@@ -252,6 +252,16 @@ MenuBar::create()
 
 To learn more about the `Menu` facade, please refer to the [Application Menu](/docs/the-basics/application-menu) documentation.
 
+### Opening a Context Menu
+
+You can programmatically display the context menu that has been configured for your Menu Bar app using the `showContextMenu()` method. This method will show the same context menu that appears when a user clicks on the Menu Bar app.
+
+```php
+MenuBar::showContextMenu();
+```
+
+This is useful when you want to trigger the context menu from within your application logic, such as in response to a keyboard shortcut, button click, or other application events.
+
 ### Setting webpage features
 
 You may control various web page features by passing an optional `webPreferences` configuration array, similar to how it works with [Windows](/docs/the-basics/windows#setting-webpage-features). This allows you to customize how the menu bar window behaves and what features are available to the web content.
