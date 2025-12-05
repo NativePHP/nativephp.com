@@ -98,46 +98,6 @@ If you're familiar with these tools, you can easily open the projects using the 
 php artisan native:open
 ```
 
-## Hot Reloading
-
-We've tried to make compiling your apps as fast as possible, but when coming from the 'make a change; hit refresh'-world
-of PHP development that we all love, compiling apps can feel like a slow and time-consuming process.
-
-Hot reloading aims to make your app development experience feel just like home.
-
-You can start hot reloading by running the following command:
-
-```shell
-php artisan native:watch
-```
-
-You can also pass the `--watch` option to the `native:run` command.
-
-This will start a long-lived process that watches your application's source files for changes, pushing them into the
-emulator after any updates and reloading the current screen.
-
-Use this in tandem with Vite's own HMR for the platform you wish to test on:
-
-```shell
-npm run dev -- --mode=ios
-
-npm run dev -- --mode=android
-```
-
-This is useful during development for quickly testing changes without re-compiling your entire app. When you make
-changes to any files in your Laravel app, the web view will be reloaded and your changes should show almost immediately.
-
-Vite HMR is perfect for apps that use SPA frameworks like Vue or React to build the UI. It even works on real devices,
-not just simulators! As long as the device is on the same network as the development machine.
-
-<aside>
-
-#### Livewire and HMR on real devices
-
-Full hot reloading support for Livewire on real devices is not yet available.
-
-</aside>
-
 ### Configuration
 
 You can configure the folders that the `watch` command pays attention to in your `config/nativephp.php` file:
@@ -155,16 +115,7 @@ You can configure the folders that the `watch` command pays attention to in your
 ]
 ```
 
-### Order matters
-
-Depending on which order you run these commands, you may find that hot reloading doesn't work immediately. It's often
-best to get the commands running, get your app open, and then make a request to a new screen to allow your app to pick
-up the `hot` file's presence and connect to the HMR server.
-
-
 <aside>
-
-
 
 #### Skip the prompts
 
@@ -174,6 +125,89 @@ to skip various prompts. Use the `--help` flag on a command to find out what val
 ```shell
 php artisan native:run --help
 ```
+
+</aside>
+
+
+## Hot Reloading
+
+We've tried to make compiling your apps as fast as possible, but when coming from the 'make a change; hit refresh'-world
+of typical browser-based PHP development that we all love, compiling apps can feel like a slow and time-consuming
+process.
+
+Hot reloading aims to make your app development experience feel just like home.
+
+You can start hot reloading by running the following command:
+
+```shell
+php artisan native:watch
+```
+
+<aside>
+
+#### 🔥 Hot Tip!
+
+You can also pass the `--watch` option to the `native:run` command. This will build and deploy a fresh version of your
+application to the target device and _then_ start the watcher, all in one go.
+
+</aside>
+
+This will start a long-lived process that watches your application's source files for changes, pushing them into the
+emulator after any updates and reloading the current screen.
+
+If you're using Vite, we'll also use your Node CLI tool of choice (`npm`, `bun`, `pnpm`, or `yarn`) to run Vite's HMR
+server.
+
+### Enabling HMR
+
+To make HMR work, you'll need to add the `hot` file helper to your `laravel` plugin's config in your `vite.config.js`:
+
+```js
+import { nativephpMobile, nativephpHotFile } from './vendor/nativephp/mobile/resources/js/vite-plugin.js'; // [tl! focus]
+
+export default defineConfig({
+    plugins: [
+        laravel({
+            input: ['resources/css/app.css', 'resources/js/app.js'],
+            refresh: true,
+            hotFile: nativephpHotFile(), // [tl! focus]
+        }),
+        tailwindcss(),
+        nativephpMobile(),
+    ]
+});
+```
+
+<aside>
+
+#### Two at a time, baby!
+
+If you're developing on macOS, you can run both Android and iOS watchers at the same time in separate terminals:
+
+```shell
+# Terminal 1
+php artisan native:watch ios
+
+# Terminal 2
+php artisan native:watch android
+```
+
+This way you can see your changes reflected in real-time on both platforms **at the same time**. Wild.
+
+</aside>
+
+This is useful during development for quickly testing changes without re-compiling your entire app. When you make
+changes to any files in your Laravel app, the web view will be reloaded and your changes should show almost immediately.
+
+Vite HMR is perfect for apps that use SPA frameworks like Vue or React to build the UI. It even works on real devices,
+not just simulators! As long as the device is on the same network as the development machine.
+
+<aside>
+
+#### Real iOS Devices Support
+
+Full hot reloading support works best on simulators. Full hot reloading support for non-JS changes on real iOS devices
+is not yet available.
 
 </aside>
 
