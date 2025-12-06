@@ -10,26 +10,28 @@ The `native:run` command now provides cleaner, more readable output, making it e
 
 ### Improved Windows Support
 Better compatibility and smoother development experience for Windows users.
+<aside>
+
+#### Note to all users
+Internally, Gradle has been upgraded, the first time you run an Android build it will take several minutes longer to download and install the new dependencies.
+
+</aside>
 
 ### Blade Directives
 New Blade directives for conditional rendering based on platform:
 
 ```blade
-@mobile
-    {{-- Only rendered in mobile apps --}}
-@endmobile
+Only rendered in mobile apps
+@mobile / @endmobile
 
-@web
-    {{-- Only rendered in web browsers --}}
-@endweb
+Only rendered in web browsers 
+@web / @endweb
 
-@ios
-    {{-- Only rendered on iOS --}}
-@endios
+Only rendered on iOS
+@ios / @endios
 
-@android
-    {{-- Only rendered on Android --}}
-@endandroid
+Only rendered on Android
+@android / @endandroid
 ```
 
 ### Improved File Watcher
