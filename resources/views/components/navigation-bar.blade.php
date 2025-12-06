@@ -1,10 +1,3 @@
-<div
-    x-collapse
-    x-show="!showMobileMenu"
->
-    {{-- Announcement banner goes here --}}
-    <x-black-friday-banner />
-</div>
 <nav
     class="sticky top-0 z-50 flex flex-col items-center justify-center border-b px-2 transition duration-200 ease-out min-[500px]:px-3"
     aria-label="Main Navigation"

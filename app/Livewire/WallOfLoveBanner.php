@@ -6,6 +6,8 @@ use Livewire\Component;
 
 class WallOfLoveBanner extends Component
 {
+    public bool $inline = false;
+
     public function dismissBanner(): void
     {
         cache()->put('wall_of_love_dismissed_'.auth()->id(), true, now()->addWeek());
