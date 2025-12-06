@@ -3,18 +3,81 @@ title: Changelog
 order: 2
 ---
 
-## JavaScript/TypeScript Library
+## v2.1.0
+
+### Cleaner Console Output
+The `native:run` command now provides cleaner, more readable output, making it easier to follow what's happening during development.
+
+### Improved Windows Support
+Better compatibility and smoother development experience for Windows users.
+
+### Blade Directives
+New Blade directives for conditional rendering based on platform:
+
+```blade
+@mobile
+    {{-- Only rendered in mobile apps --}}
+@endmobile
+
+@web
+    {{-- Only rendered in web browsers --}}
+@endweb
+
+@ios
+    {{-- Only rendered on iOS --}}
+@endios
+
+@android
+    {{-- Only rendered on Android --}}
+@endandroid
+```
+
+### Improved File Watcher
+The file watcher has been completely overhauled, switching from fswatch to [Watchman](https://facebook.github.io/watchman/) for better performance and reliability. The watcher is now combined with Vite HMR for a unified development experience.
+
+### Common URL Schemes
+NativePHP now automatically handles common URL schemes, opening them in the appropriate native app:
+- `tel:` - Phone calls
+- `mailto:` - Email
+- `sms:` - Text messages
+- `geo:` - Maps/location
+- `facetime:` - FaceTime video calls
+- `facetime-audio:` - FaceTime audio calls
+
+### Android Deep Links
+Support for custom deep links and app links on Android, allowing other apps and websites to link directly into your app.
+
+### Other Changes
+- `System::appSettings()` to open your app's settings screen in the OS Settings app
+- `Edge::clear()` to remove all EDGE components
+- Added `Native.shareUrl()` to the JavaScript library
+- `native:install`: Added `--fresh` and `-F` as aliases of `--force`
+- `native:install`: Increased timeout for slower networks
+
+### Bug Fixes
+- Fixed Scanner permissions
+- Fixed Android edge-to-edge display
+- Fixed `Browser::auth` on iOS
+- Fixed text alignment in native top-bar component on iOS
+- Fixed plist issues on iOS
+- Fixed `NATIVEPHP_START_URL` configuration
+- Fixed camera cancelled events on Android
+- Fixed bottom-nav values not updating dynamically
+
+## v2.0.0
+
+### JavaScript/TypeScript Library
 A brand-new JavaScript bridge library with full TypeScript declarations for Vue, React, Inertia, and vanilla JS apps.
 This enables calling native device features directly from your frontend code. Read more about it
-[here](../the-basics/native-functions#run-from-anywhere). 
+[here](../the-basics/native-functions#run-from-anywhere).
 
-## EDGE - Element Definition and Generation Engine
+### EDGE - Element Definition and Generation Engine
 A new native UI system for rendering navigation components natively on device using Blade. Read more about it [here](../edge-components/introduction).
 
-## Laravel Boost Support
+### Laravel Boost Support
 Full integration with Laravel Boost for AI-assisted development. Read more about it [here](../getting-started/development#laravel-boost).
 
-## Hot Module Replacement (HMR) Overhauled
+### Hot Module Replacement (HMR) Overhauled
 Full Vite HMR for rapid development. Read more about it [here](../getting-started/development#hot-reloading).
 
 Features:
@@ -23,7 +86,7 @@ Features:
 - PHP protocol adapter for axios on iOS (no more `patch-inertia` command!)
 - Works over the network even without a physical device plugged in!
 
-##  Fluent Pending API (PHP)
+###  Fluent Pending API (PHP)
 All [Asynchronous Methods](../the-basics/events#understanding-async-vs-sync) now implement a fluent API for better IDE support and ease of use.
 
 <x-snippet title="Fluent APIs">
@@ -62,7 +125,7 @@ onMounted(() => {
 </x-snippet.tab>
 </x-snippet>
 
-##  `#[OnNative]` Livewire Attribute
+###  `#[OnNative]` Livewire Attribute
 Forget the silly string concatenation of yesterday; get into today's fashionable attribute usage with this drop-in
 replacement:
 
@@ -75,19 +138,19 @@ use Native\Mobile\Attributes\OnNative; // [tl! add]
 public function handle()
 ```
 
-##  Video Recording
+###  Video Recording
 Learn more about the new Video Recorder support [here](../apis/camera#coderecordvideocode).
 
-##  QR/Barcode Scanner
+###  QR/Barcode Scanner
 Learn more about the new QR/Barcode Scanner support [here](../apis/scanner).
 
-##  Microphone
+###  Microphone
 Learn more about the new Microphone support [here](../apis/microphone).
 
-##  Network Detection
+###  Network Detection
 Learn more about the new Network Detection support [here](../apis/network).
 
-##  Background Audio Recording
+###  Background Audio Recording
 Just update your config and record audio even while the device is locked!
 
 ```php
@@ -97,7 +160,7 @@ Just update your config and record audio even while the device is locked!
     'microphone_background' => true,
 ],
 ```
-##  Push Notifications API
+###  Push Notifications API
 New fluent API for push notification enrollment:
 
 <x-snippet title="Push Notifications">
@@ -145,16 +208,16 @@ onUnmounted(() => {
 - `enrollForPushNotifications()` → use `enroll()`
 - `getPushNotificationsToken()` → use `getToken()`
 
-##  Platform Improvements
+###  Platform Improvements
 
-### iOS
+#### iOS
 - **Platform detection** - `nativephp-ios` class on body
 - **Keyboard detection** - `keyboard-visible` class when keyboard shown
 - **iOS 26 Liquid Glass** support
 - **Improved device selector** on `native:run` showing last-used device
 - **Load Times** dramatically improved. Now 60-80% faster!
 
-### Android
+#### Android
 - **Complete Android 16+ 16KB page size** compatibility
 - **Jetpack Compose UI** - Migrated from XML layouts
 - **Platform detection** - `nativephp-android` class on body
@@ -164,9 +227,9 @@ onUnmounted(() => {
 - **Page Load Times** dramatically decreased by ~40%!
 ---
 
-##  Configuration
+###  Configuration
 
-### New Options
+#### New Options
 ```php
 'start_url' => env('NATIVEPHP_START_URL', '/'),
 
@@ -185,19 +248,19 @@ onUnmounted(() => {
 ],
 ```
 
-### Custom Permission Reasons (iOS)
+#### Custom Permission Reasons (iOS)
 ```php
 'camera' => 'We need camera access to scan membership cards.',
 'location' => 'Location is used to find nearby stores.',
 ```
 
-##  New Events
+###  New Events
 
 - `Camera\VideoRecorded`, `Camera\VideoCancelled`, `Camera\PhotoCancelled`
 - `Microphone\MicrophoneRecorded`, `Microphone\MicrophoneCancelled`
 - `Scanner\CodeScanned`
 
-## Custom Events
+### Custom Events
 
 Many native calls now accept custom event classes!
 
@@ -206,7 +269,7 @@ Dialog::alert('Confirm', 'Delete this?', ['Cancel', 'Delete'])
     ->event(MyCustomEvent::class)
 ```
 
-##  Better File System Support
+###  Better File System Support
 NativePHP now symlinks your filesystems! Persisted storage stays in storage but is symlinked to the public directory for
 display in the web view! Plus a pre-configured `mobile_public` filesystem disk.
 
@@ -220,13 +283,13 @@ $imageUrl = Storage::url($path);
 <img :src="$imageurl" />
 ```
 
-## Bug Fixes
+### Bug Fixes
 
 - Fixed infinite recursion during bundling in some Laravel setups
 - Fixed iOS toolbar padding for different device sizes
 - Fixed Android debug mode forcing `APP_DEBUG=true`
 - Fixed orientation config key case sensitivity (`iPhone` vs `iphone`)
 
-## Breaking Changes
+### Breaking Changes
 
 - None
