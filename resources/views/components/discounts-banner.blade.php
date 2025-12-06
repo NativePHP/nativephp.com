@@ -1,5 +1,7 @@
-<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-    <div class="bg-gradient-to-r from-zinc-200 to-slate-300 dark:from-zinc-700 dark:to-slate-800 border border-zinc-500 rounded-lg p-6 mb-6">
+@props(['inline' => false])
+
+<div @class(['max-w-7xl mx-auto px-4 sm:px-6 lg:px-8' => !$inline])>
+    <div class="bg-gradient-to-r from-zinc-200 to-slate-300 dark:from-zinc-700 dark:to-slate-800 border border-zinc-500 rounded-lg p-6">
         <div class="flex items-start">
             <div class="flex-shrink-0">
                 <svg fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">

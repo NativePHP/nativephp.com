@@ -19,7 +19,7 @@ use Native\Mobile\Events\Scanner\CodeScanned;
 Scanner::scan();
 
 // Listen for scan results
-#[OnNative(Scanned::class)]
+#[OnNative(CodeScanned::class)]
 public function handleScan($data, $format, $id = null)
 {
     Dialog::toast("Scanned: {$data}");

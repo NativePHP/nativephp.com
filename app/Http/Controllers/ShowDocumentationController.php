@@ -101,7 +101,9 @@ class ShowDocumentationController extends Controller
         $pageProperties['version'] = $version;
         $pageProperties['pagePath'] = request()->path();
 
-        $pageProperties['content'] = CommonMark::convertToHtml($document->body());
+        $pageProperties['content'] = CommonMark::convertToHtml($document->body(), [
+            'user' => auth()->user(),
+        ]);
         $pageProperties['tableOfContents'] = $this->extractTableOfContents($document->body());
 
         $navigation = $this->getNavigation($platform, $version);

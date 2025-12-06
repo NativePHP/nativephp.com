@@ -1,6 +1,7 @@
 <?php
 
 use App\Features\ShowAuthButtons;
+use App\Http\Controllers\ApplinksController;
 use App\Http\Controllers\Auth\CustomerAuthController;
 use App\Http\Controllers\CustomerLicenseController;
 use App\Http\Controllers\CustomerSubLicenseController;
@@ -37,6 +38,9 @@ Route::view('pricing', 'pricing')->name('pricing');
 Route::view('alt-pricing', 'alt-pricing')->name('alt-pricing')->middleware('signed');
 Route::view('wall-of-love', 'wall-of-love')->name('wall-of-love');
 Route::view('brand', 'brand')->name('brand');
+Route::get('showcase/{platform?}', [App\Http\Controllers\ShowcaseController::class, 'index'])
+    ->where('platform', 'mobile|desktop')
+    ->name('showcase');
 Route::view('laracon-us-2025-giveaway', 'laracon-us-2025-giveaway')->name('laracon-us-2025-giveaway');
 Route::view('privacy-policy', 'privacy-policy')->name('privacy-policy');
 Route::view('terms-of-service', 'terms-of-service')->name('terms-of-service');
@@ -111,6 +115,16 @@ Route::post('logout', [CustomerAuthController::class, 'logout'])
     ->middleware(EnsureFeaturesAreActive::using(ShowAuthButtons::class))
     ->name('customer.logout');
 
+Route::get('callback', function (Illuminate\Http\Request $request) {
+    $url = $request->query('url');
+
+    if ($url && ! str_starts_with($url, 'http')) {
+        return redirect()->away($url.'?token='.uuid_create());
+    }
+
+    return response('Goodbye');
+})->name('callback');
+
 // Customer license management routes
 Route::middleware(['auth', EnsureFeaturesAreActive::using(ShowAuthButtons::class)])->prefix('customer')->name('customer.')->group(function () {
     Route::get('licenses', [CustomerLicenseController::class, 'index'])->name('licenses');
@@ -119,6 +133,11 @@ Route::middleware(['auth', EnsureFeaturesAreActive::using(ShowAuthButtons::class
 
     // Wall of Love submission
     Route::get('wall-of-love/create', [App\Http\Controllers\WallOfLoveSubmissionController::class, 'create'])->name('wall-of-love.create');
+
+    // Showcase submissions
+    Route::get('showcase', [App\Http\Controllers\CustomerShowcaseController::class, 'index'])->name('showcase.index');
+    Route::get('showcase/create', [App\Http\Controllers\CustomerShowcaseController::class, 'create'])->name('showcase.create');
+    Route::get('showcase/{showcase}/edit', [App\Http\Controllers\CustomerShowcaseController::class, 'edit'])->name('showcase.edit');
 
     // Billing portal
     Route::get('billing-portal', function (Illuminate\Http\Request $request) {
@@ -139,3 +158,5 @@ Route::middleware(['auth', EnsureFeaturesAreActive::using(ShowAuthButtons::class
     Route::patch('licenses/{licenseKey}/sub-licenses/{subLicense}/suspend', [CustomerSubLicenseController::class, 'suspend'])->name('licenses.sub-licenses.suspend');
     Route::post('licenses/{licenseKey}/sub-licenses/{subLicense}/send-email', [CustomerSubLicenseController::class, 'sendEmail'])->name('licenses.sub-licenses.send-email');
 });
+
+Route::get('.well-known/assetlinks.json', [ApplinksController::class, 'assetLinks']);
