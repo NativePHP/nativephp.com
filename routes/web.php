@@ -40,6 +40,9 @@ Route::view('pricing', 'pricing')->name('pricing');
 Route::view('alt-pricing', 'alt-pricing')->name('alt-pricing')->middleware('signed');
 Route::view('wall-of-love', 'wall-of-love')->name('wall-of-love');
 Route::view('brand', 'brand')->name('brand');
+Route::get('showcase/{platform?}', [App\Http\Controllers\ShowcaseController::class, 'index'])
+    ->where('platform', 'mobile|desktop')
+    ->name('showcase');
 Route::view('laracon-us-2025-giveaway', 'laracon-us-2025-giveaway')->name('laracon-us-2025-giveaway');
 Route::view('privacy-policy', 'privacy-policy')->name('privacy-policy');
 Route::view('terms-of-service', 'terms-of-service')->name('terms-of-service');
@@ -134,6 +137,11 @@ Route::middleware(['auth', EnsureFeaturesAreActive::using(ShowAuthButtons::class
 
     // Wall of Love submission
     Route::get('wall-of-love/create', [App\Http\Controllers\WallOfLoveSubmissionController::class, 'create'])->name('wall-of-love.create');
+
+    // Showcase submissions
+    Route::get('showcase', [App\Http\Controllers\CustomerShowcaseController::class, 'index'])->name('showcase.index');
+    Route::get('showcase/create', [App\Http\Controllers\CustomerShowcaseController::class, 'create'])->name('showcase.create');
+    Route::get('showcase/{showcase}/edit', [App\Http\Controllers\CustomerShowcaseController::class, 'edit'])->name('showcase.edit');
 
     // Plugin management
     Route::get('plugins', [CustomerPluginController::class, 'index'])->name('plugins.index');

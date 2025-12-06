@@ -1,3 +1,7 @@
+@php
+    $showShowcase = \App\Models\Showcase::approved()->count() >= 4;
+@endphp
+
 <nav class="flex items-center gap-1.5 lg:gap-2">
     {{-- Mobile dropdown --}}
     <x-navbar.device-dropdown
@@ -25,15 +29,23 @@
             icon="puzzle"
             icon-class="size-5"
         />
-        {{-- 👇 Hidden temporarily --}}
-        {{--
+        @if($showShowcase)
             <x-navbar.device-dropdown-item
+                href="{{ route('showcase', 'mobile') }}"
+                title="Showcase"
+                subtitle="Apps built with NativePHP"
+                icon="star"
+                icon-class="size-4"
+            />
+        @endif
+
+        {{-- 👇 Hidden temporarily --}}
+        {{-- <x-navbar.device-dropdown-item
             href="https://github.com/nativephp/mobile"
             title="GitHub"
             subtitle="Visit our GitHub repository"
             icon="github"
-            />
-        --}}
+        />--}}
     </x-navbar.device-dropdown>
 
     {{-- Desktop dropdown --}}
@@ -56,6 +68,15 @@
             icon="heart"
             icon-class="size-4"
         />
+        @if($showShowcase)
+            <x-navbar.device-dropdown-item
+                href="{{ route('showcase', 'desktop') }}"
+                title="Showcase"
+                subtitle="Apps built with NativePHP"
+                icon="star"
+                icon-class="size-4"
+            />
+        @endif
         <x-navbar.device-dropdown-item
             href="https://github.com/nativephp/desktop"
             title="GitHub"
