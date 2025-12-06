@@ -18,7 +18,7 @@ Not all actions are async. Some methods run immediately, and in some cases retur
 Here are a few of the **synchronous** APIs:
 
 ```php
-Haptics::vibrate();
+Device::vibrate();
 System::flashlight();
 Dialog::toast('Hello!');
 ```
