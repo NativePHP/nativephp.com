@@ -4,6 +4,7 @@ namespace Database\Factories;
 
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Support\Facades\Storage;
 
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Showcase>
@@ -105,5 +106,76 @@ class ShowcaseFactory extends Factory
             'macos_download_url' => fake()->optional(0.6)->url(),
             'linux_download_url' => fake()->optional(0.5)->url(),
         ]);
+    }
+
+    public function withScreenshots(int $count = 3, bool $tall = false): static
+    {
+        return $this->state(function (array $attributes) use ($count, $tall) {
+            $screenshots = [];
+
+            for ($i = 0; $i < $count; $i++) {
+                $screenshots[] = $this->generatePlaceholderScreenshot($tall);
+            }
+
+            return ['screenshots' => $screenshots];
+        });
+    }
+
+    public function withTallScreenshots(int $count = 3): static
+    {
+        return $this->withScreenshots($count, tall: true);
+    }
+
+    public function withWideScreenshots(int $count = 3): static
+    {
+        return $this->withScreenshots($count, tall: false);
+    }
+
+    protected function generatePlaceholderScreenshot(bool $tall = false): string
+    {
+        $width = $tall ? 390 : 1280;
+        $height = $tall ? 844 : 720;
+
+        $image = imagecreatetruecolor($width, $height);
+
+        $colors = [
+            [99, 102, 241],   // Indigo
+            [139, 92, 246],   // Purple
+            [236, 72, 153],   // Pink
+            [14, 165, 233],   // Sky
+            [34, 197, 94],    // Green
+            [249, 115, 22],   // Orange
+        ];
+
+        $color = fake()->randomElement($colors);
+        $bgColor = imagecolorallocate($image, $color[0], $color[1], $color[2]);
+        imagefill($image, 0, 0, $bgColor);
+
+        $white = imagecolorallocate($image, 255, 255, 255);
+
+        if ($tall) {
+            // Draw phone UI elements
+            imagefilledrectangle($image, 20, 60, $width - 20, 120, $white);
+            imagefilledrectangle($image, 20, 140, $width - 20, 400, imagecolorallocatealpha($image, 255, 255, 255, 80));
+            imagefilledrectangle($image, 20, 420, ($width - 20) / 2 - 10, 600, imagecolorallocatealpha($image, 255, 255, 255, 80));
+            imagefilledrectangle($image, ($width - 20) / 2 + 10, 420, $width - 20, 600, imagecolorallocatealpha($image, 255, 255, 255, 80));
+        } else {
+            // Draw desktop UI elements
+            imagefilledrectangle($image, 0, 0, $width, 40, imagecolorallocatealpha($image, 0, 0, 0, 80));
+            imagefilledrectangle($image, 20, 60, 250, $height - 20, imagecolorallocatealpha($image, 255, 255, 255, 80));
+            imagefilledrectangle($image, 270, 60, $width - 20, $height - 20, imagecolorallocatealpha($image, 255, 255, 255, 90));
+        }
+
+        $filename = 'showcase-screenshots/'.fake()->uuid().'.png';
+        Storage::disk('public')->makeDirectory('showcase-screenshots');
+
+        ob_start();
+        imagepng($image);
+        $imageData = ob_get_clean();
+        imagedestroy($image);
+
+        Storage::disk('public')->put($filename, $imageData);
+
+        return $filename;
     }
 }

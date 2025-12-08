@@ -44,7 +44,7 @@
                         x-transition:enter-end="opacity-100"
                         src="{{ Storage::disk('public')->url($screenshot) }}"
                         alt="{{ $showcase->title }} screenshot {{ $index + 1 }}"
-                        class="absolute inset-0 w-full h-full object-cover"
+                        class="absolute inset-0 w-full h-full object-contain"
                     >
                 @endforeach
 
@@ -90,7 +90,7 @@
             <img
                 src="{{ Storage::disk('public')->url($showcase->image) }}"
                 alt="{{ $showcase->title }}"
-                class="w-full h-full object-cover"
+                class="w-full h-full object-contain"
             >
         @else
             <div class="w-full h-full flex items-center justify-center">
