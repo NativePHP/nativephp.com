@@ -3,6 +3,23 @@ title: Changelog
 order: 2
 ---
 
+## v2.2.0
+
+### EDGE Required Props Validation
+EDGE components now validate required props at render time and provide helpful error messages showing exactly which props are missing and how to fix them.
+
+### Direct SF Symbol Support (iOS)
+Use any SF Symbol directly by including a `.` in the icon name (e.g., `car.side.fill`, `flashlight.on.fill`).
+
+### Font-based Material Icons (Android)
+Reduced Android app size by ~30MB by switching from the `material-icons-extended` library to a lightweight font-based approach. Any Material Icon ligature name now works directly.
+
+@verbatim
+```blade
+icon="{{ \Native\Mobile\Facades\System::isIos() ? 'flashlight.on.fill' : 'flashlight_on' }}"
+```
+@endverbatim
+
 ## v2.1.0
 
 ### Cleaner Console Output
