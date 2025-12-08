@@ -74,6 +74,23 @@ They can be defined in any Blade file, but for them to be processed, that Blade 
 recommend putting your components in a Blade component that is likely to be rendered on every request, such as your
 main layout, e.g. `layouts/app.blade.php` or one of its child views/components.
 
+## Props Validation
+
+EDGE components enforce required props validation to prevent misconfiguration. If you're missing required props, you'll
+see a clear error message that tells you exactly what's missing and how to fix it.
+
+For example, if you forget the `label` prop on a bottom navigation item:
+
+```
+EDGE Component <native:bottom-nav-item> is missing required properties: 'label'.
+Add these attributes to your component: label="..."
+```
+
+The error message will list all missing required props and show you exactly which attributes you need to add. This
+validation happens at render time, making it easy to catch configuration issues during development.
+
+Each component's documentation page indicates which props are required vs optional.
+
 ## Using Inertia?
 
 Each link in an EDGE component will do a full post back to PHP, which may not be what you want if you are using Inertia. To transform these requests into Inertia `<Link>`, add `router` to your `window` object:

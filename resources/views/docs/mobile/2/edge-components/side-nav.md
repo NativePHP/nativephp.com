@@ -84,10 +84,10 @@ On iOS, gesture support is always enabled for the side nav.
 
 ### `<native:side-nav-item>`
 
-- `id` - Unique identifier
-- `label` - Display text
-- `icon` - A named [icon](icons)
-- `url` - A URL to navigate to in the web view (optional)
+- `id` - Unique identifier (required)
+- `label` - Display text (required)
+- `icon` - A named [icon](icons) (required)
+- `url` - A URL to navigate to in the web view (required)
 - `active` - Highlight this item as active (optional, default: `false`)
 - `badge` - Badge text (optional)
 - `badge-color` - Hex code or named color (optional)
@@ -100,7 +100,7 @@ Any `url` that doesn't match the web view's domain will open in the user's defau
 
 ### `<native:side-nav-group>`
 
-- `heading` - The group's heading
+- `heading` - The group's heading (required)
 - `expanded` - Initially expanded (optional, default: `false`)
 - `icon` - Material icon (optional)
 
