@@ -3,7 +3,10 @@
 <article
     x-data="{
         currentSlide: 0,
+        lightboxSlide: 0,
+        lightboxOpen: false,
         screenshots: {{ json_encode($showcase->screenshots ?? []) }},
+        screenshotUrls: {{ json_encode(collect($showcase->screenshots ?? [])->map(fn($s) => Storage::disk('public')->url($s))->values()) }},
         get hasScreenshots() {
             return this.screenshots && this.screenshots.length > 0
         },
@@ -19,8 +22,31 @@
             if (this.currentSlide > 0) {
                 this.currentSlide--
             }
+        },
+        nextLightboxSlide() {
+            this.lightboxSlide = (this.lightboxSlide + 1) % this.totalSlides
+        },
+        prevLightboxSlide() {
+            this.lightboxSlide = (this.lightboxSlide - 1 + this.totalSlides) % this.totalSlides
+        },
+        openLightbox(index) {
+            this.lightboxSlide = index
+            const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth
+            document.body.style.overflow = 'hidden'
+            document.body.style.paddingRight = scrollbarWidth + 'px'
+            this.lightboxOpen = true
+        },
+        closeLightbox() {
+            this.lightboxOpen = false
+            setTimeout(() => {
+                document.body.style.overflow = ''
+                document.body.style.paddingRight = ''
+            }, 200)
         }
     }"
+    @keydown.escape.window="closeLightbox()"
+    @keydown.arrow-right.window="if (lightboxOpen) nextLightboxSlide()"
+    @keydown.arrow-left.window="if (lightboxOpen) prevLightboxSlide()"
     class="group relative overflow-hidden rounded-2xl border border-gray-200 bg-white transition-all hover:shadow-xl dark:border-gray-700 dark:bg-gray-800"
 >
     {{-- NEW Badge --}}
@@ -37,15 +63,21 @@
         @if($showcase->screenshots && count($showcase->screenshots) > 0)
             <div class="relative h-full">
                 @foreach($showcase->screenshots as $index => $screenshot)
-                    <img
+                    <button
+                        type="button"
                         x-show="currentSlide === {{ $index }}"
                         x-transition:enter="transition ease-out duration-300"
                         x-transition:enter-start="opacity-0"
                         x-transition:enter-end="opacity-100"
-                        src="{{ Storage::disk('public')->url($screenshot) }}"
-                        alt="{{ $showcase->title }} screenshot {{ $index + 1 }}"
-                        class="absolute inset-0 w-full h-full object-contain"
+                        @click="openLightbox({{ $index }})"
+                        class="absolute inset-0 w-full h-full cursor-zoom-in focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-inset"
                     >
+                        <img
+                            src="{{ Storage::disk('public')->url($screenshot) }}"
+                            alt="{{ $showcase->title }} screenshot {{ $index + 1 }}"
+                            class="w-full h-full object-contain"
+                        >
+                    </button>
                 @endforeach
 
                 {{-- Navigation Arrows --}}
@@ -213,4 +245,70 @@
             @endif
         </div>
     </div>
+
+    {{-- Lightbox Modal --}}
+    <template x-teleport="body">
+        <div
+            x-show="lightboxOpen"
+            x-transition:enter="transition ease-out duration-300"
+            x-transition:enter-start="opacity-0"
+            x-transition:enter-end="opacity-100"
+            x-transition:leave="transition ease-in duration-200"
+            x-transition:leave-start="opacity-100"
+            x-transition:leave-end="opacity-0"
+            class="fixed inset-0 z-50 flex items-center justify-center bg-black/90 p-4 sm:p-8"
+            @click.self="closeLightbox()"
+        >
+            {{-- Close Button --}}
+            <button
+                @click="closeLightbox()"
+                class="absolute top-4 right-4 z-10 p-2 rounded-full bg-white/10 text-white hover:bg-white/20 transition-colors"
+                aria-label="Close lightbox"
+            >
+                <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
+
+            {{-- Image Counter --}}
+            <div
+                x-show="totalSlides > 1"
+                class="absolute top-4 left-4 px-3 py-1.5 rounded-full bg-white/10 text-white text-sm font-medium"
+            >
+                <span x-text="lightboxSlide + 1"></span> / <span x-text="totalSlides"></span>
+            </div>
+
+            {{-- Previous Button --}}
+            <button
+                x-show="totalSlides > 1"
+                @click.stop="prevLightboxSlide()"
+                class="absolute left-4 top-1/2 -translate-y-1/2 z-10 p-3 rounded-full bg-white/10 text-white hover:bg-white/20 transition-colors"
+                aria-label="Previous screenshot"
+            >
+                <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                </svg>
+            </button>
+
+            {{-- Next Button --}}
+            <button
+                x-show="totalSlides > 1"
+                @click.stop="nextLightboxSlide()"
+                class="absolute right-4 top-1/2 -translate-y-1/2 z-10 p-3 rounded-full bg-white/10 text-white hover:bg-white/20 transition-colors"
+                aria-label="Next screenshot"
+            >
+                <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                </svg>
+            </button>
+
+            {{-- Main Image --}}
+            <img
+                :src="screenshotUrls[lightboxSlide]"
+                :alt="'{{ $showcase->title }} screenshot ' + (lightboxSlide + 1)"
+                class="max-h-full max-w-full object-contain"
+                @click.stop
+            >
+        </div>
+    </template>
 </article>
