@@ -20,6 +20,20 @@ icon="{{ \Native\Mobile\Facades\System::isIos() ? 'flashlight.on.fill' : 'flashl
 ```
 @endverbatim
 
+## v2.1.1
+
+### Foreground permissions
+Prevent removal of FOREGROUND_SERVICE and POST_NOTIFICATIONS permissions when they're needed by camera features, even if push notifications are disabled
+
+### FSymlink fix
+Run storage:unlink before storage:link to handle stale symlinks, and exclude public/storage from build to prevent symlink conflicts
+
+### iOS Push Notifications
+Handles push notification APNS flow differently, fires off the native event as soon as the token is received from FCM vs assuming the AppDelegate will ahndle it.
+
+### Fix Missing $id param on some events
+Some events were missing an `$id` parameter, which would cause users to experience errors when trying to receive an ID from the event.
+
 ## v2.1.0
 
 ### Cleaner Console Output
