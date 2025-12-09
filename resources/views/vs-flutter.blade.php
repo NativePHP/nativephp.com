@@ -409,6 +409,9 @@
             </div>
         </section>
 
+        {{-- Native Features Grid --}}
+        <x-comparison.native-features />
+
         {{-- Size Comparison Charts --}}
         <section
             class="mt-20"

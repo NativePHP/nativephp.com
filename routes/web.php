@@ -68,6 +68,30 @@ Route::get('docs/{platform}/{version}/{page?}', ShowDocumentationController::cla
     ->where('version', '[0-9]+')
     ->name('docs.show');
 
+// Forward platform requests without version to the latest version
+Route::get('docs/{platform}/{page?}', function (string $platform, $page = null) {
+    $page ??= 'getting-started/introduction';
+
+    // Find the latest version for this platform
+    $docsPath = resource_path('views/docs/'.$platform);
+
+    if (! is_dir($docsPath)) {
+        abort(404);
+    }
+
+    $versions = collect(scandir($docsPath))
+        ->filter(fn ($dir) => is_numeric($dir))
+        ->sort()
+        ->values();
+
+    $latestVersion = $versions->last() ?? '1';
+
+    return redirect("/docs/{$platform}/{$latestVersion}/{$page}", 301);
+})
+    ->where('platform', 'desktop|mobile')
+    ->where('page', '.*')
+    ->name('docs.latest');
+
 // Forward unversioned requests to the latest version
 Route::get('docs/{page?}', function ($page = null) {
     $page ??= 'introduction';
