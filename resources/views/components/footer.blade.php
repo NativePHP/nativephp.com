@@ -299,6 +299,22 @@
                                 Pricing
                             </a>
                         </li>
+                        <li>
+                            <a
+                                href="{{ route('vs-react-native-expo') }}"
+                                class="inline-block px-px py-1.5 transition duration-300 will-change-transform hover:translate-x-1 hover:text-gray-700 dark:hover:text-gray-300"
+                            >
+                                vs React Native
+                            </a>
+                        </li>
+                        <li>
+                            <a
+                                href="{{ route('vs-flutter') }}"
+                                class="inline-block px-px py-1.5 transition duration-300 will-change-transform hover:translate-x-1 hover:text-gray-700 dark:hover:text-gray-300"
+                            >
+                                vs Flutter
+                            </a>
+                        </li>
                         {{--
                             <li>
                             <a
