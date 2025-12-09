@@ -9,14 +9,19 @@ order: 2
 EDGE components now validate required props at render time and provide helpful error messages showing exactly which props are missing and how to fix them.
 
 ### Direct SF Symbol Support (iOS)
-Use any SF Symbol directly by including a `.` in the icon name (e.g., `car.side.fill`, `flashlight.on.fill`).
+Use any SF Symbol directly (e.g., `car.side.fill`, `flashlight.on.fill`).
 
 ### Font-based Material Icons (Android)
 Reduced Android app size by ~30MB by switching from the `material-icons-extended` library to a lightweight font-based approach. Any Material Icon ligature name now works directly.
 
 @verbatim
 ```blade
-icon="{{ \Native\Mobile\Facades\System::isIos() ? 'flashlight.on.fill' : 'flashlight_on' }}"
+@use(Native\Mobile\Facades\System)
+
+<native:bottom-nav-item
+    ...
+    icon="{{ System::isIos() ? 'flashlight.on.fill' : 'flashlight_on' }}"
+/>
 ```
 @endverbatim
 
@@ -25,7 +30,7 @@ icon="{{ \Native\Mobile\Facades\System::isIos() ? 'flashlight.on.fill' : 'flashl
 ### Foreground permissions
 Prevent removal of FOREGROUND_SERVICE and POST_NOTIFICATIONS permissions when they're needed by camera features, even if push notifications are disabled
 
-### FSymlink fix
+### Symlink fix
 Run storage:unlink before storage:link to handle stale symlinks, and exclude public/storage from build to prevent symlink conflicts
 
 ### iOS Push Notifications
