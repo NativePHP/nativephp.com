@@ -8,9 +8,23 @@ order: 900
 The Microphone API provides access to the device's microphone for recording audio. It offers a fluent interface for
 starting and managing recordings, tracking them with unique identifiers, and responding to completion events.
 
+<x-snippet title="Import">
+
+<x-snippet.tab name="PHP">
+
 ```php
 use Native\Mobile\Facades\Microphone;
 ```
+
+</x-snippet.tab>
+<x-snippet.tab name="JS">
+
+```js
+import { microphone, on, off, Events } from '#nativephp';
+```
+
+</x-snippet.tab>
+</x-snippet>
 
 ## Methods
 
@@ -18,40 +32,105 @@ use Native\Mobile\Facades\Microphone;
 
 Start an audio recording. Returns a `PendingMicrophone` instance that controls the recording lifecycle.
 
+<x-snippet title="Record Audio">
+
+<x-snippet.tab name="PHP">
+
 ```php
 Microphone::record()->start();
 ```
+
+</x-snippet.tab>
+<x-snippet.tab name="JS">
+
+```js
+// Basic recording
+await microphone.record();
+
+// With identifier for tracking
+await microphone.record()
+    .id('voice-memo');
+```
+
+</x-snippet.tab>
+</x-snippet>
 
 ### `stop()`
 
 Stop the current audio recording. If this results in a saved file, this dispatches the `AudioRecorded` event with the
 recording file path.
 
+<x-snippet title="Stop Recording">
+
+<x-snippet.tab name="PHP">
+
 ```php
 Microphone::stop();
 ```
+
+</x-snippet.tab>
+<x-snippet.tab name="JS">
+
+```js
+await microphone.stop();
+```
+
+</x-snippet.tab>
+</x-snippet>
 
 ### `pause()`
 
 Pause the current audio recording without ending it.
 
+<x-snippet title="Pause Recording">
+
+<x-snippet.tab name="PHP">
+
 ```php
 Microphone::pause();
 ```
+
+</x-snippet.tab>
+<x-snippet.tab name="JS">
+
+```js
+await microphone.pause();
+```
+
+</x-snippet.tab>
+</x-snippet>
 
 ### `resume()`
 
 Resume a paused audio recording.
 
+<x-snippet title="Resume Recording">
+
+<x-snippet.tab name="PHP">
+
 ```php
 Microphone::resume();
 ```
+
+</x-snippet.tab>
+<x-snippet.tab name="JS">
+
+```js
+await microphone.resume();
+```
+
+</x-snippet.tab>
+</x-snippet>
 
 ### `getStatus()`
 
 Get the current recording status.
 
 **Returns:** `string` - One of: `"idle"`, `"recording"`, or `"paused"`
+
+<x-snippet title="Get Status">
+
+<x-snippet.tab name="PHP">
 
 ```php
 $status = Microphone::getStatus();
@@ -61,11 +140,29 @@ if ($status === 'recording') {
 }
 ```
 
+</x-snippet.tab>
+<x-snippet.tab name="JS">
+
+```js
+const result = await microphone.getStatus();
+
+if (result.status === 'recording') {
+    // A recording is in progress
+}
+```
+
+</x-snippet.tab>
+</x-snippet>
+
 ### `getRecording()`
 
 Get the file path to the last recorded audio file.
 
 **Returns:** `string|null` - Path to the last recording, or `null` if none exists
+
+<x-snippet title="Get Recording">
+
+<x-snippet.tab name="PHP">
 
 ```php
 $path = Microphone::getRecording();
@@ -74,6 +171,20 @@ if ($path) {
     // Process the recording file
 }
 ```
+
+</x-snippet.tab>
+<x-snippet.tab name="JS">
+
+```js
+const result = await microphone.getRecording();
+
+if (result.path) {
+    // Process the recording file
+}
+```
+
+</x-snippet.tab>
+</x-snippet>
 
 ## PendingMicrophone
 
@@ -174,6 +285,10 @@ Dispatched when an audio recording completes. The event includes the file path a
 - `string $mimeType` - MIME type of the audio (default: `'audio/m4a'`)
 - `?string $id` - The recorder's ID, if one was set
 
+<x-snippet title="MicrophoneRecorded Event">
+
+<x-snippet.tab name="PHP">
+
 ```php
 #[OnNative(MicrophoneRecorded::class)]
 public function handleAudioRecorded(string $path, string $mimeType, ?string $id)
@@ -186,6 +301,55 @@ public function handleAudioRecorded(string $path, string $mimeType, ?string $id)
     ];
 }
 ```
+
+</x-snippet.tab>
+<x-snippet.tab name="Vue">
+
+```js
+import { on, off, Events } from '#nativephp';
+import { ref, onMounted, onUnmounted } from 'vue';
+
+const recordings = ref([]);
+
+const handleAudioRecorded = (payload) => {
+    const { path, mimeType, id } = payload;
+    recordings.value.push({ path, mimeType, id });
+};
+
+onMounted(() => {
+    on(Events.Microphone.MicrophoneRecorded, handleAudioRecorded);
+});
+
+onUnmounted(() => {
+    off(Events.Microphone.MicrophoneRecorded, handleAudioRecorded);
+});
+```
+
+</x-snippet.tab>
+<x-snippet.tab name="React">
+
+```jsx
+import { on, off, Events } from '#nativephp';
+import { useState, useEffect } from 'react';
+
+const [recordings, setRecordings] = useState([]);
+
+const handleAudioRecorded = (payload) => {
+    const { path, mimeType, id } = payload;
+    setRecordings(prev => [...prev, { path, mimeType, id }]);
+};
+
+useEffect(() => {
+    on(Events.Microphone.MicrophoneRecorded, handleAudioRecorded);
+
+    return () => {
+        off(Events.Microphone.MicrophoneRecorded, handleAudioRecorded);
+    };
+}, []);
+```
+
+</x-snippet.tab>
+</x-snippet>
 
 ## Notes
 

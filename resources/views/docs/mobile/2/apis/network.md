@@ -7,9 +7,23 @@ order: 1000
 
 The Network API provides access to the device's current network status and connection information. You can check whether the device is connected, determine the connection type, and detect metered or low-bandwidth conditions.
 
+<x-snippet title="Import">
+
+<x-snippet.tab name="PHP">
+
 ```php
 use Native\Mobile\Facades\Network;
 ```
+
+</x-snippet.tab>
+<x-snippet.tab name="JS">
+
+```js
+import { network } from '#nativephp';
+```
+
+</x-snippet.tab>
+</x-snippet>
 
 ## Methods
 
@@ -26,6 +40,10 @@ The returned object contains the following properties:
 - `isExpensive` (bool) - Whether the connection is metered/cellular (iOS only, always `false` on Android)
 - `isConstrained` (bool) - Whether Low Data Mode is enabled (iOS only, always `false` on Android)
 
+<x-snippet title="Network Status">
+
+<x-snippet.tab name="PHP">
+
 ```php
 $status = Network::status();
 
@@ -36,6 +54,23 @@ if ($status) {
     echo $status->isConstrained; // true/false (iOS only)
 }
 ```
+
+</x-snippet.tab>
+<x-snippet.tab name="JS">
+
+```js
+const status = await network.status();
+
+if (status) {
+    console.log(status.connected);    // true/false
+    console.log(status.type);         // "wifi", "cellular", "ethernet", or "unknown"
+    console.log(status.isExpensive);  // true/false (iOS only)
+    console.log(status.isConstrained); // true/false (iOS only)
+}
+```
+
+</x-snippet.tab>
+</x-snippet>
 
 ## Notes
 
