@@ -7,9 +7,23 @@ order: 600
 
 The File API provides utilities for managing files on the device. You can move files between directories or copy files to new locations. These operations execute synchronously and return a boolean indicating success or failure.
 
+<x-snippet title="Import">
+
+<x-snippet.tab name="PHP">
+
 ```php
 use Native\Mobile\Facades\File;
 ```
+
+</x-snippet.tab>
+<x-snippet.tab name="JS">
+
+```js
+import { file } from '#nativephp';
+```
+
+</x-snippet.tab>
+</x-snippet>
 
 ## Methods
 
@@ -22,6 +36,10 @@ Moves a file from one location to another. The source file is removed from its o
 - `string $to` - Absolute path to the destination file
 
 **Returns:** `bool` - `true` on success, `false` on failure
+
+<x-snippet title="Move File">
+
+<x-snippet.tab name="PHP">
 
 ```php
 // Move a captured photo to the app's storage directory
@@ -37,6 +55,26 @@ if ($success) {
 }
 ```
 
+</x-snippet.tab>
+<x-snippet.tab name="JS">
+
+```js
+// Move a captured photo to the app's storage directory
+const result = await file.move(
+    '/var/mobile/Containers/Data/tmp/photo.jpg',
+    '/var/mobile/Containers/Data/Documents/photos/photo.jpg'
+);
+
+if (result.success) {
+    // File moved successfully
+} else {
+    // Move operation failed
+}
+```
+
+</x-snippet.tab>
+</x-snippet>
+
 ### `copy(string $from, string $to)`
 
 Copies a file to a new location. The source file remains in its original location.
@@ -46,6 +84,10 @@ Copies a file to a new location. The source file remains in its original locatio
 - `string $to` - Absolute path to the destination file
 
 **Returns:** `bool` - `true` on success, `false` on failure
+
+<x-snippet title="Copy File">
+
+<x-snippet.tab name="PHP">
 
 ```php
 // Copy a file to create a backup
@@ -60,6 +102,26 @@ if ($success) {
     // Copy operation failed
 }
 ```
+
+</x-snippet.tab>
+<x-snippet.tab name="JS">
+
+```js
+// Copy a file to create a backup
+const result = await file.copy(
+    '/var/mobile/Containers/Data/Documents/document.pdf',
+    '/var/mobile/Containers/Data/Documents/backups/document.pdf'
+);
+
+if (result.success) {
+    // File copied successfully
+} else {
+    // Copy operation failed
+}
+```
+
+</x-snippet.tab>
+</x-snippet>
 
 ## Examples
 

@@ -7,9 +7,23 @@ order: 300
 
 The Camera API provides access to the device's camera for taking photos, recording videos, and selecting media from the gallery.
 
+<x-snippet title="Import">
+
+<x-snippet.tab name="PHP">
+
 ```php
 use Native\Mobile\Facades\Camera;
 ```
+
+</x-snippet.tab>
+<x-snippet.tab name="JS">
+
+```js
+import { camera, on, off, Events } from '#nativephp';
+```
+
+</x-snippet.tab>
+</x-snippet>
 
 ## Methods
 
@@ -17,9 +31,28 @@ use Native\Mobile\Facades\Camera;
 
 Opens the camera interface to take a photo.
 
+<x-snippet title="Take Photo">
+
+<x-snippet.tab name="PHP">
+
 ```php
 Camera::getPhoto();
 ```
+
+</x-snippet.tab>
+<x-snippet.tab name="JS">
+
+```js
+// Basic usage
+await camera.getPhoto();
+
+// With identifier for tracking
+await camera.getPhoto()
+    .id('profile-pic');
+```
+
+</x-snippet.tab>
+</x-snippet>
 
 ### `recordVideo()`
 
@@ -29,6 +62,10 @@ Opens the camera interface to record a video with optional configuration.
 - `array $options` - Optional recording options (default: `[]`)
 
 **Returns:** `PendingVideoRecorder` - Fluent interface for configuring video recording
+
+<x-snippet title="Record Video">
+
+<x-snippet.tab name="PHP">
 
 ```php
 // Basic video recording
@@ -44,6 +81,26 @@ Camera::recordVideo()
     ->start();
 ```
 
+</x-snippet.tab>
+<x-snippet.tab name="JS">
+
+```js
+// Basic video recording
+await camera.recordVideo();
+
+// With maximum duration
+await camera.recordVideo()
+    .maxDuration(60);
+
+// With identifier for tracking
+await camera.recordVideo()
+    .maxDuration(30)
+    .id('my-video-123');
+```
+
+</x-snippet.tab>
+</x-snippet>
+
 ### `pickImages()`
 
 Opens the gallery/photo picker to select existing images.
@@ -53,6 +110,10 @@ Opens the gallery/photo picker to select existing images.
 - `bool $multiple` - Allow multiple selection (default: `false`)
 
 **Returns:** `bool` - `true` if picker opened successfully
+
+<x-snippet title="Pick Images">
+
+<x-snippet.tab name="PHP">
 
 ```php
 // Pick a single image
@@ -64,6 +125,35 @@ Camera::pickImages('images', true);
 // Pick any media type
 Camera::pickImages('all', true);
 ```
+
+</x-snippet.tab>
+<x-snippet.tab name="JS">
+
+```js
+// Pick images using fluent API
+await camera.pickImages()
+    .images()
+    .multiple()
+    .maxItems(5);
+
+// Pick only videos
+await camera.pickImages()
+    .videos()
+    .multiple();
+
+// Pick any media type
+await camera.pickImages()
+    .all()
+    .multiple()
+    .maxItems(10);
+
+// Single image selection
+await camera.pickImages()
+    .images();
+```
+
+</x-snippet.tab>
+</x-snippet>
 
 ## PendingVideoRecorder
 
@@ -139,6 +229,10 @@ Fired when a photo is taken with the camera.
 
 **Payload:** `string $path` - File path to the captured photo
 
+<x-snippet title="PhotoTaken Event">
+
+<x-snippet.tab name="PHP">
+
 ```php
 use Native\Mobile\Attributes\OnNative;
 use Native\Mobile\Events\Camera\PhotoTaken;
@@ -151,6 +245,55 @@ public function handlePhotoTaken(string $path)
 }
 ```
 
+</x-snippet.tab>
+<x-snippet.tab name="Vue">
+
+```js
+import { on, off, Events } from '#nativephp';
+import { ref, onMounted, onUnmounted } from 'vue';
+
+const photoPath = ref('');
+
+const handlePhotoTaken = (payload) => {
+    photoPath.value = payload.path;
+    processPhoto(payload.path);
+};
+
+onMounted(() => {
+    on(Events.Camera.PhotoTaken, handlePhotoTaken);
+});
+
+onUnmounted(() => {
+    off(Events.Camera.PhotoTaken, handlePhotoTaken);
+});
+```
+
+</x-snippet.tab>
+<x-snippet.tab name="React">
+
+```jsx
+import { on, off, Events } from '#nativephp';
+import { useState, useEffect } from 'react';
+
+const [photoPath, setPhotoPath] = useState('');
+
+const handlePhotoTaken = (payload) => {
+    setPhotoPath(payload.path);
+    processPhoto(payload.path);
+};
+
+useEffect(() => {
+    on(Events.Camera.PhotoTaken, handlePhotoTaken);
+
+    return () => {
+        off(Events.Camera.PhotoTaken, handlePhotoTaken);
+    };
+}, []);
+```
+
+</x-snippet.tab>
+</x-snippet>
+
 ### `VideoRecorded`
 
 Fired when a video is successfully recorded.
@@ -159,6 +302,10 @@ Fired when a video is successfully recorded.
 - `string $path` - File path to the recorded video
 - `string $mimeType` - Video MIME type (default: `'video/mp4'`)
 - `?string $id` - Optional identifier if set via `id()` method
+
+<x-snippet title="VideoRecorded Event">
+
+<x-snippet.tab name="PHP">
 
 ```php
 use Native\Mobile\Attributes\OnNative;
@@ -177,6 +324,65 @@ public function handleVideoRecorded(string $path, string $mimeType, ?string $id 
 }
 ```
 
+</x-snippet.tab>
+<x-snippet.tab name="Vue">
+
+```js
+import { on, off, Events } from '#nativephp';
+import { ref, onMounted, onUnmounted } from 'vue';
+
+const videoPath = ref('');
+
+const handleVideoRecorded = (payload) => {
+    const { path, mimeType, id } = payload;
+    videoPath.value = path;
+    processVideo(path);
+
+    if (id === 'my-upload-video') {
+        uploadVideo(path);
+    }
+};
+
+onMounted(() => {
+    on(Events.Camera.VideoRecorded, handleVideoRecorded);
+});
+
+onUnmounted(() => {
+    off(Events.Camera.VideoRecorded, handleVideoRecorded);
+});
+```
+
+</x-snippet.tab>
+<x-snippet.tab name="React">
+
+```jsx
+import { on, off, Events } from '#nativephp';
+import { useState, useEffect } from 'react';
+
+const [videoPath, setVideoPath] = useState('');
+
+const handleVideoRecorded = (payload) => {
+    const { path, mimeType, id } = payload;
+    setVideoPath(path);
+    processVideo(path);
+
+    if (id === 'my-upload-video') {
+        uploadVideo(path);
+    }
+};
+
+useEffect(() => {
+    on(Events.Camera.VideoRecorded, handleVideoRecorded);
+
+    return () => {
+        off(Events.Camera.VideoRecorded, handleVideoRecorded);
+    };
+}, []);
+```
+
+</x-snippet.tab>
+</x-snippet>
+
 ### `VideoCancelled`
 
 Fired when video recording is cancelled by the user.
@@ -184,6 +390,10 @@ Fired when video recording is cancelled by the user.
 **Payload:**
 - `bool $cancelled` - Always `true`
 - `?string $id` - Optional identifier if set via `id()` method
+
+<x-snippet title="VideoCancelled Event">
+
+<x-snippet.tab name="PHP">
 
 ```php
 use Native\Mobile\Attributes\OnNative;
@@ -197,11 +407,58 @@ public function handleVideoCancelled(bool $cancelled, ?string $id = null)
 }
 ```
 
+</x-snippet.tab>
+<x-snippet.tab name="Vue">
+
+```js
+import { on, off, Events } from '#nativephp';
+import { onMounted, onUnmounted } from 'vue';
+
+const handleVideoCancelled = (payload) => {
+    notifyUser('Video recording was cancelled');
+};
+
+onMounted(() => {
+    on(Events.Camera.VideoCancelled, handleVideoCancelled);
+});
+
+onUnmounted(() => {
+    off(Events.Camera.VideoCancelled, handleVideoCancelled);
+});
+```
+
+</x-snippet.tab>
+<x-snippet.tab name="React">
+
+```jsx
+import { on, off, Events } from '#nativephp';
+import { useEffect } from 'react';
+
+const handleVideoCancelled = (payload) => {
+    notifyUser('Video recording was cancelled');
+};
+
+useEffect(() => {
+    on(Events.Camera.VideoCancelled, handleVideoCancelled);
+
+    return () => {
+        off(Events.Camera.VideoCancelled, handleVideoCancelled);
+    };
+}, []);
+```
+
+</x-snippet.tab>
+</x-snippet>
+
 ### `MediaSelected`
 
 Fired when media is selected from the gallery.
 
 **Payload:** `array $media` - Array of selected media items
+
+<x-snippet title="MediaSelected Event">
+
+<x-snippet.tab name="PHP">
 
 ```php
 use Native\Mobile\Attributes\OnNative;
@@ -216,6 +473,63 @@ public function handleMediaSelected($success, $files, $count)
     }
 }
 ```
+
+</x-snippet.tab>
+<x-snippet.tab name="Vue">
+
+```js
+import { on, off, Events } from '#nativephp';
+import { ref, onMounted, onUnmounted } from 'vue';
+
+const selectedFiles = ref([]);
+
+const handleMediaSelected = (payload) => {
+    const { success, files, count } = payload;
+
+    if (success) {
+        selectedFiles.value = files;
+        files.forEach(file => processMedia(file));
+    }
+};
+
+onMounted(() => {
+    on(Events.Gallery.MediaSelected, handleMediaSelected);
+});
+
+onUnmounted(() => {
+    off(Events.Gallery.MediaSelected, handleMediaSelected);
+});
+```
+
+</x-snippet.tab>
+<x-snippet.tab name="React">
+
+```jsx
+import { on, off, Events } from '#nativephp';
+import { useState, useEffect } from 'react';
+
+const [selectedFiles, setSelectedFiles] = useState([]);
+
+const handleMediaSelected = (payload) => {
+    const { success, files, count } = payload;
+
+    if (success) {
+        setSelectedFiles(files);
+        files.forEach(file => processMedia(file));
+    }
+};
+
+useEffect(() => {
+    on(Events.Gallery.MediaSelected, handleMediaSelected);
+
+    return () => {
+        off(Events.Gallery.MediaSelected, handleMediaSelected);
+    };
+}, []);
+```
+
+</x-snippet.tab>
+</x-snippet>
 
 ## Storage Locations
 

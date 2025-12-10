@@ -7,9 +7,23 @@ order: 1400
 
 The Share API enables users to share content from your app using the native share sheet. On iOS, this opens the native share menu with options like Messages, Mail, and social media apps. On Android, it launches the system share intent with available apps.
 
+<x-snippet title="Import">
+
+<x-snippet.tab name="PHP">
+
 ```php
 use Native\Mobile\Facades\Share;
 ```
+
+</x-snippet.tab>
+<x-snippet.tab name="JS">
+
+```js
+import { share } from '#nativephp';
+```
+
+</x-snippet.tab>
+</x-snippet>
 
 ## Methods
 
@@ -24,6 +38,10 @@ Share a URL using the native share dialog.
 
 **Returns:** `void`
 
+<x-snippet title="Share URL">
+
+<x-snippet.tab name="PHP">
+
 ```php
 Share::url(
     title: 'Check this out',
@@ -31,6 +49,20 @@ Share::url(
     url: 'https://example.com/article'
 );
 ```
+
+</x-snippet.tab>
+<x-snippet.tab name="JS">
+
+```js
+await share.url(
+    'Check this out',
+    'I found something interesting',
+    'https://example.com/article'
+);
+```
+
+</x-snippet.tab>
+</x-snippet>
 
 ### `file()`
 
@@ -43,6 +75,10 @@ Share a file using the native share dialog.
 
 **Returns:** `void`
 
+<x-snippet title="Share File">
+
+<x-snippet.tab name="PHP">
+
 ```php
 Share::file(
     title: 'Share Document',
@@ -51,11 +87,29 @@ Share::file(
 );
 ```
 
+</x-snippet.tab>
+<x-snippet.tab name="JS">
+
+```js
+await share.file(
+    'Share Document',
+    'Check out this PDF',
+    '/path/to/document.pdf'
+);
+```
+
+</x-snippet.tab>
+</x-snippet>
+
 ## Examples
 
 ### Sharing a Website Link
 
 Share a link to your app's website or external content.
+
+<x-snippet title="Share Website Link">
+
+<x-snippet.tab name="PHP">
 
 ```php
 Share::url(
@@ -65,9 +119,27 @@ Share::url(
 );
 ```
 
+</x-snippet.tab>
+<x-snippet.tab name="JS">
+
+```js
+await share.url(
+    'My Awesome App',
+    'Download my app today!',
+    'https://myapp.com'
+);
+```
+
+</x-snippet.tab>
+</x-snippet>
+
 ### Sharing Captured Photos
 
 Share a photo that was captured with the camera.
+
+<x-snippet title="Share Captured Photo">
+
+<x-snippet.tab name="PHP">
 
 ```php
 use Native\Mobile\Attributes\OnNative;
@@ -83,6 +155,57 @@ public function handlePhotoTaken(string $path)
     );
 }
 ```
+
+</x-snippet.tab>
+<x-snippet.tab name="Vue">
+
+```js
+import { share, on, off, Events } from '#nativephp';
+import { onMounted, onUnmounted } from 'vue';
+
+const handlePhotoTaken = (payload) => {
+    share.file(
+        'My Photo',
+        'Check out this photo I just took!',
+        payload.path
+    );
+};
+
+onMounted(() => {
+    on(Events.Camera.PhotoTaken, handlePhotoTaken);
+});
+
+onUnmounted(() => {
+    off(Events.Camera.PhotoTaken, handlePhotoTaken);
+});
+```
+
+</x-snippet.tab>
+<x-snippet.tab name="React">
+
+```jsx
+import { share, on, off, Events } from '#nativephp';
+import { useEffect } from 'react';
+
+const handlePhotoTaken = (payload) => {
+    share.file(
+        'My Photo',
+        'Check out this photo I just took!',
+        payload.path
+    );
+};
+
+useEffect(() => {
+    on(Events.Camera.PhotoTaken, handlePhotoTaken);
+
+    return () => {
+        off(Events.Camera.PhotoTaken, handlePhotoTaken);
+    };
+}, []);
+```
+
+</x-snippet.tab>
+</x-snippet>
 
 ## Notes
 
