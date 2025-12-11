@@ -45,6 +45,7 @@ Route::view('laracon-us-2025-giveaway', 'laracon-us-2025-giveaway')->name('larac
 Route::view('privacy-policy', 'privacy-policy')->name('privacy-policy');
 Route::view('terms-of-service', 'terms-of-service')->name('terms-of-service');
 Route::view('partners', 'partners')->name('partners');
+Route::view('build-my-app', 'build-my-app')->name('build-my-app');
 Route::view('sponsor', 'sponsoring')->name('sponsoring');
 Route::view('vs-react-native-expo', 'vs-react-native-expo')->name('vs-react-native-expo');
 Route::view('vs-flutter', 'vs-flutter')->name('vs-flutter');
