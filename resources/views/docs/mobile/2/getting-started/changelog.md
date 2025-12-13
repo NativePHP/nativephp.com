@@ -3,13 +3,56 @@ title: Changelog
 order: 2
 ---
 
+## v2.2.0
+
+This release includes significant improvements to EDGE components, installation experience, and build tooling.
+
+### EDGE Required Props Validation
+EDGE components now validate required props at render time. A new `MissingRequiredPropsException` provides clear error messages showing exactly which props are missing and how to fix them. Validation is enforced on `BottomNavItem`, `SideNavItem`, `TopBarAction`, `SideNavGroup`, and `TopBar`.
+
+### Font-Based Icon Rendering
+Replaced the 30MB `material-icons-extended` library with a 348KB font file using font ligatures for efficient icon rendering.
+
+- **iOS**: Supports direct SF Symbol paths (e.g., `car.side.fill`, `flashlight.on.fill`)
+- **Android**: Any Material Icon ligature name works directly
+- Cross-platform friendly name aliases are maintained for convenience
+
+@verbatim
+```blade
+@use(Native\Mobile\Facades\System)
+
+<native:bottom-nav-item
+    ...
+    icon="{{ System::isIos() ? 'flashlight.on.fill' : 'flashlight_on' }}"
+/>
+```
+@endverbatim
+
+### Auto-Prompt for App ID
+`native:install` now prompts for `NATIVEPHP_APP_ID` if not already set and auto-generates a suggested bundle ID using the format `com.{username}.{randomwords}`.
+
+### Improved iOS Build Logging
+Standardized console output using `twoColumnDetail()` format for App Store Connect operations. Replaced emoji-prefixed logs with consistent Laravel Prompts styling.
+
+Elaborate error diagnostics with pattern matching for common Xcode build errors now provide specific actionable solutions for:
+- Certificate/provisioning profile mismatches
+- Expired provisioning profiles
+- Missing signing certificates
+- Code signing errors
+
+When builds fail, the last 30 lines of error output are shown along with the build log path for debugging.
+
+### Other Improvements
+- Better handling of false positives from Apple during upload
+- Build log paths use `note()` for consistent styling
+
 ## v2.1.1
 
 ### Foreground permissions
-Prevent removal of FOREGROUND_SERVICE and POST_NOTIFICATIONS permissions when they're needed by camera features
+Prevent removal of FOREGROUND_SERVICE and POST_NOTIFICATIONS permissions when they're needed by camera features, even if push notifications are disabled
 
 ### Symlink fix
-Exclude public/storage from build to prevent symlink conflicts
+Run storage:unlink before storage:link to handle stale symlinks, and exclude public/storage from build to prevent symlink conflicts
 
 ### iOS Push Notifications
 Handles push notification APNS flow differently, fires off the native event as soon as the token is received from FCM vs assuming the AppDelegate will ahndle it.
