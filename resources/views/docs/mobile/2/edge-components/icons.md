@@ -14,14 +14,15 @@ handles the platform translation automatically.
 
 ## How It Works
 
-The icon system uses a three-tier resolution strategy:
+The icon system uses a four-tier resolution strategy:
 
-1. **Manual Mapping** - Explicit mappings for common icons and aliases (e.g., `home`, `settings`, `user`)
-2. **Smart Fallback** - Attempts to auto-convert unmapped icon names to platform equivalents
-3. **Default Fallback** - Uses a circle icon if no match is found
+1. **Direct Platform Icons** - On iOS, if the name contains a `.` it's used as a direct SF Symbol path (e.g., `car.side.fill`). On Android, any Material Icon ligature name works directly (e.g., `shopping_cart`).
+2. **Manual Mapping** - Explicit mappings for common icons and aliases (e.g., `home`, `settings`, `user`)
+3. **Smart Fallback** - Attempts to auto-convert unmapped icon names to platform equivalents
+4. **Default Fallback** - Uses a circle icon if no match is found
 
-This approach means you can use intuitive icon names and get consistent results across iOS and Android, even when the
-underlying platform icon names differ.
+This approach means you can use intuitive icon names for common cases, leverage direct platform icons for advanced use
+cases, and get consistent results across iOS and Android.
 
 ## Platform Differences
 
@@ -39,15 +40,60 @@ If an icon name isn't manually mapped, the system attempts to find a matching SF
 
 ### Android (Material Icons)
 
-On Android, icons render as Material Icons with automatic support for filled and outlined variants. The filled variant
-is used by default in most components, but components like bottom navigation can switch between filled (selected) and
-outlined (unselected) states.
+On Android, icons render using a lightweight font-based approach that supports the entire Material Icons library. You
+can use any Material Icon by its ligature name directly (e.g., `shopping_cart`, `qr_code_2`).
 
-Manual mappings convert common icon names to their Material Icon equivalents. For example:
+Manual mappings provide convenient aliases for common icon names. For example:
 
-- `home` → `Icons.Filled.Home`
-- `settings` → `Icons.Filled.Settings`
-- `check` → `Icons.Filled.Check`
+- `home` → `home`
+- `settings` → `settings`
+- `check` → `check`
+- `cart` → `shopping_cart`
+
+## Direct Platform Icons
+
+For advanced use cases, you can use platform-specific icon names directly.
+
+### iOS SF Symbols
+
+On iOS, include a `.` in the icon name to use an SF Symbol path directly:
+
+@verbatim
+```blade
+<native:bottom-nav-item icon="car.side.fill" ... />
+<native:bottom-nav-item icon="flashlight.on.fill" ... />
+<native:bottom-nav-item icon="figure.walk" ... />
+```
+@endverbatim
+
+### Android Material Icons
+
+On Android, use any Material Icon ligature name (with underscores):
+
+@verbatim
+```blade
+<native:bottom-nav-item icon="qr_code_2" ... />
+<native:bottom-nav-item icon="flashlight_on" ... />
+<native:bottom-nav-item icon="space_dashboard" ... />
+```
+@endverbatim
+
+## Platform-Specific Icons
+
+When you need different icons on each platform, use the `System` facade:
+
+@verbatim
+```blade
+<native:bottom-nav-item
+    id="flashlight"
+    icon="{{ \Native\Mobile\Facades\System::isIos() ? 'flashlight.on.fill' : 'flashlight_on' }}"
+    label="Flashlight"
+    url="/flashlight"
+/>
+```
+@endverbatim
+
+This is useful when the mapped icon doesn't match your needs or you want to use platform-specific variants.
 
 ## Basic Usage
 
@@ -220,3 +266,23 @@ application across apps. So try to maintain consistent use of icons to help guid
 
 - **Stay consistent** - Use the same icon name throughout your app for the same action
 - **Test on both platforms** - If you use auto-converted icons, verify they appear correctly on iOS and Android
+
+## Finding Icons
+
+### Android Material Icons
+
+Browse the complete Material Icons library at [Google Fonts Icons](https://fonts.google.com/icons). Use the icon name
+exactly as shown (with underscores, e.g., `shopping_cart`, `qr_code_2`).
+
+### iOS SF Symbols
+
+Browse SF Symbols using this [community Figma file](https://www.figma.com/community/file/1549047589273604548). While not
+comprehensive, it's a great starting point for discovering available symbols.
+
+For the complete library, download the [SF Symbols app](https://developer.apple.com/sf-symbols/) for macOS.
+
+<aside>
+
+SF Symbol names use dots (e.g., `house.fill`), while Material Icon names use underscores (e.g., `shopping_cart`).
+
+</aside>
