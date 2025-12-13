@@ -38,4 +38,9 @@ return [
     'bifrost' => [
         'api_key' => env('BIFROST_API_KEY'),
     ],
+
+    'turnstile' => [
+        'site_key' => env('TURNSTILE_SITE_KEY'),
+        'secret_key' => env('TURNSTILE_SECRET_KEY'),
+    ],
 ];

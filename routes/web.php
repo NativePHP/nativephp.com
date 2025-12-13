@@ -45,7 +45,10 @@ Route::view('laracon-us-2025-giveaway', 'laracon-us-2025-giveaway')->name('larac
 Route::view('privacy-policy', 'privacy-policy')->name('privacy-policy');
 Route::view('terms-of-service', 'terms-of-service')->name('terms-of-service');
 Route::view('partners', 'partners')->name('partners');
+Route::view('build-my-app', 'build-my-app')->name('build-my-app');
 Route::view('sponsor', 'sponsoring')->name('sponsoring');
+Route::view('vs-react-native-expo', 'vs-react-native-expo')->name('vs-react-native-expo');
+Route::view('vs-flutter', 'vs-flutter')->name('vs-flutter');
 
 Route::get('blog', [ShowBlogController::class, 'index'])->name('blog');
 Route::get('blog/{article}', [ShowBlogController::class, 'show'])->name('article');
@@ -61,6 +64,30 @@ Route::get('docs/{platform}/{version}/{page?}', ShowDocumentationController::cla
     ->where('platform', '[a-z]+')
     ->where('version', '[0-9]+')
     ->name('docs.show');
+
+// Forward platform requests without version to the latest version
+Route::get('docs/{platform}/{page?}', function (string $platform, $page = null) {
+    $page ??= 'getting-started/introduction';
+
+    // Find the latest version for this platform
+    $docsPath = resource_path('views/docs/'.$platform);
+
+    if (! is_dir($docsPath)) {
+        abort(404);
+    }
+
+    $versions = collect(scandir($docsPath))
+        ->filter(fn ($dir) => is_numeric($dir))
+        ->sort()
+        ->values();
+
+    $latestVersion = $versions->last() ?? '1';
+
+    return redirect("/docs/{$platform}/{$latestVersion}/{$page}", 301);
+})
+    ->where('platform', 'desktop|mobile')
+    ->where('page', '.*')
+    ->name('docs.latest');
 
 // Forward unversioned requests to the latest version
 Route::get('docs/{page?}', function ($page = null) {
