@@ -144,6 +144,7 @@ You can start hot reloading by running the following command:
 php artisan native:watch
 ```
 
+**Note:** When testing on a real device, hot reloading will reach back to the Vite server running on your development machine so you will need to ensure the Wi-Fi on the mobile device is connected to the same network as your development machine.
 <aside>
 
 #### 🔥 Hot Tip!
