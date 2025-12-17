@@ -2,15 +2,10 @@
 
 namespace Tests\Feature;
 
-use App\Enums\LicenseSource;
-use App\Enums\Subscription;
 use App\Http\Middleware\VerifyCsrfToken;
-use App\Jobs\CreateAnystackLicenseJob;
-use App\Models\License;
-use App\Models\User;
+use App\Models\OpenCollectiveDonation;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Config;
-use Illuminate\Support\Facades\Queue;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
@@ -45,172 +40,58 @@ class OpenCollectiveWebhookTest extends TestCase
     }
 
     #[Test]
-    public function it_creates_a_mini_license_for_monthly_sponsor_above_ten_dollars(): void
+    public function it_stores_donation_for_order_processed_webhook(): void
     {
-        Queue::fake();
-
-        $payload = [
-            'type' => 'collective.transaction.created',
-            'data' => [
-                'amount' => [
-                    'value' => 1500, // $15 in cents
-                    'currency' => 'USD',
-                ],
-                'order' => [
-                    'frequency' => 'MONTHLY',
-                    'fromAccount' => [
-                        'name' => 'John Doe',
-                        'email' => 'john@example.com',
-                    ],
-                ],
-            ],
-        ];
+        $payload = $this->getOrderProcessedPayload();
 
         $response = $this->postJson('/opencollective/contribution', $payload);
 
         $response->assertStatus(200);
         $response->assertJson(['status' => 'success']);
 
-        // Verify user was created
-        $this->assertDatabaseHas('users', [
-            'email' => 'john@example.com',
-            'name' => 'John Doe',
+        $this->assertDatabaseHas('opencollective_donations', [
+            'webhook_id' => 335409,
+            'order_id' => 51763,
+            'order_idv2' => '88rzownx-l9e50pxj-z836ymvb-dgk7j43a',
+            'amount' => 2000,
+            'currency' => 'USD',
+            'interval' => null,
+            'from_collective_id' => 54797,
+            'from_collective_name' => 'Testing User',
+            'from_collective_slug' => 'sudharaka',
         ]);
-
-        // Verify license creation job was dispatched
-        Queue::assertPushed(CreateAnystackLicenseJob::class, function ($job) {
-            return $job->user->email === 'john@example.com'
-                && $job->subscription === Subscription::Mini
-                && $job->source === LicenseSource::OpenCollective
-                && $job->firstName === 'John'
-                && $job->lastName === 'Doe';
-        });
     }
 
     #[Test]
-    public function it_does_not_create_license_for_one_time_contributions(): void
+    public function it_does_not_store_duplicate_orders(): void
     {
-        Queue::fake();
+        $payload = $this->getOrderProcessedPayload();
 
+        // First webhook
+        $this->postJson('/opencollective/contribution', $payload);
+
+        // Second webhook with same order
+        $response = $this->postJson('/opencollective/contribution', $payload);
+
+        $response->assertStatus(200);
+        $this->assertDatabaseCount('opencollective_donations', 1);
+    }
+
+    #[Test]
+    public function it_handles_missing_order_id_gracefully(): void
+    {
         $payload = [
-            'type' => 'collective.transaction.created',
+            'id' => 335409,
+            'type' => 'order.processed',
             'data' => [
-                'amount' => [
-                    'value' => 5000, // $50 in cents
-                    'currency' => 'USD',
-                ],
-                'order' => [
-                    'frequency' => 'ONETIME',
-                    'fromAccount' => [
-                        'name' => 'Jane Doe',
-                        'email' => 'jane@example.com',
-                    ],
-                ],
+                'order' => [],
             ],
         ];
 
         $response = $this->postJson('/opencollective/contribution', $payload);
 
         $response->assertStatus(200);
-
-        Queue::assertNotPushed(CreateAnystackLicenseJob::class);
-    }
-
-    #[Test]
-    public function it_does_not_create_license_for_monthly_contributions_below_ten_dollars(): void
-    {
-        Queue::fake();
-
-        $payload = [
-            'type' => 'collective.transaction.created',
-            'data' => [
-                'amount' => [
-                    'value' => 500, // $5 in cents
-                    'currency' => 'USD',
-                ],
-                'order' => [
-                    'frequency' => 'MONTHLY',
-                    'fromAccount' => [
-                        'name' => 'Bob Smith',
-                        'email' => 'bob@example.com',
-                    ],
-                ],
-            ],
-        ];
-
-        $response = $this->postJson('/opencollective/contribution', $payload);
-
-        $response->assertStatus(200);
-
-        Queue::assertNotPushed(CreateAnystackLicenseJob::class);
-    }
-
-    #[Test]
-    public function it_does_not_create_duplicate_licenses_for_existing_opencollective_sponsors(): void
-    {
-        Queue::fake();
-
-        $user = User::factory()->create([
-            'email' => 'existing@example.com',
-            'name' => 'Existing User',
-        ]);
-
-        License::factory()->create([
-            'user_id' => $user->id,
-            'policy_name' => Subscription::Mini->value,
-            'source' => LicenseSource::OpenCollective,
-        ]);
-
-        $payload = [
-            'type' => 'collective.transaction.created',
-            'data' => [
-                'amount' => [
-                    'value' => 1500,
-                    'currency' => 'USD',
-                ],
-                'order' => [
-                    'frequency' => 'MONTHLY',
-                    'fromAccount' => [
-                        'name' => 'Existing User',
-                        'email' => 'existing@example.com',
-                    ],
-                ],
-            ],
-        ];
-
-        $response = $this->postJson('/opencollective/contribution', $payload);
-
-        $response->assertStatus(200);
-
-        Queue::assertNotPushed(CreateAnystackLicenseJob::class);
-    }
-
-    #[Test]
-    public function it_handles_missing_email_gracefully(): void
-    {
-        Queue::fake();
-
-        $payload = [
-            'type' => 'collective.transaction.created',
-            'data' => [
-                'amount' => [
-                    'value' => 1500,
-                    'currency' => 'USD',
-                ],
-                'order' => [
-                    'frequency' => 'MONTHLY',
-                    'fromAccount' => [
-                        'name' => 'Anonymous',
-                    ],
-                ],
-            ],
-        ];
-
-        $response = $this->postJson('/opencollective/contribution', $payload);
-
-        $response->assertStatus(200);
-
-        Queue::assertNotPushed(CreateAnystackLicenseJob::class);
+        $this->assertDatabaseCount('opencollective_donations', 0);
     }
 
     #[Test]
@@ -218,10 +99,7 @@ class OpenCollectiveWebhookTest extends TestCase
     {
         Config::set('services.opencollective.webhook_secret', 'test-secret');
 
-        $payload = [
-            'type' => 'collective.transaction.created',
-            'data' => [],
-        ];
+        $payload = $this->getOrderProcessedPayload();
 
         $response = $this->postJson('/opencollective/contribution', $payload);
 
@@ -231,26 +109,9 @@ class OpenCollectiveWebhookTest extends TestCase
     #[Test]
     public function it_accepts_valid_webhook_signature(): void
     {
-        Queue::fake();
-
         Config::set('services.opencollective.webhook_secret', 'test-secret');
 
-        $payload = [
-            'type' => 'collective.transaction.created',
-            'data' => [
-                'amount' => [
-                    'value' => 1500,
-                    'currency' => 'USD',
-                ],
-                'order' => [
-                    'frequency' => 'MONTHLY',
-                    'fromAccount' => [
-                        'name' => 'Test User',
-                        'email' => 'test@example.com',
-                    ],
-                ],
-            ],
-        ];
+        $payload = $this->getOrderProcessedPayload();
 
         $payloadJson = json_encode($payload);
         $signature = hash_hmac('sha256', $payloadJson, 'test-secret');
@@ -260,5 +121,87 @@ class OpenCollectiveWebhookTest extends TestCase
         ]);
 
         $response->assertStatus(200);
+    }
+
+    #[Test]
+    public function it_handles_unhandled_webhook_types(): void
+    {
+        $payload = [
+            'id' => 12345,
+            'type' => 'some.other.event',
+            'data' => [],
+        ];
+
+        $response = $this->postJson('/opencollective/contribution', $payload);
+
+        $response->assertStatus(200);
+        $response->assertJson(['status' => 'success']);
+    }
+
+    #[Test]
+    public function donation_can_be_marked_as_claimed(): void
+    {
+        $donation = OpenCollectiveDonation::factory()->create();
+        $user = \App\Models\User::factory()->create();
+
+        $this->assertFalse($donation->isClaimed());
+
+        $donation->markAsClaimed($user);
+
+        $this->assertTrue($donation->fresh()->isClaimed());
+        $this->assertEquals($user->id, $donation->fresh()->user_id);
+        $this->assertNotNull($donation->fresh()->claimed_at);
+    }
+
+    protected function getOrderProcessedPayload(): array
+    {
+        return [
+            'createdAt' => '2025-12-04T16:20:34.260Z',
+            'id' => 335409,
+            'type' => 'order.processed',
+            'CollectiveId' => 20206,
+            'data' => [
+                'firstPayment' => true,
+                'order' => [
+                    'idV2' => '88rzownx-l9e50pxj-z836ymvb-dgk7j43a',
+                    'id' => 51763,
+                    'totalAmount' => 2000,
+                    'currency' => 'USD',
+                    'description' => 'Financial contribution to BackYourStack',
+                    'tags' => null,
+                    'interval' => null,
+                    'createdAt' => '2025-12-04T16:20:31.861Z',
+                    'quantity' => 1,
+                    'FromCollectiveId' => 54797,
+                    'TierId' => null,
+                    'formattedAmount' => '$20.00',
+                    'formattedAmountWithInterval' => '$20.00',
+                ],
+                'host' => [
+                    'idV2' => '8a47byg9-nxozdp80-xm6mjlv0-3rek5w8k',
+                    'id' => 11004,
+                    'type' => 'ORGANIZATION',
+                    'slug' => 'opensource',
+                    'name' => 'Open Source Collective',
+                ],
+                'collective' => [
+                    'idV2' => 'rvedj9wr-oz3a56d3-d35p7blg-8x4m0ykn',
+                    'id' => 20206,
+                    'type' => 'COLLECTIVE',
+                    'slug' => 'backyourstack',
+                    'name' => 'BackYourStack',
+                ],
+                'fromCollective' => [
+                    'idV2' => 'eeng0kzd-yvor4pz7-37gqbma8-37xlw95j',
+                    'id' => 54797,
+                    'type' => 'USER',
+                    'slug' => 'sudharaka',
+                    'name' => 'Testing User',
+                    'twitterHandle' => null,
+                    'githubHandle' => 'SudharakaP',
+                    'repositoryUrl' => 'https://github.com/test',
+                ],
+            ],
+        ];
     }
 }

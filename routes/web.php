@@ -36,6 +36,9 @@ Route::redirect('tshirt', 'pricing');
 // Webhook routes (must be outside web middleware for CSRF bypass)
 Route::post('opencollective/contribution', [OpenCollectiveWebhookController::class, 'handle'])->name('opencollective.webhook');
 
+// OpenCollective donation claim route
+Route::get('opencollective/claim', App\Livewire\ClaimDonationLicense::class)->name('opencollective.claim');
+
 Route::view('/', 'welcome')->name('welcome');
 Route::view('pricing', 'pricing')->name('pricing');
 Route::view('alt-pricing', 'alt-pricing')->name('alt-pricing')->middleware('signed');

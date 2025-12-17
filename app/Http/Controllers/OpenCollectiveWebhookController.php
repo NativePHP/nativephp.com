@@ -2,14 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Enums\LicenseSource;
-use App\Enums\Subscription;
-use App\Jobs\CreateAnystackLicenseJob;
-use App\Models\User;
+use App\Models\OpenCollectiveDonation;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Str;
 
 class OpenCollectiveWebhookController extends Controller
 {
@@ -30,7 +25,7 @@ class OpenCollectiveWebhookController extends Controller
 
         // Handle different webhook types
         match ($type) {
-            'collective.transaction.created' => $this->handleContributionProcessed($payload),
+            'order.processed' => $this->handleOrderProcessed($payload),
             default => Log::info('Unhandled OpenCollective webhook type', ['type' => $type]),
         };
 
@@ -54,86 +49,45 @@ class OpenCollectiveWebhookController extends Controller
         }
     }
 
-    protected function handleContributionProcessed(array $payload): void
+    protected function handleOrderProcessed(array $payload): void
     {
+        $webhookId = $payload['id'] ?? null;
         $data = $payload['data'] ?? [];
-
-        // Extract transaction details
         $order = $data['order'] ?? [];
-        $fromAccount = $order['fromAccount'] ?? [];
+        $fromCollective = $data['fromCollective'] ?? [];
 
-        // Get contributor email and name
-        $email = $fromAccount['email'] ?? null;
-        $name = $fromAccount['name'] ?? null;
+        $orderId = $order['id'] ?? null;
 
-        if (! $email) {
-            Log::warning('OpenCollective contribution missing email', ['payload' => $payload]);
+        if (! $orderId) {
+            Log::warning('OpenCollective order.processed missing order ID', ['payload' => $payload]);
 
             return;
         }
 
-        // Check if this is a recurring contribution (monthly sponsor)
-        $frequency = $order['frequency'] ?? 'ONETIME';
-        $amount = $data['amount'] ?? [];
-        $value = $amount['value'] ?? 0;
-
-        // Only grant licenses for monthly sponsors above $10
-        if ($frequency !== 'MONTHLY' || $value < 1000) { // Amount in cents
-            Log::info('OpenCollective contribution does not qualify for license', [
-                'email' => $email,
-                'frequency' => $frequency,
-                'value' => $value,
-            ]);
+        // Check if we've already processed this order
+        if (OpenCollectiveDonation::where('order_id', $orderId)->exists()) {
+            Log::info('OpenCollective order already processed', ['order_id' => $orderId]);
 
             return;
         }
 
-        // Find or create user
-        $user = User::firstOrCreate(
-            ['email' => $email],
-            [
-                'name' => $name ?? Str::before($email, '@'),
-                'password' => Hash::make(Str::random(32)),
-            ]
-        );
+        // Store the donation for later claiming
+        OpenCollectiveDonation::create([
+            'webhook_id' => $webhookId,
+            'order_id' => $orderId,
+            'order_idv2' => $order['idV2'] ?? null,
+            'amount' => $order['totalAmount'] ?? 0,
+            'currency' => $order['currency'] ?? 'USD',
+            'interval' => $order['interval'] ?? null,
+            'from_collective_id' => $fromCollective['id'] ?? $order['FromCollectiveId'] ?? 0,
+            'from_collective_name' => $fromCollective['name'] ?? null,
+            'from_collective_slug' => $fromCollective['slug'] ?? null,
+            'raw_payload' => $payload,
+        ]);
 
-        // Check if user already has a Mini license from OpenCollective
-        $existingLicense = $user->licenses()
-            ->where('policy_name', Subscription::Mini->value)
-            ->where('source', LicenseSource::OpenCollective)
-            ->first();
-
-        if ($existingLicense) {
-            Log::info('User already has OpenCollective Mini license', [
-                'user_id' => $user->id,
-                'license_id' => $existingLicense->id,
-            ]);
-
-            return;
-        }
-
-        // Create Mini license
-        $firstName = null;
-        $lastName = null;
-
-        if ($name) {
-            $nameParts = explode(' ', $name, 2);
-            $firstName = $nameParts[0] ?? null;
-            $lastName = $nameParts[1] ?? null;
-        }
-
-        CreateAnystackLicenseJob::dispatch(
-            user: $user,
-            subscription: Subscription::Mini,
-            subscriptionItemId: null,
-            firstName: $firstName,
-            lastName: $lastName,
-            source: LicenseSource::OpenCollective
-        );
-
-        Log::info('Mini license creation dispatched for OpenCollective sponsor', [
-            'user_id' => $user->id,
-            'email' => $email,
+        Log::info('OpenCollective donation stored for claiming', [
+            'order_id' => $orderId,
+            'amount' => $order['totalAmount'] ?? 0,
         ]);
     }
 }
