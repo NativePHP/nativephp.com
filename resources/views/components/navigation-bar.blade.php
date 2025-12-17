@@ -1,10 +1,3 @@
-<div
-    x-collapse
-    x-show="!showMobileMenu"
->
-    {{-- Announcement banner goes here --}}
-    <x-price-drop-banner />
-</div>
 <nav
     class="sticky top-0 z-50 flex flex-col items-center justify-center border-b px-2 transition duration-200 ease-out min-[500px]:px-3"
     aria-label="Main Navigation"
@@ -109,7 +102,7 @@
                     href="https://shop.nativephp.com/"
                     class="opacity-60 transition duration-200 hover:opacity-100"
                 >
-                    Shop
+                    Swag
                 </a>
 
                 {{-- Decorative circle --}}
@@ -121,9 +114,33 @@
                 {{-- Link --}}
                 <a
                     href="/partners"
-                    class="opacity-60 transition duration-200 hover:opacity-100"
+                    @class([
+                        'transition duration-200',
+                        'font-medium' => request()->routeIs('partners'),
+                        'opacity-60 hover:opacity-100' => ! request()->routeIs('partners'),
+                    ])
+                    aria-current="{{ request()->routeIs('partners') ? 'page' : 'false' }}"
                 >
                     Partners
+                </a>
+
+                {{-- Decorative circle --}}
+                <div
+                    class="size-[3px] rotate-45 rounded-xs bg-gray-400 transition duration-200 dark:opacity-60"
+                    aria-hidden="true"
+                ></div>
+
+                {{-- Link --}}
+                <a
+                    href="{{ route('build-my-app') }}"
+                    @class([
+                        'transition duration-200',
+                        'font-medium' => request()->routeIs('build-my-app'),
+                        'opacity-60 hover:opacity-100' => ! request()->routeIs('build-my-app'),
+                    ])
+                    aria-current="{{ request()->routeIs('build-my-app') ? 'page' : 'false' }}"
+                >
+                    Develop
                 </a>
 
                 {{-- Login/Logout --}}

@@ -89,6 +89,7 @@
         </style>
         @livewireStyles
         @vite('resources/css/app.css')
+        @stack('head')
     </head>
     <body
         x-cloak
