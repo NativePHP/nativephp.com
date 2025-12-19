@@ -270,3 +270,81 @@ nav.docs-navigation > ul > li > ul {
 .dark .prose code {
     @apply bg-gray-800 text-purple-300;
 }
+
+.prose table {
+    @apply w-full;
+}
+
+.prose :where(table):not(:where([class~='not-prose'] *)) {
+    display: block;
+    overflow-x: auto;
+}
+
+/*
+  Blur and dim the lines that don't have the `.line-focus` class,
+  but are within a code block that contains any focus lines.
+*/
+.torchlight.has-focus-lines .line:not(.line-focus) {
+    transition: filter 0.35s, opacity 0.35s;
+    filter: blur(.095rem);
+    opacity: .65;
+}
+
+/*
+  When the code block is hovered, bring all the lines into focus.
+*/
+.torchlight.has-focus-lines:hover .line:not(.line-focus) {
+    filter: blur(0px);
+    opacity: 1;
+}
+
+.prose aside {
+    @apply relative z-0 mt-5 overflow-hidden rounded-2xl bg-gradient-to-tl from-transparent to-violet-100/75 px-5 ring-1 ring-black/5 dark:from-slate-900/30 dark:to-indigo-900/35;
+}
+
+.images-two-up {
+    @apply grid gap-8 mt-0 items-center;
+
+    @variant sm {
+        @apply grid-cols-2;
+    }
+}
+
+
+/* Responsive embedded content */
+@layer components {
+    .aspect-video iframe {
+        @apply absolute inset-0 w-full h-full;
+    }
+}
+
+/* Snippet component with tabbed code blocks */
+.snippet {
+    @apply rounded-xl shadow-lg;
+}
+
+.snippet-content {
+    @apply relative;
+}
+
+.snippet-tab pre {
+    @apply m-0 rounded-none bg-transparent p-0;
+}
+
+.snippet-tab pre code {
+    @apply block min-w-max py-4 text-sm;
+}
+
+.snippet-tab pre code .line {
+    @apply px-4;
+}
+
+/* When snippet has a single tab, round the top corners */
+.snippet-content:first-child {
+    @apply rounded-t-xl;
+}
+
+/* Hide Torchlight's default copy button inside snippets */
+.snippet .torchlight-with-copy > div:first-child {
+    @apply hidden;
+}

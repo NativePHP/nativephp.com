@@ -83,10 +83,10 @@ php artisan native:migrate:fresh
 ## Seeding
 
 When developing, it's especially useful to seed your database with sample data. If you've set up
-[Database Seeders](https://laravel.com/docs/seeding), you can run these using the `native:db:seed` command:
+[Database Seeders](https://laravel.com/docs/seeding), you can run these using the `native:seed` command:
 
 ```shell
-php artisan native:db:seed
+php artisan native:seed
 ```
 
 ## When not to use a database

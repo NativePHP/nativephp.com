@@ -1,11 +1,11 @@
 ---
 title: System
-order: 800
+order: 1000
 ---
 
 ## Overview
 
-The System API provides access to basic system functions like flashlight control.
+The System API provides access to basic system functions like flashlight control and platform detection.
 
 ```php
 use Native\Mobile\Facades\System;

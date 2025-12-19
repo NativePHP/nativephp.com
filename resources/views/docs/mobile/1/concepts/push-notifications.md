@@ -17,7 +17,7 @@ your app will receive the token.
 When you want to send a notification to that user, you pass this token along with a request to the FCM service and
 Firebase handles sending the message to the right device.
 
-<aside class="relative z-0 mt-5 overflow-hidden rounded-2xl bg-pink-50 px-5 ring-1 ring-black/5 dark:bg-pink-600/10">
+<aside>
 
 FCM automatically routes notifications through Apple's Push Notification Service (APNS) behind the scenes - you don't
 need to configure APNS separately. You only need to configure Firebase with access to your APNS account.
@@ -86,7 +86,7 @@ class PushNotifications extends Component
 Once you have a token, you may use it from your server-side applications to trigger Push Notifications directly to your
 user's device.
 
-<aside class="relative z-0 mt-5 overflow-hidden rounded-2xl bg-pink-50 px-5 ring-1 ring-black/5 dark:bg-pink-600/10">
+<aside>
 
 The server-side implementation is out of scope for this documentation.
 

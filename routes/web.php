@@ -1,6 +1,7 @@
 <?php
 
 use App\Features\ShowAuthButtons;
+use App\Http\Controllers\ApplinksController;
 use App\Http\Controllers\Auth\CustomerAuthController;
 use App\Http\Controllers\CustomerLicenseController;
 use App\Http\Controllers\CustomerSubLicenseController;
@@ -44,11 +45,17 @@ Route::view('pricing', 'pricing')->name('pricing');
 Route::view('alt-pricing', 'alt-pricing')->name('alt-pricing')->middleware('signed');
 Route::view('wall-of-love', 'wall-of-love')->name('wall-of-love');
 Route::view('brand', 'brand')->name('brand');
+Route::get('showcase/{platform?}', [App\Http\Controllers\ShowcaseController::class, 'index'])
+    ->where('platform', 'mobile|desktop')
+    ->name('showcase');
 Route::view('laracon-us-2025-giveaway', 'laracon-us-2025-giveaway')->name('laracon-us-2025-giveaway');
 Route::view('privacy-policy', 'privacy-policy')->name('privacy-policy');
 Route::view('terms-of-service', 'terms-of-service')->name('terms-of-service');
 Route::view('partners', 'partners')->name('partners');
+Route::view('build-my-app', 'build-my-app')->name('build-my-app');
 Route::view('sponsor', 'sponsoring')->name('sponsoring');
+Route::view('vs-react-native-expo', 'vs-react-native-expo')->name('vs-react-native-expo');
+Route::view('vs-flutter', 'vs-flutter')->name('vs-flutter');
 
 Route::get('blog', [ShowBlogController::class, 'index'])->name('blog');
 Route::get('blog/{article}', [ShowBlogController::class, 'show'])->name('article');
@@ -64,6 +71,30 @@ Route::get('docs/{platform}/{version}/{page?}', ShowDocumentationController::cla
     ->where('platform', '[a-z]+')
     ->where('version', '[0-9]+')
     ->name('docs.show');
+
+// Forward platform requests without version to the latest version
+Route::get('docs/{platform}/{page?}', function (string $platform, $page = null) {
+    $page ??= 'getting-started/introduction';
+
+    // Find the latest version for this platform
+    $docsPath = resource_path('views/docs/'.$platform);
+
+    if (! is_dir($docsPath)) {
+        abort(404);
+    }
+
+    $versions = collect(scandir($docsPath))
+        ->filter(fn ($dir) => is_numeric($dir))
+        ->sort()
+        ->values();
+
+    $latestVersion = $versions->last() ?? '1';
+
+    return redirect("/docs/{$platform}/{$latestVersion}/{$page}", 301);
+})
+    ->where('platform', 'desktop|mobile')
+    ->where('page', '.*')
+    ->name('docs.latest');
 
 // Forward unversioned requests to the latest version
 Route::get('docs/{page?}', function ($page = null) {
@@ -118,6 +149,16 @@ Route::post('logout', [CustomerAuthController::class, 'logout'])
     ->middleware(EnsureFeaturesAreActive::using(ShowAuthButtons::class))
     ->name('customer.logout');
 
+Route::get('callback', function (Illuminate\Http\Request $request) {
+    $url = $request->query('url');
+
+    if ($url && ! str_starts_with($url, 'http')) {
+        return redirect()->away($url.'?token='.uuid_create());
+    }
+
+    return response('Goodbye');
+})->name('callback');
+
 // Customer license management routes
 Route::middleware(['auth', EnsureFeaturesAreActive::using(ShowAuthButtons::class)])->prefix('customer')->name('customer.')->group(function () {
     Route::get('licenses', [CustomerLicenseController::class, 'index'])->name('licenses');
@@ -126,6 +167,11 @@ Route::middleware(['auth', EnsureFeaturesAreActive::using(ShowAuthButtons::class
 
     // Wall of Love submission
     Route::get('wall-of-love/create', [App\Http\Controllers\WallOfLoveSubmissionController::class, 'create'])->name('wall-of-love.create');
+
+    // Showcase submissions
+    Route::get('showcase', [App\Http\Controllers\CustomerShowcaseController::class, 'index'])->name('showcase.index');
+    Route::get('showcase/create', [App\Http\Controllers\CustomerShowcaseController::class, 'create'])->name('showcase.create');
+    Route::get('showcase/{showcase}/edit', [App\Http\Controllers\CustomerShowcaseController::class, 'edit'])->name('showcase.edit');
 
     // Billing portal
     Route::get('billing-portal', function (Illuminate\Http\Request $request) {
@@ -146,3 +192,5 @@ Route::middleware(['auth', EnsureFeaturesAreActive::using(ShowAuthButtons::class
     Route::patch('licenses/{licenseKey}/sub-licenses/{subLicense}/suspend', [CustomerSubLicenseController::class, 'suspend'])->name('licenses.sub-licenses.suspend');
     Route::post('licenses/{licenseKey}/sub-licenses/{subLicense}/send-email', [CustomerSubLicenseController::class, 'sendEmail'])->name('licenses.sub-licenses.send-email');
 });
+
+Route::get('.well-known/assetlinks.json', [ApplinksController::class, 'assetLinks']);

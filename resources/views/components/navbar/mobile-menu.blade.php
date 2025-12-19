@@ -81,6 +81,7 @@
                     $isDocsActive = request()->is('docs*');
                     $isBlogActive = request()->routeIs('blog*');
                     $isPartnersActive = request()->routeIs('partners*');
+                    $isServicesActive = request()->routeIs('build-my-app');
                     $isSponsorActive = request()->routeIs('sponsoring*');
                     $isLoginActive = request()->routeIs('customer.login*');
                 @endphp
@@ -154,14 +155,14 @@
                     </a>
                 </div>
 
-                {{-- Shop Link --}}
+                {{-- Swag Link --}}
                 <div>
                     <a
                         href="https://shop.nativephp.com/"
                         class="flex items-center gap-2 py-3 opacity-50 transition duration-200 hover:translate-x-1 hover:opacity-100"
-                        aria-label="NativePHP Shop"
+                        aria-label="NativePHP Swag"
                     >
-                        <div>Shop</div>
+                        <div>Swag</div>
                     </a>
                 </div>
 
@@ -184,6 +185,29 @@
                         @endif
 
                         <div>Partners</div>
+                    </a>
+                </div>
+
+                {{-- Services Link --}}
+                <div>
+                    <a
+                        href="{{ route('build-my-app') }}"
+                        @class([
+                            'flex items-center gap-2 py-3 transition duration-200',
+                            'font-medium' => $isServicesActive,
+                            'opacity-50 hover:translate-x-1 hover:opacity-100' => ! $isServicesActive,
+                        ])
+                        aria-current="{{ $isServicesActive ? 'page' : 'false' }}"
+                    >
+                        @if ($isServicesActive)
+                            <x-icons.right-arrow
+                                class="size-4 shrink-0"
+                                aria-hidden="true"
+                                focusable="false"
+                            />
+                        @endif
+
+                        <div>Develop</div>
                     </a>
                 </div>
 
