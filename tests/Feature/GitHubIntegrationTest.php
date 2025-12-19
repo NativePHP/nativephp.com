@@ -72,7 +72,7 @@ class GitHubIntegrationTest extends TestCase
         $response->assertStatus(200);
         $response->assertSee('Connected as');
         $response->assertSee('@testuser');
-        $response->assertSee('Request Repository Access');
+        $response->assertSee('Request Access');
     }
 
     public function test_user_can_request_repo_access_with_active_max_license(): void
@@ -243,8 +243,8 @@ class GitHubIntegrationTest extends TestCase
         $response = $this->actingAs($user)->get('/customer/licenses');
 
         $response->assertStatus(200);
-        $response->assertSee('Access Granted');
+        $response->assertSee('Invitation Sent');
         $response->assertSee('@testuser');
-        $response->assertDontSee('Request Repository Access');
+        $response->assertDontSee('Request Access');
     }
 }

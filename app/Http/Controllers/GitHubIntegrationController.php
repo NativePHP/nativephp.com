@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Support\GitHubOAuth;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Laravel\Socialite\Facades\Socialite;
 
 class GitHubIntegrationController extends Controller
@@ -32,10 +33,15 @@ class GitHubIntegrationController extends Controller
                 'github_username' => $githubUser->nickname,
             ]);
 
-            return redirect()->route('customer.licenses.index')
+            return redirect()->route('customer.licenses')
                 ->with('success', 'GitHub account connected successfully!');
         } catch (\Exception $e) {
-            return redirect()->route('customer.licenses.index')
+            Log::error('GitHub OAuth callback failed', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+
+            return redirect()->route('customer.licenses')
                 ->with('error', 'Failed to connect GitHub account. Please try again.');
         }
     }

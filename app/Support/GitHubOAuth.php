@@ -75,6 +75,7 @@ class GitHubOAuth
 
     public function checkCollaboratorStatus(string $githubUsername): ?string
     {
+        // First check if they're an active collaborator
         $response = Http::withToken($this->token)
             ->get(
                 sprintf(
@@ -89,10 +90,37 @@ class GitHubOAuth
             return 'active';
         }
 
+        // Check for pending invitation
+        if ($this->hasPendingInvitation($githubUsername)) {
+            return 'pending';
+        }
+
         if ($response->status() === 404) {
             return null;
         }
 
         return 'unknown';
+    }
+
+    public function hasPendingInvitation(string $githubUsername): bool
+    {
+        $response = Http::withToken($this->token)
+            ->get(
+                sprintf(
+                    'https://api.github.com/repos/%s/%s/invitations',
+                    self::ORGANIZATION,
+                    self::REPOSITORY
+                )
+            );
+
+        if ($response->failed()) {
+            return false;
+        }
+
+        $invitations = $response->json();
+
+        return collect($invitations)->contains(function ($invitation) use ($githubUsername) {
+            return strtolower($invitation['invitee']['login'] ?? '') === strtolower($githubUsername);
+        });
     }
 }
