@@ -27,7 +27,7 @@
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 <x-discounts-banner :inline="true" />
                 <livewire:wall-of-love-banner :inline="true" />
-                <x-github-access-banner :inline="true" />
+                <livewire:git-hub-access-banner :inline="true" />
             </div>
         </div>
 

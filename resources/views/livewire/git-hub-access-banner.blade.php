@@ -1,5 +1,4 @@
-@props(['inline' => false])
-
+<div>
 @if(auth()->user()->hasActiveMaxLicense())
     <div @class(['max-w-7xl mx-auto px-4 sm:px-6 lg:px-8' => !$inline])>
         <div class="bg-gradient-to-r from-gray-50 to-slate-100 dark:from-gray-800 dark:to-slate-900 border border-gray-300 dark:border-gray-600 rounded-lg p-6 h-full">
@@ -11,18 +10,26 @@
                 </div>
                 <div class="ml-4 flex-1">
                     <h3 class="font-medium text-gray-900 dark:text-white">
-                        GitHub Repository Access
+                        <a href="https://github.com/nativephp/mobile" target="_blank" rel="noopener noreferrer" class="hover:underline"><code>nativephp/mobile</code></a> Repo Access
                     </h3>
                     <div class="mt-1 text-sm text-gray-600 dark:text-gray-400">
                         @if(auth()->user()->github_username)
                             <p>Connected as <span class="font-mono font-medium text-gray-900 dark:text-white">{{ '@' . auth()->user()->github_username }}</span></p>
-                            @if(auth()->user()->mobile_repo_access_granted_at)
+
+                            @if($collaboratorStatus === 'active')
                                 <p class="mt-1">
                                     <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
-                                        Invitation Sent
+                                        Access Granted
                                     </span>
                                 </p>
-                                <p class="mt-1 text-xs">Check your GitHub notifications to accept.</p>
+                                <p class="mt-1 text-xs">You have access to the nativephp/mobile repository.</p>
+                            @elseif($collaboratorStatus === 'pending')
+                                <p class="mt-1">
+                                    <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200">
+                                        Invitation Pending
+                                    </span>
+                                </p>
+                                <p class="mt-1 text-xs">Check your GitHub notifications to accept the invitation.</p>
                             @else
                                 <p>Request access to the nativephp/mobile repository.</p>
                             @endif
@@ -32,7 +39,16 @@
                     </div>
                     <div class="mt-4 flex flex-wrap gap-2">
                         @if(auth()->user()->github_username)
-                            @if(!auth()->user()->mobile_repo_access_granted_at)
+                            @if($collaboratorStatus === 'active')
+                                <a href="https://github.com/nativephp/mobile" target="_blank" rel="noopener noreferrer" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                                    View Repo
+                                </a>
+                            @elseif($collaboratorStatus === 'pending')
+                                <button wire:click="refreshStatus" type="button" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                                    <span wire:loading.remove wire:target="refreshStatus">Check Status</span>
+                                    <span wire:loading wire:target="refreshStatus">Checking...</span>
+                                </button>
+                            @else
                                 <form action="{{ route('github.request-access') }}" method="POST">
                                     @csrf
                                     <button type="submit" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
@@ -58,3 +74,4 @@
         </div>
     </div>
 @endif
+</div>
