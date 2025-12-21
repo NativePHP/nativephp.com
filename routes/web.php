@@ -157,6 +157,13 @@ Route::middleware(['auth', EnsureFeaturesAreActive::using(ShowAuthButtons::class
     Route::delete('customer/github/disconnect', [App\Http\Controllers\GitHubIntegrationController::class, 'disconnect'])->name('github.disconnect');
 });
 
+// Discord OAuth routes
+Route::middleware(['auth', EnsureFeaturesAreActive::using(ShowAuthButtons::class)])->group(function () {
+    Route::get('auth/discord', [App\Http\Controllers\DiscordIntegrationController::class, 'redirectToDiscord'])->name('discord.redirect');
+    Route::get('auth/discord/callback', [App\Http\Controllers\DiscordIntegrationController::class, 'handleCallback'])->name('discord.callback');
+    Route::delete('customer/discord/disconnect', [App\Http\Controllers\DiscordIntegrationController::class, 'disconnect'])->name('discord.disconnect');
+});
+
 Route::get('callback', function (Illuminate\Http\Request $request) {
     $url = $request->query('url');
 
@@ -170,6 +177,7 @@ Route::get('callback', function (Illuminate\Http\Request $request) {
 // Customer license management routes
 Route::middleware(['auth', EnsureFeaturesAreActive::using(ShowAuthButtons::class)])->prefix('customer')->name('customer.')->group(function () {
     Route::get('licenses', [CustomerLicenseController::class, 'index'])->name('licenses');
+    Route::view('integrations', 'customer.integrations')->name('integrations');
     Route::get('licenses/{licenseKey}', [CustomerLicenseController::class, 'show'])->name('licenses.show');
     Route::patch('licenses/{licenseKey}', [CustomerLicenseController::class, 'update'])->name('licenses.update');
 

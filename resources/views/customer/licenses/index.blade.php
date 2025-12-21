@@ -14,6 +14,9 @@
                         <a href="{{ route('customer.showcase.index') }}" class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
                             Showcase
                         </a>
+                        <a href="{{ route('customer.integrations') }}" class="inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                            Integrations
+                        </a>
                         <a href="{{ route('customer.billing-portal') }}" class="inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
                             Manage Subscription
                         </a>
@@ -24,10 +27,11 @@
 
         {{-- Banners --}}
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-6">
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <x-discounts-banner :inline="true" />
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                @if(auth()->user()->hasActualLicense())
+                    <x-discounts-banner :inline="true" />
+                @endif
                 <livewire:wall-of-love-banner :inline="true" />
-                <livewire:git-hub-access-banner :inline="true" />
             </div>
         </div>
 
@@ -151,7 +155,9 @@
                         @endforeach
                     </ul>
                 </div>
-            @else
+            @endif
+
+            @if($licenses->count() === 0 && $assignedSubLicenses->count() === 0)
                 <div class="text-center">
                     <div class="bg-white dark:bg-gray-800 shadow sm:rounded-lg p-6">
                         <h3 class="mt-2 text-sm font-medium text-gray-900 dark:text-white">No licenses found</h3>
