@@ -5,6 +5,7 @@ use App\Http\Controllers\ApplinksController;
 use App\Http\Controllers\Auth\CustomerAuthController;
 use App\Http\Controllers\CustomerLicenseController;
 use App\Http\Controllers\CustomerSubLicenseController;
+use App\Http\Controllers\OpenCollectiveWebhookController;
 use App\Http\Controllers\ShowBlogController;
 use App\Http\Controllers\ShowDocumentationController;
 use Illuminate\Support\Facades\Route;
@@ -32,6 +33,12 @@ Route::redirect('mobile', 'pricing');
 Route::redirect('ios', 'pricing');
 Route::redirect('t-shirt', 'pricing');
 Route::redirect('tshirt', 'pricing');
+
+// Webhook routes (must be outside web middleware for CSRF bypass)
+Route::post('opencollective/contribution', [OpenCollectiveWebhookController::class, 'handle'])->name('opencollective.webhook');
+
+// OpenCollective donation claim route
+Route::get('opencollective/claim', App\Livewire\ClaimDonationLicense::class)->name('opencollective.claim');
 
 Route::view('/', 'welcome')->name('welcome');
 Route::view('pricing', 'pricing')->name('pricing');
