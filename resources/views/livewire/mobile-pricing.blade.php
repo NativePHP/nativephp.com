@@ -100,7 +100,7 @@
                 {{-- Price --}}
                 <div
                     class="flex items-start gap-1.5 pt-5"
-                    aria-label="Price: FREE (with Bifrost subscription)"
+                    aria-label="Price: FREE (with Bifrost subscription or OpenCollective donation)"
                 >
                     <div class="text-5xl font-semibold">FREE</div>
                     <div class="self-end pb-1.5 text-zinc-500">
@@ -118,10 +118,40 @@
                 <a
                     href="https://bifrost.nativephp.com/register"
                     class="my-5 block w-full rounded-2xl bg-zinc-200 py-4 text-center text-sm font-medium transition duration-200 ease-in-out hover:bg-zinc-800 hover:text-white dark:bg-slate-700/30 dark:hover:bg-slate-700/40"
-                    aria-label="Get started with a FREE Mini license"
+                    aria-label="Get started with a FREE Mini license via Bifrost"
                 >
-                    Get started
+                    Get started with Bifrost
                 </a>
+
+                {{-- OpenCollective Alternative --}}
+                <div class="relative my-5">
+                    <div class="absolute inset-0 flex items-center">
+                        <div class="w-full border-t border-zinc-300 dark:border-zinc-600"></div>
+                    </div>
+                    <div class="relative flex justify-center text-sm">
+                        <span class="bg-gray-100 px-2 text-zinc-500 dark:bg-mirage">or</span>
+                    </div>
+                </div>
+
+                <div class="mb-6 text-center">
+                    <p class="text-sm text-zinc-600 dark:text-zinc-400">
+                        Donate any amount via
+                        <a
+                            href="https://opencollective.com/nativephp"
+                            target="_blank"
+                            class="font-medium text-zinc-800 underline underline-offset-2 transition-colors hover:text-zinc-600 dark:text-zinc-200 dark:hover:text-zinc-100"
+                        >
+                            OpenCollective
+                        </a>
+                    </p>
+                    <a
+                        href="{{ route('opencollective.claim') }}"
+                        class="mt-3 inline-block rounded-xl bg-zinc-200 px-6 py-3 text-center text-sm font-medium transition duration-200 ease-in-out hover:bg-zinc-800 hover:text-white dark:bg-slate-700/30 dark:hover:bg-slate-700/40"
+                        aria-label="Claim your Mini license from an OpenCollective donation"
+                    >
+                        Already donated? Claim your license
+                    </a>
+                </div>
 
                 <x-pricing-plan-features plan-name="Mini" />
             </div>

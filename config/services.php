@@ -39,11 +39,15 @@ return [
         'api_key' => env('BIFROST_API_KEY'),
     ],
 
+    'opencollective' => [
+        'webhook_secret' => env('OPENCOLLECTIVE_WEBHOOK_SECRET'),
+    ],
+
     'github' => [
         'client_id' => env('GITHUB_CLIENT_ID'),
         'client_secret' => env('GITHUB_CLIENT_SECRET'),
         'redirect' => env('APP_URL').'/auth/github/callback',
-        'token' => env('GITHUB_TOKEN'), // For API calls (admin:org scope required)
+        'token' => env('GITHUB_TOKEN'),
     ],
 
     'turnstile' => [
