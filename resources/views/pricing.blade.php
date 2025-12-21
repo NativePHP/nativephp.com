@@ -607,7 +607,7 @@
     </section>
 
     {{-- Pricing Section --}}
-    <livewire:mobile-pricing :discounted="auth()->check()" />
+    <livewire:mobile-pricing :discounted="auth()->user()?->hasActualLicense() ?? false" />
 
     {{-- Ultra Section --}}
     <x-ultra-plan />

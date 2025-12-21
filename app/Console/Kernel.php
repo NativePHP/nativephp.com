@@ -23,6 +23,12 @@ class Kernel extends ConsoleKernel
             ->dailyAt('10:00')
             ->onOneServer()
             ->runInBackground();
+
+        // Remove Discord Max role for users with expired Max licenses
+        $schedule->command('discord:remove-expired-roles')
+            ->dailyAt('10:30')
+            ->onOneServer()
+            ->runInBackground();
     }
 
     /**
