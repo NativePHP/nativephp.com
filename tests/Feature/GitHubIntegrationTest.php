@@ -37,7 +37,7 @@ class GitHubIntegrationTest extends TestCase
             'is_suspended' => false,
         ]);
 
-        $response = $this->actingAs($user)->get('/customer/licenses');
+        $response = $this->actingAs($user)->get('/customer/integrations');
 
         $response->assertStatus(200);
         $response->assertSee('nativephp/mobile');
@@ -57,7 +57,7 @@ class GitHubIntegrationTest extends TestCase
             'is_suspended' => false,
         ]);
 
-        $response = $this->actingAs($user)->get('/customer/licenses');
+        $response = $this->actingAs($user)->get('/customer/integrations');
 
         $response->assertStatus(200);
         $response->assertDontSee('Repo Access');
@@ -78,7 +78,7 @@ class GitHubIntegrationTest extends TestCase
             'is_suspended' => false,
         ]);
 
-        $response = $this->actingAs($user)->get('/customer/licenses');
+        $response = $this->actingAs($user)->get('/customer/integrations');
 
         $response->assertStatus(200);
         $response->assertSee('Connected as');
@@ -254,7 +254,7 @@ class GitHubIntegrationTest extends TestCase
             'is_suspended' => false,
         ]);
 
-        $response = $this->actingAs($user)->get('/customer/licenses');
+        $response = $this->actingAs($user)->get('/customer/integrations');
 
         $response->assertStatus(200);
         $response->assertSee('Access Granted');
@@ -283,7 +283,7 @@ class GitHubIntegrationTest extends TestCase
             'is_suspended' => false,
         ]);
 
-        $response = $this->actingAs($user)->get('/customer/licenses');
+        $response = $this->actingAs($user)->get('/customer/integrations');
 
         $response->assertStatus(200);
         $response->assertSee('Invitation Pending');

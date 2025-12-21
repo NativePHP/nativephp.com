@@ -224,8 +224,12 @@
                                 <button
                                     type="submit"
                                     class="flex w-full items-center justify-between py-3 opacity-50 transition duration-200 hover:translate-x-1 hover:opacity-100"
+                                    title="Logged in as {{ auth()->user()->email }}"
                                 >
-                                    <div>Log out</div>
+                                    <div class="flex flex-col items-start">
+                                        <span>Log out</span>
+                                        <span class="text-xs opacity-70">{{ auth()->user()->email }}</span>
+                                    </div>
                                 </button>
                             </form>
                         @else

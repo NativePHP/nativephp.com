@@ -28,6 +28,7 @@ class User extends Authenticatable implements FilamentUser
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
         'mobile_repo_access_granted_at' => 'datetime',
+        'discord_role_granted_at' => 'datetime',
     ];
 
     public function canAccessPanel(Panel $panel): bool
@@ -63,6 +64,35 @@ class User extends Authenticatable implements FilamentUser
             ->where('is_suspended', false)
             ->whereActive()
             ->exists();
+    }
+
+    public function hasActiveMaxSubLicense(): bool
+    {
+        return SubLicense::query()
+            ->where('assigned_email', $this->email)
+            ->where('is_suspended', false)
+            ->whereActive()
+            ->whereHas('parentLicense', function ($query) {
+                $query->where('policy_name', 'max')
+                    ->where('is_suspended', false)
+                    ->whereActive();
+            })
+            ->exists();
+    }
+
+    public function hasMaxAccess(): bool
+    {
+        return $this->hasActiveMaxLicense() || $this->hasActiveMaxSubLicense();
+    }
+
+    public function hasDiscordConnected(): bool
+    {
+        return ! empty($this->discord_id);
+    }
+
+    public function hasActualLicense(): bool
+    {
+        return $this->licenses()->exists();
     }
 
     public function getFirstNameAttribute(): ?string
