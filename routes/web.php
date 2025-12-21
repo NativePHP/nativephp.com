@@ -139,7 +139,7 @@ Route::middleware(['guest'])->group(function () {
     Route::post('login', [CustomerAuthController::class, 'login']);
 
     Route::get('register', [CustomerAuthController::class, 'showRegister'])->name('customer.register');
-    Route::post('register', [CustomerAuthController::class, 'register']);
+    Route::post('register', [CustomerAuthController::class, 'register'])->middleware('throttle:5,1');
 
     Route::get('forgot-password', [CustomerAuthController::class, 'showForgotPassword'])->name('password.request');
     Route::post('forgot-password', [CustomerAuthController::class, 'sendPasswordResetLink'])->name('password.email');
