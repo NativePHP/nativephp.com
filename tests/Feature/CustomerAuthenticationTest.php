@@ -27,7 +27,7 @@ class CustomerAuthenticationTest extends TestCase
 
         $response->assertStatus(200);
         $response->assertSee('Sign in to your account');
-        $response->assertSee('Manage your NativePHP licenses');
+        $response->assertSee('create a new account');
     }
 
     public function test_customer_can_login_with_valid_credentials(): void
