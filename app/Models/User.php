@@ -27,6 +27,7 @@ class User extends Authenticatable implements FilamentUser
     protected $casts = [
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
+        'mobile_repo_access_granted_at' => 'datetime',
     ];
 
     public function canAccessPanel(Panel $panel): bool
@@ -53,6 +54,15 @@ class User extends Authenticatable implements FilamentUser
     public function wallOfLoveSubmissions(): HasMany
     {
         return $this->hasMany(WallOfLoveSubmission::class);
+    }
+
+    public function hasActiveMaxLicense(): bool
+    {
+        return $this->licenses()
+            ->where('policy_name', 'max')
+            ->where('is_suspended', false)
+            ->whereActive()
+            ->exists();
     }
 
     public function getFirstNameAttribute(): ?string
