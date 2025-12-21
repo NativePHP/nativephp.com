@@ -28,14 +28,38 @@
 
         {{-- Banners --}}
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-6">
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 <x-discounts-banner :inline="true" />
                 <livewire:wall-of-love-banner :inline="true" />
+                <livewire:git-hub-access-banner :inline="true" />
             </div>
         </div>
 
         {{-- Content --}}
         <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+            {{-- Flash Messages --}}
+            @if(session()->has('success'))
+                <div class="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-700 rounded-lg p-4 mb-6">
+                    <div class="flex items-center">
+                        <svg class="h-5 w-5 text-green-600 dark:text-green-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                        </svg>
+                        <p class="text-sm text-green-700 dark:text-green-300">{{ session('success') }}</p>
+                    </div>
+                </div>
+            @endif
+
+            @if(session()->has('error'))
+                <div class="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-700 rounded-lg p-4 mb-6">
+                    <div class="flex items-center">
+                        <svg class="h-5 w-5 text-red-600 dark:text-red-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                        <p class="text-sm text-red-700 dark:text-red-300">{{ session('error') }}</p>
+                    </div>
+                </div>
+            @endif
+
             @if($licenses->count() > 0)
                 <div class="bg-white dark:bg-gray-800 shadow overflow-hidden sm:rounded-md">
                     <ul class="divide-y divide-gray-200 dark:divide-gray-700">

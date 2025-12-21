@@ -146,6 +146,14 @@ Route::post('logout', [CustomerAuthController::class, 'logout'])
     ->middleware(EnsureFeaturesAreActive::using(ShowAuthButtons::class))
     ->name('customer.logout');
 
+// GitHub OAuth routes
+Route::middleware(['auth', EnsureFeaturesAreActive::using(ShowAuthButtons::class)])->group(function () {
+    Route::get('auth/github', [App\Http\Controllers\GitHubIntegrationController::class, 'redirectToGitHub'])->name('github.redirect');
+    Route::get('auth/github/callback', [App\Http\Controllers\GitHubIntegrationController::class, 'handleCallback'])->name('github.callback');
+    Route::post('customer/github/request-access', [App\Http\Controllers\GitHubIntegrationController::class, 'requestRepoAccess'])->name('github.request-access');
+    Route::delete('customer/github/disconnect', [App\Http\Controllers\GitHubIntegrationController::class, 'disconnect'])->name('github.disconnect');
+});
+
 Route::get('callback', function (Illuminate\Http\Request $request) {
     $url = $request->query('url');
 

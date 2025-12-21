@@ -39,6 +39,13 @@ return [
         'api_key' => env('BIFROST_API_KEY'),
     ],
 
+    'github' => [
+        'client_id' => env('GITHUB_CLIENT_ID'),
+        'client_secret' => env('GITHUB_CLIENT_SECRET'),
+        'redirect' => env('APP_URL').'/auth/github/callback',
+        'token' => env('GITHUB_TOKEN'), // For API calls (admin:org scope required)
+    ],
+
     'turnstile' => [
         'site_key' => env('TURNSTILE_SITE_KEY'),
         'secret_key' => env('TURNSTILE_SECRET_KEY'),
