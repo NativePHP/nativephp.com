@@ -138,6 +138,9 @@ Route::middleware(['guest'])->group(function () {
     Route::get('login', [CustomerAuthController::class, 'showLogin'])->name('customer.login');
     Route::post('login', [CustomerAuthController::class, 'login']);
 
+    Route::get('register', [CustomerAuthController::class, 'showRegister'])->name('customer.register');
+    Route::post('register', [CustomerAuthController::class, 'register']);
+
     Route::get('forgot-password', [CustomerAuthController::class, 'showForgotPassword'])->name('password.request');
     Route::post('forgot-password', [CustomerAuthController::class, 'sendPasswordResetLink'])->name('password.email');
 

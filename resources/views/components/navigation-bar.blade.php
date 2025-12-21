@@ -161,6 +161,7 @@
                             <button
                                 type="submit"
                                 class="opacity-60 transition duration-200 hover:opacity-100"
+                                title="Logged in as {{ auth()->user()->email }}"
                             >
                                 Log out
                             </button>
