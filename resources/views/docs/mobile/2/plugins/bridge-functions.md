@@ -24,7 +24,7 @@ In your `nativephp.json`, declare each function with its platform implementation
         {
             "name": "MyPlugin.DoSomething",
             "ios": "MyPluginFunctions.DoSomething",
-            "android": "com.vendor.plugin.myplugin.MyPluginFunctions.DoSomething",
+            "android": "com.myvendor.plugins.myplugin.MyPluginFunctions.DoSomething",
             "description": "Does something useful"
         }
     ]
@@ -32,6 +32,12 @@ In your `nativephp.json`, declare each function with its platform implementation
 ```
 
 The `name` is what PHP uses. The platform-specific values point to your native class and method.
+
+### Naming Convention
+
+- **`name`** — A unique identifier like `MyPlugin.DoSomething`. This is what PHP code uses.
+- **`ios`** — Swift enum/class path: `EnumName.ClassName`
+- **`android`** — Full Kotlin class path including your vendor package (e.g., `com.myvendor.plugins.myplugin.ClassName`)
 
 ## Swift Implementation (iOS)
 
@@ -64,13 +70,13 @@ Key points:
 
 ## Kotlin Implementation (Android)
 
-Create your functions in `resources/android/src/.../`:
+Create your functions in `resources/android/src/`. Use your own vendor-namespaced package:
 
 ```kotlin
-package com.vendor.plugin.myplugin
+package com.myvendor.plugins.myplugin
 
-import com.example.androidphp.bridge.BridgeFunction
-import com.example.androidphp.bridge.BridgeResponse
+import com.nativephp.mobile.bridge.BridgeFunction
+import com.nativephp.mobile.bridge.BridgeResponse
 
 object MyPluginFunctions {
 
@@ -89,13 +95,8 @@ object MyPluginFunctions {
 }
 ```
 
-<aside>
-
-#### Package Naming
-
-Use your plugin's namespace in the Kotlin package name. The scaffolding command sets this up correctly.
-
-</aside>
+The package declaration determines where your file is placed during compilation. Using `com.myvendor.plugins.myplugin` ensures
+your code is isolated from other plugins and the core NativePHP code.
 
 ## Calling from PHP
 
