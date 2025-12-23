@@ -35,6 +35,46 @@ my-plugin/
 │   └── js/                # JavaScript library stubs
 ```
 
+## Android Package Naming
+
+Android/Kotlin code must declare a package at the top of each file. Use your own vendor-namespaced package to avoid
+conflicts:
+
+```kotlin
+// resources/android/src/MyPluginFunctions.kt
+package com.myvendor.plugins.myplugin
+
+import com.nativephp.mobile.bridge.BridgeFunction
+import com.nativephp.mobile.bridge.BridgeResponse
+
+object MyPluginFunctions {
+    class DoSomething : BridgeFunction {
+        override fun execute(parameters: Map<String, Any>): Map<String, Any> {
+            return BridgeResponse.success(mapOf("status" to "done"))
+        }
+    }
+}
+```
+
+The compiler places files based on their package declaration, so `package com.myvendor.plugins.myplugin` results in the file
+being placed at `app/src/main/java/com/myvendor/plugins/myplugin/MyPluginFunctions.kt`.
+
+<aside>
+Files without package declarations will be placed in a fallback location, but this is not recommended. Always declare
+packages in your Kotlin files.
+</aside>
+
+Reference the full package path in your manifest's bridge functions:
+
+```json
+{
+    "bridge_functions": [{
+        "name": "MyPlugin.DoSomething",
+        "android": "com.myvendor.plugins.myplugin.MyPluginFunctions.DoSomething"
+    }]
+}
+```
+
 ## The composer.json
 
 Your `composer.json` must specify the plugin type:
@@ -58,35 +98,56 @@ The `type: nativephp-plugin` tells NativePHP to look for native code in this pac
 
 ## The nativephp.json Manifest
 
-The manifest declares everything about your plugin:
+The manifest declares everything about your plugin. Platform-specific configuration is grouped under `android` and `ios`
+keys:
 
 ```json
 {
     "name": "vendor/my-plugin",
     "namespace": "MyPlugin",
+    "version": "1.0.0",
+    "description": "A sample plugin",
     "bridge_functions": [
         {
             "name": "MyPlugin.DoSomething",
             "ios": "MyPluginFunctions.DoSomething",
-            "android": "com.vendor.plugin.myplugin.MyPluginFunctions.DoSomething"
+            "android": "com.nativephp.plugins.myplugin.MyPluginFunctions.DoSomething"
         }
     ],
     "events": ["Vendor\\MyPlugin\\Events\\SomethingHappened"],
-    "permissions": {
-        "android": ["android.permission.SOME_PERMISSION"],
-        "ios": {
-            "NSCameraUsageDescription": "We need camera access"
+    "android": {
+        "permissions": ["android.permission.CAMERA"],
+        "dependencies": {
+            "implementation": ["com.google.mlkit:barcode-scanning:17.2.0"]
+        }
+    },
+    "ios": {
+        "info_plist": {
+            "NSCameraUsageDescription": "Camera is used for scanning"
+        },
+        "dependencies": {
+            "pods": [{"name": "GoogleMLKit/BarcodeScanning", "version": "~> 4.0"}]
         }
     }
 }
 ```
 
-The key fields:
+### Manifest Fields
 
-- **namespace** — Used to generate bridge function registration code
-- **bridge_functions** — Maps PHP calls to native implementations
-- **events** — Event classes your plugin dispatches
-- **permissions** — Platform permissions your plugin requires
+| Field | Required | Description |
+|-------|----------|-------------|
+| `name` | Yes | Package name in vendor/package format |
+| `namespace` | Yes | PHP namespace for the plugin (used for code generation) |
+| `version` | No | Semantic version (default: 1.0.0) |
+| `description` | No | Human-readable description |
+| `bridge_functions` | No | Array of native function mappings |
+| `events` | No | Event classes the plugin dispatches |
+| `android` | No | Android-specific configuration |
+| `ios` | No | iOS-specific configuration |
+| `assets` | No | Declarative asset copying |
+| `hooks` | No | Lifecycle hook commands |
+| `secrets` | No | Required environment variables |
+| `service_provider` | No | Fully-qualified service provider class |
 
 ## Local Development
 
@@ -142,13 +203,34 @@ export async function doSomething(options = {}) {
 
 Users can then import your functions directly in Vue, React, or vanilla JS.
 
-## Plugin Writer Agent
+## Claude Code Plugin
 
-If you're building a complex plugin, install the plugin-writer agent to help with native code patterns:
+If you're using [Claude Code](https://claude.com/claude-code), install the NativePHP plugin development tools from
+the Claude Code Plugins marketplace. This gives you specialized agents and skills for writing native code.
+
+### Installation
 
 ```shell
-php artisan native:plugin:install-agent
+claude plugins:add https://github.com/NativePHP/ClaudePlugins/tree/main/nativephp-plugin-dev
 ```
 
-This copies a specialized agent configuration to your project's `.claude/agents/` directory. The agent understands
-NativePHP plugin patterns and can help write Swift/Kotlin bridge functions, event dispatching, and hook commands.
+### What's Included
+
+The plugin provides:
+
+- **Specialized Agents** — Expert agents for Kotlin/Android and Swift/iOS native code
+- **Plugin Scaffold Command** — Run `/create-nativephp-plugin` to scaffold a complete plugin
+- **Plugin Validator** — Run `/validate-nativephp-plugin` to check your plugin structure
+- **Skills for Native Patterns** — Documentation for bridge functions, events, and architecture
+
+### Usage
+
+Once installed, you can:
+
+- Ask Claude Code to "create a NativePHP plugin for [your use case]"
+- Run `/create-nativephp-plugin` to scaffold a new plugin interactively
+- Run `/validate-nativephp-plugin` to validate your plugin structure
+- Ask about native code patterns — the agents understand NativePHP conventions
+
+The agents are context-aware and will help you write correct Kotlin bridge functions, Swift implementations,
+manifest configuration, and Laravel facades.

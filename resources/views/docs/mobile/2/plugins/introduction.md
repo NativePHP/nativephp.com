@@ -24,6 +24,20 @@ platforms offer much more — AR, ML, NFC, health sensors, and countless third-p
 Plugins let the community build and share these integrations. Install a plugin and its features become available to
 your PHP code just like the built-in APIs.
 
+## What Plugins Can Do
+
+Plugins have full access to native platform capabilities:
+
+- **Bridge functions** — Call Swift/Kotlin code from PHP and get results back
+- **Events** — Dispatch events from native code to your Livewire components
+- **Permissions** — Declare required permissions (camera, location, etc.)
+- **Dependencies** — Include native libraries via Gradle, CocoaPods, or Swift Package Manager
+- **Custom repositories** — Use private Maven repos for enterprise SDKs
+- **Android components** — Register Activities, Services, Receivers, and Content Providers
+- **Assets** — Bundle ML models, configuration files, and other resources
+- **Lifecycle hooks** — Run code at build time to download models, validate config, etc.
+- **Secrets** — Declare required environment variables with validation
+
 ## Plugin Architecture
 
 Plugins follow the same patterns as NativePHP's core:
@@ -45,3 +59,14 @@ public function handleResult($data)
 The native code runs on-device, communicates with your PHP through the bridge, and dispatches events back to your
 Livewire components. It's the same model you're already using.
 
+## Getting Started
+
+Ready to build your own plugin? Check out [Creating Plugins](./creating-plugins) for the full guide.
+
+If you're using [Claude Code](https://claude.com/claude-code), you can install specialized plugin development tools:
+
+```shell
+claude plugins:add https://github.com/NativePHP/ClaudePlugins/tree/main/nativephp-plugin-dev
+```
+
+This gives you expert agents for Kotlin and Swift, interactive scaffolding commands, and skills for native code patterns.

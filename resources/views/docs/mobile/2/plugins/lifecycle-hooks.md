@@ -8,13 +8,23 @@ order: 600
 Hooks let your plugin run code at specific points during the build process. Need to download an ML model before
 compilation? Copy assets to the right platform directory? Run validation? Hooks handle these scenarios.
 
+<aside>
+
+#### Declarative vs Programmatic Assets
+
+For simple file copying, use the [declarative `assets` field](advanced-configuration.md#declarative-assets) in your
+manifest. Use the `copy_assets` hook only when you need dynamic behavior like downloading files, unzipping archives, or
+conditional copying.
+
+</aside>
+
 ## Available Hooks
 
 | Hook | When it Runs |
 |------|--------------|
 | `pre_compile` | Before native code compilation |
 | `post_compile` | After compilation, before build |
-| `copy_assets` | When copying assets to native projects |
+| `copy_assets` | When copying assets to native projects (runs after declarative asset copying) |
 | `post_build` | After a successful build |
 
 ## Creating Hook Commands
