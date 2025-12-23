@@ -6,9 +6,24 @@ order: 400
 ## Overview
 
 The Device API exposes internal information about the device, such as the model and operating system version, along with user information such as unique ids.
+
+<x-snippet title="Import">
+
+<x-snippet.tab name="PHP">
+
 ```php
 use Native\Mobile\Facades\Device;
 ```
+
+</x-snippet.tab>
+<x-snippet.tab name="JS">
+
+```js
+import { device } from '#nativephp';
+```
+
+</x-snippet.tab>
+</x-snippet>
 
 ## Methods
 
@@ -18,12 +33,54 @@ Return a unique identifier for the device.
 
 Returns: `string`
 
+<x-snippet title="Get Device ID">
+
+<x-snippet.tab name="PHP">
+
+```php
+$id = Device::getId();
+```
+
+</x-snippet.tab>
+<x-snippet.tab name="JS">
+
+```js
+const result = await device.getId();
+const deviceId = result.id;
+```
+
+</x-snippet.tab>
+</x-snippet>
+
 ### `getInfo()`
 
 Return information about the underlying device/os/platform.
 
 Returns JSON encoded: `string`
 
+<x-snippet title="Get Device Info">
+
+<x-snippet.tab name="PHP">
+
+```php
+$info = Device::getInfo();
+$deviceInfo = json_decode($info);
+```
+
+</x-snippet.tab>
+<x-snippet.tab name="JS">
+
+```js
+const result = await device.getInfo();
+const deviceInfo = JSON.parse(result.info);
+
+console.log(deviceInfo.platform);  // 'ios' or 'android'
+console.log(deviceInfo.model);     // e.g., 'iPhone13,4'
+console.log(deviceInfo.osVersion); // e.g., '17.0'
+```
+
+</x-snippet.tab>
+</x-snippet>
 
 ### `vibrate()`
 
@@ -31,9 +88,23 @@ Triggers device vibration for tactile feedback.
 
 **Returns:** `void`
 
+<x-snippet title="Vibrate">
+
+<x-snippet.tab name="PHP">
+
 ```php
 Device::vibrate();
 ```
+
+</x-snippet.tab>
+<x-snippet.tab name="JS">
+
+```js
+await device.vibrate();
+```
+
+</x-snippet.tab>
+</x-snippet>
 
 ### `flashlight()`
 
@@ -41,16 +112,53 @@ Toggles the device flashlight (camera flash LED) on and off.
 
 **Returns:** `void`
 
+<x-snippet title="Toggle Flashlight">
+
+<x-snippet.tab name="PHP">
+
 ```php
 Device::flashlight(); // Toggle flashlight state
 ```
 
+</x-snippet.tab>
+<x-snippet.tab name="JS">
+
+```js
+const result = await device.flashlight();
+console.log(result.state); // true = on, false = off
+```
+
+</x-snippet.tab>
+</x-snippet>
 
 ### `getBatteryInfo()`
 
 Return information about the battery.
 
 Returns JSON encoded: `string`
+
+<x-snippet title="Get Battery Info">
+
+<x-snippet.tab name="PHP">
+
+```php
+$info = Device::getBatteryInfo();
+$batteryInfo = json_decode($info);
+```
+
+</x-snippet.tab>
+<x-snippet.tab name="JS">
+
+```js
+const result = await device.getBatteryInfo();
+const batteryInfo = JSON.parse(result.info);
+
+console.log(batteryInfo.batteryLevel); // 0-1 (e.g., 0.85 = 85%)
+console.log(batteryInfo.isCharging);   // true/false
+```
+
+</x-snippet.tab>
+</x-snippet>
 
 ## Device Info
 

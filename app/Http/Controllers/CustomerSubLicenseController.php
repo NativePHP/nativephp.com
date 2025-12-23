@@ -6,6 +6,7 @@ use App\Actions\SubLicenses\DeleteSubLicense;
 use App\Actions\SubLicenses\SuspendSubLicense;
 use App\Http\Requests\CreateSubLicenseRequest;
 use App\Jobs\CreateAnystackSubLicenseJob;
+use App\Jobs\RevokeMaxAccessJob;
 use App\Jobs\UpdateAnystackContactAssociationJob;
 use App\Models\License;
 use App\Models\SubLicense;
@@ -68,6 +69,11 @@ class CustomerSubLicenseController extends Controller
             UpdateAnystackContactAssociationJob::dispatch($subLicense, $request->assigned_email);
         }
 
+        // If the email was changed and this is a Max license, revoke access for the old email
+        if ($oldEmail && $oldEmail !== $request->assigned_email && $license->policy_name === 'max') {
+            RevokeMaxAccessJob::dispatch($oldEmail);
+        }
+
         return redirect()->route('customer.licenses.show', $licenseKey)
             ->with('success', 'Sub-license updated successfully!');
     }
@@ -82,7 +88,14 @@ class CustomerSubLicenseController extends Controller
             abort(404);
         }
 
+        $assignedEmail = $subLicense->assigned_email;
+
         app(DeleteSubLicense::class)->handle($subLicense);
+
+        // If this was a Max license and had an assigned email, revoke access
+        if ($assignedEmail && $license->policy_name === 'max') {
+            RevokeMaxAccessJob::dispatch($assignedEmail);
+        }
 
         return redirect()->route('customer.licenses.show', $licenseKey)
             ->with('success', 'Sub-license deleted successfully!');
@@ -98,7 +111,14 @@ class CustomerSubLicenseController extends Controller
             abort(404);
         }
 
+        $assignedEmail = $subLicense->assigned_email;
+
         app(SuspendSubLicense::class)->handle($subLicense);
+
+        // If this was a Max license and had an assigned email, revoke access
+        if ($assignedEmail && $license->policy_name === 'max') {
+            RevokeMaxAccessJob::dispatch($assignedEmail);
+        }
 
         return redirect()->route('customer.licenses.show', $licenseKey)
             ->with('success', 'Sub-license suspended successfully!');

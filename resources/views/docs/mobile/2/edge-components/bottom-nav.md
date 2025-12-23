@@ -45,10 +45,10 @@ A bottom navigation bar with up to 5 items. Used for your app's primary navigati
 
 A `<native:bottom-nav>` can contain up to 5 `<native:bottom-nav-item>` elements.
 
-- `id` - Unique identifier
-- `icon` - A named [icon](icons)
-- `label` - Accessibility label (optional)
-- `url` - A URL to navigate to in the web view (optional)
+- `id` - Unique identifier (required)
+- `icon` - A named [icon](icons) (required)
+- `label` - Accessibility label (required)
+- `url` - A URL to navigate to in the web view (required)
 - `active` - Highlight this item as active (optional, default: `false`)
 - `badge` - Badge text/number (optional)
 - `news` - Show "new" indicator dot (optional, default: `false`)

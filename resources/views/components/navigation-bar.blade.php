@@ -102,7 +102,7 @@
                     href="https://shop.nativephp.com/"
                     class="opacity-60 transition duration-200 hover:opacity-100"
                 >
-                    Shop
+                    Swag
                 </a>
 
                 {{-- Decorative circle --}}
@@ -114,9 +114,33 @@
                 {{-- Link --}}
                 <a
                     href="/partners"
-                    class="opacity-60 transition duration-200 hover:opacity-100"
+                    @class([
+                        'transition duration-200',
+                        'font-medium' => request()->routeIs('partners'),
+                        'opacity-60 hover:opacity-100' => ! request()->routeIs('partners'),
+                    ])
+                    aria-current="{{ request()->routeIs('partners') ? 'page' : 'false' }}"
                 >
                     Partners
+                </a>
+
+                {{-- Decorative circle --}}
+                <div
+                    class="size-[3px] rotate-45 rounded-xs bg-gray-400 transition duration-200 dark:opacity-60"
+                    aria-hidden="true"
+                ></div>
+
+                {{-- Link --}}
+                <a
+                    href="{{ route('build-my-app') }}"
+                    @class([
+                        'transition duration-200',
+                        'font-medium' => request()->routeIs('build-my-app'),
+                        'opacity-60 hover:opacity-100' => ! request()->routeIs('build-my-app'),
+                    ])
+                    aria-current="{{ request()->routeIs('build-my-app') ? 'page' : 'false' }}"
+                >
+                    Develop
                 </a>
 
                 {{-- Login/Logout --}}
@@ -137,6 +161,7 @@
                             <button
                                 type="submit"
                                 class="opacity-60 transition duration-200 hover:opacity-100"
+                                title="Logged in as {{ auth()->user()->email }}"
                             >
                                 Log out
                             </button>

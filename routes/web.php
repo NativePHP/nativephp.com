@@ -5,6 +5,7 @@ use App\Http\Controllers\ApplinksController;
 use App\Http\Controllers\Auth\CustomerAuthController;
 use App\Http\Controllers\CustomerLicenseController;
 use App\Http\Controllers\CustomerSubLicenseController;
+use App\Http\Controllers\OpenCollectiveWebhookController;
 use App\Http\Controllers\ShowBlogController;
 use App\Http\Controllers\ShowDocumentationController;
 use Illuminate\Support\Facades\Route;
@@ -33,6 +34,12 @@ Route::redirect('ios', 'pricing');
 Route::redirect('t-shirt', 'pricing');
 Route::redirect('tshirt', 'pricing');
 
+// Webhook routes (must be outside web middleware for CSRF bypass)
+Route::post('opencollective/contribution', [OpenCollectiveWebhookController::class, 'handle'])->name('opencollective.webhook');
+
+// OpenCollective donation claim route
+Route::get('opencollective/claim', App\Livewire\ClaimDonationLicense::class)->name('opencollective.claim');
+
 Route::view('/', 'welcome')->name('welcome');
 Route::view('pricing', 'pricing')->name('pricing');
 Route::view('alt-pricing', 'alt-pricing')->name('alt-pricing')->middleware('signed');
@@ -45,7 +52,10 @@ Route::view('laracon-us-2025-giveaway', 'laracon-us-2025-giveaway')->name('larac
 Route::view('privacy-policy', 'privacy-policy')->name('privacy-policy');
 Route::view('terms-of-service', 'terms-of-service')->name('terms-of-service');
 Route::view('partners', 'partners')->name('partners');
+Route::view('build-my-app', 'build-my-app')->name('build-my-app');
 Route::view('sponsor', 'sponsoring')->name('sponsoring');
+Route::view('vs-react-native-expo', 'vs-react-native-expo')->name('vs-react-native-expo');
+Route::view('vs-flutter', 'vs-flutter')->name('vs-flutter');
 
 Route::get('blog', [ShowBlogController::class, 'index'])->name('blog');
 Route::get('blog/{article}', [ShowBlogController::class, 'show'])->name('article');
@@ -61,6 +71,30 @@ Route::get('docs/{platform}/{version}/{page?}', ShowDocumentationController::cla
     ->where('platform', '[a-z]+')
     ->where('version', '[0-9]+')
     ->name('docs.show');
+
+// Forward platform requests without version to the latest version
+Route::get('docs/{platform}/{page?}', function (string $platform, $page = null) {
+    $page ??= 'getting-started/introduction';
+
+    // Find the latest version for this platform
+    $docsPath = resource_path('views/docs/'.$platform);
+
+    if (! is_dir($docsPath)) {
+        abort(404);
+    }
+
+    $versions = collect(scandir($docsPath))
+        ->filter(fn ($dir) => is_numeric($dir))
+        ->sort()
+        ->values();
+
+    $latestVersion = $versions->last() ?? '1';
+
+    return redirect("/docs/{$platform}/{$latestVersion}/{$page}", 301);
+})
+    ->where('platform', 'desktop|mobile')
+    ->where('page', '.*')
+    ->name('docs.latest');
 
 // Forward unversioned requests to the latest version
 Route::get('docs/{page?}', function ($page = null) {
@@ -104,6 +138,9 @@ Route::middleware(['guest'])->group(function () {
     Route::get('login', [CustomerAuthController::class, 'showLogin'])->name('customer.login');
     Route::post('login', [CustomerAuthController::class, 'login']);
 
+    Route::get('register', [CustomerAuthController::class, 'showRegister'])->name('customer.register');
+    Route::post('register', [CustomerAuthController::class, 'register'])->middleware('throttle:5,1');
+
     Route::get('forgot-password', [CustomerAuthController::class, 'showForgotPassword'])->name('password.request');
     Route::post('forgot-password', [CustomerAuthController::class, 'sendPasswordResetLink'])->name('password.email');
 
@@ -114,6 +151,21 @@ Route::middleware(['guest'])->group(function () {
 Route::post('logout', [CustomerAuthController::class, 'logout'])
     ->middleware(EnsureFeaturesAreActive::using(ShowAuthButtons::class))
     ->name('customer.logout');
+
+// GitHub OAuth routes
+Route::middleware(['auth', EnsureFeaturesAreActive::using(ShowAuthButtons::class)])->group(function () {
+    Route::get('auth/github', [App\Http\Controllers\GitHubIntegrationController::class, 'redirectToGitHub'])->name('github.redirect');
+    Route::get('auth/github/callback', [App\Http\Controllers\GitHubIntegrationController::class, 'handleCallback'])->name('github.callback');
+    Route::post('customer/github/request-access', [App\Http\Controllers\GitHubIntegrationController::class, 'requestRepoAccess'])->name('github.request-access');
+    Route::delete('customer/github/disconnect', [App\Http\Controllers\GitHubIntegrationController::class, 'disconnect'])->name('github.disconnect');
+});
+
+// Discord OAuth routes
+Route::middleware(['auth', EnsureFeaturesAreActive::using(ShowAuthButtons::class)])->group(function () {
+    Route::get('auth/discord', [App\Http\Controllers\DiscordIntegrationController::class, 'redirectToDiscord'])->name('discord.redirect');
+    Route::get('auth/discord/callback', [App\Http\Controllers\DiscordIntegrationController::class, 'handleCallback'])->name('discord.callback');
+    Route::delete('customer/discord/disconnect', [App\Http\Controllers\DiscordIntegrationController::class, 'disconnect'])->name('discord.disconnect');
+});
 
 Route::get('callback', function (Illuminate\Http\Request $request) {
     $url = $request->query('url');
@@ -128,6 +180,7 @@ Route::get('callback', function (Illuminate\Http\Request $request) {
 // Customer license management routes
 Route::middleware(['auth', EnsureFeaturesAreActive::using(ShowAuthButtons::class)])->prefix('customer')->name('customer.')->group(function () {
     Route::get('licenses', [CustomerLicenseController::class, 'index'])->name('licenses');
+    Route::view('integrations', 'customer.integrations')->name('integrations');
     Route::get('licenses/{licenseKey}', [CustomerLicenseController::class, 'show'])->name('licenses.show');
     Route::patch('licenses/{licenseKey}', [CustomerLicenseController::class, 'update'])->name('licenses.update');
 

@@ -179,6 +179,9 @@ export default defineConfig({
 });
 ```
 
+**Note:** When testing on real devices, hot reloading is communicating with the Vite server running on your development machine.
+For this to work, ensure the test device is connected to the same Wi-Fi network as your development machine.
+
 <aside>
 
 #### Two at a time, baby!

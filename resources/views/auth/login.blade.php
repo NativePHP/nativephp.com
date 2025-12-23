@@ -6,7 +6,10 @@
                     Sign in to your account
                 </h2>
                 <p class="mt-2 text-center text-sm text-gray-600 dark:text-gray-400">
-                    Manage your NativePHP licenses
+                    Or
+                    <a href="{{ route('customer.register') }}" class="font-medium text-blue-600 hover:text-blue-500 dark:text-blue-400 dark:hover:text-blue-300">
+                        create a new account
+                    </a>
                 </p>
             </div>
 

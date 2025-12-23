@@ -35,23 +35,31 @@ A top bar with title and action buttons. This renders at the top of the screen.
 
 ## Props
 
-- `title` - The title text
+- `title` - The title text (required)
 - `show-navigation-icon` - Show back/menu button (optional, default: `true`)
-- `label` - If more than 5 actions, iOS will display an overflow menu and the labels assigned to each item
+- `label` - If more than 5 actions, iOS will display an overflow menu and the labels assigned to each item (optional)
 - `background-color` - Background color. Hex code (optional)
 - `text-color` - Text color. Hex code (optional)
 - `elevation` - Shadow depth 0-24 (optional) [Android]
 
 ## Children
 
-A `<native:top-bar>` can contain up to 10 `<native:top-bar-action>` elements. These populate the trailing edge,
-collapsing to a menu if there are too many.
+A `<native:top-bar>` can contain up to 10 `<native:top-bar-action>` elements. These are displayed on the trailing edge of the bar.
 
 ### Props
-- `id` - Unique identifier
-- `icon` - A named [icon](icons)
+- `id` - Unique identifier (required)
+- `icon` - A named [icon](icons) (required)
 - `label` - Accessibility label (optional)
 - `url` - A URL to navigate to in the web view (optional)
+
+On Android, the first 3 actions are shown as icon buttons; additional actions collapse into an overflow menu (⋮). On iOS, if more than 5 actions are provided, they collapse into an overflow menu.
+
+### `<native:top-bar-action>` Props
+
+- `id` - Unique identifier (required)
+- `icon` - A named [icon](icons) (required)
+- `label` - Text label for the action. Used for accessibility and displayed in overflow menus (optional but recommended)
+- `url` - A URL to navigate to when tapped
 
 <aside>
 

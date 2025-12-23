@@ -212,7 +212,7 @@
                             href="https://shop.nativephp.com/"
                             class="inline-block px-px py-1.5 transition duration-300 will-change-transform hover:translate-x-1 hover:text-gray-700 dark:hover:text-gray-300"
                         >
-                            Shop
+                            Swag
                         </a>
                     </li>
                     <li>
@@ -221,6 +221,14 @@
                             class="inline-block px-px py-1.5 transition duration-300 will-change-transform hover:translate-x-1 hover:text-gray-700 dark:hover:text-gray-300"
                         >
                             Partners
+                        </a>
+                    </li>
+                    <li>
+                        <a
+                            href="{{ route('build-my-app') }}"
+                            class="inline-block px-px py-1.5 transition duration-300 will-change-transform hover:translate-x-1 hover:text-gray-700 dark:hover:text-gray-300"
+                        >
+                            Develop
                         </a>
                     </li>
                     <li>
@@ -285,7 +293,7 @@
                     >
                         <li>
                             <a
-                                href="/docs/mobile/1/getting-started/introduction"
+                                href="/docs/mobile/2/getting-started/introduction"
                                 class="inline-block px-px py-1.5 transition duration-300 will-change-transform hover:translate-x-1 hover:text-gray-700 dark:hover:text-gray-300"
                             >
                                 Documentation
@@ -297,6 +305,22 @@
                                 class="inline-block px-px py-1.5 transition duration-300 will-change-transform hover:translate-x-1 hover:text-gray-700 dark:hover:text-gray-300"
                             >
                                 Pricing
+                            </a>
+                        </li>
+                        <li>
+                            <a
+                                href="{{ route('vs-react-native-expo') }}"
+                                class="inline-block px-px py-1.5 transition duration-300 will-change-transform hover:translate-x-1 hover:text-gray-700 dark:hover:text-gray-300"
+                            >
+                                vs React Native
+                            </a>
+                        </li>
+                        <li>
+                            <a
+                                href="{{ route('vs-flutter') }}"
+                                class="inline-block px-px py-1.5 transition duration-300 will-change-transform hover:translate-x-1 hover:text-gray-700 dark:hover:text-gray-300"
+                            >
+                                vs Flutter
                             </a>
                         </li>
                         {{--
@@ -328,7 +352,7 @@
                     >
                         <li>
                             <a
-                                href="/docs/desktop/1/getting-started/introduction"
+                                href="/docs/desktop/2/getting-started/introduction"
                                 class="inline-block px-px py-1.5 transition duration-300 will-change-transform hover:translate-x-1 hover:text-gray-700 dark:hover:text-gray-300"
                             >
                                 Documentation

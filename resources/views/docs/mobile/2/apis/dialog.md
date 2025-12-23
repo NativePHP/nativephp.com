@@ -7,9 +7,23 @@ order: 500
 
 The Dialog API provides access to native UI elements like alerts, toasts, and sharing interfaces.
 
+<x-snippet title="Import">
+
+<x-snippet.tab name="PHP">
+
 ```php
 use Native\Mobile\Facades\Dialog;
 ```
+
+</x-snippet.tab>
+<x-snippet.tab name="JS">
+
+```js
+import { dialog, on, off, Events } from '#nativephp';
+```
+
+</x-snippet.tab>
+</x-snippet>
 
 ## Methods
 
@@ -24,8 +38,12 @@ Displays a native alert dialog with customizable buttons.
 
 **Button Positioning:**
 - **1 button** - Positive (OK/Confirm)
-- **2 buttons** - Negative (Cancel) + Positive (OK/Confirm) 
+- **2 buttons** - Negative (Cancel) + Positive (OK/Confirm)
 - **3 buttons** - Negative (Cancel) + Neutral (Maybe) + Positive (OK/Confirm)
+
+<x-snippet title="Alert Dialog">
+
+<x-snippet.tab name="PHP">
 
 ```php
 Dialog::alert(
@@ -35,17 +53,55 @@ Dialog::alert(
 );
 ```
 
+</x-snippet.tab>
+<x-snippet.tab name="JS">
+
+```js
+// Simple usage
+await dialog.alert('Confirm Action', 'Are you sure you want to delete this item?', ['Cancel', 'Delete']);
+
+// Fluent builder API
+await dialog.alert()
+    .title('Confirm Action')
+    .message('Are you sure you want to delete this item?')
+    .buttons(['Cancel', 'Delete']);
+
+// Quick confirm dialog (OK/Cancel)
+await dialog.alert()
+    .confirm('Confirm Action', 'Are you sure?');
+
+// Quick destructive confirm (Cancel/Delete)
+await dialog.alert()
+    .confirmDelete('Delete Item', 'This action cannot be undone.');
+```
+
+</x-snippet.tab>
+</x-snippet>
+
 ### `toast()`
 
 Displays a brief toast notification message.
 
-
 **Parameters:**
 - `string $message` - The message to display
+
+<x-snippet title="Toast Notification">
+
+<x-snippet.tab name="PHP">
 
 ```php
 Dialog::toast('Item saved successfully!');
 ```
+
+</x-snippet.tab>
+<x-snippet.tab name="JS">
+
+```js
+await dialog.toast('Item saved successfully!');
+```
+
+</x-snippet.tab>
+</x-snippet>
 
 #### Good toast messages
 
@@ -83,9 +139,13 @@ Dialog::share(
 
 Fired when a button is pressed in an alert dialog.
 
-**Payload:** 
+**Payload:**
 - `int $index` - Index of the pressed button (0-based)
 - `string $label` - Label/text of the pressed button
+
+<x-snippet title="ButtonPressed Event">
+
+<x-snippet.tab name="PHP">
 
 ```php
 use Native\Mobile\Attributes\OnNative;
@@ -107,3 +167,66 @@ public function handleAlertButton($index, $label)
     }
 }
 ```
+
+</x-snippet.tab>
+<x-snippet.tab name="Vue">
+
+```js
+import { dialog, on, off, Events } from '#nativephp';
+import { ref, onMounted, onUnmounted } from 'vue';
+
+const buttonLabel = ref('');
+
+const handleButtonPressed = (payload) => {
+    const { index, label } = payload;
+    buttonLabel.value = label;
+
+    if (index === 0) {
+        dialog.toast(`You pressed '${label}'`);
+    } else if (index === 1) {
+        performAction();
+        dialog.toast(`You pressed '${label}'`);
+    }
+};
+
+onMounted(() => {
+    on(Events.Alert.ButtonPressed, handleButtonPressed);
+});
+
+onUnmounted(() => {
+    off(Events.Alert.ButtonPressed, handleButtonPressed);
+});
+```
+
+</x-snippet.tab>
+<x-snippet.tab name="React">
+
+```jsx
+import { dialog, on, off, Events } from '#nativephp';
+import { useState, useEffect } from 'react';
+
+const [buttonLabel, setButtonLabel] = useState('');
+
+const handleButtonPressed = (payload) => {
+    const { index, label } = payload;
+    setButtonLabel(label);
+
+    if (index === 0) {
+        dialog.toast(`You pressed '${label}'`);
+    } else if (index === 1) {
+        performAction();
+        dialog.toast(`You pressed '${label}'`);
+    }
+};
+
+useEffect(() => {
+    on(Events.Alert.ButtonPressed, handleButtonPressed);
+
+    return () => {
+        off(Events.Alert.ButtonPressed, handleButtonPressed);
+    };
+}, []);
+```
+
+</x-snippet.tab>
+</x-snippet>

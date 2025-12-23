@@ -19,6 +19,7 @@
         "laravel/framework": "^10.10",
         "laravel/pennant": "^1.18",
         "laravel/sanctum": "^3.3",
+        "laravel/socialite": "^5.24",
         "laravel/tinker": "^2.8",
         "league/commonmark": "^2.4",
         "livewire/livewire": "^3.6.4",

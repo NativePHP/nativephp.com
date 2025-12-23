@@ -12,19 +12,21 @@ class ShowcaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // 10 approved showcases (mix of platforms)
-        Showcase::factory(4)->approved()->mobile()->create();
-        Showcase::factory(4)->approved()->desktop()->create();
-        Showcase::factory(2)->approved()->both()->create();
+        // Approved showcases with screenshots
+        Showcase::factory(2)->approved()->mobile()->withTallScreenshots(3)->create();
+        Showcase::factory(2)->approved()->mobile()->create();
+        Showcase::factory(2)->approved()->desktop()->withWideScreenshots(3)->create();
+        Showcase::factory(2)->approved()->desktop()->create();
+        Showcase::factory(2)->approved()->both()->withTallScreenshots(2)->create();
 
-        // 5 recently approved (will show as "new")
-        Showcase::factory(2)->recentlyApproved()->mobile()->create();
-        Showcase::factory(2)->recentlyApproved()->desktop()->create();
-        Showcase::factory(1)->recentlyApproved()->both()->create();
+        // Recently approved (will show as "new") with screenshots
+        Showcase::factory(2)->recentlyApproved()->mobile()->withTallScreenshots(4)->create();
+        Showcase::factory(2)->recentlyApproved()->desktop()->withWideScreenshots(3)->create();
+        Showcase::factory(1)->recentlyApproved()->both()->withWideScreenshots(2)->create();
 
-        // 5 pending review
-        Showcase::factory(2)->pending()->mobile()->create();
-        Showcase::factory(2)->pending()->desktop()->create();
+        // Pending review
+        Showcase::factory(2)->pending()->mobile()->withTallScreenshots(2)->create();
+        Showcase::factory(2)->pending()->desktop()->withWideScreenshots(2)->create();
         Showcase::factory(1)->pending()->both()->create();
     }
 }
