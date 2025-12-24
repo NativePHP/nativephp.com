@@ -98,15 +98,12 @@ The `type: nativephp-plugin` tells NativePHP to look for native code in this pac
 
 ## The nativephp.json Manifest
 
-The manifest declares everything about your plugin. Platform-specific configuration is grouped under `android` and `ios`
-keys:
+The manifest declares native-specific configuration for your plugin. Package metadata (`name`, `version`, `description`,
+`service_provider`) comes from your `composer.json` — don't duplicate it here.
 
 ```json
 {
-    "name": "vendor/my-plugin",
     "namespace": "MyPlugin",
-    "version": "1.0.0",
-    "description": "A sample plugin",
     "bridge_functions": [
         {
             "name": "MyPlugin.DoSomething",
@@ -136,10 +133,7 @@ keys:
 
 | Field | Required | Description |
 |-------|----------|-------------|
-| `name` | Yes | Package name in vendor/package format |
-| `namespace` | Yes | PHP namespace for the plugin (used for code generation) |
-| `version` | No | Semantic version (default: 1.0.0) |
-| `description` | No | Human-readable description |
+| `namespace` | Yes | Namespace for the plugin (used for code generation and directory structure) |
 | `bridge_functions` | No | Array of native function mappings |
 | `events` | No | Event classes the plugin dispatches |
 | `android` | No | Android-specific configuration |
@@ -147,7 +141,6 @@ keys:
 | `assets` | No | Declarative asset copying |
 | `hooks` | No | Lifecycle hook commands |
 | `secrets` | No | Required environment variables |
-| `service_provider` | No | Fully-qualified service provider class |
 
 ## Local Development
 
@@ -177,6 +170,58 @@ Changes to your plugin's PHP code are picked up immediately. Changes to native c
 Run `php artisan native:plugin:validate` to catch manifest errors, missing native code, or mismatched function
 declarations before you try to build.
 
+</aside>
+
+## Registering Plugins
+
+After installing a plugin with Composer, you need to register it so it gets compiled into your native builds.
+
+### First Time Setup
+
+Publish the plugins service provider:
+
+```shell
+php artisan vendor:publish --tag=nativephp-plugins-provider
+```
+
+This creates `app/Providers/NativePluginsServiceProvider.php`.
+
+### Register a Plugin
+
+```shell
+php artisan native:plugin:register vendor/plugin-name
+```
+
+This automatically adds the plugin's service provider to your `plugins()` array:
+
+```php
+public function plugins(): array
+{
+    return [
+        \Vendor\PluginName\PluginNameServiceProvider::class,
+    ];
+}
+```
+
+### List Plugins
+
+```shell
+# Show registered plugins
+php artisan native:plugin:list
+
+# Show all installed plugins (including unregistered)
+php artisan native:plugin:list --all
+```
+
+### Remove a Plugin
+
+```shell
+php artisan native:plugin:register vendor/plugin-name --remove
+```
+
+<aside>
+This explicit registration is a security measure. It prevents transitive dependencies from automatically
+registering plugins without your consent.
 </aside>
 
 ## JavaScript Library
