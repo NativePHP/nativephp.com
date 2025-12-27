@@ -1,6 +1,6 @@
 @php
     $isMobile = request()->is('docs/mobile/*');
-    $mobileHref = '/docs/mobile/2';
+    $mobileHref = '/docs/mobile/3';
     $desktopHref = '/docs/desktop/2';
 @endphp
 

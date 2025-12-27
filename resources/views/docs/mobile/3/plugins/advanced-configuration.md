@@ -122,7 +122,56 @@ Use fully qualified names for components outside your plugin's package.
 | `name` | Component class name (required) |
 | `exported` | Whether other apps can bind to this service |
 | `permission` | Permission required to access the service |
-| `foregroundServiceType` | Type for foreground services (camera, microphone, location, etc.) |
+| `foregroundServiceType` | Type for foreground services (camera, microphone, location, etc.). Supports array format for multiple types. |
+
+## Android Features
+
+Declare hardware or software features your plugin requires using the `features` array. These are added as
+`<uses-feature>` elements in `AndroidManifest.xml`:
+
+```json
+{
+    "android": {
+        "features": [
+            {"name": "android.hardware.camera", "required": true},
+            {"name": "android.hardware.camera.autofocus", "required": false},
+            {"name": "android.hardware.bluetooth_le", "required": true}
+        ]
+    }
+}
+```
+
+Each feature has:
+- **name** — The feature name (e.g., `android.hardware.camera`)
+- **required** — Whether the app requires this feature (default: `true`)
+
+Setting `required: false` allows your app to be installed on devices without the feature, but you must check
+for availability at runtime.
+
+## Android Meta-Data
+
+Add application-level `<meta-data>` elements for SDK configuration:
+
+```json
+{
+    "android": {
+        "meta_data": [
+            {
+                "name": "com.google.android.geo.API_KEY",
+                "value": "${GOOGLE_MAPS_API_KEY}"
+            },
+            {
+                "name": "com.google.firebase.messaging.default_notification_icon",
+                "value": "@drawable/ic_notification"
+            }
+        ]
+    }
+}
+```
+
+Each entry has:
+- **name** — The meta-data key
+- **value** — The value (supports `${ENV_VAR}` placeholders)
 
 ## Declarative Assets
 
@@ -177,16 +226,71 @@ or conditional asset placement.
 
 </aside>
 
+## iOS Background Modes
+
+Enable background execution capabilities with the `background_modes` array. These values are added to
+`UIBackgroundModes` in `Info.plist`:
+
+```json
+{
+    "ios": {
+        "background_modes": ["audio", "fetch", "processing", "location"]
+    }
+}
+```
+
+Common values:
+- `audio` — Audio playback or recording
+- `fetch` — Background fetch
+- `processing` — Background processing tasks
+- `location` — Location updates
+- `remote-notification` — Push notification processing
+- `bluetooth-central` — Bluetooth LE central mode
+- `bluetooth-peripheral` — Bluetooth LE peripheral mode
+
+<aside>
+
+Background modes require corresponding entitlements and App Store review. Only request modes your plugin actually needs.
+
+</aside>
+
+## iOS Entitlements
+
+Configure app entitlements for capabilities like Maps, App Groups, HealthKit, or iCloud:
+
+```json
+{
+    "ios": {
+        "entitlements": {
+            "com.apple.developer.maps": true,
+            "com.apple.security.application-groups": ["group.com.example.shared"],
+            "com.apple.developer.associated-domains": ["applinks:example.com"],
+            "com.apple.developer.healthkit": true
+        }
+    }
+}
+```
+
+Values can be:
+- **Boolean** — `true`/`false` for simple capabilities
+- **Array** — For capabilities requiring multiple values (App Groups, Associated Domains)
+- **String** — For single-value entitlements
+
+Entitlements are written to `NativePHP.entitlements`. If the file doesn't exist, it's created automatically.
+
+<aside>
+
+Many entitlements require corresponding capabilities enabled in your Apple Developer account and Xcode project settings.
+
+</aside>
+
 ## Complete Example
 
 Here's a complete manifest for a plugin that integrates Firebase ML Kit with a custom Activity:
 
 ```json
 {
-    "name": "vendor/firebase-ml-plugin",
     "namespace": "FirebaseML",
-    "version": "2.0.0",
-    "description": "Firebase ML Kit integration for NativePHP",
     "bridge_functions": [
         {
             "name": "FirebaseML.Analyze",
@@ -202,6 +306,9 @@ Here's a complete manifest for a plugin that integrates Firebase ML Kit with a c
             "android.permission.CAMERA",
             "android.permission.INTERNET"
         ],
+        "features": [
+            {"name": "android.hardware.camera", "required": true}
+        ],
         "dependencies": {
             "implementation": [
                 "com.google.firebase:firebase-ml-vision:24.1.0",
@@ -215,10 +322,16 @@ Here's a complete manifest for a plugin that integrates Firebase ML Kit with a c
                 "exported": false,
                 "configChanges": "orientation|screenSize|keyboardHidden"
             }
+        ],
+        "meta_data": [
+            {
+                "name": "com.google.firebase.ml.vision.DEPENDENCIES",
+                "value": "ocr"
+            }
         ]
     },
     "ios": {
-        "permissions": {
+        "info_plist": {
             "NSCameraUsageDescription": "Camera is used for ML analysis"
         },
         "dependencies": {
@@ -226,6 +339,10 @@ Here's a complete manifest for a plugin that integrates Firebase ML Kit with a c
                 {"name": "Firebase/MLVision", "version": "~> 10.0"},
                 {"name": "Firebase/Core", "version": "~> 10.0"}
             ]
+        },
+        "background_modes": ["processing"],
+        "entitlements": {
+            "com.apple.developer.associated-domains": ["applinks:example.com"]
         }
     },
     "assets": {
@@ -244,7 +361,6 @@ Here's a complete manifest for a plugin that integrates Firebase ML Kit with a c
     },
     "hooks": {
         "pre_compile": "nativephp:firebase-ml:setup"
-    },
-    "service_provider": "Vendor\\FirebaseML\\FirebaseMLServiceProvider"
+    }
 }
 ```
