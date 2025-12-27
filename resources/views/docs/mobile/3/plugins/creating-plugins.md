@@ -136,11 +136,24 @@ The manifest declares native-specific configuration for your plugin. Package met
 | `namespace` | Yes | Namespace for the plugin (used for code generation and directory structure) |
 | `bridge_functions` | No | Array of native function mappings |
 | `events` | No | Event classes the plugin dispatches |
-| `android` | No | Android-specific configuration |
-| `ios` | No | iOS-specific configuration |
+| `android.permissions` | No | Android permission strings |
+| `android.features` | No | Android uses-feature declarations |
+| `android.dependencies` | No | Gradle dependencies |
+| `android.repositories` | No | Custom Maven repositories |
+| `android.activities` | No | Activities to register in manifest |
+| `android.services` | No | Services to register in manifest |
+| `android.receivers` | No | Broadcast receivers to register |
+| `android.providers` | No | Content providers to register |
+| `android.meta_data` | No | Application meta-data entries |
+| `ios.info_plist` | No | Info.plist entries (permissions, API keys) |
+| `ios.dependencies` | No | Swift packages and CocoaPods |
+| `ios.background_modes` | No | UIBackgroundModes values |
+| `ios.entitlements` | No | App entitlements |
 | `assets` | No | Declarative asset copying |
 | `hooks` | No | Lifecycle hook commands |
 | `secrets` | No | Required environment variables |
+
+See [Advanced Configuration](advanced-configuration.md) for detailed documentation on each field.
 
 ## Local Development
 

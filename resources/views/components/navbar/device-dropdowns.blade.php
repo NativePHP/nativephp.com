@@ -10,7 +10,7 @@
         id="mobile-dropdown"
     >
         <x-navbar.device-dropdown-item
-            href="/docs/mobile/2/getting-started/introduction"
+            href="/docs/mobile/3/getting-started/introduction"
             title="Documentation"
             subtitle="Get started with Mobile"
             icon="docs"

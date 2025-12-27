@@ -15,7 +15,7 @@ return [
 
     'latest_versions' => [
         'desktop' => 2,
-        'mobile' => 2,
+        'mobile' => 3,
     ],
 
 ];

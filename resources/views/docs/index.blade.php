@@ -13,7 +13,8 @@
         @elseif($platform === 'mobile')
             <livewire:version-switcher :versions="[
                 1 => '1.x',
-                2 => '2.x'
+                2 => '2.x',
+                3 => '3.x'
             ]" />
         @endif
 
@@ -44,7 +45,8 @@
         @elseif($platform === 'mobile')
             <livewire:version-switcher :versions="[
                 1 => '1.x',
-                2 => '2.x'
+                2 => '2.x',
+                3 => '3.x'
             ]" />
         @endif
 
