@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "565e1d22ee6d0b4e9d0611e4bfb58658",
+    "content-hash": "4bbe279a024738785d34d58e55b4b63c",
     "packages": [
         {
             "name": "anourvalar/eloquent-serialize",
@@ -2915,6 +2915,100 @@
                 "source": "https://github.com/laravel/framework"
             },
             "time": "2025-09-30T14:56:54+00:00"
+        },
+        {
+            "name": "laravel/nightwatch",
+            "version": "v1.21.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/laravel/nightwatch.git",
+                "reference": "c77c70b56802ff1fc743772a497eeea742ee2b38"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/laravel/nightwatch/zipball/c77c70b56802ff1fc743772a497eeea742ee2b38",
+                "reference": "c77c70b56802ff1fc743772a497eeea742ee2b38",
+                "shasum": ""
+            },
+            "require": {
+                "ext-zlib": "*",
+                "guzzlehttp/promises": "^2.0",
+                "laravel/framework": "^10.0|^11.0|^12.0",
+                "monolog/monolog": "^3.6",
+                "nesbot/carbon": "^2.0|^3.0",
+                "php": "^8.2",
+                "psr/http-message": "^1.0|^2.0",
+                "psr/log": "^1.0|^2.0|^3.0",
+                "ramsey/uuid": "^4.0",
+                "symfony/console": "^6.0|^7.0",
+                "symfony/http-foundation": "^6.0|^7.0",
+                "symfony/polyfill-php84": "^1.29"
+            },
+            "require-dev": {
+                "aws/aws-sdk-php": "^3.349",
+                "ext-pcntl": "*",
+                "ext-pdo": "*",
+                "guzzlehttp/guzzle": "^7.0",
+                "guzzlehttp/psr7": "^2.0",
+                "laravel/horizon": "^5.4",
+                "laravel/pint": "1.21.0",
+                "laravel/vapor-core": "^2.38.2",
+                "livewire/livewire": "^2.0|^3.0",
+                "mockery/mockery": "^1.0",
+                "mongodb/laravel-mongodb": "^4.0|^5.0",
+                "orchestra/testbench": "^8.0|^9.0|^10.0",
+                "orchestra/testbench-core": "^8.0|^9.0|^10.0",
+                "orchestra/workbench": "^8.0|^9.0|^10.0",
+                "phpstan/phpstan": "^1.0",
+                "phpunit/phpunit": "^10.0|^11.0|^12.0",
+                "singlestoredb/singlestoredb-laravel": "^1.0|^2.0",
+                "spatie/laravel-ignition": "^2.0",
+                "symfony/mailer": "^6.0|^7.0",
+                "symfony/mime": "^6.0|^7.0",
+                "symfony/var-dumper": "^6.0|^7.0"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "aliases": {
+                        "Nightwatch": "Laravel\\Nightwatch\\Facades\\Nightwatch"
+                    },
+                    "providers": [
+                        "Laravel\\Nightwatch\\NightwatchServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "files": [
+                    "agent/helpers.php"
+                ],
+                "psr-4": {
+                    "Laravel\\Nightwatch\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Taylor Otwell",
+                    "email": "taylor@laravel.com"
+                }
+            ],
+            "description": "The official Laravel Nightwatch package.",
+            "homepage": "https://nightwatch.laravel.com",
+            "keywords": [
+                "Insights",
+                "laravel",
+                "monitoring"
+            ],
+            "support": {
+                "docs": "https://nightwatch.laravel.com/docs",
+                "issues": "https://github.com/laravel/nightwatch/issues",
+                "source": "https://github.com/laravel/nightwatch"
+            },
+            "time": "2025-12-18T04:19:39+00:00"
         },
         {
             "name": "laravel/pennant",
@@ -8989,6 +9083,86 @@
                 }
             ],
             "time": "2025-07-08T02:45:35+00:00"
+        },
+        {
+            "name": "symfony/polyfill-php84",
+            "version": "v1.33.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/symfony/polyfill-php84.git",
+                "reference": "d8ced4d875142b6a7426000426b8abc631d6b191"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/symfony/polyfill-php84/zipball/d8ced4d875142b6a7426000426b8abc631d6b191",
+                "reference": "d8ced4d875142b6a7426000426b8abc631d6b191",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=7.2"
+            },
+            "type": "library",
+            "extra": {
+                "thanks": {
+                    "url": "https://github.com/symfony/polyfill",
+                    "name": "symfony/polyfill"
+                }
+            },
+            "autoload": {
+                "files": [
+                    "bootstrap.php"
+                ],
+                "psr-4": {
+                    "Symfony\\Polyfill\\Php84\\": ""
+                },
+                "classmap": [
+                    "Resources/stubs"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Nicolas Grekas",
+                    "email": "p@tchwork.com"
+                },
+                {
+                    "name": "Symfony Community",
+                    "homepage": "https://symfony.com/contributors"
+                }
+            ],
+            "description": "Symfony polyfill backporting some PHP 8.4+ features to lower PHP versions",
+            "homepage": "https://symfony.com",
+            "keywords": [
+                "compatibility",
+                "polyfill",
+                "portable",
+                "shim"
+            ],
+            "support": {
+                "source": "https://github.com/symfony/polyfill-php84/tree/v1.33.0"
+            },
+            "funding": [
+                {
+                    "url": "https://symfony.com/sponsor",
+                    "type": "custom"
+                },
+                {
+                    "url": "https://github.com/fabpot",
+                    "type": "github"
+                },
+                {
+                    "url": "https://github.com/nicolas-grekas",
+                    "type": "github"
+                },
+                {
+                    "url": "https://tidelift.com/funding/github/packagist/symfony/symfony",
+                    "type": "tidelift"
+                }
+            ],
+            "time": "2025-06-24T13:30:11+00:00"
         },
         {
             "name": "symfony/polyfill-uuid",
