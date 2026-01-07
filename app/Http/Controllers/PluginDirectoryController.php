@@ -28,4 +28,13 @@ class PluginDirectoryController extends Controller
             'latestPlugins' => $latestPlugins,
         ]);
     }
+
+    public function show(Plugin $plugin): View
+    {
+        abort_unless($plugin->isApproved(), 404);
+
+        return view('plugin-show', [
+            'plugin' => $plugin,
+        ]);
+    }
 }

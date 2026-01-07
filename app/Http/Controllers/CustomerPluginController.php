@@ -34,14 +34,17 @@ class CustomerPluginController extends Controller
     {
         $user = Auth::user();
 
-        $user->plugins()->create([
+        $plugin = $user->plugins()->create([
             'name' => $request->name,
+            'repository_url' => $request->repository_url,
             'type' => $request->type,
             'anystack_id' => $request->anystack_id,
             'status' => PluginStatus::Pending,
         ]);
 
-        return redirect()->route('customer.plugins.index')
+        $plugin->generateWebhookSecret();
+
+        return redirect()->route('customer.plugins.show', $plugin)
             ->with('success', 'Your plugin has been submitted for review!');
     }
 

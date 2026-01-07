@@ -104,7 +104,11 @@ class PluginFactory extends Factory
         return [
             'user_id' => User::factory(),
             'name' => fake()->unique()->numerify("{$vendor}/{$package}-###"),
+            'repository_url' => "https://github.com/{$vendor}/{$package}",
+            'webhook_secret' => bin2hex(random_bytes(32)),
             'description' => fake()->randomElement($this->descriptions),
+            'ios_version' => fake()->randomElement(['15.0+', '16.0+', '14.0+', '17.0+', null]),
+            'android_version' => fake()->randomElement(['12+', '13+', '11+', '14+', null]),
             'type' => PluginType::Free,
             'status' => PluginStatus::Pending,
             'featured' => false,

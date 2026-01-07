@@ -24,6 +24,9 @@ class Plugin extends Model
         'type' => PluginType::class,
         'approved_at' => 'datetime',
         'featured' => 'boolean',
+        'composer_data' => 'array',
+        'nativephp_data' => 'array',
+        'last_synced_at' => 'datetime',
     ];
 
     protected static function booted(): void
@@ -128,6 +131,43 @@ class Plugin extends Model
         }
 
         return "https://anystack.sh/products/{$this->anystack_id}";
+    }
+
+    public function getWebhookUrl(): ?string
+    {
+        if (! $this->webhook_secret) {
+            return null;
+        }
+
+        return route('webhooks.plugins', $this->webhook_secret);
+    }
+
+    public function generateWebhookSecret(): string
+    {
+        $secret = bin2hex(random_bytes(32));
+
+        $this->update(['webhook_secret' => $secret]);
+
+        return $secret;
+    }
+
+    public function getRepositoryOwnerAndName(): ?array
+    {
+        if (! $this->repository_url) {
+            return null;
+        }
+
+        $path = parse_url($this->repository_url, PHP_URL_PATH);
+        $parts = array_values(array_filter(explode('/', trim($path, '/'))));
+
+        if (count($parts) < 2) {
+            return null;
+        }
+
+        return [
+            'owner' => $parts[0],
+            'repo' => str_replace('.git', '', $parts[1]),
+        ];
     }
 
     public function approve(int $approvedById): void

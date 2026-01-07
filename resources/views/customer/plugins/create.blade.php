@@ -41,34 +41,61 @@
             >
                 @csrf
 
-                {{-- Plugin Name --}}
+                {{-- Plugin Details --}}
                 <div class="rounded-lg border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-gray-800">
                     <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Plugin Details</h2>
                     <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">
-                        Enter your plugin's Composer package name.
+                        Enter your plugin's Composer package name and GitHub repository.
                     </p>
 
-                    <div class="mt-6">
-                        <label for="name" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                            Composer Package Name
-                        </label>
-                        <div class="mt-1">
-                            <input
-                                type="text"
-                                id="name"
-                                name="name"
-                                value="{{ old('name') }}"
-                                placeholder="vendor/package-name"
-                                class="block w-full rounded-md border border-gray-300 px-3 py-2 font-mono shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white sm:text-sm @error('name') border-red-500 dark:border-red-500 @enderror"
-                            />
+                    <div class="mt-6 space-y-6">
+                        {{-- Package Name --}}
+                        <div>
+                            <label for="name" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                Composer Package Name
+                            </label>
+                            <div class="mt-1">
+                                <input
+                                    type="text"
+                                    id="name"
+                                    name="name"
+                                    value="{{ old('name') }}"
+                                    placeholder="vendor/package-name"
+                                    class="block w-full rounded-md border border-gray-300 px-3 py-2 font-mono shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white sm:text-sm @error('name') border-red-500 dark:border-red-500 @enderror"
+                                />
+                            </div>
+                            @error('name')
+                                <p class="mt-2 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
+                            @else
+                                <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">
+                                    This should match your package name in <code class="rounded bg-gray-100 px-1 py-0.5 dark:bg-gray-700">composer.json</code>
+                                </p>
+                            @enderror
                         </div>
-                        @error('name')
-                            <p class="mt-2 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
-                        @else
-                            <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">
-                                This should match your package name in <code class="rounded bg-gray-100 px-1 py-0.5 dark:bg-gray-700">composer.json</code>
-                            </p>
-                        @enderror
+
+                        {{-- Repository URL --}}
+                        <div>
+                            <label for="repository_url" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                GitHub Repository URL
+                            </label>
+                            <div class="mt-1">
+                                <input
+                                    type="url"
+                                    id="repository_url"
+                                    name="repository_url"
+                                    value="{{ old('repository_url') }}"
+                                    placeholder="https://github.com/vendor/repo"
+                                    class="block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white sm:text-sm @error('repository_url') border-red-500 dark:border-red-500 @enderror"
+                                />
+                            </div>
+                            @error('repository_url')
+                                <p class="mt-2 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
+                            @else
+                                <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">
+                                    We'll fetch your README and plugin details from this repository.
+                                </p>
+                            @enderror
+                        </div>
                     </div>
                 </div>
 
