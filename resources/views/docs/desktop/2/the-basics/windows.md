@@ -469,6 +469,17 @@ In order to keep the window draggable, you should add an HTML element with the f
 </div>
 ```
 
+### Hidden Traffic Lights (macOS only)
+
+On macOS, you may use the `trafficLightsHidden()` method to hide the window control buttons (red, yellow, green) while keeping the title bar visible.
+
+```php
+Window::open()
+    ->trafficLightsHidden();
+```
+
+This is useful when you want to create a custom window appearance on macOS while maintaining the title bar for dragging. Unlike `titleBarHidden()` which hides the entire title bar, this method only hides the control buttons.
+
 ### Setting webpage features
 
 You may control various web page features by passing an optional `webPreferences` configuration array. This allows you to customize how the Electron window behaves and what features are available to the web content.
