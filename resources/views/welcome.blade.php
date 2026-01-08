@@ -10,4 +10,7 @@
 
     {{-- Partners --}}
     <x-home.partners />
+
+    {{-- Feedback --}}
+    <x-home.feedback />
 </x-layout>
