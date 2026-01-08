@@ -44,8 +44,15 @@
             </p>
         </div>
 
+        @php
+            $columns = 4;
+            $itemsPerColumn = (int) ceil($submissions->count() / $columns);
+        @endphp
         <div class="mt-6 columns-1 gap-4 sm:columns-2 lg:columns-4">
             @foreach ($submissions as $submission)
+                @php
+                    $row = $loop->index % $itemsPerColumn;
+                @endphp
                 <div
                     x-init="
                         () => {
@@ -53,7 +60,7 @@
                                 gsap.fromTo(
                                     $el,
                                     { autoAlpha: 0, y: 15 },
-                                    { autoAlpha: 1, y: 0, duration: 0.4, delay: {{ $loop->index * 0.08 }}, ease: 'power2.out' },
+                                    { autoAlpha: 1, y: 0, duration: 0.4, delay: {{ $row * 0.1 }}, ease: 'power2.out' },
                                 )
                             })
                         }
