@@ -3,7 +3,6 @@
         ->approved()
         ->promoted()
         ->latest()
-        ->take(4)
         ->get();
 @endphp
 
