@@ -49,4 +49,14 @@ class WallOfLoveSubmissionFactory extends Factory
             'approved_by' => null,
         ]);
     }
+
+    /**
+     * Indicate that the submission is promoted to the homepage.
+     */
+    public function promoted(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'promoted' => true,
+        ]);
+    }
 }
