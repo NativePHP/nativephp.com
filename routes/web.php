@@ -40,6 +40,19 @@ Route::post('opencollective/contribution', [OpenCollectiveWebhookController::cla
 // OpenCollective donation claim route
 Route::get('opencollective/claim', App\Livewire\ClaimDonationLicense::class)->name('opencollective.claim');
 
+// MCP Server routes
+Route::prefix('mcp')->group(function () {
+    Route::get('sse', [App\Http\Controllers\McpController::class, 'sse'])->name('mcp.sse');
+    Route::post('message', [App\Http\Controllers\McpController::class, 'message'])->name('mcp.message');
+    Route::get('health', [App\Http\Controllers\McpController::class, 'health'])->name('mcp.health');
+
+    // REST API endpoints
+    Route::get('api/search', [App\Http\Controllers\McpController::class, 'searchApi'])->name('mcp.api.search');
+    Route::get('api/page/{platform}/{version}/{section}/{slug}', [App\Http\Controllers\McpController::class, 'pageApi'])->name('mcp.api.page');
+    Route::get('api/apis/{platform}/{version}', [App\Http\Controllers\McpController::class, 'apisApi'])->name('mcp.api.apis');
+    Route::get('api/navigation/{platform}/{version}', [App\Http\Controllers\McpController::class, 'navigationApi'])->name('mcp.api.navigation');
+});
+
 Route::view('/', 'welcome')->name('welcome');
 Route::view('pricing', 'pricing')->name('pricing');
 Route::view('alt-pricing', 'alt-pricing')->name('alt-pricing')->middleware('signed');
