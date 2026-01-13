@@ -71,6 +71,9 @@ class McpController extends Controller
 
         try {
             $result = match ($method) {
+                'initialize' => $this->handleInitialize($params),
+                'notifications/initialized' => new \stdClass,
+                'ping' => new \stdClass,
                 'tools/list' => ['tools' => $this->getToolDefinitions()],
                 'tools/call' => $this->handleToolCall($params['name'] ?? '', $params['arguments'] ?? []),
                 default => throw new \InvalidArgumentException("Unknown method: {$method}"),
@@ -234,6 +237,20 @@ class McpController extends Controller
                     ],
                     'required' => ['platform', 'version'],
                 ],
+            ],
+        ];
+    }
+
+    protected function handleInitialize(array $params): array
+    {
+        return [
+            'protocolVersion' => '2024-11-05',
+            'capabilities' => [
+                'tools' => new \stdClass,
+            ],
+            'serverInfo' => [
+                'name' => 'nativephp-docs',
+                'version' => '1.0.0',
             ],
         ];
     }
