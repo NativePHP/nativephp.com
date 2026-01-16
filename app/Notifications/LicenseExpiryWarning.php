@@ -40,7 +40,7 @@ class LicenseExpiryWarning extends Notification implements ShouldQueue
             ->line('**Good news:** As an early adopter, you qualify for our Early Access Pricing - the same great rates you enjoyed when you first purchased!')
             ->action('Renew Your License', $renewalUrl)
             ->line('If you have any questions about your renewal, please don\'t hesitate to contact our support team.')
-            ->salutation('Best regards,<br>The NativePHP Team');
+            ->salutation("Best regards,\nThe NativePHP Team");
     }
 
     private function getSubject(): string
