@@ -3,16 +3,17 @@
         {{-- Header --}}
         <header>
             <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
-                <div class="flex items-center justify-between py-6">
-                    <div>
-                        <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Edit Plugin</h1>
-                        <p class="mt-1 font-mono text-sm text-gray-600 dark:text-gray-400">
-                            {{ $plugin->name }}
-                        </p>
-                    </div>
-                    <a href="{{ route('customer.plugins.index') }}" class="inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600">
-                        Back to Plugins
+                <div class="py-6">
+                    <a href="{{ route('customer.plugins.index') }}" class="inline-flex items-center space-x-2 text-gray-400 hover:text-gray-500 dark:text-gray-500 dark:hover:text-gray-400">
+                        <svg class="size-4" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clip-rule="evenodd"></path>
+                        </svg>
+                        <span class="text-sm font-medium">Plugins</span>
                     </a>
+                    <h1 class="mt-4 text-2xl font-bold text-gray-900 dark:text-white">Edit Plugin</h1>
+                    <p class="mt-1 font-mono text-sm text-gray-600 dark:text-gray-400">
+                        {{ $plugin->name }}
+                    </p>
                 </div>
             </div>
         </header>
@@ -39,12 +40,22 @@
             <div class="mb-6 rounded-lg border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-gray-800">
                 <div class="flex items-center justify-between">
                     <div class="flex items-center gap-3">
-                        <div class="grid size-10 place-items-center rounded-lg bg-gradient-to-br from-indigo-500 to-purple-600 text-white">
-                            <x-icons.puzzle class="size-5" />
-                        </div>
+                        @if ($plugin->hasLogo())
+                            <img src="{{ $plugin->getLogoUrl() }}" alt="{{ $plugin->name }} logo" class="size-10 rounded-lg object-cover" />
+                        @else
+                            <div class="grid size-10 place-items-center rounded-lg bg-gradient-to-br from-indigo-500 to-purple-600 text-white">
+                                <x-icons.puzzle class="size-5" />
+                            </div>
+                        @endif
                         <div>
                             <p class="font-mono text-sm font-medium text-gray-900 dark:text-white">{{ $plugin->name }}</p>
-                            <p class="text-xs text-gray-500 dark:text-gray-400">{{ $plugin->type->label() }} plugin</p>
+                            <p class="text-xs text-gray-500 dark:text-gray-400">
+                                {{ $plugin->type->label() }} plugin
+                                @if ($plugin->latest_version)
+                                    <span class="text-gray-400 dark:text-gray-500">•</span>
+                                    v{{ $plugin->latest_version }}
+                                @endif
+                            </p>
                         </div>
                     </div>
                     @if ($plugin->isPending())
@@ -60,6 +71,65 @@
                             Rejected
                         </span>
                     @endif
+                </div>
+            </div>
+
+            {{-- Plugin Logo --}}
+            <div class="mb-6 rounded-lg border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-gray-800">
+                <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Plugin Logo</h2>
+                <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">
+                    Upload a logo for your plugin. This will be displayed in the plugin directory.
+                </p>
+
+                <div class="mt-4">
+                    @if ($plugin->hasLogo())
+                        <div class="flex items-start gap-4">
+                            <img src="{{ $plugin->getLogoUrl() }}" alt="{{ $plugin->name }} logo" class="size-24 rounded-lg object-cover shadow-sm" />
+                            <div class="flex flex-col gap-2">
+                                <form method="POST" action="{{ route('customer.plugins.logo.update', $plugin) }}" enctype="multipart/form-data" class="flex items-center gap-2">
+                                    @csrf
+                                    <input
+                                        type="file"
+                                        name="logo"
+                                        accept="image/png,image/jpeg,image/jpg,image/svg+xml,image/webp"
+                                        class="block text-sm text-gray-500 file:mr-4 file:rounded-md file:border-0 file:bg-indigo-50 file:px-4 file:py-2 file:text-sm file:font-medium file:text-indigo-700 hover:file:bg-indigo-100 dark:text-gray-400 dark:file:bg-indigo-900/50 dark:file:text-indigo-300 dark:hover:file:bg-indigo-900/70"
+                                    />
+                                    <button type="submit" class="inline-flex items-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700">
+                                        Update
+                                    </button>
+                                </form>
+                                <form method="POST" action="{{ route('customer.plugins.logo.delete', $plugin) }}">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="inline-flex items-center text-sm font-medium text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300">
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="mr-1 size-4">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
+                                        </svg>
+                                        Remove logo
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    @else
+                        <form method="POST" action="{{ route('customer.plugins.logo.update', $plugin) }}" enctype="multipart/form-data" class="flex items-center gap-4">
+                            @csrf
+                            <input
+                                type="file"
+                                name="logo"
+                                accept="image/png,image/jpeg,image/jpg,image/svg+xml,image/webp"
+                                class="block text-sm text-gray-500 file:mr-4 file:rounded-md file:border-0 file:bg-indigo-50 file:px-4 file:py-2 file:text-sm file:font-medium file:text-indigo-700 hover:file:bg-indigo-100 dark:text-gray-400 dark:file:bg-indigo-900/50 dark:file:text-indigo-300 dark:hover:file:bg-indigo-900/70"
+                            />
+                            <button type="submit" class="inline-flex items-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700">
+                                Upload
+                            </button>
+                        </form>
+                    @endif
+                    @error('logo')
+                        <p class="mt-2 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
+                    @enderror
+                    <p class="mt-2 text-xs text-gray-500 dark:text-gray-400">
+                        PNG, JPG, SVG, or WebP. Max 1MB. Recommended: 256x256 pixels, square.
+                    </p>
                 </div>
             </div>
 
@@ -100,11 +170,65 @@
                                 <li>Click <strong>Add webhook</strong></li>
                                 <li>Paste the Webhook URL above into the <strong>Payload URL</strong> field</li>
                                 <li>Set <strong>Content type</strong> to <code class="rounded bg-gray-100 px-1 dark:bg-gray-700">application/json</code></li>
-                                <li>Under "Which events would you like to trigger this webhook?", select <strong>Just the push event</strong></li>
+                                <li>Under "Which events would you like to trigger this webhook?", select <strong>Let me select individual events</strong></li>
+                                <li>Check <strong>Pushes</strong> and <strong>Releases</strong></li>
                                 <li>Click <strong>Add webhook</strong></li>
                             </ol>
                         </div>
                     </div>
+                </div>
+            @endif
+
+            {{-- Pricing (Paid plugins only) --}}
+            @if ($plugin->isPaid())
+                <div class="mb-6 rounded-lg border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-gray-800">
+                    <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Pricing</h2>
+                    <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">
+                        Set the price for your plugin. Minimum price is $10.
+                    </p>
+
+                    <form method="POST" action="{{ route('customer.plugins.price.update', $plugin) }}" class="mt-4">
+                        @csrf
+                        @method('PATCH')
+
+                        <div>
+                            <label for="price" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Price (USD)</label>
+                            <div class="relative mt-1 rounded-md shadow-sm">
+                                <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+                                    <span class="text-gray-500 dark:text-gray-400 sm:text-sm">$</span>
+                                </div>
+                                <input
+                                    type="number"
+                                    name="price"
+                                    id="price"
+                                    min="10"
+                                    max="99999"
+                                    step="1"
+                                    value="{{ old('price', $plugin->activePrice?->amount ? $plugin->activePrice->amount / 100 : '') }}"
+                                    class="block w-full rounded-md border border-gray-300 py-2 pl-7 pr-12 text-gray-900 placeholder-gray-500 focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 sm:text-sm @error('price') border-red-500 dark:border-red-500 @enderror"
+                                    placeholder="29"
+                                />
+                                <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
+                                    <span class="text-gray-500 dark:text-gray-400 sm:text-sm">USD</span>
+                                </div>
+                            </div>
+                            @error('price')
+                                <p class="mt-2 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
+                            @enderror
+                            <p class="mt-2 text-xs text-gray-500 dark:text-gray-400">
+                                Whole dollars only, no cents. You will receive 70% of each sale after payment processing fees.
+                            </p>
+                        </div>
+
+                        <div class="mt-4 flex justify-end">
+                            <button
+                                type="submit"
+                                class="inline-flex items-center rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                            >
+                                Update Price
+                            </button>
+                        </div>
+                    </form>
                 </div>
             @endif
 

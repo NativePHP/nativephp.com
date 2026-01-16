@@ -38,11 +38,47 @@
             </div>
         </div>
 
-        {{-- Results count --}}
-        @if ($search)
-            <p class="mt-4 text-center text-sm text-gray-600 dark:text-zinc-400">
-                {{ $plugins->total() }} {{ Str::plural('result', $plugins->total()) }} for "{{ $search }}"
-            </p>
+        {{-- Active Filters --}}
+        @if ($search || $authorUser)
+            <div class="mt-4 flex flex-wrap items-center justify-center gap-2">
+                @if ($authorUser)
+                    <span class="inline-flex items-center gap-1.5 rounded-full bg-indigo-100 py-1 pl-3 pr-1.5 text-sm font-medium text-indigo-800 dark:bg-indigo-900/30 dark:text-indigo-300">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-4">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
+                        </svg>
+                        {{ $authorUser->name }}
+                        <button
+                            type="button"
+                            wire:click="clearAuthor"
+                            class="ml-0.5 rounded-full p-0.5 hover:bg-indigo-200 dark:hover:bg-indigo-800"
+                        >
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="size-3.5">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
+                            </svg>
+                        </button>
+                    </span>
+                @endif
+                @if ($search)
+                    <span class="inline-flex items-center gap-1.5 rounded-full bg-gray-100 py-1 pl-3 pr-1.5 text-sm font-medium text-gray-800 dark:bg-gray-700 dark:text-gray-300">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-4">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
+                        </svg>
+                        "{{ $search }}"
+                        <button
+                            type="button"
+                            wire:click="clearSearch"
+                            class="ml-0.5 rounded-full p-0.5 hover:bg-gray-200 dark:hover:bg-gray-600"
+                        >
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="size-3.5">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
+                            </svg>
+                        </button>
+                    </span>
+                @endif
+                <span class="text-sm text-gray-500 dark:text-gray-400">
+                    {{ $plugins->total() }} {{ Str::plural('result', $plugins->total()) }}
+                </span>
+            </div>
         @endif
     </section>
 
@@ -65,17 +101,36 @@
             <div class="flex flex-col items-center justify-center rounded-2xl border-2 border-dashed border-gray-300 bg-gray-50 p-12 text-center dark:border-gray-700 dark:bg-slate-800/50">
                 <x-icons.puzzle class="size-12 text-gray-400 dark:text-gray-500" />
                 <h3 class="mt-4 text-lg font-medium text-gray-900 dark:text-white">No plugins found</h3>
-                @if ($search)
+                @if ($search || $authorUser)
                     <p class="mt-2 text-gray-600 dark:text-gray-400">
-                        No plugins match your search. Try a different term.
+                        @if ($authorUser && $search)
+                            No plugins by {{ $authorUser->name }} match your search.
+                        @elseif ($authorUser)
+                            {{ $authorUser->name }} hasn't published any plugins yet.
+                        @else
+                            No plugins match your search. Try a different term.
+                        @endif
                     </p>
-                    <button
-                        type="button"
-                        wire:click="clearSearch"
-                        class="mt-4 inline-flex items-center gap-2 rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700"
-                    >
-                        Clear search
-                    </button>
+                    <div class="mt-4 flex items-center gap-2">
+                        @if ($search)
+                            <button
+                                type="button"
+                                wire:click="clearSearch"
+                                class="inline-flex items-center gap-2 rounded-lg bg-gray-200 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600"
+                            >
+                                Clear search
+                            </button>
+                        @endif
+                        @if ($authorUser)
+                            <button
+                                type="button"
+                                wire:click="clearAuthor"
+                                class="inline-flex items-center gap-2 rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700"
+                            >
+                                View all plugins
+                            </button>
+                        @endif
+                    </div>
                 @else
                     <p class="mt-2 text-gray-600 dark:text-gray-400">
                         Be the first to submit a plugin to the directory!

@@ -5,13 +5,17 @@ namespace App\Models;
 use App\Enums\PluginActivityType;
 use App\Enums\PluginStatus;
 use App\Enums\PluginType;
+use App\Jobs\SyncPluginReleases;
 use App\Notifications\PluginApproved;
 use App\Notifications\PluginRejected;
+use App\Services\PluginSyncService;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Plugin extends Model
 {
@@ -24,6 +28,9 @@ class Plugin extends Model
         'type' => PluginType::class,
         'approved_at' => 'datetime',
         'featured' => 'boolean',
+        'is_active' => 'boolean',
+        'is_official' => 'boolean',
+        'satis_included' => 'boolean',
         'composer_data' => 'array',
         'nativephp_data' => 'array',
         'last_synced_at' => 'datetime',
@@ -66,6 +73,74 @@ class Plugin extends Model
         return $this->hasMany(PluginActivity::class)->orderBy('created_at', 'desc');
     }
 
+    /**
+     * @return BelongsTo<DeveloperAccount, Plugin>
+     */
+    public function developerAccount(): BelongsTo
+    {
+        return $this->belongsTo(DeveloperAccount::class);
+    }
+
+    /**
+     * @return HasMany<PluginPrice>
+     */
+    public function prices(): HasMany
+    {
+        return $this->hasMany(PluginPrice::class);
+    }
+
+    /**
+     * @return HasOne<PluginPrice>
+     */
+    public function activePrice(): HasOne
+    {
+        return $this->hasOne(PluginPrice::class)->where('is_active', true)->latest();
+    }
+
+    /**
+     * @return HasMany<PluginLicense>
+     */
+    public function licenses(): HasMany
+    {
+        return $this->hasMany(PluginLicense::class);
+    }
+
+    /**
+     * @return BelongsToMany<PluginBundle>
+     */
+    public function bundles(): BelongsToMany
+    {
+        return $this->belongsToMany(PluginBundle::class, 'bundle_plugin')
+            ->withPivot('sort_order')
+            ->withTimestamps();
+    }
+
+    /**
+     * Alias for bundles() - required by Filament's AttachAction.
+     *
+     * @return BelongsToMany<PluginBundle>
+     */
+    public function pluginBundles(): BelongsToMany
+    {
+        return $this->bundles();
+    }
+
+    /**
+     * @return HasMany<PluginVersion>
+     */
+    public function versions(): HasMany
+    {
+        return $this->hasMany(PluginVersion::class)->orderBy('created_at', 'desc');
+    }
+
+    /**
+     * @return HasOne<PluginVersion>
+     */
+    public function latestVersion(): HasOne
+    {
+        return $this->hasOne(PluginVersion::class)->where('is_packaged', true)->latest('published_at');
+    }
+
     public function isPending(): bool
     {
         return $this->status === PluginStatus::Pending;
@@ -96,13 +171,33 @@ class Plugin extends Model
         return $this->featured;
     }
 
+    public function isOfficial(): bool
+    {
+        return $this->is_official ?? false;
+    }
+
+    public function isIncludedInSatis(): bool
+    {
+        return $this->satis_included ?? false;
+    }
+
     /**
      * @param  Builder<Plugin>  $query
      * @return Builder<Plugin>
      */
     public function scopeApproved(Builder $query): Builder
     {
-        return $query->where('status', PluginStatus::Approved);
+        return $query->where('status', PluginStatus::Approved)
+            ->where('is_active', true);
+    }
+
+    /**
+     * @param  Builder<Plugin>  $query
+     * @return Builder<Plugin>
+     */
+    public function scopeActive(Builder $query): Builder
+    {
+        return $query->where('is_active', true);
     }
 
     /**
@@ -142,6 +237,99 @@ class Plugin extends Model
         return route('webhooks.plugins', $this->webhook_secret);
     }
 
+    public function getLogoUrl(): ?string
+    {
+        if (! $this->logo_path) {
+            return null;
+        }
+
+        return asset('storage/'.$this->logo_path);
+    }
+
+    public function hasLogo(): bool
+    {
+        return $this->logo_path !== null;
+    }
+
+    /**
+     * Reserved namespaces that can only be used by admin users.
+     */
+    public const RESERVED_NAMESPACES = [
+        'native',
+        'nativephp',
+        'bifrost',
+    ];
+
+    /**
+     * Get the vendor namespace from the package name.
+     * e.g., "acme/my-plugin" returns "acme"
+     */
+    public function getVendorNamespace(): ?string
+    {
+        if (! $this->name) {
+            return null;
+        }
+
+        $parts = explode('/', $this->name);
+
+        return $parts[0] ?? null;
+    }
+
+    /**
+     * Check if a namespace is reserved (admin-only).
+     */
+    public static function isReservedNamespace(string $namespace): bool
+    {
+        return in_array(strtolower($namespace), self::RESERVED_NAMESPACES, true);
+    }
+
+    /**
+     * Check if a vendor namespace is available for a given user.
+     * Returns true if the namespace is not claimed by another user
+     * and is not a reserved namespace (unless user is admin).
+     */
+    public static function isNamespaceAvailableForUser(string $namespace, int $userId): bool
+    {
+        $user = User::find($userId);
+
+        // Reserved namespaces are only available to admins
+        if (self::isReservedNamespace($namespace)) {
+            return $user && $user->isAdmin();
+        }
+
+        // Check if namespace is already claimed by another user
+        return ! static::where('name', 'like', $namespace.'/%')
+            ->where('user_id', '!=', $userId)
+            ->exists();
+    }
+
+    /**
+     * Get the user who owns a particular namespace.
+     */
+    public static function getNamespaceOwner(string $namespace): ?User
+    {
+        $plugin = static::where('name', 'like', $namespace.'/%')
+            ->first();
+
+        return $plugin?->user;
+    }
+
+    public function getLicense(): ?string
+    {
+        return $this->composer_data['license'] ?? null;
+    }
+
+    public function getLicenseUrl(): ?string
+    {
+        $repoInfo = $this->getRepositoryOwnerAndName();
+
+        if (! $repoInfo) {
+            return null;
+        }
+
+        return "https://github.com/{$repoInfo['owner']}/{$repoInfo['repo']}/blob/main/LICENSE";
+    }
+
     public function generateWebhookSecret(): string
     {
         $secret = bin2hex(random_bytes(32));
@@ -179,6 +367,7 @@ class Plugin extends Model
             'approved_at' => now(),
             'approved_by' => $approvedById,
             'rejection_reason' => null,
+            'satis_included' => $this->isPaid(),
         ]);
 
         $this->recordActivity(
@@ -190,6 +379,12 @@ class Plugin extends Model
         );
 
         $this->user->notify(new PluginApproved($this));
+
+        app(PluginSyncService::class)->sync($this);
+
+        if ($this->isPaid()) {
+            SyncPluginReleases::dispatch($this);
+        }
     }
 
     public function reject(string $reason, int $rejectedById): void

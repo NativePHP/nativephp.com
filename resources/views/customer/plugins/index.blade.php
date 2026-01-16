@@ -5,15 +5,16 @@
             <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                 <div class="flex items-center justify-between py-6">
                     <div>
-                        <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Plugins</h1>
+                        <a href="{{ route('dashboard') }}" class="inline-flex items-center space-x-2 text-gray-400 hover:text-gray-500 dark:text-gray-500 dark:hover:text-gray-400">
+                            <svg class="size-4" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clip-rule="evenodd"></path>
+                            </svg>
+                            <span class="text-sm font-medium">Dashboard</span>
+                        </a>
+                        <h1 class="mt-2 text-2xl font-bold text-gray-900 dark:text-white">Plugins</h1>
                         <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">
                             Extend NativePHP Mobile with powerful native features
                         </p>
-                    </div>
-                    <div class="flex items-center space-x-3">
-                        <a href="{{ route('customer.licenses') }}" class="inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600">
-                            Back to Licenses
-                        </a>
                     </div>
                 </div>
             </div>
@@ -81,6 +82,153 @@
                     </a>
                 </div>
             </div>
+
+            {{-- Author Display Name Section --}}
+            <div class="mt-8">
+                <div class="rounded-lg border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-gray-800">
+                    <div class="flex items-start justify-between">
+                        <div class="flex items-start gap-4">
+                            <div class="flex size-12 shrink-0 items-center justify-center rounded-lg bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-400">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
+                                </svg>
+                            </div>
+                            <div class="flex-1">
+                                <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Author Display Name</h3>
+                                <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">
+                                    This is how your name will appear on your plugins in the directory.
+                                </p>
+                                <form
+                                    method="POST"
+                                    action="{{ route('customer.plugins.display-name') }}"
+                                    class="mt-4 flex gap-3"
+                                    x-data="{ displayName: '{{ old('display_name', auth()->user()->display_name) }}' }"
+                                >
+                                    @csrf
+                                    @method('PATCH')
+                                    <div class="flex-1">
+                                        <input
+                                            type="text"
+                                            name="display_name"
+                                            x-model="displayName"
+                                            placeholder="{{ auth()->user()->name }}"
+                                            class="block w-full rounded-md border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white @error('display_name') border-red-500 dark:border-red-500 @enderror"
+                                        />
+                                        @error('display_name')
+                                            <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
+                                        @enderror
+                                    </div>
+                                    <button
+                                        type="submit"
+                                        class="inline-flex items-center rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:bg-indigo-500 dark:hover:bg-indigo-600"
+                                    >
+                                        Save
+                                    </button>
+                                </form>
+                                <p class="mt-2 text-xs text-gray-500 dark:text-gray-500">
+                                    Leave blank to use your account name: <span class="font-medium">{{ auth()->user()->name }}</span>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {{-- Stripe Connect Section (only show when paid plugins are enabled) --}}
+            @feature(App\Features\AllowPaidPlugins::class)
+            <div class="mt-8">
+                @if ($developerAccount && $developerAccount->hasCompletedOnboarding())
+                    {{-- Connected Account --}}
+                    <div class="rounded-lg border border-green-200 bg-green-50 p-6 dark:border-green-800 dark:bg-green-900/20">
+                        <div class="flex items-start justify-between">
+                            <div class="flex items-start gap-4">
+                                <div class="flex size-12 shrink-0 items-center justify-center rounded-lg bg-green-100 text-green-600 dark:bg-green-900/50 dark:text-green-400">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                                    </svg>
+                                </div>
+                                <div>
+                                    <h3 class="text-lg font-semibold text-green-900 dark:text-green-100">Stripe Connect Active</h3>
+                                    <p class="mt-1 text-sm text-green-700 dark:text-green-300">
+                                        Your developer account is set up and ready to receive payouts for paid plugin sales.
+                                    </p>
+                                    <div class="mt-2 flex items-center gap-4 text-sm">
+                                        <span class="inline-flex items-center gap-1 text-green-700 dark:text-green-300">
+                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="size-4">
+                                                <path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 0 1 .143 1.052l-8 10.5a.75.75 0 0 1-1.127.075l-4.5-4.5a.75.75 0 0 1 1.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 0 1 1.05-.143Z" clip-rule="evenodd" />
+                                            </svg>
+                                            Payouts {{ $developerAccount->payouts_enabled ? 'Enabled' : 'Pending' }}
+                                        </span>
+                                        <span class="inline-flex items-center gap-1 text-green-700 dark:text-green-300">
+                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="size-4">
+                                                <path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 0 1 .143 1.052l-8 10.5a.75.75 0 0 1-1.127.075l-4.5-4.5a.75.75 0 0 1 1.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 0 1 1.05-.143Z" clip-rule="evenodd" />
+                                            </svg>
+                                            {{ $developerAccount->stripe_connect_status->label() }}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                            <a href="{{ route('customer.developer.dashboard') }}" class="inline-flex items-center rounded-md bg-green-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 dark:bg-green-700 dark:hover:bg-green-600">
+                                View Dashboard
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="ml-2 size-4">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
+                                </svg>
+                            </a>
+                        </div>
+                    </div>
+                @elseif ($developerAccount)
+                    {{-- Onboarding In Progress --}}
+                    <div class="rounded-lg border border-yellow-200 bg-yellow-50 p-6 dark:border-yellow-800 dark:bg-yellow-900/20">
+                        <div class="flex items-start justify-between">
+                            <div class="flex items-start gap-4">
+                                <div class="flex size-12 shrink-0 items-center justify-center rounded-lg bg-yellow-100 text-yellow-600 dark:bg-yellow-900/50 dark:text-yellow-400">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                                    </svg>
+                                </div>
+                                <div>
+                                    <h3 class="text-lg font-semibold text-yellow-900 dark:text-yellow-100">Complete Your Stripe Setup</h3>
+                                    <p class="mt-1 text-sm text-yellow-700 dark:text-yellow-300">
+                                        You've started the Stripe Connect setup but there are still some steps remaining. Complete the onboarding to start receiving payouts.
+                                    </p>
+                                </div>
+                            </div>
+                            <a href="{{ route('customer.developer.onboarding.refresh') }}" class="inline-flex items-center rounded-md bg-yellow-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-yellow-700 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2 dark:bg-yellow-700 dark:hover:bg-yellow-600">
+                                Continue Setup
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="ml-2 size-4">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
+                                </svg>
+                            </a>
+                        </div>
+                    </div>
+                @else
+                    {{-- No Developer Account --}}
+                    <div class="rounded-lg border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-gray-800">
+                        <div class="flex items-start justify-between">
+                            <div class="flex items-start gap-4">
+                                <div class="flex size-12 shrink-0 items-center justify-center rounded-lg bg-indigo-100 text-indigo-600 dark:bg-indigo-900/50 dark:text-indigo-400">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-3.75 3h15a2.25 2.25 0 0 0 2.25-2.25V6.75A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25v10.5A2.25 2.25 0 0 0 4.5 19.5Z" />
+                                    </svg>
+                                </div>
+                                <div>
+                                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Sell Paid Plugins</h3>
+                                    <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">
+                                        Want to sell premium plugins? Connect your Stripe account to receive payouts when customers purchase your paid plugins. You'll earn 70% of each sale.
+                                    </p>
+                                </div>
+                            </div>
+                            <a href="{{ route('customer.developer.onboarding') }}" class="inline-flex items-center rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:bg-indigo-500 dark:hover:bg-indigo-600">
+                                Connect Stripe
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="ml-2 size-4">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
+                                </svg>
+                            </a>
+                        </div>
+                    </div>
+                @endif
+            </div>
+            @endfeature
 
             {{-- Success Message --}}
             @if (session('success'))

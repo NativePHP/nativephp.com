@@ -3,9 +3,12 @@
 namespace App\Providers;
 
 use App\Features\ShowAuthButtons;
+use App\Features\ShowPlugins;
+use App\Services\CartService;
 use App\Support\GitHub;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Queue\Events\JobFailed;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Queue;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\View;
@@ -52,6 +55,18 @@ class AppServiceProvider extends ServiceProvider
         View::share('bskyLink', 'https://bsky.app/profile/nativephp.com');
         View::share('openCollectiveLink', 'https://opencollective.com/nativephp');
         View::share('githubLink', 'https://github.com/nativephp');
+
+        // Share cart count with navigation components
+        View::composer(['components.navigation-bar', 'components.navbar.mobile-menu'], function ($view) {
+            $cartCount = 0;
+
+            if (Feature::active(ShowPlugins::class)) {
+                $cartService = app(CartService::class);
+                $cartCount = $cartService->getCartItemCount(Auth::user());
+            }
+
+            $view->with('cartCount', $cartCount);
+        });
     }
 
     private function sendFailingJobsToSentry(): void

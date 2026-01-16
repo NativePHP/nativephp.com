@@ -16,25 +16,20 @@ class SubmitPluginRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => [
-                'required',
-                'string',
-                'max:255',
-                'regex:/^[a-z0-9]([_.-]?[a-z0-9]+)*\/[a-z0-9]([_.-]?[a-z0-9]+)*$/i',
-                'unique:plugins,name',
-            ],
             'repository_url' => [
                 'required',
                 'url',
                 'max:255',
                 'regex:/^https:\/\/github\.com\/[a-zA-Z0-9_.-]+\/[a-zA-Z0-9_.-]+$/',
+                'unique:plugins,repository_url',
             ],
             'type' => ['required', 'string', Rule::enum(PluginType::class)],
-            'anystack_id' => [
+            'price' => [
                 'nullable',
                 'required_if:type,paid',
-                'string',
-                'max:255',
+                'integer',
+                'min:10',
+                'max:99999',
             ],
         ];
     }
@@ -42,15 +37,25 @@ class SubmitPluginRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'name.required' => 'Please enter your plugin\'s Composer package name.',
-            'name.regex' => 'Please enter a valid Composer package name (e.g., vendor/package-name).',
-            'name.unique' => 'This plugin has already been submitted.',
-            'repository_url.required' => 'Please enter your plugin\'s GitHub repository URL.',
+            'repository_url.required' => 'Please select or enter your plugin\'s GitHub repository.',
             'repository_url.url' => 'Please enter a valid URL.',
             'repository_url.regex' => 'Please enter a valid GitHub repository URL (e.g., https://github.com/vendor/repo).',
+            'repository_url.unique' => 'This repository has already been submitted.',
             'type.required' => 'Please select whether your plugin is free or paid.',
             'type.enum' => 'Please select a valid plugin type.',
-            'anystack_id.required_if' => 'Please enter your Anystack Product ID for paid plugins.',
+            'price.required_if' => 'Please enter a price for your paid plugin.',
+            'price.integer' => 'The price must be a whole dollar amount (no cents).',
+            'price.min' => 'The price must be at least $10.',
+            'price.max' => 'The price cannot exceed $99,999.',
         ];
+    }
+
+    public function withValidator($validator): void
+    {
+        $validator->after(function ($validator) {
+            if ($this->type === 'paid' && ! $this->user()->github_id) {
+                $validator->errors()->add('type', 'You must connect your GitHub account to submit a paid plugin.');
+            }
+        });
     }
 }

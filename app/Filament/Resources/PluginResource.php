@@ -21,6 +21,10 @@ class PluginResource extends Resource
 
     protected static ?string $navigationLabel = 'Plugins';
 
+    protected static ?string $navigationGroup = 'Plugins';
+
+    protected static ?int $navigationSort = 1;
+
     protected static ?string $pluralModelLabel = 'Plugins';
 
     public static function form(Form $form): Form
@@ -29,6 +33,13 @@ class PluginResource extends Resource
             ->schema([
                 Forms\Components\Section::make('Plugin Details')
                     ->schema([
+                        Forms\Components\Placeholder::make('logo_preview')
+                            ->label('Logo')
+                            ->content(fn (?Plugin $record) => $record?->hasLogo()
+                                ? new \Illuminate\Support\HtmlString('<img src="'.e($record->getLogoUrl()).'" alt="Logo" class="w-16 h-16 rounded-lg object-cover" />')
+                                : 'No logo')
+                            ->visible(fn (?Plugin $record) => $record !== null),
+
                         Forms\Components\TextInput::make('name')
                             ->label('Composer Package Name')
                             ->disabled(),
@@ -37,10 +48,12 @@ class PluginResource extends Resource
                             ->options(PluginType::class)
                             ->disabled(),
 
-                        Forms\Components\TextInput::make('anystack_id')
-                            ->label('Anystack Product ID')
+                        Forms\Components\TextInput::make('repository_url')
+                            ->label('Repository URL')
                             ->disabled()
-                            ->visible(fn (Plugin $record) => $record->isPaid()),
+                            ->url()
+                            ->suffixIcon('heroicon-o-arrow-top-right-on-square')
+                            ->suffixIconColor('gray'),
 
                         Forms\Components\Select::make('status')
                             ->options(PluginStatus::class)
@@ -54,7 +67,7 @@ class PluginResource extends Resource
                         Forms\Components\Textarea::make('rejection_reason')
                             ->label('Rejection Reason')
                             ->disabled()
-                            ->visible(fn (Plugin $record) => $record->isRejected()),
+                            ->visible(fn (?Plugin $record) => $record?->isRejected()),
                     ])
                     ->columns(2),
 
@@ -71,11 +84,11 @@ class PluginResource extends Resource
                         Forms\Components\Select::make('approved_by')
                             ->relationship('approvedBy', 'email')
                             ->disabled()
-                            ->visible(fn (Plugin $record) => $record->approved_by !== null),
+                            ->visible(fn (?Plugin $record) => $record?->approved_by !== null),
 
                         Forms\Components\DateTimePicker::make('approved_at')
                             ->disabled()
-                            ->visible(fn (Plugin $record) => $record->approved_at !== null),
+                            ->visible(fn (?Plugin $record) => $record?->approved_at !== null),
                     ])
                     ->columns(2),
             ]);
@@ -85,6 +98,13 @@ class PluginResource extends Resource
     {
         return $table
             ->columns([
+                Tables\Columns\ImageColumn::make('logo_path')
+                    ->label('')
+                    ->disk('public')
+                    ->circular()
+                    ->defaultImageUrl(fn () => 'https://ui-avatars.com/api/?name=P&color=7C3AED&background=EDE9FE')
+                    ->size(40),
+
                 Tables\Columns\TextColumn::make('name')
                     ->label('Package Name')
                     ->searchable()
@@ -117,6 +137,10 @@ class PluginResource extends Resource
                 Tables\Columns\ToggleColumn::make('featured')
                     ->sortable(),
 
+                Tables\Columns\ToggleColumn::make('is_active')
+                    ->label('Active')
+                    ->sortable(),
+
                 Tables\Columns\TextColumn::make('created_at')
                     ->label('Submitted')
                     ->dateTime()
@@ -128,6 +152,8 @@ class PluginResource extends Resource
                 Tables\Filters\SelectFilter::make('type')
                     ->options(PluginType::class),
                 Tables\Filters\TernaryFilter::make('featured'),
+                Tables\Filters\TernaryFilter::make('is_active')
+                    ->label('Active'),
             ])
             ->actions([
                 // Approve Action
@@ -158,6 +184,15 @@ class PluginResource extends Resource
 
                 // External Links Group
                 Tables\Actions\ActionGroup::make([
+                    // View Listing Page (Approved plugins only)
+                    Tables\Actions\Action::make('viewListing')
+                        ->label('View Listing Page')
+                        ->icon('heroicon-o-eye')
+                        ->color('gray')
+                        ->url(fn (Plugin $record) => route('plugins.show', $record))
+                        ->openUrlInNewTab()
+                        ->visible(fn (Plugin $record) => $record->isApproved()),
+
                     // Packagist Link (Free plugins only)
                     Tables\Actions\Action::make('viewPackagist')
                         ->label('View on Packagist')

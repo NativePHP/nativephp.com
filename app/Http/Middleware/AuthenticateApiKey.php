@@ -21,13 +21,19 @@ class AuthenticateApiKey
             return response()->json(['message' => 'API key not configured'], 500);
         }
 
-        $authHeader = $request->header('Authorization');
+        // Prefer X-API-Key header (allows Basic Auth to coexist)
+        // Fall back to Bearer token in Authorization header
+        $providedKey = $request->header('X-API-Key');
 
-        if (! $authHeader || ! str_starts_with($authHeader, 'Bearer ')) {
-            return response()->json(['message' => 'Unauthorized'], 401);
+        if (! $providedKey) {
+            $authHeader = $request->header('Authorization');
+
+            if (! $authHeader || ! str_starts_with($authHeader, 'Bearer ')) {
+                return response()->json(['message' => 'Unauthorized'], 401);
+            }
+
+            $providedKey = substr($authHeader, 7);
         }
-
-        $providedKey = substr($authHeader, 7); // Remove 'Bearer ' prefix
 
         if (! hash_equals($apiKey, $providedKey)) {
             return response()->json(['message' => 'Unauthorized'], 401);

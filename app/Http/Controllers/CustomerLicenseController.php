@@ -30,7 +30,13 @@ class CustomerLicenseController extends Controller
             ->orderBy('created_at', 'desc')
             ->get();
 
-        return view('customer.licenses.index', compact('licenses', 'assignedSubLicenses'));
+        // Fetch plugin licenses (purchased plugins)
+        $pluginLicenses = $user->pluginLicenses()
+            ->with('plugin')
+            ->orderBy('purchased_at', 'desc')
+            ->get();
+
+        return view('customer.licenses.index', compact('licenses', 'assignedSubLicenses', 'pluginLicenses'));
     }
 
     public function show(string $licenseKey): View

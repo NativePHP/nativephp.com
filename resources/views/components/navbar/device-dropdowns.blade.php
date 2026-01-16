@@ -22,13 +22,15 @@
             icon="dollar-circle"
             icon-class="size-5.5"
         />
-        <x-navbar.device-dropdown-item
-            href="{{ route('plugins') }}"
-            title="Plugins"
-            subtitle="Extend your mobile apps"
-            icon="puzzle"
-            icon-class="size-5"
-        />
+        @feature(App\Features\ShowPlugins::class)
+            <x-navbar.device-dropdown-item
+                href="{{ route('plugins') }}"
+                title="Plugins"
+                subtitle="Extend your mobile apps"
+                icon="puzzle"
+                icon-class="size-5"
+            />
+        @endfeature
         @if($showShowcase)
             <x-navbar.device-dropdown-item
                 href="{{ route('showcase', 'mobile') }}"

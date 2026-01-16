@@ -7,6 +7,7 @@ use Filament\Models\Contracts\FilamentUser;
 use Filament\Panel;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Collection;
@@ -22,6 +23,7 @@ class User extends Authenticatable implements FilamentUser
     protected $hidden = [
         'password',
         'remember_token',
+        'github_token',
     ];
 
     protected $casts = [
@@ -63,6 +65,30 @@ class User extends Authenticatable implements FilamentUser
         return $this->hasMany(Plugin::class);
     }
 
+    /**
+     * @return HasMany<PluginLicense>
+     */
+    public function pluginLicenses(): HasMany
+    {
+        return $this->hasMany(PluginLicense::class);
+    }
+
+    /**
+     * @return HasOne<DeveloperAccount>
+     */
+    public function developerAccount(): HasOne
+    {
+        return $this->hasOne(DeveloperAccount::class);
+    }
+
+    /**
+     * @return HasOne<UserPurchaseHistory>
+     */
+    public function purchaseHistory(): HasOne
+    {
+        return $this->hasOne(UserPurchaseHistory::class);
+    }
+
     public function hasActiveMaxLicense(): bool
     {
         return $this->licenses()
@@ -101,6 +127,11 @@ class User extends Authenticatable implements FilamentUser
         return $this->licenses()->exists();
     }
 
+    public function getDisplayNameAttribute(): string
+    {
+        return $this->attributes['display_name'] ?? $this->name ?? 'Unknown';
+    }
+
     public function getFirstNameAttribute(): ?string
     {
         if (empty($this->name)) {
@@ -130,5 +161,58 @@ class User extends Authenticatable implements FilamentUser
         ]);
 
         return collect($search->data);
+    }
+
+    public function getPluginLicenseKey(): string
+    {
+        if (! $this->plugin_license_key) {
+            $this->plugin_license_key = bin2hex(random_bytes(32));
+            $this->save();
+        }
+
+        return $this->plugin_license_key;
+    }
+
+    public function regeneratePluginLicenseKey(): string
+    {
+        $this->plugin_license_key = bin2hex(random_bytes(32));
+        $this->save();
+
+        return $this->plugin_license_key;
+    }
+
+    public function hasPluginAccess(Plugin $plugin): bool
+    {
+        if ($plugin->isFree()) {
+            return true;
+        }
+
+        // Authors always have access to their own plugins
+        if ($plugin->user_id === $this->id) {
+            return true;
+        }
+
+        return $this->pluginLicenses()
+            ->forPlugin($plugin)
+            ->active()
+            ->exists();
+    }
+
+    public function getGitHubToken(): ?string
+    {
+        if (! $this->github_token) {
+            return null;
+        }
+
+        try {
+            return decrypt($this->github_token);
+        } catch (\Exception) {
+            return null;
+        }
+    }
+
+    public function hasGitHubToken(): bool
+    {
+        return $this->getGitHubToken() !== null;
     }
 }

@@ -19,11 +19,11 @@ class PluginSyncService
             return false;
         }
 
-        $baseUrl = "https://raw.githubusercontent.com/{$repo['owner']}/{$repo['repo']}/main";
+        $token = $this->getGitHubToken($plugin);
 
-        $readme = $this->fetchFile("{$baseUrl}/README.md");
-        $composerJson = $this->fetchFile("{$baseUrl}/composer.json");
-        $nativephpJson = $this->fetchFile("{$baseUrl}/nativephp.json");
+        $readme = $this->fetchFileFromGitHub($repo['owner'], $repo['repo'], 'README.md', $token);
+        $composerJson = $this->fetchFileFromGitHub($repo['owner'], $repo['repo'], 'composer.json', $token);
+        $nativephpJson = $this->fetchFileFromGitHub($repo['owner'], $repo['repo'], 'nativephp.json', $token);
 
         if (! $composerJson) {
             Log::warning("Plugin {$plugin->id}: Could not fetch composer.json");
@@ -41,6 +41,10 @@ class PluginSyncService
         ];
 
         if ($composerData) {
+            if (isset($composerData['name']) && ! $plugin->name) {
+                $updateData['name'] = $composerData['name'];
+            }
+
             if (isset($composerData['description'])) {
                 $updateData['description'] = $composerData['description'];
             }
@@ -55,6 +59,12 @@ class PluginSyncService
             $updateData['readme_html'] = CommonMark::convertToHtml($readme);
         }
 
+        // Fetch the latest tag/release
+        $latestTag = $this->fetchLatestTag($repo['owner'], $repo['repo'], $token);
+        if ($latestTag) {
+            $updateData['latest_version'] = ltrim($latestTag, 'v');
+        }
+
         $plugin->update($updateData);
 
         Log::info("Plugin {$plugin->id} synced successfully");
@@ -62,19 +72,80 @@ class PluginSyncService
         return true;
     }
 
-    protected function fetchFile(string $url): ?string
+    public function fetchLatestTag(string $owner, string $repo, ?string $token): ?string
     {
         try {
-            $response = Http::timeout(10)->get($url);
+            $request = Http::timeout(10);
+
+            if ($token) {
+                $request = $request->withToken($token);
+            }
+
+            // First try to get the latest release
+            $response = $request->get("https://api.github.com/repos/{$owner}/{$repo}/releases/latest");
 
             if ($response->successful()) {
-                return $response->body();
+                return $response->json('tag_name');
+            }
+
+            // Fall back to tags if no releases exist
+            $tagsResponse = Http::timeout(10)
+                ->when($token, fn ($http) => $http->withToken($token))
+                ->get("https://api.github.com/repos/{$owner}/{$repo}/tags", [
+                    'per_page' => 1,
+                ]);
+
+            if ($tagsResponse->successful() && count($tagsResponse->json()) > 0) {
+                return $tagsResponse->json()[0]['name'];
             }
         } catch (\Exception $e) {
-            Log::warning("Failed to fetch {$url}: {$e->getMessage()}");
+            Log::warning("Failed to fetch latest tag for {$owner}/{$repo}: {$e->getMessage()}");
         }
 
         return null;
+    }
+
+    protected function fetchFileFromGitHub(string $owner, string $repo, string $path, ?string $token): ?string
+    {
+        try {
+            $request = Http::timeout(10);
+
+            if ($token) {
+                $request = $request->withToken($token);
+            }
+
+            $response = $request->get("https://api.github.com/repos/{$owner}/{$repo}/contents/{$path}");
+
+            if ($response->successful()) {
+                $data = $response->json();
+
+                if (isset($data['content'])) {
+                    return base64_decode($data['content']);
+                }
+            }
+
+            $baseUrl = "https://raw.githubusercontent.com/{$owner}/{$repo}/main";
+            $fallbackResponse = Http::timeout(10)->get("{$baseUrl}/{$path}");
+
+            if ($fallbackResponse->successful()) {
+                return $fallbackResponse->body();
+            }
+        } catch (\Exception $e) {
+            Log::warning("Failed to fetch {$path} from {$owner}/{$repo}: {$e->getMessage()}");
+        }
+
+        return null;
+    }
+
+    protected function getGitHubToken(Plugin $plugin): ?string
+    {
+        $user = $plugin->user;
+
+        if ($user && $user->hasGitHubToken()) {
+            return $user->getGitHubToken();
+        }
+
+        return config('services.github.token');
     }
 
     protected function extractIosVersion(array $nativephpData): ?string

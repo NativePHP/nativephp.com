@@ -11,29 +11,137 @@
                         </p>
                     </div>
                     <div class="flex items-center space-x-3">
-                        <a href="{{ route('customer.plugins.index') }}" class="inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-                            <x-icons.puzzle class="mr-2 -ml-1 size-4" />
-                            Plugins
+                        <a href="{{ route('customer.showcase.index') }}" class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                            Showcase
                         </a>
-                        <a href="{{ route('customer.plugins.index') }}" class="inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-                            <x-icons.puzzle class="mr-2 -ml-1 size-4" />
-                            Plugins
+                        @feature(App\Features\ShowPlugins::class)
+                            <a href="{{ route('customer.plugins.index') }}" class="inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                                <x-icons.puzzle class="mr-2 -ml-1 size-4" />
+                                Plugins
+                            </a>
+                        @endfeature
+                        <a href="{{ route('customer.integrations') }}" class="inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                            Integrations
                         </a>
                         <a href="{{ route('customer.billing-portal') }}" class="inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-                            Manage Your Subscription
+                            Manage Subscription
                         </a>
+                        <form method="POST" action="{{ route('customer.logout') }}" class="inline">
+                            @csrf
+                            <button type="submit" class="inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                                Log out
+                            </button>
+                        </form>
                     </div>
                 </div>
             </div>
         </header>
 
-        {{-- Wall of Love Callout for Early Adopters --}}
-        <livewire:wall-of-love-banner />
+        {{-- Banners --}}
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-6">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                @if(auth()->user()->hasActualLicense())
+                    <x-discounts-banner :inline="true" />
+                @endif
+                <livewire:wall-of-love-banner :inline="true" />
+            </div>
+        </div>
 
-        <x-discounts-banner />
+        {{-- Purchased Plugins --}}
+        @feature(App\Features\ShowPlugins::class)
+            @if($pluginLicenses->count() > 0)
+                <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+                    <div class="flex items-center justify-between mb-4">
+                        <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Purchased Plugins</h2>
+                        <a href="{{ route('plugins.directory') }}" class="text-sm text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300">
+                            Browse more plugins
+                        </a>
+                    </div>
+
+                    {{-- Plugin License Key --}}
+                    @if(auth()->user()->plugin_license_key)
+                        <div class="mb-6 rounded-lg border border-indigo-200 bg-indigo-50 p-4 dark:border-indigo-800 dark:bg-indigo-900/20">
+                            <div class="flex items-start justify-between">
+                                <div>
+                                    <h3 class="text-sm font-medium text-indigo-900 dark:text-indigo-200">Your Plugin License Key</h3>
+                                    <p class="mt-1 text-xs text-indigo-700 dark:text-indigo-300">
+                                        Use this key with your email to authenticate Composer for paid plugins.
+                                    </p>
+                                </div>
+                                <button
+                                    type="button"
+                                    onclick="navigator.clipboard.writeText('{{ auth()->user()->plugin_license_key }}'); this.textContent = 'Copied!'; setTimeout(() => this.textContent = 'Copy', 2000);"
+                                    class="rounded bg-indigo-600 px-2.5 py-1.5 text-xs font-medium text-white hover:bg-indigo-700"
+                                >
+                                    Copy
+                                </button>
+                            </div>
+                            <div class="mt-3">
+                                <code class="block rounded bg-indigo-100 px-3 py-2 font-mono text-xs text-indigo-900 dark:bg-indigo-900/50 dark:text-indigo-200 break-all">
+                                    {{ auth()->user()->plugin_license_key }}
+                                </code>
+                            </div>
+                            <details class="mt-3">
+                                <summary class="cursor-pointer text-xs font-medium text-indigo-700 dark:text-indigo-300 hover:text-indigo-900 dark:hover:text-indigo-100">
+                                    How to configure Composer
+                                </summary>
+                                <div class="mt-2 rounded bg-gray-900 p-3">
+                                    <code class="block font-mono text-xs text-gray-100 whitespace-pre">composer config http-basic.plugins.nativephp.com {{ auth()->user()->email }} {{ auth()->user()->plugin_license_key }}</code>
+                                </div>
+                            </details>
+                        </div>
+                    @endif
+
+                    <div class="bg-white dark:bg-gray-800 shadow overflow-hidden sm:rounded-md">
+                        <ul class="divide-y divide-gray-200 dark:divide-gray-700">
+                            @foreach($pluginLicenses as $pluginLicense)
+                                <li>
+                                    <a href="{{ route('plugins.show', $pluginLicense->plugin->slug ?? $pluginLicense->plugin->id) }}" class="block hover:bg-gray-50 dark:hover:bg-gray-700">
+                                        <div class="px-4 py-4 sm:px-6">
+                                            <div class="flex items-center justify-between">
+                                                <div class="flex items-center">
+                                                    <div class="flex-shrink-0">
+                                                        @if($pluginLicense->plugin->hasLogo())
+                                                            <img src="{{ $pluginLicense->plugin->getLogoUrl() }}" alt="{{ $pluginLicense->plugin->name }}" class="size-10 rounded-lg object-cover">
+                                                        @else
+                                                            <div class="grid size-10 place-items-center rounded-lg bg-gradient-to-br from-indigo-500 to-purple-600 text-white">
+                                                                <x-icons.puzzle class="size-5" />
+                                                            </div>
+                                                        @endif
+                                                    </div>
+                                                    <div class="ml-4">
+                                                        <p class="text-sm font-medium text-blue-600 dark:text-blue-400">
+                                                            {{ $pluginLicense->plugin->name }}
+                                                        </p>
+                                                        @if($pluginLicense->plugin->description)
+                                                            <p class="mt-0.5 text-xs text-gray-500 dark:text-gray-400 line-clamp-1">
+                                                                {{ $pluginLicense->plugin->description }}
+                                                            </p>
+                                                        @endif
+                                                    </div>
+                                                </div>
+                                                <div class="flex flex-col items-end">
+                                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
+                                                        Licensed
+                                                    </span>
+                                                    <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                                                        Purchased {{ $pluginLicense->purchased_at->format('M j, Y') }}
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </a>
+                                </li>
+                            @endforeach
+                        </ul>
+                    </div>
+                </div>
+            @endif
+        @endfeature
 
         {{-- Content --}}
         <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+            <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">NativePHP Licenses</h2>
             @if($licenses->count() > 0)
                 <div class="bg-white dark:bg-gray-800 shadow overflow-hidden sm:rounded-md">
                     <ul class="divide-y divide-gray-200 dark:divide-gray-700">

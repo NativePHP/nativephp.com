@@ -5,9 +5,17 @@
     class="flex flex-col rounded-2xl border border-gray-200 bg-white p-6 shadow-sm transition duration-200 hover:shadow-md hover:border-indigo-300 dark:border-gray-700 dark:bg-slate-800/50 dark:hover:border-indigo-600"
 >
     <div class="flex items-start justify-between">
-        <div class="grid size-12 shrink-0 place-items-center rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 text-white">
-            <x-icons.puzzle class="size-6" />
-        </div>
+        @if ($plugin->hasLogo())
+            <img
+                src="{{ $plugin->getLogoUrl() }}"
+                alt="{{ $plugin->name }} logo"
+                class="size-12 shrink-0 rounded-xl object-cover"
+            />
+        @else
+            <div class="grid size-12 shrink-0 place-items-center rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 text-white">
+                <x-icons.puzzle class="size-6" />
+            </div>
+        @endif
         @if ($plugin->isPaid())
             <span class="inline-flex items-center rounded-full bg-emerald-100 px-2.5 py-0.5 text-xs font-medium text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-400">
                 Paid

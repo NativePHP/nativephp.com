@@ -49,13 +49,14 @@
                     "
                     class="mt-6 text-4xl md:text-5xl lg:text-6xl"
                 >
+                    Mobile
                     <span class="-mx-1.5 text-[#99ceb2] dark:text-indigo-500">
                         {
                     </span>
                     <span class="font-bold">Plugins</span>
                     <span class="-mx-1.5 text-[#99ceb2] dark:text-indigo-500">
                         }
-                    </span>
+                    </span> Rock
                 </h1>
 
                 {{-- Subtitle --}}
@@ -80,7 +81,7 @@
                     class="mx-auto mt-6 max-w-3xl text-lg text-gray-600 dark:text-zinc-400"
                 >
                     Extend your NativePHP Mobile apps with powerful native features.
-                    Install with Composer. Build anything for iOS and Android.
+                    Install with Composer. Build <em>anything</em> for iOS and Android.
                 </p>
 
                 {{-- Call to Action Buttons --}}
@@ -131,6 +132,7 @@
         </section>
 
         {{-- Featured Plugins Section --}}
+        @if ($featuredPlugins->isNotEmpty())
         <section class="mt-24">
             <div
                 x-init="
@@ -185,6 +187,46 @@
                 </div>
             </div>
         </section>
+        @endif
+
+        {{-- Plugin Bundles Section --}}
+        @if ($bundles->isNotEmpty())
+        <section class="mt-16">
+            <div
+                x-init="
+                    () => {
+                        motion.inView($el, (element) => {
+                            motion.animate(
+                                $el,
+                                {
+                                    opacity: [0, 1],
+                                    y: [10, 0],
+                                },
+                                {
+                                    duration: 0.7,
+                                    ease: motion.easeOut,
+                                },
+                            )
+                        })
+                    }
+                "
+            >
+                <h2 class="text-center text-2xl font-semibold md:text-3xl">
+                    Plugin Bundles
+                </h2>
+                <p class="mx-auto mt-3 max-w-2xl text-center text-gray-600 dark:text-zinc-400">
+                    Save money with curated plugin collections.
+                </p>
+
+                {{-- Bundle Cards Grid --}}
+                <div class="mt-10 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+                    @foreach ($bundles as $bundle)
+                        <x-bundle-card :bundle="$bundle" />
+                    @endforeach
+                </div>
+            </div>
+        </section>
+        @endif
 
         {{-- Latest Plugins Section --}}
         <section class="mt-16">
@@ -479,7 +521,7 @@
                 </h2>
 
                 <p class="mt-4 max-w-3xl text-gray-600 dark:text-gray-400">
-                    Are you a Swift or Kotlin developer? Create plugins for the NativePHP community and generate revenue from your expertise.
+                    Know Swift or Kotlin? Create plugins for the NativePHP community and generate revenue from your expertise.
                 </p>
 
                 <div class="mt-8 space-y-5">
@@ -556,7 +598,7 @@
                         </div>
                         <div>
                             <h3 class="text-xl font-medium">
-                                Generate Revenue
+                                Sell Your Plugins (Soon!)
                             </h3>
                             <p class="mt-1 text-gray-600 dark:text-gray-400">
                                 Sell your plugins through our marketplace and earn money from your native development skills.

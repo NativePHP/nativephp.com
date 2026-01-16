@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Plugin;
+use App\Models\PluginBundle;
 use Illuminate\View\View;
 
 class PluginDirectoryController extends Controller
@@ -23,9 +24,16 @@ class PluginDirectoryController extends Controller
             ->take(3)
             ->get();
 
+        $bundles = PluginBundle::query()
+            ->active()
+            ->with('plugins')
+            ->latest()
+            ->get();
+
         return view('plugins', [
             'featuredPlugins' => $featuredPlugins,
             'latestPlugins' => $latestPlugins,
+            'bundles' => $bundles,
         ]);
     }
 
@@ -33,8 +41,11 @@ class PluginDirectoryController extends Controller
     {
         abort_unless($plugin->isApproved(), 404);
 
+        $bundles = $plugin->bundles()->active()->get();
+
         return view('plugin-show', [
             'plugin' => $plugin,
+            'bundles' => $bundles,
         ]);
     }
 }
