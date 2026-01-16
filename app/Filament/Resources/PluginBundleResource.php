@@ -174,6 +174,17 @@ class PluginBundleResource extends Resource
             ->actions([
                 Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
+                Tables\Actions\ActionGroup::make([
+                    Tables\Actions\Action::make('viewListing')
+                        ->label('View Listing Page')
+                        ->icon('heroicon-o-eye')
+                        ->color('gray')
+                        ->url(fn (PluginBundle $record) => route('bundles.show', $record))
+                        ->openUrlInNewTab()
+                        ->visible(fn (PluginBundle $record) => $record->is_active && $record->published_at?->isPast()),
+                ])
+                    ->label('More')
+                    ->icon('heroicon-m-ellipsis-vertical'),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

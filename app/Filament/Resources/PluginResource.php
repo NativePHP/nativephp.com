@@ -211,26 +211,6 @@ class PluginResource extends Resource
                         ->openUrlInNewTab()
                         ->visible(fn (Plugin $record) => $record->isFree()),
 
-                    // Anystack Link (Paid plugins only)
-                    Tables\Actions\Action::make('viewAnystack')
-                        ->label('View on Anystack')
-                        ->icon('heroicon-o-arrow-top-right-on-square')
-                        ->color('gray')
-                        ->url(fn (Plugin $record) => $record->getAnystackUrl())
-                        ->openUrlInNewTab()
-                        ->visible(fn (Plugin $record) => $record->isPaid() && $record->anystack_id),
-
-                    // Anystack Instructions (Paid plugins without ID)
-                    Tables\Actions\Action::make('anystackInstructions')
-                        ->label('Anystack Setup')
-                        ->icon('heroicon-o-information-circle')
-                        ->color('warning')
-                        ->visible(fn (Plugin $record) => $record->isPaid())
-                        ->modalHeading('Anystack Verification Required')
-                        ->modalDescription('For paid plugins, verify that the developer has applied to the "NativePHP Plugin Directory" affiliate program in their Anystack dashboard under the Advertising section.')
-                        ->modalSubmitAction(false)
-                        ->modalCancelActionLabel('Close'),
-
                     // Edit Description Action
                     Tables\Actions\Action::make('editDescription')
                         ->label('Edit Description')
@@ -250,7 +230,6 @@ class PluginResource extends Resource
                         ->modalDescription(fn (Plugin $record) => "Update the description for '{$record->name}'"),
 
                     Tables\Actions\ViewAction::make(),
-                    Tables\Actions\DeleteAction::make(),
                 ])
                     ->label('More')
                     ->icon('heroicon-m-ellipsis-vertical'),

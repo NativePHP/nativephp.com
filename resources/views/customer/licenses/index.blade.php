@@ -85,8 +85,15 @@
                                 <summary class="cursor-pointer text-xs font-medium text-indigo-700 dark:text-indigo-300 hover:text-indigo-900 dark:hover:text-indigo-100">
                                     How to configure Composer
                                 </summary>
-                                <div class="mt-2 rounded bg-gray-900 p-3">
-                                    <code class="block font-mono text-xs text-gray-100 whitespace-pre">composer config http-basic.plugins.nativephp.com {{ auth()->user()->email }} {{ auth()->user()->plugin_license_key }}</code>
+                                <div class="mt-2 space-y-2">
+                                    <p class="text-xs text-indigo-700 dark:text-indigo-300">1. Add the NativePHP plugins repository:</p>
+                                    <div class="rounded bg-gray-900 p-3">
+                                        <code class="block font-mono text-xs text-gray-100 whitespace-pre">composer config repositories.nativephp-plugins composer https://plugins.nativephp.com</code>
+                                    </div>
+                                    <p class="text-xs text-indigo-700 dark:text-indigo-300">2. Configure your credentials:</p>
+                                    <div class="rounded bg-gray-900 p-3">
+                                        <code class="block font-mono text-xs text-gray-100 whitespace-pre">composer config http-basic.plugins.nativephp.com {{ auth()->user()->email }} {{ auth()->user()->plugin_license_key }}</code>
+                                    </div>
                                 </div>
                             </details>
                         </div>
