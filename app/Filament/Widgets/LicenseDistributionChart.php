@@ -70,24 +70,20 @@ class LicenseDistributionChart extends ChartWidget
     protected function getOptions(): array
     {
         return [
+            'scales' => [
+                'x' => [
+                    'display' => false,
+                ],
+                'y' => [
+                    'display' => false,
+                ],
+            ],
             'plugins' => [
                 'legend' => [
                     'position' => 'bottom',
                 ],
                 'tooltip' => [
-                    'callbacks' => [
-                        'label' => '/**
-                         * @param {Object} context
-                         * @returns {string}
-                         */
-                        function(context) {
-                            const label = context.label || "";
-                            const value = context.raw || 0;
-                            const total = context.chart.data.datasets[0].data.reduce((a, b) => a + b, 0);
-                            const percentage = Math.round((value / total) * 100);
-                            return `${label}: ${value} (${percentage}%)`;
-                        }',
-                    ],
+                    'enabled' => true,
                 ],
             ],
         ];
