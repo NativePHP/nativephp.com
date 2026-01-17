@@ -2,9 +2,15 @@
     {{-- Hero --}}
     <x-home.hero />
 
+    {{-- Testimonials --}}
+    <x-home.testimonials />
+
     {{-- Explainer --}}
     <x-home.explainer />
 
     {{-- Partners --}}
     <x-home.partners />
+
+    {{-- Feedback --}}
+    <x-home.feedback />
 </x-layout>

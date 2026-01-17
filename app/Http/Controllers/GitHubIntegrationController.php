@@ -37,6 +37,7 @@ class GitHubIntegrationController extends Controller
     {
         try {
             $githubUser = Socialite::driver('github')->user();
+
             $intent = session()->pull('github_auth_intent', 'link');
 
             if (Auth::check()) {
@@ -49,7 +50,6 @@ class GitHubIntegrationController extends Controller
 
             return redirect()->route('customer.login')
                 ->with('error', 'Please log in first to connect your GitHub account.');
-
         } catch (\Exception $e) {
             Log::error('GitHub OAuth callback failed', [
                 'error' => $e->getMessage(),

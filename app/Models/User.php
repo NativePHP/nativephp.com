@@ -29,6 +29,8 @@ class User extends Authenticatable implements FilamentUser
     protected $casts = [
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
+        'mobile_repo_access_granted_at' => 'datetime',
+        'discord_role_granted_at' => 'datetime',
     ];
 
     public function canAccessPanel(Panel $panel): bool

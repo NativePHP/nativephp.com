@@ -49,6 +49,48 @@ class WallOfLoveSubmissionResource extends Resource
                             ->maxLength(1000)
                             ->rows(4),
                     ]),
+
+                Forms\Components\Section::make('Status & Promotion')
+                    ->schema([
+                        Forms\Components\Toggle::make('is_approved')
+                            ->label('Approved')
+                            ->helperText('Approved submissions appear on the Wall of Love.')
+                            ->formatStateUsing(fn (?WallOfLoveSubmission $record) => $record?->isApproved() ?? false)
+                            ->dehydrated(false)
+                            ->afterStateUpdated(function (bool $state, ?WallOfLoveSubmission $record) {
+                                if (! $record) {
+                                    return;
+                                }
+
+                                if ($state) {
+                                    $record->update([
+                                        'approved_at' => now(),
+                                        'approved_by' => auth()->id(),
+                                    ]);
+                                } else {
+                                    $record->update([
+                                        'approved_at' => null,
+                                        'approved_by' => null,
+                                        'promoted' => false,
+                                        'promoted_testimonial' => null,
+                                    ]);
+                                }
+                            })
+                            ->live(),
+
+                        Forms\Components\Toggle::make('promoted')
+                            ->label('Promoted to Homepage')
+                            ->helperText('Promoted submissions appear in the feedback section on the homepage.')
+                            ->visible(fn (Forms\Get $get) => $get('is_approved'))
+                            ->live(),
+
+                        Forms\Components\Textarea::make('promoted_testimonial')
+                            ->label('Promoted Testimonial (optional override)')
+                            ->helperText('Leave empty to use the original testimonial, or enter a clipped version for the homepage.')
+                            ->rows(4)
+                            ->visible(fn (Forms\Get $get) => $get('is_approved') && $get('promoted')),
+                    ])
+                    ->columns(1),
             ]);
     }
 
@@ -84,6 +126,15 @@ class WallOfLoveSubmissionResource extends Resource
                     ->falseColor('warning')
                     ->sortable(),
 
+                Tables\Columns\IconColumn::make('promoted')
+                    ->label('Promoted')
+                    ->boolean()
+                    ->trueIcon('heroicon-o-star')
+                    ->falseIcon('heroicon-o-star')
+                    ->trueColor('warning')
+                    ->falseColor('gray')
+                    ->sortable(),
+
                 Tables\Columns\TextColumn::make('approvedBy.name')
                     ->label('Approved By')
                     ->toggleable(),
@@ -104,6 +155,12 @@ class WallOfLoveSubmissionResource extends Resource
                         true: fn (Builder $query) => $query->whereNotNull('approved_at'),
                         false: fn (Builder $query) => $query->whereNull('approved_at'),
                     ),
+
+                Tables\Filters\TernaryFilter::make('promoted')
+                    ->label('Promoted')
+                    ->placeholder('All')
+                    ->trueLabel('Promoted')
+                    ->falseLabel('Not Promoted'),
             ])
             ->actions([
                 Tables\Actions\Action::make('approve')
@@ -129,6 +186,33 @@ class WallOfLoveSubmissionResource extends Resource
                     ->requiresConfirmation()
                     ->modalHeading('Unapprove Submission')
                     ->modalDescription('Are you sure you want to unapprove this submission?'),
+
+                Tables\Actions\Action::make('promote')
+                    ->icon('heroicon-o-star')
+                    ->color('warning')
+                    ->visible(fn (WallOfLoveSubmission $record) => $record->isApproved() && ! $record->isPromoted())
+                    ->form([
+                        Forms\Components\Textarea::make('promoted_testimonial')
+                            ->label('Testimonial Text (optional override)')
+                            ->helperText('Leave empty to use the original testimonial, or enter a clipped version.')
+                            ->rows(4)
+                            ->default(fn (WallOfLoveSubmission $record) => $record->testimonial),
+                    ])
+                    ->action(fn (WallOfLoveSubmission $record, array $data) => $record->update([
+                        'promoted' => true,
+                        'promoted_testimonial' => $data['promoted_testimonial'] !== $record->testimonial ? $data['promoted_testimonial'] : null,
+                    ]))
+                    ->modalHeading('Promote to Homepage')
+                    ->modalDescription('This will display this testimonial in the feedback section on the homepage.'),
+
+                Tables\Actions\Action::make('unpromote')
+                    ->icon('heroicon-o-x-mark')
+                    ->color('gray')
+                    ->visible(fn (WallOfLoveSubmission $record) => $record->isPromoted())
+                    ->action(fn (WallOfLoveSubmission $record) => $record->update(['promoted' => false]))
+                    ->requiresConfirmation()
+                    ->modalHeading('Remove from Homepage')
+                    ->modalDescription('This will remove this testimonial from the homepage feedback section.'),
 
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\DeleteAction::make(),

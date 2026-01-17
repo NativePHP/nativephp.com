@@ -41,7 +41,6 @@
             />
         @endif
 
-        {{-- 👇 Hidden temporarily --}}
         {{-- <x-navbar.device-dropdown-item
             href="https://github.com/nativephp/mobile"
             title="GitHub"
