@@ -261,10 +261,11 @@ iOS apps require several credentials from Apple Developer:
 To upload to the App Store directly from the command line, you'll need an API key:
 
 1. Log in to [App Store Connect](https://appstoreconnect.apple.com)
-2. Navigate to Users & Access → Keys
-3. Click the "+" button to create a new key with "Developer" access
-4. Download the `.p8` file immediately (you can't download it again later)
-5. Note the Key ID and Issuer ID displayed on the page
+2. Navigate to Users & Access
+3. Click Integrations tab → Keys → App Store Connect API
+4. Click the "+" or "Request Access" button to create a new key with "Developer" access
+5. Download the `.p8` file immediately (you can't download it again later)
+6. Note the Key ID and Issuer ID displayed on the page
 
 ### Export Methods
 
