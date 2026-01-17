@@ -14,9 +14,18 @@ class PluginAccessTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_returns_401_without_credentials(): void
+    public function test_returns_401_without_api_key(): void
     {
         $response = $this->getJson('/api/plugins/access');
+
+        $response->assertStatus(401)
+            ->assertJson(['message' => 'Unauthorized']);
+    }
+
+    public function test_returns_401_without_credentials(): void
+    {
+        $response = $this->withApiKey()
+            ->getJson('/api/plugins/access');
 
         $response->assertStatus(401)
             ->assertJson(['error' => 'Authentication required']);
@@ -24,7 +33,8 @@ class PluginAccessTest extends TestCase
 
     public function test_returns_401_with_invalid_credentials(): void
     {
-        $response = $this->asBasicAuth('invalid@example.com', 'invalid-key')
+        $response = $this->withApiKey()
+            ->asBasicAuth('invalid@example.com', 'invalid-key')
             ->getJson('/api/plugins/access');
 
         $response->assertStatus(401)
@@ -60,20 +70,21 @@ class PluginAccessTest extends TestCase
             'expires_at' => null, // Never expires
         ]);
 
-        $response = $this->asBasicAuth($user->email, 'test-license-key-123')
+        $response = $this->withApiKey()
+            ->asBasicAuth($user->email, 'test-license-key-123')
             ->getJson('/api/plugins/access');
 
         $response->assertStatus(200)
             ->assertJson([
                 'success' => true,
                 'user' => ['email' => $user->email],
-            ])
-            ->assertJsonCount(2, 'plugins');
+            ]);
 
         $plugins = $response->json('plugins');
         $pluginNames = array_column($plugins, 'name');
 
-        $this->assertContains('vendor/free-plugin', $pluginNames);
+        // Only paid plugins with licenses are returned (not free plugins)
+        $this->assertNotContains('vendor/free-plugin', $pluginNames);
         $this->assertContains('vendor/paid-plugin', $pluginNames);
     }
 
@@ -97,7 +108,8 @@ class PluginAccessTest extends TestCase
             'expires_at' => now()->subDay(),
         ]);
 
-        $response = $this->asBasicAuth($user->email, 'test-license-key-123')
+        $response = $this->withApiKey()
+            ->asBasicAuth($user->email, 'test-license-key-123')
             ->getJson('/api/plugins/access');
 
         $response->assertStatus(200);
@@ -126,7 +138,8 @@ class PluginAccessTest extends TestCase
             'plugin_id' => $paidPlugin->id,
         ]);
 
-        $response = $this->asBasicAuth($user->email, 'test-license-key-123')
+        $response = $this->withApiKey()
+            ->asBasicAuth($user->email, 'test-license-key-123')
             ->getJson('/api/plugins/access/vendor/paid-plugin');
 
         $response->assertStatus(200)
@@ -150,7 +163,8 @@ class PluginAccessTest extends TestCase
             'is_active' => true,
         ]);
 
-        $response = $this->asBasicAuth($user->email, 'test-license-key-123')
+        $response = $this->withApiKey()
+            ->asBasicAuth($user->email, 'test-license-key-123')
             ->getJson('/api/plugins/access/vendor/paid-plugin');
 
         $response->assertStatus(200)
@@ -174,7 +188,8 @@ class PluginAccessTest extends TestCase
             'is_active' => true,
         ]);
 
-        $response = $this->asBasicAuth($user->email, 'test-license-key-123')
+        $response = $this->withApiKey()
+            ->asBasicAuth($user->email, 'test-license-key-123')
             ->getJson('/api/plugins/access/vendor/free-plugin');
 
         $response->assertStatus(200)
@@ -191,7 +206,8 @@ class PluginAccessTest extends TestCase
             'plugin_license_key' => 'test-license-key-123',
         ]);
 
-        $response = $this->asBasicAuth($user->email, 'test-license-key-123')
+        $response = $this->withApiKey()
+            ->asBasicAuth($user->email, 'test-license-key-123')
             ->getJson('/api/plugins/access/vendor/nonexistent');
 
         $response->assertStatus(404)
@@ -202,6 +218,13 @@ class PluginAccessTest extends TestCase
     {
         return $this->withHeaders([
             'Authorization' => 'Basic '.base64_encode("{$username}:{$password}"),
+        ]);
+    }
+
+    protected function withApiKey(): static
+    {
+        return $this->withHeaders([
+            'X-API-Key' => config('services.bifrost.api_key'),
         ]);
     }
 }

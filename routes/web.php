@@ -13,7 +13,6 @@ use App\Http\Controllers\DeveloperOnboardingController;
 use App\Http\Controllers\OpenCollectiveWebhookController;
 use App\Http\Controllers\PluginDirectoryController;
 use App\Http\Controllers\PluginPurchaseController;
-use App\Http\Controllers\PluginRepositoryController;
 use App\Http\Controllers\PluginWebhookController;
 use App\Http\Controllers\ShowBlogController;
 use App\Http\Controllers\ShowDocumentationController;
@@ -295,15 +294,4 @@ Route::middleware(['auth', EnsureFeaturesAreActive::using(ShowAuthButtons::class
     Route::get('onboarding/return', [DeveloperOnboardingController::class, 'return'])->name('onboarding.return');
     Route::get('onboarding/refresh', [DeveloperOnboardingController::class, 'refresh'])->name('onboarding.refresh');
     Route::get('dashboard', [DeveloperOnboardingController::class, 'dashboard'])->name('dashboard');
-});
-
-// Plugin repository routes (plugins.nativephp.com subdomain)
-Route::domain('plugins.'.parse_url(config('app.url'), PHP_URL_HOST))->group(function () {
-    Route::get('packages.json', [PluginRepositoryController::class, 'packagesJson'])->name('plugins.repository.packages');
-    Route::get('p2/{vendor}/{package}.json', [PluginRepositoryController::class, 'packageMetadata'])
-        ->middleware(['composer.auth', 'plugin.access'])
-        ->name('plugins.repository.metadata');
-    Route::get('dist/{vendor}/{package}/{version}.zip', [PluginRepositoryController::class, 'download'])
-        ->middleware(['composer.auth', 'plugin.access'])
-        ->name('plugins.repository.download');
 });

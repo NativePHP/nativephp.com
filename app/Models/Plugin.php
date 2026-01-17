@@ -30,7 +30,6 @@ class Plugin extends Model
         'featured' => 'boolean',
         'is_active' => 'boolean',
         'is_official' => 'boolean',
-        'satis_included' => 'boolean',
         'composer_data' => 'array',
         'nativephp_data' => 'array',
         'last_synced_at' => 'datetime',
@@ -176,11 +175,6 @@ class Plugin extends Model
         return $this->is_official ?? false;
     }
 
-    public function isIncludedInSatis(): bool
-    {
-        return $this->satis_included ?? false;
-    }
-
     /**
      * @param  Builder<Plugin>  $query
      * @return Builder<Plugin>
@@ -217,15 +211,6 @@ class Plugin extends Model
     public function getGithubUrl(): string
     {
         return "https://github.com/{$this->name}";
-    }
-
-    public function getAnystackUrl(): ?string
-    {
-        if (! $this->anystack_id) {
-            return null;
-        }
-
-        return "https://anystack.sh/products/{$this->anystack_id}";
     }
 
     public function getWebhookUrl(): ?string
@@ -367,7 +352,6 @@ class Plugin extends Model
             'approved_at' => now(),
             'approved_by' => $approvedById,
             'rejection_reason' => null,
-            'satis_included' => $this->isPaid(),
         ]);
 
         $this->recordActivity(

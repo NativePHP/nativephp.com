@@ -112,7 +112,6 @@ class PluginFactory extends Factory
             'type' => PluginType::Free,
             'status' => PluginStatus::Pending,
             'featured' => false,
-            'anystack_id' => null,
             'rejection_reason' => null,
             'approved_at' => null,
             'approved_by' => null,
@@ -169,7 +168,6 @@ class PluginFactory extends Factory
     {
         return $this->state(fn (array $attributes) => [
             'type' => PluginType::Free,
-            'anystack_id' => null,
         ]);
     }
 
@@ -177,7 +175,6 @@ class PluginFactory extends Factory
     {
         return $this->state(fn (array $attributes) => [
             'type' => PluginType::Paid,
-            'anystack_id' => fake()->uuid(),
         ]);
     }
 

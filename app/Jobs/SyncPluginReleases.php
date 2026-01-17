@@ -4,6 +4,7 @@ namespace App\Jobs;
 
 use App\Models\Plugin;
 use App\Models\PluginVersion;
+use App\Services\SatisService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -20,12 +21,14 @@ class SyncPluginReleases implements ShouldQueue
 
     public int $backoff = 60;
 
+    protected bool $hasNewReleases = false;
+
     public function __construct(
         public Plugin $plugin,
-        public bool $buildNewReleases = true
+        public bool $triggerSatisBuild = true
     ) {}
 
-    public function handle(): void
+    public function handle(SatisService $satisService): void
     {
         if (! $this->plugin->isApproved()) {
             Log::info("Plugin {$this->plugin->id} is not approved, skipping release sync");
@@ -50,6 +53,11 @@ class SyncPluginReleases implements ShouldQueue
         }
 
         $this->plugin->update(['last_synced_at' => now()]);
+
+        // Trigger satis build if we have new releases
+        if ($this->triggerSatisBuild && $this->hasNewReleases) {
+            $satisService->build([$this->plugin]);
+        }
     }
 
     protected function fetchReleases(string $owner, string $repo, ?string $token): array
@@ -89,7 +97,7 @@ class SyncPluginReleases implements ShouldQueue
             return;
         }
 
-        $pluginVersion = PluginVersion::create([
+        PluginVersion::create([
             'plugin_id' => $this->plugin->id,
             'version' => $version,
             'tag_name' => $tagName,
@@ -104,9 +112,7 @@ class SyncPluginReleases implements ShouldQueue
             'version' => $version,
         ]);
 
-        if ($this->buildNewReleases && $this->plugin->isPaid()) {
-            BuildPluginPackage::dispatch($pluginVersion);
-        }
+        $this->hasNewReleases = true;
     }
 
     protected function getGitHubToken(): ?string
