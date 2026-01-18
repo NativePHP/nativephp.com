@@ -22,6 +22,15 @@
             icon="dollar-circle"
             icon-class="size-5.5"
         />
+        @feature(App\Features\ShowPlugins::class)
+            <x-navbar.device-dropdown-item
+                href="{{ route('plugins') }}"
+                title="Plugins"
+                subtitle="Extend your mobile apps"
+                icon="puzzle"
+                icon-class="size-5"
+            />
+        @endfeature
         @if($showShowcase)
             <x-navbar.device-dropdown-item
                 href="{{ route('showcase', 'mobile') }}"
@@ -31,6 +40,13 @@
                 icon-class="size-4"
             />
         @endif
+
+        {{-- <x-navbar.device-dropdown-item
+            href="https://github.com/nativephp/mobile"
+            title="GitHub"
+            subtitle="Visit our GitHub repository"
+            icon="github"
+        />--}}
     </x-navbar.device-dropdown>
 
     {{-- Desktop dropdown --}}

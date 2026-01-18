@@ -63,4 +63,14 @@ return [
         'site_key' => env('TURNSTILE_SITE_KEY'),
         'secret_key' => env('TURNSTILE_SECRET_KEY'),
     ],
+
+    'satis' => [
+        'url' => env('SATIS_API_URL', 'https://plugins.nativephp.com'),
+        'api_key' => env('SATIS_API_KEY'),
+    ],
+
+    'stripe_connect' => [
+        'client_id' => env('STRIPE_CONNECT_CLIENT_ID'),
+        'platform_fee_percent' => 30,
+    ],
 ];

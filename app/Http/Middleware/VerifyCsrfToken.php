@@ -14,5 +14,6 @@ class VerifyCsrfToken extends Middleware
     protected $except = [
         'stripe/webhook',
         'opencollective/contribution',
+        'webhooks/plugins/*',
     ];
 }

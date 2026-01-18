@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\LicenseController;
+use App\Http\Controllers\Api\PluginAccessController;
 use App\Http\Controllers\Api\TemporaryLinkController;
 use App\Http\Controllers\McpController;
 use Illuminate\Http\Request;
@@ -31,6 +32,11 @@ Route::prefix('mcp')->group(function () {
 });
 
 Route::middleware('auth.api_key')->group(function () {
+    Route::prefix('plugins')->name('api.plugins.')->group(function () {
+        Route::get('/access', [PluginAccessController::class, 'index'])->name('access');
+        Route::get('/access/{vendor}/{package}', [PluginAccessController::class, 'checkAccess'])->name('access.check');
+    });
+
     Route::post('/licenses', [LicenseController::class, 'store']);
     Route::get('/licenses/{key}', [LicenseController::class, 'show']);
     Route::get('/licenses', [LicenseController::class, 'index']);

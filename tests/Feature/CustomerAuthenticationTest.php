@@ -42,7 +42,7 @@ class CustomerAuthenticationTest extends TestCase
             'password' => 'password',
         ]);
 
-        $response->assertRedirect('/customer/licenses');
+        $response->assertRedirect('/dashboard');
         $this->assertAuthenticatedAs($user);
     }
 
@@ -86,12 +86,12 @@ class CustomerAuthenticationTest extends TestCase
 
         $response = $this->actingAs($user)->get('/login');
 
-        $response->assertRedirect('/customer/licenses');
+        $response->assertRedirect('/dashboard');
     }
 
     public function test_unauthenticated_customer_is_redirected_to_login(): void
     {
-        $response = $this->get('/customer/licenses');
+        $response = $this->get('/dashboard');
 
         $response->assertRedirect('/login');
     }
