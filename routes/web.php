@@ -188,7 +188,7 @@ Route::middleware(['auth', EnsureFeaturesAreActive::using(ShowAuthButtons::class
     Route::delete('customer/discord/disconnect', [App\Http\Controllers\DiscordIntegrationController::class, 'disconnect'])->name('discord.disconnect');
 });
 
-Route::get('callback', function (Illuminate\Http\Request $request) {
+Route::get('callback', function (\Illuminate\Http\Request $request) {
     $url = $request->query('url');
 
     if ($url && ! str_starts_with($url, 'http')) {
@@ -234,7 +234,7 @@ Route::middleware(['auth', EnsureFeaturesAreActive::using(ShowAuthButtons::class
     });
 
     // Billing portal
-    Route::get('billing-portal', function (Illuminate\Http\Request $request) {
+    Route::get('billing-portal', function (\Illuminate\Http\Request $request) {
         $user = $request->user();
 
         // Check if user exists in Stripe, create if they don't
