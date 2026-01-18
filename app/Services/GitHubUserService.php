@@ -143,4 +143,66 @@ class GitHubUserService
 
         return json_decode($content, true);
     }
+
+    /**
+     * Create a webhook on a GitHub repository.
+     *
+     * @return array{success: bool, error?: string, webhook_id?: int}
+     */
+    public function createWebhook(string $owner, string $repo, string $webhookUrl, string $secret): array
+    {
+        $token = $this->user->getGitHubToken();
+
+        if (! $token) {
+            return [
+                'success' => false,
+                'error' => 'No GitHub token available',
+            ];
+        }
+
+        $response = Http::withToken($token)
+            ->post("https://api.github.com/repos/{$owner}/{$repo}/hooks", [
+                'name' => 'web',
+                'active' => true,
+                'events' => ['push', 'release'],
+                'config' => [
+                    'url' => $webhookUrl,
+                    'content_type' => 'json',
+                    'secret' => $secret,
+                    'insecure_ssl' => '0',
+                ],
+            ]);
+
+        if ($response->failed()) {
+            $status = $response->status();
+            $body = $response->json();
+
+            Log::warning('Failed to create GitHub webhook', [
+                'user_id' => $this->user->id,
+                'owner' => $owner,
+                'repo' => $repo,
+                'status' => $status,
+                'response' => $body,
+            ]);
+
+            $error = match ($status) {
+                404 => 'Repository not found or you do not have admin access',
+                403 => 'Permission denied - you need admin access to this repository',
+                422 => $body['errors'][0]['message'] ?? 'Webhook already exists or validation failed',
+                default => 'Failed to create webhook',
+            };
+
+            return [
+                'success' => false,
+                'error' => $error,
+            ];
+        }
+
+        $data = $response->json();
+
+        return [
+            'success' => true,
+            'webhook_id' => $data['id'] ?? null,
+        ];
+    }
 }

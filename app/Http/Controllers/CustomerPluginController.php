@@ -9,6 +9,7 @@ use App\Http\Requests\UpdatePluginDescriptionRequest;
 use App\Http\Requests\UpdatePluginLogoRequest;
 use App\Http\Requests\UpdatePluginPriceRequest;
 use App\Models\Plugin;
+use App\Services\GitHubUserService;
 use App\Services\PluginSyncService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
@@ -53,14 +54,34 @@ class CustomerPluginController extends Controller
             $developerAccountId = $user->developerAccount->id;
         }
 
+        // Build the full repository URL from vendor/repo format
+        $repository = trim($request->repository, '/');
+        $repositoryUrl = 'https://github.com/'.$repository;
+        [$owner, $repo] = explode('/', $repository);
+
         $plugin = $user->plugins()->create([
-            'repository_url' => $request->repository_url,
+            'repository_url' => $repositoryUrl,
             'type' => $request->type,
             'status' => PluginStatus::Pending,
             'developer_account_id' => $developerAccountId,
         ]);
 
-        $plugin->generateWebhookSecret();
+        $webhookSecret = $plugin->generateWebhookSecret();
+
+        // Attempt to automatically install the webhook if the user has a GitHub token
+        $webhookInstalled = false;
+        if ($user->hasGitHubToken()) {
+            $githubService = GitHubUserService::for($user);
+            $webhookResult = $githubService->createWebhook(
+                $owner,
+                $repo,
+                $plugin->getWebhookUrl(),
+                $webhookSecret
+            );
+            $webhookInstalled = $webhookResult['success'];
+        }
+
+        $plugin->update(['webhook_installed' => $webhookInstalled]);
 
         if ($request->type === 'paid' && $request->price) {
             $plugin->prices()->create([
@@ -92,8 +113,13 @@ class CustomerPluginController extends Controller
                 ->with('error', $errorMessage);
         }
 
+        $successMessage = 'Your plugin has been submitted for review!';
+        if (! $webhookInstalled) {
+            $successMessage .= ' Please set up the webhook manually to enable automatic syncing.';
+        }
+
         return redirect()->route('customer.plugins.show', $plugin)
-            ->with('success', 'Your plugin has been submitted for review!');
+            ->with('success', $successMessage);
     }
 
     public function show(Plugin $plugin): View

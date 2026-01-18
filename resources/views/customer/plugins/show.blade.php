@@ -133,50 +133,66 @@
                 </div>
             </div>
 
-            {{-- Webhook Setup --}}
+            {{-- Webhook Status --}}
             @if ($plugin->webhook_secret)
-                <div class="mb-6 rounded-lg border border-blue-200 bg-blue-50 p-6 dark:border-blue-900/50 dark:bg-blue-900/20">
-                    <h2 class="flex items-center gap-2 text-lg font-semibold text-blue-900 dark:text-blue-100">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M13.19 8.688a4.5 4.5 0 0 1 1.242 7.244l-4.5 4.5a4.5 4.5 0 0 1-6.364-6.364l1.757-1.757m13.35-.622 1.757-1.757a4.5 4.5 0 0 0-6.364-6.364l-4.5 4.5a4.5 4.5 0 0 0 1.242 7.244" />
-                        </svg>
-                        GitHub Webhook Setup
-                    </h2>
-                    <p class="mt-2 text-sm text-blue-800 dark:text-blue-200">
-                        Add a webhook to your GitHub repository to automatically sync your plugin data when you push changes.
-                    </p>
+                @if ($plugin->webhook_installed)
+                    {{-- Webhook was automatically installed --}}
+                    <div class="mb-6 rounded-lg border border-green-200 bg-green-50 p-6 dark:border-green-900/50 dark:bg-green-900/20">
+                        <h2 class="flex items-center gap-2 text-lg font-semibold text-green-900 dark:text-green-100">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                            </svg>
+                            Webhook Configured
+                        </h2>
+                        <p class="mt-2 text-sm text-green-800 dark:text-green-200">
+                            The GitHub webhook has been automatically configured for your repository. Your plugin data will sync automatically when you push changes or create releases.
+                        </p>
+                    </div>
+                @else
+                    {{-- Webhook needs manual setup --}}
+                    <div class="mb-6 rounded-lg border border-amber-200 bg-amber-50 p-6 dark:border-amber-900/50 dark:bg-amber-900/20">
+                        <h2 class="flex items-center gap-2 text-lg font-semibold text-amber-900 dark:text-amber-100">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z" />
+                            </svg>
+                            Manual Webhook Setup Required
+                        </h2>
+                        <p class="mt-2 text-sm text-amber-800 dark:text-amber-200">
+                            We couldn't automatically install the webhook on your repository. This might be because you don't have admin access to the repository or haven't connected your GitHub account. Please set it up manually to enable automatic syncing.
+                        </p>
 
-                    <div class="mt-4 space-y-4">
-                        <div>
-                            <label class="block text-sm font-medium text-blue-900 dark:text-blue-100">Webhook URL</label>
-                            <div class="mt-1 flex items-center gap-2">
-                                <code class="block flex-1 overflow-x-auto rounded-md bg-white px-3 py-2 font-mono text-sm text-gray-900 dark:bg-gray-800 dark:text-white">{{ $plugin->getWebhookUrl() }}</code>
-                                <button
-                                    type="button"
-                                    onclick="navigator.clipboard.writeText('{{ $plugin->getWebhookUrl() }}')"
-                                    class="inline-flex items-center rounded-md bg-blue-100 px-3 py-2 text-sm font-medium text-blue-700 hover:bg-blue-200 dark:bg-blue-900/50 dark:text-blue-200 dark:hover:bg-blue-900/70"
-                                >
-                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-4">
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="M15.666 3.888A2.25 2.25 0 0 0 13.5 2.25h-3c-1.03 0-1.9.693-2.166 1.638m7.332 0c.055.194.084.4.084.612v0a.75.75 0 0 1-.75.75H9a.75.75 0 0 1-.75-.75v0c0-.212.03-.418.084-.612m7.332 0c.646.049 1.288.11 1.927.184 1.1.128 1.907 1.077 1.907 2.185V19.5a2.25 2.25 0 0 1-2.25 2.25H6.75A2.25 2.25 0 0 1 4.5 19.5V6.257c0-1.108.806-2.057 1.907-2.185a48.208 48.208 0 0 1 1.927-.184" />
-                                    </svg>
-                                </button>
+                        <div class="mt-4 space-y-4">
+                            <div>
+                                <label class="block text-sm font-medium text-amber-900 dark:text-amber-100">Webhook URL</label>
+                                <div class="mt-1 flex items-center gap-2">
+                                    <code class="block flex-1 overflow-x-auto rounded-md bg-white px-3 py-2 font-mono text-sm text-gray-900 dark:bg-gray-800 dark:text-white">{{ $plugin->getWebhookUrl() }}</code>
+                                    <button
+                                        type="button"
+                                        onclick="navigator.clipboard.writeText('{{ $plugin->getWebhookUrl() }}')"
+                                        class="inline-flex items-center rounded-md bg-amber-100 px-3 py-2 text-sm font-medium text-amber-700 hover:bg-amber-200 dark:bg-amber-900/50 dark:text-amber-200 dark:hover:bg-amber-900/70"
+                                    >
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-4">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M15.666 3.888A2.25 2.25 0 0 0 13.5 2.25h-3c-1.03 0-1.9.693-2.166 1.638m7.332 0c.055.194.084.4.084.612v0a.75.75 0 0 1-.75.75H9a.75.75 0 0 1-.75-.75v0c0-.212.03-.418.084-.612m7.332 0c.646.049 1.288.11 1.927.184 1.1.128 1.907 1.077 1.907 2.185V19.5a2.25 2.25 0 0 1-2.25 2.25H6.75A2.25 2.25 0 0 1 4.5 19.5V6.257c0-1.108.806-2.057 1.907-2.185a48.208 48.208 0 0 1 1.927-.184" />
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="rounded-md bg-white p-4 dark:bg-gray-800">
+                                <h3 class="text-sm font-medium text-gray-900 dark:text-white">Setup Instructions</h3>
+                                <ol class="mt-2 list-inside list-decimal space-y-1 text-sm text-gray-600 dark:text-gray-400">
+                                    <li>Go to your repository's <strong>Settings → Webhooks</strong></li>
+                                    <li>Click <strong>Add webhook</strong></li>
+                                    <li>Paste the Webhook URL above into the <strong>Payload URL</strong> field</li>
+                                    <li>Set <strong>Content type</strong> to <code class="rounded bg-gray-100 px-1 dark:bg-gray-700">application/json</code></li>
+                                    <li>Under "Which events would you like to trigger this webhook?", select <strong>Let me select individual events</strong></li>
+                                    <li>Check <strong>Pushes</strong> and <strong>Releases</strong></li>
+                                    <li>Click <strong>Add webhook</strong></li>
+                                </ol>
                             </div>
                         </div>
-
-                        <div class="rounded-md bg-white p-4 dark:bg-gray-800">
-                            <h3 class="text-sm font-medium text-gray-900 dark:text-white">Setup Instructions</h3>
-                            <ol class="mt-2 list-inside list-decimal space-y-1 text-sm text-gray-600 dark:text-gray-400">
-                                <li>Go to your repository's <strong>Settings → Webhooks</strong></li>
-                                <li>Click <strong>Add webhook</strong></li>
-                                <li>Paste the Webhook URL above into the <strong>Payload URL</strong> field</li>
-                                <li>Set <strong>Content type</strong> to <code class="rounded bg-gray-100 px-1 dark:bg-gray-700">application/json</code></li>
-                                <li>Under "Which events would you like to trigger this webhook?", select <strong>Let me select individual events</strong></li>
-                                <li>Check <strong>Pushes</strong> and <strong>Releases</strong></li>
-                                <li>Click <strong>Add webhook</strong></li>
-                            </ol>
-                        </div>
                     </div>
-                </div>
+                @endif
             @endif
 
             {{-- Pricing (Paid plugins only) --}}

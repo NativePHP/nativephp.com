@@ -33,6 +33,7 @@ class Plugin extends Model
         'composer_data' => 'array',
         'nativephp_data' => 'array',
         'last_synced_at' => 'datetime',
+        'webhook_installed' => 'boolean',
     ];
 
     protected static function booted(): void

@@ -76,8 +76,7 @@
                 x-data="{
                     pluginType: '{{ old('type', 'free') }}',
                     repositories: [],
-                    selectedRepo: '',
-                    oldRepoUrl: '{{ old('repository_url', '') }}',
+                    selectedRepo: '{{ old('repository', '') }}',
                     loadingRepos: false,
                     reposLoaded: false,
                     init() {
@@ -98,22 +97,10 @@
                             const data = await response.json();
                             this.repositories = data.repositories || [];
                             this.reposLoaded = true;
-                            // Restore selection from old value if it was a URL
-                            if (this.oldRepoUrl) {
-                                const match = this.repositories.find(r => r.html_url === this.oldRepoUrl);
-                                if (match) {
-                                    this.selectedRepo = match.full_name;
-                                }
-                            }
                         } catch (error) {
                             console.error('Failed to load repositories:', error);
                         }
                         this.loadingRepos = false;
-                    },
-                    getRepoUrl() {
-                        if (!this.selectedRepo) return this.oldRepoUrl || '';
-                        const repo = this.repositories.find(r => r.full_name === this.selectedRepo);
-                        return repo ? repo.html_url : '';
                     }
                 }"
                 class="space-y-8"
@@ -187,7 +174,7 @@
                 <input type="hidden" name="type" value="free" />
                 @endfeature
 
-                {{-- Free Plugin: Repository URL --}}
+                {{-- Free Plugin: Repository --}}
                 <div
                     x-show="pluginType === 'free'"
                     x-transition:enter="transition ease-out duration-200"
@@ -197,24 +184,27 @@
                 >
                     <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Repository</h2>
                     <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">
-                        Enter your public GitHub repository URL.
+                        Enter your public GitHub repository.
                     </p>
 
                     <div class="mt-6">
-                        <label for="repository_url_free" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                            GitHub Repository URL
+                        <label for="repository_free" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                            GitHub Repository
                         </label>
-                        <div class="mt-1">
+                        <div class="mt-1 flex rounded-md shadow-sm">
+                            <span class="inline-flex items-center rounded-l-md border border-r-0 border-gray-300 bg-gray-50 px-3 text-gray-500 dark:border-gray-600 dark:bg-gray-600 dark:text-gray-400 sm:text-sm">
+                                github.com/
+                            </span>
                             <input
-                                type="url"
-                                id="repository_url_free"
-                                :name="pluginType === 'free' ? 'repository_url' : ''"
-                                value="{{ old('repository_url') }}"
-                                placeholder="https://github.com/vendor/repo"
-                                class="block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white sm:text-sm @error('repository_url') border-red-500 dark:border-red-500 @enderror"
+                                type="text"
+                                id="repository_free"
+                                :name="pluginType === 'free' ? 'repository' : ''"
+                                value="{{ old('repository') }}"
+                                placeholder="vendor/repo-name"
+                                class="block w-full min-w-0 flex-1 rounded-none rounded-r-md border border-gray-300 px-3 py-2 focus:border-blue-500 focus:outline-none focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white sm:text-sm @error('repository') border-red-500 dark:border-red-500 @enderror"
                             />
                         </div>
-                        @error('repository_url')
+                        @error('repository')
                             <p class="mt-2 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
                         @else
                             <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">
@@ -297,7 +287,8 @@
                                         <select
                                             id="repository_select"
                                             x-model="selectedRepo"
-                                            class="block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white sm:text-sm @error('repository_url') border-red-500 dark:border-red-500 @enderror"
+                                            :name="pluginType === 'paid' ? 'repository' : ''"
+                                            class="block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white sm:text-sm @error('repository') border-red-500 dark:border-red-500 @enderror"
                                         >
                                             <option value="">Select a repository...</option>
                                             <template x-for="repo in repositories" :key="repo.id">
@@ -305,14 +296,8 @@
                                             </template>
                                         </select>
                                     </template>
-                                    {{-- Hidden input to submit the actual repository URL --}}
-                                    <input
-                                        type="hidden"
-                                        :name="pluginType === 'paid' ? 'repository_url' : ''"
-                                        :value="getRepoUrl()"
-                                    />
                                 </div>
-                                @error('repository_url')
+                                @error('repository')
                                     <p class="mt-2 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
                                 @enderror
                             </div>

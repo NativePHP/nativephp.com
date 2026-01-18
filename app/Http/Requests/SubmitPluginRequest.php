@@ -16,12 +16,17 @@ class SubmitPluginRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'repository_url' => [
+            'repository' => [
                 'required',
-                'url',
+                'string',
                 'max:255',
-                'regex:/^https:\/\/github\.com\/[a-zA-Z0-9_.-]+\/[a-zA-Z0-9_.-]+$/',
-                'unique:plugins,repository_url',
+                'regex:/^[a-zA-Z0-9_.-]+\/[a-zA-Z0-9_.-]+$/',
+                function ($attribute, $value, $fail) {
+                    $url = 'https://github.com/'.trim($value, '/');
+                    if (\App\Models\Plugin::where('repository_url', $url)->exists()) {
+                        $fail('This repository has already been submitted.');
+                    }
+                },
             ],
             'type' => ['required', 'string', Rule::enum(PluginType::class)],
             'price' => [
@@ -37,10 +42,8 @@ class SubmitPluginRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'repository_url.required' => 'Please select or enter your plugin\'s GitHub repository.',
-            'repository_url.url' => 'Please enter a valid URL.',
-            'repository_url.regex' => 'Please enter a valid GitHub repository URL (e.g., https://github.com/vendor/repo).',
-            'repository_url.unique' => 'This repository has already been submitted.',
+            'repository.required' => 'Please enter your plugin\'s GitHub repository.',
+            'repository.regex' => 'Please enter a valid repository in the format vendor/repo-name.',
             'type.required' => 'Please select whether your plugin is free or paid.',
             'type.enum' => 'Please select a valid plugin type.',
             'price.required_if' => 'Please enter a price for your paid plugin.',
