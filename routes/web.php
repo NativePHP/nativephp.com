@@ -224,13 +224,13 @@ Route::middleware(['auth', EnsureFeaturesAreActive::using(ShowAuthButtons::class
         Route::get('plugins', [CustomerPluginController::class, 'index'])->name('plugins.index');
         Route::get('plugins/submit', [CustomerPluginController::class, 'create'])->name('plugins.create');
         Route::post('plugins', [CustomerPluginController::class, 'store'])->name('plugins.store');
+        Route::patch('plugins/display-name', [CustomerPluginController::class, 'updateDisplayName'])->name('plugins.display-name');
         Route::get('plugins/{plugin}', [CustomerPluginController::class, 'show'])->name('plugins.show');
         Route::patch('plugins/{plugin}', [CustomerPluginController::class, 'update'])->name('plugins.update');
         Route::post('plugins/{plugin}/resubmit', [CustomerPluginController::class, 'resubmit'])->name('plugins.resubmit');
         Route::post('plugins/{plugin}/logo', [CustomerPluginController::class, 'updateLogo'])->name('plugins.logo.update');
         Route::delete('plugins/{plugin}/logo', [CustomerPluginController::class, 'deleteLogo'])->name('plugins.logo.delete');
         Route::patch('plugins/{plugin}/price', [CustomerPluginController::class, 'updatePrice'])->name('plugins.price.update');
-        Route::patch('plugins/display-name', [CustomerPluginController::class, 'updateDisplayName'])->name('plugins.display-name');
     });
 
     // Billing portal
