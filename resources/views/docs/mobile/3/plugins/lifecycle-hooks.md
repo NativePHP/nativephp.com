@@ -12,7 +12,7 @@ compilation? Copy assets to the right platform directory? Run validation? Hooks 
 
 #### Declarative vs Programmatic Assets
 
-For simple file copying, use the [declarative `assets` field](advanced-configuration.md#declarative-assets) in your
+For simple file copying, use the [declarative `assets` field](advanced-configuration#declarative-assets) in your
 manifest. Use the `copy_assets` hook only when you need dynamic behavior like downloading files, unzipping archives, or
 conditional copying.
 
@@ -132,3 +132,8 @@ Hooks run as normal Artisan commands. You have full access to Laravel's console 
 `$this->warn()`, progress bars, and more.
 
 </aside>
+
+## Official Plugins & Dev Kit
+
+Browse ready-made plugins or get the Dev Kit to build your own.
+[Visit the NativePHP Plugin Marketplace →](https://nativephp.com/plugins)

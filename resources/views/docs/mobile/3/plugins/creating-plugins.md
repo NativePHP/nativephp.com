@@ -13,6 +13,18 @@ php artisan native:plugin:create
 
 This walks you through naming, namespace selection, and feature options, then generates a complete plugin structure.
 
+<aside>
+
+#### Build Plugins 10x Faster
+
+Writing native Kotlin and Swift code is the hardest part of plugin development. The
+[NativePHP Plugin Development Kit](https://nativephp.com/plugins) for Claude Code can generate production-ready
+plugins in minutes — complete with bridge functions, events, permissions, and platform-specific implementations.
+
+[Get the Plugin Dev Kit →](https://nativephp.com/plugins)
+
+</aside>
+
 ## Plugin Structure
 
 A plugin follows a standard layout:
@@ -145,15 +157,20 @@ The manifest declares native-specific configuration for your plugin. Package met
 | `android.receivers` | No | Broadcast receivers to register |
 | `android.providers` | No | Content providers to register |
 | `android.meta_data` | No | Application meta-data entries |
+| `android.min_version` | No | Minimum Android SDK version required |
+| `android.init_function` | No | Native function to call during app initialization |
 | `ios.info_plist` | No | Info.plist entries (permissions, API keys) |
 | `ios.dependencies` | No | Swift packages and CocoaPods |
 | `ios.background_modes` | No | UIBackgroundModes values |
 | `ios.entitlements` | No | App entitlements |
+| `ios.capabilities` | No | iOS capabilities for Xcode project |
+| `ios.min_version` | No | Minimum iOS version required |
+| `ios.init_function` | No | Native function to call during app initialization |
 | `assets` | No | Declarative asset copying |
 | `hooks` | No | Lifecycle hook commands |
 | `secrets` | No | Required environment variables |
 
-See [Advanced Configuration](advanced-configuration.md) for detailed documentation on each field.
+See [Advanced Configuration](advanced-configuration) for detailed documentation on each field.
 
 ## Local Development
 
@@ -176,6 +193,15 @@ composer require vendor/my-plugin
 Changes to your plugin's PHP code are picked up immediately. Changes to native code require a rebuild with
 `php artisan native:run`.
 
+When testing significant changes to your plugin's native code or manifest, you may need to force a fresh install of
+the native projects:
+
+```shell
+php artisan native:install --force
+```
+
+This ensures the native projects are rebuilt from scratch with your latest plugin configuration.
+
 <aside>
 
 #### Validate Early and Often
@@ -191,13 +217,13 @@ After installing a plugin with Composer, you need to register it so it gets comp
 
 ### First Time Setup
 
-Publish the plugins service provider:
+Publish the NativeServiceProvider:
 
 ```shell
 php artisan vendor:publish --tag=nativephp-plugins-provider
 ```
 
-This creates `app/Providers/NativePluginsServiceProvider.php`.
+This creates `app/Providers/NativeServiceProvider.php`.
 
 ### Register a Plugin
 
@@ -261,34 +287,90 @@ export async function doSomething(options = {}) {
 
 Users can then import your functions directly in Vue, React, or vanilla JS.
 
-## Claude Code Plugin
+## NativePHP Plugin Development Kit
 
-If you're using [Claude Code](https://claude.com/claude-code), install the NativePHP plugin development tools from
-the Claude Code Plugins marketplace. This gives you specialized agents and skills for writing native code.
+<aside>
 
-### Installation
+#### The Fastest Way to Build Native Plugins
 
-```shell
-claude plugins:add https://github.com/NativePHP/ClaudePlugins/tree/main/nativephp-plugin-dev
-```
+Most Laravel developers aren't Kotlin or Swift experts — and that's okay. The **NativePHP Plugin Development Kit** for
+Claude Code turns natural language into production-ready native code.
+
+Describe what you want ("a plugin that scans barcodes and returns product info") and get a complete, working plugin
+with proper bridge functions, events, permissions, and both iOS and Android implementations.
+
+[Get the Plugin Dev Kit →](https://nativephp.com/plugins)
+
+</aside>
+
+If you're using [Claude Code](https://claude.com/claude-code), the Plugin Development Kit supercharges your workflow
+with specialized agents trained on NativePHP's architecture.
 
 ### What's Included
 
-The plugin provides:
+- **Kotlin/Android Expert Agent** — Writes correct bridge functions, handles Android lifecycles, configures Gradle
+- **Swift/iOS Expert Agent** — Implements iOS bridge functions, manages Info.plist, configures SPM/CocoaPods
+- **Plugin Architect Agent** — Designs plugin structure, manifest configuration, and Laravel integration
+- **Interactive Commands** — `/create-nativephp-plugin` scaffolds complete plugins from a description
+- **Validation Tools** — `/validate-nativephp-plugin` catches errors before you build
 
-- **Specialized Agents** — Expert agents for Kotlin/Android and Swift/iOS native code
-- **Plugin Scaffold Command** — Run `/create-nativephp-plugin` to scaffold a complete plugin
-- **Plugin Validator** — Run `/validate-nativephp-plugin` to check your plugin structure
-- **Skills for Native Patterns** — Documentation for bridge functions, events, and architecture
+### Why It's Worth It
 
-### Usage
+Writing native mobile code is hard. These agents understand:
 
-Once installed, you can:
+- NativePHP's bridge function patterns and response formats
+- Platform-specific APIs and how to expose them to PHP
+- Permission declarations, entitlements, and manifest configuration
+- Event dispatching from native code to Livewire components
+- Dependency management across Gradle, CocoaPods, and SPM
 
-- Ask Claude Code to "create a NativePHP plugin for [your use case]"
-- Run `/create-nativephp-plugin` to scaffold a new plugin interactively
-- Run `/validate-nativephp-plugin` to validate your plugin structure
-- Ask about native code patterns — the agents understand NativePHP conventions
+Instead of learning two new languages and their ecosystems, describe what you need and let the agents handle the
+implementation details.
 
-The agents are context-aware and will help you write correct Kotlin bridge functions, Swift implementations,
-manifest configuration, and Laravel facades.
+[Get the Plugin Dev Kit →](https://nativephp.com/plugins)
+
+## AI Development Tools
+
+NativePHP includes built-in commands for AI-assisted plugin development.
+
+### Install Development Agents
+
+Install specialized AI agents for plugin development:
+
+```shell
+php artisan native:plugin:install-agent
+```
+
+This copies agent definition files to your project's `.claude/agents/` directory. Available agents include:
+
+- **kotlin-android-expert** — Deep Android/Kotlin native development
+- **swift-ios-expert** — Deep iOS/Swift native development
+- **js-bridge-expert** — JavaScript/TypeScript client integration
+- **plugin-writer** — General plugin scaffolding and structure
+- **plugin-docs-writer** — Documentation and Boost guidelines
+
+Use `--all` to install all agents without prompting, or `--force` to overwrite existing files.
+
+### Create Boost Guidelines
+
+If you're using [Boost](https://laravel.com/ai/boost), create AI guidelines for your plugin:
+
+```shell
+php artisan native:plugin:boost
+```
+
+This generates a `resources/boost/guidelines/core.blade.php` file in your plugin that documents:
+
+- How to use your plugin's facade
+- Available methods and their descriptions
+- Events and how to listen for them
+- JavaScript usage examples
+
+When users install your plugin and run `php artisan boost:install`, these guidelines are automatically loaded,
+helping AI assistants understand how to use your plugin correctly.
+
+## Ready to Build?
+
+You now have everything you need to create NativePHP plugins. For most developers, the
+[Plugin Development Kit](https://nativephp.com/plugins) is the fastest path from idea to working plugin — it
+handles the native code complexity so you can focus on what your plugin does, not how to write Kotlin and Swift.

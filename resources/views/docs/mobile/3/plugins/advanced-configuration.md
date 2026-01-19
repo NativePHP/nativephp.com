@@ -3,6 +3,16 @@ title: Advanced Configuration
 order: 750
 ---
 
+<aside>
+
+#### Let AI Handle the Complexity
+
+Advanced plugin configuration can be tricky to get right. The [NativePHP Plugin Dev Kit](https://nativephp.com/plugins)
+generates correct manifest configurations, Gradle dependencies, CocoaPods specs, and platform-specific code — so you
+don't have to memorize these docs.
+
+</aside>
+
 ## Secrets & Environment Variables
 
 Plugins that require API keys, tokens, or other sensitive configuration can declare required environment variables using
@@ -221,7 +231,7 @@ variable values during the build:
 
 <aside>
 
-Use [lifecycle hooks](lifecycle-hooks.md) for complex asset handling like downloading large files, unzipping archives,
+Use [lifecycle hooks](lifecycle-hooks) for complex asset handling like downloading large files, unzipping archives,
 or conditional asset placement.
 
 </aside>
@@ -281,6 +291,79 @@ Entitlements are written to `NativePHP.entitlements`. If the file doesn't exist,
 <aside>
 
 Many entitlements require corresponding capabilities enabled in your Apple Developer account and Xcode project settings.
+
+</aside>
+
+## iOS Capabilities
+
+Declare iOS capabilities your plugin requires. These are separate from entitlements and are used for Xcode project
+configuration:
+
+```json
+{
+    "ios": {
+        "capabilities": ["push-notifications", "background-modes", "healthkit"]
+    }
+}
+```
+
+## Minimum Platform Versions
+
+Specify minimum platform versions your plugin requires:
+
+```json
+{
+    "android": {
+        "min_version": 33
+    },
+    "ios": {
+        "min_version": "18.0"
+    }
+}
+```
+
+- **Android** — Minimum SDK version (integer, e.g., `33` for Android 13)
+- **iOS** — Minimum iOS version (string, e.g., `"18.0"`)
+
+NativePHP currently requires a minimum of Android SDK 33 and iOS 18. Your plugin's minimum versions cannot be lower
+than these. Use this field when your plugin requires a higher version than NativePHP's baseline.
+
+If a user's app targets a lower version than your plugin requires, they'll receive a warning during plugin validation.
+
+## Initialization Functions
+
+Plugins can specify native functions to call during app initialization. This is useful for SDKs that require early
+setup before any bridge functions are called:
+
+```json
+{
+    "android": {
+        "init_function": "com.myvendor.plugins.myplugin.MyPluginInit.initialize"
+    },
+    "ios": {
+        "init_function": "MyPluginInit.initialize"
+    }
+}
+```
+
+The init function is called once when the app starts, before any bridge functions are available. Use this for:
+- SDK initialization that must happen early
+- Setting up global state or singletons
+- Registering observers or listeners
+
+<aside>
+
+Init functions run synchronously during app startup. Keep them fast to avoid slowing down app launch.
+
+</aside>
+
+<aside>
+
+#### Skip the Guesswork
+
+Building a plugin like this from scratch means learning Gradle, CocoaPods, Swift Package Manager, and two unfamiliar
+languages. The [NativePHP Plugin Dev Kit](https://nativephp.com/plugins) handles all of it — describe what you want
+and get a working plugin with correct configurations for both platforms.
 
 </aside>
 
@@ -364,3 +447,8 @@ Here's a complete manifest for a plugin that integrates Firebase ML Kit with a c
     }
 }
 ```
+
+## Official Plugins & Dev Kit
+
+Browse ready-made plugins for common use cases, or get the Plugin Dev Kit to build your own.
+[Visit the NativePHP Plugin Marketplace →](https://nativephp.com/plugins)

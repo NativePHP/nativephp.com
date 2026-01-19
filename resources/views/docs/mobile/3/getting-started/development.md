@@ -219,7 +219,7 @@ is not yet available.
 
 ## Laravel Boost
 
-NativePHP for Mobile supports [Laravel Boost](https://github.com/laravel/boost) which aims to accelerate AI-assisted development by providing
+NativePHP for Mobile supports [Laravel Boost](https://laravel.com/ai/boost) which aims to accelerate AI-assisted development by providing
 the essential context and structure that AI needs to generate high-quality, Laravel-specific code.
 
 After installing `nativephp/mobile` and `laravel/boost` simply run `php artisan boost:install` and follow the prompts

@@ -44,7 +44,7 @@ ever. In just a few minutes, you can go from code to app store submission.
 2. NativePHP's custom Swift/Kotlin bridges manage the PHP environment, running your PHP code directly.
 3. A custom PHP extension is compiled into PHP, that exposes PHP interfaces to native functions.
 4. Build with HTML, JavaScript, Tailwind, Blade, Livewire, React, Vue, Svelte — whatever you're most comfortable with!
-5. And now in v2: use truly native UI components too with [EDGE](/docs/mobile/3/edge-components/)!
+5. And now in v3: use truly native UI components too with [EDGE](/docs/mobile/3/edge-components/)!
 
 You simply interact with an easy-to-use set of functions from PHP and everything just works!
 

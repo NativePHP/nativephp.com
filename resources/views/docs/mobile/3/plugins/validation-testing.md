@@ -80,3 +80,8 @@ Add `$this->info()` or `Log::debug()` in your native code to trace execution. Ch
 - Confirm you're dispatching on the main thread
 - Check the event class name matches the manifest
 - Verify the `#[OnNative]` attribute uses the correct class
+
+## Official Plugins & Dev Kit
+
+Skip the debugging — browse ready-made plugins or get the Dev Kit to build your own.
+[Visit the NativePHP Plugin Marketplace →](https://nativephp.com/plugins)
