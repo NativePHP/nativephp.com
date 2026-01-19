@@ -8,7 +8,7 @@ order: 500
 Many native operations are asynchronous — ML inference, sensor readings, background tasks. Your native code needs a
 way to send results back to PHP when they're ready. That's where events come in.
 
-Events are dispatched from native code and received by your Livewire components, just like the built-in APIs.
+Events are dispatched from native code and received by your Livewire components.
 
 ## Declaring Events
 
@@ -103,19 +103,7 @@ will silently fail.
 
 </aside>
 
-## Listening in Livewire
+## Official Plugins & Dev Kit
 
-Use the `#[OnNative]` attribute to handle plugin events:
-
-```php
-use Native\Mobile\Attributes\OnNative;
-use Vendor\MyPlugin\Events\ProcessingComplete;
-
-#[OnNative(ProcessingComplete::class)]
-public function handleComplete(string $result, ?string $id = null)
-{
-    $this->processedResult = $result;
-}
-```
-
-The attribute wires up the JavaScript event listener automatically.
+Skip the complexity — browse ready-made plugins or get the Dev Kit to build your own.
+[Visit the NativePHP Plugin Marketplace →](https://nativephp.com/plugins)

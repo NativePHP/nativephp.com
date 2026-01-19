@@ -44,6 +44,9 @@ List Android permissions as strings under `android.permissions`:
 
 These are added to the app's `AndroidManifest.xml` at build time.
 
+See the <a href="https://developer.android.com/reference/android/Manifest.permission#summary" target="_blank">Android Manifest.permission reference</a>
+for a complete list of available permissions.
+
 ### iOS Info.plist Entries
 
 iOS requires usage descriptions for each permission, plus any API keys or configuration tokens your plugin needs. Provide
@@ -66,6 +69,9 @@ These are merged into the app's `Info.plist`. You can include:
 - Permission usage descriptions (`NS*UsageDescription` keys)
 - API tokens and configuration keys
 - Any other Info.plist entries your plugin requires
+
+See the <a href="https://developer.apple.com/documentation/bundleresources/information-property-list" target="_blank">Apple Information Property List reference</a>
+for all available keys.
 
 Use `${ENV_VAR}` placeholders for sensitive values like API tokens.
 
@@ -245,3 +251,8 @@ Here's a complete manifest for an ML plugin that uses Mapbox maps:
     }
 }
 ```
+
+## Official Plugins & Dev Kit
+
+Skip the configuration complexity — browse ready-made plugins or get the Dev Kit to build your own.
+[Visit the NativePHP Plugin Marketplace →](https://nativephp.com/plugins)

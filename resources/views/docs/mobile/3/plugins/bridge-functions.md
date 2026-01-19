@@ -107,9 +107,13 @@ class MyPlugin
 {
     public function doSomething(array $options = []): mixed
     {
-        $result = nativephp_call('MyPlugin.DoSomething', json_encode($options));
+        if (function_exists('nativephp_call')) {
+            $result = nativephp_call('MyPlugin.DoSomething', json_encode($options));
 
-        return json_decode($result)?->data;
+            return json_decode($result)?->data;
+        }
+
+        return null;
     }
 }
 ```
@@ -129,3 +133,8 @@ return BridgeResponse.error("Something went wrong")
 ```
 
 The error message is available in PHP through the response.
+
+## Official Plugins & Dev Kit
+
+Need native functionality without writing Kotlin or Swift? Browse ready-made plugins or get the Dev Kit to build your own.
+[Visit the NativePHP Plugin Marketplace →](https://nativephp.com/plugins)

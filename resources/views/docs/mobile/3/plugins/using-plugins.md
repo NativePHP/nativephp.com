@@ -11,7 +11,27 @@ Plugins are standard Composer packages. Install them like any other Laravel pack
 composer require vendor/nativephp-plugin-name
 ```
 
-The plugin's service provider will be auto-discovered by Laravel.
+The plugin's PHP service provider will be auto-discovered by Laravel, but the native code won't be included in builds
+until you explicitly register it.
+
+## Register the Plugin
+
+For security, plugins must be explicitly registered before their native code is compiled into your app. This prevents
+transitive dependencies from automatically including native code without your consent.
+
+First, ensure you've published the NativeServiceProvider:
+
+```shell
+php artisan vendor:publish --tag=nativephp-plugins-provider
+```
+
+Then register the plugin:
+
+```shell
+php artisan native:plugin:register vendor/nativephp-plugin-name
+```
+
+This adds the plugin to your `app/Providers/NativeServiceProvider.php` file.
 
 ## Verify Installation
 
@@ -35,7 +55,7 @@ The plugin's Swift and Kotlin code gets compiled into your app automatically.
 
 ## Using Plugin Features
 
-Each plugin provides its own facade and follows the same patterns as the built-in APIs.
+Each plugin provides its own facade for interacting with native functionality.
 
 ```php
 use Vendor\PluginName\Facades\PluginName;
@@ -46,7 +66,7 @@ $result = PluginName::doSomething(['option' => 'value']);
 
 ## Listening to Plugin Events
 
-Plugins dispatch events just like the core APIs. Use the `#[OnNative]` attribute in your Livewire components:
+Plugins dispatch events to your Livewire components. Use the `#[OnNative]` attribute to listen for them:
 
 ```php
 use Native\Mobile\Attributes\OnNative;
@@ -75,3 +95,25 @@ into your app's configuration during build.
 
 If a plugin needs camera access, microphone, or other sensitive permissions, you'll see them listed when you run
 `native:plugin:list`.
+
+## Removing a Plugin
+
+To completely uninstall a plugin:
+
+```shell
+php artisan native:plugin:uninstall vendor/nativephp-plugin-name
+```
+
+This command:
+- Unregisters the plugin from your `NativeServiceProvider`
+- Removes the package via Composer
+- Removes the path repository from `composer.json` (if applicable)
+- Optionally deletes the plugin source directory (for local path repositories)
+
+Use `--force` to skip confirmation prompts, or `--keep-files` to preserve the source directory when uninstalling
+a local plugin.
+
+## Official Plugins & Dev Kit
+
+Find ready-made plugins for common use cases, or get the Dev Kit to build your own.
+[Visit the NativePHP Plugin Marketplace →](https://nativephp.com/plugins)
