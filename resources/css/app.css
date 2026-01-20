@@ -133,12 +133,12 @@ nav.docs-navigation > ul > li {
     & > a {
         @apply font-semibold;
         @apply mb-1.5 px-3 py-2.5 no-underline;
-        @apply rounded-3xl border dark:border-white/15;
+        @apply rounded-lg;
     }
 }
 
 nav.docs-navigation > ul > li.active > a {
-    @apply text-black dark:text-white;
+    @apply bg-violet-100 text-black dark:bg-violet-950/50 dark:text-white;
 
     & > svg {
         @apply text-violet-400;
@@ -159,7 +159,7 @@ nav.docs-navigation > ul > li > ul {
         @apply font-normal;
 
         & a {
-            @apply ml-3 block w-full border-l-[1.5px] py-1.5 pl-3 transition-all duration-200 dark:border-white/10;
+            @apply ml-3 block w-full border-l-2 py-1.5 pl-3 transition-all duration-200 dark:border-white/10;
         }
 
         &.exact-active a {
