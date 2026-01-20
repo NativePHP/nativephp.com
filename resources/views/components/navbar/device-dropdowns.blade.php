@@ -27,7 +27,7 @@
                 href="{{ route('plugins') }}"
                 title="Plugins"
                 subtitle="Extend your mobile apps"
-                icon="puzzle"
+                icon="plug"
                 icon-class="size-5"
             />
         @endfeature
