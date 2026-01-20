@@ -2,6 +2,9 @@
     {{-- Hero --}}
     <x-home.hero />
 
+    {{-- Announcements: Plugins, Mimi, Jump --}}
+    <x-home.announcements />
+
     {{-- Testimonials --}}
     <x-home.testimonials />
 
