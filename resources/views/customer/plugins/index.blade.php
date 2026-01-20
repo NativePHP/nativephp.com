@@ -49,7 +49,7 @@
                 {{-- Browse Plugins Card --}}
                 <div class="rounded-lg border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-gray-800">
                     <div class="flex size-12 items-center justify-center rounded-lg bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-300">
-                        <x-icons.puzzle class="size-6" />
+                        <x-vaadin-plug class="size-6" />
                     </div>
                     <h3 class="mt-4 text-lg font-semibold text-gray-900 dark:text-white">Browse Plugins</h3>
                     <p class="mt-2 text-sm text-gray-600 dark:text-gray-400">

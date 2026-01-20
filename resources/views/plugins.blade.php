@@ -24,7 +24,7 @@
                     "
                 >
                     <div class="mx-auto grid size-20 place-items-center rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-600 text-white shadow-lg">
-                        <x-icons.puzzle class="size-10" />
+                        <x-vaadin-plug class="size-10"/>
                     </div>
                 </div>
 
@@ -112,7 +112,7 @@
                             href="{{ route('plugins.directory') }}"
                             class="flex items-center justify-center gap-2.5 rounded-xl bg-zinc-800 px-6 py-4 text-white transition duration-200 hover:bg-zinc-900 dark:bg-indigo-700/80 dark:hover:bg-indigo-900"
                         >
-                            <x-icons.puzzle class="size-5" />
+                            <x-vaadin-plug class="size-5" />
                             Browse Plugins
                         </a>
                     </div>
@@ -166,19 +166,19 @@
                         <x-plugin-card :plugin="$plugin" />
                     @empty
                         <div class="flex flex-col items-center justify-center rounded-2xl border-2 border-dashed border-gray-300 bg-gray-50 p-8 text-center dark:border-gray-700 dark:bg-slate-800/50">
-                            <x-icons.puzzle class="size-8 text-gray-400 dark:text-gray-500" />
+                            <x-vaadin-plug class="size-8 text-gray-400 dark:text-gray-500" />
                             <p class="mt-3 text-sm text-gray-500 dark:text-gray-400">
                                 Featured plugins coming soon
                             </p>
                         </div>
                         <div class="hidden flex-col items-center justify-center rounded-2xl border-2 border-dashed border-gray-300 bg-gray-50 p-8 text-center md:flex dark:border-gray-700 dark:bg-slate-800/50">
-                            <x-icons.puzzle class="size-8 text-gray-400 dark:text-gray-500" />
+                            <x-vaadin-plug class="size-8 text-gray-400 dark:text-gray-500" />
                             <p class="mt-3 text-sm text-gray-500 dark:text-gray-400">
                                 Featured plugins coming soon
                             </p>
                         </div>
                         <div class="hidden flex-col items-center justify-center rounded-2xl border-2 border-dashed border-gray-300 bg-gray-50 p-8 text-center lg:flex dark:border-gray-700 dark:bg-slate-800/50">
-                            <x-icons.puzzle class="size-8 text-gray-400 dark:text-gray-500" />
+                            <x-vaadin-plug class="size-8 text-gray-400 dark:text-gray-500" />
                             <p class="mt-3 text-sm text-gray-500 dark:text-gray-400">
                                 Featured plugins coming soon
                             </p>
@@ -678,7 +678,7 @@
                             href="{{ route('plugins.directory') }}"
                             class="flex items-center justify-center gap-2.5 rounded-xl bg-zinc-800 px-6 py-4 text-white transition duration-200 hover:bg-zinc-900 dark:bg-indigo-700/80 dark:hover:bg-indigo-900"
                         >
-                            <x-icons.puzzle class="size-5" />
+                            <x-vaadin-plug class="size-5" />
                             Browse Plugins
                         </a>
                     </div>

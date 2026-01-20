@@ -16,7 +16,7 @@
                         </a>
                         @feature(App\Features\ShowPlugins::class)
                             <a href="{{ route('customer.plugins.index') }}" class="inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-                                <x-icons.puzzle class="mr-2 -ml-1 size-4" />
+                                <x-vaadin-plug class="mr-2 -ml-1 size-4" />
                                 Plugins
                             </a>
                         @endfeature
@@ -112,7 +112,7 @@
                                                             <img src="{{ $pluginLicense->plugin->getLogoUrl() }}" alt="{{ $pluginLicense->plugin->name }}" class="size-10 rounded-lg object-cover">
                                                         @else
                                                             <div class="grid size-10 place-items-center rounded-lg bg-gradient-to-br from-indigo-500 to-purple-600 text-white">
-                                                                <x-icons.puzzle class="size-5" />
+                                                                <x-vaadin-plug class="size-5" />
                                                             </div>
                                                         @endif
                                                     </div>

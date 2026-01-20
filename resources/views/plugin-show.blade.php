@@ -60,7 +60,7 @@
                     />
                 @else
                     <div class="grid size-16 shrink-0 place-items-center rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-600 text-white">
-                        <x-icons.puzzle class="size-8" />
+                        <x-vaadin-plug class="size-8" />
                     </div>
                 @endif
                 <div>

@@ -160,7 +160,7 @@
                             </a>
                         @empty
                             <div class="px-4 py-8 text-center sm:px-6">
-                                <x-icons.puzzle class="mx-auto size-8 text-gray-400" />
+                                <x-vaadin-plug class="mx-auto size-8 text-gray-400" />
                                 <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">No plugins yet</p>
                                 <a href="{{ route('customer.plugins.create') }}" class="mt-2 inline-flex text-sm font-medium text-indigo-600 hover:text-indigo-500 dark:text-indigo-400">
                                     Submit your first plugin

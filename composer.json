@@ -11,6 +11,7 @@
         "php": "^8.1",
         "artesaos/seotools": "^1.2",
         "blade-ui-kit/blade-heroicons": "^2.3",
+        "codeat3/blade-vaadin-icons": "^1.6",
         "doctrine/dbal": "^3.9",
         "embed/embed": "^4.4",
         "filament/filament": "^3.2",
@@ -29,6 +30,7 @@
         "simonhamp/the-og": "^0.7.0",
         "spatie/laravel-menu": "^4.1",
         "spatie/yaml-front-matter": "^2.0",
+        "stephenjude/filament-feature-flags": "^3.0",
         "symfony/http-client": "^7.2",
         "symfony/mailgun-mailer": "^7.1",
         "torchlight/torchlight-commonmark": "^0.5.5"

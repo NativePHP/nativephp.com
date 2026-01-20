@@ -99,7 +99,7 @@
             @endif
         @else
             <div class="flex flex-col items-center justify-center rounded-2xl border-2 border-dashed border-gray-300 bg-gray-50 p-12 text-center dark:border-gray-700 dark:bg-slate-800/50">
-                <x-icons.puzzle class="size-12 text-gray-400 dark:text-gray-500" />
+                <x-vaadin-plug class="size-12 text-gray-400 dark:text-gray-500" />
                 <h3 class="mt-4 text-lg font-medium text-gray-900 dark:text-white">No plugins found</h3>
                 @if ($search || $authorUser)
                     <p class="mt-2 text-gray-600 dark:text-gray-400">

@@ -41,32 +41,29 @@ class PluginResource extends Resource
                             ->visible(fn (?Plugin $record) => $record !== null),
 
                         Forms\Components\TextInput::make('name')
-                            ->label('Composer Package Name')
-                            ->disabled(),
+                            ->label('Composer Package Name'),
 
                         Forms\Components\Select::make('type')
-                            ->options(PluginType::class)
-                            ->disabled(),
+                            ->options(PluginType::class),
 
                         Forms\Components\TextInput::make('repository_url')
                             ->label('Repository URL')
-                            ->disabled()
+
                             ->url()
                             ->suffixIcon('heroicon-o-arrow-top-right-on-square')
                             ->suffixIconColor('gray'),
 
                         Forms\Components\Select::make('status')
-                            ->options(PluginStatus::class)
-                            ->disabled(),
+                            ->options(PluginStatus::class),
 
                         Forms\Components\Textarea::make('description')
                             ->label('Description')
-                            ->disabled()
+
                             ->columnSpanFull(),
 
                         Forms\Components\Textarea::make('rejection_reason')
                             ->label('Rejection Reason')
-                            ->disabled()
+
                             ->visible(fn (?Plugin $record) => $record?->isRejected()),
                     ])
                     ->columns(2),
@@ -75,19 +72,19 @@ class PluginResource extends Resource
                     ->schema([
                         Forms\Components\Select::make('user_id')
                             ->relationship('user', 'email')
-                            ->disabled(),
+                            ->searchable()
+                            ->preload(),
 
                         Forms\Components\DateTimePicker::make('created_at')
-                            ->label('Submitted At')
-                            ->disabled(),
+                            ->label('Submitted At'),
 
                         Forms\Components\Select::make('approved_by')
                             ->relationship('approvedBy', 'email')
-                            ->disabled()
+
                             ->visible(fn (?Plugin $record) => $record?->approved_by !== null),
 
                         Forms\Components\DateTimePicker::make('approved_at')
-                            ->disabled()
+
                             ->visible(fn (?Plugin $record) => $record?->approved_at !== null),
                     ])
                     ->columns(2),
@@ -156,6 +153,7 @@ class PluginResource extends Resource
                     ->label('Active'),
             ])
             ->actions([
+                Tables\Actions\EditAction::make(),
                 // Approve Action
                 Tables\Actions\Action::make('approve')
                     ->icon('heroicon-o-check')
@@ -263,6 +261,7 @@ class PluginResource extends Resource
     {
         return [
             'index' => Pages\ListPlugins::route('/'),
+            'edit' => Pages\EditPlugin::route('/{record}/edit'),
             'view' => Pages\ViewPlugin::route('/{record}'),
         ];
     }
