@@ -6,6 +6,18 @@
 
     if ($isOldVersion) {
         $latestPagePath = resource_path("views/docs/{$platform}/{$latestVersion}/{$page}.md");
+
+        // Handle renamed paths (e.g., apis/* moved to plugins/core/*)
+        $remappedPage = $page;
+        if (str_starts_with($page, 'apis/')) {
+            $remappedPage = 'plugins/core/' . substr($page, 5);
+            $remappedPath = resource_path("views/docs/{$platform}/{$latestVersion}/{$remappedPage}.md");
+            if (file_exists($remappedPath)) {
+                $latestPagePath = $remappedPath;
+                $page = $remappedPage;
+            }
+        }
+
         $targetPage = file_exists($latestPagePath) ? $page : 'getting-started/introduction';
 
         $latestUrl = route('docs.show', [

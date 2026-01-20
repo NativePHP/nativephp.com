@@ -37,10 +37,20 @@ Route::redirect('docs/1/getting-started/sponsoring', '/sponsor');
 Route::redirect('docs/desktop/1/getting-started/sponsoring', '/sponsor');
 Route::redirect('discord', 'https://discord.gg/nativephp');
 Route::redirect('bifrost', 'https://bifrost.nativephp.com');
-Route::redirect('mobile', 'pricing');
-Route::redirect('ios', 'pricing');
+Route::redirect('mobile', 'blog/nativephp-for-mobile-is-now-free');
+Route::redirect('ios', 'blog/nativephp-for-mobile-is-now-free');
 Route::redirect('t-shirt', 'pricing');
 Route::redirect('tshirt', 'pricing');
+
+// Redirect mobile v3 core plugin docs to plugin directory pages
+Route::get('docs/mobile/3/plugins/core/{page}', function (string $page) {
+    return redirect("/plugins/nativephp/mobile-{$page}", 301);
+})->where('page', '[a-z-]+');
+
+// Redirect old mobile v3 API docs to plugin directory pages
+Route::get('docs/mobile/3/apis/{page}', function (string $page) {
+    return redirect("/plugins/nativephp/mobile-{$page}", 301);
+})->where('page', '[a-z-]+');
 
 // Webhook routes (must be outside web middleware for CSRF bypass)
 Route::post('opencollective/contribution', [OpenCollectiveWebhookController::class, 'handle'])->name('opencollective.webhook');
@@ -63,9 +73,9 @@ Route::view('partners', 'partners')->name('partners');
 Route::view('build-my-app', 'build-my-app')->name('build-my-app');
 
 // Public plugin directory routes
-    Route::get('plugins', [PluginDirectoryController::class, 'index'])->name('plugins');
-    Route::get('plugins/directory', App\Livewire\PluginDirectory::class)->name('plugins.directory');
-    Route::get('plugins/{plugin}', [PluginDirectoryController::class, 'show'])->name('plugins.show');
+Route::get('plugins', [PluginDirectoryController::class, 'index'])->name('plugins');
+Route::get('plugins/directory', App\Livewire\PluginDirectory::class)->name('plugins.directory');
+Route::get('plugins/{plugin}', [PluginDirectoryController::class, 'show'])->name('plugins.show');
 
 Route::view('sponsor', 'sponsoring')->name('sponsoring');
 Route::view('vs-react-native-expo', 'vs-react-native-expo')->name('vs-react-native-expo');

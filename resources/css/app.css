@@ -158,18 +158,48 @@ nav.docs-navigation > ul > li > ul {
     & > li {
         @apply font-normal;
 
-        & a {
+        & > a {
             @apply ml-3 block w-full border-l-2 py-1.5 pl-3 transition-all duration-200 dark:border-white/10;
         }
 
-        &.exact-active a {
+        &.exact-active > a {
             @apply border-violet-400 font-medium text-violet-800/80 dark:border-violet-400/90 dark:text-white;
         }
 
-        &:hover a {
+        &:hover > a {
             @apply border-violet-400 dark:border-violet-400/90;
         }
     }
+}
+
+/* Third tier (subsections) */
+nav.docs-navigation ul.third-tier {
+    @apply mt-1;
+
+    & > li {
+        @apply font-normal;
+
+        & > a {
+            @apply ml-6 block w-full border-l-2 py-1 pl-3 text-xs transition-all duration-200 dark:border-white/10;
+        }
+
+        &.exact-active > a {
+            @apply border-violet-400 font-medium text-violet-800/80 dark:border-violet-400/90 dark:text-white;
+        }
+
+        &:hover > a {
+            @apply border-violet-400 dark:border-violet-400/90;
+        }
+    }
+}
+
+/* Subsection header styling */
+nav.docs-navigation .subsection-header {
+    @apply ml-3 flex items-center gap-2 border-l-2 py-1.5 pl-3 font-semibold text-gray-700 dark:border-white/10 dark:text-gray-300;
+}
+
+nav.docs-navigation li:has(.third-tier .exact-active) > .subsection-header {
+    @apply border-violet-400 dark:border-violet-400/90;
 }
 
 /* Prose */
