@@ -21,7 +21,7 @@
             {{-- Plugin icon and title --}}
             <div class="mt-8 flex items-center gap-4">
                 <div class="grid size-16 shrink-0 place-items-center rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-600 text-white">
-                    <x-icons.puzzle class="size-8" />
+                    <x-vaadin-plug class="size-8" />
                 </div>
                 <div>
                     <h1 class="font-mono text-2xl font-bold sm:text-3xl">

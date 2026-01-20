@@ -13,7 +13,7 @@
             />
         @else
             <div class="grid size-12 shrink-0 place-items-center rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 text-white">
-                <x-icons.puzzle class="size-6" />
+                <x-vaadin-plug class="size-6" />
             </div>
         @endif
         @if ($plugin->isPaid())

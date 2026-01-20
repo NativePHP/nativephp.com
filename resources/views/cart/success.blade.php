@@ -73,7 +73,7 @@
                             <div class="flex items-center justify-between rounded-lg border border-gray-200 bg-gray-50 p-4 dark:border-gray-700 dark:bg-gray-700/50">
                                 <div class="flex items-center gap-4">
                                     <div class="grid size-10 place-items-center rounded-lg bg-gradient-to-br from-indigo-500 to-purple-600 text-white">
-                                        <x-icons.puzzle class="size-5" />
+                                        <x-vaadin-plug class="size-5" />
                                     </div>
                                     <span class="font-mono text-sm font-medium text-gray-900 dark:text-white" x-text="license.plugin_name"></span>
                                 </div>

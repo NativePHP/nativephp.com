@@ -30,6 +30,7 @@ class HandleInvoicePaidJob implements ShouldQueue
             Invoice::BILLING_REASON_SUBSCRIPTION_CREATE => $this->handleSubscriptionCreated(),
             Invoice::BILLING_REASON_SUBSCRIPTION_UPDATE => null, // TODO: Handle subscription update
             Invoice::BILLING_REASON_SUBSCRIPTION_CYCLE => $this->handleSubscriptionRenewal(),
+            Invoice::BILLING_REASON_MANUAL => null,
             default => null,
         };
     }

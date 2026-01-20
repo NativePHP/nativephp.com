@@ -71,7 +71,7 @@
                                     <img src="{{ $plugin->getLogoUrl() }}" alt="{{ $plugin->name }}" class="size-10 rounded-lg object-cover" />
                                 @else
                                     <div class="grid size-10 place-items-center rounded-lg bg-gradient-to-br from-indigo-500 to-purple-600 text-white">
-                                        <x-icons.puzzle class="size-5" />
+                                        <x-vaadin-plug class="size-5" />
                                     </div>
                                 @endif
                                 <span class="font-mono text-sm font-medium text-gray-900 dark:text-white">{{ $plugin->name }}</span>
