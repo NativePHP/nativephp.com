@@ -63,9 +63,9 @@ Route::view('partners', 'partners')->name('partners');
 Route::view('build-my-app', 'build-my-app')->name('build-my-app');
 
 // Public plugin directory routes
-    Route::get('plugins', [PluginDirectoryController::class, 'index'])->name('plugins');
-    Route::get('plugins/directory', App\Livewire\PluginDirectory::class)->name('plugins.directory');
-    Route::get('plugins/{plugin}', [PluginDirectoryController::class, 'show'])->name('plugins.show');
+Route::get('plugins', [PluginDirectoryController::class, 'index'])->name('plugins');
+Route::get('plugins/directory', App\Livewire\PluginDirectory::class)->name('plugins.directory');
+Route::get('plugins/{plugin}', [PluginDirectoryController::class, 'show'])->name('plugins.show');
 
 Route::view('sponsor', 'sponsoring')->name('sponsoring');
 Route::view('vs-react-native-expo', 'vs-react-native-expo')->name('vs-react-native-expo');

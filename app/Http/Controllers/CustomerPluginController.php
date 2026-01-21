@@ -8,6 +8,7 @@ use App\Http\Requests\SubmitPluginRequest;
 use App\Http\Requests\UpdatePluginDescriptionRequest;
 use App\Http\Requests\UpdatePluginLogoRequest;
 use App\Http\Requests\UpdatePluginPriceRequest;
+use App\Jobs\SyncPluginReleases;
 use App\Models\Plugin;
 use App\Services\GitHubUserService;
 use App\Services\PluginSyncService;
@@ -111,6 +112,11 @@ class CustomerPluginController extends Controller
 
             return redirect()->route('customer.plugins.create')
                 ->with('error', $errorMessage);
+        }
+
+        // Trigger Satis build for paid plugins so reviewers can test via Composer
+        if ($plugin->isPaid()) {
+            SyncPluginReleases::dispatch($plugin);
         }
 
         $successMessage = 'Your plugin has been submitted for review!';

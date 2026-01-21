@@ -30,12 +30,6 @@ class SyncPluginReleases implements ShouldQueue
 
     public function handle(SatisService $satisService): void
     {
-        if (! $this->plugin->isApproved()) {
-            Log::info("Plugin {$this->plugin->id} is not approved, skipping release sync");
-
-            return;
-        }
-
         $repo = $this->plugin->getRepositoryOwnerAndName();
 
         if (! $repo) {
@@ -55,7 +49,7 @@ class SyncPluginReleases implements ShouldQueue
         $this->plugin->update(['last_synced_at' => now()]);
 
         // Trigger satis build if we have new releases
-        if ($this->triggerSatisBuild && $this->hasNewReleases) {
+        if ($this->triggerSatisBuild && $this->hasNewReleases && $this->plugin->isPaid()) {
             $satisService->build([$this->plugin]);
         }
     }
