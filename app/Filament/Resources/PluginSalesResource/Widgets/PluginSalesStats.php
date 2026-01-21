@@ -7,7 +7,6 @@ use App\Models\PluginLicense;
 use Filament\Widgets\Concerns\InteractsWithPageTable;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
-use Illuminate\Database\Eloquent\Builder;
 
 class PluginSalesStats extends BaseWidget
 {
@@ -23,12 +22,14 @@ class PluginSalesStats extends BaseWidget
     protected function getStats(): array
     {
         $filteredQuery = $this->getPageTableQuery();
-        $totalQuery = PluginLicense::query();
 
-        $isFiltered = $this->hasActiveFilters($filteredQuery);
+        $grandTotalRevenue = PluginLicense::sum('price_paid');
+        $grandTotalSales = PluginLicense::count();
 
-        $grandTotalRevenue = $totalQuery->sum('price_paid');
-        $grandTotalSales = $totalQuery->count();
+        $filteredRevenue = (clone $filteredQuery)->sum('price_paid');
+        $filteredSales = (clone $filteredQuery)->count();
+
+        $isFiltered = $filteredSales !== $grandTotalSales;
 
         $stats = [
             Stat::make('Total Revenue', $this->formatCurrency($grandTotalRevenue))
@@ -43,9 +44,6 @@ class PluginSalesStats extends BaseWidget
         ];
 
         if ($isFiltered) {
-            $filteredRevenue = (clone $filteredQuery)->sum('price_paid');
-            $filteredSales = (clone $filteredQuery)->count();
-
             $stats[] = Stat::make('Filtered Revenue', $this->formatCurrency($filteredRevenue))
                 ->description('Current filter')
                 ->descriptionIcon('heroicon-m-funnel')
@@ -58,25 +56,6 @@ class PluginSalesStats extends BaseWidget
         }
 
         return $stats;
-    }
-
-    protected function hasActiveFilters(Builder $query): bool
-    {
-        $tableFilters = $this->getTableFiltersForm()->getState();
-
-        foreach ($tableFilters as $filter) {
-            if (is_array($filter)) {
-                foreach ($filter as $value) {
-                    if ($value !== null && $value !== '' && $value !== false) {
-                        return true;
-                    }
-                }
-            } elseif ($filter !== null && $filter !== '' && $filter !== false) {
-                return true;
-            }
-        }
-
-        return false;
     }
 
     protected function formatCurrency(int $cents): string
