@@ -42,6 +42,10 @@
                     <div class="flex items-center gap-3">
                         @if ($plugin->hasLogo())
                             <img src="{{ $plugin->getLogoUrl() }}" alt="{{ $plugin->name }} logo" class="size-10 rounded-lg object-cover" />
+                        @elseif ($plugin->hasGradientIcon())
+                            <div class="grid size-10 place-items-center rounded-lg bg-gradient-to-br {{ $plugin->getGradientClasses() }} text-white">
+                                <x-dynamic-component :component="'heroicon-o-' . $plugin->icon_name" class="size-5" />
+                            </div>
                         @else
                             <div class="grid size-10 place-items-center rounded-lg bg-gradient-to-br from-indigo-500 to-purple-600 text-white">
                                 <x-vaadin-plug class="size-5" />
@@ -74,20 +78,110 @@
                 </div>
             </div>
 
-            {{-- Plugin Logo --}}
-            <div class="mb-6 rounded-lg border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-gray-800">
-                <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Plugin Logo</h2>
+            {{-- Plugin Icon --}}
+            <div class="mb-6 rounded-lg border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-gray-800" x-data="{ mode: '{{ $plugin->hasLogo() ? 'upload' : 'gradient' }}' }">
+                <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Plugin Icon</h2>
                 <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">
-                    Upload a logo for your plugin. This will be displayed in the plugin directory.
+                    Choose a gradient and icon, or upload your own logo.
                 </p>
 
                 <div class="mt-4">
-                    @if ($plugin->hasLogo())
-                        <div class="flex items-start gap-4">
-                            <img src="{{ $plugin->getLogoUrl() }}" alt="{{ $plugin->name }} logo" class="size-24 rounded-lg object-cover shadow-sm" />
-                            <div class="flex flex-col gap-2">
-                                <form method="POST" action="{{ route('customer.plugins.logo.update', $plugin) }}" enctype="multipart/form-data" class="flex items-center gap-2">
-                                    @csrf
+                    {{-- Current Icon Preview --}}
+                    @if ($plugin->hasCustomIcon())
+                        <div class="mb-4 flex items-center gap-4">
+                            @if ($plugin->hasLogo())
+                                <img src="{{ $plugin->getLogoUrl() }}" alt="{{ $plugin->name }} logo" class="size-16 rounded-lg object-cover shadow-sm" />
+                            @elseif ($plugin->hasGradientIcon())
+                                <div class="grid size-16 place-items-center rounded-lg bg-gradient-to-br {{ $plugin->getGradientClasses() }} text-white shadow-sm">
+                                    <x-dynamic-component :component="'heroicon-o-' . $plugin->icon_name" class="size-8" />
+                                </div>
+                            @endif
+                            <form method="POST" action="{{ route('customer.plugins.logo.delete', $plugin) }}">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="inline-flex items-center text-sm font-medium text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300">
+                                    <x-heroicon-o-trash class="mr-1 size-4" />
+                                    Remove icon
+                                </button>
+                            </form>
+                        </div>
+                    @endif
+
+                    {{-- Gradient Icon Picker --}}
+                    <div x-show="mode === 'gradient'" x-cloak>
+                        <form method="POST" action="{{ route('customer.plugins.icon.update', $plugin) }}">
+                            @csrf
+                            <div class="space-y-4">
+                                {{-- Gradient Selection --}}
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Choose a gradient</label>
+                                    <div class="mt-2 grid grid-cols-4 gap-3 sm:grid-cols-8">
+                                        @foreach (\App\Models\Plugin::gradientPresets() as $key => $classes)
+                                            <label class="relative cursor-pointer">
+                                                <input
+                                                    type="radio"
+                                                    name="icon_gradient"
+                                                    value="{{ $key }}"
+                                                    class="peer sr-only"
+                                                    {{ old('icon_gradient', $plugin->icon_gradient) === $key ? 'checked' : '' }}
+                                                />
+                                                <div class="size-12 rounded-lg bg-gradient-to-br {{ $classes }} ring-2 ring-transparent ring-offset-2 transition-all peer-checked:ring-indigo-500 peer-focus:ring-indigo-500 hover:scale-105 dark:ring-offset-gray-800"></div>
+                                            </label>
+                                        @endforeach
+                                    </div>
+                                    @error('icon_gradient')
+                                        <p class="mt-2 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
+                                    @enderror
+                                </div>
+
+                                {{-- Icon Name Input --}}
+                                <div>
+                                    <label for="icon_name" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Heroicon name</label>
+                                    <div class="mt-1">
+                                        <input
+                                            type="text"
+                                            name="icon_name"
+                                            id="icon_name"
+                                            value="{{ old('icon_name', $plugin->icon_name ?? 'cube') }}"
+                                            placeholder="cube"
+                                            class="block w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900 placeholder-gray-500 focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 sm:text-sm @error('icon_name') border-red-500 dark:border-red-500 @enderror"
+                                        />
+                                    </div>
+                                    @error('icon_name')
+                                        <p class="mt-2 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
+                                    @enderror
+                                    <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                                        Enter a Heroicon outline name, e.g., <code class="rounded bg-gray-100 px-1 dark:bg-gray-700">cube</code>, <code class="rounded bg-gray-100 px-1 dark:bg-gray-700">sparkles</code>, <code class="rounded bg-gray-100 px-1 dark:bg-gray-700">bolt</code>.
+                                        <a href="https://heroicons.com" target="_blank" class="text-indigo-600 hover:text-indigo-500 dark:text-indigo-400">Browse icons</a>
+                                    </p>
+                                </div>
+
+                                <div class="flex items-center justify-between">
+                                    <button type="submit" class="inline-flex items-center rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700">
+                                        Save Icon
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+
+                        <div class="mt-4 border-t border-gray-200 pt-4 dark:border-gray-700">
+                            <button
+                                type="button"
+                                @click="mode = 'upload'"
+                                class="text-sm font-medium text-indigo-600 hover:text-indigo-500 dark:text-indigo-400"
+                            >
+                                Or upload your own logo instead
+                            </button>
+                        </div>
+                    </div>
+
+                    {{-- Custom Logo Upload --}}
+                    <div x-show="mode === 'upload'" x-cloak>
+                        <form method="POST" action="{{ route('customer.plugins.logo.update', $plugin) }}" enctype="multipart/form-data" class="space-y-4">
+                            @csrf
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Upload a logo</label>
+                                <div class="mt-2 flex items-center gap-4">
                                     <input
                                         type="file"
                                         name="logo"
@@ -95,41 +189,28 @@
                                         class="block text-sm text-gray-500 file:mr-4 file:rounded-md file:border-0 file:bg-indigo-50 file:px-4 file:py-2 file:text-sm file:font-medium file:text-indigo-700 hover:file:bg-indigo-100 dark:text-gray-400 dark:file:bg-indigo-900/50 dark:file:text-indigo-300 dark:hover:file:bg-indigo-900/70"
                                     />
                                     <button type="submit" class="inline-flex items-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700">
-                                        Update
+                                        Upload
                                     </button>
-                                </form>
-                                <form method="POST" action="{{ route('customer.plugins.logo.delete', $plugin) }}">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="inline-flex items-center text-sm font-medium text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300">
-                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="mr-1 size-4">
-                                            <path stroke-linecap="round" stroke-linejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
-                                        </svg>
-                                        Remove logo
-                                    </button>
-                                </form>
+                                </div>
+                                @error('logo')
+                                    <p class="mt-2 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
+                                @enderror
+                                <p class="mt-2 text-xs text-gray-500 dark:text-gray-400">
+                                    PNG, JPG, SVG, or WebP. Max 1MB. Recommended: 256x256 pixels, square.
+                                </p>
                             </div>
-                        </div>
-                    @else
-                        <form method="POST" action="{{ route('customer.plugins.logo.update', $plugin) }}" enctype="multipart/form-data" class="flex items-center gap-4">
-                            @csrf
-                            <input
-                                type="file"
-                                name="logo"
-                                accept="image/png,image/jpeg,image/jpg,image/svg+xml,image/webp"
-                                class="block text-sm text-gray-500 file:mr-4 file:rounded-md file:border-0 file:bg-indigo-50 file:px-4 file:py-2 file:text-sm file:font-medium file:text-indigo-700 hover:file:bg-indigo-100 dark:text-gray-400 dark:file:bg-indigo-900/50 dark:file:text-indigo-300 dark:hover:file:bg-indigo-900/70"
-                            />
-                            <button type="submit" class="inline-flex items-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700">
-                                Upload
-                            </button>
                         </form>
-                    @endif
-                    @error('logo')
-                        <p class="mt-2 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
-                    @enderror
-                    <p class="mt-2 text-xs text-gray-500 dark:text-gray-400">
-                        PNG, JPG, SVG, or WebP. Max 1MB. Recommended: 256x256 pixels, square.
-                    </p>
+
+                        <div class="mt-4 border-t border-gray-200 pt-4 dark:border-gray-700">
+                            <button
+                                type="button"
+                                @click="mode = 'gradient'"
+                                class="text-sm font-medium text-indigo-600 hover:text-indigo-500 dark:text-indigo-400"
+                            >
+                                Or choose a gradient icon instead
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </div>
 

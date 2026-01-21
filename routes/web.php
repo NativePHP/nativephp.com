@@ -228,6 +228,7 @@ Route::middleware(['auth', EnsureFeaturesAreActive::using(ShowAuthButtons::class
         Route::patch('plugins/{plugin}', [CustomerPluginController::class, 'update'])->name('plugins.update');
         Route::post('plugins/{plugin}/resubmit', [CustomerPluginController::class, 'resubmit'])->name('plugins.resubmit');
         Route::post('plugins/{plugin}/logo', [CustomerPluginController::class, 'updateLogo'])->name('plugins.logo.update');
+        Route::post('plugins/{plugin}/icon', [CustomerPluginController::class, 'updateIcon'])->name('plugins.icon.update');
         Route::delete('plugins/{plugin}/logo', [CustomerPluginController::class, 'deleteLogo'])->name('plugins.logo.delete');
         Route::patch('plugins/{plugin}/price', [CustomerPluginController::class, 'updatePrice'])->name('plugins.price.update');
     });

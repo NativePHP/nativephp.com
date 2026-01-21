@@ -11,6 +11,10 @@
                 alt="{{ $plugin->name }} logo"
                 class="size-12 shrink-0 rounded-xl object-cover"
             />
+        @elseif ($plugin->hasGradientIcon())
+            <div class="grid size-12 shrink-0 place-items-center rounded-xl bg-gradient-to-br {{ $plugin->getGradientClasses() }} text-white">
+                <x-dynamic-component :component="'heroicon-o-' . $plugin->icon_name" class="size-6" />
+            </div>
         @else
             <div class="grid size-12 shrink-0 place-items-center rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 text-white">
                 <x-vaadin-plug class="size-6" />

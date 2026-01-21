@@ -237,6 +237,42 @@ class Plugin extends Model
         return $this->logo_path !== null;
     }
 
+    public function hasGradientIcon(): bool
+    {
+        return $this->icon_gradient !== null && $this->icon_name !== null;
+    }
+
+    public function hasCustomIcon(): bool
+    {
+        return $this->hasLogo() || $this->hasGradientIcon();
+    }
+
+    /**
+     * Available gradient presets for plugin icons.
+     *
+     * @return array<string, string>
+     */
+    public static function gradientPresets(): array
+    {
+        return [
+            'indigo-purple' => 'from-indigo-500 to-purple-600',
+            'blue-cyan' => 'from-blue-500 to-cyan-500',
+            'green-emerald' => 'from-green-500 to-emerald-600',
+            'orange-red' => 'from-orange-500 to-red-600',
+            'pink-rose' => 'from-pink-500 to-rose-600',
+            'violet-fuchsia' => 'from-violet-500 to-fuchsia-600',
+            'amber-yellow' => 'from-amber-500 to-yellow-500',
+            'slate-gray' => 'from-slate-600 to-gray-700',
+        ];
+    }
+
+    public function getGradientClasses(): string
+    {
+        $presets = self::gradientPresets();
+
+        return $presets[$this->icon_gradient] ?? $presets['indigo-purple'];
+    }
+
     /**
      * Reserved namespaces that can only be used by admin users.
      */

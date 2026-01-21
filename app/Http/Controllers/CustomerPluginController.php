@@ -13,6 +13,7 @@ use App\Models\Plugin;
 use App\Services\GitHubUserService;
 use App\Services\PluginSyncService;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
@@ -188,10 +189,43 @@ class CustomerPluginController extends Controller
 
         $path = $request->file('logo')->store('plugin-logos', 'public');
 
-        $plugin->update(['logo_path' => $path]);
+        // Clear gradient/icon when uploading a custom logo
+        $plugin->update([
+            'logo_path' => $path,
+            'icon_gradient' => null,
+            'icon_name' => null,
+        ]);
 
         return redirect()->route('customer.plugins.show', $plugin)
             ->with('success', 'Plugin logo updated successfully!');
+    }
+
+    public function updateIcon(Request $request, Plugin $plugin): RedirectResponse
+    {
+        $user = Auth::user();
+
+        if ($plugin->user_id !== $user->id) {
+            abort(403);
+        }
+
+        $validated = $request->validate([
+            'icon_gradient' => ['required', 'string', 'in:'.implode(',', array_keys(Plugin::gradientPresets()))],
+            'icon_name' => ['required', 'string', 'max:100', 'regex:/^[a-z0-9-]+$/'],
+        ]);
+
+        // Clear custom logo when using gradient icon
+        if ($plugin->logo_path) {
+            Storage::disk('public')->delete($plugin->logo_path);
+        }
+
+        $plugin->update([
+            'logo_path' => null,
+            'icon_gradient' => $validated['icon_gradient'],
+            'icon_name' => $validated['icon_name'],
+        ]);
+
+        return redirect()->route('customer.plugins.show', $plugin)
+            ->with('success', 'Plugin icon updated successfully!');
     }
 
     public function deleteLogo(Plugin $plugin): RedirectResponse
@@ -204,11 +238,16 @@ class CustomerPluginController extends Controller
 
         if ($plugin->logo_path) {
             Storage::disk('public')->delete($plugin->logo_path);
-            $plugin->update(['logo_path' => null]);
         }
 
+        $plugin->update([
+            'logo_path' => null,
+            'icon_gradient' => null,
+            'icon_name' => null,
+        ]);
+
         return redirect()->route('customer.plugins.show', $plugin)
-            ->with('success', 'Plugin logo removed successfully!');
+            ->with('success', 'Plugin icon removed successfully!');
     }
 
     public function updateDisplayName(): RedirectResponse

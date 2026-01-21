@@ -184,6 +184,10 @@
                                         <div class="shrink-0">
                                             @if ($item->plugin->hasLogo())
                                                 <img src="{{ $item->plugin->getLogoUrl() }}" alt="{{ $item->plugin->name }}" class="size-16 rounded-lg object-cover" />
+                                            @elseif ($item->plugin->hasGradientIcon())
+                                                <div class="grid size-16 place-items-center rounded-lg bg-gradient-to-br {{ $item->plugin->getGradientClasses() }} text-white">
+                                                    <x-dynamic-component :component="'heroicon-o-' . $item->plugin->icon_name" class="size-8" />
+                                                </div>
                                             @else
                                                 <div class="grid size-16 place-items-center rounded-lg bg-gradient-to-br from-indigo-500 to-purple-600 text-white">
                                                     <x-vaadin-plug class="size-8" />
