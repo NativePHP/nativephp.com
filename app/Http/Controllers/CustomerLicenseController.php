@@ -20,6 +20,9 @@ class CustomerLicenseController extends Controller
         $user = Auth::user();
         $licenses = $user->licenses()->orderBy('created_at', 'desc')->get();
 
+        // Ensure user has a plugin license key (generates one if missing)
+        $pluginLicenseKey = $user->getPluginLicenseKey();
+
         // Fetch sub-licenses assigned to this user's email (excluding those from licenses they own)
         $assignedSubLicenses = SubLicense::query()
             ->with('parentLicense')
@@ -36,7 +39,7 @@ class CustomerLicenseController extends Controller
             ->orderBy('purchased_at', 'desc')
             ->get();
 
-        return view('customer.licenses.index', compact('licenses', 'assignedSubLicenses', 'pluginLicenses'));
+        return view('customer.licenses.index', compact('licenses', 'assignedSubLicenses', 'pluginLicenses', 'pluginLicenseKey'));
     }
 
     public function show(string $licenseKey): View
@@ -65,5 +68,14 @@ class CustomerLicenseController extends Controller
 
         return redirect()->route('customer.licenses.show', $licenseKey)
             ->with('success', 'License name updated successfully!');
+    }
+
+    public function rotatePluginLicenseKey(): RedirectResponse
+    {
+        $user = Auth::user();
+        $user->regeneratePluginLicenseKey();
+
+        return redirect()->route('dashboard')
+            ->with('success', 'Your plugin license key has been rotated. Please update your Composer configuration with the new key.');
     }
 }

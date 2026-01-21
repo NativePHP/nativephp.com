@@ -208,6 +208,7 @@ Route::middleware(['auth', EnsureFeaturesAreActive::using(ShowAuthButtons::class
     Route::view('integrations', 'customer.integrations')->name('integrations');
     Route::get('licenses/{licenseKey}', [CustomerLicenseController::class, 'show'])->name('licenses.show');
     Route::patch('licenses/{licenseKey}', [CustomerLicenseController::class, 'update'])->name('licenses.update');
+    Route::post('plugin-license-key/rotate', [CustomerLicenseController::class, 'rotatePluginLicenseKey'])->name('plugin-license-key.rotate');
 
     // Wall of Love submission
     Route::get('wall-of-love/create', [App\Http\Controllers\WallOfLoveSubmissionController::class, 'create'])->name('wall-of-love.create');
