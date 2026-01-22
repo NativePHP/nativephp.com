@@ -74,4 +74,24 @@ class PluginDirectoryController extends Controller
             'hasDiscount' => $bestPrice && $regularPrice && $bestPrice->id !== $regularPrice->id,
         ]);
     }
+
+    public function license(string $vendor, string $package): View
+    {
+        $plugin = Plugin::findByVendorPackageOrFail($vendor, $package);
+
+        abort_unless($plugin->isApproved(), 404);
+        abort_unless($plugin->isPaid(), 404);
+        abort_unless($plugin->license_html, 404);
+
+        $user = Auth::user();
+
+        // For paid plugins, check if user has an accessible price
+        if (! $plugin->hasAccessiblePriceFor($user)) {
+            abort(404);
+        }
+
+        return view('plugin-license', [
+            'plugin' => $plugin,
+        ]);
+    }
 }

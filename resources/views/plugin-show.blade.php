@@ -198,16 +198,28 @@
                             <dt class="text-xs font-medium text-gray-500 dark:text-gray-400">License</dt>
                             <dd class="mt-1">
                                 @if ($plugin->getLicense())
-                                    <a
-                                        href="{{ $plugin->getLicenseUrl() }}"
-                                        target="_blank"
-                                        class="inline-flex items-center gap-1 text-sm font-medium text-indigo-600 hover:text-indigo-700 dark:text-indigo-400 dark:hover:text-indigo-300"
-                                    >
-                                        {{ $plugin->getLicense() }}
-                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-3">
-                                            <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 6H5.25A2.25 2.25 0 0 0 3 8.25v10.5A2.25 2.25 0 0 0 5.25 21h10.5A2.25 2.25 0 0 0 18 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" />
-                                        </svg>
-                                    </a>
+                                    @if ($plugin->isPaid() && $plugin->license_html)
+                                        <a
+                                            href="{{ route('plugins.license', $plugin->routeParams()) }}"
+                                            class="inline-flex items-center gap-1 text-sm font-medium text-indigo-600 hover:text-indigo-700 dark:text-indigo-400 dark:hover:text-indigo-300"
+                                        >
+                                            {{ $plugin->getLicense() }}
+                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-3">
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 6H5.25A2.25 2.25 0 0 0 3 8.25v10.5A2.25 2.25 0 0 0 5.25 21h10.5A2.25 2.25 0 0 0 18 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" />
+                                            </svg>
+                                        </a>
+                                    @else
+                                        <a
+                                            href="{{ $plugin->getLicenseUrl() }}"
+                                            target="_blank"
+                                            class="inline-flex items-center gap-1 text-sm font-medium text-indigo-600 hover:text-indigo-700 dark:text-indigo-400 dark:hover:text-indigo-300"
+                                        >
+                                            {{ $plugin->getLicense() }}
+                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-3">
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 6H5.25A2.25 2.25 0 0 0 3 8.25v10.5A2.25 2.25 0 0 0 5.25 21h10.5A2.25 2.25 0 0 0 18 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" />
+                                            </svg>
+                                        </a>
+                                    @endif
                                 @else
                                     <span class="text-sm text-gray-500 dark:text-gray-400">—</span>
                                 @endif
