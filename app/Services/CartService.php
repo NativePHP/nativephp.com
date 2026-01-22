@@ -73,9 +73,11 @@ class CartService
             throw new \InvalidArgumentException('Only paid plugins can be added to cart');
         }
 
-        $activePrice = $plugin->activePrice;
+        // Get the best price for the cart's user
+        $user = $cart->user;
+        $bestPrice = $plugin->getBestPriceForUser($user);
 
-        if (! $activePrice) {
+        if (! $bestPrice) {
             throw new \InvalidArgumentException('Plugin has no active price');
         }
 
@@ -85,9 +87,9 @@ class CartService
 
         return $cart->items()->create([
             'plugin_id' => $plugin->id,
-            'plugin_price_id' => $activePrice->id,
-            'price_at_addition' => $activePrice->amount,
-            'currency' => $activePrice->currency,
+            'plugin_price_id' => $bestPrice->id,
+            'price_at_addition' => $bestPrice->amount,
+            'currency' => $bestPrice->currency,
         ]);
     }
 
@@ -112,10 +114,15 @@ class CartService
             throw new \InvalidArgumentException('You already own all plugins in this bundle');
         }
 
+        // Get the best price for this user
+        $bestPrice = $bundle->getBestPriceForUser($user);
+        $priceAmount = $bestPrice ? $bestPrice->amount : $bundle->price;
+        $currency = $bestPrice ? $bestPrice->currency : ($bundle->currency ?? 'USD');
+
         return $cart->items()->create([
             'plugin_bundle_id' => $bundle->id,
-            'bundle_price_at_addition' => $bundle->price,
-            'currency' => $bundle->currency,
+            'bundle_price_at_addition' => $priceAmount,
+            'currency' => $currency,
         ]);
     }
 
@@ -187,18 +194,24 @@ class CartService
                     continue;
                 }
 
-                if ($bundle->price !== $item->bundle_price_at_addition) {
+                // Get the best price for the cart's user
+                $user = $cart->user;
+                $bestPrice = $bundle->getBestPriceForUser($user);
+                $currentPrice = $bestPrice ? $bestPrice->amount : $bundle->price;
+                $currency = $bestPrice ? $bestPrice->currency : ($bundle->currency ?? 'USD');
+
+                if ($currentPrice !== $item->bundle_price_at_addition) {
                     $changes[] = [
                         'item' => $item,
                         'name' => $bundle->name,
                         'type' => 'price_changed',
                         'old_price' => $item->bundle_price_at_addition,
-                        'new_price' => $bundle->price,
+                        'new_price' => $currentPrice,
                     ];
 
                     $item->update([
-                        'bundle_price_at_addition' => $bundle->price,
-                        'currency' => $bundle->currency,
+                        'bundle_price_at_addition' => $currentPrice,
+                        'currency' => $currency,
                     ]);
                 }
             } else {
@@ -217,7 +230,9 @@ class CartService
                     continue;
                 }
 
-                $currentPrice = $plugin->activePrice;
+                // Get the best price for the cart's user
+                $user = $cart->user;
+                $currentPrice = $plugin->getBestPriceForUser($user);
 
                 if (! $currentPrice) {
                     $changes[] = [
@@ -231,7 +246,8 @@ class CartService
                     continue;
                 }
 
-                if (! $item->hasPriceChanged()) {
+                // Check if price has changed (compare amounts)
+                if ($currentPrice->amount === $item->price_at_addition) {
                     continue;
                 }
 
@@ -315,11 +331,16 @@ class CartService
             ->whereIn('plugin_id', $bundlePluginIds)
             ->delete();
 
+        // Get the best price for this user
+        $bestPrice = $bundle->getBestPriceForUser($user);
+        $priceAmount = $bestPrice ? $bestPrice->amount : $bundle->price;
+        $currency = $bestPrice ? $bestPrice->currency : ($bundle->currency ?? 'USD');
+
         // Add the bundle
         return $cart->items()->create([
             'plugin_bundle_id' => $bundle->id,
-            'bundle_price_at_addition' => $bundle->price,
-            'currency' => $bundle->currency,
+            'bundle_price_at_addition' => $priceAmount,
+            'currency' => $currency,
         ]);
     }
 }

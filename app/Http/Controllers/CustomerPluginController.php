@@ -7,7 +7,6 @@ use App\Features\AllowPaidPlugins;
 use App\Http\Requests\SubmitPluginRequest;
 use App\Http\Requests\UpdatePluginDescriptionRequest;
 use App\Http\Requests\UpdatePluginLogoRequest;
-use App\Http\Requests\UpdatePluginPriceRequest;
 use App\Jobs\SyncPluginReleases;
 use App\Models\Plugin;
 use App\Services\GitHubUserService;
@@ -85,14 +84,6 @@ class CustomerPluginController extends Controller
 
         $plugin->update(['webhook_installed' => $webhookInstalled]);
 
-        if ($request->type === 'paid' && $request->price) {
-            $plugin->prices()->create([
-                'amount' => $request->price * 100,
-                'currency' => 'usd',
-                'is_active' => true,
-            ]);
-        }
-
         $syncService->sync($plugin);
 
         if (! $plugin->name) {
@@ -125,12 +116,13 @@ class CustomerPluginController extends Controller
             $successMessage .= ' Please set up the webhook manually to enable automatic syncing.';
         }
 
-        return redirect()->route('customer.plugins.show', $plugin)
+        return redirect()->route('customer.plugins.show', $this->pluginRouteParams($plugin))
             ->with('success', $successMessage);
     }
 
-    public function show(Plugin $plugin): View
+    public function show(string $vendor, string $package): View
     {
+        $plugin = Plugin::findByVendorPackageOrFail($vendor, $package);
         $user = Auth::user();
 
         if ($plugin->user_id !== $user->id) {
@@ -140,8 +132,9 @@ class CustomerPluginController extends Controller
         return view('customer.plugins.show', compact('plugin'));
     }
 
-    public function update(UpdatePluginDescriptionRequest $request, Plugin $plugin): RedirectResponse
+    public function update(UpdatePluginDescriptionRequest $request, string $vendor, string $package): RedirectResponse
     {
+        $plugin = Plugin::findByVendorPackageOrFail($vendor, $package);
         $user = Auth::user();
 
         if ($plugin->user_id !== $user->id) {
@@ -150,12 +143,13 @@ class CustomerPluginController extends Controller
 
         $plugin->updateDescription($request->description, $user->id);
 
-        return redirect()->route('customer.plugins.show', $plugin)
+        return redirect()->route('customer.plugins.show', $this->pluginRouteParams($plugin))
             ->with('success', 'Plugin description updated successfully!');
     }
 
-    public function resubmit(Plugin $plugin): RedirectResponse
+    public function resubmit(string $vendor, string $package): RedirectResponse
     {
+        $plugin = Plugin::findByVendorPackageOrFail($vendor, $package);
         $user = Auth::user();
 
         // Ensure the plugin belongs to the current user
@@ -175,8 +169,9 @@ class CustomerPluginController extends Controller
             ->with('success', 'Your plugin has been resubmitted for review!');
     }
 
-    public function updateLogo(UpdatePluginLogoRequest $request, Plugin $plugin): RedirectResponse
+    public function updateLogo(UpdatePluginLogoRequest $request, string $vendor, string $package): RedirectResponse
     {
+        $plugin = Plugin::findByVendorPackageOrFail($vendor, $package);
         $user = Auth::user();
 
         if ($plugin->user_id !== $user->id) {
@@ -196,12 +191,13 @@ class CustomerPluginController extends Controller
             'icon_name' => null,
         ]);
 
-        return redirect()->route('customer.plugins.show', $plugin)
+        return redirect()->route('customer.plugins.show', $this->pluginRouteParams($plugin))
             ->with('success', 'Plugin logo updated successfully!');
     }
 
-    public function updateIcon(Request $request, Plugin $plugin): RedirectResponse
+    public function updateIcon(Request $request, string $vendor, string $package): RedirectResponse
     {
+        $plugin = Plugin::findByVendorPackageOrFail($vendor, $package);
         $user = Auth::user();
 
         if ($plugin->user_id !== $user->id) {
@@ -224,12 +220,13 @@ class CustomerPluginController extends Controller
             'icon_name' => $validated['icon_name'],
         ]);
 
-        return redirect()->route('customer.plugins.show', $plugin)
+        return redirect()->route('customer.plugins.show', $this->pluginRouteParams($plugin))
             ->with('success', 'Plugin icon updated successfully!');
     }
 
-    public function deleteLogo(Plugin $plugin): RedirectResponse
+    public function deleteLogo(string $vendor, string $package): RedirectResponse
     {
+        $plugin = Plugin::findByVendorPackageOrFail($vendor, $package);
         $user = Auth::user();
 
         if ($plugin->user_id !== $user->id) {
@@ -246,8 +243,20 @@ class CustomerPluginController extends Controller
             'icon_name' => null,
         ]);
 
-        return redirect()->route('customer.plugins.show', $plugin)
+        return redirect()->route('customer.plugins.show', $this->pluginRouteParams($plugin))
             ->with('success', 'Plugin icon removed successfully!');
+    }
+
+    /**
+     * Get route parameters for a plugin's vendor/package URL.
+     *
+     * @return array{vendor: string, package: string}
+     */
+    protected function pluginRouteParams(Plugin $plugin): array
+    {
+        [$vendor, $package] = explode('/', $plugin->name);
+
+        return ['vendor' => $vendor, 'package' => $package];
     }
 
     public function updateDisplayName(): RedirectResponse
@@ -264,32 +273,5 @@ class CustomerPluginController extends Controller
 
         return redirect()->route('customer.plugins.index')
             ->with('success', 'Display name updated successfully!');
-    }
-
-    public function updatePrice(UpdatePluginPriceRequest $request, Plugin $plugin): RedirectResponse
-    {
-        $user = Auth::user();
-
-        if ($plugin->user_id !== $user->id) {
-            abort(403);
-        }
-
-        if (! $plugin->isPaid()) {
-            return redirect()->route('customer.plugins.show', $plugin)
-                ->with('error', 'Only paid plugins can have pricing updated.');
-        }
-
-        // Deactivate existing prices
-        $plugin->prices()->update(['is_active' => false]);
-
-        // Create new active price
-        $plugin->prices()->create([
-            'amount' => $request->price * 100,
-            'currency' => 'usd',
-            'is_active' => true,
-        ]);
-
-        return redirect()->route('customer.plugins.show', $plugin)
-            ->with('success', 'Plugin price updated successfully!');
     }
 }

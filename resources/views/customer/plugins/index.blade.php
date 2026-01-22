@@ -290,7 +290,7 @@
                                                     Rejected
                                                 </span>
                                             @endif
-                                            <a href="{{ route('customer.plugins.show', $plugin) }}" class="inline-flex items-center text-sm font-medium text-indigo-600 hover:text-indigo-700 dark:text-indigo-400 dark:hover:text-indigo-300">
+                                            <a href="{{ route('customer.plugins.show', $plugin->routeParams()) }}" class="inline-flex items-center text-sm font-medium text-indigo-600 hover:text-indigo-700 dark:text-indigo-400 dark:hover:text-indigo-300">
                                                 Edit
                                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="ml-1 size-4">
                                                     <path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
@@ -312,7 +312,7 @@
                                                     <h3 class="text-sm font-medium text-red-800 dark:text-red-200">Rejection Reason</h3>
                                                     <p class="mt-1 text-sm text-red-700 dark:text-red-300">{{ $plugin->rejection_reason }}</p>
                                                     <div class="mt-3">
-                                                        <form method="POST" action="{{ route('customer.plugins.resubmit', $plugin) }}" class="inline">
+                                                        <form method="POST" action="{{ route('customer.plugins.resubmit', $plugin->routeParams()) }}" class="inline">
                                                             @csrf
                                                             <button type="submit" class="inline-flex items-center rounded-md bg-red-100 px-3 py-1.5 text-sm font-medium text-red-800 hover:bg-red-200 dark:bg-red-900/50 dark:text-red-200 dark:hover:bg-red-900/70">
                                                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="mr-1.5 size-4">

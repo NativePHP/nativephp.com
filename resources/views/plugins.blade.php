@@ -109,7 +109,7 @@
                     {{-- Primary CTA - Browse Plugins --}}
                     <div class="w-full max-w-56">
                         <a
-                            href="{{ route('plugins.directory') }}"
+                            href="{{ route('plugins.marketplace') }}"
                             class="flex items-center justify-center gap-2.5 rounded-xl bg-zinc-800 px-6 py-4 text-white transition duration-200 hover:bg-zinc-900 dark:bg-indigo-700/80 dark:hover:bg-indigo-900"
                         >
                             <x-vaadin-plug class="size-5" />
@@ -675,7 +675,7 @@
                     {{-- Primary CTA --}}
                     <div class="w-full max-w-56">
                         <a
-                            href="{{ route('plugins.directory') }}"
+                            href="{{ route('plugins.marketplace') }}"
                             class="flex items-center justify-center gap-2.5 rounded-xl bg-zinc-800 px-6 py-4 text-white transition duration-200 hover:bg-zinc-900 dark:bg-indigo-700/80 dark:hover:bg-indigo-900"
                         >
                             <x-vaadin-plug class="size-5" />

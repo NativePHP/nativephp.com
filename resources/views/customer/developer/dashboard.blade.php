@@ -127,7 +127,7 @@
                     </div>
                     <div class="divide-y divide-gray-200 dark:divide-gray-700">
                         @forelse ($plugins->take(5) as $plugin)
-                            <a href="{{ route('customer.plugins.show', $plugin) }}" class="block px-4 py-4 hover:bg-gray-50 dark:hover:bg-gray-700 sm:px-6">
+                            <a href="{{ route('customer.plugins.show', $plugin->routeParams()) }}" class="block px-4 py-4 hover:bg-gray-50 dark:hover:bg-gray-700 sm:px-6">
                                 <div class="flex items-center justify-between">
                                     <div class="min-w-0 flex-1">
                                         <p class="truncate font-medium text-gray-900 dark:text-white">{{ $plugin->name }}</p>

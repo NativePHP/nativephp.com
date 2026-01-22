@@ -63,24 +63,6 @@ class PluginBundleResource extends Resource
                     ])
                     ->columns(2),
 
-                Forms\Components\Section::make('Pricing')
-                    ->schema([
-                        Forms\Components\TextInput::make('price')
-                            ->label('Bundle Price (in cents)')
-                            ->required()
-                            ->numeric()
-                            ->minValue(100)
-                            ->helperText('Enter price in cents. E.g., 4999 = $49.99'),
-
-                        Forms\Components\Select::make('currency')
-                            ->options([
-                                'USD' => 'USD',
-                            ])
-                            ->default('USD')
-                            ->required(),
-                    ])
-                    ->columns(2),
-
                 Forms\Components\Section::make('Included Plugins')
                     ->schema([
                         Forms\Components\Select::make('plugins')
@@ -139,10 +121,9 @@ class PluginBundleResource extends Resource
                     ->counts('plugins')
                     ->sortable(),
 
-                Tables\Columns\TextColumn::make('price')
+                Tables\Columns\TextColumn::make('formatted_price')
                     ->label('Bundle Price')
-                    ->formatStateUsing(fn (int $state): string => '$'.number_format($state / 100, 2))
-                    ->sortable(),
+                    ->sortable(query: fn ($query, $direction) => $query->orderBy('price', $direction)),
 
                 Tables\Columns\TextColumn::make('retail_value')
                     ->label('Retail Value')
@@ -197,6 +178,7 @@ class PluginBundleResource extends Resource
     public static function getRelations(): array
     {
         return [
+            RelationManagers\PricesRelationManager::class,
             RelationManagers\PluginsRelationManager::class,
             RelationManagers\LicensesRelationManager::class,
         ];

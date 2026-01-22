@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Enums\PluginActivityType;
 use App\Enums\PluginStatus;
+use App\Enums\PluginTier;
 use App\Enums\PluginType;
 use App\Jobs\SyncPluginReleases;
 use App\Notifications\PluginApproved;
@@ -21,11 +22,42 @@ class Plugin extends Model
 {
     use HasFactory;
 
+    /**
+     * Find a plugin by its vendor and package name.
+     */
+    public static function findByVendorPackage(string $vendor, string $package): ?self
+    {
+        return static::where('name', "{$vendor}/{$package}")->first();
+    }
+
+    /**
+     * Find a plugin by its vendor and package name, or fail.
+     *
+     * @throws \Illuminate\Database\Eloquent\ModelNotFoundException
+     */
+    public static function findByVendorPackageOrFail(string $vendor, string $package): self
+    {
+        return static::where('name', "{$vendor}/{$package}")->firstOrFail();
+    }
+
+    /**
+     * Get route parameters for this plugin's vendor/package URL.
+     *
+     * @return array{vendor: string, package: string}
+     */
+    public function routeParams(): array
+    {
+        [$vendor, $package] = explode('/', $this->name);
+
+        return ['vendor' => $vendor, 'package' => $package];
+    }
+
     protected $guarded = [];
 
     protected $casts = [
         'status' => PluginStatus::class,
         'type' => PluginType::class,
+        'tier' => PluginTier::class,
         'approved_at' => 'datetime',
         'featured' => 'boolean',
         'is_active' => 'boolean',
@@ -47,6 +79,36 @@ class Plugin extends Model
                 $plugin->user_id
             );
         });
+
+        static::updated(function (Plugin $plugin) {
+            // When tier is set or changed, create/update prices automatically
+            if ($plugin->wasChanged('tier') && $plugin->tier !== null) {
+                $plugin->syncPricesFromTier();
+            }
+        });
+    }
+
+    /**
+     * Create or update prices based on the plugin's tier.
+     */
+    public function syncPricesFromTier(): void
+    {
+        if ($this->tier === null) {
+            return;
+        }
+
+        $tierPrices = $this->tier->getPrices();
+
+        foreach ($tierPrices as $priceTier => $amount) {
+            $this->prices()->updateOrCreate(
+                ['tier' => $priceTier],
+                [
+                    'amount' => $amount,
+                    'currency' => 'USD',
+                    'is_active' => true,
+                ]
+            );
+        }
     }
 
     /**
@@ -95,6 +157,41 @@ class Plugin extends Model
     public function activePrice(): HasOne
     {
         return $this->hasOne(PluginPrice::class)->where('is_active', true)->latest();
+    }
+
+    /**
+     * Get the best (lowest) active price for a user based on their eligible tiers.
+     * Returns null if no price exists for the user's eligible tiers.
+     */
+    public function getBestPriceForUser(?User $user): ?PluginPrice
+    {
+        $eligibleTiers = $user ? $user->getEligiblePriceTiers() : [\App\Enums\PriceTier::Regular];
+
+        // Get the lowest active price for the user's eligible tiers
+        return $this->prices()
+            ->active()
+            ->forTiers($eligibleTiers)
+            ->orderBy('amount', 'asc')
+            ->first();
+    }
+
+    /**
+     * Check if a user has access to at least one price tier for this plugin.
+     */
+    public function hasAccessiblePriceFor(?User $user): bool
+    {
+        return $this->getBestPriceForUser($user) !== null;
+    }
+
+    /**
+     * Get the regular (non-discounted) price for comparison display.
+     */
+    public function getRegularPrice(): ?PluginPrice
+    {
+        return $this->prices()
+            ->active()
+            ->forTier(\App\Enums\PriceTier::Regular)
+            ->first() ?? $this->activePrice;
     }
 
     /**

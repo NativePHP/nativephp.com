@@ -52,7 +52,7 @@
             <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
                 <div class="flex items-center justify-between mb-4">
                     <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Plugins</h2>
-                    <a href="{{ route('plugins.directory') }}" class="text-sm text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300">
+                    <a href="{{ route('plugins.marketplace') }}" class="text-sm text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300">
                         Browse plugins
                     </a>
                 </div>
@@ -63,7 +63,7 @@
                         <div>
                             <h3 class="text-sm font-medium text-indigo-900 dark:text-indigo-200">Your Plugin Credentials</h3>
                             <p class="mt-1 text-xs text-indigo-700 dark:text-indigo-300">
-                                Use these credentials with Composer to install paid plugins from the NativePHP Plugin Directory.
+                                Use these credentials with Composer to install plugins from the NativePHP Plugin Marketplace.
                             </p>
                         </div>
                         <button
@@ -201,7 +201,7 @@
                         <ul class="divide-y divide-gray-200 dark:divide-gray-700">
                             @foreach($pluginLicenses as $pluginLicense)
                                 <li>
-                                    <a href="{{ route('plugins.show', $pluginLicense->plugin->slug ?? $pluginLicense->plugin->id) }}" class="block hover:bg-gray-50 dark:hover:bg-gray-700">
+                                    <a href="{{ route('plugins.show', $pluginLicense->plugin->routeParams()) }}" class="block hover:bg-gray-50 dark:hover:bg-gray-700">
                                         <div class="px-4 py-4 sm:px-6">
                                             <div class="flex items-center justify-between">
                                                 <div class="flex items-center">
@@ -246,7 +246,7 @@
 
         {{-- Content --}}
         <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
-            <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">NativePHP Licenses</h2>
+            <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Licenses</h2>
             @if($licenses->count() > 0)
                 <div class="bg-white dark:bg-gray-800 shadow overflow-hidden sm:rounded-md">
                     <ul class="divide-y divide-gray-200 dark:divide-gray-700">

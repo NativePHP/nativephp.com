@@ -19,7 +19,7 @@
                 async checkStatus() {
                     this.pollCount++;
                     try {
-                        const response = await fetch('{{ route('plugins.purchase.status', ['plugin' => $plugin, 'sessionId' => $sessionId]) }}');
+                        const response = await fetch('{{ route('plugins.purchase.status', array_merge($plugin->routeParams(), ['sessionId' => $sessionId])) }}');
                         const data = await response.json();
                         this.status = data.status;
                     } catch (e) {
@@ -80,7 +80,7 @@
                                 @endif
                                 <span class="font-mono text-sm font-medium text-gray-900 dark:text-white">{{ $plugin->name }}</span>
                             </div>
-                            <a href="{{ route('plugins.show', $plugin) }}" class="text-sm font-medium text-indigo-600 hover:text-indigo-700 dark:text-indigo-400 dark:hover:text-indigo-300">
+                            <a href="{{ route('plugins.show', $plugin->routeParams()) }}" class="text-sm font-medium text-indigo-600 hover:text-indigo-700 dark:text-indigo-400 dark:hover:text-indigo-300">
                                 View Plugin
                             </a>
                         </div>
@@ -117,7 +117,7 @@
 
                     {{-- Actions --}}
                     <div class="mt-8 flex flex-col gap-4 sm:flex-row sm:justify-center">
-                        <a href="{{ route('plugins.show', $plugin) }}" class="inline-flex items-center justify-center rounded-md bg-indigo-600 px-6 py-3 text-sm font-medium text-white hover:bg-indigo-700">
+                        <a href="{{ route('plugins.show', $plugin->routeParams()) }}" class="inline-flex items-center justify-center rounded-md bg-indigo-600 px-6 py-3 text-sm font-medium text-white hover:bg-indigo-700">
                             View Plugin Details
                         </a>
                         <a href="{{ route('dashboard') }}" class="inline-flex items-center justify-center rounded-md border border-gray-300 bg-white px-6 py-3 text-sm font-medium text-gray-700 hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600">

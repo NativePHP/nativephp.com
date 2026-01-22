@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class PluginPrice extends Model
+class BundlePrice extends Model
 {
     use HasFactory;
 
@@ -21,16 +21,16 @@ class PluginPrice extends Model
     ];
 
     /**
-     * @return BelongsTo<Plugin, PluginPrice>
+     * @return BelongsTo<PluginBundle, BundlePrice>
      */
-    public function plugin(): BelongsTo
+    public function pluginBundle(): BelongsTo
     {
-        return $this->belongsTo(Plugin::class);
+        return $this->belongsTo(PluginBundle::class);
     }
 
     /**
-     * @param  Builder<PluginPrice>  $query
-     * @return Builder<PluginPrice>
+     * @param  Builder<BundlePrice>  $query
+     * @return Builder<BundlePrice>
      */
     public function scopeActive(Builder $query): Builder
     {
@@ -38,8 +38,8 @@ class PluginPrice extends Model
     }
 
     /**
-     * @param  Builder<PluginPrice>  $query
-     * @return Builder<PluginPrice>
+     * @param  Builder<BundlePrice>  $query
+     * @return Builder<BundlePrice>
      */
     public function scopeForTier(Builder $query, PriceTier|string $tier): Builder
     {
@@ -49,9 +49,9 @@ class PluginPrice extends Model
     }
 
     /**
-     * @param  Builder<PluginPrice>  $query
+     * @param  Builder<BundlePrice>  $query
      * @param  array<PriceTier>  $tiers
-     * @return Builder<PluginPrice>
+     * @return Builder<BundlePrice>
      */
     public function scopeForTiers(Builder $query, array $tiers): Builder
     {

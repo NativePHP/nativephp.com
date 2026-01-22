@@ -83,14 +83,6 @@ class User extends Authenticatable implements FilamentUser
         return $this->hasOne(DeveloperAccount::class);
     }
 
-    /**
-     * @return HasOne<UserPurchaseHistory>
-     */
-    public function purchaseHistory(): HasOne
-    {
-        return $this->hasOne(UserPurchaseHistory::class);
-    }
-
     public function hasActiveMaxLicense(): bool
     {
         return $this->licenses()
@@ -117,6 +109,51 @@ class User extends Authenticatable implements FilamentUser
     public function hasMaxAccess(): bool
     {
         return $this->hasActiveMaxLicense() || $this->hasActiveMaxSubLicense();
+    }
+
+    /**
+     * Check if user has an active Pro or Max license (direct only, not sub-licenses).
+     * Used to determine plugin discount eligibility.
+     */
+    public function hasActiveProOrMaxLicense(): bool
+    {
+        return $this->licenses()
+            ->whereIn('policy_name', ['pro', 'max'])
+            ->where('is_suspended', false)
+            ->whereActive()
+            ->exists();
+    }
+
+    /**
+     * Check if user was an Early Access Program customer.
+     * EAP customers purchased before June 1, 2025.
+     */
+    public function isEapCustomer(): bool
+    {
+        return $this->licenses()
+            ->where('created_at', '<', '2025-06-01 00:00:00')
+            ->exists();
+    }
+
+    /**
+     * Get all price tiers the user is eligible for.
+     * Always includes 'regular', plus any special tiers based on their status.
+     *
+     * @return array<\App\Enums\PriceTier>
+     */
+    public function getEligiblePriceTiers(): array
+    {
+        $tiers = [\App\Enums\PriceTier::Regular];
+
+        if ($this->hasActiveProOrMaxLicense()) {
+            $tiers[] = \App\Enums\PriceTier::Subscriber;
+        }
+
+        if ($this->isEapCustomer()) {
+            $tiers[] = \App\Enums\PriceTier::Eap;
+        }
+
+        return $tiers;
     }
 
     public function hasDiscordConnected(): bool

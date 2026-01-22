@@ -25,15 +25,15 @@
                 "
             >
                 <a
-                    href="{{ route('plugins.directory') }}"
+                    href="{{ route('plugins.marketplace') }}"
                     class="inline-flex items-center gap-2 opacity-60 transition duration-200 hover:-translate-x-0.5 hover:opacity-100"
-                    aria-label="Return to plugin directory"
+                    aria-label="Return to plugin marketplace"
                 >
                     <x-icons.right-arrow
                         class="size-3 shrink-0 -scale-x-100"
                         aria-hidden="true"
                     />
-                    <div class="text-sm">Plugin Directory</div>
+                    <div class="text-sm">Plugin Marketplace</div>
                 </a>
             </div>
 
@@ -155,9 +155,27 @@
                 <div class="rounded-2xl border-2 border-amber-500 bg-gradient-to-br from-amber-50 to-orange-50 p-6 dark:border-amber-400 dark:from-amber-950/50 dark:to-orange-950/50">
                     <div class="text-center">
                         <p class="text-sm font-medium text-gray-600 dark:text-gray-400">Bundle Price</p>
-                        <p class="mt-1 text-4xl font-bold text-gray-900 dark:text-white">
-                            {{ $bundle->formatted_price }}
-                        </p>
+                        @if ($bestPrice)
+                            @if ($hasDiscount && $regularPrice)
+                                <p class="mt-1 text-lg text-gray-400 line-through dark:text-gray-500">
+                                    ${{ number_format($regularPrice->amount / 100) }}
+                                </p>
+                                <p class="text-4xl font-bold text-gray-900 dark:text-white">
+                                    ${{ number_format($bestPrice->amount / 100) }}
+                                </p>
+                                <p class="mt-1 text-xs font-medium text-green-600 dark:text-green-400">
+                                    {{ $bestPrice->tier->label() }} pricing applied
+                                </p>
+                            @else
+                                <p class="mt-1 text-4xl font-bold text-gray-900 dark:text-white">
+                                    ${{ number_format($bestPrice->amount / 100) }}
+                                </p>
+                            @endif
+                        @else
+                            <p class="mt-1 text-4xl font-bold text-gray-900 dark:text-white">
+                                {{ $bundle->formatted_price }}
+                            </p>
+                        @endif
                         @if ($bundle->discount_percent > 0)
                             <div class="mt-2">
                                 <span class="text-lg text-gray-500 line-through dark:text-gray-400">
@@ -165,7 +183,7 @@
                                 </span>
                             </div>
                             <p class="mt-1 text-sm font-medium text-green-600 dark:text-green-400">
-                                Save {{ $bundle->formatted_savings }} ({{ $bundle->discount_percent }}% off)
+                                Save {{ $bundle->formatted_savings }} (~{{ $bundle->discount_percent }}% off)
                             </p>
                         @endif
                         <p class="mt-2 text-xs text-gray-500 dark:text-gray-400">One-time purchase</p>
