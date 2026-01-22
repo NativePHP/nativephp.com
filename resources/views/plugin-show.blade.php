@@ -100,7 +100,7 @@
                         })
                     }
                 "
-                class="prose max-w-none grow text-gray-600 dark:text-gray-400 dark:prose-headings:text-white"
+                class="prose min-w-0 max-w-none grow text-gray-600 dark:text-gray-400 dark:prose-headings:text-white"
                 aria-labelledby="plugin-title"
             >
                 @if ($plugin->readme_html)
@@ -127,7 +127,7 @@
                         })
                     }
                 "
-                class="w-full shrink-0 lg:sticky lg:top-24 lg:w-72"
+                class="w-full shrink-0 lg:sticky lg:top-24 lg:w-80"
             >
                 {{-- Purchase Box for Paid Plugins --}}
                 @if ($plugin->isPaid() && $bestPrice && $plugin->is_active)
@@ -172,44 +172,8 @@
                     </h2>
 
                     <dl class="mt-4 grid grid-cols-2 gap-3">
-                        {{-- Type --}}
-                        <div class="rounded-xl bg-gray-50 p-3 dark:bg-slate-700/30">
-                            <dt class="text-xs font-medium text-gray-500 dark:text-gray-400">Type</dt>
-                            <dd class="mt-1">
-                                @if ($plugin->isPaid())
-                                    <span class="text-sm font-medium text-emerald-600 dark:text-emerald-400">Paid</span>
-                                @else
-                                    <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Free</span>
-                                @endif
-                            </dd>
-                        </div>
-
-                        {{-- Version --}}
-                        <div class="rounded-xl bg-gray-50 p-3 dark:bg-slate-700/30">
-                            <dt class="text-xs font-medium text-gray-500 dark:text-gray-400">Version</dt>
-                            <dd class="mt-1 text-sm font-medium text-gray-900 dark:text-white">
-                                {{ $plugin->latest_version ?? '—' }}
-                            </dd>
-                        </div>
-
-                        {{-- iOS Version --}}
-                        <div class="rounded-xl bg-gray-50 p-3 dark:bg-slate-700/30">
-                            <dt class="text-xs font-medium text-gray-500 dark:text-gray-400">iOS</dt>
-                            <dd class="mt-1 text-sm font-medium text-gray-900 dark:text-white">
-                                {{ $plugin->ios_version ?? '—' }}
-                            </dd>
-                        </div>
-
-                        {{-- Android Version --}}
-                        <div class="rounded-xl bg-gray-50 p-3 dark:bg-slate-700/30">
-                            <dt class="text-xs font-medium text-gray-500 dark:text-gray-400">Android</dt>
-                            <dd class="mt-1 text-sm font-medium text-gray-900 dark:text-white">
-                                {{ $plugin->android_version ?? '—' }}
-                            </dd>
-                        </div>
-
                         {{-- Author --}}
-                        <div class="rounded-xl bg-gray-50 p-3 dark:bg-slate-700/30">
+                        <div class="col-span-2 rounded-xl bg-gray-50 p-3 dark:bg-slate-700/30">
                             <dt class="text-xs font-medium text-gray-500 dark:text-gray-400">Author</dt>
                             <dd class="mt-1">
                                 <a
@@ -218,6 +182,14 @@
                                 >
                                     {{ $plugin->user->display_name }}
                                 </a>
+                            </dd>
+                        </div>
+
+                        {{-- Version --}}
+                        <div class="rounded-xl bg-gray-50 p-3 dark:bg-slate-700/30">
+                            <dt class="text-xs font-medium text-gray-500 dark:text-gray-400">Version</dt>
+                            <dd class="mt-1 text-sm font-medium text-gray-900 dark:text-white">
+                                {{ $plugin->latest_version ?? '—' }}
                             </dd>
                         </div>
 
@@ -237,10 +209,19 @@
                                         </svg>
                                     </a>
                                 @else
-                                    <span class="text-sm font-medium text-gray-900 dark:text-white">—</span>
+                                    <span class="text-sm text-gray-500 dark:text-gray-400">—</span>
                                 @endif
                             </dd>
                         </div>
+
+                        {{-- iOS Version --}}
+                        <div class="rounded-xl bg-gray-50 p-3 dark:bg-slate-700/30">
+                            <dt class="text-xs font-medium text-gray-500 dark:text-gray-400">iOS</dt>
+                            <dd class="mt-1 text-sm font-medium text-gray-900 dark:text-white">
+                                {{ $plugin->ios_version ?? '—' }}
+                            </dd>
+                        </div>
+
                     </dl>
 
                     {{-- Links (only for free plugins with repository) --}}

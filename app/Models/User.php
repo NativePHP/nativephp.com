@@ -254,4 +254,78 @@ class User extends Authenticatable implements FilamentUser
     {
         return $this->getGitHubToken() !== null;
     }
+
+    /**
+     * Plugin names that are available for free to eligible subscribers.
+     */
+    public const FREE_PLUGINS_OFFER = [
+        'nativephp/mobile-biometrics',
+        'nativephp/mobile-geolocation',
+        'nativephp/mobile-firebase',
+        'nativephp/mobile-secure-storage',
+        'nativephp/mobile-scanner',
+    ];
+
+    /**
+     * Check if user is eligible for the free plugins offer.
+     * Eligible if they purchased or renewed since Nov 1st 2025.
+     */
+    public function isEligibleForFreePluginsOffer(): bool
+    {
+        $cutoffDate = '2025-11-01 00:00:00';
+
+        // Check for licenses created since the cutoff (new purchases)
+        $hasRecentLicense = $this->licenses()
+            ->where('created_at', '>=', $cutoffDate)
+            ->exists();
+
+        if ($hasRecentLicense) {
+            return true;
+        }
+
+        // Check for active subscription renewals (subscription updated since cutoff)
+        // This catches renewals where the subscription was updated
+        $hasRecentRenewal = $this->subscriptions()
+            ->where('stripe_status', 'active')
+            ->where('updated_at', '>=', $cutoffDate)
+            ->exists();
+
+        return $hasRecentRenewal;
+    }
+
+    /**
+     * Check if user has already claimed all free plugins.
+     */
+    public function hasClaimedFreePlugins(): bool
+    {
+        $freePluginIds = \App\Models\Plugin::query()
+            ->whereIn('name', self::FREE_PLUGINS_OFFER)
+            ->pluck('id');
+
+        if ($freePluginIds->isEmpty()) {
+            return false;
+        }
+
+        // Check if user has licenses for all the free plugins
+        $claimedCount = $this->pluginLicenses()
+            ->whereIn('plugin_id', $freePluginIds)
+            ->count();
+
+        return $claimedCount >= $freePluginIds->count();
+    }
+
+    /**
+     * Check if user should see the free plugins offer banner.
+     * Offer expires on 28th February 2026.
+     */
+    public function shouldSeeFreePluginsOffer(): bool
+    {
+        $offerExpiresAt = '2026-02-28 23:59:59';
+
+        if (now()->gt($offerExpiresAt)) {
+            return false;
+        }
+
+        return $this->isEligibleForFreePluginsOffer() && ! $this->hasClaimedFreePlugins();
+    }
 }

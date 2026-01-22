@@ -27,6 +27,7 @@
                             Add your plugin to the NativePHP Plugin Directory
                         </p>
                     </div>
+                    <x-dashboard-menu />
                 </div>
             </div>
         </header>

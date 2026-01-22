@@ -17,6 +17,7 @@
                             </svg>
                             Submit Plugin
                         </a>
+                        <x-dashboard-menu />
                     </div>
                 </div>
             </div>

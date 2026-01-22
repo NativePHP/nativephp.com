@@ -16,6 +16,7 @@
                             Extend NativePHP Mobile with powerful native features
                         </p>
                     </div>
+                    <x-dashboard-menu />
                 </div>
             </div>
         </header>

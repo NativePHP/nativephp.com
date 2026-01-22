@@ -10,29 +10,7 @@
                             Manage your NativePHP licenses
                         </p>
                     </div>
-                    <div class="flex items-center space-x-3">
-                        <a href="{{ route('customer.showcase.index') }}" class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-                            Showcase
-                        </a>
-                        @feature(App\Features\ShowPlugins::class)
-                            <a href="{{ route('customer.plugins.index') }}" class="inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-                                <x-vaadin-plug class="mr-2 -ml-1 size-4" />
-                                Plugins
-                            </a>
-                        @endfeature
-                        <a href="{{ route('customer.integrations') }}" class="inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-                            Integrations
-                        </a>
-                        <a href="{{ route('customer.billing-portal') }}" class="inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-                            Manage Subscription
-                        </a>
-                        <form method="POST" action="{{ route('customer.logout') }}" class="inline">
-                            @csrf
-                            <button type="submit" class="inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-                                Log out
-                            </button>
-                        </form>
-                    </div>
+                    <x-dashboard-menu />
                 </div>
             </div>
         </header>
@@ -40,8 +18,8 @@
         {{-- Banners --}}
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-6">
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                @if(auth()->user()->hasActualLicense())
-                    <x-discounts-banner :inline="true" />
+                @if(auth()->user()->shouldSeeFreePluginsOffer())
+                    <x-free-plugins-offer-banner :inline="true" />
                 @endif
                 <livewire:wall-of-love-banner :inline="true" />
             </div>
@@ -81,12 +59,14 @@
                         </summary>
                         <div class="mt-2 space-y-2">
                             <p class="text-xs text-indigo-700 dark:text-indigo-300">1. Add the NativePHP plugins repository:</p>
-                            <div class="group relative rounded bg-gray-900 p-3">
-                                <code class="block font-mono text-xs text-gray-100 whitespace-pre pr-8">composer config repositories.nativephp-plugins composer https://plugins.nativephp.com</code>
+                            <div class="group flex items-center rounded bg-gray-900">
+                                <div class="min-w-0 flex-1 overflow-x-auto p-3">
+                                    <code class="block font-mono text-xs text-gray-100 whitespace-pre pr-4">composer config repositories.nativephp-plugins composer https://plugins.nativephp.com</code>
+                                </div>
                                 <button
                                     type="button"
                                     onclick="navigator.clipboard.writeText('composer config repositories.nativephp-plugins composer https://plugins.nativephp.com'); this.querySelector('svg').classList.add('hidden'); this.querySelector('span').classList.remove('hidden'); setTimeout(() => { this.querySelector('svg').classList.remove('hidden'); this.querySelector('span').classList.add('hidden'); }, 2000);"
-                                    class="absolute right-2 top-2 rounded p-1 text-gray-400 hover:bg-gray-800 hover:text-gray-200"
+                                    class="shrink-0 self-stretch bg-gray-900 px-3 text-gray-400 hover:bg-gray-800 hover:text-gray-200"
                                     title="Copy command"
                                 >
                                     <x-heroicon-o-clipboard class="size-4" />
@@ -94,12 +74,14 @@
                                 </button>
                             </div>
                             <p class="text-xs text-indigo-700 dark:text-indigo-300">2. Configure your credentials:</p>
-                            <div class="group relative rounded bg-gray-900 p-3">
-                                <code class="block font-mono text-xs text-gray-100 whitespace-pre pr-8">composer config http-basic.plugins.nativephp.com {{ auth()->user()->email }} {{ $pluginLicenseKey }}</code>
+                            <div class="group flex items-center rounded bg-gray-900">
+                                <div class="min-w-0 flex-1 overflow-x-auto p-3">
+                                    <code class="block font-mono text-xs text-gray-100 whitespace-pre pr-4">composer config http-basic.plugins.nativephp.com {{ auth()->user()->email }} {{ $pluginLicenseKey }}</code>
+                                </div>
                                 <button
                                     type="button"
                                     onclick="navigator.clipboard.writeText('composer config http-basic.plugins.nativephp.com {{ auth()->user()->email }} {{ $pluginLicenseKey }}'); this.querySelector('svg').classList.add('hidden'); this.querySelector('span').classList.remove('hidden'); setTimeout(() => { this.querySelector('svg').classList.remove('hidden'); this.querySelector('span').classList.add('hidden'); }, 2000);"
-                                    class="absolute right-2 top-2 rounded p-1 text-gray-400 hover:bg-gray-800 hover:text-gray-200"
+                                    class="shrink-0 self-stretch bg-gray-900 px-3 text-gray-400 hover:bg-gray-800 hover:text-gray-200"
                                     title="Copy command"
                                 >
                                     <x-heroicon-o-clipboard class="size-4" />
