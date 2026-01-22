@@ -10,6 +10,7 @@ use App\Jobs\SyncPluginReleases;
 use App\Notifications\PluginApproved;
 use App\Notifications\PluginRejected;
 use App\Services\PluginSyncService;
+use App\Services\SatisService;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -84,6 +85,13 @@ class Plugin extends Model
             // When tier is set or changed, create/update prices automatically
             if ($plugin->wasChanged('tier') && $plugin->tier !== null) {
                 $plugin->syncPricesFromTier();
+            }
+        });
+
+        static::deleting(function (Plugin $plugin) {
+            // Remove from Satis when plugin is deleted
+            if ($plugin->name) {
+                app(SatisService::class)->removePackage($plugin->name);
             }
         });
     }
