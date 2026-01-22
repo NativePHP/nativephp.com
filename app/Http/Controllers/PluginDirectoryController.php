@@ -17,19 +17,19 @@ class PluginDirectoryController extends Controller
             ->approved()
             ->featured()
             ->latest()
-            ->take(6)
+            ->take(12)
             ->get()
             ->filter(fn (Plugin $plugin) => $plugin->isFree() || $plugin->hasAccessiblePriceFor($user))
-            ->take(3);
+            ->take(6);
 
         $latestPlugins = Plugin::query()
             ->approved()
             ->where('featured', false)
             ->latest()
-            ->take(6)
+            ->take(12)
             ->get()
             ->filter(fn (Plugin $plugin) => $plugin->isFree() || $plugin->hasAccessiblePriceFor($user))
-            ->take(3);
+            ->take(6);
 
         $bundles = PluginBundle::query()
             ->active()
