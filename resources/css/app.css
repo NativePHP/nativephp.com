@@ -190,11 +190,11 @@ nav.docs-navigation > ul > li > ul {
 }
 
 .prose pre {
-    @apply rounded-xl p-6 shadow-lg;
+    @apply max-w-full overflow-x-auto rounded-xl p-6 shadow-lg;
 }
 
 .prose pre code {
-    @apply bg-transparent p-0 text-sm font-normal text-gray-50;
+    @apply block bg-transparent p-0 text-sm font-normal text-gray-50;
 }
 
 .prose code {
@@ -227,7 +227,7 @@ nav.docs-navigation > ul > li > ul {
  overflow-x-auto is recommended.
 */
 .prose pre {
-    @apply my-4 overflow-x-auto rounded-md bg-transparent p-0;
+    @apply my-4 max-w-full overflow-x-auto rounded-md bg-transparent p-0;
 }
 
 /*
