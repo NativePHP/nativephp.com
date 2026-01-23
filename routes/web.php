@@ -63,10 +63,12 @@ Route::view('partners', 'partners')->name('partners');
 Route::view('build-my-app', 'build-my-app')->name('build-my-app');
 
 // Public plugin directory routes
-Route::get('plugins', [PluginDirectoryController::class, 'index'])->name('plugins');
-Route::get('plugins/marketplace', App\Livewire\PluginDirectory::class)->name('plugins.marketplace');
-Route::get('plugins/{vendor}/{package}', [PluginDirectoryController::class, 'show'])->name('plugins.show');
-Route::get('plugins/{vendor}/{package}/license', [PluginDirectoryController::class, 'license'])->name('plugins.license');
+Route::middleware(EnsureFeaturesAreActive::using(ShowPlugins::class))->group(function () {
+    Route::get('plugins', [PluginDirectoryController::class, 'index'])->name('plugins');
+    Route::get('plugins/marketplace', App\Livewire\PluginDirectory::class)->name('plugins.marketplace');
+    Route::get('plugins/{vendor}/{package}', [PluginDirectoryController::class, 'show'])->name('plugins.show');
+    Route::get('plugins/{vendor}/{package}/license', [PluginDirectoryController::class, 'license'])->name('plugins.license');
+});
 
 Route::view('sponsor', 'sponsoring')->name('sponsoring');
 Route::view('vs-react-native-expo', 'vs-react-native-expo')->name('vs-react-native-expo');
