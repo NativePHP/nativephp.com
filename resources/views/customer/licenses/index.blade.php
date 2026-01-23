@@ -18,9 +18,13 @@
         {{-- Banners --}}
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-6">
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                @if(auth()->user()->shouldSeeFreePluginsOffer())
-                    <x-free-plugins-offer-banner :inline="true" />
-                @endif
+                @feature(App\Features\ShowPlugins::class)
+                    @if(auth()->user()->shouldSeeFreePluginsOffer())
+                        <x-free-plugins-offer-banner :inline="true" />
+                    @endif
+                @else
+                    <x-discounts-banner :inline="true" />
+                @endfeature
                 <livewire:wall-of-love-banner :inline="true" />
             </div>
         </div>
