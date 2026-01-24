@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Collection;
 
 class PluginBundle extends Model
@@ -39,6 +40,57 @@ class PluginBundle extends Model
     public function licenses(): HasMany
     {
         return $this->hasMany(PluginLicense::class);
+    }
+
+    /**
+     * @return HasMany<BundlePrice>
+     */
+    public function prices(): HasMany
+    {
+        return $this->hasMany(BundlePrice::class);
+    }
+
+    /**
+     * @return HasOne<BundlePrice>
+     */
+    public function activePrice(): HasOne
+    {
+        return $this->hasOne(BundlePrice::class)->where('is_active', true)->latest();
+    }
+
+    /**
+     * Get the best (lowest) active price for a user based on their eligible tiers.
+     * Returns null if no price exists for the user's eligible tiers.
+     */
+    public function getBestPriceForUser(?User $user): ?BundlePrice
+    {
+        $eligibleTiers = $user ? $user->getEligiblePriceTiers() : [\App\Enums\PriceTier::Regular];
+
+        // Get the lowest active price for the user's eligible tiers
+        return $this->prices()
+            ->active()
+            ->forTiers($eligibleTiers)
+            ->orderBy('amount', 'asc')
+            ->first();
+    }
+
+    /**
+     * Check if a user has access to at least one price tier for this bundle.
+     */
+    public function hasAccessiblePriceFor(?User $user): bool
+    {
+        return $this->getBestPriceForUser($user) !== null;
+    }
+
+    /**
+     * Get the regular (non-discounted) price for comparison display.
+     */
+    public function getRegularPrice(): ?BundlePrice
+    {
+        return $this->prices()
+            ->active()
+            ->forTier(\App\Enums\PriceTier::Regular)
+            ->first() ?? $this->activePrice;
     }
 
     /**
@@ -101,11 +153,15 @@ class PluginBundle extends Model
     }
 
     /**
-     * Get formatted bundle price.
+     * Get formatted bundle price (uses regular tier price or legacy price column).
      */
     public function getFormattedPriceAttribute(): string
     {
-        return '$'.number_format($this->price / 100, 2);
+        $price = $this->getRegularPrice();
+
+        $amount = $price ? $price->amount : $this->price;
+
+        return '$'.number_format($amount / 100, 2);
     }
 
     /**
@@ -119,7 +175,10 @@ class PluginBundle extends Model
             return 0;
         }
 
-        return (int) round(($retailValue - $this->price) / $retailValue * 100);
+        $price = $this->getRegularPrice();
+        $amount = $price ? $price->amount : $this->price;
+
+        return (int) round(($retailValue - $amount) / $retailValue * 100);
     }
 
     /**
@@ -127,7 +186,10 @@ class PluginBundle extends Model
      */
     public function getSavingsAttribute(): int
     {
-        return max(0, $this->retail_value - $this->price);
+        $price = $this->getRegularPrice();
+        $amount = $price ? $price->amount : $this->price;
+
+        return max(0, $this->retail_value - $amount);
     }
 
     /**
@@ -176,10 +238,16 @@ class PluginBundle extends Model
      *
      * @return array<int, int> Plugin ID => allocated amount in cents
      */
-    public function calculateProportionalAllocation(): array
+    public function calculateProportionalAllocation(?int $bundlePriceAmount = null): array
     {
         $retailValue = $this->retail_value;
-        $bundlePrice = $this->price;
+
+        // Use provided amount or fall back to regular tier price or legacy price
+        if ($bundlePriceAmount === null) {
+            $price = $this->getRegularPrice();
+            $bundlePriceAmount = $price ? $price->amount : $this->price;
+        }
+
         $allocations = [];
 
         if ($retailValue <= 0) {
@@ -195,10 +263,10 @@ class PluginBundle extends Model
 
             // For last plugin, allocate remainder to avoid rounding issues
             if ($index === $lastIndex) {
-                $allocations[$plugin->id] = $bundlePrice - $runningTotal;
+                $allocations[$plugin->id] = $bundlePriceAmount - $runningTotal;
             } else {
                 $proportion = $pluginRetail / $retailValue;
-                $allocation = (int) round($bundlePrice * $proportion);
+                $allocation = (int) round($bundlePriceAmount * $proportion);
                 $allocations[$plugin->id] = $allocation;
                 $runningTotal += $allocation;
             }

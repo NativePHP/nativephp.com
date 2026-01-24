@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\PriceTier;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -16,6 +17,7 @@ class PluginPrice extends Model
     protected $casts = [
         'amount' => 'integer',
         'is_active' => 'boolean',
+        'tier' => PriceTier::class,
     ];
 
     /**
@@ -35,17 +37,46 @@ class PluginPrice extends Model
         return $query->where('is_active', true);
     }
 
+    /**
+     * @param  Builder<PluginPrice>  $query
+     * @return Builder<PluginPrice>
+     */
+    public function scopeForTier(Builder $query, PriceTier|string $tier): Builder
+    {
+        $tierValue = $tier instanceof PriceTier ? $tier->value : $tier;
+
+        return $query->where('tier', $tierValue);
+    }
+
+    /**
+     * @param  Builder<PluginPrice>  $query
+     * @param  array<PriceTier>  $tiers
+     * @return Builder<PluginPrice>
+     */
+    public function scopeForTiers(Builder $query, array $tiers): Builder
+    {
+        $tierValues = array_map(fn ($t) => $t instanceof PriceTier ? $t->value : $t, $tiers);
+
+        return $query->whereIn('tier', $tierValues);
+    }
+
     public function getFormattedAmountAttribute(): string
     {
         return number_format($this->amount / 100, 2);
     }
 
-    public function getDiscountedAmount(int $discountPercent): int
+    public function isRegularTier(): bool
     {
-        if ($discountPercent <= 0 || $discountPercent > 100) {
-            return $this->amount;
-        }
+        return $this->tier === PriceTier::Regular;
+    }
 
-        return (int) round($this->amount * (100 - $discountPercent) / 100);
+    public function isSubscriberTier(): bool
+    {
+        return $this->tier === PriceTier::Subscriber;
+    }
+
+    public function isEapTier(): bool
+    {
+        return $this->tier === PriceTier::Eap;
     }
 }

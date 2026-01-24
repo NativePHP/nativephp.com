@@ -16,6 +16,7 @@
                             Connect your accounts to unlock additional features
                         </p>
                     </div>
+                    <x-dashboard-menu />
                 </div>
             </div>
         </header>

@@ -29,13 +29,6 @@ class SubmitPluginRequest extends FormRequest
                 },
             ],
             'type' => ['required', 'string', Rule::enum(PluginType::class)],
-            'price' => [
-                'nullable',
-                'required_if:type,paid',
-                'integer',
-                'min:10',
-                'max:99999',
-            ],
         ];
     }
 
@@ -46,18 +39,14 @@ class SubmitPluginRequest extends FormRequest
             'repository.regex' => 'Please enter a valid repository in the format vendor/repo-name.',
             'type.required' => 'Please select whether your plugin is free or paid.',
             'type.enum' => 'Please select a valid plugin type.',
-            'price.required_if' => 'Please enter a price for your paid plugin.',
-            'price.integer' => 'The price must be a whole dollar amount (no cents).',
-            'price.min' => 'The price must be at least $10.',
-            'price.max' => 'The price cannot exceed $99,999.',
         ];
     }
 
     public function withValidator($validator): void
     {
         $validator->after(function ($validator) {
-            if ($this->type === 'paid' && ! $this->user()->github_id) {
-                $validator->errors()->add('type', 'You must connect your GitHub account to submit a paid plugin.');
+            if (! $this->user()->github_id) {
+                $validator->errors()->add('repository', 'You must connect your GitHub account to submit a plugin.');
             }
         });
     }

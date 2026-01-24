@@ -3,7 +3,9 @@
 namespace App\Livewire;
 
 use App\Models\Plugin;
+use App\Models\PluginBundle;
 use App\Models\User;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Title;
@@ -12,7 +14,7 @@ use Livewire\Component;
 use Livewire\WithPagination;
 
 #[Layout('components.layout')]
-#[Title('Plugin Directory')]
+#[Title('Plugin Marketplace')]
 class PluginDirectory extends Component
 {
     use WithPagination;
@@ -23,12 +25,20 @@ class PluginDirectory extends Component
     #[Url]
     public ?int $author = null;
 
+    #[Url]
+    public string $view = 'plugins';
+
     public function updatedSearch(): void
     {
         $this->resetPage();
     }
 
     public function updatedAuthor(): void
+    {
+        $this->resetPage();
+    }
+
+    public function updatedView(): void
     {
         $this->resetPage();
     }
@@ -45,8 +55,21 @@ class PluginDirectory extends Component
         $this->resetPage();
     }
 
+    public function showPlugins(): void
+    {
+        $this->view = 'plugins';
+        $this->resetPage();
+    }
+
+    public function showBundles(): void
+    {
+        $this->view = 'bundles';
+        $this->resetPage();
+    }
+
     public function render(): View
     {
+        $user = Auth::user();
         $authorUser = $this->author ? User::find($this->author) : null;
 
         $plugins = Plugin::query()
@@ -64,8 +87,22 @@ class PluginDirectory extends Component
             ->latest()
             ->paginate(15);
 
+        $bundles = PluginBundle::query()
+            ->active()
+            ->with('plugins')
+            ->when($this->search, function ($query) {
+                $query->where(function ($q) {
+                    $q->where('name', 'like', "%{$this->search}%")
+                        ->orWhere('description', 'like', "%{$this->search}%");
+                });
+            })
+            ->latest()
+            ->get()
+            ->filter(fn (PluginBundle $bundle) => $bundle->hasAccessiblePriceFor($user));
+
         return view('livewire.plugin-directory', [
             'plugins' => $plugins,
+            'bundles' => $bundles,
             'authorUser' => $authorUser,
         ]);
     }

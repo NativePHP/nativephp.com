@@ -84,6 +84,11 @@ class StripeConnectService
             $buyer->createAsStripeCustomer();
         }
 
+        $productName = $plugin->name;
+        if (! $price->isRegularTier()) {
+            $productName .= ' ('.$price->tier->label().' pricing)';
+        }
+
         $sessionParams = [
             'mode' => 'payment',
             'line_items' => [
@@ -92,15 +97,15 @@ class StripeConnectService
                         'currency' => strtolower($price->currency),
                         'unit_amount' => $price->amount,
                         'product_data' => [
-                            'name' => $plugin->name,
+                            'name' => $productName,
                             'description' => $plugin->description ?? 'NativePHP Plugin',
                         ],
                     ],
                     'quantity' => 1,
                 ],
             ],
-            'success_url' => route('plugins.purchase.success', ['plugin' => $plugin->id]).'?session_id={CHECKOUT_SESSION_ID}',
-            'cancel_url' => route('plugins.purchase.cancel', ['plugin' => $plugin->id]),
+            'success_url' => route('plugins.purchase.success', $plugin->routeParams()).'?session_id={CHECKOUT_SESSION_ID}',
+            'cancel_url' => route('plugins.purchase.cancel', $plugin->routeParams()),
             'customer' => $buyer->stripe_id,
             'customer_update' => [
                 'name' => 'auto',
@@ -110,7 +115,9 @@ class StripeConnectService
                 'plugin_id' => $plugin->id,
                 'user_id' => $buyer->id,
                 'price_id' => $price->id,
+                'price_tier' => $price->tier->value,
             ],
+            'allow_promotion_codes' => true,
             'billing_address_collection' => 'required',
             'tax_id_collection' => ['enabled' => true],
             'invoice_creation' => [

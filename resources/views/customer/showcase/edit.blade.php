@@ -18,7 +18,7 @@
                                 Update the details of your showcase submission.
                             </p>
                         </div>
-                        <div>
+                        <div class="flex items-center space-x-3">
                             @if($showcase->isApproved())
                                 <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
                                     Approved
@@ -28,6 +28,7 @@
                                     Pending Review
                                 </span>
                             @endif
+                            <x-dashboard-menu />
                         </div>
                     </div>
                 </div>

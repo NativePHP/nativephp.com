@@ -3,6 +3,7 @@
 namespace App\Filament\Resources;
 
 use App\Enums\PluginStatus;
+use App\Enums\PluginTier;
 use App\Enums\PluginType;
 use App\Filament\Resources\PluginResource\Pages;
 use App\Filament\Resources\PluginResource\RelationManagers;
@@ -45,6 +46,11 @@ class PluginResource extends Resource
 
                         Forms\Components\Select::make('type')
                             ->options(PluginType::class),
+
+                        Forms\Components\Select::make('tier')
+                            ->options(PluginTier::class)
+                            ->placeholder('No tier')
+                            ->helperText('Set pricing tier for paid plugins'),
 
                         Forms\Components\TextInput::make('repository_url')
                             ->label('Repository URL')
@@ -117,6 +123,12 @@ class PluginResource extends Resource
                     })
                     ->sortable(),
 
+                Tables\Columns\TextColumn::make('tier')
+                    ->badge()
+                    ->color(fn (?PluginTier $state): string => $state?->color() ?? 'gray')
+                    ->sortable()
+                    ->placeholder('-'),
+
                 Tables\Columns\TextColumn::make('user.email')
                     ->label('Submitted By')
                     ->searchable()
@@ -187,7 +199,7 @@ class PluginResource extends Resource
                         ->label('View Listing Page')
                         ->icon('heroicon-o-eye')
                         ->color('gray')
-                        ->url(fn (Plugin $record) => route('plugins.show', $record))
+                        ->url(fn (Plugin $record) => route('plugins.show', $record->routeParams()))
                         ->openUrlInNewTab()
                         ->visible(fn (Plugin $record) => $record->isApproved()),
 
@@ -253,6 +265,7 @@ class PluginResource extends Resource
     public static function getRelations(): array
     {
         return [
+            RelationManagers\PricesRelationManager::class,
             RelationManagers\ActivitiesRelationManager::class,
         ];
     }

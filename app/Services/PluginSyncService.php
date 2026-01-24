@@ -22,6 +22,7 @@ class PluginSyncService
         $token = $this->getGitHubToken($plugin);
 
         $readme = $this->fetchFileFromGitHub($repo['owner'], $repo['repo'], 'README.md', $token);
+        $license = $this->fetchLicenseFile($repo['owner'], $repo['repo'], $token);
         $composerJson = $this->fetchFileFromGitHub($repo['owner'], $repo['repo'], 'composer.json', $token);
         $nativephpJson = $this->fetchFileFromGitHub($repo['owner'], $repo['repo'], 'nativephp.json', $token);
 
@@ -57,6 +58,10 @@ class PluginSyncService
 
         if ($readme) {
             $updateData['readme_html'] = CommonMark::convertToHtml($readme);
+        }
+
+        if ($license) {
+            $updateData['license_html'] = CommonMark::convertToHtml($license);
         }
 
         // Fetch the latest tag/release
@@ -156,5 +161,21 @@ class PluginSyncService
     protected function extractAndroidVersion(array $nativephpData): ?string
     {
         return $nativephpData['android']['min_version'] ?? null;
+    }
+
+    protected function fetchLicenseFile(string $owner, string $repo, ?string $token): ?string
+    {
+        // Try common license file names
+        $licenseFiles = ['LICENSE.md', 'LICENSE', 'LICENSE.txt', 'license.md', 'license', 'license.txt'];
+
+        foreach ($licenseFiles as $filename) {
+            $content = $this->fetchFileFromGitHub($owner, $repo, $filename, $token);
+
+            if ($content) {
+                return $content;
+            }
+        }
+
+        return null;
     }
 }

@@ -102,6 +102,23 @@ class PluginAccessController extends Controller
     {
         $plugins = [];
 
+        // Admins have access to ALL paid plugins (including pending) for review
+        if ($user->isAdmin()) {
+            $allPaidPlugins = Plugin::query()
+                ->where('type', \App\Enums\PluginType::Paid)
+                ->whereNotNull('name')
+                ->get(['name', 'status']);
+
+            foreach ($allPaidPlugins as $plugin) {
+                $plugins[] = [
+                    'name' => $plugin->name,
+                    'access' => 'admin',
+                ];
+            }
+
+            return $plugins;
+        }
+
         // Paid plugins the user has submitted
         $submittedPlugins = Plugin::query()
             ->where('user_id', $user->id)

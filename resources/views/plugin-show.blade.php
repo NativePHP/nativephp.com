@@ -25,15 +25,15 @@
                 "
             >
                 <a
-                    href="{{ route('plugins.directory') }}"
+                    href="{{ route('plugins.marketplace') }}"
                     class="inline-flex items-center gap-2 opacity-60 transition duration-200 hover:-translate-x-0.5 hover:opacity-100"
-                    aria-label="Return to plugin directory"
+                    aria-label="Return to plugin marketplace"
                 >
                     <x-icons.right-arrow
                         class="size-3 shrink-0 -scale-x-100"
                         aria-hidden="true"
                     />
-                    <div class="text-sm">Plugin Directory</div>
+                    <div class="text-sm">Plugin Marketplace</div>
                 </a>
             </div>
 
@@ -58,6 +58,10 @@
                         alt="{{ $plugin->name }} logo"
                         class="size-16 shrink-0 rounded-2xl object-cover"
                     />
+                @elseif ($plugin->hasGradientIcon())
+                    <div class="grid size-16 shrink-0 place-items-center rounded-2xl bg-gradient-to-br {{ $plugin->getGradientClasses() }} text-white">
+                        <x-dynamic-component :component="'heroicon-o-' . $plugin->icon_name" class="size-8" />
+                    </div>
                 @else
                     <div class="grid size-16 shrink-0 place-items-center rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-600 text-white">
                         <x-vaadin-plug class="size-8" />
@@ -96,7 +100,7 @@
                         })
                     }
                 "
-                class="prose max-w-none grow text-gray-600 dark:text-gray-400 dark:prose-headings:text-white"
+                class="prose min-w-0 max-w-none grow text-gray-600 dark:text-gray-400 dark:prose-headings:text-white"
                 aria-labelledby="plugin-title"
             >
                 @if ($plugin->readme_html)
@@ -123,19 +127,31 @@
                         })
                     }
                 "
-                class="w-full shrink-0 lg:sticky lg:top-24 lg:w-72"
+                class="w-full shrink-0 lg:sticky lg:top-24 lg:w-80"
             >
                 {{-- Purchase Box for Paid Plugins --}}
-                @if ($plugin->isPaid() && $plugin->activePrice && $plugin->is_active)
+                @if ($plugin->isPaid() && $bestPrice && $plugin->is_active)
                     <div class="mb-4 rounded-2xl border-2 border-indigo-500 bg-gradient-to-br from-indigo-50 to-purple-50 p-6 dark:border-indigo-400 dark:from-indigo-950/50 dark:to-purple-950/50">
                         <div class="text-center">
                             <p class="text-sm font-medium text-gray-600 dark:text-gray-400">Price</p>
-                            <p class="mt-1 text-4xl font-bold text-gray-900 dark:text-white">
-                                ${{ number_format($plugin->activePrice->amount / 100) }}
-                            </p>
+                            @if ($hasDiscount && $regularPrice)
+                                <p class="mt-1 text-lg text-gray-400 line-through dark:text-gray-500">
+                                    ${{ number_format($regularPrice->amount / 100) }}
+                                </p>
+                                <p class="text-4xl font-bold text-gray-900 dark:text-white">
+                                    ${{ number_format($bestPrice->amount / 100) }}
+                                </p>
+                                <p class="mt-1 text-xs font-medium text-green-600 dark:text-green-400">
+                                    {{ $bestPrice->tier->label() }} pricing applied
+                                </p>
+                            @else
+                                <p class="mt-1 text-4xl font-bold text-gray-900 dark:text-white">
+                                    ${{ number_format($bestPrice->amount / 100) }}
+                                </p>
+                            @endif
                             <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">One-time purchase</p>
                         </div>
-                        <form action="{{ route('cart.add', $plugin) }}" method="POST" class="mt-4">
+                        <form action="{{ route('cart.add', $plugin->routeParams()) }}" method="POST" class="mt-4">
                             @csrf
                             <button
                                 type="submit"
@@ -156,15 +172,16 @@
                     </h2>
 
                     <dl class="mt-4 grid grid-cols-2 gap-3">
-                        {{-- Type --}}
-                        <div class="rounded-xl bg-gray-50 p-3 dark:bg-slate-700/30">
-                            <dt class="text-xs font-medium text-gray-500 dark:text-gray-400">Type</dt>
+                        {{-- Author --}}
+                        <div class="col-span-2 rounded-xl bg-gray-50 p-3 dark:bg-slate-700/30">
+                            <dt class="text-xs font-medium text-gray-500 dark:text-gray-400">Author</dt>
                             <dd class="mt-1">
-                                @if ($plugin->isPaid())
-                                    <span class="text-sm font-medium text-emerald-600 dark:text-emerald-400">Paid</span>
-                                @else
-                                    <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Free</span>
-                                @endif
+                                <a
+                                    href="{{ route('plugins.marketplace', ['author' => $plugin->user->id]) }}"
+                                    class="text-sm font-medium text-indigo-600 hover:text-indigo-700 dark:text-indigo-400 dark:hover:text-indigo-300"
+                                >
+                                    {{ $plugin->user->display_name }}
+                                </a>
                             </dd>
                         </div>
 
@@ -173,6 +190,39 @@
                             <dt class="text-xs font-medium text-gray-500 dark:text-gray-400">Version</dt>
                             <dd class="mt-1 text-sm font-medium text-gray-900 dark:text-white">
                                 {{ $plugin->latest_version ?? '—' }}
+                            </dd>
+                        </div>
+
+                        {{-- License --}}
+                        <div class="rounded-xl bg-gray-50 p-3 dark:bg-slate-700/30">
+                            <dt class="text-xs font-medium text-gray-500 dark:text-gray-400">License</dt>
+                            <dd class="mt-1">
+                                @if ($plugin->getLicense())
+                                    @if ($plugin->isPaid() && $plugin->license_html)
+                                        <a
+                                            href="{{ route('plugins.license', $plugin->routeParams()) }}"
+                                            class="inline-flex items-center gap-1 text-sm font-medium text-indigo-600 hover:text-indigo-700 dark:text-indigo-400 dark:hover:text-indigo-300"
+                                        >
+                                            {{ $plugin->getLicense() }}
+                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-3">
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 6H5.25A2.25 2.25 0 0 0 3 8.25v10.5A2.25 2.25 0 0 0 5.25 21h10.5A2.25 2.25 0 0 0 18 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" />
+                                            </svg>
+                                        </a>
+                                    @else
+                                        <a
+                                            href="{{ $plugin->getLicenseUrl() }}"
+                                            target="_blank"
+                                            class="inline-flex items-center gap-1 text-sm font-medium text-indigo-600 hover:text-indigo-700 dark:text-indigo-400 dark:hover:text-indigo-300"
+                                        >
+                                            {{ $plugin->getLicense() }}
+                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-3">
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 6H5.25A2.25 2.25 0 0 0 3 8.25v10.5A2.25 2.25 0 0 0 5.25 21h10.5A2.25 2.25 0 0 0 18 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" />
+                                            </svg>
+                                        </a>
+                                    @endif
+                                @else
+                                    <span class="text-sm text-gray-500 dark:text-gray-400">—</span>
+                                @endif
                             </dd>
                         </div>
 
@@ -192,39 +242,6 @@
                             </dd>
                         </div>
 
-                        {{-- Author --}}
-                        <div class="rounded-xl bg-gray-50 p-3 dark:bg-slate-700/30">
-                            <dt class="text-xs font-medium text-gray-500 dark:text-gray-400">Author</dt>
-                            <dd class="mt-1">
-                                <a
-                                    href="{{ route('plugins.directory', ['author' => $plugin->user->id]) }}"
-                                    class="text-sm font-medium text-indigo-600 hover:text-indigo-700 dark:text-indigo-400 dark:hover:text-indigo-300"
-                                >
-                                    {{ $plugin->user->display_name }}
-                                </a>
-                            </dd>
-                        </div>
-
-                        {{-- License --}}
-                        <div class="rounded-xl bg-gray-50 p-3 dark:bg-slate-700/30">
-                            <dt class="text-xs font-medium text-gray-500 dark:text-gray-400">License</dt>
-                            <dd class="mt-1">
-                                @if ($plugin->getLicense())
-                                    <a
-                                        href="{{ $plugin->getLicenseUrl() }}"
-                                        target="_blank"
-                                        class="inline-flex items-center gap-1 text-sm font-medium text-indigo-600 hover:text-indigo-700 dark:text-indigo-400 dark:hover:text-indigo-300"
-                                    >
-                                        {{ $plugin->getLicense() }}
-                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-3">
-                                            <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 6H5.25A2.25 2.25 0 0 0 3 8.25v10.5A2.25 2.25 0 0 0 5.25 21h10.5A2.25 2.25 0 0 0 18 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" />
-                                        </svg>
-                                    </a>
-                                @else
-                                    <span class="text-sm font-medium text-gray-900 dark:text-white">—</span>
-                                @endif
-                            </dd>
-                        </div>
                     </dl>
 
                     {{-- Links (only for free plugins with repository) --}}

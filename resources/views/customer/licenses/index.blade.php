@@ -10,29 +10,7 @@
                             Manage your NativePHP licenses
                         </p>
                     </div>
-                    <div class="flex items-center space-x-3">
-                        <a href="{{ route('customer.showcase.index') }}" class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-                            Showcase
-                        </a>
-                        @feature(App\Features\ShowPlugins::class)
-                            <a href="{{ route('customer.plugins.index') }}" class="inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-                                <x-vaadin-plug class="mr-2 -ml-1 size-4" />
-                                Plugins
-                            </a>
-                        @endfeature
-                        <a href="{{ route('customer.integrations') }}" class="inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-                            Integrations
-                        </a>
-                        <a href="{{ route('customer.billing-portal') }}" class="inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-                            Manage Subscription
-                        </a>
-                        <form method="POST" action="{{ route('customer.logout') }}" class="inline">
-                            @csrf
-                            <button type="submit" class="inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-                                Log out
-                            </button>
-                        </form>
-                    </div>
+                    <x-dashboard-menu />
                 </div>
             </div>
         </header>
@@ -40,76 +18,186 @@
         {{-- Banners --}}
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-6">
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                @if(auth()->user()->hasActualLicense())
+                @feature(App\Features\ShowPlugins::class)
+                    @if(auth()->user()->shouldSeeFreePluginsOffer())
+                        <x-free-plugins-offer-banner :inline="true" />
+                    @endif
+                @else
                     <x-discounts-banner :inline="true" />
-                @endif
+                @endfeature
                 <livewire:wall-of-love-banner :inline="true" />
             </div>
         </div>
 
-        {{-- Purchased Plugins --}}
+        {{-- Plugin Composer Configuration --}}
         @feature(App\Features\ShowPlugins::class)
-            @if($pluginLicenses->count() > 0)
-                <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
-                    <div class="flex items-center justify-between mb-4">
-                        <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Purchased Plugins</h2>
-                        <a href="{{ route('plugins.directory') }}" class="text-sm text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300">
-                            Browse more plugins
-                        </a>
-                    </div>
+            <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+                <div class="flex items-center justify-between mb-4">
+                    <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Plugins</h2>
+                    <a href="{{ route('plugins.marketplace') }}" class="text-sm text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300">
+                        Browse plugins
+                    </a>
+                </div>
 
-                    {{-- Plugin License Key --}}
-                    @if(auth()->user()->plugin_license_key)
-                        <div class="mb-6 rounded-lg border border-indigo-200 bg-indigo-50 p-4 dark:border-indigo-800 dark:bg-indigo-900/20">
-                            <div class="flex items-start justify-between">
-                                <div>
-                                    <h3 class="text-sm font-medium text-indigo-900 dark:text-indigo-200">Your Plugin License Key</h3>
-                                    <p class="mt-1 text-xs text-indigo-700 dark:text-indigo-300">
-                                        Use this key with your email to authenticate Composer for paid plugins.
-                                    </p>
+                {{-- Plugin License Key - Always shown --}}
+                <div class="mb-6 rounded-lg border border-indigo-200 bg-indigo-50 p-4 dark:border-indigo-800 dark:bg-indigo-900/20" x-data="{ showRotateModal: false }">
+                    <div class="flex items-start justify-between">
+                        <div>
+                            <h3 class="text-sm font-medium text-indigo-900 dark:text-indigo-200">Your Plugin Credentials</h3>
+                            <p class="mt-1 text-xs text-indigo-700 dark:text-indigo-300">
+                                Use these credentials with Composer to install plugins from the NativePHP Plugin Marketplace.
+                            </p>
+                        </div>
+                        <button
+                            type="button"
+                            @click="showRotateModal = true"
+                            class="rounded bg-gray-200 px-2.5 py-1.5 text-xs font-medium text-gray-700 hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600"
+                            title="Rotate key"
+                        >
+                            <x-heroicon-o-arrow-path class="size-4" />
+                        </button>
+                    </div>
+                    <details class="mt-3">
+                        <summary class="cursor-pointer text-xs font-medium text-indigo-700 dark:text-indigo-300 hover:text-indigo-900 dark:hover:text-indigo-100">
+                            How to configure Composer
+                        </summary>
+                        <div class="mt-2 space-y-2">
+                            <p class="text-xs text-indigo-700 dark:text-indigo-300">1. Add the NativePHP plugins repository:</p>
+                            <div class="group flex items-center rounded bg-gray-900">
+                                <div class="min-w-0 flex-1 overflow-x-auto p-3">
+                                    <code class="block font-mono text-xs text-gray-100 whitespace-pre pr-4">composer config repositories.nativephp-plugins composer https://plugins.nativephp.com</code>
                                 </div>
                                 <button
                                     type="button"
-                                    onclick="navigator.clipboard.writeText('{{ auth()->user()->plugin_license_key }}'); this.textContent = 'Copied!'; setTimeout(() => this.textContent = 'Copy', 2000);"
-                                    class="rounded bg-indigo-600 px-2.5 py-1.5 text-xs font-medium text-white hover:bg-indigo-700"
+                                    onclick="navigator.clipboard.writeText('composer config repositories.nativephp-plugins composer https://plugins.nativephp.com'); this.querySelector('svg').classList.add('hidden'); this.querySelector('span').classList.remove('hidden'); setTimeout(() => { this.querySelector('svg').classList.remove('hidden'); this.querySelector('span').classList.add('hidden'); }, 2000);"
+                                    class="shrink-0 self-stretch bg-gray-900 px-3 text-gray-400 hover:bg-gray-800 hover:text-gray-200"
+                                    title="Copy command"
                                 >
-                                    Copy
+                                    <x-heroicon-o-clipboard class="size-4" />
+                                    <span class="hidden text-xs">Copied!</span>
                                 </button>
                             </div>
-                            <div class="mt-3">
-                                <code class="block rounded bg-indigo-100 px-3 py-2 font-mono text-xs text-indigo-900 dark:bg-indigo-900/50 dark:text-indigo-200 break-all">
-                                    {{ auth()->user()->plugin_license_key }}
-                                </code>
+                            <p class="text-xs text-indigo-700 dark:text-indigo-300">2. Configure your credentials:</p>
+                            <div class="group flex items-center rounded bg-gray-900">
+                                <div class="min-w-0 flex-1 overflow-x-auto p-3">
+                                    <code class="block font-mono text-xs text-gray-100 whitespace-pre pr-4">composer config http-basic.plugins.nativephp.com {{ auth()->user()->email }} {{ $pluginLicenseKey }}</code>
+                                </div>
+                                <button
+                                    type="button"
+                                    onclick="navigator.clipboard.writeText('composer config http-basic.plugins.nativephp.com {{ auth()->user()->email }} {{ $pluginLicenseKey }}'); this.querySelector('svg').classList.add('hidden'); this.querySelector('span').classList.remove('hidden'); setTimeout(() => { this.querySelector('svg').classList.remove('hidden'); this.querySelector('span').classList.add('hidden'); }, 2000);"
+                                    class="shrink-0 self-stretch bg-gray-900 px-3 text-gray-400 hover:bg-gray-800 hover:text-gray-200"
+                                    title="Copy command"
+                                >
+                                    <x-heroicon-o-clipboard class="size-4" />
+                                    <span class="hidden text-xs">Copied!</span>
+                                </button>
                             </div>
-                            <details class="mt-3">
-                                <summary class="cursor-pointer text-xs font-medium text-indigo-700 dark:text-indigo-300 hover:text-indigo-900 dark:hover:text-indigo-100">
-                                    How to configure Composer
-                                </summary>
-                                <div class="mt-2 space-y-2">
-                                    <p class="text-xs text-indigo-700 dark:text-indigo-300">1. Add the NativePHP plugins repository:</p>
-                                    <div class="rounded bg-gray-900 p-3">
-                                        <code class="block font-mono text-xs text-gray-100 whitespace-pre">composer config repositories.nativephp-plugins composer https://plugins.nativephp.com</code>
+                        </div>
+                    </details>
+
+                    {{-- Rotate Key Confirmation Modal --}}
+                    <div
+                        x-show="showRotateModal"
+                        x-cloak
+                        class="fixed inset-0 z-50 overflow-y-auto"
+                        aria-labelledby="modal-title"
+                        role="dialog"
+                        aria-modal="true"
+                    >
+                        <div class="flex min-h-screen items-end justify-center px-4 pb-20 pt-4 text-center sm:block sm:p-0">
+                            {{-- Background overlay --}}
+                            <div
+                                x-show="showRotateModal"
+                                x-transition:enter="ease-out duration-300"
+                                x-transition:enter-start="opacity-0"
+                                x-transition:enter-end="opacity-100"
+                                x-transition:leave="ease-in duration-200"
+                                x-transition:leave-start="opacity-100"
+                                x-transition:leave-end="opacity-0"
+                                class="fixed inset-0 bg-gray-500/60 backdrop-blur-sm transition-opacity dark:bg-gray-900/60"
+                                @click="showRotateModal = false"
+                            ></div>
+
+                            {{-- Center modal --}}
+                            <span class="hidden sm:inline-block sm:h-screen sm:align-middle" aria-hidden="true">&#8203;</span>
+
+                            {{-- Modal panel --}}
+                            <div
+                                x-show="showRotateModal"
+                                x-transition:enter="ease-out duration-300"
+                                x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+                                x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100"
+                                x-transition:leave="ease-in duration-200"
+                                x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100"
+                                x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+                                class="relative inline-block transform overflow-hidden rounded-lg bg-white px-4 pb-4 pt-5 text-left align-bottom shadow-xl transition-all dark:bg-gray-800 sm:my-8 sm:w-full sm:max-w-lg sm:p-6 sm:align-middle"
+                            >
+                                <div class="sm:flex sm:items-start">
+                                    <div class="mx-auto flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-yellow-100 dark:bg-yellow-900 sm:mx-0 sm:h-10 sm:w-10">
+                                        <x-heroicon-o-exclamation-triangle class="h-6 w-6 text-yellow-600 dark:text-yellow-400" />
                                     </div>
-                                    <p class="text-xs text-indigo-700 dark:text-indigo-300">2. Configure your credentials:</p>
-                                    <div class="rounded bg-gray-900 p-3">
-                                        <code class="block font-mono text-xs text-gray-100 whitespace-pre">composer config http-basic.plugins.nativephp.com {{ auth()->user()->email }} {{ auth()->user()->plugin_license_key }}</code>
+                                    <div class="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left">
+                                        <h3 class="text-base font-semibold leading-6 text-gray-900 dark:text-white" id="modal-title">
+                                            Rotate Plugin License Key
+                                        </h3>
+                                        <div class="mt-2">
+                                            <p class="text-sm text-gray-500 dark:text-gray-400">
+                                                Are you sure you want to rotate your plugin license key? This action cannot be undone.
+                                            </p>
+                                            <div class="mt-3 rounded-md bg-yellow-50 p-3 dark:bg-yellow-900/30">
+                                                <p class="text-sm font-medium text-yellow-800 dark:text-yellow-200">
+                                                    After rotating your key, you will need to:
+                                                </p>
+                                                <ul class="mt-2 list-disc pl-5 text-sm text-yellow-700 dark:text-yellow-300">
+                                                    <li>Update your <code class="font-mono">auth.json</code> file in all projects</li>
+                                                    <li>Reconfigure Composer credentials on any CI/CD systems</li>
+                                                    <li>Update any deployment scripts that reference the old key</li>
+                                                </ul>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
-                            </details>
+                                <div class="mt-5 sm:mt-4 sm:flex sm:flex-row-reverse">
+                                    <form method="POST" action="{{ route('customer.plugin-license-key.rotate') }}">
+                                        @csrf
+                                        <button
+                                            type="submit"
+                                            class="inline-flex w-full justify-center rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 sm:ml-3 sm:w-auto"
+                                        >
+                                            Rotate Key
+                                        </button>
+                                    </form>
+                                    <button
+                                        type="button"
+                                        @click="showRotateModal = false"
+                                        class="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 dark:bg-gray-700 dark:text-white dark:ring-gray-600 dark:hover:bg-gray-600 sm:mt-0 sm:w-auto"
+                                    >
+                                        Cancel
+                                    </button>
+                                </div>
+                            </div>
                         </div>
-                    @endif
+                    </div>
+                </div>
 
+                {{-- Purchased Plugins --}}
+                @if($pluginLicenses->count() > 0)
+                    <h3 class="text-md font-medium text-gray-900 dark:text-white mb-3">Your Purchased Plugins</h3>
                     <div class="bg-white dark:bg-gray-800 shadow overflow-hidden sm:rounded-md">
                         <ul class="divide-y divide-gray-200 dark:divide-gray-700">
                             @foreach($pluginLicenses as $pluginLicense)
                                 <li>
-                                    <a href="{{ route('plugins.show', $pluginLicense->plugin->slug ?? $pluginLicense->plugin->id) }}" class="block hover:bg-gray-50 dark:hover:bg-gray-700">
+                                    <a href="{{ route('plugins.show', $pluginLicense->plugin->routeParams()) }}" class="block hover:bg-gray-50 dark:hover:bg-gray-700">
                                         <div class="px-4 py-4 sm:px-6">
                                             <div class="flex items-center justify-between">
                                                 <div class="flex items-center">
                                                     <div class="flex-shrink-0">
                                                         @if($pluginLicense->plugin->hasLogo())
                                                             <img src="{{ $pluginLicense->plugin->getLogoUrl() }}" alt="{{ $pluginLicense->plugin->name }}" class="size-10 rounded-lg object-cover">
+                                                        @elseif($pluginLicense->plugin->hasGradientIcon())
+                                                            <div class="grid size-10 place-items-center rounded-lg bg-gradient-to-br {{ $pluginLicense->plugin->getGradientClasses() }} text-white">
+                                                                <x-dynamic-component :component="'heroicon-o-' . $pluginLicense->plugin->icon_name" class="size-5" />
+                                                            </div>
                                                         @else
                                                             <div class="grid size-10 place-items-center rounded-lg bg-gradient-to-br from-indigo-500 to-purple-600 text-white">
                                                                 <x-vaadin-plug class="size-5" />
@@ -142,13 +230,13 @@
                             @endforeach
                         </ul>
                     </div>
-                </div>
-            @endif
+                @endif
+            </div>
         @endfeature
 
         {{-- Content --}}
         <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
-            <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">NativePHP Licenses</h2>
+            <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Licenses</h2>
             @if($licenses->count() > 0)
                 <div class="bg-white dark:bg-gray-800 shadow overflow-hidden sm:rounded-md">
                     <ul class="divide-y divide-gray-200 dark:divide-gray-700">

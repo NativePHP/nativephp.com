@@ -18,7 +18,7 @@ class ViewPlugin extends ViewRecord
                 ->label('View Listing Page')
                 ->icon('heroicon-o-eye')
                 ->color('gray')
-                ->url(fn () => route('plugins.show', $this->record))
+                ->url(fn () => route('plugins.show', $this->record->routeParams()))
                 ->openUrlInNewTab()
                 ->visible(fn () => $this->record->isApproved()),
 

@@ -32,18 +32,40 @@ class CartController extends Controller
 
         $cart = $cart->fresh(['items.plugin.activePrice', 'items.plugin.user', 'items.pluginBundle.plugins']);
 
-        // Check for available bundle upgrades
+        // Get bundle IDs already in the cart
+        $cartBundleIds = $cart->items()
+            ->whereNotNull('plugin_bundle_id')
+            ->pluck('plugin_bundle_id')
+            ->toArray();
+
+        // Check for available bundle upgrades based on cart items
         $bundleUpgrades = $cart->getAvailableBundleUpgrades();
+
+        // If cart is empty or no matching bundles, show random bundles (excluding ones in cart)
+        $showingRandomBundles = false;
+        if ($cart->isEmpty() || $bundleUpgrades->isEmpty()) {
+            $bundleUpgrades = PluginBundle::query()
+                ->active()
+                ->whereNotIn('id', $cartBundleIds)
+                ->with('plugins')
+                ->inRandomOrder()
+                ->limit(4)
+                ->get();
+            $showingRandomBundles = true;
+        }
 
         return view('cart.show', [
             'cart' => $cart,
             'priceChanges' => $priceChanges,
             'bundleUpgrades' => $bundleUpgrades,
+            'showingRandomBundles' => $showingRandomBundles,
         ]);
     }
 
-    public function add(Request $request, Plugin $plugin): RedirectResponse|JsonResponse
+    public function add(Request $request, string $vendor, string $package): RedirectResponse|JsonResponse
     {
+        $plugin = Plugin::findByVendorPackageOrFail($vendor, $package);
+
         $user = Auth::user();
         $cart = $this->cartService->getCart($user);
 
@@ -75,8 +97,10 @@ class CartController extends Controller
         }
     }
 
-    public function remove(Request $request, Plugin $plugin): RedirectResponse|JsonResponse
+    public function remove(Request $request, string $vendor, string $package): RedirectResponse|JsonResponse
     {
+        $plugin = Plugin::findByVendorPackageOrFail($vendor, $package);
+
         $user = Auth::user();
         $cart = $this->cartService->getCart($user);
 
@@ -382,6 +406,7 @@ class CartController extends Controller
                 'address' => 'auto',
             ],
             'metadata' => $metadata,
+            'allow_promotion_codes' => true,
             'billing_address_collection' => 'required',
             'tax_id_collection' => ['enabled' => true],
             'invoice_creation' => [

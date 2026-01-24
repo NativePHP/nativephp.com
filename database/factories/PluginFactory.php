@@ -100,11 +100,12 @@ class PluginFactory extends Factory
     {
         $vendor = fake()->randomElement($this->pluginPrefixes);
         $package = fake()->randomElement($this->pluginSuffixes);
+        $uniqueSuffix = fake()->unique()->numberBetween(100, 999999);
 
         return [
             'user_id' => User::factory(),
-            'name' => fake()->unique()->numerify("{$vendor}/{$package}-###"),
-            'repository_url' => "https://github.com/{$vendor}/{$package}",
+            'name' => "{$vendor}/{$package}-{$uniqueSuffix}",
+            'repository_url' => "https://github.com/{$vendor}/{$package}-{$uniqueSuffix}",
             'webhook_secret' => bin2hex(random_bytes(32)),
             'description' => fake()->randomElement($this->descriptions),
             'ios_version' => fake()->randomElement(['15.0+', '16.0+', '14.0+', '17.0+', null]),

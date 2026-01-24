@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\Plugin;
-use App\Services\GrandfatheringService;
 use App\Services\StripeConnectService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
@@ -14,76 +13,77 @@ use Illuminate\View\View;
 class PluginPurchaseController extends Controller
 {
     public function __construct(
-        protected StripeConnectService $stripeConnectService,
-        protected GrandfatheringService $grandfatheringService
+        protected StripeConnectService $stripeConnectService
     ) {}
 
-    public function show(Request $request, Plugin $plugin): View|RedirectResponse
+    public function show(Request $request, string $vendor, string $package): View|RedirectResponse
     {
+        $plugin = Plugin::findByVendorPackageOrFail($vendor, $package);
+
         if ($plugin->isFree()) {
-            return redirect()->route('plugins.show', $plugin);
+            return redirect()->route('plugins.show', $this->pluginRouteParams($plugin));
         }
 
         $user = $request->user();
-        $activePrice = $plugin->activePrice;
+        $bestPrice = $plugin->getBestPriceForUser($user);
+        $regularPrice = $plugin->getRegularPrice();
 
-        if (! $activePrice) {
-            return redirect()->route('plugins.show', $plugin)
+        if (! $bestPrice) {
+            return redirect()->route('plugins.show', $this->pluginRouteParams($plugin))
                 ->with('error', 'This plugin is not available for purchase.');
         }
 
-        $discountPercent = $this->grandfatheringService->getApplicableDiscount($user, $plugin->is_official);
-        $discountedAmount = $activePrice->getDiscountedAmount($discountPercent);
-
         return view('plugins.purchase', [
             'plugin' => $plugin,
-            'price' => $activePrice,
-            'discountPercent' => $discountPercent,
-            'discountedAmount' => $discountedAmount,
-            'originalAmount' => $activePrice->amount,
+            'price' => $bestPrice,
+            'regularPrice' => $regularPrice,
+            'hasDiscount' => $regularPrice && $bestPrice->id !== $regularPrice->id,
         ]);
     }
 
-    public function checkout(Request $request, Plugin $plugin): RedirectResponse
+    public function checkout(Request $request, string $vendor, string $package): RedirectResponse
     {
+        $plugin = Plugin::findByVendorPackageOrFail($vendor, $package);
         $user = $request->user();
 
         if ($plugin->isFree()) {
-            return redirect()->route('plugins.show', $plugin);
+            return redirect()->route('plugins.show', $this->pluginRouteParams($plugin));
         }
 
-        $activePrice = $plugin->activePrice;
+        $bestPrice = $plugin->getBestPriceForUser($user);
 
-        if (! $activePrice) {
-            return redirect()->route('plugins.show', $plugin)
+        if (! $bestPrice) {
+            return redirect()->route('plugins.show', $this->pluginRouteParams($plugin))
                 ->with('error', 'This plugin is not available for purchase.');
         }
 
         try {
-            $session = $this->stripeConnectService->createCheckoutSession($activePrice, $user);
+            $session = $this->stripeConnectService->createCheckoutSession($bestPrice, $user);
 
             return redirect($session->url);
         } catch (\Exception $e) {
             Log::error('Plugin checkout failed', [
                 'plugin_id' => $plugin->id,
                 'user_id' => $user->id,
-                'price_id' => $activePrice->id,
+                'price_id' => $bestPrice->id,
+                'price_tier' => $bestPrice->tier->value,
                 'error' => $e->getMessage(),
                 'trace' => $e->getTraceAsString(),
             ]);
 
-            return redirect()->route('plugins.purchase.show', $plugin)
+            return redirect()->route('plugins.purchase.show', $this->pluginRouteParams($plugin))
                 ->with('error', 'Unable to start checkout. Please try again.');
         }
     }
 
-    public function success(Request $request, Plugin $plugin): View|RedirectResponse
+    public function success(Request $request, string $vendor, string $package): View|RedirectResponse
     {
+        $plugin = Plugin::findByVendorPackageOrFail($vendor, $package);
         $sessionId = $request->query('session_id');
 
         // Validate session ID exists and looks like a real Stripe session ID
         if (! $sessionId || ! str_starts_with($sessionId, 'cs_')) {
-            return redirect()->route('plugins.show', $plugin)
+            return redirect()->route('plugins.show', $this->pluginRouteParams($plugin))
                 ->with('error', 'Invalid checkout session. Please try again.');
         }
 
@@ -93,8 +93,9 @@ class PluginPurchaseController extends Controller
         ]);
     }
 
-    public function status(Request $request, Plugin $plugin, string $sessionId): JsonResponse
+    public function status(Request $request, string $vendor, string $package, string $sessionId): JsonResponse
     {
+        $plugin = Plugin::findByVendorPackageOrFail($vendor, $package);
         $user = $request->user();
 
         // Check if license exists for this checkout session and plugin
@@ -117,9 +118,23 @@ class PluginPurchaseController extends Controller
         ]);
     }
 
-    public function cancel(Request $request, Plugin $plugin): RedirectResponse
+    public function cancel(Request $request, string $vendor, string $package): RedirectResponse
     {
-        return redirect()->route('plugins.show', $plugin)
+        $plugin = Plugin::findByVendorPackageOrFail($vendor, $package);
+
+        return redirect()->route('plugins.show', $this->pluginRouteParams($plugin))
             ->with('message', 'Purchase cancelled.');
+    }
+
+    /**
+     * Get route parameters for a plugin's vendor/package URL.
+     *
+     * @return array{vendor: string, package: string}
+     */
+    protected function pluginRouteParams(Plugin $plugin): array
+    {
+        [$vendor, $package] = explode('/', $plugin->name);
+
+        return ['vendor' => $vendor, 'package' => $package];
     }
 }

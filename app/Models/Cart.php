@@ -82,7 +82,7 @@ class Cart extends Model
     }
 
     /**
-     * Find bundles where all plugins are already in the cart as individual items.
+     * Find all bundles that contain at least one plugin from the cart.
      *
      * @return \Illuminate\Support\Collection<int, PluginBundle>
      */
@@ -104,17 +104,14 @@ class Cart extends Model
             ->pluck('plugin_bundle_id')
             ->toArray();
 
-        // Find active bundles where ALL plugins are in the cart
+        // Find active bundles that contain at least one plugin from the cart
         return PluginBundle::query()
             ->active()
             ->whereNotIn('id', $cartBundleIds)
+            ->whereHas('plugins', function ($query) use ($cartPluginIds) {
+                $query->whereIn('plugins.id', $cartPluginIds);
+            })
             ->with('plugins')
-            ->get()
-            ->filter(function (PluginBundle $bundle) use ($cartPluginIds) {
-                $bundlePluginIds = $bundle->plugins->pluck('id')->toArray();
-
-                // All bundle plugins must be in the cart
-                return ! empty($bundlePluginIds) && empty(array_diff($bundlePluginIds, $cartPluginIds));
-            });
+            ->get();
     }
 }

@@ -73,9 +73,12 @@ Route::view('partners', 'partners')->name('partners');
 Route::view('build-my-app', 'build-my-app')->name('build-my-app');
 
 // Public plugin directory routes
-Route::get('plugins', [PluginDirectoryController::class, 'index'])->name('plugins');
-Route::get('plugins/directory', App\Livewire\PluginDirectory::class)->name('plugins.directory');
-Route::get('plugins/{plugin}', [PluginDirectoryController::class, 'show'])->name('plugins.show');
+Route::middleware(EnsureFeaturesAreActive::using(ShowPlugins::class))->group(function () {
+    Route::get('plugins', [PluginDirectoryController::class, 'index'])->name('plugins');
+    Route::get('plugins/marketplace', App\Livewire\PluginDirectory::class)->name('plugins.marketplace');
+    Route::get('plugins/{vendor}/{package}', [PluginDirectoryController::class, 'show'])->name('plugins.show');
+    Route::get('plugins/{vendor}/{package}/license', [PluginDirectoryController::class, 'license'])->name('plugins.license');
+});
 
 Route::view('sponsor', 'sponsoring')->name('sponsoring');
 Route::view('vs-react-native-expo', 'vs-react-native-expo')->name('vs-react-native-expo');
@@ -218,6 +221,8 @@ Route::middleware(['auth', EnsureFeaturesAreActive::using(ShowAuthButtons::class
     Route::view('integrations', 'customer.integrations')->name('integrations');
     Route::get('licenses/{licenseKey}', [CustomerLicenseController::class, 'show'])->name('licenses.show');
     Route::patch('licenses/{licenseKey}', [CustomerLicenseController::class, 'update'])->name('licenses.update');
+    Route::post('plugin-license-key/rotate', [CustomerLicenseController::class, 'rotatePluginLicenseKey'])->name('plugin-license-key.rotate');
+    Route::post('claim-free-plugins', [CustomerLicenseController::class, 'claimFreePlugins'])->name('claim-free-plugins');
 
     // Wall of Love submission
     Route::get('wall-of-love/create', [App\Http\Controllers\WallOfLoveSubmissionController::class, 'create'])->name('wall-of-love.create');
@@ -233,12 +238,12 @@ Route::middleware(['auth', EnsureFeaturesAreActive::using(ShowAuthButtons::class
         Route::get('plugins/submit', [CustomerPluginController::class, 'create'])->name('plugins.create');
         Route::post('plugins', [CustomerPluginController::class, 'store'])->name('plugins.store');
         Route::patch('plugins/display-name', [CustomerPluginController::class, 'updateDisplayName'])->name('plugins.display-name');
-        Route::get('plugins/{plugin}', [CustomerPluginController::class, 'show'])->name('plugins.show');
-        Route::patch('plugins/{plugin}', [CustomerPluginController::class, 'update'])->name('plugins.update');
-        Route::post('plugins/{plugin}/resubmit', [CustomerPluginController::class, 'resubmit'])->name('plugins.resubmit');
-        Route::post('plugins/{plugin}/logo', [CustomerPluginController::class, 'updateLogo'])->name('plugins.logo.update');
-        Route::delete('plugins/{plugin}/logo', [CustomerPluginController::class, 'deleteLogo'])->name('plugins.logo.delete');
-        Route::patch('plugins/{plugin}/price', [CustomerPluginController::class, 'updatePrice'])->name('plugins.price.update');
+        Route::get('plugins/{vendor}/{package}', [CustomerPluginController::class, 'show'])->name('plugins.show');
+        Route::patch('plugins/{vendor}/{package}', [CustomerPluginController::class, 'update'])->name('plugins.update');
+        Route::post('plugins/{vendor}/{package}/resubmit', [CustomerPluginController::class, 'resubmit'])->name('plugins.resubmit');
+        Route::post('plugins/{vendor}/{package}/logo', [CustomerPluginController::class, 'updateLogo'])->name('plugins.logo.update');
+        Route::post('plugins/{vendor}/{package}/icon', [CustomerPluginController::class, 'updateIcon'])->name('plugins.icon.update');
+        Route::delete('plugins/{vendor}/{package}/logo', [CustomerPluginController::class, 'deleteLogo'])->name('plugins.logo.delete');
     });
 
     // Billing portal
@@ -267,11 +272,11 @@ Route::post('webhooks/plugins/{secret}', PluginWebhookController::class)->name('
 
 // Plugin purchase routes
 Route::middleware(['auth', EnsureFeaturesAreActive::using(ShowAuthButtons::class), EnsureFeaturesAreActive::using(ShowPlugins::class)])->group(function () {
-    Route::get('plugins/{plugin}/purchase', [PluginPurchaseController::class, 'show'])->name('plugins.purchase.show');
-    Route::post('plugins/{plugin}/purchase', [PluginPurchaseController::class, 'checkout'])->name('plugins.purchase.checkout');
-    Route::get('plugins/{plugin}/purchase/success', [PluginPurchaseController::class, 'success'])->name('plugins.purchase.success');
-    Route::get('plugins/{plugin}/purchase/status/{sessionId}', [PluginPurchaseController::class, 'status'])->name('plugins.purchase.status');
-    Route::get('plugins/{plugin}/purchase/cancel', [PluginPurchaseController::class, 'cancel'])->name('plugins.purchase.cancel');
+    Route::get('plugins/{vendor}/{package}/purchase', [PluginPurchaseController::class, 'show'])->name('plugins.purchase.show');
+    Route::post('plugins/{vendor}/{package}/purchase', [PluginPurchaseController::class, 'checkout'])->name('plugins.purchase.checkout');
+    Route::get('plugins/{vendor}/{package}/purchase/success', [PluginPurchaseController::class, 'success'])->name('plugins.purchase.success');
+    Route::get('plugins/{vendor}/{package}/purchase/status/{sessionId}', [PluginPurchaseController::class, 'status'])->name('plugins.purchase.status');
+    Route::get('plugins/{vendor}/{package}/purchase/cancel', [PluginPurchaseController::class, 'cancel'])->name('plugins.purchase.cancel');
 });
 
 // Bundle routes (public)
@@ -282,8 +287,8 @@ Route::middleware(EnsureFeaturesAreActive::using(ShowPlugins::class))->group(fun
 // Cart routes (public - allows guest cart)
 Route::middleware(EnsureFeaturesAreActive::using(ShowPlugins::class))->group(function () {
     Route::get('cart', [CartController::class, 'show'])->name('cart.show');
-    Route::post('cart/add/{plugin}', [CartController::class, 'add'])->name('cart.add');
-    Route::delete('cart/remove/{plugin}', [CartController::class, 'remove'])->name('cart.remove');
+    Route::post('cart/add/{vendor}/{package}', [CartController::class, 'add'])->name('cart.add');
+    Route::delete('cart/remove/{vendor}/{package}', [CartController::class, 'remove'])->name('cart.remove');
     Route::post('cart/bundle/{bundle:slug}', [CartController::class, 'addBundle'])->name('cart.bundle.add');
     Route::post('cart/bundle/{bundle:slug}/exchange', [CartController::class, 'exchangeForBundle'])->name('cart.bundle.exchange');
     Route::delete('cart/bundle/{bundle:slug}', [CartController::class, 'removeBundle'])->name('cart.bundle.remove');

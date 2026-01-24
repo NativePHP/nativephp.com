@@ -27,6 +27,7 @@
                             Add your plugin to the NativePHP Plugin Directory
                         </p>
                     </div>
+                    <x-dashboard-menu />
                 </div>
             </div>
         </header>
@@ -70,6 +71,34 @@
                 </div>
             @endif
 
+            {{-- GitHub Connection Required (for all plugins) --}}
+            @if (!auth()->user()->github_id)
+                <div class="rounded-lg border border-amber-200 bg-amber-50 p-6 dark:border-amber-900/50 dark:bg-amber-900/20">
+                    <div class="flex">
+                        <div class="shrink-0">
+                            <svg class="size-5 text-amber-400" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M8.485 2.495c.673-1.167 2.357-1.167 3.03 0l6.28 10.875c.673 1.167-.17 2.625-1.516 2.625H3.72c-1.347 0-2.189-1.458-1.515-2.625L8.485 2.495zM10 5a.75.75 0 01.75.75v3.5a.75.75 0 01-1.5 0v-3.5A.75.75 0 0110 5zm0 9a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd" />
+                            </svg>
+                        </div>
+                        <div class="ml-3">
+                            <h3 class="text-sm font-medium text-amber-800 dark:text-amber-200">
+                                GitHub Connection Required
+                            </h3>
+                            <div class="mt-2 text-sm text-amber-700 dark:text-amber-300">
+                                <p>
+                                    To submit a plugin, you need to connect your GitHub account so we can access your repository and automatically set up webhooks.
+                                </p>
+                                <a href="{{ route('github.redirect', ['return' => route('customer.plugins.create')]) }}" class="mt-4 inline-flex items-center rounded-md bg-gray-900 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-gray-700 dark:bg-gray-700 dark:hover:bg-gray-600">
+                                    <svg class="mr-2 size-5" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M10 0C4.477 0 0 4.484 0 10.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0110 4.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.203 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.942.359.31.678.921.678 1.856 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0020 10.017C20 4.484 15.522 0 10 0z" clip-rule="evenodd" />
+                                    </svg>
+                                    Connect GitHub Account
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            @else
             <form
                 method="POST"
                 action="{{ route('customer.plugins.store') }}"
@@ -80,14 +109,7 @@
                     loadingRepos: false,
                     reposLoaded: false,
                     init() {
-                        if (this.pluginType === 'paid') {
-                            this.loadRepositories();
-                        }
-                        this.$watch('pluginType', (value) => {
-                            if (value === 'paid' && !this.reposLoaded) {
-                                this.loadRepositories();
-                            }
-                        });
+                        this.loadRepositories();
                     },
                     async loadRepositories() {
                         if (this.loadingRepos || this.reposLoaded) return;
@@ -174,211 +196,94 @@
                 <input type="hidden" name="type" value="free" />
                 @endfeature
 
-                {{-- Free Plugin: Repository --}}
-                <div
-                    x-show="pluginType === 'free'"
-                    x-transition:enter="transition ease-out duration-200"
-                    x-transition:enter-start="opacity-0 -translate-y-2"
-                    x-transition:enter-end="opacity-100 translate-y-0"
-                    class="rounded-lg border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-gray-800"
-                >
-                    <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Repository</h2>
+                {{-- Repository Selection (for all plugins) --}}
+                <div class="rounded-lg border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-gray-800">
+                    <div class="mb-4 flex items-center justify-between">
+                        <div class="flex items-center">
+                            <svg class="size-5 text-emerald-500" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd" />
+                            </svg>
+                            <span class="ml-2 text-sm font-medium text-emerald-800 dark:text-emerald-200">
+                                Connected as <strong>{{ auth()->user()->github_username }}</strong>
+                            </span>
+                        </div>
+                    </div>
+
+                    <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Select Repository</h2>
                     <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">
-                        Enter your public GitHub repository.
+                        Choose the repository containing your plugin. We'll automatically set up a webhook to keep your plugin in sync.
                     </p>
 
                     <div class="mt-6">
-                        <label for="repository_free" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                            GitHub Repository
+                        <label for="repository_select" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                            Repository
                         </label>
-                        <div class="mt-1 flex rounded-md shadow-sm">
-                            <span class="inline-flex items-center rounded-l-md border border-r-0 border-gray-300 bg-gray-50 px-3 text-gray-500 dark:border-gray-600 dark:bg-gray-600 dark:text-gray-400 sm:text-sm">
-                                github.com/
-                            </span>
-                            <input
-                                type="text"
-                                id="repository_free"
-                                :name="pluginType === 'free' ? 'repository' : ''"
-                                value="{{ old('repository') }}"
-                                placeholder="vendor/repo-name"
-                                class="block w-full min-w-0 flex-1 rounded-none rounded-r-md border border-gray-300 px-3 py-2 focus:border-blue-500 focus:outline-none focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white sm:text-sm @error('repository') border-red-500 dark:border-red-500 @enderror"
-                            />
+                        <div class="mt-1">
+                            <template x-if="loadingRepos">
+                                <div class="flex items-center space-x-2 text-sm text-gray-500 dark:text-gray-400">
+                                    <svg class="size-5 animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                    </svg>
+                                    <span>Loading repositories...</span>
+                                </div>
+                            </template>
+                            <template x-if="!loadingRepos && reposLoaded">
+                                <select
+                                    id="repository_select"
+                                    x-model="selectedRepo"
+                                    name="repository"
+                                    class="block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white sm:text-sm @error('repository') border-red-500 dark:border-red-500 @enderror"
+                                >
+                                    <option value="">Select a repository...</option>
+                                    <template x-for="repo in repositories" :key="repo.id">
+                                        <option :value="repo.full_name" x-text="repo.full_name + (repo.private ? ' (private)' : '')"></option>
+                                    </template>
+                                </select>
+                            </template>
                         </div>
                         @error('repository')
                             <p class="mt-2 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
-                        @else
-                            <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">
-                                We'll fetch your README and plugin details from this repository.
-                            </p>
                         @enderror
                     </div>
                 </div>
 
-                {{-- Paid Plugin Settings --}}
+                {{-- Paid Plugin Info --}}
                 @feature(App\Features\AllowPaidPlugins::class)
                 <div
                     x-show="pluginType === 'paid'"
                     x-transition:enter="transition ease-out duration-200"
                     x-transition:enter-start="opacity-0 -translate-y-2"
                     x-transition:enter-end="opacity-100 translate-y-0"
-                    class="space-y-6"
+                    class="rounded-lg border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-gray-800"
                 >
-                    {{-- GitHub Connection Required --}}
-                    @if (!auth()->user()->github_id)
-                        <div class="rounded-lg border border-amber-200 bg-amber-50 p-6 dark:border-amber-900/50 dark:bg-amber-900/20">
-                            <div class="flex">
-                                <div class="shrink-0">
-                                    <svg class="size-5 text-amber-400" viewBox="0 0 20 20" fill="currentColor">
-                                        <path fill-rule="evenodd" d="M8.485 2.495c.673-1.167 2.357-1.167 3.03 0l6.28 10.875c.673 1.167-.17 2.625-1.516 2.625H3.72c-1.347 0-2.189-1.458-1.515-2.625L8.485 2.495zM10 5a.75.75 0 01.75.75v3.5a.75.75 0 01-1.5 0v-3.5A.75.75 0 0110 5zm0 9a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd" />
-                                    </svg>
-                                </div>
-                                <div class="ml-3">
-                                    <h3 class="text-sm font-medium text-amber-800 dark:text-amber-200">
-                                        GitHub Connection Required
-                                    </h3>
-                                    <div class="mt-2 text-sm text-amber-700 dark:text-amber-300">
-                                        <p>
-                                            To sell a paid plugin, you need to connect your GitHub account so we can access your repository.
-                                        </p>
-                                        <a href="{{ route('github.redirect', ['return' => route('customer.plugins.create')]) }}" class="mt-4 inline-flex items-center rounded-md bg-gray-900 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-gray-700 dark:bg-gray-700 dark:hover:bg-gray-600">
-                                            <svg class="mr-2 size-5" fill="currentColor" viewBox="0 0 20 20">
-                                                <path fill-rule="evenodd" d="M10 0C4.477 0 0 4.484 0 10.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0110 4.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.203 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.942.359.31.678.921.678 1.856 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0020 10.017C20 4.484 15.522 0 10 0z" clip-rule="evenodd" />
-                                            </svg>
-                                            Connect GitHub Account
-                                        </a>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    @else
-                        {{-- GitHub Connected - Show Repo Selector --}}
-                        <div class="rounded-lg border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-gray-800">
-                            <div class="mb-4 flex items-center justify-between">
-                                <div class="flex items-center">
-                                    <svg class="size-5 text-emerald-500" viewBox="0 0 20 20" fill="currentColor">
-                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd" />
-                                    </svg>
-                                    <span class="ml-2 text-sm font-medium text-emerald-800 dark:text-emerald-200">
-                                        Connected as <strong>{{ auth()->user()->github_username }}</strong>
-                                    </span>
-                                </div>
-                            </div>
-
-                            <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Select Repository</h2>
-                            <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">
-                                Choose the repository containing your plugin.
-                            </p>
-
-                            <div class="mt-6">
-                                <label for="repository_select" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                                    Repository
-                                </label>
-                                <div class="mt-1">
-                                    <template x-if="loadingRepos">
-                                        <div class="flex items-center space-x-2 text-sm text-gray-500 dark:text-gray-400">
-                                            <svg class="size-5 animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                                            </svg>
-                                            <span>Loading repositories...</span>
-                                        </div>
-                                    </template>
-                                    <template x-if="!loadingRepos && reposLoaded">
-                                        <select
-                                            id="repository_select"
-                                            x-model="selectedRepo"
-                                            :name="pluginType === 'paid' ? 'repository' : ''"
-                                            class="block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white sm:text-sm @error('repository') border-red-500 dark:border-red-500 @enderror"
-                                        >
-                                            <option value="">Select a repository...</option>
-                                            <template x-for="repo in repositories" :key="repo.id">
-                                                <option :value="repo.full_name" x-text="repo.full_name + (repo.private ? ' (private)' : '')"></option>
-                                            </template>
-                                        </select>
-                                    </template>
-                                </div>
-                                @error('repository')
-                                    <p class="mt-2 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
-                                @enderror
-                            </div>
-                        </div>
-
-                        {{-- Pricing --}}
-                        <div class="rounded-lg border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-gray-800">
-                            <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Pricing</h2>
-                            <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">
-                                Set the price for your plugin. You'll receive 70% of each sale.
-                            </p>
-
-                            <div class="mt-6">
-                                <label for="price" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                                    Price (USD)
-                                </label>
-                                <div class="relative mt-1 rounded-md shadow-sm">
-                                    <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-                                        <span class="text-gray-500 dark:text-gray-400 sm:text-sm">$</span>
-                                    </div>
-                                    <input
-                                        type="number"
-                                        id="price"
-                                        name="price"
-                                        min="10"
-                                        step="1"
-                                        value="{{ old('price') }}"
-                                        placeholder="29"
-                                        class="block w-full rounded-md border border-gray-300 py-2 pl-7 pr-12 focus:border-blue-500 focus:outline-none focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white sm:text-sm @error('price') border-red-500 dark:border-red-500 @enderror"
-                                    />
-                                    <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
-                                        <span class="text-gray-500 dark:text-gray-400 sm:text-sm">USD</span>
-                                    </div>
-                                </div>
-                                @error('price')
-                                    <p class="mt-2 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
-                                @else
-                                    <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">
-                                        Whole dollars only, minimum $10. This is a one-time purchase price. Customers get lifetime access to updates.
-                                    </p>
-                                @enderror
-                            </div>
-
-                            <div class="mt-4 rounded-md bg-gray-50 p-3 dark:bg-gray-700/50">
-                                <p class="text-sm text-gray-600 dark:text-gray-400">
-                                    <strong>Revenue split:</strong> You receive 70%, NativePHP retains 30% for hosting, payment processing, and platform maintenance.
-                                </p>
-                            </div>
-                        </div>
-
-                        {{-- How it works --}}
-                        <div class="rounded-lg border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-gray-800">
-                            <h3 class="text-sm font-medium text-gray-900 dark:text-white">How paid plugins work</h3>
-                            <ul class="mt-4 space-y-3 text-sm text-gray-600 dark:text-gray-400">
-                                <li class="flex items-start gap-3">
-                                    <svg class="mt-0.5 size-5 shrink-0 text-indigo-500" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
-                                    </svg>
-                                    <span>We pull your code from GitHub when you tag a release</span>
-                                </li>
-                                <li class="flex items-start gap-3">
-                                    <svg class="mt-0.5 size-5 shrink-0 text-indigo-500" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
-                                    </svg>
-                                    <span>We host and distribute your plugin via <code class="rounded bg-gray-100 px-1 py-0.5 dark:bg-gray-600">plugins.nativephp.com</code></span>
-                                </li>
-                                <li class="flex items-start gap-3">
-                                    <svg class="mt-0.5 size-5 shrink-0 text-indigo-500" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
-                                    </svg>
-                                    <span>Customers install via Composer with their license key</span>
-                                </li>
-                                <li class="flex items-start gap-3">
-                                    <svg class="mt-0.5 size-5 shrink-0 text-indigo-500" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
-                                    </svg>
-                                    <span>You get paid automatically via Stripe Connect</span>
-                                </li>
-                            </ul>
-                        </div>
-                    @endif
+                    <h3 class="text-sm font-medium text-gray-900 dark:text-white">How paid plugins work</h3>
+                    <ul class="mt-4 space-y-3 text-sm text-gray-600 dark:text-gray-400">
+                        <li class="flex items-start gap-3">
+                            <svg class="mt-0.5 size-5 shrink-0 text-indigo-500" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                            </svg>
+                            <span>We pull your code from GitHub when you tag a release</span>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <svg class="mt-0.5 size-5 shrink-0 text-indigo-500" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                            </svg>
+                            <span>We host and distribute your plugin via <code class="rounded bg-gray-100 px-1 py-0.5 dark:bg-gray-600">plugins.nativephp.com</code></span>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <svg class="mt-0.5 size-5 shrink-0 text-indigo-500" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                            </svg>
+                            <span>Customers install via Composer with their license key</span>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <svg class="mt-0.5 size-5 shrink-0 text-indigo-500" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                            </svg>
+                            <span>You get paid automatically via Stripe Connect</span>
+                        </li>
+                    </ul>
                 </div>
                 @endfeature
 
@@ -395,6 +300,7 @@
                     </button>
                 </div>
             </form>
+            @endif
         </div>
     </div>
 </x-layout>

@@ -4,11 +4,13 @@ namespace App\Models;
 
 use App\Enums\PluginActivityType;
 use App\Enums\PluginStatus;
+use App\Enums\PluginTier;
 use App\Enums\PluginType;
 use App\Jobs\SyncPluginReleases;
 use App\Notifications\PluginApproved;
 use App\Notifications\PluginRejected;
 use App\Services\PluginSyncService;
+use App\Services\SatisService;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -21,11 +23,42 @@ class Plugin extends Model
 {
     use HasFactory;
 
+    /**
+     * Find a plugin by its vendor and package name.
+     */
+    public static function findByVendorPackage(string $vendor, string $package): ?self
+    {
+        return static::where('name', "{$vendor}/{$package}")->first();
+    }
+
+    /**
+     * Find a plugin by its vendor and package name, or fail.
+     *
+     * @throws \Illuminate\Database\Eloquent\ModelNotFoundException
+     */
+    public static function findByVendorPackageOrFail(string $vendor, string $package): self
+    {
+        return static::where('name', "{$vendor}/{$package}")->firstOrFail();
+    }
+
+    /**
+     * Get route parameters for this plugin's vendor/package URL.
+     *
+     * @return array{vendor: string, package: string}
+     */
+    public function routeParams(): array
+    {
+        [$vendor, $package] = explode('/', $this->name);
+
+        return ['vendor' => $vendor, 'package' => $package];
+    }
+
     protected $guarded = [];
 
     protected $casts = [
         'status' => PluginStatus::class,
         'type' => PluginType::class,
+        'tier' => PluginTier::class,
         'approved_at' => 'datetime',
         'featured' => 'boolean',
         'is_active' => 'boolean',
@@ -47,6 +80,43 @@ class Plugin extends Model
                 $plugin->user_id
             );
         });
+
+        static::updated(function (Plugin $plugin) {
+            // When tier is set or changed, create/update prices automatically
+            if ($plugin->wasChanged('tier') && $plugin->tier !== null) {
+                $plugin->syncPricesFromTier();
+            }
+        });
+
+        static::deleting(function (Plugin $plugin) {
+            // Remove from Satis when plugin is deleted
+            if ($plugin->name) {
+                app(SatisService::class)->removePackage($plugin->name);
+            }
+        });
+    }
+
+    /**
+     * Create or update prices based on the plugin's tier.
+     */
+    public function syncPricesFromTier(): void
+    {
+        if ($this->tier === null) {
+            return;
+        }
+
+        $tierPrices = $this->tier->getPrices();
+
+        foreach ($tierPrices as $priceTier => $amount) {
+            $this->prices()->updateOrCreate(
+                ['tier' => $priceTier],
+                [
+                    'amount' => $amount,
+                    'currency' => 'USD',
+                    'is_active' => true,
+                ]
+            );
+        }
     }
 
     /**
@@ -95,6 +165,41 @@ class Plugin extends Model
     public function activePrice(): HasOne
     {
         return $this->hasOne(PluginPrice::class)->where('is_active', true)->latest();
+    }
+
+    /**
+     * Get the best (lowest) active price for a user based on their eligible tiers.
+     * Returns null if no price exists for the user's eligible tiers.
+     */
+    public function getBestPriceForUser(?User $user): ?PluginPrice
+    {
+        $eligibleTiers = $user ? $user->getEligiblePriceTiers() : [\App\Enums\PriceTier::Regular];
+
+        // Get the lowest active price for the user's eligible tiers
+        return $this->prices()
+            ->active()
+            ->forTiers($eligibleTiers)
+            ->orderBy('amount', 'asc')
+            ->first();
+    }
+
+    /**
+     * Check if a user has access to at least one price tier for this plugin.
+     */
+    public function hasAccessiblePriceFor(?User $user): bool
+    {
+        return $this->getBestPriceForUser($user) !== null;
+    }
+
+    /**
+     * Get the regular (non-discounted) price for comparison display.
+     */
+    public function getRegularPrice(): ?PluginPrice
+    {
+        return $this->prices()
+            ->active()
+            ->forTier(\App\Enums\PriceTier::Regular)
+            ->first() ?? $this->activePrice;
     }
 
     /**
@@ -235,6 +340,42 @@ class Plugin extends Model
     public function hasLogo(): bool
     {
         return $this->logo_path !== null;
+    }
+
+    public function hasGradientIcon(): bool
+    {
+        return $this->icon_gradient !== null && $this->icon_name !== null;
+    }
+
+    public function hasCustomIcon(): bool
+    {
+        return $this->hasLogo() || $this->hasGradientIcon();
+    }
+
+    /**
+     * Available gradient presets for plugin icons.
+     *
+     * @return array<string, string>
+     */
+    public static function gradientPresets(): array
+    {
+        return [
+            'indigo-purple' => 'from-indigo-500 to-purple-600',
+            'blue-cyan' => 'from-blue-500 to-cyan-500',
+            'green-emerald' => 'from-green-500 to-emerald-600',
+            'orange-red' => 'from-orange-500 to-red-600',
+            'pink-rose' => 'from-pink-500 to-rose-600',
+            'violet-fuchsia' => 'from-violet-500 to-fuchsia-600',
+            'amber-yellow' => 'from-amber-500 to-yellow-500',
+            'slate-gray' => 'from-slate-600 to-gray-700',
+        ];
+    }
+
+    public function getGradientClasses(): string
+    {
+        $presets = self::gradientPresets();
+
+        return $presets[$this->icon_gradient] ?? $presets['indigo-purple'];
     }
 
     /**
