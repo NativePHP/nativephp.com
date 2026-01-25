@@ -26,7 +26,9 @@ class CartService
 
     protected function getCartForUser(User $user): Cart
     {
-        $cart = Cart::where('user_id', $user->id)->first();
+        $cart = Cart::where('user_id', $user->id)
+            ->whereNull('completed_at')
+            ->first();
 
         if (! $cart) {
             $cart = Cart::create([
@@ -293,11 +295,16 @@ class CartService
     public function getCartItemCount(?User $user = null): int
     {
         if ($user) {
-            $cart = Cart::where('user_id', $user->id)->first();
+            $cart = Cart::where('user_id', $user->id)
+                ->whereNull('completed_at')
+                ->first();
         } else {
             $sessionId = Session::get(self::SESSION_KEY);
             $cart = $sessionId
-                ? Cart::where('session_id', $sessionId)->whereNull('user_id')->first()
+                ? Cart::where('session_id', $sessionId)
+                    ->whereNull('user_id')
+                    ->whereNull('completed_at')
+                    ->first()
                 : null;
         }
 

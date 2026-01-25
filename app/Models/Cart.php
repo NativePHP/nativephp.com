@@ -15,6 +15,7 @@ class Cart extends Model
 
     protected $casts = [
         'expires_at' => 'datetime',
+        'completed_at' => 'datetime',
     ];
 
     /**
@@ -79,6 +80,17 @@ class Cart extends Model
     public function clear(): void
     {
         $this->items()->delete();
+    }
+
+    public function isCompleted(): bool
+    {
+        return $this->completed_at !== null;
+    }
+
+    public function markAsCompleted(): void
+    {
+        $this->update(['completed_at' => now()]);
+        $this->clear();
     }
 
     /**
