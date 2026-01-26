@@ -1,11 +1,19 @@
 <?php
 
 use App\Features\ShowAuthButtons;
+use App\Features\ShowPlugins;
 use App\Http\Controllers\ApplinksController;
 use App\Http\Controllers\Auth\CustomerAuthController;
+use App\Http\Controllers\BundleController;
+use App\Http\Controllers\CartController;
 use App\Http\Controllers\CustomerLicenseController;
+use App\Http\Controllers\CustomerPluginController;
 use App\Http\Controllers\CustomerSubLicenseController;
+use App\Http\Controllers\DeveloperOnboardingController;
 use App\Http\Controllers\OpenCollectiveWebhookController;
+use App\Http\Controllers\PluginDirectoryController;
+use App\Http\Controllers\PluginPurchaseController;
+use App\Http\Controllers\PluginWebhookController;
 use App\Http\Controllers\ShowBlogController;
 use App\Http\Controllers\ShowDocumentationController;
 use Illuminate\Support\Facades\Route;
@@ -29,29 +37,26 @@ Route::redirect('docs/1/getting-started/sponsoring', '/sponsor');
 Route::redirect('docs/desktop/1/getting-started/sponsoring', '/sponsor');
 Route::redirect('discord', 'https://discord.gg/nativephp');
 Route::redirect('bifrost', 'https://bifrost.nativephp.com');
-Route::redirect('mobile', 'pricing');
-Route::redirect('ios', 'pricing');
+Route::redirect('mobile', 'blog/nativephp-for-mobile-is-now-free');
+Route::redirect('ios', 'blog/nativephp-for-mobile-is-now-free');
 Route::redirect('t-shirt', 'pricing');
 Route::redirect('tshirt', 'pricing');
+
+// Redirect mobile v3 core plugin docs to plugin directory pages
+Route::get('docs/mobile/3/plugins/core/{page}', function (string $page) {
+    return redirect("/plugins/nativephp/mobile-{$page}", 301);
+})->where('page', '[a-z-]+');
+
+// Redirect old mobile v3 API docs to plugin directory pages
+Route::get('docs/mobile/3/apis/{page}', function (string $page) {
+    return redirect("/plugins/nativephp/mobile-{$page}", 301);
+})->where('page', '[a-z-]+');
 
 // Webhook routes (must be outside web middleware for CSRF bypass)
 Route::post('opencollective/contribution', [OpenCollectiveWebhookController::class, 'handle'])->name('opencollective.webhook');
 
 // OpenCollective donation claim route
 Route::get('opencollective/claim', App\Livewire\ClaimDonationLicense::class)->name('opencollective.claim');
-
-// MCP Server routes
-Route::prefix('mcp')->group(function () {
-    Route::get('sse', [App\Http\Controllers\McpController::class, 'sse'])->name('mcp.sse');
-    Route::post('message', [App\Http\Controllers\McpController::class, 'message'])->name('mcp.message');
-    Route::get('health', [App\Http\Controllers\McpController::class, 'health'])->name('mcp.health');
-
-    // REST API endpoints
-    Route::get('api/search', [App\Http\Controllers\McpController::class, 'searchApi'])->name('mcp.api.search');
-    Route::get('api/page/{platform}/{version}/{section}/{slug}', [App\Http\Controllers\McpController::class, 'pageApi'])->name('mcp.api.page');
-    Route::get('api/apis/{platform}/{version}', [App\Http\Controllers\McpController::class, 'apisApi'])->name('mcp.api.apis');
-    Route::get('api/navigation/{platform}/{version}', [App\Http\Controllers\McpController::class, 'navigationApi'])->name('mcp.api.navigation');
-});
 
 Route::view('/', 'welcome')->name('welcome');
 Route::view('pricing', 'pricing')->name('pricing');
@@ -66,6 +71,15 @@ Route::view('privacy-policy', 'privacy-policy')->name('privacy-policy');
 Route::view('terms-of-service', 'terms-of-service')->name('terms-of-service');
 Route::view('partners', 'partners')->name('partners');
 Route::view('build-my-app', 'build-my-app')->name('build-my-app');
+
+// Public plugin directory routes
+Route::middleware(EnsureFeaturesAreActive::using(ShowPlugins::class))->group(function () {
+    Route::get('plugins', [PluginDirectoryController::class, 'index'])->name('plugins');
+    Route::get('plugins/marketplace', App\Livewire\PluginDirectory::class)->name('plugins.marketplace');
+    Route::get('plugins/{vendor}/{package}', [PluginDirectoryController::class, 'show'])->name('plugins.show');
+    Route::get('plugins/{vendor}/{package}/license', [PluginDirectoryController::class, 'license'])->name('plugins.license');
+});
+
 Route::view('sponsor', 'sponsoring')->name('sponsoring');
 Route::view('vs-react-native-expo', 'vs-react-native-expo')->name('vs-react-native-expo');
 Route::view('vs-flutter', 'vs-flutter')->name('vs-flutter');
@@ -159,18 +173,23 @@ Route::middleware(['guest'])->group(function () {
 
     Route::get('reset-password/{token}', [CustomerAuthController::class, 'showResetPassword'])->name('password.reset');
     Route::post('reset-password', [CustomerAuthController::class, 'resetPassword'])->name('password.update');
+
+    Route::get('auth/github/login', [App\Http\Controllers\GitHubAuthController::class, 'redirect'])->name('login.github');
 });
 
 Route::post('logout', [CustomerAuthController::class, 'logout'])
     ->middleware(EnsureFeaturesAreActive::using(ShowAuthButtons::class))
     ->name('customer.logout');
 
-// GitHub OAuth routes
+// GitHub OAuth callback (no auth required - handles both login and linking)
+Route::get('auth/github/callback', [App\Http\Controllers\GitHubIntegrationController::class, 'handleCallback'])->name('github.callback');
+
+// GitHub OAuth routes (auth required)
 Route::middleware(['auth', EnsureFeaturesAreActive::using(ShowAuthButtons::class)])->group(function () {
     Route::get('auth/github', [App\Http\Controllers\GitHubIntegrationController::class, 'redirectToGitHub'])->name('github.redirect');
-    Route::get('auth/github/callback', [App\Http\Controllers\GitHubIntegrationController::class, 'handleCallback'])->name('github.callback');
     Route::post('customer/github/request-access', [App\Http\Controllers\GitHubIntegrationController::class, 'requestRepoAccess'])->name('github.request-access');
     Route::delete('customer/github/disconnect', [App\Http\Controllers\GitHubIntegrationController::class, 'disconnect'])->name('github.disconnect');
+    Route::get('customer/github/repositories', [App\Http\Controllers\GitHubIntegrationController::class, 'repositories'])->name('github.repositories');
 });
 
 // Discord OAuth routes
@@ -180,7 +199,7 @@ Route::middleware(['auth', EnsureFeaturesAreActive::using(ShowAuthButtons::class
     Route::delete('customer/discord/disconnect', [App\Http\Controllers\DiscordIntegrationController::class, 'disconnect'])->name('discord.disconnect');
 });
 
-Route::get('callback', function (Illuminate\Http\Request $request) {
+Route::get('callback', function (\Illuminate\Http\Request $request) {
     $url = $request->query('url');
 
     if ($url && ! str_starts_with($url, 'http')) {
@@ -190,12 +209,20 @@ Route::get('callback', function (Illuminate\Http\Request $request) {
     return response('Goodbye');
 })->name('callback');
 
+// Dashboard route
+Route::middleware(['auth', EnsureFeaturesAreActive::using(ShowAuthButtons::class)])
+    ->get('dashboard', [CustomerLicenseController::class, 'index'])
+    ->name('dashboard');
+
 // Customer license management routes
 Route::middleware(['auth', EnsureFeaturesAreActive::using(ShowAuthButtons::class)])->prefix('customer')->name('customer.')->group(function () {
-    Route::get('licenses', [CustomerLicenseController::class, 'index'])->name('licenses');
+    // Redirect old licenses URL to dashboard
+    Route::redirect('licenses', '/dashboard')->name('licenses');
     Route::view('integrations', 'customer.integrations')->name('integrations');
     Route::get('licenses/{licenseKey}', [CustomerLicenseController::class, 'show'])->name('licenses.show');
     Route::patch('licenses/{licenseKey}', [CustomerLicenseController::class, 'update'])->name('licenses.update');
+    Route::post('plugin-license-key/rotate', [CustomerLicenseController::class, 'rotatePluginLicenseKey'])->name('plugin-license-key.rotate');
+    Route::post('claim-free-plugins', [CustomerLicenseController::class, 'claimFreePlugins'])->name('claim-free-plugins');
 
     // Wall of Love submission
     Route::get('wall-of-love/create', [App\Http\Controllers\WallOfLoveSubmissionController::class, 'create'])->name('wall-of-love.create');
@@ -205,8 +232,22 @@ Route::middleware(['auth', EnsureFeaturesAreActive::using(ShowAuthButtons::class
     Route::get('showcase/create', [App\Http\Controllers\CustomerShowcaseController::class, 'create'])->name('showcase.create');
     Route::get('showcase/{showcase}/edit', [App\Http\Controllers\CustomerShowcaseController::class, 'edit'])->name('showcase.edit');
 
+    // Plugin management
+    Route::middleware(EnsureFeaturesAreActive::using(ShowPlugins::class))->group(function () {
+        Route::get('plugins', [CustomerPluginController::class, 'index'])->name('plugins.index');
+        Route::get('plugins/submit', [CustomerPluginController::class, 'create'])->name('plugins.create');
+        Route::post('plugins', [CustomerPluginController::class, 'store'])->name('plugins.store');
+        Route::patch('plugins/display-name', [CustomerPluginController::class, 'updateDisplayName'])->name('plugins.display-name');
+        Route::get('plugins/{vendor}/{package}', [CustomerPluginController::class, 'show'])->name('plugins.show');
+        Route::patch('plugins/{vendor}/{package}', [CustomerPluginController::class, 'update'])->name('plugins.update');
+        Route::post('plugins/{vendor}/{package}/resubmit', [CustomerPluginController::class, 'resubmit'])->name('plugins.resubmit');
+        Route::post('plugins/{vendor}/{package}/logo', [CustomerPluginController::class, 'updateLogo'])->name('plugins.logo.update');
+        Route::post('plugins/{vendor}/{package}/icon', [CustomerPluginController::class, 'updateIcon'])->name('plugins.icon.update');
+        Route::delete('plugins/{vendor}/{package}/logo', [CustomerPluginController::class, 'deleteLogo'])->name('plugins.logo.delete');
+    });
+
     // Billing portal
-    Route::get('billing-portal', function (Illuminate\Http\Request $request) {
+    Route::get('billing-portal', function (\Illuminate\Http\Request $request) {
         $user = $request->user();
 
         // Check if user exists in Stripe, create if they don't
@@ -214,7 +255,7 @@ Route::middleware(['auth', EnsureFeaturesAreActive::using(ShowAuthButtons::class
             $user->createAsStripeCustomer();
         }
 
-        return $user->redirectToBillingPortal(route('customer.licenses'));
+        return $user->redirectToBillingPortal(route('dashboard'));
     })->name('billing-portal');
 
     // Sub-license management routes
@@ -226,3 +267,44 @@ Route::middleware(['auth', EnsureFeaturesAreActive::using(ShowAuthButtons::class
 });
 
 Route::get('.well-known/assetlinks.json', [ApplinksController::class, 'assetLinks']);
+
+Route::post('webhooks/plugins/{secret}', PluginWebhookController::class)->name('webhooks.plugins');
+
+// Plugin purchase routes
+Route::middleware(['auth', EnsureFeaturesAreActive::using(ShowAuthButtons::class), EnsureFeaturesAreActive::using(ShowPlugins::class)])->group(function () {
+    Route::get('plugins/{vendor}/{package}/purchase', [PluginPurchaseController::class, 'show'])->name('plugins.purchase.show');
+    Route::post('plugins/{vendor}/{package}/purchase', [PluginPurchaseController::class, 'checkout'])->name('plugins.purchase.checkout');
+    Route::get('plugins/{vendor}/{package}/purchase/success', [PluginPurchaseController::class, 'success'])->name('plugins.purchase.success');
+    Route::get('plugins/{vendor}/{package}/purchase/status/{sessionId}', [PluginPurchaseController::class, 'status'])->name('plugins.purchase.status');
+    Route::get('plugins/{vendor}/{package}/purchase/cancel', [PluginPurchaseController::class, 'cancel'])->name('plugins.purchase.cancel');
+});
+
+// Bundle routes (public)
+Route::middleware(EnsureFeaturesAreActive::using(ShowPlugins::class))->group(function () {
+    Route::get('bundles/{bundle:slug}', [BundleController::class, 'show'])->name('bundles.show');
+});
+
+// Cart routes (public - allows guest cart)
+Route::middleware(EnsureFeaturesAreActive::using(ShowPlugins::class))->group(function () {
+    Route::get('cart', [CartController::class, 'show'])->name('cart.show');
+    Route::post('cart/add/{vendor}/{package}', [CartController::class, 'add'])->name('cart.add');
+    Route::delete('cart/remove/{vendor}/{package}', [CartController::class, 'remove'])->name('cart.remove');
+    Route::post('cart/bundle/{bundle:slug}', [CartController::class, 'addBundle'])->name('cart.bundle.add');
+    Route::post('cart/bundle/{bundle:slug}/exchange', [CartController::class, 'exchangeForBundle'])->name('cart.bundle.exchange');
+    Route::delete('cart/bundle/{bundle:slug}', [CartController::class, 'removeBundle'])->name('cart.bundle.remove');
+    Route::delete('cart/clear', [CartController::class, 'clear'])->name('cart.clear');
+    Route::get('cart/count', [CartController::class, 'count'])->name('cart.count');
+    Route::post('cart/checkout', [CartController::class, 'checkout'])->name('cart.checkout');
+    Route::get('cart/success', [CartController::class, 'success'])->name('cart.success')->middleware('auth');
+    Route::get('cart/status/{sessionId}', [CartController::class, 'status'])->name('cart.status')->middleware('auth');
+    Route::get('cart/cancel', [CartController::class, 'cancel'])->name('cart.cancel');
+});
+
+// Developer onboarding routes
+Route::middleware(['auth', EnsureFeaturesAreActive::using(ShowAuthButtons::class), EnsureFeaturesAreActive::using(ShowPlugins::class)])->prefix('customer/developer')->name('customer.developer.')->group(function () {
+    Route::get('onboarding', [DeveloperOnboardingController::class, 'show'])->name('onboarding');
+    Route::post('onboarding/start', [DeveloperOnboardingController::class, 'start'])->name('onboarding.start');
+    Route::get('onboarding/return', [DeveloperOnboardingController::class, 'return'])->name('onboarding.return');
+    Route::get('onboarding/refresh', [DeveloperOnboardingController::class, 'refresh'])->name('onboarding.refresh');
+    Route::get('dashboard', [DeveloperOnboardingController::class, 'dashboard'])->name('dashboard');
+});

@@ -1,0 +1,282 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Support\Collection;
+
+class PluginBundle extends Model
+{
+    use HasFactory;
+
+    protected $guarded = [];
+
+    protected $casts = [
+        'price' => 'integer',
+        'is_active' => 'boolean',
+        'is_featured' => 'boolean',
+        'published_at' => 'datetime',
+    ];
+
+    /**
+     * @return BelongsToMany<Plugin>
+     */
+    public function plugins(): BelongsToMany
+    {
+        return $this->belongsToMany(Plugin::class, 'bundle_plugin')
+            ->withPivot('sort_order')
+            ->orderByPivot('sort_order')
+            ->withTimestamps();
+    }
+
+    /**
+     * @return HasMany<PluginLicense>
+     */
+    public function licenses(): HasMany
+    {
+        return $this->hasMany(PluginLicense::class);
+    }
+
+    /**
+     * @return HasMany<BundlePrice>
+     */
+    public function prices(): HasMany
+    {
+        return $this->hasMany(BundlePrice::class);
+    }
+
+    /**
+     * @return HasOne<BundlePrice>
+     */
+    public function activePrice(): HasOne
+    {
+        return $this->hasOne(BundlePrice::class)->where('is_active', true)->latest();
+    }
+
+    /**
+     * Get the best (lowest) active price for a user based on their eligible tiers.
+     * Returns null if no price exists for the user's eligible tiers.
+     */
+    public function getBestPriceForUser(?User $user): ?BundlePrice
+    {
+        $eligibleTiers = $user ? $user->getEligiblePriceTiers() : [\App\Enums\PriceTier::Regular];
+
+        // Get the lowest active price for the user's eligible tiers
+        return $this->prices()
+            ->active()
+            ->forTiers($eligibleTiers)
+            ->orderBy('amount', 'asc')
+            ->first();
+    }
+
+    /**
+     * Check if a user has access to at least one price tier for this bundle.
+     */
+    public function hasAccessiblePriceFor(?User $user): bool
+    {
+        return $this->getBestPriceForUser($user) !== null;
+    }
+
+    /**
+     * Get the regular (non-discounted) price for comparison display.
+     */
+    public function getRegularPrice(): ?BundlePrice
+    {
+        return $this->prices()
+            ->active()
+            ->forTier(\App\Enums\PriceTier::Regular)
+            ->first() ?? $this->activePrice;
+    }
+
+    /**
+     * @param  Builder<PluginBundle>  $query
+     * @return Builder<PluginBundle>
+     */
+    public function scopeActive(Builder $query): Builder
+    {
+        return $query->where('is_active', true)
+            ->whereNotNull('published_at')
+            ->where('published_at', '<=', now());
+    }
+
+    /**
+     * @param  Builder<PluginBundle>  $query
+     * @return Builder<PluginBundle>
+     */
+    public function scopeFeatured(Builder $query): Builder
+    {
+        return $query->where('is_featured', true);
+    }
+
+    public function isActive(): bool
+    {
+        return $this->is_active
+            && $this->published_at
+            && $this->published_at->lte(now());
+    }
+
+    public function getLogoUrl(): ?string
+    {
+        if (! $this->logo_path) {
+            return null;
+        }
+
+        return asset('storage/'.$this->logo_path);
+    }
+
+    public function hasLogo(): bool
+    {
+        return $this->logo_path !== null;
+    }
+
+    /**
+     * Calculate the total retail value of all plugins in the bundle.
+     */
+    public function getRetailValueAttribute(): int
+    {
+        return $this->plugins
+            ->filter(fn (Plugin $plugin) => $plugin->activePrice)
+            ->sum(fn (Plugin $plugin) => $plugin->activePrice->amount);
+    }
+
+    /**
+     * Get formatted retail value.
+     */
+    public function getFormattedRetailValueAttribute(): string
+    {
+        return '$'.number_format($this->retail_value / 100, 2);
+    }
+
+    /**
+     * Get formatted bundle price (uses regular tier price or legacy price column).
+     */
+    public function getFormattedPriceAttribute(): string
+    {
+        $price = $this->getRegularPrice();
+
+        $amount = $price ? $price->amount : $this->price;
+
+        return '$'.number_format($amount / 100, 2);
+    }
+
+    /**
+     * Calculate the discount percentage.
+     */
+    public function getDiscountPercentAttribute(): int
+    {
+        $retailValue = $this->retail_value;
+
+        if ($retailValue <= 0) {
+            return 0;
+        }
+
+        $price = $this->getRegularPrice();
+        $amount = $price ? $price->amount : $this->price;
+
+        return (int) round(($retailValue - $amount) / $retailValue * 100);
+    }
+
+    /**
+     * Get the savings amount in cents.
+     */
+    public function getSavingsAttribute(): int
+    {
+        $price = $this->getRegularPrice();
+        $amount = $price ? $price->amount : $this->price;
+
+        return max(0, $this->retail_value - $amount);
+    }
+
+    /**
+     * Get formatted savings.
+     */
+    public function getFormattedSavingsAttribute(): string
+    {
+        return '$'.number_format($this->savings / 100, 2);
+    }
+
+    /**
+     * Check if a user already owns all plugins in the bundle.
+     */
+    public function isOwnedBy(User $user): bool
+    {
+        $ownedPluginIds = $user->pluginLicenses()
+            ->active()
+            ->pluck('plugin_id')
+            ->toArray();
+
+        return $this->plugins->every(
+            fn (Plugin $plugin) => in_array($plugin->id, $ownedPluginIds)
+        );
+    }
+
+    /**
+     * Get plugins the user doesn't own yet.
+     *
+     * @return Collection<int, Plugin>
+     */
+    public function getUnownedPluginsFor(User $user): Collection
+    {
+        $ownedPluginIds = $user->pluginLicenses()
+            ->active()
+            ->pluck('plugin_id')
+            ->toArray();
+
+        return $this->plugins->filter(
+            fn (Plugin $plugin) => ! in_array($plugin->id, $ownedPluginIds)
+        );
+    }
+
+    /**
+     * Calculate proportional allocation of bundle price to each plugin.
+     * Used for developer payouts.
+     *
+     * @return array<int, int> Plugin ID => allocated amount in cents
+     */
+    public function calculateProportionalAllocation(?int $bundlePriceAmount = null): array
+    {
+        $retailValue = $this->retail_value;
+
+        // Use provided amount or fall back to regular tier price or legacy price
+        if ($bundlePriceAmount === null) {
+            $price = $this->getRegularPrice();
+            $bundlePriceAmount = $price ? $price->amount : $this->price;
+        }
+
+        $allocations = [];
+
+        if ($retailValue <= 0) {
+            return $allocations;
+        }
+
+        $runningTotal = 0;
+        $plugins = $this->plugins->filter(fn (Plugin $p) => $p->activePrice)->values();
+        $lastIndex = $plugins->count() - 1;
+
+        foreach ($plugins as $index => $plugin) {
+            $pluginRetail = $plugin->activePrice->amount;
+
+            // For last plugin, allocate remainder to avoid rounding issues
+            if ($index === $lastIndex) {
+                $allocations[$plugin->id] = $bundlePriceAmount - $runningTotal;
+            } else {
+                $proportion = $pluginRetail / $retailValue;
+                $allocation = (int) round($bundlePriceAmount * $proportion);
+                $allocations[$plugin->id] = $allocation;
+                $runningTotal += $allocation;
+            }
+        }
+
+        return $allocations;
+    }
+
+    public function getRouteKeyName(): string
+    {
+        return 'slug';
+    }
+}

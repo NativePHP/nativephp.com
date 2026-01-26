@@ -30,4 +30,70 @@ class LicenseFactory extends Factory
             'expires_at' => fn (array $attrs) => Date::parse($attrs['created_at'])->addYear(),
         ];
     }
+
+    public function pro(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'policy_name' => 'pro',
+        ]);
+    }
+
+    public function max(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'policy_name' => 'max',
+        ]);
+    }
+
+    public function mini(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'policy_name' => 'mini',
+        ]);
+    }
+
+    public function suspended(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'is_suspended' => true,
+        ]);
+    }
+
+    public function expired(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'expires_at' => now()->subDay(),
+        ]);
+    }
+
+    public function active(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'is_suspended' => false,
+            'expires_at' => now()->addYear(),
+        ]);
+    }
+
+    public function eapEligible(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'created_at' => Date::create(2025, 5, 1),
+            'updated_at' => Date::create(2025, 5, 1),
+        ]);
+    }
+
+    public function afterEap(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'created_at' => Date::create(2025, 7, 1),
+            'updated_at' => Date::create(2025, 7, 1),
+        ]);
+    }
+
+    public function withoutSubscriptionItem(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'subscription_item_id' => null,
+        ]);
+    }
 }

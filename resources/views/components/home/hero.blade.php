@@ -554,11 +554,12 @@
                         )
                     }
                 "
-                class="mt-4 w-full max-w-55"
+                class="mt-4 flex w-full max-w-md flex-col items-center gap-3 sm:flex-row sm:justify-center"
             >
-                <div class="transition duration-300">
+                {{-- Mobile button --}}
+                <div class="w-full max-w-55 transition duration-300">
                     <a
-                        href="/docs/mobile/1/getting-started/introduction"
+                        href="/docs/mobile/getting-started/introduction"
                         class="group relative isolate z-0 flex h-15 items-center justify-between gap-3 overflow-hidden rounded-3xl bg-gray-900 px-5 leading-snug text-white transition duration-200 ease-in-out will-change-transform hover:bg-gray-800 2xl:h-17 2xl:px-7 dark:bg-haiti dark:hover:bg-indigo-900/50"
                         aria-label="Get started with NativePHP documentation for mobile apps"
                     >
@@ -566,7 +567,7 @@
                         <div
                             class="bg-gradient-to-br from-white to-cyan-300 bg-clip-text text-transparent duration-500 ease-in-out will-change-transform group-hover:translate-x-1 2xl:text-lg"
                         >
-                            Start building
+                            Build Mobile
                         </div>
                         {{-- Arrow --}}
                         <div class="flex items-center gap-1">
@@ -601,7 +602,7 @@
                             "
                             class="absolute -bottom-12 left-14 -z-10 h-20 w-44 rounded-full bg-transparent blur-xl will-change-transform dark:bg-blue-500/30"
                         ></div>
-                        {{-- Orange blur --}}
+                        {{-- Cyan blur --}}
                         <div
                             x-init="
                                 () => {
@@ -618,6 +619,73 @@
                                 }
                             "
                             class="absolute -bottom-12 -left-5 -z-20 h-20 w-44 rounded-full bg-transparent blur-xl will-change-transform dark:bg-cyan-500/30"
+                        ></div>
+                    </a>
+                </div>
+
+                {{-- Desktop button --}}
+                <div class="w-full max-w-55 transition duration-300">
+                    <a
+                        href="/docs/desktop/getting-started/introduction"
+                        class="group relative isolate z-0 flex h-15 items-center justify-between gap-3 overflow-hidden rounded-3xl bg-gray-900 px-5 leading-snug text-white transition duration-200 ease-in-out will-change-transform hover:bg-gray-800 2xl:h-17 2xl:px-7 dark:bg-haiti dark:hover:bg-indigo-900/50"
+                        aria-label="Get started with NativePHP documentation for desktop apps"
+                    >
+                        {{-- Label --}}
+                        <div
+                            class="bg-gradient-to-br from-white to-violet-300 bg-clip-text text-transparent duration-500 ease-in-out will-change-transform group-hover:translate-x-1 2xl:text-lg"
+                        >
+                            Build Desktop
+                        </div>
+                        {{-- Arrow --}}
+                        <div class="flex items-center gap-1">
+                            <div class="flex flex-col gap-2">
+                                <div
+                                    class="size-1 rounded-full bg-current opacity-50 transition duration-500 ease-in-out will-change-transform group-hover:translate-x-2 group-hover:translate-y-1.5 group-hover:opacity-100"
+                                ></div>
+                                <div
+                                    class="size-1 rounded-full bg-current opacity-50 transition duration-500 ease-in-out will-change-transform group-hover:-translate-y-3"
+                                ></div>
+                            </div>
+                            <div
+                                class="size-1 rounded-full bg-current transition duration-500 ease-in-out will-change-transform group-hover:-translate-x-2 group-hover:translate-y-1.5 group-hover:opacity-50"
+                            ></div>
+                        </div>
+                        {{-- Violet blur --}}
+                        <div
+                            x-init="
+                                () => {
+                                    gsap.to($el, {
+                                        duration: 10,
+                                        repeat: -1,
+                                        ease: 'power1.inOut',
+                                        keyframes: {
+                                            x: [0, 20, -100, 0],
+                                            y: [0, 5, 0],
+                                            scale: [1, 0.7, 1],
+                                            rotate: [0, 10, 0],
+                                        },
+                                    })
+                                }
+                            "
+                            class="absolute -bottom-12 left-14 -z-10 h-20 w-44 rounded-full bg-transparent blur-xl will-change-transform dark:bg-violet-500/30"
+                        ></div>
+                        {{-- Purple blur --}}
+                        <div
+                            x-init="
+                                () => {
+                                    gsap.to($el, {
+                                        duration: 5,
+                                        repeat: -1,
+                                        ease: 'power1.inOut',
+                                        keyframes: {
+                                            x: [0, -10, 0],
+                                            y: [0, 10, 0],
+                                            scale: [1, 1.2, 1],
+                                        },
+                                    })
+                                }
+                            "
+                            class="absolute -bottom-12 -left-5 -z-20 h-20 w-44 rounded-full bg-transparent blur-xl will-change-transform dark:bg-purple-500/30"
                         ></div>
                     </a>
                 </div>

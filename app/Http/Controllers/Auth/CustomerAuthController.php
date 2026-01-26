@@ -4,7 +4,9 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\LoginRequest;
+use App\Models\Plugin;
 use App\Models\User;
+use App\Services\CartService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -13,6 +15,8 @@ use Illuminate\View\View;
 
 class CustomerAuthController extends Controller
 {
+    public function __construct(protected CartService $cartService) {}
+
     public function showLogin(): View
     {
         return view('auth.login');
@@ -39,7 +43,27 @@ class CustomerAuthController extends Controller
 
         Auth::login($user);
 
-        return redirect()->route('customer.licenses');
+        // Transfer guest cart to user
+        $this->cartService->transferGuestCartToUser($user);
+
+        // Check for pending add-to-cart action
+        $pendingPluginId = session()->pull('pending_add_to_cart');
+        if ($pendingPluginId) {
+            $plugin = Plugin::find($pendingPluginId);
+            if ($plugin && $plugin->isPaid() && $plugin->activePrice) {
+                $cart = $this->cartService->getCart($user);
+                try {
+                    $this->cartService->addPlugin($cart, $plugin);
+
+                    return redirect()->route('cart.show')
+                        ->with('success', "{$plugin->name} has been added to your cart!");
+                } catch (\Exception $e) {
+                    // Plugin couldn't be added, continue to normal flow
+                }
+            }
+        }
+
+        return redirect()->intended(route('dashboard'));
     }
 
     public function login(LoginRequest $request): RedirectResponse
@@ -48,7 +72,29 @@ class CustomerAuthController extends Controller
 
         $request->session()->regenerate();
 
-        return redirect()->intended(route('customer.licenses'));
+        $user = Auth::user();
+
+        // Transfer guest cart to user
+        $this->cartService->transferGuestCartToUser($user);
+
+        // Check for pending add-to-cart action
+        $pendingPluginId = session()->pull('pending_add_to_cart');
+        if ($pendingPluginId) {
+            $plugin = Plugin::find($pendingPluginId);
+            if ($plugin && $plugin->isPaid() && $plugin->activePrice) {
+                $cart = $this->cartService->getCart($user);
+                try {
+                    $this->cartService->addPlugin($cart, $plugin);
+
+                    return redirect()->route('cart.show')
+                        ->with('success', "{$plugin->name} has been added to your cart!");
+                } catch (\Exception $e) {
+                    // Plugin couldn't be added, continue to normal flow
+                }
+            }
+        }
+
+        return redirect()->intended(route('dashboard'));
     }
 
     public function logout(Request $request): RedirectResponse

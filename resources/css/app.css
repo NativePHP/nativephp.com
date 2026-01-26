@@ -7,6 +7,9 @@
 @source '../../storage/framework/views/*.php';
 @source '../../vendor/filament/**/*.blade.php';
 
+/* Safelist classes used in dynamic content (blog posts from database) */
+@source inline("grid-cols-1 grid-cols-2 grid-cols-3 grid-cols-4 grid-cols-5 grid-cols-6");
+
 @custom-variant dark (&:where(.dark, .dark *));
 
 @theme {
@@ -133,12 +136,12 @@ nav.docs-navigation > ul > li {
     & > a {
         @apply font-semibold;
         @apply mb-1.5 px-3 py-2.5 no-underline;
-        @apply rounded-3xl border dark:border-white/15;
+        @apply rounded-lg;
     }
 }
 
 nav.docs-navigation > ul > li.active > a {
-    @apply text-black dark:text-white;
+    @apply bg-violet-100 text-black dark:bg-violet-950/50 dark:text-white;
 
     & > svg {
         @apply text-violet-400;
@@ -158,18 +161,48 @@ nav.docs-navigation > ul > li > ul {
     & > li {
         @apply font-normal;
 
-        & a {
-            @apply ml-3 block w-full border-l-[1.5px] py-1.5 pl-3 transition-all duration-200 dark:border-white/10;
+        & > a {
+            @apply ml-3 block w-full border-l-2 py-1.5 pl-3 transition-all duration-200 dark:border-white/10;
         }
 
-        &.exact-active a {
+        &.exact-active > a {
             @apply border-violet-400 font-medium text-violet-800/80 dark:border-violet-400/90 dark:text-white;
         }
 
-        &:hover a {
+        &:hover > a {
             @apply border-violet-400 dark:border-violet-400/90;
         }
     }
+}
+
+/* Third tier (subsections) */
+nav.docs-navigation ul.third-tier {
+    @apply mt-1;
+
+    & > li {
+        @apply font-normal;
+
+        & > a {
+            @apply ml-6 block w-full border-l-2 py-1 pl-3 text-xs transition-all duration-200 dark:border-white/10;
+        }
+
+        &.exact-active > a {
+            @apply border-violet-400 font-medium text-violet-800/80 dark:border-violet-400/90 dark:text-white;
+        }
+
+        &:hover > a {
+            @apply border-violet-400 dark:border-violet-400/90;
+        }
+    }
+}
+
+/* Subsection header styling */
+nav.docs-navigation .subsection-header {
+    @apply ml-3 flex items-center gap-2 border-l-2 py-1.5 pl-3 font-semibold text-gray-700 dark:border-white/10 dark:text-gray-300;
+}
+
+nav.docs-navigation li:has(.third-tier .exact-active) > .subsection-header {
+    @apply border-violet-400 dark:border-violet-400/90;
 }
 
 /* Prose */
@@ -190,11 +223,11 @@ nav.docs-navigation > ul > li > ul {
 }
 
 .prose pre {
-    @apply rounded-xl p-6 shadow-lg;
+    @apply max-w-full overflow-x-auto rounded-xl p-6 shadow-lg;
 }
 
 .prose pre code {
-    @apply bg-transparent p-0 text-sm font-normal text-gray-50;
+    @apply block bg-transparent p-0 text-sm font-normal text-gray-50;
 }
 
 .prose code {
@@ -227,7 +260,7 @@ nav.docs-navigation > ul > li > ul {
  overflow-x-auto is recommended.
 */
 .prose pre {
-    @apply my-4 overflow-x-auto rounded-md bg-transparent p-0;
+    @apply my-4 max-w-full overflow-x-auto rounded-md bg-transparent p-0;
 }
 
 /*

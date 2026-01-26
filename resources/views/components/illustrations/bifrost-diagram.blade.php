@@ -13,6 +13,7 @@
         />
 
         <p class="hidden whitespace-nowrap sm:block md:text-lg">
+            <span>Your</span>
             <span class="font-semibold">NativePHP</span>
             <span>app</span>
         </p>
@@ -20,7 +21,7 @@
 
     {{-- Left line (decorative) --}}
     <div
-        class="hidden h-0.5 w-10 bg-gradient-to-r from-transparent to-blue-500/50 2xs:block sm:w-20"
+        class="hidden h-0.5 w-8 bg-gradient-to-r from-transparent to-blue-500/50 2xs:block"
         aria-hidden="true"
     ></div>
 
@@ -66,7 +67,7 @@
     </div>
 
     {{-- Right (Build outputs to platforms) --}}
-    <div class="flex items-center sm:pr-14 md:pr-24">
+    <div class="flex items-center">
         <div aria-hidden="true">
             <x-icons.home.arc-connector aria-hidden="true" />
             <div

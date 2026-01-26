@@ -127,6 +127,38 @@ Notification::title('Hello from NativePHP')
     ->show();
 ```
 
+### Notification Sounds
+
+You may set a custom audio by using the `sound()` method.
+
+Setting a sound overrides the system's default notification sound for that notification.
+
+You can use the system's default notification sounds. On macOS, for example, set the sound to `'Ping'`.
+
+```php
+Notification::title('Hello from NativePHP')
+    ->sound('Ping')
+    ->show();
+```
+
+You can also provide a custom audio file.
+
+```php
+Notification::title('Hello from NativePHP')
+    ->sound(resource_path('example.mp3'))
+    ->show();
+```
+
+### Silent Notifications
+
+Make a notification silent with the `silent()` method:
+
+```php
+Notification::title('Hello from NativePHP')
+    ->silent()
+    ->show();
+```
+
 ### Notification Actions
 
 On macOS, you can add action buttons to a notification using the `addAction()` method.
