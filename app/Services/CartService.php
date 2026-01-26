@@ -47,6 +47,7 @@ class CartService
         if ($sessionId) {
             $cart = Cart::where('session_id', $sessionId)
                 ->whereNull('user_id')
+                ->whereNull('completed_at')
                 ->first();
 
             if ($cart && ! $cart->isExpired()) {

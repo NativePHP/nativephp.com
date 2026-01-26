@@ -90,7 +90,6 @@ class Cart extends Model
     public function markAsCompleted(): void
     {
         $this->update(['completed_at' => now()]);
-        $this->clear();
     }
 
     /**
