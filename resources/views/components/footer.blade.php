@@ -9,10 +9,10 @@
         Footer
     </h2>
     <div
-        class="flex flex-col flex-wrap gap-x-6 gap-y-4 md:flex-row md:items-end md:justify-between"
+        class="flex flex-col flex-wrap gap-x-6 gap-y-4 xl:flex-row xl:items-end xl:justify-between"
     >
         {{-- Left side --}}
-        <div class="flex flex-col items-center gap-6 md:items-start">
+        <div class="flex flex-col items-center gap-6 xl:items-start">
             {{-- Logo --}}
             <div
                 x-init="
@@ -189,7 +189,7 @@
                     Explore
                 </h3>
                 <ul
-                    class="flex flex-col items-start text-sm text-gray-500 dark:text-gray-400"
+                    class="grid sm:grid-rows-5 sm:grid-flow-col gap-x-6 text-sm text-gray-500 dark:text-gray-400"
                 >
                     <li>
                         <a
@@ -207,14 +207,14 @@
                             Blog
                         </a>
                     </li>
-                    <li>
+                    {{-- <li>
                         <a
                             href="https://shop.nativephp.com/"
                             class="inline-block px-px py-1.5 transition duration-300 will-change-transform hover:translate-x-1 hover:text-gray-700 dark:hover:text-gray-300"
                         >
                             Swag
                         </a>
-                    </li>
+                    </li> --}}
                     <li>
                         <a
                             href="/partners"

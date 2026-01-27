@@ -156,7 +156,7 @@
                 </div>
 
                 {{-- Swag Link --}}
-                <div>
+                {{-- <div>
                     <a
                         href="https://shop.nativephp.com/"
                         class="flex items-center gap-2 py-3 opacity-50 transition duration-200 hover:translate-x-1 hover:opacity-100"
@@ -164,7 +164,7 @@
                     >
                         <div>Swag</div>
                     </a>
-                </div>
+                </div> --}}
 
                 <div>
                     <a
