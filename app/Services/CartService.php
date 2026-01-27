@@ -150,7 +150,9 @@ class CartService
             return null;
         }
 
-        $userCart = Cart::where('user_id', $user->id)->first();
+        $userCart = Cart::where('user_id', $user->id)
+            ->whereNull('completed_at')
+            ->first();
 
         if ($userCart) {
             // Merge guest cart items into user cart

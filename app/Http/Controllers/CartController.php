@@ -216,6 +216,8 @@ class CartController extends Controller
         try {
             $session = $this->createMultiItemCheckoutSession($cart, $user);
 
+            $cart->update(['stripe_checkout_session_id' => $session->id]);
+
             return redirect($session->url);
         } catch (\Exception $e) {
             Log::error('Cart checkout failed', [
@@ -240,7 +242,8 @@ class CartController extends Controller
                 ->with('error', 'Invalid checkout session. Please try again.');
         }
 
-        // Cart will be marked as completed by the webhook when payment is confirmed
+        // Cart will be marked as completed by the webhook after licenses are created
+
         return view('cart.success', [
             'sessionId' => $sessionId,
         ]);
