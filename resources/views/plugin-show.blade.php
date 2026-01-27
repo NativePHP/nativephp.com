@@ -1,6 +1,6 @@
 <x-layout title="{{ $plugin->name }} - Plugin">
     <section
-        class="mx-auto mt-10 w-full max-w-5xl"
+        class="mx-auto mt-10 w-full max-w-7xl"
         aria-labelledby="plugin-title"
     >
         <header class="relative">

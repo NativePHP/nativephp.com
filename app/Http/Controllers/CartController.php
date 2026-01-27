@@ -5,19 +5,18 @@ namespace App\Http\Controllers;
 use App\Models\Plugin;
 use App\Models\PluginBundle;
 use App\Services\CartService;
-use App\Services\StripeConnectService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\View\View;
+use Laravel\Cashier\Cashier;
 
 class CartController extends Controller
 {
     public function __construct(
-        protected CartService $cartService,
-        protected StripeConnectService $stripeConnectService
+        protected CartService $cartService
     ) {}
 
     public function show(Request $request): View
@@ -217,6 +216,8 @@ class CartController extends Controller
         try {
             $session = $this->createMultiItemCheckoutSession($cart, $user);
 
+            $cart->update(['stripe_checkout_session_id' => $session->id]);
+
             return redirect($session->url);
         } catch (\Exception $e) {
             Log::error('Cart checkout failed', [
@@ -241,11 +242,7 @@ class CartController extends Controller
                 ->with('error', 'Invalid checkout session. Please try again.');
         }
 
-        $user = Auth::user();
-
-        // Clear the cart - the webhook will create the licenses
-        $cart = $this->cartService->getCart($user);
-        $cart->clear();
+        // Cart will be marked as completed by the webhook after licenses are created
 
         return view('cart.success', [
             'sessionId' => $sessionId,
@@ -256,9 +253,27 @@ class CartController extends Controller
     {
         $user = Auth::user();
 
-        // Check if licenses exist for this checkout session
+        // Retrieve the checkout session to get the invoice ID
+        try {
+            $session = Cashier::stripe()->checkout->sessions->retrieve($sessionId);
+            $invoiceId = $session->invoice;
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Unable to verify purchase status.',
+            ], 400);
+        }
+
+        if (! $invoiceId) {
+            return response()->json([
+                'status' => 'pending',
+                'message' => 'Processing your purchase...',
+            ]);
+        }
+
+        // Check if licenses exist for this invoice
         $licenses = $user->pluginLicenses()
-            ->where('stripe_checkout_session_id', $sessionId)
+            ->where('stripe_invoice_id', $invoiceId)
             ->with('plugin')
             ->get();
 
@@ -274,6 +289,7 @@ class CartController extends Controller
             'message' => 'Purchase complete!',
             'licenses' => $licenses->map(fn ($license) => [
                 'id' => $license->id,
+                'plugin_id' => $license->plugin->id,
                 'plugin_name' => $license->plugin->name,
                 'plugin_slug' => $license->plugin->slug,
             ]),
@@ -296,20 +312,10 @@ class CartController extends Controller
 
     protected function createMultiItemCheckoutSession($cart, $user): \Stripe\Checkout\Session
     {
-        $stripe = new \Stripe\StripeClient(config('cashier.secret'));
-
         // Eager load items with plugins and bundles to avoid any stale data issues
         $cart->load('items.plugin', 'items.pluginBundle.plugins');
 
         $lineItems = [];
-        $metadata = [
-            'cart_id' => $cart->id,
-            'user_id' => $user->id,
-            'plugin_ids' => [],
-            'price_ids' => [],
-            'bundle_ids' => [],
-            'bundle_plugin_ids' => [],
-        ];
 
         Log::info('Creating multi-item checkout session', [
             'cart_id' => $cart->id,
@@ -320,14 +326,6 @@ class CartController extends Controller
         foreach ($cart->items as $item) {
             if ($item->isBundle()) {
                 $bundle = $item->pluginBundle;
-
-                Log::info('Adding bundle to checkout session', [
-                    'cart_id' => $cart->id,
-                    'cart_item_id' => $item->id,
-                    'bundle_id' => $bundle->id,
-                    'bundle_name' => $bundle->name,
-                    'plugin_count' => $bundle->plugins->count(),
-                ]);
 
                 $pluginNames = $bundle->plugins->pluck('name')->take(3)->implode(', ');
                 if ($bundle->plugins->count() > 3) {
@@ -345,19 +343,8 @@ class CartController extends Controller
                     ],
                     'quantity' => 1,
                 ];
-
-                $metadata['bundle_ids'][] = $bundle->id;
-                $metadata['bundle_plugin_ids'][$bundle->id] = $bundle->plugins->pluck('id')->implode(':');
             } else {
                 $plugin = $item->plugin;
-
-                Log::info('Adding plugin to checkout session', [
-                    'cart_id' => $cart->id,
-                    'cart_item_id' => $item->id,
-                    'plugin_id' => $plugin->id,
-                    'plugin_name' => $plugin->name,
-                    'price_id' => $item->plugin_price_id,
-                ]);
 
                 $lineItems[] = [
                     'price_data' => [
@@ -370,32 +357,18 @@ class CartController extends Controller
                     ],
                     'quantity' => 1,
                 ];
-
-                $metadata['plugin_ids'][] = $plugin->id;
-                $metadata['price_ids'][] = $item->plugin_price_id;
             }
         }
 
-        // Encode arrays for Stripe metadata (must be strings)
-        $metadata['cart_id'] = (string) $metadata['cart_id'];
-        $metadata['user_id'] = (string) $metadata['user_id'];
-        $metadata['plugin_ids'] = implode(',', $metadata['plugin_ids']);
-        $metadata['price_ids'] = implode(',', $metadata['price_ids']);
-        $metadata['bundle_ids'] = implode(',', $metadata['bundle_ids']);
-        $metadata['bundle_plugin_ids'] = json_encode($metadata['bundle_plugin_ids']);
+        // Ensure the user has a valid Stripe customer ID
+        $this->ensureValidStripeCustomer($user);
 
-        Log::info('Checkout session metadata prepared', [
-            'cart_id' => $cart->id,
-            'metadata' => $metadata,
-            'line_items_count' => count($lineItems),
-        ]);
+        // Metadata only needs cart_id - we'll look up items from the cart
+        $metadata = [
+            'cart_id' => (string) $cart->id,
+        ];
 
-        // Ensure the user has a Stripe customer ID (required for Stripe Accounts V2)
-        if (! $user->stripe_id) {
-            $user->createAsStripeCustomer();
-        }
-
-        return $stripe->checkout->sessions->create([
+        $session = Cashier::stripe()->checkout->sessions->create([
             'mode' => 'payment',
             'line_items' => $lineItems,
             'success_url' => route('cart.success').'?session_id={CHECKOUT_SESSION_ID}',
@@ -414,8 +387,51 @@ class CartController extends Controller
                 'invoice_data' => [
                     'description' => 'NativePHP Plugin Purchase',
                     'footer' => 'Thank you for your purchase!',
+                    'metadata' => $metadata,
                 ],
             ],
         ]);
+
+        // Store the Stripe checkout session ID on the cart
+        $cart->update(['stripe_checkout_session_id' => $session->id]);
+
+        Log::info('Checkout session created', [
+            'cart_id' => $cart->id,
+            'session_id' => $session->id,
+        ]);
+
+        return $session;
+    }
+
+    /**
+     * Ensure the user has a valid Stripe customer ID.
+     * Creates a new customer if none exists or if the existing one is invalid.
+     */
+    protected function ensureValidStripeCustomer($user): void
+    {
+        if (! $user->stripe_id) {
+            $user->createAsStripeCustomer();
+
+            return;
+        }
+
+        // Verify the customer exists in Stripe
+        try {
+            Cashier::stripe()->customers->retrieve($user->stripe_id);
+        } catch (\Stripe\Exception\InvalidRequestException $e) {
+            // Customer doesn't exist in Stripe, create a new one
+            if (str_contains($e->getMessage(), 'No such customer')) {
+                Log::warning('Stripe customer not found, creating new customer', [
+                    'user_id' => $user->id,
+                    'old_stripe_id' => $user->stripe_id,
+                ]);
+
+                $user->stripe_id = null;
+                $user->save();
+                $user->createAsStripeCustomer();
+            } else {
+                throw $e;
+            }
+        }
     }
 }

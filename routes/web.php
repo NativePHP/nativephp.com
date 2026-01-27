@@ -284,7 +284,7 @@ Route::middleware(EnsureFeaturesAreActive::using(ShowPlugins::class))->group(fun
     Route::delete('cart/bundle/{bundle:slug}', [CartController::class, 'removeBundle'])->name('cart.bundle.remove');
     Route::delete('cart/clear', [CartController::class, 'clear'])->name('cart.clear');
     Route::get('cart/count', [CartController::class, 'count'])->name('cart.count');
-    Route::post('cart/checkout', [CartController::class, 'checkout'])->name('cart.checkout');
+    Route::match(['get', 'post'], 'cart/checkout', [CartController::class, 'checkout'])->name('cart.checkout');
     Route::get('cart/success', [CartController::class, 'success'])->name('cart.success')->middleware('auth');
     Route::get('cart/status/{sessionId}', [CartController::class, 'status'])->name('cart.status')->middleware('auth');
     Route::get('cart/cancel', [CartController::class, 'cancel'])->name('cart.cancel');

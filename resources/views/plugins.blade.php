@@ -1,5 +1,5 @@
 <x-layout title="Plugins for NativePHP Mobile">
-    <div class="mx-auto max-w-5xl">
+    <div class="mx-auto max-w-7xl">
         {{-- Hero Section --}}
         <section class="mt-12">
             <div class="grid place-items-center text-center">
@@ -161,7 +161,7 @@
                 </p>
 
                 {{-- Plugin Cards Grid --}}
-                <div class="mt-10 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+                <div class="mt-10 grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                     @forelse ($featuredPlugins as $plugin)
                         <x-plugin-card :plugin="$plugin" />
                     @empty
@@ -219,7 +219,7 @@
                 </p>
 
                 {{-- Bundle Cards Grid --}}
-                <div class="mt-10 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+                <div class="mt-10 grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                     @foreach ($bundles as $bundle)
                         <x-bundle-card :bundle="$bundle" />
                     @endforeach
@@ -257,7 +257,7 @@
                 </p>
 
                 {{-- Plugin Cards Grid --}}
-                <div class="mt-10 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+                <div class="mt-10 grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                     @forelse ($latestPlugins as $plugin)
                         <x-plugin-card :plugin="$plugin" />
                     @empty

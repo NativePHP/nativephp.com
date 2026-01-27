@@ -1,4 +1,4 @@
-<div class="mx-auto max-w-5xl">
+<div class="mx-auto max-w-7xl">
     {{-- Header --}}
     <section class="mt-12">
         <div class="text-center">
@@ -113,7 +113,7 @@
         @if ($view === 'bundles')
             {{-- Bundles Grid --}}
             @if ($bundles->count() > 0)
-                <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3" wire:loading.class="opacity-50">
+                <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4" wire:loading.class="opacity-50">
                     @foreach ($bundles as $bundle)
                         <x-bundle-card :bundle="$bundle" wire:key="bundle-{{ $bundle->id }}" />
                     @endforeach
@@ -145,7 +145,7 @@
         @else
             {{-- Plugins Grid --}}
             @if ($plugins->count() > 0)
-                <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3" wire:loading.class="opacity-50">
+                <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4" wire:loading.class="opacity-50">
                     @foreach ($plugins as $plugin)
                         <x-plugin-card :plugin="$plugin" wire:key="plugin-{{ $plugin->id }}" />
                     @endforeach
