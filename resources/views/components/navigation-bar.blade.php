@@ -98,18 +98,18 @@
                 ></div>
 
                 {{-- Link --}}
-                <a
+                {{-- <a
                     href="https://shop.nativephp.com/"
                     class="opacity-60 transition duration-200 hover:opacity-100"
                 >
                     Swag
-                </a>
+                </a> --}}
 
                 {{-- Decorative circle --}}
-                <div
+                {{-- <div
                     class="size-[3px] rotate-45 rounded-xs bg-gray-400 transition duration-200 dark:opacity-60"
                     aria-hidden="true"
-                ></div>
+                ></div> --}}
 
                 {{-- Link --}}
                 <a
