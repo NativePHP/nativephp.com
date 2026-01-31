@@ -40,6 +40,7 @@ Route::middleware('auth.api_key')->group(function () {
     Route::post('/licenses', [LicenseController::class, 'store']);
     Route::get('/licenses/{key}', [LicenseController::class, 'show']);
     Route::get('/licenses', [LicenseController::class, 'index']);
+    Route::patch('/licenses/{key}/renew', [LicenseController::class, 'renew']);
     Route::post('/temp-links', [TemporaryLinkController::class, 'store']);
 });
 
