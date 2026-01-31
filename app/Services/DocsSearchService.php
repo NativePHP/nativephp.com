@@ -18,6 +18,15 @@ class DocsSearchService
 
     public function search(string $query, ?string $platform = null, ?string $version = null, int $limit = 10): array
     {
+        if ($platform !== null && ! $this->sanitizePlatform($platform)) {
+            return [];
+        }
+        if ($version !== null && ! $this->sanitizeVersion($version)) {
+            return [];
+        }
+
+        $limit = min(max(1, $limit), 100);
+
         $pages = $this->getAllPages($platform, $version);
         $queryTerms = $this->tokenize($query);
 
@@ -38,6 +47,15 @@ class DocsSearchService
 
     public function getPage(string $platform, string $version, string $section, string $slug): ?array
     {
+        $platform = $this->sanitizePlatform($platform);
+        $version = $this->sanitizeVersion($version);
+        $section = $this->sanitizePathSegment($section);
+        $slug = $this->sanitizePathSegment($slug);
+
+        if (! $platform || ! $version || ! $section || ! $slug) {
+            return null;
+        }
+
         $filePath = "{$this->docsPath}/{$platform}/{$version}/{$section}/{$slug}.md";
 
         if (! file_exists($filePath)) {
@@ -60,6 +78,10 @@ class DocsSearchService
 
     public function listApis(string $platform, string $version): array
     {
+        if (! $this->sanitizePlatform($platform) || ! $this->sanitizeVersion($version)) {
+            return [];
+        }
+
         return collect($this->getAllPages($platform, $version))
             ->filter(fn ($page) => $page['section'] === 'apis')
             ->sortBy('order')
@@ -69,6 +91,10 @@ class DocsSearchService
 
     public function getNavigation(string $platform, string $version): array
     {
+        if (! $this->sanitizePlatform($platform) || ! $this->sanitizeVersion($version)) {
+            return [];
+        }
+
         $pages = $this->getAllPages($platform, $version);
 
         $sections = [];
@@ -125,7 +151,14 @@ class DocsSearchService
 
     protected function getAllPages(?string $platform = null, ?string $version = null): array
     {
-        $cacheKey = "mcp_docs_pages_{$platform}_{$version}";
+        if ($platform !== null && ! $this->sanitizePlatform($platform)) {
+            return [];
+        }
+        if ($version !== null && ! $this->sanitizeVersion($version)) {
+            return [];
+        }
+
+        $cacheKey = 'mcp_docs_pages_'.($platform ?? 'all').'_'.($version ?? 'all');
 
         if (config('app.env') !== 'local') {
             $cached = Cache::get($cacheKey);
@@ -282,5 +315,38 @@ class DocsSearchService
         }
 
         return Str::limit(preg_replace('/\s+/', ' ', $content), $length);
+    }
+
+    protected function sanitizePlatform(?string $platform): ?string
+    {
+        if ($platform === null) {
+            return null;
+        }
+
+        $allowed = ['desktop', 'mobile'];
+
+        return in_array($platform, $allowed, true) ? $platform : null;
+    }
+
+    protected function sanitizeVersion(?string $version): ?string
+    {
+        if ($version === null) {
+            return null;
+        }
+
+        return preg_match('/^[0-9]+$/', $version) ? $version : null;
+    }
+
+    protected function sanitizePathSegment(?string $segment): ?string
+    {
+        if ($segment === null || $segment === '') {
+            return null;
+        }
+
+        if (str_contains($segment, '..') || str_contains($segment, '/') || str_contains($segment, '\\')) {
+            return null;
+        }
+
+        return preg_match('/^[a-zA-Z0-9_-]+$/', $segment) ? $segment : null;
     }
 }

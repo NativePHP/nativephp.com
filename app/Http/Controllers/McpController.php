@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\McpSearchRequest;
 use App\Services\DocsSearchService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -113,18 +114,16 @@ class McpController extends Controller
 
     // REST API endpoints for simpler integrations
 
-    public function searchApi(Request $request): JsonResponse
+    public function searchApi(McpSearchRequest $request): JsonResponse
     {
-        $query = $request->input('q', '');
-        $platform = $request->input('platform');
-        $version = $request->input('version');
-        $limit = (int) $request->input('limit', 10);
+        $validated = $request->validated();
 
-        if (empty($query)) {
-            return response()->json(['error' => 'Missing query parameter: q'], 400);
-        }
-
-        $results = $this->docsSearch->search($query, $platform, $version, $limit);
+        $results = $this->docsSearch->search(
+            $validated['q'],
+            $validated['platform'] ?? null,
+            $validated['version'] ?? null,
+            $validated['limit'] ?? 10
+        );
 
         return response()->json(['results' => $results]);
     }
