@@ -26,7 +26,9 @@ class CartService
 
     protected function getCartForUser(User $user): Cart
     {
-        $cart = Cart::where('user_id', $user->id)->first();
+        $cart = Cart::where('user_id', $user->id)
+            ->whereNull('completed_at')
+            ->first();
 
         if (! $cart) {
             $cart = Cart::create([
@@ -45,6 +47,7 @@ class CartService
         if ($sessionId) {
             $cart = Cart::where('session_id', $sessionId)
                 ->whereNull('user_id')
+                ->whereNull('completed_at')
                 ->first();
 
             if ($cart && ! $cart->isExpired()) {
@@ -147,7 +150,9 @@ class CartService
             return null;
         }
 
-        $userCart = Cart::where('user_id', $user->id)->first();
+        $userCart = Cart::where('user_id', $user->id)
+            ->whereNull('completed_at')
+            ->first();
 
         if ($userCart) {
             // Merge guest cart items into user cart
@@ -293,11 +298,16 @@ class CartService
     public function getCartItemCount(?User $user = null): int
     {
         if ($user) {
-            $cart = Cart::where('user_id', $user->id)->first();
+            $cart = Cart::where('user_id', $user->id)
+                ->whereNull('completed_at')
+                ->first();
         } else {
             $sessionId = Session::get(self::SESSION_KEY);
             $cart = $sessionId
-                ? Cart::where('session_id', $sessionId)->whereNull('user_id')->first()
+                ? Cart::where('session_id', $sessionId)
+                    ->whereNull('user_id')
+                    ->whereNull('completed_at')
+                    ->first()
                 : null;
         }
 

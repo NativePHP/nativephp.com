@@ -11,20 +11,16 @@ use App\Models\PluginPayout;
 use App\Models\PluginPrice;
 use App\Models\User;
 use Illuminate\Support\Facades\Log;
-use Stripe\StripeClient;
+use Laravel\Cashier\Cashier;
 
+/**
+ * Service for managing Stripe Connect accounts and processing developer payouts.
+ */
 class StripeConnectService
 {
-    protected StripeClient $stripe;
-
-    public function __construct()
-    {
-        $this->stripe = new StripeClient(config('cashier.secret'));
-    }
-
     public function createConnectAccount(User $user): DeveloperAccount
     {
-        $account = $this->stripe->accounts->create([
+        $account = Cashier::stripe()->accounts->create([
             'type' => 'express',
             'email' => $user->email,
             'metadata' => [
@@ -46,7 +42,7 @@ class StripeConnectService
 
     public function createOnboardingLink(DeveloperAccount $account): string
     {
-        $accountLink = $this->stripe->accountLinks->create([
+        $accountLink = Cashier::stripe()->accountLinks->create([
             'account' => $account->stripe_connect_account_id,
             'refresh_url' => route('customer.developer.onboarding.refresh'),
             'return_url' => route('customer.developer.onboarding.return'),
@@ -58,7 +54,7 @@ class StripeConnectService
 
     public function refreshAccountStatus(DeveloperAccount $account): void
     {
-        $stripeAccount = $this->stripe->accounts->retrieve($account->stripe_connect_account_id);
+        $stripeAccount = Cashier::stripe()->accounts->retrieve($account->stripe_connect_account_id);
 
         $account->update([
             'payouts_enabled' => $stripeAccount->payouts_enabled,
@@ -72,173 +68,6 @@ class StripeConnectService
             'stripe_account_id' => $account->stripe_connect_account_id,
             'status' => $account->stripe_connect_status->value,
         ]);
-    }
-
-    public function createCheckoutSession(PluginPrice $price, User $buyer): \Stripe\Checkout\Session
-    {
-        $plugin = $price->plugin;
-        $developerAccount = $plugin->developerAccount;
-
-        // Ensure the buyer has a Stripe customer ID (required for Stripe Accounts V2)
-        if (! $buyer->stripe_id) {
-            $buyer->createAsStripeCustomer();
-        }
-
-        $productName = $plugin->name;
-        if (! $price->isRegularTier()) {
-            $productName .= ' ('.$price->tier->label().' pricing)';
-        }
-
-        $sessionParams = [
-            'mode' => 'payment',
-            'line_items' => [
-                [
-                    'price_data' => [
-                        'currency' => strtolower($price->currency),
-                        'unit_amount' => $price->amount,
-                        'product_data' => [
-                            'name' => $productName,
-                            'description' => $plugin->description ?? 'NativePHP Plugin',
-                        ],
-                    ],
-                    'quantity' => 1,
-                ],
-            ],
-            'success_url' => route('plugins.purchase.success', $plugin->routeParams()).'?session_id={CHECKOUT_SESSION_ID}',
-            'cancel_url' => route('plugins.purchase.cancel', $plugin->routeParams()),
-            'customer' => $buyer->stripe_id,
-            'customer_update' => [
-                'name' => 'auto',
-                'address' => 'auto',
-            ],
-            'metadata' => [
-                'plugin_id' => $plugin->id,
-                'user_id' => $buyer->id,
-                'price_id' => $price->id,
-                'price_tier' => $price->tier->value,
-            ],
-            'allow_promotion_codes' => true,
-            'billing_address_collection' => 'required',
-            'tax_id_collection' => ['enabled' => true],
-            'invoice_creation' => [
-                'enabled' => true,
-                'invoice_data' => [
-                    'description' => 'NativePHP Plugin Purchase',
-                    'footer' => 'Thank you for your purchase!',
-                ],
-            ],
-        ];
-
-        if ($developerAccount && $developerAccount->canReceivePayouts()) {
-            $split = PluginPayout::calculateSplit($price->amount);
-
-            $sessionParams['payment_intent_data'] = [
-                'transfer_data' => [
-                    'destination' => $developerAccount->stripe_connect_account_id,
-                    'amount' => $split['developer_amount'],
-                ],
-            ];
-        }
-
-        return $this->stripe->checkout->sessions->create($sessionParams);
-    }
-
-    public function processSuccessfulPayment(string $sessionId): PluginLicense
-    {
-        $session = $this->stripe->checkout->sessions->retrieve($sessionId, [
-            'expand' => ['payment_intent'],
-        ]);
-
-        $pluginId = $session->metadata->plugin_id;
-        $userId = $session->metadata->user_id;
-        $priceId = $session->metadata->price_id;
-
-        $plugin = Plugin::findOrFail($pluginId);
-        $user = User::findOrFail($userId);
-        $price = PluginPrice::findOrFail($priceId);
-
-        $license = PluginLicense::create([
-            'user_id' => $user->id,
-            'plugin_id' => $plugin->id,
-            'stripe_payment_intent_id' => $session->payment_intent->id,
-            'price_paid' => $session->amount_total,
-            'currency' => strtoupper($session->currency),
-            'is_grandfathered' => false,
-            'purchased_at' => now(),
-        ]);
-
-        if ($plugin->developerAccount && $plugin->developerAccount->canReceivePayouts()) {
-            $this->createPayout($license, $plugin->developerAccount);
-        }
-
-        $user->getPluginLicenseKey();
-
-        Log::info('Created plugin license from successful payment', [
-            'license_id' => $license->id,
-            'user_id' => $user->id,
-            'plugin_id' => $plugin->id,
-        ]);
-
-        return $license;
-    }
-
-    /**
-     * Process a multi-item cart payment and create licenses for each plugin.
-     *
-     * @return array<PluginLicense>
-     */
-    public function processMultiItemPayment(string $sessionId): array
-    {
-        $session = $this->stripe->checkout->sessions->retrieve($sessionId, [
-            'expand' => ['payment_intent', 'line_items'],
-        ]);
-
-        $userId = $session->metadata->user_id;
-        $pluginIds = explode(',', $session->metadata->plugin_ids);
-        $priceIds = explode(',', $session->metadata->price_ids);
-
-        $user = User::findOrFail($userId);
-        $licenses = [];
-
-        // Get line items to match prices
-        $lineItems = $session->line_items->data;
-
-        foreach ($pluginIds as $index => $pluginId) {
-            $plugin = Plugin::findOrFail($pluginId);
-            $priceId = $priceIds[$index] ?? null;
-            $price = $priceId ? PluginPrice::find($priceId) : null;
-
-            // Get the amount from line items
-            $amount = isset($lineItems[$index])
-                ? $lineItems[$index]->amount_total
-                : ($price ? $price->amount : 0);
-
-            $license = PluginLicense::create([
-                'user_id' => $user->id,
-                'plugin_id' => $plugin->id,
-                'stripe_payment_intent_id' => $session->payment_intent->id,
-                'price_paid' => $amount,
-                'currency' => strtoupper($session->currency),
-                'is_grandfathered' => false,
-                'purchased_at' => now(),
-            ]);
-
-            if ($plugin->developerAccount && $plugin->developerAccount->canReceivePayouts()) {
-                $this->createPayout($license, $plugin->developerAccount);
-            }
-
-            $licenses[] = $license;
-
-            Log::info('Created plugin license from cart payment', [
-                'license_id' => $license->id,
-                'user_id' => $user->id,
-                'plugin_id' => $plugin->id,
-            ]);
-        }
-
-        $user->getPluginLicenseKey();
-
-        return $licenses;
     }
 
     public function createPayout(PluginLicense $license, DeveloperAccount $developerAccount): PluginPayout
@@ -292,7 +121,7 @@ class StripeConnectService
                 $transferParams['source_transaction'] = $chargeId;
             }
 
-            $transfer = $this->stripe->transfers->create($transferParams);
+            $transfer = Cashier::stripe()->transfers->create($transferParams);
 
             $payout->markAsTransferred($transfer->id);
 
@@ -326,7 +155,7 @@ class StripeConnectService
         }
 
         try {
-            $paymentIntent = $this->stripe->paymentIntents->retrieve($license->stripe_payment_intent_id);
+            $paymentIntent = Cashier::stripe()->paymentIntents->retrieve($license->stripe_payment_intent_id);
 
             return $paymentIntent->latest_charge;
         } catch (\Exception $e) {
@@ -354,7 +183,7 @@ class StripeConnectService
 
     public function createProductAndPrice(Plugin $plugin, int $amountCents, string $currency = 'usd'): PluginPrice
     {
-        $product = $this->stripe->products->create([
+        $product = Cashier::stripe()->products->create([
             'name' => $plugin->name,
             'description' => $plugin->description,
             'metadata' => [
@@ -362,7 +191,7 @@ class StripeConnectService
             ],
         ]);
 
-        $price = $this->stripe->prices->create([
+        $price = Cashier::stripe()->prices->create([
             'product' => $product->id,
             'unit_amount' => $amountCents,
             'currency' => $currency,

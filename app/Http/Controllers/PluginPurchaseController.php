@@ -3,87 +3,80 @@
 namespace App\Http\Controllers;
 
 use App\Models\Plugin;
-use App\Services\StripeConnectService;
+use App\Services\CartService;
+use App\Services\GrandfatheringService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
 use Illuminate\View\View;
+use Laravel\Cashier\Cashier;
 
 class PluginPurchaseController extends Controller
 {
     public function __construct(
-        protected StripeConnectService $stripeConnectService
+        protected CartService $cartService,
+        protected GrandfatheringService $grandfatheringService
     ) {}
 
-    public function show(Request $request, string $vendor, string $package): View|RedirectResponse
+    public function show(Request $request, Plugin $plugin): View|RedirectResponse
     {
-        $plugin = Plugin::findByVendorPackageOrFail($vendor, $package);
-
         if ($plugin->isFree()) {
-            return redirect()->route('plugins.show', $this->pluginRouteParams($plugin));
+            return redirect()->route('plugins.show', $plugin);
         }
 
         $user = $request->user();
-        $bestPrice = $plugin->getBestPriceForUser($user);
-        $regularPrice = $plugin->getRegularPrice();
+        $activePrice = $plugin->activePrice;
 
-        if (! $bestPrice) {
-            return redirect()->route('plugins.show', $this->pluginRouteParams($plugin))
+        if (! $activePrice) {
+            return redirect()->route('plugins.show', $plugin)
                 ->with('error', 'This plugin is not available for purchase.');
         }
+
+        $discountPercent = $this->grandfatheringService->getApplicableDiscount($user, $plugin->is_official);
+        $discountedAmount = $activePrice->getDiscountedAmount($discountPercent);
 
         return view('plugins.purchase', [
             'plugin' => $plugin,
-            'price' => $bestPrice,
-            'regularPrice' => $regularPrice,
-            'hasDiscount' => $regularPrice && $bestPrice->id !== $regularPrice->id,
+            'price' => $activePrice,
+            'discountPercent' => $discountPercent,
+            'discountedAmount' => $discountedAmount,
+            'originalAmount' => $activePrice->amount,
         ]);
     }
 
-    public function checkout(Request $request, string $vendor, string $package): RedirectResponse
+    public function checkout(Request $request, Plugin $plugin): RedirectResponse
     {
-        $plugin = Plugin::findByVendorPackageOrFail($vendor, $package);
         $user = $request->user();
 
         if ($plugin->isFree()) {
-            return redirect()->route('plugins.show', $this->pluginRouteParams($plugin));
+            return redirect()->route('plugins.show', $plugin);
         }
 
-        $bestPrice = $plugin->getBestPriceForUser($user);
-
-        if (! $bestPrice) {
-            return redirect()->route('plugins.show', $this->pluginRouteParams($plugin))
+        if (! $plugin->activePrice) {
+            return redirect()->route('plugins.show', $plugin)
                 ->with('error', 'This plugin is not available for purchase.');
         }
 
+        // Add plugin to cart and redirect to cart checkout
+        $cart = $this->cartService->getCart($user);
+
         try {
-            $session = $this->stripeConnectService->createCheckoutSession($bestPrice, $user);
-
-            return redirect($session->url);
-        } catch (\Exception $e) {
-            Log::error('Plugin checkout failed', [
-                'plugin_id' => $plugin->id,
-                'user_id' => $user->id,
-                'price_id' => $bestPrice->id,
-                'price_tier' => $bestPrice->tier->value,
-                'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString(),
-            ]);
-
-            return redirect()->route('plugins.purchase.show', $this->pluginRouteParams($plugin))
-                ->with('error', 'Unable to start checkout. Please try again.');
+            $this->cartService->addPlugin($cart, $plugin);
+        } catch (\InvalidArgumentException $e) {
+            return redirect()->route('plugins.show', $plugin)
+                ->with('error', $e->getMessage());
         }
+
+        return redirect()->route('cart.checkout');
     }
 
-    public function success(Request $request, string $vendor, string $package): View|RedirectResponse
+    public function success(Request $request, Plugin $plugin): View|RedirectResponse
     {
-        $plugin = Plugin::findByVendorPackageOrFail($vendor, $package);
         $sessionId = $request->query('session_id');
 
         // Validate session ID exists and looks like a real Stripe session ID
         if (! $sessionId || ! str_starts_with($sessionId, 'cs_')) {
-            return redirect()->route('plugins.show', $this->pluginRouteParams($plugin))
+            return redirect()->route('plugins.show', $plugin)
                 ->with('error', 'Invalid checkout session. Please try again.');
         }
 
@@ -93,14 +86,31 @@ class PluginPurchaseController extends Controller
         ]);
     }
 
-    public function status(Request $request, string $vendor, string $package, string $sessionId): JsonResponse
+    public function status(Request $request, Plugin $plugin, string $sessionId): JsonResponse
     {
-        $plugin = Plugin::findByVendorPackageOrFail($vendor, $package);
         $user = $request->user();
 
-        // Check if license exists for this checkout session and plugin
+        // Retrieve the checkout session to get the invoice ID
+        try {
+            $session = Cashier::stripe()->checkout->sessions->retrieve($sessionId);
+            $invoiceId = $session->invoice;
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Unable to verify purchase status.',
+            ], 400);
+        }
+
+        if (! $invoiceId) {
+            return response()->json([
+                'status' => 'pending',
+                'message' => 'Processing your purchase...',
+            ]);
+        }
+
+        // Check if license exists for this invoice and plugin
         $license = $user->pluginLicenses()
-            ->where('stripe_checkout_session_id', $sessionId)
+            ->where('stripe_invoice_id', $invoiceId)
             ->where('plugin_id', $plugin->id)
             ->first();
 
@@ -118,23 +128,9 @@ class PluginPurchaseController extends Controller
         ]);
     }
 
-    public function cancel(Request $request, string $vendor, string $package): RedirectResponse
+    public function cancel(Request $request, Plugin $plugin): RedirectResponse
     {
-        $plugin = Plugin::findByVendorPackageOrFail($vendor, $package);
-
-        return redirect()->route('plugins.show', $this->pluginRouteParams($plugin))
+        return redirect()->route('plugins.show', $plugin)
             ->with('message', 'Purchase cancelled.');
-    }
-
-    /**
-     * Get route parameters for a plugin's vendor/package URL.
-     *
-     * @return array{vendor: string, package: string}
-     */
-    protected function pluginRouteParams(Plugin $plugin): array
-    {
-        [$vendor, $package] = explode('/', $plugin->name);
-
-        return ['vendor' => $vendor, 'package' => $package];
     }
 }

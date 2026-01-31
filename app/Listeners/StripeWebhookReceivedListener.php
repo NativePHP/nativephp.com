@@ -4,7 +4,6 @@ namespace App\Listeners;
 
 use App\Jobs\CreateUserFromStripeCustomer;
 use App\Jobs\HandleInvoicePaidJob;
-use App\Jobs\ProcessPluginCheckoutJob;
 use App\Jobs\RemoveDiscordMaxRoleJob;
 use App\Models\User;
 use Exception;
@@ -24,7 +23,6 @@ class StripeWebhookReceivedListener
             'customer.subscription.created' => $this->createUserIfNotExists($event->payload['data']['object']['customer']),
             'customer.subscription.deleted' => $this->handleSubscriptionDeleted($event),
             'customer.subscription.updated' => $this->handleSubscriptionUpdated($event),
-            'checkout.session.completed' => $this->handleCheckoutSessionCompleted($event),
             default => null,
         };
     }
@@ -48,9 +46,18 @@ class StripeWebhookReceivedListener
 
     private function handleInvoicePaid(WebhookReceived $event): void
     {
+        Log::info('handleInvoicePaid called', [
+            'invoice_id' => $event->payload['data']['object']['id'] ?? 'unknown',
+            'billing_reason' => $event->payload['data']['object']['billing_reason'] ?? 'unknown',
+        ]);
+
         $invoice = Invoice::constructFrom($event->payload['data']['object']);
 
+        Log::info('Dispatching HandleInvoicePaidJob', ['invoice_id' => $invoice->id]);
+
         dispatch(new HandleInvoicePaidJob($invoice));
+
+        Log::info('HandleInvoicePaidJob dispatched');
     }
 
     private function handleSubscriptionDeleted(WebhookReceived $event): void
@@ -96,38 +103,5 @@ class StripeWebhookReceivedListener
         }
 
         dispatch(new RemoveDiscordMaxRoleJob($user));
-    }
-
-    private function handleCheckoutSessionCompleted(WebhookReceived $event): void
-    {
-        $session = $event->payload['data']['object'];
-
-        // Only process completed payment sessions for plugins
-        if ($session['payment_status'] !== 'paid') {
-            return;
-        }
-
-        $metadata = $session['metadata'] ?? [];
-
-        // Only process if this is a plugin purchase (has plugin_id or plugin_ids in metadata)
-        if (! isset($metadata['plugin_id']) && ! isset($metadata['plugin_ids'])) {
-            return;
-        }
-
-        Log::info('Dispatching ProcessPluginCheckoutJob from webhook', [
-            'session_id' => $session['id'],
-            'metadata' => $metadata,
-            'has_cart_id' => isset($metadata['cart_id']),
-            'has_plugin_ids' => isset($metadata['plugin_ids']),
-            'plugin_ids_value' => $metadata['plugin_ids'] ?? null,
-        ]);
-
-        dispatch(new ProcessPluginCheckoutJob(
-            checkoutSessionId: $session['id'],
-            metadata: $metadata,
-            amountTotal: $session['amount_total'],
-            currency: $session['currency'],
-            paymentIntentId: $session['payment_intent'] ?? null,
-        ));
     }
 }
