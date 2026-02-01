@@ -8,5 +8,5 @@ class ShowAuthButtons
 {
     use WithFeatureResolver;
 
-    protected bool $defaultValue = false;
+    protected bool $defaultValue = true;
 }
