@@ -10,24 +10,17 @@
         id="mobile-dropdown"
     >
         <x-navbar.device-dropdown-item
-            href="/docs/mobile/2/getting-started/introduction"
+            href="/docs/mobile/3/getting-started/introduction"
             title="Documentation"
             subtitle="Get started with Mobile"
             icon="docs"
-        />
-        <x-navbar.device-dropdown-item
-            href="{{ route('pricing') }}"
-            title="Pricing"
-            subtitle="See our pricing plans"
-            icon="dollar-circle"
-            icon-class="size-5.5"
         />
         @feature(App\Features\ShowPlugins::class)
             <x-navbar.device-dropdown-item
                 href="{{ route('plugins') }}"
                 title="Plugins"
                 subtitle="Extend your mobile apps"
-                icon="puzzle"
+                icon="plug"
                 icon-class="size-5"
             />
         @endfeature
@@ -40,13 +33,12 @@
                 icon-class="size-4"
             />
         @endif
-
-        {{-- <x-navbar.device-dropdown-item
-            href="https://github.com/nativephp/mobile"
+        <x-navbar.device-dropdown-item
+            href="https://github.com/nativephp/mobile-air"
             title="GitHub"
             subtitle="Visit our GitHub repository"
             icon="github"
-        />--}}
+        />
     </x-navbar.device-dropdown>
 
     {{-- Desktop dropdown --}}
@@ -61,13 +53,6 @@
             title="Documentation"
             subtitle="Get started with Desktop"
             icon="docs"
-        />
-        <x-navbar.device-dropdown-item
-            href="/sponsor"
-            title="Sponsor"
-            subtitle="Support our contributors"
-            icon="heart"
-            icon-class="size-4"
         />
         @if($showShowcase)
             <x-navbar.device-dropdown-item

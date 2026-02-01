@@ -3,7 +3,6 @@
 namespace App\Filament\Resources\PluginResource\Pages;
 
 use App\Filament\Resources\PluginResource;
-use Filament\Actions;
 use Filament\Resources\Pages\EditRecord;
 
 class EditPlugin extends EditRecord

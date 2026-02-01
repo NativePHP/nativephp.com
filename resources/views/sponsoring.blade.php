@@ -63,31 +63,21 @@
             aria-labelledby="article-title"
         >
             <p>
-                NativePHP is an organization backed by a team of dedicated
+                NativePHP is managed by <b>Bifrost Technology, LLC</b> and backed by a team of dedicated
                 employees, maintainers, and contributors who commit their time
-                to ensure its continued development and improvement. Currently,
-                we operate two major projects: NativePHP for Mobile and
-                NativePHP for Desktop. Together, we can continue to grow
-                NativePHP and ensure it remains a valuable tool for the
-                community.
+                to ensure its continued development and improvement.
             </p>
 
-            <h2>NativePHP for Mobile</h2>
-
             <p>
-                If you're interested in NativePHP for Mobile, you can
-                <a href="/mobile">purchase a license</a>
-                , which is the best way you can support both projects of the
-                NativePHP organization. These funds are used to cover the costs
-                of development, infrastructure, and community initiatives for
-                both projects.
+                We operate two major open source projects &mdash; NativePHP for Desktop and
+                NativePHP for Mobile &mdash; as well as <a href="https://bifrost.nativephp.com">Bifrost</a>,
+                an optional paid SaaS that complements NativePHP by providing cloud-based build services.
             </p>
 
-            <h2>NativePHP for Desktop</h2>
+            <h2>Sponsorship</h2>
 
             <p>
-                NativePHP for Desktop is a free, open source project available
-                under an MIT license. We encourage and appreciate any
+                NativePHP is free and open source. We encourage and appreciate any
                 contributions to the project, whether it's through code,
                 documentation, spreading the word, or a financial sponsorship.
                 We provide the following ways of making an easy financial
@@ -105,7 +95,7 @@
             <p>
                 All contributions are welcome, at any amount, as a one-off
                 payment or on a recurring schedule. These funds are used to
-                support the maintainers of the Desktop project.
+                support the maintainers and cover development costs.
             </p>
 
             <p>

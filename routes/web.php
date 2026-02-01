@@ -37,10 +37,20 @@ Route::redirect('docs/1/getting-started/sponsoring', '/sponsor');
 Route::redirect('docs/desktop/1/getting-started/sponsoring', '/sponsor');
 Route::redirect('discord', 'https://discord.gg/nativephp');
 Route::redirect('bifrost', 'https://bifrost.nativephp.com');
-Route::redirect('mobile', 'pricing');
-Route::redirect('ios', 'pricing');
-Route::redirect('t-shirt', 'pricing');
-Route::redirect('tshirt', 'pricing');
+Route::redirect('mobile', 'blog/nativephp-for-mobile-is-now-free');
+Route::redirect('ios', 'blog/nativephp-for-mobile-is-now-free');
+Route::redirect('t-shirt', 'blog/nativephp-for-mobile-is-now-free');
+Route::redirect('tshirt', 'blog/nativephp-for-mobile-is-now-free');
+
+// Redirect mobile v3 core plugin docs to plugin directory pages
+Route::get('docs/mobile/3/plugins/core/{page}', function (string $page) {
+    return redirect("/plugins/nativephp/mobile-{$page}", 301);
+})->where('page', '[a-z-]+');
+
+// Redirect old mobile v3 API docs to plugin directory pages
+Route::get('docs/mobile/3/apis/{page}', function (string $page) {
+    return redirect("/plugins/nativephp/mobile-{$page}", 301);
+})->where('page', '[a-z-]+');
 
 // Webhook routes (must be outside web middleware for CSRF bypass)
 Route::post('opencollective/contribution', [OpenCollectiveWebhookController::class, 'handle'])->name('opencollective.webhook');
@@ -49,7 +59,7 @@ Route::post('opencollective/contribution', [OpenCollectiveWebhookController::cla
 Route::get('opencollective/claim', App\Livewire\ClaimDonationLicense::class)->name('opencollective.claim');
 
 Route::view('/', 'welcome')->name('welcome');
-Route::view('pricing', 'pricing')->name('pricing');
+Route::redirect('pricing', 'blog/nativephp-for-mobile-is-now-free')->name('pricing');
 Route::view('alt-pricing', 'alt-pricing')->name('alt-pricing')->middleware('signed');
 Route::view('wall-of-love', 'wall-of-love')->name('wall-of-love');
 Route::view('brand', 'brand')->name('brand');

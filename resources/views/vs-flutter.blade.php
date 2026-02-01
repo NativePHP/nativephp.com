@@ -920,7 +920,7 @@
                 </p>
                 <div class="mt-8 flex flex-col items-center justify-center gap-4 sm:flex-row">
                     <a
-                        href="{{ route('pricing') }}"
+                        href="/docs/mobile/getting-started/introduction"
                         class="inline-flex items-center gap-2 rounded-xl bg-emerald-600 px-8 py-4 font-semibold text-white transition hover:bg-emerald-700"
                     >
                         Get Started
@@ -936,12 +936,6 @@
                                 clip-rule="evenodd"
                             />
                         </svg>
-                    </a>
-                    <a
-                        href="{{ route('docs') }}"
-                        class="inline-flex items-center gap-2 rounded-xl bg-gray-200 px-8 py-4 font-semibold text-gray-700 transition hover:bg-gray-300 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700"
-                    >
-                        Read the Docs
                     </a>
                 </div>
             </div>

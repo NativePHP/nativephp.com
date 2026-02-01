@@ -116,6 +116,8 @@
         "
         class="font-poppins min-h-screen overflow-x-clip antialiased selection:bg-black selection:text-[#b4a9ff] dark:bg-[#050714] dark:text-white"
     >
+        <x-mobile-free-banner />
+
         <x-navigation-bar />
 
         <div

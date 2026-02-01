@@ -8,6 +8,9 @@
     {{-- Explainer --}}
     <x-home.explainer />
 
+    {{-- Announcements: Plugins, Bifrost, Mimi, Jump --}}
+    <x-home.announcements />
+
     {{-- Partners --}}
     <x-home.partners />
 

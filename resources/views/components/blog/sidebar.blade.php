@@ -13,7 +13,7 @@
     class="sticky top-20 right-0 hidden max-w-52 shrink-0 min-[850px]:block"
 >
     <a
-        href="{{ route('pricing') }}"
+        href="/docs/mobile"
         class="group relative z-0 grid place-items-center overflow-hidden rounded-2xl bg-gray-100 px-4 pt-10 text-center text-pretty transition duration-200 hover:bg-gray-200/70 hover:ring-1 hover:ring-black/60 dark:bg-mirage dark:hover:bg-haiti dark:hover:ring-cloud"
     >
         {{-- Logo --}}

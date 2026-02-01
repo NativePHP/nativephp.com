@@ -304,12 +304,11 @@
                         </svg>
                     </x-slot>
 
-                    <x-slot name="title">Ultra Licensing</x-slot>
+                    <x-slot name="title">Premium Plugins</x-slot>
 
                     <x-slot name="description">
-                        Receive an Ultra license for: unlimited published
-                        applications, unlimited developers, and team management
-                        tools.
+                        Receive free access to all first-party premium plugins
+                        for your team.
                     </x-slot>
                 </x-benefit-card>
 

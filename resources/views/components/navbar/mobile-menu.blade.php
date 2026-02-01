@@ -16,7 +16,7 @@
             })
         }
     "
-    class="relative z-40 lg:hidden"
+    class="relative z-40 xl:hidden"
 >
     <button
         type="button"
@@ -77,7 +77,6 @@
             >
                 @php
                     $isHomeActive = request()->routeIs('welcome*');
-                    $isPricingActive = request()->routeIs('pricing*');
                     $isDocsActive = request()->is('docs*');
                     $isBlogActive = request()->routeIs('blog*');
                     $isPartnersActive = request()->routeIs('partners*');
@@ -188,6 +187,29 @@
                     </a>
                 </div>
 
+                {{-- Sponsor Link --}}
+                <div>
+                    <a
+                        href="/sponsor"
+                        @class([
+                            'flex items-center gap-2 py-3 transition duration-200',
+                            'font-medium' => $isSponsorActive,
+                            'opacity-50 hover:translate-x-1 hover:opacity-100' => ! $isSponsorActive,
+                        ])
+                        aria-current="{{ $isSponsorActive ? 'page' : 'false' }}"
+                    >
+                        @if ($isSponsorActive)
+                            <x-icons.right-arrow
+                                class="size-4 shrink-0"
+                                aria-hidden="true"
+                                focusable="false"
+                            />
+                        @endif
+
+                        <div>Sponsor</div>
+                    </a>
+                </div>
+
                 {{-- Services Link --}}
                 <div>
                     <a
@@ -243,7 +265,7 @@
                                     />
                                 @endif
 
-                                <div>Log in</div>
+                                <div>Dashboard</div>
                             </a>
                         @endauth
                     </div>
@@ -336,6 +358,10 @@
                 class="h-0.5 w-full rounded-full bg-current opacity-5"
                 role="presentation"
             ></div>
+
+            <div class="mt-4 flex justify-center">
+                <x-bifrost-button />
+            </div>
 
             <nav
                 class="mx-auto mt-4 flex"

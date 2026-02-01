@@ -225,6 +225,14 @@
                     </li>
                     <li>
                         <a
+                            href="/sponsor"
+                            class="inline-block px-px py-1.5 transition duration-300 will-change-transform hover:translate-x-1 hover:text-gray-700 dark:hover:text-gray-300"
+                        >
+                            Sponsor
+                        </a>
+                    </li>
+                    <li>
+                        <a
                             href="{{ route('build-my-app') }}"
                             class="inline-block px-px py-1.5 transition duration-300 will-change-transform hover:translate-x-1 hover:text-gray-700 dark:hover:text-gray-300"
                         >
@@ -245,7 +253,7 @@
                                     href="{{ route('customer.login') }}"
                                     class="inline-block px-px py-1.5 transition duration-300 will-change-transform hover:translate-x-1 hover:text-gray-700 dark:hover:text-gray-300"
                                 >
-                                    License Management
+                                    Dashboard
                                 </a>
                         </li>
                     @endfeature
@@ -293,18 +301,10 @@
                     >
                         <li>
                             <a
-                                href="/docs/mobile/2/getting-started/introduction"
+                                href="/docs/mobile/3/getting-started/introduction"
                                 class="inline-block px-px py-1.5 transition duration-300 will-change-transform hover:translate-x-1 hover:text-gray-700 dark:hover:text-gray-300"
                             >
                                 Documentation
-                            </a>
-                        </li>
-                        <li>
-                            <a
-                                href="{{ route('pricing') }}"
-                                class="inline-block px-px py-1.5 transition duration-300 will-change-transform hover:translate-x-1 hover:text-gray-700 dark:hover:text-gray-300"
-                            >
-                                Pricing
                             </a>
                         </li>
                         <li>
@@ -323,16 +323,14 @@
                                 vs Flutter
                             </a>
                         </li>
-                        {{--
-                            <li>
+                        <li>
                             <a
-                            href="https://github.com/nativephp/mobile"
-                            class="inline-block px-px py-1.5 transition duration-300 will-change-transform hover:translate-x-1 hover:text-gray-700 dark:hover:text-gray-300"
+                                href="https://github.com/nativephp/mobile-air"
+                                class="inline-block px-px py-1.5 transition duration-300 will-change-transform hover:translate-x-1 hover:text-gray-700 dark:hover:text-gray-300"
                             >
-                            GitHub
+                                GitHub
                             </a>
-                            </li>
-                        --}}
+                        </li>
                     </ul>
                 </section>
 
@@ -356,14 +354,6 @@
                                 class="inline-block px-px py-1.5 transition duration-300 will-change-transform hover:translate-x-1 hover:text-gray-700 dark:hover:text-gray-300"
                             >
                                 Documentation
-                            </a>
-                        </li>
-                        <li>
-                            <a
-                                href="{{ route('sponsoring') }}"
-                                class="inline-block px-px py-1.5 transition duration-300 will-change-transform hover:translate-x-1 hover:text-gray-700 dark:hover:text-gray-300"
-                            >
-                                Sponsoring
                             </a>
                         </li>
                         <li>

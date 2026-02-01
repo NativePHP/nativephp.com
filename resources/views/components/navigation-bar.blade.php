@@ -75,7 +75,7 @@
 
             {{-- Desktop menu --}}
             <div
-                class="hidden items-center gap-2.5 text-sm lg:flex"
+                class="hidden items-center gap-2.5 text-sm xl:flex"
                 aria-label="Primary navigation"
             >
                 {{-- Link --}}
@@ -132,6 +132,25 @@
 
                 {{-- Link --}}
                 <a
+                    href="/sponsor"
+                    @class([
+                        'transition duration-200',
+                        'font-medium' => request()->routeIs('sponsoring'),
+                        'opacity-60 hover:opacity-100' => ! request()->routeIs('sponsoring'),
+                    ])
+                    aria-current="{{ request()->routeIs('sponsoring') ? 'page' : 'false' }}"
+                >
+                    Sponsor
+                </a>
+
+                {{-- Decorative circle --}}
+                <div
+                    class="size-[3px] rotate-45 rounded-xs bg-gray-400 transition duration-200 dark:opacity-60"
+                    aria-hidden="true"
+                ></div>
+
+                {{-- Link --}}
+                <a
                     href="{{ route('build-my-app') }}"
                     @class([
                         'transition duration-200',
@@ -164,7 +183,7 @@
                             href="{{ route('customer.login') }}"
                             class="opacity-60 transition duration-200 hover:opacity-100"
                         >
-                            Log in
+                            Dashboard
                         </a>
                     @endauth
                 @endfeature
