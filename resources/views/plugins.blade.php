@@ -120,7 +120,7 @@
                     {{-- Secondary CTA - Documentation --}}
                     <div class="w-full max-w-56">
                         <a
-                            href="/docs/mobile/2/plugins"
+                            href="/docs/mobile/plugins"
                             class="flex items-center justify-center gap-2.5 rounded-xl bg-gray-200 px-6 py-4 text-gray-800 transition duration-200 hover:bg-gray-300/80 dark:bg-slate-700/30 dark:text-white dark:hover:bg-slate-700/40"
                         >
                             <x-icons.docs class="size-5" />
@@ -609,7 +609,7 @@
 
                 <div class="mt-10">
                     <a
-                        href="/docs/mobile/2/plugins"
+                        href="/docs/mobile/plugins"
                         class="inline-flex items-center gap-2.5 rounded-xl bg-zinc-800 px-6 py-4 text-white transition duration-200 hover:bg-zinc-900 dark:bg-indigo-700/80 dark:hover:bg-indigo-900"
                     >
                         <x-icons.docs class="size-5" />
@@ -686,7 +686,7 @@
                     {{-- Secondary CTA --}}
                     <div class="w-full max-w-56">
                         <a
-                            href="/docs/mobile/2/plugins"
+                            href="/docs/mobile/plugins"
                             class="flex items-center justify-center gap-2.5 rounded-xl bg-gray-200 px-6 py-4 text-gray-800 transition duration-200 hover:bg-gray-300/80 dark:bg-slate-700/30 dark:text-white dark:hover:bg-slate-700/40"
                         >
                             <x-icons.docs class="size-5" />
