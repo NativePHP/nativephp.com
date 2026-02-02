@@ -2,11 +2,10 @@
 
 namespace App\Features;
 
-use Stephenjude\FilamentFeatureFlag\Traits\WithFeatureResolver;
-
 class ShowAuthButtons
 {
-    use WithFeatureResolver;
-
-    protected bool $defaultValue = true;
+    public function resolve(mixed $scope): bool
+    {
+        return true;
+    }
 }

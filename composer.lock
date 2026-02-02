@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "8c63c423e469ed2a8fef7a9f536e624c",
+    "content-hash": "0066b2c5e2724b89955a152b12a3eddb",
     "packages": [
         {
             "name": "anourvalar/eloquent-serialize",
@@ -7389,74 +7389,6 @@
                 }
             ],
             "time": "2025-11-24T16:17:28+00:00"
-        },
-        {
-            "name": "stephenjude/filament-feature-flags",
-            "version": "3.0.4",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/stephenjude/filament-feature-flags.git",
-                "reference": "98fe81567e27ccfabba205abf3f0059a9dde52ab"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/stephenjude/filament-feature-flags/zipball/98fe81567e27ccfabba205abf3f0059a9dde52ab",
-                "reference": "98fe81567e27ccfabba205abf3f0059a9dde52ab",
-                "shasum": ""
-            },
-            "require": {
-                "filament/filament": "^3.0",
-                "illuminate/contracts": "^10.0|^11.0|^12.0",
-                "laravel/pennant": "^1.10",
-                "php": "^8.2",
-                "spatie/laravel-package-tools": "^1.14.0"
-            },
-            "require-dev": {
-                "laravel/pint": "^1.0",
-                "nunomaduro/collision": "^7.8",
-                "orchestra/testbench": "^8.8|^10.0",
-                "pestphp/pest": "^2.20|^3.7",
-                "pestphp/pest-plugin-arch": "^2.0|^3.0",
-                "pestphp/pest-plugin-laravel": "^2.0|^3.1",
-                "pestphp/pest-plugin-livewire": "^2.1|^3.0"
-            },
-            "type": "library",
-            "extra": {
-                "laravel": {
-                    "providers": [
-                        "Stephenjude\\FilamentFeatureFlag\\FeatureFlagPluginServiceProvider"
-                    ]
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "Stephenjude\\FilamentFeatureFlag\\": "src/",
-                    "Stephenjude\\FilamentFeatureFlag\\Database\\Factories\\": "database/factories/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "stephenjude",
-                    "email": "stephenjudesuccess@gmail.com",
-                    "role": "Developer"
-                }
-            ],
-            "description": "Filament implementation of feature flags and segmentation with Laravel Pennant.",
-            "homepage": "https://github.com/stephenjude/filament-feature-flags",
-            "keywords": [
-                "filament-feature-flags",
-                "laravel",
-                "stephenjude"
-            ],
-            "support": {
-                "issues": "https://github.com/stephenjude/filament-feature-flags/issues",
-                "source": "https://github.com/stephenjude/filament-feature-flags/tree/3.0.4"
-            },
-            "time": "2025-08-12T08:13:54+00:00"
         },
         {
             "name": "stripe/stripe-php",
