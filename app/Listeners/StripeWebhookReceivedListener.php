@@ -6,6 +6,7 @@ use App\Jobs\CreateUserFromStripeCustomer;
 use App\Jobs\HandleInvoicePaidJob;
 use App\Jobs\RemoveDiscordMaxRoleJob;
 use App\Models\User;
+use App\Notifications\SubscriptionCancelled;
 use Exception;
 use Illuminate\Support\Facades\Log;
 use Laravel\Cashier\Cashier;
@@ -86,6 +87,12 @@ class StripeWebhookReceivedListener
         }
 
         $status = $subscription['status'];
+        $previousAttributes = $event->payload['data']['previous_attributes'] ?? [];
+
+        // Send cancellation email if status just changed to canceled
+        if ($status === 'canceled' && isset($previousAttributes['status'])) {
+            $user->notify(new SubscriptionCancelled);
+        }
 
         if (in_array($status, ['canceled', 'unpaid', 'past_due', 'incomplete_expired'])) {
             $this->removeDiscordRoleIfNoMaxLicense($user);
