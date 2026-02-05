@@ -244,7 +244,7 @@
                             @php
                                 $isLegacyLicense = $license->isLegacy();
                                 $daysUntilExpiry = $license->expires_at ? $license->expires_at->diffInDays(now()) : null;
-                                $needsRenewal = $isLegacyLicense && $daysUntilExpiry !== null && $daysUntilExpiry <= 30 && !$license->expires_at->isPast();
+                                $needsRenewal = $isLegacyLicense && $daysUntilExpiry !== null && !$license->expires_at->isPast();
                             @endphp
                             <li class="{{ $needsRenewal ? 'bg-blue-50 dark:bg-blue-900/20' : '' }}">
                                 <a href="{{ route('customer.licenses.show', $license->key) }}" class="block hover:bg-gray-50 dark:hover:bg-gray-700 {{ $needsRenewal ? 'hover:bg-blue-100 dark:hover:bg-blue-900/30' : '' }}">

@@ -159,7 +159,7 @@
             @php
                 $isLegacyLicense = $license->isLegacy();
                 $daysUntilExpiry = $license->expires_at ? $license->expires_at->diffInDays(now()) : null;
-                $needsRenewal = $isLegacyLicense && $daysUntilExpiry !== null && $daysUntilExpiry <= 30;
+                $needsRenewal = $isLegacyLicense && $daysUntilExpiry !== null;
             @endphp
 
             @if($needsRenewal && !$license->expires_at->isPast())
