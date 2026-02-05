@@ -107,9 +107,13 @@
                                                     <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
                                                         {{ $item->pluginBundle->plugins->count() }} plugins included
                                                     </p>
-                                                    @if ($item->pluginBundle->discount_percent > 0)
+                                                    @php
+                                                        $cartBundleDiscount = $item->pluginBundle->getDiscountPercentForUser(auth()->user());
+                                                        $cartBundleSavings = $item->pluginBundle->getFormattedSavingsForUser(auth()->user());
+                                                    @endphp
+                                                    @if ($cartBundleDiscount > 0)
                                                         <p class="mt-1 text-xs text-green-600 dark:text-green-400">
-                                                            Save {{ $item->pluginBundle->discount_percent }}% ({{ $item->pluginBundle->formatted_savings }})
+                                                            Save {{ $cartBundleDiscount }}% ({{ $cartBundleSavings }})
                                                         </p>
                                                     @endif
                                                 </div>
@@ -278,16 +282,20 @@
                                         <p class="mt-0.5 text-xs text-amber-700 dark:text-amber-300">
                                             {{ $bundle->plugins->count() }} plugins
                                         </p>
-                                        @if ($bundle->discount_percent > 0)
+                                        @php
+                                            $upgradeBundleDiscount = $bundle->getDiscountPercentForUser(auth()->user());
+                                            $upgradeBundlePrice = $bundle->getFormattedPriceForUser(auth()->user());
+                                        @endphp
+                                        @if ($upgradeBundleDiscount > 0)
                                             <p class="mt-1 text-xs font-medium text-green-700 dark:text-green-400">
-                                                Save {{ $bundle->discount_percent }}%
+                                                Save {{ $upgradeBundleDiscount }}%
                                             </p>
                                         @endif
                                     </div>
                                 </div>
                                 <div class="mt-3 flex items-center justify-between">
                                     <span class="text-sm font-bold text-amber-900 dark:text-amber-200">
-                                        {{ $bundle->formatted_price }}
+                                        {{ $upgradeBundlePrice }}
                                     </span>
                                     <a href="{{ route('bundles.show', $bundle) }}" class="text-xs font-medium text-amber-700 hover:text-amber-800 dark:text-amber-400 dark:hover:text-amber-300">
                                         View bundle →

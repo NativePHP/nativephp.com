@@ -23,12 +23,16 @@ class BundleController extends Controller
 
         $bestPrice = $bundle->getBestPriceForUser($user);
         $regularPrice = $bundle->getRegularPrice();
+        $priceAmount = $bestPrice ? $bestPrice->amount : $bundle->price;
 
         return view('bundle-show', [
             'bundle' => $bundle,
             'bestPrice' => $bestPrice,
             'regularPrice' => $regularPrice,
             'hasDiscount' => $bestPrice && $regularPrice && $bestPrice->id !== $regularPrice->id,
+            'discountPercent' => $bundle->getDiscountPercentFor($priceAmount),
+            'savings' => $bundle->getSavingsFor($priceAmount),
+            'formattedSavings' => $bundle->getFormattedSavingsFor($priceAmount),
         ]);
     }
 }

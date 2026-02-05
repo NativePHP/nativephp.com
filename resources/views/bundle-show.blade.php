@@ -156,19 +156,12 @@
                     <div class="text-center">
                         <p class="text-sm font-medium text-gray-600 dark:text-gray-400">Bundle Price</p>
                         @if ($bestPrice)
+                            <p class="mt-1 text-4xl font-bold text-gray-900 dark:text-white">
+                                ${{ number_format($bestPrice->amount / 100) }}
+                            </p>
                             @if ($hasDiscount && $regularPrice)
-                                <p class="mt-1 text-lg text-gray-400 line-through dark:text-gray-500">
-                                    ${{ number_format($regularPrice->amount / 100) }}
-                                </p>
-                                <p class="text-4xl font-bold text-gray-900 dark:text-white">
-                                    ${{ number_format($bestPrice->amount / 100) }}
-                                </p>
                                 <p class="mt-1 text-xs font-medium text-green-600 dark:text-green-400">
                                     {{ $bestPrice->tier->label() }} pricing applied
-                                </p>
-                            @else
-                                <p class="mt-1 text-4xl font-bold text-gray-900 dark:text-white">
-                                    ${{ number_format($bestPrice->amount / 100) }}
                                 </p>
                             @endif
                         @else
@@ -176,54 +169,45 @@
                                 {{ $bundle->formatted_price }}
                             </p>
                         @endif
-                        @if ($bundle->discount_percent > 0)
+                        @if ($discountPercent > 0)
                             <div class="mt-2">
                                 <span class="text-lg text-gray-500 line-through dark:text-gray-400">
                                     {{ $bundle->formatted_retail_value }}
                                 </span>
                             </div>
                             <p class="mt-1 text-sm font-medium text-green-600 dark:text-green-400">
-                                Save {{ $bundle->formatted_savings }} (~{{ $bundle->discount_percent }}% off)
+                                Save {{ $formattedSavings }} (~{{ $discountPercent }}% off)
                             </p>
                         @endif
                         <p class="mt-2 text-xs text-gray-500 dark:text-gray-400">One-time purchase</p>
                     </div>
 
                     <div class="mt-6">
-                        @auth
-                            @if ($bundle->isOwnedBy(auth()->user()))
+                        @if (auth()->check() && $bundle->isOwnedBy(auth()->user()))
+                            <button
+                                type="button"
+                                disabled
+                                class="flex w-full items-center justify-center gap-2 rounded-xl bg-gray-300 px-4 py-3 text-sm font-semibold text-gray-500 dark:bg-gray-600 dark:text-gray-400"
+                            >
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                                </svg>
+                                You own all plugins
+                            </button>
+                        @else
+                            <form action="{{ route('cart.bundle.add', $bundle) }}" method="POST">
+                                @csrf
                                 <button
-                                    type="button"
-                                    disabled
-                                    class="flex w-full items-center justify-center gap-2 rounded-xl bg-gray-300 px-4 py-3 text-sm font-semibold text-gray-500 dark:bg-gray-600 dark:text-gray-400"
+                                    type="submit"
+                                    class="flex w-full items-center justify-center gap-2 rounded-xl bg-amber-600 px-4 py-3 text-sm font-semibold text-white shadow-lg shadow-amber-500/25 transition hover:bg-amber-700 hover:shadow-amber-500/40 dark:shadow-amber-500/10"
                                 >
                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5">
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 0 0-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 0 0-16.536-1.84M7.5 14.25 5.106 5.272M6 20.25a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Zm12.75 0a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z" />
                                     </svg>
-                                    You own all plugins
+                                    Add Bundle to Cart
                                 </button>
-                            @else
-                                <form action="{{ route('cart.bundle.add', $bundle) }}" method="POST">
-                                    @csrf
-                                    <button
-                                        type="submit"
-                                        class="flex w-full items-center justify-center gap-2 rounded-xl bg-amber-600 px-4 py-3 text-sm font-semibold text-white shadow-lg shadow-amber-500/25 transition hover:bg-amber-700 hover:shadow-amber-500/40 dark:shadow-amber-500/10"
-                                    >
-                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5">
-                                            <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 0 0-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 0 0-16.536-1.84M7.5 14.25 5.106 5.272M6 20.25a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Zm12.75 0a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z" />
-                                        </svg>
-                                        Add Bundle to Cart
-                                    </button>
-                                </form>
-                            @endif
-                        @else
-                            <a
-                                href="{{ route('customer.login', ['return' => route('bundles.show', $bundle)]) }}"
-                                class="flex w-full items-center justify-center gap-2 rounded-xl bg-amber-600 px-4 py-3 text-sm font-semibold text-white shadow-lg shadow-amber-500/25 transition hover:bg-amber-700 hover:shadow-amber-500/40 dark:shadow-amber-500/10"
-                            >
-                                Log in to Purchase
-                            </a>
-                        @endauth
+                            </form>
+                        @endif
                     </div>
                 </div>
             </aside>

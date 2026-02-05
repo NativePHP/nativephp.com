@@ -160,11 +160,16 @@ class Plugin extends Model
     }
 
     /**
+     * Get the active price, preferring the Regular tier for consistency.
+     *
      * @return HasOne<PluginPrice>
      */
     public function activePrice(): HasOne
     {
-        return $this->hasOne(PluginPrice::class)->where('is_active', true)->latest();
+        return $this->hasOne(PluginPrice::class)
+            ->where('is_active', true)
+            ->orderByRaw("CASE WHEN tier = 'regular' THEN 0 ELSE 1 END")
+            ->latest();
     }
 
     /**

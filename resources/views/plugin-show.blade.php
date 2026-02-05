@@ -311,10 +311,14 @@
                                                 <p class="truncate text-sm font-medium text-gray-900 group-hover:text-amber-700 dark:text-white dark:group-hover:text-amber-400">
                                                     {{ $bundle->name }}
                                                 </p>
+                                                @php
+                                                    $bundlePrice = $bundle->getFormattedPriceForUser(auth()->user());
+                                                    $bundleDiscount = $bundle->getDiscountPercentForUser(auth()->user());
+                                                @endphp
                                                 <p class="text-xs text-gray-500 dark:text-gray-400">
-                                                    {{ $bundle->formatted_price }}
-                                                    @if ($bundle->discount_percent > 0)
-                                                        <span class="text-green-600 dark:text-green-400">· Save {{ $bundle->discount_percent }}%</span>
+                                                    {{ $bundlePrice }}
+                                                    @if ($bundleDiscount > 0)
+                                                        <span class="text-green-600 dark:text-green-400">· Save {{ $bundleDiscount }}%</span>
                                                     @endif
                                                 </p>
                                             </div>

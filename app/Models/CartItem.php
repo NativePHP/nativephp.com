@@ -66,6 +66,8 @@ class CartItem extends Model
 
     public function hasPriceChanged(): bool
     {
+        $user = $this->cart->user;
+
         if ($this->isBundle()) {
             $bundle = $this->pluginBundle;
 
@@ -73,10 +75,16 @@ class CartItem extends Model
                 return true;
             }
 
-            return $bundle->price !== $this->bundle_price_at_addition;
+            $currentPrice = $bundle->getBestPriceForUser($user);
+
+            if (! $currentPrice) {
+                return true;
+            }
+
+            return $currentPrice->amount !== $this->bundle_price_at_addition;
         }
 
-        $currentPrice = $this->plugin->activePrice;
+        $currentPrice = $this->plugin->getBestPriceForUser($user);
 
         if (! $currentPrice) {
             return true;

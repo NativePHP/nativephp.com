@@ -1,5 +1,11 @@
 @props(['bundle'])
 
+@php
+    $user = auth()->user();
+    $formattedPrice = $bundle->getFormattedPriceForUser($user);
+    $discountPercent = $bundle->getDiscountPercentForUser($user);
+@endphp
+
 <a
     href="{{ route('bundles.show', $bundle) }}"
     class="flex flex-col rounded-2xl border border-gray-200 bg-white p-6 shadow-sm transition duration-200 hover:shadow-md hover:border-amber-300 dark:border-gray-700 dark:bg-slate-800/50 dark:hover:border-amber-600"
@@ -42,18 +48,18 @@
     <div class="mt-4 flex items-end justify-between">
         <div>
             <span class="text-lg font-bold text-gray-900 dark:text-white">
-                {{ $bundle->formatted_price }}
+                {{ $formattedPrice }}
             </span>
-            @if ($bundle->discount_percent > 0)
+            @if ($discountPercent > 0)
                 <span class="ml-2 text-sm text-gray-500 line-through dark:text-gray-400">
                     {{ $bundle->formatted_retail_value }}
                 </span>
             @endif
         </div>
 
-        @if ($bundle->discount_percent > 0)
+        @if ($discountPercent > 0)
             <span class="inline-flex items-center rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-medium text-green-800 dark:bg-green-900/30 dark:text-green-400">
-                Save {{ $bundle->discount_percent }}%
+                Save {{ $discountPercent }}%
             </span>
         @endif
     </div>

@@ -316,11 +316,11 @@ class User extends Authenticatable implements FilamentUser
 
     /**
      * Check if user should see the free plugins offer banner.
-     * Offer expires on 28th February 2026.
+     * Offer expires on 31st May 2026.
      */
     public function shouldSeeFreePluginsOffer(): bool
     {
-        $offerExpiresAt = '2026-02-28 23:59:59';
+        $offerExpiresAt = '2026-05-31 23:59:59';
 
         if (now()->gt($offerExpiresAt)) {
             return false;

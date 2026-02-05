@@ -51,11 +51,16 @@ class PluginBundle extends Model
     }
 
     /**
+     * Get the active price, preferring the Regular tier for consistency.
+     *
      * @return HasOne<BundlePrice>
      */
     public function activePrice(): HasOne
     {
-        return $this->hasOne(BundlePrice::class)->where('is_active', true)->latest();
+        return $this->hasOne(BundlePrice::class)
+            ->where('is_active', true)
+            ->orderByRaw("CASE WHEN tier = 'regular' THEN 0 ELSE 1 END")
+            ->latest();
     }
 
     /**
@@ -136,12 +141,13 @@ class PluginBundle extends Model
 
     /**
      * Calculate the total retail value of all plugins in the bundle.
+     * Uses regular tier prices for comparison purposes.
      */
     public function getRetailValueAttribute(): int
     {
         return $this->plugins
-            ->filter(fn (Plugin $plugin) => $plugin->activePrice)
-            ->sum(fn (Plugin $plugin) => $plugin->activePrice->amount);
+            ->filter(fn (Plugin $plugin) => $plugin->getRegularPrice())
+            ->sum(fn (Plugin $plugin) => $plugin->getRegularPrice()->amount);
     }
 
     /**
@@ -150,6 +156,18 @@ class PluginBundle extends Model
     public function getFormattedRetailValueAttribute(): string
     {
         return '$'.number_format($this->retail_value / 100, 2);
+    }
+
+    /**
+     * Get formatted bundle price for a user's best available tier.
+     */
+    public function getFormattedPriceForUser(?User $user): string
+    {
+        $price = $this->getBestPriceForUser($user);
+
+        $amount = $price ? $price->amount : $this->price;
+
+        return '$'.number_format($amount / 100, 2);
     }
 
     /**
@@ -165,9 +183,9 @@ class PluginBundle extends Model
     }
 
     /**
-     * Calculate the discount percentage.
+     * Calculate the discount percentage for a given price amount.
      */
-    public function getDiscountPercentAttribute(): int
+    public function getDiscountPercentFor(int $priceAmount): int
     {
         $retailValue = $this->retail_value;
 
@@ -175,25 +193,79 @@ class PluginBundle extends Model
             return 0;
         }
 
-        $price = $this->getRegularPrice();
-        $amount = $price ? $price->amount : $this->price;
-
-        return (int) round(($retailValue - $amount) / $retailValue * 100);
+        return (int) round(($retailValue - $priceAmount) / $retailValue * 100);
     }
 
     /**
-     * Get the savings amount in cents.
+     * Calculate the discount percentage for a user's best price.
+     */
+    public function getDiscountPercentForUser(?User $user): int
+    {
+        $price = $this->getBestPriceForUser($user);
+        $amount = $price ? $price->amount : $this->price;
+
+        return $this->getDiscountPercentFor($amount);
+    }
+
+    /**
+     * Calculate the discount percentage (uses regular price for backwards compatibility).
+     */
+    public function getDiscountPercentAttribute(): int
+    {
+        $price = $this->getRegularPrice();
+        $amount = $price ? $price->amount : $this->price;
+
+        return $this->getDiscountPercentFor($amount);
+    }
+
+    /**
+     * Get the savings amount in cents for a given price amount.
+     */
+    public function getSavingsFor(int $priceAmount): int
+    {
+        return max(0, $this->retail_value - $priceAmount);
+    }
+
+    /**
+     * Get the savings amount in cents for a user's best price.
+     */
+    public function getSavingsForUser(?User $user): int
+    {
+        $price = $this->getBestPriceForUser($user);
+        $amount = $price ? $price->amount : $this->price;
+
+        return $this->getSavingsFor($amount);
+    }
+
+    /**
+     * Get the savings amount in cents (uses regular price for backwards compatibility).
      */
     public function getSavingsAttribute(): int
     {
         $price = $this->getRegularPrice();
         $amount = $price ? $price->amount : $this->price;
 
-        return max(0, $this->retail_value - $amount);
+        return $this->getSavingsFor($amount);
     }
 
     /**
-     * Get formatted savings.
+     * Get formatted savings for a given amount.
+     */
+    public function getFormattedSavingsFor(int $priceAmount): string
+    {
+        return '$'.number_format($this->getSavingsFor($priceAmount) / 100, 2);
+    }
+
+    /**
+     * Get formatted savings for a user's best price.
+     */
+    public function getFormattedSavingsForUser(?User $user): string
+    {
+        return '$'.number_format($this->getSavingsForUser($user) / 100, 2);
+    }
+
+    /**
+     * Get formatted savings (uses regular price for backwards compatibility).
      */
     public function getFormattedSavingsAttribute(): string
     {
@@ -255,11 +327,11 @@ class PluginBundle extends Model
         }
 
         $runningTotal = 0;
-        $plugins = $this->plugins->filter(fn (Plugin $p) => $p->activePrice)->values();
+        $plugins = $this->plugins->filter(fn (Plugin $p) => $p->getRegularPrice())->values();
         $lastIndex = $plugins->count() - 1;
 
         foreach ($plugins as $index => $plugin) {
-            $pluginRetail = $plugin->activePrice->amount;
+            $pluginRetail = $plugin->getRegularPrice()->amount;
 
             // For last plugin, allocate remainder to avoid rounding issues
             if ($index === $lastIndex) {

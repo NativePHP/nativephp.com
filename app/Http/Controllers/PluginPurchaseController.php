@@ -25,22 +25,22 @@ class PluginPurchaseController extends Controller
         }
 
         $user = $request->user();
-        $activePrice = $plugin->activePrice;
+        $bestPrice = $plugin->getBestPriceForUser($user);
 
-        if (! $activePrice) {
+        if (! $bestPrice) {
             return redirect()->route('plugins.show', $plugin)
                 ->with('error', 'This plugin is not available for purchase.');
         }
 
         $discountPercent = $this->grandfatheringService->getApplicableDiscount($user, $plugin->is_official);
-        $discountedAmount = $activePrice->getDiscountedAmount($discountPercent);
+        $discountedAmount = $bestPrice->getDiscountedAmount($discountPercent);
 
         return view('plugins.purchase', [
             'plugin' => $plugin,
-            'price' => $activePrice,
+            'price' => $bestPrice,
             'discountPercent' => $discountPercent,
             'discountedAmount' => $discountedAmount,
-            'originalAmount' => $activePrice->amount,
+            'originalAmount' => $bestPrice->amount,
         ]);
     }
 
@@ -52,7 +52,7 @@ class PluginPurchaseController extends Controller
             return redirect()->route('plugins.show', $plugin);
         }
 
-        if (! $plugin->activePrice) {
+        if (! $plugin->getBestPriceForUser($user)) {
             return redirect()->route('plugins.show', $plugin)
                 ->with('error', 'This plugin is not available for purchase.');
         }
