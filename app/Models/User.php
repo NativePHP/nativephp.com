@@ -112,19 +112,6 @@ class User extends Authenticatable implements FilamentUser
     }
 
     /**
-     * Check if user has an active Pro or Max license (direct only, not sub-licenses).
-     * Used to determine plugin discount eligibility.
-     */
-    public function hasActiveProOrMaxLicense(): bool
-    {
-        return $this->licenses()
-            ->whereIn('policy_name', ['pro', 'max'])
-            ->where('is_suspended', false)
-            ->whereActive()
-            ->exists();
-    }
-
-    /**
      * Check if user was an Early Access Program customer.
      * EAP customers purchased before June 1, 2025.
      */
@@ -145,7 +132,7 @@ class User extends Authenticatable implements FilamentUser
     {
         $tiers = [\App\Enums\PriceTier::Regular];
 
-        if ($this->hasActiveProOrMaxLicense()) {
+        if ($this->subscribed()) {
             $tiers[] = \App\Enums\PriceTier::Subscriber;
         }
 

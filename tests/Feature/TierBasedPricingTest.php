@@ -13,6 +13,7 @@ use App\Models\PluginPrice;
 use App\Models\User;
 use App\Services\CartService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Laravel\Cashier\Subscription;
 use Laravel\Pennant\Feature;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
@@ -21,11 +22,32 @@ class TierBasedPricingTest extends TestCase
 {
     use RefreshDatabase;
 
+    // Test price IDs that match the Subscription enum's fromStripePriceId mapping
+    private const MINI_PRICE_ID = 'price_test_mini';
+
+    private const PRO_PRICE_ID = 'price_1RoZeVAyFo6rlwXqtnOViUCf';
+
+    private const MAX_PRICE_ID = 'price_1RoZk0AyFo6rlwXqjkLj4hZ0';
+
     protected function setUp(): void
     {
         parent::setUp();
 
         Feature::define(ShowPlugins::class, true);
+
+        // Set config for mini price ID used in tests
+        config(['subscriptions.plans.mini.stripe_price_id' => self::MINI_PRICE_ID]);
+    }
+
+    /**
+     * Create an active subscription for a user.
+     */
+    private function createSubscription(User $user, string $priceId): Subscription
+    {
+        return Subscription::factory()
+            ->for($user)
+            ->active()
+            ->create(['stripe_price' => $priceId]);
     }
 
     // ========================================
@@ -46,20 +68,14 @@ class TierBasedPricingTest extends TestCase
     }
 
     #[Test]
-    public function user_with_active_pro_license_qualifies_for_subscriber_tier(): void
+    public function user_with_active_pro_subscription_qualifies_for_subscriber_tier(): void
     {
         $user = User::factory()->create();
-        License::factory()
-            ->for($user)
-            ->pro()
-            ->active()
-            ->withoutSubscriptionItem()
-            ->afterEap()
-            ->create();
+        $this->createSubscription($user, self::PRO_PRICE_ID);
 
         $tiers = $user->getEligiblePriceTiers();
 
-        $this->assertTrue($user->hasActiveProOrMaxLicense());
+        $this->assertTrue($user->subscribed());
         $this->assertFalse($user->isEapCustomer());
         $this->assertContains(PriceTier::Regular, $tiers);
         $this->assertContains(PriceTier::Subscriber, $tiers);
@@ -67,36 +83,41 @@ class TierBasedPricingTest extends TestCase
     }
 
     #[Test]
-    public function user_with_active_max_license_qualifies_for_subscriber_tier(): void
+    public function user_with_active_max_subscription_qualifies_for_subscriber_tier(): void
     {
         $user = User::factory()->create();
-        License::factory()
-            ->for($user)
-            ->max()
-            ->active()
-            ->withoutSubscriptionItem()
-            ->afterEap()
-            ->create();
+        $this->createSubscription($user, self::MAX_PRICE_ID);
 
         $tiers = $user->getEligiblePriceTiers();
 
-        $this->assertTrue($user->hasActiveProOrMaxLicense());
+        $this->assertTrue($user->subscribed());
         $this->assertFalse($user->isEapCustomer());
         $this->assertContains(PriceTier::Subscriber, $tiers);
     }
 
     #[Test]
-    public function user_with_mini_license_does_not_qualify_for_subscriber_tier(): void
+    public function user_with_mini_subscription_qualifies_for_subscriber_tier(): void
     {
         $user = User::factory()->create();
-        License::factory()
-            ->for($user)
-            ->mini()
-            ->active()
-            ->withoutSubscriptionItem()
-            ->create();
+        $this->createSubscription($user, self::MINI_PRICE_ID);
 
-        $this->assertFalse($user->hasActiveProOrMaxLicense());
+        $this->assertTrue($user->subscribed());
+
+        $tiers = $user->getEligiblePriceTiers();
+
+        $this->assertContains(PriceTier::Subscriber, $tiers);
+    }
+
+    #[Test]
+    public function user_with_canceled_subscription_does_not_qualify_for_subscriber_tier(): void
+    {
+        $user = User::factory()->create();
+        Subscription::factory()
+            ->for($user)
+            ->canceled()
+            ->create(['stripe_price' => self::PRO_PRICE_ID]);
+
+        $this->assertFalse($user->subscribed());
 
         $tiers = $user->getEligiblePriceTiers();
 
@@ -104,35 +125,15 @@ class TierBasedPricingTest extends TestCase
     }
 
     #[Test]
-    public function user_with_suspended_pro_license_does_not_qualify_for_subscriber_tier(): void
+    public function user_with_past_due_subscription_does_not_qualify_for_subscriber_tier(): void
     {
         $user = User::factory()->create();
-        License::factory()
+        Subscription::factory()
             ->for($user)
-            ->pro()
-            ->suspended()
-            ->withoutSubscriptionItem()
-            ->create();
+            ->pastDue()
+            ->create(['stripe_price' => self::PRO_PRICE_ID]);
 
-        $this->assertFalse($user->hasActiveProOrMaxLicense());
-
-        $tiers = $user->getEligiblePriceTiers();
-
-        $this->assertNotContains(PriceTier::Subscriber, $tiers);
-    }
-
-    #[Test]
-    public function user_with_expired_pro_license_does_not_qualify_for_subscriber_tier(): void
-    {
-        $user = User::factory()->create();
-        License::factory()
-            ->for($user)
-            ->pro()
-            ->expired()
-            ->withoutSubscriptionItem()
-            ->create();
-
-        $this->assertFalse($user->hasActiveProOrMaxLicense());
+        $this->assertFalse($user->subscribed());
 
         $tiers = $user->getEligiblePriceTiers();
 
@@ -159,12 +160,14 @@ class TierBasedPricingTest extends TestCase
     }
 
     #[Test]
-    public function user_with_pro_license_from_eap_period_qualifies_for_both_tiers(): void
+    public function user_with_subscription_and_eap_license_qualifies_for_both_tiers(): void
     {
         $user = User::factory()->create();
+        $this->createSubscription($user, self::PRO_PRICE_ID);
+        // EAP eligibility is still determined by licenses table
         License::factory()
             ->for($user)
-            ->pro()
+            ->mini()
             ->active()
             ->eapEligible()
             ->withoutSubscriptionItem()
@@ -172,7 +175,7 @@ class TierBasedPricingTest extends TestCase
 
         $tiers = $user->getEligiblePriceTiers();
 
-        $this->assertTrue($user->hasActiveProOrMaxLicense());
+        $this->assertTrue($user->subscribed());
         $this->assertTrue($user->isEapCustomer());
         $this->assertContains(PriceTier::Regular, $tiers);
         $this->assertContains(PriceTier::Subscriber, $tiers);
@@ -219,13 +222,7 @@ class TierBasedPricingTest extends TestCase
     public function subscriber_sees_subscriber_plugin_price(): void
     {
         $user = User::factory()->create();
-        License::factory()
-            ->for($user)
-            ->pro()
-            ->active()
-            ->withoutSubscriptionItem()
-            ->afterEap()
-            ->create();
+        $this->createSubscription($user, self::PRO_PRICE_ID);
 
         $plugin = Plugin::factory()->approved()->paid()->create(['is_active' => true]);
         PluginPrice::factory()->regular()->amount(2999)->create(['plugin_id' => $plugin->id]);
@@ -267,6 +264,7 @@ class TierBasedPricingTest extends TestCase
     public function user_qualifying_for_multiple_tiers_sees_lowest_plugin_price(): void
     {
         $user = User::factory()->create();
+        $this->createSubscription($user, self::PRO_PRICE_ID);
         License::factory()
             ->for($user)
             ->pro()
@@ -290,6 +288,7 @@ class TierBasedPricingTest extends TestCase
     public function subscriber_sees_subscriber_price_when_it_is_lower_than_eap(): void
     {
         $user = User::factory()->create();
+        $this->createSubscription($user, self::PRO_PRICE_ID);
         License::factory()
             ->for($user)
             ->pro()
@@ -313,13 +312,7 @@ class TierBasedPricingTest extends TestCase
     public function plugin_falls_back_to_regular_price_when_user_tier_not_available(): void
     {
         $user = User::factory()->create();
-        License::factory()
-            ->for($user)
-            ->pro()
-            ->active()
-            ->withoutSubscriptionItem()
-            ->afterEap()
-            ->create();
+        $this->createSubscription($user, self::PRO_PRICE_ID);
 
         $plugin = Plugin::factory()->approved()->paid()->create(['is_active' => true]);
         PluginPrice::factory()->regular()->amount(2999)->create(['plugin_id' => $plugin->id]);
@@ -399,13 +392,7 @@ class TierBasedPricingTest extends TestCase
     public function subscriber_sees_subscriber_bundle_price(): void
     {
         $user = User::factory()->create();
-        License::factory()
-            ->for($user)
-            ->max()
-            ->active()
-            ->withoutSubscriptionItem()
-            ->afterEap()
-            ->create();
+        $this->createSubscription($user, self::MAX_PRICE_ID);
 
         $bundle = PluginBundle::factory()->active()->create();
         BundlePrice::factory()->regular()->amount(9999)->create(['plugin_bundle_id' => $bundle->id]);
@@ -447,9 +434,10 @@ class TierBasedPricingTest extends TestCase
     public function user_qualifying_for_multiple_tiers_sees_lowest_bundle_price(): void
     {
         $user = User::factory()->create();
+        $this->createSubscription($user, self::MAX_PRICE_ID);
         License::factory()
             ->for($user)
-            ->max()
+            ->mini()
             ->active()
             ->eapEligible()
             ->withoutSubscriptionItem()
@@ -521,13 +509,7 @@ class TierBasedPricingTest extends TestCase
     public function cart_adds_plugin_at_subscriber_price_for_pro_user(): void
     {
         $user = User::factory()->create();
-        License::factory()
-            ->for($user)
-            ->pro()
-            ->active()
-            ->withoutSubscriptionItem()
-            ->afterEap()
-            ->create();
+        $this->createSubscription($user, self::PRO_PRICE_ID);
         $cart = Cart::factory()->for($user)->create();
 
         $plugin = Plugin::factory()->approved()->paid()->create(['is_active' => true]);
@@ -590,13 +572,7 @@ class TierBasedPricingTest extends TestCase
     public function cart_adds_bundle_at_subscriber_price_for_max_user(): void
     {
         $user = User::factory()->create();
-        License::factory()
-            ->for($user)
-            ->max()
-            ->active()
-            ->withoutSubscriptionItem()
-            ->afterEap()
-            ->create();
+        $this->createSubscription($user, self::MAX_PRICE_ID);
         $cart = Cart::factory()->for($user)->create();
 
         $plugin = Plugin::factory()->approved()->paid()->create(['is_active' => true]);
@@ -654,13 +630,7 @@ class TierBasedPricingTest extends TestCase
         $item = $cartService->addPlugin($cart, $plugin);
         $this->assertEquals(2999, $item->price_at_addition);
 
-        License::factory()
-            ->for($user)
-            ->pro()
-            ->active()
-            ->withoutSubscriptionItem()
-            ->afterEap()
-            ->create();
+        $this->createSubscription($user, self::PRO_PRICE_ID);
 
         PluginPrice::factory()->subscriber()->amount(1999)->create(['plugin_id' => $plugin->id]);
 
@@ -680,13 +650,7 @@ class TierBasedPricingTest extends TestCase
     public function cart_exchange_for_bundle_uses_correct_tier_price(): void
     {
         $user = User::factory()->create();
-        License::factory()
-            ->for($user)
-            ->pro()
-            ->active()
-            ->withoutSubscriptionItem()
-            ->afterEap()
-            ->create();
+        $this->createSubscription($user, self::PRO_PRICE_ID);
         $cart = Cart::factory()->for($user)->create();
 
         $plugin1 = Plugin::factory()->approved()->paid()->create(['is_active' => true]);
@@ -716,16 +680,10 @@ class TierBasedPricingTest extends TestCase
     // ========================================
 
     #[Test]
-    public function subscriber_who_loses_license_sees_regular_price(): void
+    public function subscriber_who_cancels_subscription_sees_regular_price(): void
     {
         $user = User::factory()->create();
-        $license = License::factory()
-            ->for($user)
-            ->pro()
-            ->active()
-            ->withoutSubscriptionItem()
-            ->afterEap()
-            ->create();
+        $subscription = $this->createSubscription($user, self::PRO_PRICE_ID);
 
         $plugin = Plugin::factory()->approved()->paid()->create(['is_active' => true]);
         PluginPrice::factory()->regular()->amount(2999)->create(['plugin_id' => $plugin->id]);
@@ -733,7 +691,7 @@ class TierBasedPricingTest extends TestCase
 
         $this->assertEquals(1999, $plugin->getBestPriceForUser($user)->amount);
 
-        $license->update(['is_suspended' => true]);
+        $subscription->update(['stripe_status' => 'canceled', 'ends_at' => now()]);
         $user->refresh();
 
         $this->assertEquals(2999, $plugin->getBestPriceForUser($user)->amount);
@@ -778,13 +736,7 @@ class TierBasedPricingTest extends TestCase
     public function subscriber_can_access_plugin_with_only_subscriber_tier_price(): void
     {
         $user = User::factory()->create();
-        License::factory()
-            ->for($user)
-            ->pro()
-            ->active()
-            ->withoutSubscriptionItem()
-            ->afterEap()
-            ->create();
+        $this->createSubscription($user, self::PRO_PRICE_ID);
 
         $plugin = Plugin::factory()->approved()->paid()->create(['is_active' => true]);
         PluginPrice::factory()->subscriber()->amount(1999)->create(['plugin_id' => $plugin->id]);
@@ -814,13 +766,7 @@ class TierBasedPricingTest extends TestCase
     public function subscriber_can_access_bundle_with_only_subscriber_tier_price(): void
     {
         $user = User::factory()->create();
-        License::factory()
-            ->for($user)
-            ->max()
-            ->active()
-            ->withoutSubscriptionItem()
-            ->afterEap()
-            ->create();
+        $this->createSubscription($user, self::MAX_PRICE_ID);
 
         $bundle = PluginBundle::factory()->active()->create();
         BundlePrice::factory()->subscriber()->amount(7999)->create(['plugin_bundle_id' => $bundle->id]);
@@ -864,13 +810,7 @@ class TierBasedPricingTest extends TestCase
     public function accessible_paid_plugin_returns_200(): void
     {
         $user = User::factory()->create();
-        License::factory()
-            ->for($user)
-            ->pro()
-            ->active()
-            ->withoutSubscriptionItem()
-            ->afterEap()
-            ->create();
+        $this->createSubscription($user, self::PRO_PRICE_ID);
 
         $plugin = Plugin::factory()->approved()->paid()->create(['is_active' => true]);
         PluginPrice::factory()->subscriber()->amount(1999)->create(['plugin_id' => $plugin->id]);
@@ -901,13 +841,7 @@ class TierBasedPricingTest extends TestCase
     public function accessible_bundle_returns_200(): void
     {
         $user = User::factory()->create();
-        License::factory()
-            ->for($user)
-            ->max()
-            ->active()
-            ->withoutSubscriptionItem()
-            ->afterEap()
-            ->create();
+        $this->createSubscription($user, self::MAX_PRICE_ID);
 
         $plugin = Plugin::factory()->approved()->paid()->create(['is_active' => true]);
         PluginPrice::factory()->regular()->amount(2999)->create(['plugin_id' => $plugin->id]);
