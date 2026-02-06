@@ -14,7 +14,6 @@ class LicenseRenewalController extends Controller
         $license = License::where('key', $licenseKey)
             ->whereNull('subscription_item_id') // Only legacy licenses
             ->whereNotNull('expires_at') // Must have an expiry date
-            ->where('expires_at', '>', now()) // Must not already be expired
             ->with('user')
             ->firstOrFail();
 
@@ -24,7 +23,7 @@ class LicenseRenewalController extends Controller
         }
 
         $subscriptionType = Subscription::from($license->policy_name);
-        $isNearExpiry = $license->expires_at->diffInDays(now()) <= 30;
+        $isNearExpiry = $license->expires_at->isPast() || $license->expires_at->diffInDays(now()) <= 30;
 
         return view('license.renewal', [
             'license' => $license,
@@ -40,7 +39,6 @@ class LicenseRenewalController extends Controller
         $license = License::where('key', $licenseKey)
             ->whereNull('subscription_item_id') // Only legacy licenses
             ->whereNotNull('expires_at') // Must have an expiry date
-            ->where('expires_at', '>', now()) // Must not already be expired
             ->with('user')
             ->firstOrFail();
 
