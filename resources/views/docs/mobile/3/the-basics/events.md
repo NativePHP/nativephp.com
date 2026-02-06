@@ -107,7 +107,7 @@ Events are 'broadcast' to the frontend of your application via the web view thro
 easily listen for these events through JavaScript in a few ways:
 
 - The globally available `Native.on()` helper
-- Directly importing the `on` function
+- Directly importing the `On` function
 - The `#[OnNative()]` PHP attribute Livewire extension
 
 <aside>
@@ -133,7 +133,7 @@ Register the event listener directly in JavaScript:
 
 This approach is useful if you're not using any particular frontend JavaScript framework.
 
-#### The `on` import
+#### The `On` import
 
 <aside>
 
@@ -141,17 +141,17 @@ Make sure you've [set up the `Native` plugin](native-functions#install-the-plugi
 
 </aside>
 
-If you're using a SPA framework like Vue or React, it's more convenient to import the `on` function directly to
+If you're using a SPA framework like Vue or React, it's more convenient to import the `On` function directly to
 register your event listeners. Here's an example using the amazing Vue:
 
 ```js
-import { on, Events } from '#nativephp';
+import { On, Events } from '#nativephp';
 import { onMounted } from 'vue';
 
 const handleButtonPressed = (payload: any) => {};
 
 onMounted(() => {
-    on(Events.Alert.ButtonPressed, handleButtonPressed);
+    On(Events.Alert.ButtonPressed, handleButtonPressed);
 });
 ```
 
@@ -159,17 +159,17 @@ Note how we're also using the `Events` object above to simplify our use of built
 classes, you will need to reference these by their full name:
 
 ```js
-on('App\\Events\\MyButtonPressedEvent', handleButtonPressed);
+On('App\\Events\\MyButtonPressedEvent', handleButtonPressed);
 ```
 
-In SPA land, don't forget to de-register your event handlers using the `off` function too:
+In SPA land, don't forget to de-register your event handlers using the `Off` function too:
 
 ```js
-import { off, Events } from '#nativephp';
+import { Off, Events } from '#nativephp';
 import { onUnmounted } from 'vue';
 
 onUnmounted(() => {
-    off(Events.Alert.ButtonPressed, handleButtonPressed);
+    Off(Events.Alert.ButtonPressed, handleButtonPressed);
 });
 ```
 

@@ -52,7 +52,7 @@ section to the JSON:
 Run `npm install`, then in your JavaScript, simply import the relevant functions from the plugin:
 
 ```js
-import { on, off, Microphone, Events } from '#nativephp';
+import { On, Off, Microphone, Events } from '#nativephp';
 import { onMounted, onUnmounted } from 'vue';
 
 const buttonClicked = () => {
@@ -64,11 +64,11 @@ const handleRecordingFinished = () => {
 };
 
 onMounted(() => {
-    on(Events.Microphone.MicrophoneRecorded, handleRecordingFinished);
+    On(Events.Microphone.MicrophoneRecorded, handleRecordingFinished);
 });
 
 onUnmounted(() => {
-    off(Events.Microphone.MicrophoneRecorded, handleRecordingFinished);
+    Off(Events.Microphone.MicrophoneRecorded, handleRecordingFinished);
 });
 ```
 
