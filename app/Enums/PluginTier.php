@@ -45,15 +45,15 @@ enum PluginTier: string
         return match ($this) {
             self::Bronze => [
                 PriceTier::Regular->value => 2900,
-                PriceTier::Subscriber->value => 900,
+                PriceTier::Subscriber->value => 1100,
             ],
             self::Silver => [
                 PriceTier::Regular->value => 4900,
-                PriceTier::Subscriber->value => 1500,
+                PriceTier::Subscriber->value => 1700,
             ],
             self::Gold => [
                 PriceTier::Regular->value => 9900,
-                PriceTier::Subscriber->value => 2900,
+                PriceTier::Subscriber->value => 3100,
             ],
         };
     }
