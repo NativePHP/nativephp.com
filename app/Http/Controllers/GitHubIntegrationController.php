@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Product;
 use App\Models\User;
 use App\Services\GitHubUserService;
 use App\Support\GitHubOAuth;
@@ -155,13 +156,46 @@ class GitHubIntegrationController extends Controller
         return back()->with('error', 'Failed to send repository invitation. Please try again or contact support.');
     }
 
-    public function disconnect(): RedirectResponse
+    public function requestClaudePluginsAccess(): RedirectResponse
     {
         $user = Auth::user();
 
+        if (! $user->github_username) {
+            return back()->with('error', 'Please connect your GitHub account first.');
+        }
+
+        // Check if user has a Plugin Dev Kit license
+        $pluginDevKit = Product::where('slug', 'plugin-dev-kit')->first();
+
+        if (! $pluginDevKit || ! $user->hasProductLicense($pluginDevKit)) {
+            return back()->with('error', 'You need a Plugin Dev Kit license to access the ClaudePlugins repository.');
+        }
+
+        $github = GitHubOAuth::make();
+        $success = $github->inviteToClaudePluginsRepo($user->github_username);
+
+        if ($success) {
+            $user->update([
+                'claude_plugins_repo_access_granted_at' => now(),
+            ]);
+
+            return back()->with('success', 'Repository invitation sent! Please check your GitHub notifications to accept the invitation.');
+        }
+
+        return back()->with('error', 'Failed to send repository invitation. Please try again or contact support.');
+    }
+
+    public function disconnect(): RedirectResponse
+    {
+        $user = Auth::user();
+        $github = GitHubOAuth::make();
+
         if ($user->mobile_repo_access_granted_at && $user->github_username) {
-            $github = GitHubOAuth::make();
             $github->removeFromMobileRepo($user->github_username);
+        }
+
+        if ($user->claude_plugins_repo_access_granted_at && $user->github_username) {
+            $github->removeFromClaudePluginsRepo($user->github_username);
         }
 
         $user->update([
@@ -169,6 +203,7 @@ class GitHubIntegrationController extends Controller
             'github_username' => null,
             'github_token' => null,
             'mobile_repo_access_granted_at' => null,
+            'claude_plugins_repo_access_granted_at' => null,
         ]);
 
         return back()->with('success', 'GitHub account disconnected successfully.');

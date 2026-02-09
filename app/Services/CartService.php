@@ -6,6 +6,7 @@ use App\Models\Cart;
 use App\Models\CartItem;
 use App\Models\Plugin;
 use App\Models\PluginBundle;
+use App\Models\Product;
 use App\Models\User;
 use Illuminate\Support\Facades\Session;
 
@@ -134,6 +135,41 @@ class CartService
         return $cart->items()->where('plugin_bundle_id', $bundle->id)->delete() > 0;
     }
 
+    public function addProduct(Cart $cart, Product $product): CartItem
+    {
+        if (! $product->isActive()) {
+            throw new \InvalidArgumentException('This product is not available for purchase');
+        }
+
+        // Check if user already owns this product
+        $user = $cart->user;
+        if ($user && $product->isOwnedBy($user)) {
+            throw new \InvalidArgumentException('You already own this product');
+        }
+
+        // Get the best price for the cart's user
+        $bestPrice = $product->getBestPriceForUser($user);
+
+        if (! $bestPrice) {
+            throw new \InvalidArgumentException('Product has no active price');
+        }
+
+        if ($cart->hasProduct($product)) {
+            return $cart->items()->where('product_id', $product->id)->first();
+        }
+
+        return $cart->items()->create([
+            'product_id' => $product->id,
+            'product_price_at_addition' => $bestPrice->amount,
+            'currency' => $bestPrice->currency,
+        ]);
+    }
+
+    public function removeProduct(Cart $cart, Product $product): bool
+    {
+        return $cart->items()->where('product_id', $product->id)->delete() > 0;
+    }
+
     public function transferGuestCartToUser(User $user): ?Cart
     {
         $sessionId = Session::get(self::SESSION_KEY);
@@ -157,7 +193,11 @@ class CartService
         if ($userCart) {
             // Merge guest cart items into user cart
             foreach ($guestCart->items as $item) {
-                if ($item->isBundle()) {
+                if ($item->isProduct()) {
+                    if (! $userCart->hasProduct($item->product)) {
+                        $item->update(['cart_id' => $userCart->id]);
+                    }
+                } elseif ($item->isBundle()) {
                     if (! $userCart->hasBundle($item->pluginBundle)) {
                         $item->update(['cart_id' => $userCart->id]);
                     }
@@ -184,6 +224,54 @@ class CartService
         $changes = [];
 
         foreach ($cart->items as $item) {
+            if ($item->isProduct()) {
+                $product = $item->product;
+
+                if (! $product || ! $product->isActive()) {
+                    $changes[] = [
+                        'item' => $item,
+                        'name' => $product?->name ?? 'Product',
+                        'type' => 'unavailable',
+                        'old_price' => $item->product_price_at_addition,
+                    ];
+                    $item->delete();
+
+                    continue;
+                }
+
+                $user = $cart->user;
+                $currentPrice = $product->getBestPriceForUser($user);
+
+                if (! $currentPrice) {
+                    $changes[] = [
+                        'item' => $item,
+                        'name' => $product->name,
+                        'type' => 'unavailable',
+                        'old_price' => $item->product_price_at_addition,
+                    ];
+                    $item->delete();
+
+                    continue;
+                }
+
+                if ($currentPrice->amount !== $item->product_price_at_addition) {
+                    $changes[] = [
+                        'item' => $item,
+                        'name' => $product->name,
+                        'type' => 'price_changed',
+                        'old_price' => $item->product_price_at_addition,
+                        'new_price' => $currentPrice->amount,
+                    ];
+
+                    $item->update([
+                        'product_price_at_addition' => $currentPrice->amount,
+                        'currency' => $currentPrice->currency,
+                    ]);
+                }
+
+                continue;
+            }
+
             if ($item->isBundle()) {
                 $bundle = $item->pluginBundle;
 
@@ -280,7 +368,13 @@ class CartService
         $removed = [];
 
         foreach ($cart->items as $item) {
-            if ($item->isBundle()) {
+            if ($item->isProduct()) {
+                $product = $item->product;
+                if ($product && $product->isOwnedBy($user)) {
+                    $removed[] = ['type' => 'product', 'item' => $product];
+                    $item->delete();
+                }
+            } elseif ($item->isBundle()) {
                 $bundle = $item->pluginBundle;
                 if ($bundle && $bundle->isOwnedBy($user)) {
                     $removed[] = ['type' => 'bundle', 'item' => $bundle];

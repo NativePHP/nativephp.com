@@ -1,0 +1,425 @@
+<x-layout title="{{ $product->name }}">
+    <section
+        class="mx-auto mt-10 w-full max-w-7xl"
+        aria-labelledby="product-title"
+    >
+        <header class="relative">
+            {{-- Blurred circle - Decorative --}}
+            <div
+                class="absolute top-0 right-1/2 -z-30 h-60 w-60 translate-x-1/2 rounded-full bg-purple-300/50 blur-[150px] md:w-80 dark:bg-purple-500/30"
+                aria-hidden="true"
+            ></div>
+
+            {{-- Back button --}}
+            <div
+                x-init="
+                    () => {
+                        motion.inView($el, () => {
+                            gsap.fromTo(
+                                $el,
+                                { autoAlpha: 0, x: 5 },
+                                { autoAlpha: 1, x: 0, duration: 0.7, ease: 'power1.out' },
+                            )
+                        })
+                    }
+                "
+            >
+                <a
+                    href="{{ route('plugins.marketplace') }}"
+                    class="inline-flex items-center gap-2 opacity-60 transition duration-200 hover:-translate-x-0.5 hover:opacity-100"
+                    aria-label="Return to plugin marketplace"
+                >
+                    <x-icons.right-arrow
+                        class="size-3 shrink-0 -scale-x-100"
+                        aria-hidden="true"
+                    />
+                    <div class="text-sm">Plugin Marketplace</div>
+                </a>
+            </div>
+
+            {{-- Product icon and title --}}
+            <div
+                x-init="
+                    () => {
+                        motion.inView($el, () => {
+                            gsap.fromTo(
+                                $el,
+                                { autoAlpha: 0, y: 5 },
+                                { autoAlpha: 1, y: 0, duration: 0.7, ease: 'power1.out' },
+                            )
+                        })
+                    }
+                "
+                class="mt-8 flex items-center gap-4"
+            >
+                @if ($product->logo_path)
+                    <img
+                        src="{{ Storage::url($product->logo_path) }}"
+                        alt="{{ $product->name }}"
+                        class="size-16 shrink-0 rounded-2xl object-cover"
+                    >
+                @else
+                    <div class="grid size-16 shrink-0 place-items-center rounded-2xl bg-gradient-to-br from-purple-500 to-indigo-600 text-white">
+                        <x-heroicon-s-cube class="size-8" />
+                    </div>
+                @endif
+                <div>
+                    <h1
+                        id="product-title"
+                        class="font-mono text-2xl font-bold sm:text-3xl"
+                    >
+                        {{ $product->name }}
+                    </h1>
+                    <p class="mt-1 text-gray-600 dark:text-gray-400">
+                        Build native NativePHP plugins with AI assistance
+                    </p>
+                </div>
+            </div>
+        </header>
+
+        {{-- Divider --}}
+        <x-divider />
+
+        {{-- Session Messages --}}
+        @if (session('error'))
+            <div class="mb-6 rounded-lg border border-red-200 bg-red-50 p-4 dark:border-red-800 dark:bg-red-900/20">
+                <p class="text-sm text-red-800 dark:text-red-200">{{ session('error') }}</p>
+            </div>
+        @endif
+
+        @if (session('success'))
+            <div class="mb-6 rounded-lg border border-green-200 bg-green-50 p-4 dark:border-green-800 dark:bg-green-900/20">
+                <p class="text-sm text-green-800 dark:text-green-200">{{ session('success') }}</p>
+            </div>
+        @endif
+
+        <div class="mt-2 flex flex-col-reverse gap-8 lg:flex-row lg:items-start">
+            {{-- Main content --}}
+            <article
+                x-init="
+                    () => {
+                        motion.inView($el, () => {
+                            gsap.fromTo(
+                                $el,
+                                { autoAlpha: 0, y: 5 },
+                                { autoAlpha: 1, y: 0, duration: 0.7, ease: 'power1.out' },
+                            )
+                        })
+                    }
+                "
+                class="prose min-w-0 max-w-none grow dark:prose-invert prose-headings:font-semibold prose-h2:text-xl prose-h2:mt-8 prose-h2:mb-4 prose-p:text-gray-600 dark:prose-p:text-gray-400 prose-li:text-gray-600 dark:prose-li:text-gray-400"
+            >
+                {{-- Hero Section --}}
+                <div class="not-prose mb-10 rounded-2xl bg-gradient-to-br from-purple-50 to-indigo-50 p-8 dark:from-purple-950/30 dark:to-indigo-950/30">
+                    <h2 class="text-2xl font-bold text-gray-900 dark:text-white">
+                        Skip the Kotlin & Swift learning curve
+                    </h2>
+                    <p class="mt-3 text-lg text-gray-600 dark:text-gray-400">
+                        The Plugin Dev Kit gives you specialized AI agents for <a href="https://claude.com/claude-code" target="_blank" class="text-purple-600 hover:underline dark:text-purple-400">Claude Code</a> that understand NativePHP's architecture deeply. Describe what you want in plain English and get production-ready native code.
+                    </p>
+                </div>
+
+                {{-- The Problem --}}
+                <h2>The Challenge</h2>
+                <p>
+                    Building NativePHP plugins requires writing native code in <strong>Kotlin</strong> (Android) and <strong>Swift</strong> (iOS). Even experienced Laravel developers find this challenging:
+                </p>
+                <ul>
+                    <li>Two unfamiliar languages with different paradigms</li>
+                    <li>Platform-specific APIs, lifecycles, and threading models</li>
+                    <li>Complex build systems (Gradle, CocoaPods, Swift Package Manager)</li>
+                    <li>Bridge function patterns that must be exactly right</li>
+                    <li>Permission declarations, entitlements, and manifest configuration</li>
+                </ul>
+
+                {{-- The Solution --}}
+                <h2>The Solution</h2>
+                <p>
+                    The Plugin Dev Kit includes specialized AI agents trained specifically on NativePHP's plugin architecture. These agents understand:
+                </p>
+                <ul>
+                    <li><strong>Bridge function patterns</strong> — Correct request/response formats, parameter extraction, error handling</li>
+                    <li><strong>Platform APIs</strong> — How to expose iOS and Android capabilities to PHP</li>
+                    <li><strong>Event dispatching</strong> — Sending events from native code to Livewire components</li>
+                    <li><strong>Manifest configuration</strong> — Permissions, dependencies, entitlements, and more</li>
+                    <li><strong>Best practices</strong> — Threading, memory management, and lifecycle handling</li>
+                </ul>
+
+                {{-- What's Included --}}
+                <h2>What's Included</h2>
+                <div class="not-prose mt-4 grid gap-4 sm:grid-cols-2">
+                    <div class="rounded-xl border border-gray-200 bg-white p-5 dark:border-gray-700 dark:bg-slate-800/50">
+                        <div class="flex items-center gap-3">
+                            <div class="grid size-10 shrink-0 place-items-center rounded-lg bg-orange-100 text-orange-600 dark:bg-orange-900/30 dark:text-orange-400">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M17.25 6.75 22.5 12l-5.25 5.25m-10.5 0L1.5 12l5.25-5.25m7.5-3-4.5 16.5" />
+                                </svg>
+                            </div>
+                            <div>
+                                <h3 class="font-semibold text-gray-900 dark:text-white">Kotlin/Android Agent</h3>
+                                <p class="text-sm text-gray-500 dark:text-gray-400">Expert in Android SDK, Jetpack, and Gradle</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="rounded-xl border border-gray-200 bg-white p-5 dark:border-gray-700 dark:bg-slate-800/50">
+                        <div class="flex items-center gap-3">
+                            <div class="grid size-10 shrink-0 place-items-center rounded-lg bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M17.25 6.75 22.5 12l-5.25 5.25m-10.5 0L1.5 12l5.25-5.25m7.5-3-4.5 16.5" />
+                                </svg>
+                            </div>
+                            <div>
+                                <h3 class="font-semibold text-gray-900 dark:text-white">Swift/iOS Agent</h3>
+                                <p class="text-sm text-gray-500 dark:text-gray-400">Expert in UIKit, SwiftUI, and Apple frameworks</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="rounded-xl border border-gray-200 bg-white p-5 dark:border-gray-700 dark:bg-slate-800/50">
+                        <div class="flex items-center gap-3">
+                            <div class="grid size-10 shrink-0 place-items-center rounded-lg bg-purple-100 text-purple-600 dark:bg-purple-900/30 dark:text-purple-400">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904 9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09ZM18.259 8.715 18 9.75l-.259-1.035a3.375 3.375 0 0 0-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 0 0 2.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 0 0 2.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 0 0-2.456 2.456ZM16.894 20.567 16.5 21.75l-.394-1.183a2.25 2.25 0 0 0-1.423-1.423L13.5 18.75l1.183-.394a2.25 2.25 0 0 0 1.423-1.423l.394-1.183.394 1.183a2.25 2.25 0 0 0 1.423 1.423l1.183.394-1.183.394a2.25 2.25 0 0 0-1.423 1.423Z" />
+                                </svg>
+                            </div>
+                            <div>
+                                <h3 class="font-semibold text-gray-900 dark:text-white">Plugin Architect</h3>
+                                <p class="text-sm text-gray-500 dark:text-gray-400">Designs structure and Laravel integration</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="rounded-xl border border-gray-200 bg-white p-5 dark:border-gray-700 dark:bg-slate-800/50">
+                        <div class="flex items-center gap-3">
+                            <div class="grid size-10 shrink-0 place-items-center rounded-lg bg-green-100 text-green-600 dark:bg-green-900/30 dark:text-green-400">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12c0 1.268-.63 2.39-1.593 3.068a3.745 3.745 0 0 1-1.043 3.296 3.745 3.745 0 0 1-3.296 1.043A3.745 3.745 0 0 1 12 21c-1.268 0-2.39-.63-3.068-1.593a3.746 3.746 0 0 1-3.296-1.043 3.745 3.745 0 0 1-1.043-3.296A3.745 3.745 0 0 1 3 12c0-1.268.63-2.39 1.593-3.068a3.745 3.745 0 0 1 1.043-3.296 3.746 3.746 0 0 1 3.296-1.043A3.746 3.746 0 0 1 12 3c1.268 0 2.39.63 3.068 1.593a3.746 3.746 0 0 1 3.296 1.043 3.746 3.746 0 0 1 1.043 3.296A3.745 3.745 0 0 1 21 12Z" />
+                                </svg>
+                            </div>
+                            <div>
+                                <h3 class="font-semibold text-gray-900 dark:text-white">Validation Tools</h3>
+                                <p class="text-sm text-gray-500 dark:text-gray-400">Catch errors before you build</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {{-- Private Repository --}}
+                @if ($product->github_repo)
+                    <h2>Private Repository Access</h2>
+                    <p>
+                        Your purchase includes access to the private <code>nativephp/{{ $product->github_repo }}</code> repository containing:
+                    </p>
+                    <ul>
+                        <li><strong>Complete plugin examples</strong> — Real-world plugins you can learn from and customize</li>
+                        <li><strong>Agent definition files</strong> — Install directly into your Claude Code environment</li>
+                        <li><strong>Reference implementations</strong> — Camera, ML Kit, Bluetooth, and more</li>
+                        <li><strong>Ongoing updates</strong> — New agents and examples as NativePHP evolves</li>
+                    </ul>
+                @endif
+
+                {{-- How It Works --}}
+                <h2>How It Works</h2>
+                <div class="not-prose">
+                    <ol class="mt-4 space-y-4">
+                        <li class="flex gap-4">
+                            <span class="grid size-8 shrink-0 place-items-center rounded-full bg-purple-100 text-sm font-bold text-purple-600 dark:bg-purple-900/30 dark:text-purple-400">1</span>
+                            <div>
+                                <p class="font-medium text-gray-900 dark:text-white">Connect your GitHub account</p>
+                                <p class="text-sm text-gray-500 dark:text-gray-400">After purchase, connect GitHub in your dashboard to get repository access</p>
+                            </div>
+                        </li>
+                        <li class="flex gap-4">
+                            <span class="grid size-8 shrink-0 place-items-center rounded-full bg-purple-100 text-sm font-bold text-purple-600 dark:bg-purple-900/30 dark:text-purple-400">2</span>
+                            <div>
+                                <p class="font-medium text-gray-900 dark:text-white">Install the agents</p>
+                                <p class="text-sm text-gray-500 dark:text-gray-400">Run <code class="rounded bg-gray-100 px-1.5 py-0.5 text-xs dark:bg-gray-700">php artisan native:plugin:install-agent</code> to add agents to your project</p>
+                            </div>
+                        </li>
+                        <li class="flex gap-4">
+                            <span class="grid size-8 shrink-0 place-items-center rounded-full bg-purple-100 text-sm font-bold text-purple-600 dark:bg-purple-900/30 dark:text-purple-400">3</span>
+                            <div>
+                                <p class="font-medium text-gray-900 dark:text-white">Describe what you need</p>
+                                <p class="text-sm text-gray-500 dark:text-gray-400">Tell Claude what your plugin should do in plain English</p>
+                            </div>
+                        </li>
+                        <li class="flex gap-4">
+                            <span class="grid size-8 shrink-0 place-items-center rounded-full bg-purple-100 text-sm font-bold text-purple-600 dark:bg-purple-900/30 dark:text-purple-400">4</span>
+                            <div>
+                                <p class="font-medium text-gray-900 dark:text-white">Get working code</p>
+                                <p class="text-sm text-gray-500 dark:text-gray-400">Receive production-ready Kotlin, Swift, and PHP with correct configurations</p>
+                            </div>
+                        </li>
+                    </ol>
+                </div>
+
+                {{-- Who It's For --}}
+                <h2>Perfect For</h2>
+                <ul>
+                    <li><strong>Laravel developers</strong> who want to extend NativePHP without learning native development</li>
+                    <li><strong>Teams</strong> building custom functionality for their mobile apps</li>
+                    <li><strong>Agencies</strong> delivering NativePHP projects with native integrations</li>
+                    <li><strong>Plugin authors</strong> who want to ship faster and with fewer bugs</li>
+                </ul>
+            </article>
+
+            {{-- Sidebar --}}
+            <aside
+                x-init="
+                    () => {
+                        motion.inView($el, () => {
+                            gsap.fromTo(
+                                $el,
+                                { autoAlpha: 0, x: 5 },
+                                { autoAlpha: 1, x: 0, duration: 0.7, ease: 'power1.out' },
+                            )
+                        })
+                    }
+                "
+                class="w-full shrink-0 lg:sticky lg:top-24 lg:w-80"
+            >
+                @if ($alreadyOwned)
+                    {{-- Already Owned --}}
+                    <div class="rounded-2xl border-2 border-green-500 bg-gradient-to-br from-green-50 to-emerald-50 p-6 dark:border-green-400 dark:from-green-950/50 dark:to-emerald-950/50">
+                        <div class="text-center">
+                            <div class="mx-auto grid size-12 place-items-center rounded-full bg-green-100 dark:bg-green-900/50">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="size-6 text-green-600 dark:text-green-400">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" />
+                                </svg>
+                            </div>
+                            <p class="mt-3 font-semibold text-green-800 dark:text-green-200">You Own This Product</p>
+                            <p class="mt-1 text-sm text-green-700 dark:text-green-300">
+                                Access your repository from the Integrations page.
+                            </p>
+                        </div>
+                        @if ($product->github_repo)
+                            <a
+                                href="{{ route('customer.integrations') }}"
+                                class="mt-4 flex w-full items-center justify-center gap-2 rounded-xl bg-green-600 px-4 py-3 text-sm font-semibold text-white transition hover:bg-green-700"
+                            >
+                                <svg class="size-5" fill="currentColor" viewBox="0 0 24 24">
+                                    <path fill-rule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" clip-rule="evenodd" />
+                                </svg>
+                                Manage Repository Access
+                            </a>
+                        @endif
+                    </div>
+                @else
+                    {{-- Purchase Box --}}
+                    @if ($bestPrice)
+                        <div class="rounded-2xl border-2 border-purple-500 bg-gradient-to-br from-purple-50 to-indigo-50 p-6 dark:border-purple-400 dark:from-purple-950/50 dark:to-indigo-950/50">
+                            <div class="text-center">
+                                <p class="text-sm font-medium text-gray-600 dark:text-gray-400">Price</p>
+                                @if ($hasDiscount && $regularPrice)
+                                    <p class="mt-1 text-lg text-gray-400 line-through dark:text-gray-500">
+                                        ${{ number_format($regularPrice->amount / 100) }}
+                                    </p>
+                                    <p class="text-4xl font-bold text-gray-900 dark:text-white">
+                                        ${{ number_format($bestPrice->amount / 100) }}
+                                    </p>
+                                    <p class="mt-1 text-xs font-medium text-green-600 dark:text-green-400">
+                                        {{ $bestPrice->tier->label() }} pricing applied
+                                    </p>
+                                @else
+                                    <p class="mt-1 text-4xl font-bold text-gray-900 dark:text-white">
+                                        ${{ number_format($bestPrice->amount / 100) }}
+                                    </p>
+                                @endif
+                                <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">One-time purchase · Lifetime access</p>
+                            </div>
+                            <form action="{{ route('cart.product.add', $product) }}" method="POST" class="mt-4">
+                                @csrf
+                                <button
+                                    type="submit"
+                                    class="flex w-full items-center justify-center gap-2 rounded-xl bg-purple-600 px-4 py-3 text-sm font-semibold text-white shadow-lg shadow-purple-500/25 transition hover:bg-purple-700 hover:shadow-purple-500/40 dark:shadow-purple-500/10"
+                                >
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 0 0-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 0 0-16.536-1.84M7.5 14.25 5.106 5.272M6 20.25a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Zm12.75 0a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z" />
+                                    </svg>
+                                    Add to Cart
+                                </button>
+                            </form>
+                            <p class="mt-4 text-center text-xs text-gray-500 dark:text-gray-400">
+                                Secure checkout via Stripe
+                            </p>
+                        </div>
+                    @endif
+                @endif
+
+                {{-- Product Details --}}
+                <div class="mt-4 rounded-2xl border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-slate-800/50">
+                    <h2 class="text-sm font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">
+                        What You Get
+                    </h2>
+
+                    <ul class="mt-4 space-y-3">
+                        <li class="flex items-start gap-3">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="mt-0.5 size-5 shrink-0 text-purple-500">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" />
+                            </svg>
+                            <span class="text-sm text-gray-600 dark:text-gray-400">Kotlin/Android expert agent</span>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="mt-0.5 size-5 shrink-0 text-purple-500">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" />
+                            </svg>
+                            <span class="text-sm text-gray-600 dark:text-gray-400">Swift/iOS expert agent</span>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="mt-0.5 size-5 shrink-0 text-purple-500">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" />
+                            </svg>
+                            <span class="text-sm text-gray-600 dark:text-gray-400">Plugin architect agent</span>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="mt-0.5 size-5 shrink-0 text-purple-500">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" />
+                            </svg>
+                            <span class="text-sm text-gray-600 dark:text-gray-400">Validation & testing tools</span>
+                        </li>
+                        @if ($product->github_repo)
+                            <li class="flex items-start gap-3">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="mt-0.5 size-5 shrink-0 text-purple-500">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" />
+                                </svg>
+                                <span class="text-sm text-gray-600 dark:text-gray-400">Private GitHub repository access</span>
+                            </li>
+                        @endif
+                        <li class="flex items-start gap-3">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="mt-0.5 size-5 shrink-0 text-purple-500">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" />
+                            </svg>
+                            <span class="text-sm text-gray-600 dark:text-gray-400">Lifetime updates</span>
+                        </li>
+                    </ul>
+                </div>
+
+                {{-- Requirements --}}
+                <div class="mt-4 rounded-2xl border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-slate-800/50">
+                    <h2 class="text-sm font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">
+                        Requirements
+                    </h2>
+
+                    <ul class="mt-4 space-y-2 text-sm text-gray-600 dark:text-gray-400">
+                        <li class="flex items-center gap-2">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-4 text-gray-400">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 7.5l3 2.25-3 2.25m4.5 0h3m-9 8.25h13.5A2.25 2.25 0 0021 18V6a2.25 2.25 0 00-2.25-2.25H5.25A2.25 2.25 0 003 6v12a2.25 2.25 0 002.25 2.25z" />
+                            </svg>
+                            <a href="https://claude.com/claude-code" target="_blank" class="text-purple-600 hover:underline dark:text-purple-400">Claude Code</a>
+                        </li>
+                        <li class="flex items-center gap-2">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-4 text-gray-400">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 7.5l3 2.25-3 2.25m4.5 0h3m-9 8.25h13.5A2.25 2.25 0 0021 18V6a2.25 2.25 0 00-2.25-2.25H5.25A2.25 2.25 0 003 6v12a2.25 2.25 0 002.25 2.25z" />
+                            </svg>
+                            NativePHP Mobile
+                        </li>
+                        <li class="flex items-center gap-2">
+                            <svg class="size-4 text-gray-400" fill="currentColor" viewBox="0 0 24 24">
+                                <path fill-rule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" clip-rule="evenodd" />
+                            </svg>
+                            GitHub account
+                        </li>
+                    </ul>
+                </div>
+            </aside>
+        </div>
+    </section>
+</x-layout>

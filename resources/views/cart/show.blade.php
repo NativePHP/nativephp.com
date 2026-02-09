@@ -65,7 +65,66 @@
                     <div class="rounded-lg border border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-800">
                         <ul class="divide-y divide-gray-200 dark:divide-gray-700">
                             @foreach ($cart->items as $item)
-                                @if ($item->isBundle())
+                                @if ($item->isProduct())
+                                    {{-- Product Item --}}
+                                    <li
+                                        @if(session('just_added_product_id') === $item->product_id)
+                                            x-data="{ highlight: true }"
+                                            x-init="setTimeout(() => highlight = false, 3000)"
+                                            :class="highlight ? 'bg-purple-50 dark:bg-purple-900/20 ring-2 ring-purple-500 ring-inset' : ''"
+                                            class="flex gap-4 p-6 transition-all duration-1000"
+                                        @else
+                                            class="flex gap-4 p-6"
+                                        @endif
+                                    >
+                                        {{-- Product Logo --}}
+                                        <div class="shrink-0">
+                                            @if ($item->product->logo_path)
+                                                <img src="{{ Storage::url($item->product->logo_path) }}" alt="{{ $item->product->name }}" class="size-16 rounded-lg object-cover" />
+                                            @else
+                                                <div class="grid size-16 place-items-center rounded-lg bg-gradient-to-br from-purple-500 to-indigo-600 text-white">
+                                                    <x-heroicon-s-cube class="size-8" />
+                                                </div>
+                                            @endif
+                                        </div>
+
+                                        {{-- Product Details --}}
+                                        <div class="flex flex-1 flex-col">
+                                            <div class="flex justify-between">
+                                                <div>
+                                                    <div class="flex items-center gap-2">
+                                                        <h3 class="text-sm font-medium text-gray-900 dark:text-white">
+                                                            <a href="{{ route('products.show', $item->product) }}" class="hover:text-purple-600 dark:hover:text-purple-400">
+                                                                {{ $item->product->name }}
+                                                            </a>
+                                                        </h3>
+                                                        <span class="inline-flex items-center rounded-full bg-purple-100 px-2 py-0.5 text-xs font-medium text-purple-800 dark:bg-purple-900/30 dark:text-purple-400">
+                                                            Product
+                                                        </span>
+                                                    </div>
+                                                    @if ($item->product->github_repo)
+                                                        <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                                                            Includes <code class="rounded bg-gray-100 px-1 py-0.5 text-xs dark:bg-gray-700">nativephp/{{ $item->product->github_repo }}</code> access
+                                                        </p>
+                                                    @endif
+                                                </div>
+                                                <p class="text-sm font-medium text-gray-900 dark:text-white">
+                                                    {{ $item->getFormattedPrice() }}
+                                                </p>
+                                            </div>
+
+                                            <div class="mt-4 flex justify-end">
+                                                <form action="{{ route('cart.product.remove', $item->product) }}" method="POST">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button type="submit" class="text-sm font-medium text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300">
+                                                        Remove
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </li>
+                                @elseif ($item->isBundle())
                                     {{-- Bundle Item --}}
                                     <li
                                         @if(session('just_added_bundle_id') === $item->plugin_bundle_id)

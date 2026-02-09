@@ -9,7 +9,9 @@ class GitHubOAuth
 {
     private const ORGANIZATION = 'nativephp';
 
-    private const REPOSITORY = 'mobile';
+    private const MOBILE_REPOSITORY = 'mobile';
+
+    private const CLAUDE_PLUGINS_REPOSITORY = 'ClaudePlugins';
 
     public function __construct(
         private ?string $token
@@ -20,14 +22,17 @@ class GitHubOAuth
         return new static(config('services.github.token') ?? '');
     }
 
-    public function inviteToMobileRepo(string $githubUsername): bool
+    /**
+     * Invite a user to a repository with read-only access.
+     */
+    public function inviteToRepo(string $repository, string $githubUsername): bool
     {
         $response = Http::withToken($this->token)
             ->put(
                 sprintf(
                     'https://api.github.com/repos/%s/%s/collaborators/%s',
                     self::ORGANIZATION,
-                    self::REPOSITORY,
+                    $repository,
                     $githubUsername
                 ),
                 [
@@ -37,6 +42,7 @@ class GitHubOAuth
 
         if ($response->failed()) {
             Log::error('Failed to invite user to GitHub repository', [
+                'repository' => $repository,
                 'username' => $githubUsername,
                 'status' => $response->status(),
                 'response' => $response->json(),
@@ -48,20 +54,24 @@ class GitHubOAuth
         return true;
     }
 
-    public function removeFromMobileRepo(string $githubUsername): bool
+    /**
+     * Remove a user from a repository.
+     */
+    public function removeFromRepo(string $repository, string $githubUsername): bool
     {
         $response = Http::withToken($this->token)
             ->delete(
                 sprintf(
                     'https://api.github.com/repos/%s/%s/collaborators/%s',
                     self::ORGANIZATION,
-                    self::REPOSITORY,
+                    $repository,
                     $githubUsername
                 )
             );
 
         if ($response->failed()) {
             Log::error('Failed to remove user from GitHub repository', [
+                'repository' => $repository,
                 'username' => $githubUsername,
                 'status' => $response->status(),
                 'response' => $response->json(),
@@ -73,15 +83,17 @@ class GitHubOAuth
         return true;
     }
 
-    public function checkCollaboratorStatus(string $githubUsername): ?string
+    /**
+     * Check the collaborator status for a user on a specific repository.
+     */
+    public function checkRepoCollaboratorStatus(string $repository, string $githubUsername): ?string
     {
-        // First check if they're an active collaborator
         $response = Http::withToken($this->token)
             ->get(
                 sprintf(
                     'https://api.github.com/repos/%s/%s/collaborators/%s',
                     self::ORGANIZATION,
-                    self::REPOSITORY,
+                    $repository,
                     $githubUsername
                 )
             );
@@ -90,8 +102,7 @@ class GitHubOAuth
             return 'active';
         }
 
-        // Check for pending invitation
-        if ($this->hasPendingInvitation($githubUsername)) {
+        if ($this->hasRepoPendingInvitation($repository, $githubUsername)) {
             return 'pending';
         }
 
@@ -102,14 +113,17 @@ class GitHubOAuth
         return 'unknown';
     }
 
-    public function hasPendingInvitation(string $githubUsername): bool
+    /**
+     * Check if a user has a pending invitation for a specific repository.
+     */
+    public function hasRepoPendingInvitation(string $repository, string $githubUsername): bool
     {
         $response = Http::withToken($this->token)
             ->get(
                 sprintf(
                     'https://api.github.com/repos/%s/%s/invitations',
                     self::ORGANIZATION,
-                    self::REPOSITORY
+                    $repository
                 )
             );
 
@@ -122,5 +136,44 @@ class GitHubOAuth
         return collect($invitations)->contains(function ($invitation) use ($githubUsername) {
             return strtolower($invitation['invitee']['login'] ?? '') === strtolower($githubUsername);
         });
+    }
+
+    // Backward compatible methods for mobile repo
+
+    public function inviteToMobileRepo(string $githubUsername): bool
+    {
+        return $this->inviteToRepo(self::MOBILE_REPOSITORY, $githubUsername);
+    }
+
+    public function removeFromMobileRepo(string $githubUsername): bool
+    {
+        return $this->removeFromRepo(self::MOBILE_REPOSITORY, $githubUsername);
+    }
+
+    public function checkCollaboratorStatus(string $githubUsername): ?string
+    {
+        return $this->checkRepoCollaboratorStatus(self::MOBILE_REPOSITORY, $githubUsername);
+    }
+
+    public function hasPendingInvitation(string $githubUsername): bool
+    {
+        return $this->hasRepoPendingInvitation(self::MOBILE_REPOSITORY, $githubUsername);
+    }
+
+    // ClaudePlugins repo methods
+
+    public function inviteToClaudePluginsRepo(string $githubUsername): bool
+    {
+        return $this->inviteToRepo(self::CLAUDE_PLUGINS_REPOSITORY, $githubUsername);
+    }
+
+    public function removeFromClaudePluginsRepo(string $githubUsername): bool
+    {
+        return $this->removeFromRepo(self::CLAUDE_PLUGINS_REPOSITORY, $githubUsername);
+    }
+
+    public function checkClaudePluginsCollaboratorStatus(string $githubUsername): ?string
+    {
+        return $this->checkRepoCollaboratorStatus(self::CLAUDE_PLUGINS_REPOSITORY, $githubUsername);
     }
 }

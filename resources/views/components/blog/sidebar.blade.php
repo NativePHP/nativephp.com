@@ -1,4 +1,5 @@
 <aside
+    x-data="{ ad: Math.random() < 0.5 ? 'mobile' : 'devkit' }"
     x-init="
         () => {
             motion.inView($el, () => {
@@ -12,7 +13,10 @@
     "
     class="sticky top-20 right-0 hidden max-w-52 shrink-0 min-[850px]:block"
 >
+    {{-- NativePHP Mobile Ad --}}
     <a
+        x-show="ad === 'mobile'"
+        x-cloak
         href="/docs/mobile"
         class="group relative z-0 grid place-items-center overflow-hidden rounded-2xl bg-gray-100 px-4 pt-10 text-center text-pretty transition duration-200 hover:bg-gray-200/70 hover:ring-1 hover:ring-black/60 dark:bg-mirage dark:hover:bg-haiti dark:hover:ring-cloud"
     >
@@ -73,6 +77,46 @@
                 class="h-15 w-36 rotate-30 rounded-full bg-violet-300 blur-xl dark:bg-violet-400/30"
             ></div>
         </div>
+    </a>
+
+    {{-- Plugin Dev Kit Ad --}}
+    <a
+        x-show="ad === 'devkit'"
+        x-cloak
+        href="{{ route('products.show', 'plugin-dev-kit') }}"
+        class="group relative z-0 grid place-items-center overflow-hidden rounded-2xl bg-gradient-to-br from-purple-600 to-indigo-700 px-4 py-8 text-center text-pretty transition duration-200 hover:from-purple-500 hover:to-indigo-600 hover:ring-1 hover:ring-purple-400"
+    >
+        {{-- Icon --}}
+        <div class="grid size-14 place-items-center rounded-xl bg-white/20 text-white backdrop-blur-sm">
+            <x-heroicon-s-cube class="size-8" />
+        </div>
+
+        {{-- Title --}}
+        <div class="mt-3 text-lg font-bold text-white">
+            Plugin Dev Kit
+        </div>
+
+        {{-- Tagline --}}
+        <div class="mt-2 text-sm text-purple-100">
+            Build native plugins with
+            <strong class="text-white">Claude Code</strong>
+        </div>
+
+        {{-- CTA --}}
+        <div class="mt-4 rounded-lg bg-white/20 px-4 py-1.5 text-sm font-medium text-white backdrop-blur-sm transition group-hover:bg-white/30">
+            Learn More
+        </div>
+
+        {{-- Decorative stars --}}
+        <x-icons.star
+            class="absolute top-4 right-3 z-10 w-3 -rotate-7 text-purple-300"
+        />
+        <x-icons.star
+            class="absolute top-8 left-4 z-10 w-2 rotate-12 text-indigo-300"
+        />
+        <x-icons.star
+            class="absolute bottom-12 right-6 z-10 w-2.5 text-purple-200"
+        />
     </a>
 
     {{-- Sponsors --}}
