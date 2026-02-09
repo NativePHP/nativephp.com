@@ -1,6 +1,6 @@
 <x-layout :title="$bundle->name . ' - Plugin Bundle'">
     <section
-        class="mx-auto mt-10 w-full max-w-5xl"
+        class="mx-auto mt-10 w-full max-w-7xl"
         aria-labelledby="bundle-title"
     >
         <header class="relative">
@@ -129,7 +129,7 @@
                     <p class="mt-2 text-sm text-gray-600 dark:text-gray-400">
                         Purchase this bundle to get access to all {{ $bundle->plugins->count() }} plugins.
                     </p>
-                    <div class="mt-6 grid gap-6 md:grid-cols-2">
+                    <div class="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
                         @foreach ($bundle->plugins as $plugin)
                             <x-plugin-card :plugin="$plugin" />
                         @endforeach
