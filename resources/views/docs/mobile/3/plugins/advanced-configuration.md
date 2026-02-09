@@ -7,7 +7,7 @@ order: 750
 
 #### Let AI Handle the Complexity
 
-Advanced plugin configuration can be tricky to get right. The [NativePHP Plugin Dev Kit](https://nativephp.com/plugins)
+Advanced plugin configuration can be tricky to get right. The [NativePHP Plugin Dev Kit](/products/plugin-dev-kit)
 generates correct manifest configurations, Gradle dependencies, CocoaPods specs, and platform-specific code — so you
 don't have to memorize these docs.
 
@@ -362,7 +362,7 @@ Init functions run synchronously during app startup. Keep them fast to avoid slo
 #### Skip the Guesswork
 
 Building a plugin like this from scratch means learning Gradle, CocoaPods, Swift Package Manager, and two unfamiliar
-languages. The [NativePHP Plugin Dev Kit](https://nativephp.com/plugins) handles all of it — describe what you want
+languages. The [NativePHP Plugin Dev Kit](/products/plugin-dev-kit) handles all of it — describe what you want
 and get a working plugin with correct configurations for both platforms.
 
 </aside>

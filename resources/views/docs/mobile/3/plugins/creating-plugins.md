@@ -18,10 +18,10 @@ This walks you through naming, namespace selection, and feature options, then ge
 #### Build Plugins 10x Faster
 
 Writing native Kotlin and Swift code is the hardest part of plugin development. The
-[NativePHP Plugin Development Kit](https://nativephp.com/plugins) for Claude Code can generate production-ready
+[NativePHP Plugin Development Kit](/products/plugin-dev-kit) for Claude Code can generate production-ready
 plugins in minutes — complete with bridge functions, events, permissions, and platform-specific implementations.
 
-[Get the Plugin Dev Kit →](https://nativephp.com/plugins)
+[Get the Plugin Dev Kit →](/products/plugin-dev-kit)
 
 </aside>
 
@@ -299,7 +299,7 @@ Claude Code turns natural language into production-ready native code.
 Describe what you want ("a plugin that scans barcodes and returns product info") and get a complete, working plugin
 with proper bridge functions, events, permissions, and both iOS and Android implementations.
 
-[Get the Plugin Dev Kit →](https://nativephp.com/plugins)
+[Get the Plugin Dev Kit →](/products/plugin-dev-kit)
 
 </aside>
 
@@ -327,7 +327,7 @@ Writing native mobile code is hard. These agents understand:
 Instead of learning two new languages and their ecosystems, describe what you need and let the agents handle the
 implementation details.
 
-[Get the Plugin Dev Kit →](https://nativephp.com/plugins)
+[Get the Plugin Dev Kit →](/products/plugin-dev-kit)
 
 ## AI Development Tools
 
@@ -372,5 +372,5 @@ helping AI assistants understand how to use your plugin correctly.
 ## Ready to Build?
 
 You now have everything you need to create NativePHP plugins. For most developers, the
-[Plugin Development Kit](https://nativephp.com/plugins) is the fastest path from idea to working plugin — it
+[Plugin Development Kit](/products/plugin-dev-kit) is the fastest path from idea to working plugin — it
 handles the native code complexity so you can focus on what your plugin does, not how to write Kotlin and Swift.
