@@ -21,10 +21,64 @@ class CustomerLicenseController extends Controller
     public function index(): View
     {
         $user = Auth::user();
-        $licenses = $user->licenses()->orderBy('created_at', 'desc')->get();
 
-        // Ensure user has a plugin license key (generates one if missing)
-        $pluginLicenseKey = $user->getPluginLicenseKey();
+        // Dashboard summary data
+        $licenseCount = $user->licenses()->count();
+        $isEapCustomer = $user->isEapCustomer();
+        $activeSubscription = $user->subscription();
+        $pluginLicenseCount = $user->pluginLicenses()->count();
+
+        // Get subscription plan name
+        $subscriptionName = null;
+        if ($activeSubscription) {
+            try {
+                $subscriptionName = \App\Enums\Subscription::fromStripePriceId($activeSubscription->stripe_price)->name();
+            } catch (\RuntimeException) {
+                $subscriptionName = ucfirst($activeSubscription->type);
+            }
+        }
+
+        // For renewal CTA when no subscription
+        $renewalLicenseKey = null;
+        if (! $activeSubscription) {
+            $highestTierLicense = $user->licenses()
+                ->whereIn('policy_name', ['max', 'pro', 'mini'])
+                ->orderByRaw("FIELD(policy_name, 'max', 'pro', 'mini')")
+                ->first();
+            $renewalLicenseKey = $highestTierLicense?->key;
+        }
+
+        // Connected accounts info
+        $hasGitHub = $user->hasGitHubToken();
+        $hasDiscord = $user->hasDiscordConnected();
+        $connectedAccountsCount = ($hasGitHub ? 1 : 0) + ($hasDiscord ? 1 : 0);
+        $connectedAccountsDescription = match (true) {
+            $hasGitHub && $hasDiscord => 'GitHub & Discord',
+            $hasGitHub => 'GitHub connected',
+            $hasDiscord => 'Discord connected',
+            default => 'No accounts connected',
+        };
+
+        // Total purchases (licenses + plugins)
+        $totalPurchases = $licenseCount + $pluginLicenseCount;
+
+        return view('customer.dashboard', compact(
+            'licenseCount',
+            'isEapCustomer',
+            'activeSubscription',
+            'subscriptionName',
+            'pluginLicenseCount',
+            'renewalLicenseKey',
+            'connectedAccountsCount',
+            'connectedAccountsDescription',
+            'totalPurchases'
+        ));
+    }
+
+    public function list(): View
+    {
+        $user = Auth::user();
+        $licenses = $user->licenses()->orderBy('created_at', 'desc')->get();
 
         // Fetch sub-licenses assigned to this user's email (excluding those from licenses they own)
         $assignedSubLicenses = SubLicense::query()
@@ -36,13 +90,7 @@ class CustomerLicenseController extends Controller
             ->orderBy('created_at', 'desc')
             ->get();
 
-        // Fetch plugin licenses (purchased plugins)
-        $pluginLicenses = $user->pluginLicenses()
-            ->with('plugin')
-            ->orderBy('purchased_at', 'desc')
-            ->get();
-
-        return view('customer.licenses.index', compact('licenses', 'assignedSubLicenses', 'pluginLicenses', 'pluginLicenseKey'));
+        return view('customer.licenses.list', compact('licenses', 'assignedSubLicenses'));
     }
 
     public function show(string $licenseKey): View
@@ -78,7 +126,7 @@ class CustomerLicenseController extends Controller
         $user = Auth::user();
         $user->regeneratePluginLicenseKey();
 
-        return redirect()->route('dashboard')
+        return redirect()->route('customer.purchased-plugins.index')
             ->with('success', 'Your plugin license key has been rotated. Please update your Composer configuration with the new key.');
     }
 

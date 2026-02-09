@@ -8,12 +8,14 @@ use App\Http\Controllers\BundleController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\CustomerLicenseController;
 use App\Http\Controllers\CustomerPluginController;
+use App\Http\Controllers\CustomerPurchasedPluginsController;
 use App\Http\Controllers\CustomerSubLicenseController;
 use App\Http\Controllers\DeveloperOnboardingController;
 use App\Http\Controllers\OpenCollectiveWebhookController;
 use App\Http\Controllers\PluginDirectoryController;
 use App\Http\Controllers\PluginPurchaseController;
 use App\Http\Controllers\PluginWebhookController;
+use App\Http\Controllers\PurchaseHistoryController;
 use App\Http\Controllers\ShowBlogController;
 use App\Http\Controllers\ShowDocumentationController;
 use Illuminate\Support\Facades\Route;
@@ -216,9 +218,17 @@ Route::middleware(['auth', EnsureFeaturesAreActive::using(ShowAuthButtons::class
 
 // Customer license management routes
 Route::middleware(['auth', EnsureFeaturesAreActive::using(ShowAuthButtons::class)])->prefix('customer')->name('customer.')->group(function () {
-    // Redirect old licenses URL to dashboard
-    Route::redirect('licenses', '/dashboard')->name('licenses');
+    // License list page
+    Route::get('licenses', [CustomerLicenseController::class, 'list'])->name('licenses.list');
     Route::view('integrations', 'customer.integrations')->name('integrations');
+
+    // Purchased plugins page (requires ShowPlugins feature)
+    Route::middleware(EnsureFeaturesAreActive::using(ShowPlugins::class))
+        ->get('purchased-plugins', [CustomerPurchasedPluginsController::class, 'index'])
+        ->name('purchased-plugins.index');
+
+    // Purchase history page
+    Route::get('purchase-history', [PurchaseHistoryController::class, 'index'])->name('purchase-history.index');
     Route::get('licenses/{licenseKey}', [CustomerLicenseController::class, 'show'])->name('licenses.show');
     Route::patch('licenses/{licenseKey}', [CustomerLicenseController::class, 'update'])->name('licenses.update');
     Route::post('plugin-license-key/rotate', [CustomerLicenseController::class, 'rotatePluginLicenseKey'])->name('plugin-license-key.rotate');

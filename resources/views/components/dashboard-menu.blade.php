@@ -25,12 +25,24 @@
         <a href="{{ route('dashboard') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700">
             Dashboard
         </a>
+        <a href="{{ route('customer.licenses.list') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700">
+            Licenses
+        </a>
+        @feature(App\Features\ShowPlugins::class)
+            <a href="{{ route('customer.purchased-plugins.index') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700">
+                Purchased Plugins
+            </a>
+        @endfeature
+        <a href="{{ route('customer.purchase-history.index') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700">
+            Purchase History
+        </a>
+        <div class="border-t border-gray-100 dark:border-gray-700"></div>
         <a href="{{ route('customer.showcase.index') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700">
             Showcase
         </a>
         @feature(App\Features\ShowPlugins::class)
             <a href="{{ route('customer.plugins.index') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700">
-                Plugins
+                Developer Plugins
             </a>
         @endfeature
         <a href="{{ route('customer.integrations') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700">
