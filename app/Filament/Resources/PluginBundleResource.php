@@ -7,8 +7,11 @@ use App\Filament\Resources\PluginBundleResource\Pages;
 use App\Filament\Resources\PluginBundleResource\RelationManagers;
 use App\Models\Plugin;
 use App\Models\PluginBundle;
+use App\Models\PluginLicense;
+use App\Models\User;
 use Filament\Forms;
 use Filament\Forms\Form;
+use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
@@ -22,7 +25,7 @@ class PluginBundleResource extends Resource
 
     protected static ?string $navigationLabel = 'Bundles';
 
-    protected static ?string $navigationGroup = 'Plugins';
+    protected static ?string $navigationGroup = 'Products';
 
     protected static ?int $navigationSort = 2;
 
@@ -163,6 +166,64 @@ class PluginBundleResource extends Resource
                         ->url(fn (PluginBundle $record) => route('bundles.show', $record))
                         ->openUrlInNewTab()
                         ->visible(fn (PluginBundle $record) => $record->is_active && $record->published_at?->isPast()),
+
+                    Tables\Actions\Action::make('grantToUser')
+                        ->label('Grant to User')
+                        ->icon('heroicon-o-gift')
+                        ->color('success')
+                        ->form([
+                            Forms\Components\Select::make('user_id')
+                                ->label('User')
+                                ->searchable()
+                                ->getSearchResultsUsing(function (string $search): array {
+                                    return User::query()
+                                        ->where('name', 'like', "%{$search}%")
+                                        ->orWhere('email', 'like', "%{$search}%")
+                                        ->limit(50)
+                                        ->get()
+                                        ->mapWithKeys(fn (User $user) => [$user->id => "{$user->name} ({$user->email})"])
+                                        ->toArray();
+                                })
+                                ->required(),
+                        ])
+                        ->action(function (PluginBundle $record, array $data): void {
+                            $user = User::findOrFail($data['user_id']);
+                            $record->loadMissing('plugins');
+
+                            $grantedCount = 0;
+
+                            foreach ($record->plugins as $plugin) {
+                                $existingLicense = $user->pluginLicenses()
+                                    ->where('plugin_id', $plugin->id)
+                                    ->exists();
+
+                                if ($existingLicense) {
+                                    continue;
+                                }
+
+                                PluginLicense::create([
+                                    'user_id' => $user->id,
+                                    'plugin_id' => $plugin->id,
+                                    'plugin_bundle_id' => $record->id,
+                                    'price_paid' => 0,
+                                    'currency' => 'USD',
+                                    'is_grandfathered' => true,
+                                    'purchased_at' => now(),
+                                ]);
+
+                                $grantedCount++;
+                            }
+
+                            $user->getPluginLicenseKey();
+
+                            Notification::make()
+                                ->title("Granted {$grantedCount} plugin license(s) to {$user->name}")
+                                ->success()
+                                ->send();
+                        })
+                        ->modalHeading('Grant Bundle to User')
+                        ->modalDescription(fn (PluginBundle $record) => "Grant all plugins in '{$record->name}' to a user for free.")
+                        ->modalSubmitActionLabel('Grant'),
                 ])
                     ->label('More')
                     ->icon('heroicon-m-ellipsis-vertical'),

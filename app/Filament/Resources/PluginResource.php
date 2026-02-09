@@ -8,8 +8,11 @@ use App\Enums\PluginType;
 use App\Filament\Resources\PluginResource\Pages;
 use App\Filament\Resources\PluginResource\RelationManagers;
 use App\Models\Plugin;
+use App\Models\PluginLicense;
+use App\Models\User;
 use Filament\Forms;
 use Filament\Forms\Form;
+use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
@@ -22,7 +25,7 @@ class PluginResource extends Resource
 
     protected static ?string $navigationLabel = 'Plugins';
 
-    protected static ?string $navigationGroup = 'Plugins';
+    protected static ?string $navigationGroup = 'Products';
 
     protected static ?int $navigationSort = 1;
 
@@ -238,6 +241,61 @@ class PluginResource extends Resource
                         ->action(fn (Plugin $record, array $data) => $record->updateDescription($data['description'], auth()->id()))
                         ->modalHeading('Edit Plugin Description')
                         ->modalDescription(fn (Plugin $record) => "Update the description for '{$record->name}'"),
+
+                    Tables\Actions\Action::make('grantToUser')
+                        ->label('Grant to User')
+                        ->icon('heroicon-o-gift')
+                        ->color('success')
+                        ->form([
+                            Forms\Components\Select::make('user_id')
+                                ->label('User')
+                                ->searchable()
+                                ->getSearchResultsUsing(function (string $search): array {
+                                    return User::query()
+                                        ->where('name', 'like', "%{$search}%")
+                                        ->orWhere('email', 'like', "%{$search}%")
+                                        ->limit(50)
+                                        ->get()
+                                        ->mapWithKeys(fn (User $user) => [$user->id => "{$user->name} ({$user->email})"])
+                                        ->toArray();
+                                })
+                                ->required(),
+                        ])
+                        ->action(function (Plugin $record, array $data): void {
+                            $user = User::findOrFail($data['user_id']);
+
+                            $existingLicense = $user->pluginLicenses()
+                                ->where('plugin_id', $record->id)
+                                ->exists();
+
+                            if ($existingLicense) {
+                                Notification::make()
+                                    ->title('User already has a license for this plugin')
+                                    ->warning()
+                                    ->send();
+
+                                return;
+                            }
+
+                            PluginLicense::create([
+                                'user_id' => $user->id,
+                                'plugin_id' => $record->id,
+                                'price_paid' => 0,
+                                'currency' => 'USD',
+                                'is_grandfathered' => true,
+                                'purchased_at' => now(),
+                            ]);
+
+                            $user->getPluginLicenseKey();
+
+                            Notification::make()
+                                ->title("Granted '{$record->name}' license to {$user->name}")
+                                ->success()
+                                ->send();
+                        })
+                        ->modalHeading('Grant Plugin to User')
+                        ->modalDescription(fn (Plugin $record) => "Grant '{$record->name}' to a user for free.")
+                        ->modalSubmitActionLabel('Grant'),
 
                     Tables\Actions\ViewAction::make(),
                 ])

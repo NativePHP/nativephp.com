@@ -18,7 +18,7 @@ class PluginSalesResource extends Resource
 
     protected static ?string $navigationLabel = 'Sales';
 
-    protected static ?string $navigationGroup = 'Plugins';
+    protected static ?string $navigationGroup = 'Products';
 
     protected static ?int $navigationSort = 3;
 
