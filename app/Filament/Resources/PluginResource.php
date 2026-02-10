@@ -324,6 +324,7 @@ class PluginResource extends Resource
     {
         return [
             RelationManagers\PricesRelationManager::class,
+            RelationManagers\LicensesRelationManager::class,
             RelationManagers\ActivitiesRelationManager::class,
         ];
     }
