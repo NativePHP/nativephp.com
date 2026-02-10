@@ -156,7 +156,7 @@
 
         {{-- Right side --}}
         <nav
-            class="flex flex-wrap w-full justify-around gap-x-5 gap-y-3 sm:w-auto lg:justify-around xl:gap-x-10"
+            class="grid w-full grid-cols-2 gap-x-5 gap-y-3 sm:w-auto xl:gap-x-10"
             aria-label="Footer navigation"
             x-init="
                 () => {
@@ -189,7 +189,7 @@
                     Explore
                 </h3>
                 <ul
-                    class="grid sm:grid-rows-5 sm:grid-flow-col gap-x-6 text-sm text-gray-500 dark:text-gray-400"
+                    class="grid sm:grid-rows-5 sm:grid-flow-col sm:auto-cols-fr gap-x-6 text-sm text-gray-500 dark:text-gray-400"
                 >
                     <li>
                         <a
@@ -284,10 +284,10 @@
                 </ul>
             </section>
 
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-10 w-auto lg:justify-around">
-                {{-- Column --}}
+            {{-- Column --}}
+            <div class="flex flex-col gap-4 sm:flex-row sm:gap-10">
                 <section
-                    class="flex grow flex-col items-start gap-1 sm:grow-0"
+                    class="flex flex-col items-start gap-1"
                     aria-labelledby="footer-mobile-heading"
                 >
                     <h3
@@ -334,37 +334,36 @@
                     </ul>
                 </section>
 
-                {{-- Column --}}
                 <section
-                    class="flex grow flex-col items-start gap-1 sm:grow-0"
+                    class="flex flex-col items-start gap-1"
                     aria-labelledby="footer-desktop-heading"
                 >
-                    <h3
-                        id="footer-desktop-heading"
-                        class="font-medium"
-                    >
-                        Desktop
-                    </h3>
-                    <ul
-                        class="flex flex-col items-start text-sm text-gray-500 dark:text-gray-400"
-                    >
-                        <li>
-                            <a
-                                href="/docs/desktop/2/getting-started/introduction"
-                                class="inline-block px-px py-1.5 transition duration-300 will-change-transform hover:translate-x-1 hover:text-gray-700 dark:hover:text-gray-300"
-                            >
-                                Documentation
-                            </a>
-                        </li>
-                        <li>
-                            <a
-                                href="https://github.com/nativephp/desktop"
-                                class="inline-block px-px py-1.5 transition duration-300 will-change-transform hover:translate-x-1 hover:text-gray-700 dark:hover:text-gray-300"
-                            >
-                                GitHub
-                            </a>
-                        </li>
-                    </ul>
+                <h3
+                    id="footer-desktop-heading"
+                    class="font-medium"
+                >
+                    Desktop
+                </h3>
+                <ul
+                    class="flex flex-col items-start text-sm text-gray-500 dark:text-gray-400"
+                >
+                    <li>
+                        <a
+                            href="/docs/desktop/2/getting-started/introduction"
+                            class="inline-block px-px py-1.5 transition duration-300 will-change-transform hover:translate-x-1 hover:text-gray-700 dark:hover:text-gray-300"
+                        >
+                            Documentation
+                        </a>
+                    </li>
+                    <li>
+                        <a
+                            href="https://github.com/nativephp/desktop"
+                            class="inline-block px-px py-1.5 transition duration-300 will-change-transform hover:translate-x-1 hover:text-gray-700 dark:hover:text-gray-300"
+                        >
+                            GitHub
+                        </a>
+                    </li>
+                </ul>
                 </section>
             </div>
         </nav>
