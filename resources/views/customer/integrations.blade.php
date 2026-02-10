@@ -62,19 +62,18 @@
                 <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">About Integrations</h3>
                 <div class="prose dark:prose-invert prose-sm max-w-none text-gray-600 dark:text-gray-400">
                     <ul class="list-disc list-inside space-y-2">
-                        <li><strong>GitHub:</strong> Max license holders can access the private <code>nativephp/mobile</code> repository.</li>
+                        <li><strong>GitHub:</strong> Max license holders can access the private <code>nativephp/mobile</code> repository. Plugin Dev Kit license holders can access <code>nativephp/claude-code</code>.</li>
                         <li><strong>Discord:</strong> Max license holders receive a special "Max" role in the NativePHP Discord server.</li>
                     </ul>
-                    @if(auth()->user()->hasMaxAccess())
-                        <p class="mt-4">
-                            Need help? Join our <a href="https://discord.gg/nativephp" target="_blank" class="text-blue-600 hover:underline dark:text-blue-400">Discord community</a>.
-                        </p>
-                    @else
-                        <p class="mt-4">
-                            These integrations are available to Max license holders. <a href="{{ route('pricing') }}" class="text-blue-600 hover:underline dark:text-blue-400">Upgrade to Max</a> to unlock these features.
-                        </p>
-                    @endif
+                    <p class="mt-4">
+                        Need help? Join our <a href="https://discord.gg/nativephp" target="_blank" class="text-blue-600 hover:underline dark:text-blue-400">Discord community</a>.
+                    </p>
                 </div>
+            </div>
+
+            {{-- Claude Plugins Access (for Plugin Dev Kit license holders) --}}
+            <div class="mb-6">
+                <livewire:claude-plugins-access-banner :inline="true" />
             </div>
 
             @if(auth()->user()->hasMaxAccess())

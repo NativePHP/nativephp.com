@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Plugin;
 use App\Models\PluginBundle;
+use App\Models\Product;
 use App\Services\CartService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
@@ -24,12 +25,12 @@ class CartController extends Controller
         $user = Auth::user();
         $cart = $this->cartService->getCart($user);
 
-        $cart->load('items.plugin.activePrice', 'items.plugin.user', 'items.pluginBundle.plugins');
+        $cart->load('items.plugin.activePrice', 'items.plugin.user', 'items.pluginBundle.plugins', 'items.product.activePrice');
 
         // Refresh prices and notify of changes
         $priceChanges = $this->cartService->refreshPrices($cart);
 
-        $cart = $cart->fresh(['items.plugin.activePrice', 'items.plugin.user', 'items.pluginBundle.plugins']);
+        $cart = $cart->fresh(['items.plugin.activePrice', 'items.plugin.user', 'items.pluginBundle.plugins', 'items.product.activePrice']);
 
         // Get bundle IDs already in the cart
         $cartBundleIds = $cart->items()
@@ -181,6 +182,56 @@ class CartController extends Controller
         }
     }
 
+    public function addProduct(Request $request, Product $product): RedirectResponse|JsonResponse
+    {
+        $user = Auth::user();
+        $cart = $this->cartService->getCart($user);
+
+        try {
+            $this->cartService->addProduct($cart, $product);
+
+            if ($request->wantsJson()) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Product added to cart',
+                    'cart_count' => $cart->itemCount(),
+                ]);
+            }
+
+            session()->flash('just_added_product_id', $product->id);
+
+            return redirect()->route('cart.show')
+                ->with('success', '<strong>'.e($product->name).'</strong> has been added to your cart!');
+        } catch (\InvalidArgumentException $e) {
+            if ($request->wantsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => $e->getMessage(),
+                ], 400);
+            }
+
+            return redirect()->back()->with('error', $e->getMessage());
+        }
+    }
+
+    public function removeProduct(Request $request, Product $product): RedirectResponse|JsonResponse
+    {
+        $user = Auth::user();
+        $cart = $this->cartService->getCart($user);
+
+        $this->cartService->removeProduct($cart, $product);
+
+        if ($request->wantsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Product removed from cart',
+                'cart_count' => $cart->itemCount(),
+            ]);
+        }
+
+        return redirect()->route('cart.show')->with('success', "{$product->name} removed from cart.");
+    }
+
     public function clear(Request $request): RedirectResponse
     {
         $user = Auth::user();
@@ -272,27 +323,44 @@ class CartController extends Controller
         }
 
         // Check if licenses exist for this invoice
-        $licenses = $user->pluginLicenses()
+        $pluginLicenses = $user->pluginLicenses()
             ->where('stripe_invoice_id', $invoiceId)
             ->with('plugin')
             ->get();
 
-        if ($licenses->isEmpty()) {
+        $productLicenses = $user->productLicenses()
+            ->where('stripe_invoice_id', $invoiceId)
+            ->with('product')
+            ->get();
+
+        if ($pluginLicenses->isEmpty() && $productLicenses->isEmpty()) {
             return response()->json([
                 'status' => 'pending',
                 'message' => 'Processing your purchase...',
             ]);
         }
 
+        // Check if any products grant GitHub repo access
+        $productsWithRepoAccess = $productLicenses->filter(fn ($license) => $license->product->github_repo !== null);
+        $hasGitHubConnected = $user->hasGitHubToken();
+
         return response()->json([
             'status' => 'complete',
             'message' => 'Purchase complete!',
-            'licenses' => $licenses->map(fn ($license) => [
+            'licenses' => $pluginLicenses->map(fn ($license) => [
                 'id' => $license->id,
                 'plugin_id' => $license->plugin->id,
                 'plugin_name' => $license->plugin->name,
                 'plugin_slug' => $license->plugin->slug,
             ]),
+            'products' => $productLicenses->map(fn ($license) => [
+                'id' => $license->id,
+                'product_name' => $license->product->name,
+                'product_slug' => $license->product->slug,
+                'github_repo' => $license->product->github_repo,
+            ]),
+            'has_github_connected' => $hasGitHubConnected,
+            'needs_github_connection' => $productsWithRepoAccess->isNotEmpty() && ! $hasGitHubConnected,
         ]);
     }
 
@@ -312,8 +380,8 @@ class CartController extends Controller
 
     protected function createMultiItemCheckoutSession($cart, $user): \Stripe\Checkout\Session
     {
-        // Eager load items with plugins and bundles to avoid any stale data issues
-        $cart->load('items.plugin', 'items.pluginBundle.plugins');
+        // Eager load items with plugins, bundles, and products to avoid any stale data issues
+        $cart->load('items.plugin', 'items.pluginBundle.plugins', 'items.product');
 
         $lineItems = [];
 
@@ -339,6 +407,20 @@ class CartController extends Controller
                         'product_data' => [
                             'name' => $bundle->name.' (Bundle)',
                             'description' => 'Includes: '.$pluginNames,
+                        ],
+                    ],
+                    'quantity' => 1,
+                ];
+            } elseif ($item->isProduct()) {
+                $product = $item->product;
+
+                $lineItems[] = [
+                    'price_data' => [
+                        'currency' => strtolower($item->currency),
+                        'unit_amount' => $item->product_price_at_addition,
+                        'product_data' => [
+                            'name' => $product->name,
+                            'description' => $product->description ?? 'NativePHP Product',
                         ],
                     ],
                     'quantity' => 1,

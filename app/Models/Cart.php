@@ -54,6 +54,11 @@ class Cart extends Model
         return $this->items()->where('plugin_bundle_id', $bundle->id)->exists();
     }
 
+    public function hasProduct(Product $product): bool
+    {
+        return $this->items()->where('product_id', $product->id)->exists();
+    }
+
     public function getSubtotal(): int
     {
         return $this->items->sum(fn (CartItem $item) => $item->getItemPrice());

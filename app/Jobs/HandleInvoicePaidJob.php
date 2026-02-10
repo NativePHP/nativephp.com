@@ -13,8 +13,11 @@ use App\Models\PluginBundle;
 use App\Models\PluginLicense;
 use App\Models\PluginPayout;
 use App\Models\PluginPrice;
+use App\Models\Product;
+use App\Models\ProductLicense;
 use App\Models\User;
 use App\Services\StripeConnectService;
+use App\Support\GitHubOAuth;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -234,8 +237,11 @@ class HandleInvoicePaidJob implements ShouldQueue
 
     private function processCartPurchase(string $cartId): void
     {
-        $cart = Cart::with(['items.plugin.developerAccount', 'items.pluginBundle.plugins.developerAccount'])
-            ->find($cartId);
+        $cart = Cart::with([
+            'items.plugin.developerAccount',
+            'items.pluginBundle.plugins.developerAccount',
+            'items.product',
+        ])->find($cartId);
 
         if (! $cart) {
             Log::error('Cart not found for invoice', [
@@ -275,7 +281,9 @@ class HandleInvoicePaidJob implements ShouldQueue
         ]);
 
         foreach ($cart->items as $item) {
-            if ($item->isBundle()) {
+            if ($item->isProduct()) {
+                $this->processCartProductItem($user, $item);
+            } elseif ($item->isBundle()) {
                 $this->processCartBundleItem($user, $item);
             } else {
                 $this->processCartPluginItem($user, $item);
@@ -356,6 +364,84 @@ class HandleInvoicePaidJob implements ShouldQueue
             'bundle_id' => $bundle->id,
             'bundle_name' => $bundle->name,
         ]);
+    }
+
+    private function processCartProductItem(User $user, CartItem $item): void
+    {
+        $product = $item->product;
+
+        if (! $product) {
+            Log::warning('Product not found for cart item', ['cart_item_id' => $item->id]);
+
+            return;
+        }
+
+        // Check if license already exists for this invoice + product
+        if (ProductLicense::where('stripe_invoice_id', $this->invoice->id)
+            ->where('product_id', $product->id)
+            ->exists()) {
+            Log::info('License already exists for product', [
+                'invoice_id' => $this->invoice->id,
+                'product_id' => $product->id,
+            ]);
+
+            return;
+        }
+
+        $this->createProductLicense($user, $product, $item->product_price_at_addition);
+    }
+
+    private function createProductLicense(User $user, Product $product, int $amount): ProductLicense
+    {
+        $license = ProductLicense::create([
+            'user_id' => $user->id,
+            'product_id' => $product->id,
+            'stripe_invoice_id' => $this->invoice->id,
+            'stripe_payment_intent_id' => $this->invoice->payment_intent,
+            'price_paid' => $amount,
+            'currency' => strtoupper($this->invoice->currency),
+            'purchased_at' => now(),
+        ]);
+
+        Log::info('Created product license from invoice', [
+            'invoice_id' => $this->invoice->id,
+            'license_id' => $license->id,
+            'product_id' => $product->id,
+        ]);
+
+        // Auto-grant GitHub repo access if applicable
+        if ($product->hasGitHubRepoAccess() && $user->github_username) {
+            $this->grantProductGitHubAccess($user, $product);
+        }
+
+        return $license;
+    }
+
+    private function grantProductGitHubAccess(User $user, Product $product): void
+    {
+        $github = GitHubOAuth::make();
+        $success = $github->inviteToRepo($product->github_repo, $user->github_username);
+
+        if ($success) {
+            // Update user's repo access timestamp based on the repo
+            if ($product->github_repo === 'claude-code') {
+                $user->update([
+                    'claude_plugins_repo_access_granted_at' => now(),
+                ]);
+            }
+
+            Log::info('Granted GitHub repo access for product purchase', [
+                'user_id' => $user->id,
+                'product_id' => $product->id,
+                'github_repo' => $product->github_repo,
+            ]);
+        } else {
+            Log::warning('Failed to grant GitHub repo access for product purchase', [
+                'user_id' => $user->id,
+                'product_id' => $product->id,
+                'github_repo' => $product->github_repo,
+            ]);
+        }
     }
 
     private function processPluginPurchases(User $user, array $metadata): void

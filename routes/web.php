@@ -15,6 +15,7 @@ use App\Http\Controllers\OpenCollectiveWebhookController;
 use App\Http\Controllers\PluginDirectoryController;
 use App\Http\Controllers\PluginPurchaseController;
 use App\Http\Controllers\PluginWebhookController;
+use App\Http\Controllers\ProductController;
 use App\Http\Controllers\PurchaseHistoryController;
 use App\Http\Controllers\ShowBlogController;
 use App\Http\Controllers\ShowDocumentationController;
@@ -190,6 +191,7 @@ Route::get('auth/github/callback', [App\Http\Controllers\GitHubIntegrationContro
 Route::middleware(['auth', EnsureFeaturesAreActive::using(ShowAuthButtons::class)])->group(function () {
     Route::get('auth/github', [App\Http\Controllers\GitHubIntegrationController::class, 'redirectToGitHub'])->name('github.redirect');
     Route::post('customer/github/request-access', [App\Http\Controllers\GitHubIntegrationController::class, 'requestRepoAccess'])->name('github.request-access');
+    Route::post('customer/github/request-claude-plugins-access', [App\Http\Controllers\GitHubIntegrationController::class, 'requestClaudePluginsAccess'])->name('github.request-claude-plugins-access');
     Route::delete('customer/github/disconnect', [App\Http\Controllers\GitHubIntegrationController::class, 'disconnect'])->name('github.disconnect');
     Route::get('customer/github/repositories', [App\Http\Controllers\GitHubIntegrationController::class, 'repositories'])->name('github.repositories');
 });
@@ -294,6 +296,11 @@ Route::middleware(EnsureFeaturesAreActive::using(ShowPlugins::class))->group(fun
     Route::get('bundles/{bundle:slug}', [BundleController::class, 'show'])->name('bundles.show');
 });
 
+// Product routes (public)
+Route::middleware(EnsureFeaturesAreActive::using(ShowPlugins::class))->group(function () {
+    Route::get('products/{product:slug}', [ProductController::class, 'show'])->name('products.show');
+});
+
 // Cart routes (public - allows guest cart)
 Route::middleware(EnsureFeaturesAreActive::using(ShowPlugins::class))->group(function () {
     Route::get('cart', [CartController::class, 'show'])->name('cart.show');
@@ -302,6 +309,8 @@ Route::middleware(EnsureFeaturesAreActive::using(ShowPlugins::class))->group(fun
     Route::post('cart/bundle/{bundle:slug}', [CartController::class, 'addBundle'])->name('cart.bundle.add');
     Route::post('cart/bundle/{bundle:slug}/exchange', [CartController::class, 'exchangeForBundle'])->name('cart.bundle.exchange');
     Route::delete('cart/bundle/{bundle:slug}', [CartController::class, 'removeBundle'])->name('cart.bundle.remove');
+    Route::post('cart/product/{product:slug}', [CartController::class, 'addProduct'])->name('cart.product.add');
+    Route::delete('cart/product/{product:slug}', [CartController::class, 'removeProduct'])->name('cart.product.remove');
     Route::delete('cart/clear', [CartController::class, 'clear'])->name('cart.clear');
     Route::get('cart/count', [CartController::class, 'count'])->name('cart.count');
     Route::match(['get', 'post'], 'cart/checkout', [CartController::class, 'checkout'])->name('cart.checkout');

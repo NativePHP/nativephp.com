@@ -15,6 +15,7 @@ class CartItem extends Model
     protected $casts = [
         'price_at_addition' => 'integer',
         'bundle_price_at_addition' => 'integer',
+        'product_price_at_addition' => 'integer',
     ];
 
     /**
@@ -49,14 +50,40 @@ class CartItem extends Model
         return $this->belongsTo(PluginBundle::class);
     }
 
+    /**
+     * @return BelongsTo<Product, CartItem>
+     */
+    public function product(): BelongsTo
+    {
+        return $this->belongsTo(Product::class);
+    }
+
     public function isBundle(): bool
     {
         return $this->plugin_bundle_id !== null;
     }
 
+    public function isProduct(): bool
+    {
+        return $this->product_id !== null;
+    }
+
+    public function isPlugin(): bool
+    {
+        return $this->plugin_id !== null && ! $this->isBundle() && ! $this->isProduct();
+    }
+
     public function getItemPrice(): int
     {
-        return $this->isBundle() ? $this->bundle_price_at_addition : $this->price_at_addition;
+        if ($this->isProduct()) {
+            return $this->product_price_at_addition;
+        }
+
+        if ($this->isBundle()) {
+            return $this->bundle_price_at_addition;
+        }
+
+        return $this->price_at_addition;
     }
 
     public function getFormattedPrice(): string
@@ -67,6 +94,22 @@ class CartItem extends Model
     public function hasPriceChanged(): bool
     {
         $user = $this->cart->user;
+
+        if ($this->isProduct()) {
+            $product = $this->product;
+
+            if (! $product || ! $product->isActive()) {
+                return true;
+            }
+
+            $currentPrice = $product->getBestPriceForUser($user);
+
+            if (! $currentPrice) {
+                return true;
+            }
+
+            return $currentPrice->amount !== $this->product_price_at_addition;
+        }
 
         if ($this->isBundle()) {
             $bundle = $this->pluginBundle;
@@ -95,6 +138,10 @@ class CartItem extends Model
 
     public function getItemName(): string
     {
+        if ($this->isProduct()) {
+            return $this->product->name;
+        }
+
         if ($this->isBundle()) {
             return $this->pluginBundle->name.' (Bundle)';
         }

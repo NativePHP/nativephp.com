@@ -30,6 +30,7 @@ class User extends Authenticatable implements FilamentUser
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
         'mobile_repo_access_granted_at' => 'datetime',
+        'claude_plugins_repo_access_granted_at' => 'datetime',
         'discord_role_granted_at' => 'datetime',
     ];
 
@@ -73,6 +74,24 @@ class User extends Authenticatable implements FilamentUser
     public function pluginLicenses(): HasMany
     {
         return $this->hasMany(PluginLicense::class);
+    }
+
+    /**
+     * @return HasMany<ProductLicense>
+     */
+    public function productLicenses(): HasMany
+    {
+        return $this->hasMany(ProductLicense::class);
+    }
+
+    /**
+     * Check if user has a license for a specific product.
+     */
+    public function hasProductLicense(Product $product): bool
+    {
+        return $this->productLicenses()
+            ->forProduct($product)
+            ->exists();
     }
 
     /**
