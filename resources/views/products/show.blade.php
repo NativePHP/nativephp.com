@@ -115,92 +115,171 @@
                         Skip the Kotlin & Swift learning curve
                     </h2>
                     <p class="mt-3 text-lg text-gray-600 dark:text-gray-400">
-                        The Plugin Dev Kit gives you specialized AI agents for <a href="https://claude.com/claude-code" target="_blank" class="text-purple-600 hover:underline dark:text-purple-400">Claude Code</a> that understand NativePHP's architecture deeply. Describe what you want in plain English and get production-ready native code.
+                        The Plugin Dev Kit is a <a href="https://claude.com/claude-code" target="_blank" class="text-purple-600 hover:underline dark:text-purple-400">Claude Code</a> plugin that scaffolds complete NativePHP plugin packages for you. Describe what you want in plain English and get production-ready native code for both platforms.
                     </p>
                 </div>
 
-                {{-- The Problem --}}
-                <h2>The Challenge</h2>
-                <p>
-                    Building NativePHP plugins requires writing native code in <strong>Kotlin</strong> (Android) and <strong>Swift</strong> (iOS). Even experienced Laravel developers find this challenging:
-                </p>
-                <ul>
-                    <li>Two unfamiliar languages with different paradigms</li>
-                    <li>Platform-specific APIs, lifecycles, and threading models</li>
-                    <li>Complex build systems (Gradle, CocoaPods, Swift Package Manager)</li>
-                    <li>Bridge function patterns that must be exactly right</li>
-                    <li>Permission declarations, entitlements, and manifest configuration</li>
-                </ul>
+                {{-- Installation --}}
+                <h2>Install in 2 Steps</h2>
+                <div class="not-prose mt-4 space-y-3">
+                    <div class="overflow-x-auto rounded-xl bg-gray-900 p-4 dark:bg-black">
+                        <pre class="text-sm text-gray-100"><code><span class="text-gray-500"># Add the NativePHP plugin registry</span>
+<span class="text-purple-400">claude</span> plugin marketplace add nativephp/ClaudePlugins
 
-                {{-- The Solution --}}
-                <h2>The Solution</h2>
+<span class="text-gray-500"># Install the Plugin Dev Kit</span>
+<span class="text-purple-400">claude</span> plugin install nativephp-plugin-dev</code></pre>
+                    </div>
+                </div>
                 <p>
-                    The Plugin Dev Kit includes specialized AI agents trained specifically on NativePHP's plugin architecture. These agents understand:
+                    That's it. The plugin is now available in every Claude Code session.
                 </p>
-                <ul>
-                    <li><strong>Bridge function patterns</strong> — Correct request/response formats, parameter extraction, error handling</li>
-                    <li><strong>Platform APIs</strong> — How to expose iOS and Android capabilities to PHP</li>
-                    <li><strong>Event dispatching</strong> — Sending events from native code to Livewire components</li>
-                    <li><strong>Manifest configuration</strong> — Permissions, dependencies, entitlements, and more</li>
-                    <li><strong>Best practices</strong> — Threading, memory management, and lifecycle handling</li>
-                </ul>
 
-                {{-- What's Included --}}
-                <h2>What's Included</h2>
-                <div class="not-prose mt-4 grid gap-4 sm:grid-cols-2">
-                    <div class="rounded-xl border border-gray-200 bg-white p-5 dark:border-gray-700 dark:bg-slate-800/50">
-                        <div class="flex items-center gap-3">
-                            <div class="grid size-10 shrink-0 place-items-center rounded-lg bg-orange-100 text-orange-600 dark:bg-orange-900/30 dark:text-orange-400">
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M17.25 6.75 22.5 12l-5.25 5.25m-10.5 0L1.5 12l5.25-5.25m7.5-3-4.5 16.5" />
-                                </svg>
-                            </div>
-                            <div>
-                                <h3 class="font-semibold text-gray-900 dark:text-white">Kotlin/Android Agent</h3>
-                                <p class="text-sm text-gray-500 dark:text-gray-400">Expert in Android SDK, Jetpack, and Gradle</p>
-                            </div>
+                {{-- How to Use --}}
+                <h2>Using the Plugin</h2>
+                <p>
+                    Once installed, just tell Claude what kind of plugin you want to build:
+                </p>
+                <div class="not-prose mt-4 space-y-3">
+                    <div class="rounded-xl border border-gray-200 bg-white p-4 dark:border-gray-700 dark:bg-slate-800/50">
+                        <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Example prompts:</p>
+                        <ul class="mt-3 space-y-2.5">
+                            <li class="flex items-start gap-2 text-sm text-gray-700 dark:text-gray-300">
+                                <span class="mt-0.5 shrink-0 text-purple-500">&raquo;</span>
+                                <span>"Use the nativephp-plugin-dev plugin to create a barcode scanner plugin using ML Kit"</span>
+                            </li>
+                            <li class="flex items-start gap-2 text-sm text-gray-700 dark:text-gray-300">
+                                <span class="mt-0.5 shrink-0 text-purple-500">&raquo;</span>
+                                <span>"Create a NativePHP plugin that wraps the HealthKit API for step counting"</span>
+                            </li>
+                            <li class="flex items-start gap-2 text-sm text-gray-700 dark:text-gray-300">
+                                <span class="mt-0.5 shrink-0 text-purple-500">&raquo;</span>
+                                <span>"Build me a Bluetooth Low Energy plugin for NativePHP Mobile"</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                {{-- What It Creates --}}
+                <h2>What It Creates</h2>
+                <p>
+                    Every scaffolded plugin is a complete, ready-to-develop Composer package with everything wired up:
+                </p>
+                <div class="not-prose mt-4 grid gap-3 sm:grid-cols-2">
+                    <div class="flex items-start gap-3 rounded-xl border border-gray-200 bg-white p-4 dark:border-gray-700 dark:bg-slate-800/50">
+                        <div class="grid size-8 shrink-0 place-items-center rounded-lg bg-purple-100 text-purple-600 dark:bg-purple-900/30 dark:text-purple-400">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-4">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M17.25 6.75 22.5 12l-5.25 5.25m-10.5 0L1.5 12l5.25-5.25m7.5-3-4.5 16.5" />
+                            </svg>
+                        </div>
+                        <div>
+                            <p class="font-medium text-gray-900 dark:text-white">PHP Class & Laravel Facade</p>
+                            <p class="text-xs text-gray-500 dark:text-gray-400">Service provider, facade, and public API</p>
                         </div>
                     </div>
-                    <div class="rounded-xl border border-gray-200 bg-white p-5 dark:border-gray-700 dark:bg-slate-800/50">
-                        <div class="flex items-center gap-3">
-                            <div class="grid size-10 shrink-0 place-items-center rounded-lg bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400">
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M17.25 6.75 22.5 12l-5.25 5.25m-10.5 0L1.5 12l5.25-5.25m7.5-3-4.5 16.5" />
-                                </svg>
-                            </div>
-                            <div>
-                                <h3 class="font-semibold text-gray-900 dark:text-white">Swift/iOS Agent</h3>
-                                <p class="text-sm text-gray-500 dark:text-gray-400">Expert in UIKit, SwiftUI, and Apple frameworks</p>
-                            </div>
+                    <div class="flex items-start gap-3 rounded-xl border border-gray-200 bg-white p-4 dark:border-gray-700 dark:bg-slate-800/50">
+                        <div class="grid size-8 shrink-0 place-items-center rounded-lg bg-orange-100 text-orange-600 dark:bg-orange-900/30 dark:text-orange-400">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-4">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 1.5H8.25A2.25 2.25 0 0 0 6 3.75v16.5a2.25 2.25 0 0 0 2.25 2.25h7.5A2.25 2.25 0 0 0 18 20.25V3.75a2.25 2.25 0 0 0-2.25-2.25H13.5m-3 0V3h3V1.5m-3 0h3" />
+                            </svg>
+                        </div>
+                        <div>
+                            <p class="font-medium text-gray-900 dark:text-white">Kotlin (Android)</p>
+                            <p class="text-xs text-gray-500 dark:text-gray-400">Bridge functions, Activities & Services</p>
                         </div>
                     </div>
-                    <div class="rounded-xl border border-gray-200 bg-white p-5 dark:border-gray-700 dark:bg-slate-800/50">
-                        <div class="flex items-center gap-3">
-                            <div class="grid size-10 shrink-0 place-items-center rounded-lg bg-purple-100 text-purple-600 dark:bg-purple-900/30 dark:text-purple-400">
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904 9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09ZM18.259 8.715 18 9.75l-.259-1.035a3.375 3.375 0 0 0-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 0 0 2.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 0 0 2.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 0 0-2.456 2.456ZM16.894 20.567 16.5 21.75l-.394-1.183a2.25 2.25 0 0 0-1.423-1.423L13.5 18.75l1.183-.394a2.25 2.25 0 0 0 1.423-1.423l.394-1.183.394 1.183a2.25 2.25 0 0 0 1.423 1.423l1.183.394-1.183.394a2.25 2.25 0 0 0-1.423 1.423Z" />
-                                </svg>
-                            </div>
-                            <div>
-                                <h3 class="font-semibold text-gray-900 dark:text-white">Plugin Architect</h3>
-                                <p class="text-sm text-gray-500 dark:text-gray-400">Designs structure and Laravel integration</p>
-                            </div>
+                    <div class="flex items-start gap-3 rounded-xl border border-gray-200 bg-white p-4 dark:border-gray-700 dark:bg-slate-800/50">
+                        <div class="grid size-8 shrink-0 place-items-center rounded-lg bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-4">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 1.5H8.25A2.25 2.25 0 0 0 6 3.75v16.5a2.25 2.25 0 0 0 2.25 2.25h7.5A2.25 2.25 0 0 0 18 20.25V3.75a2.25 2.25 0 0 0-2.25-2.25H13.5m-3 0V3h3V1.5m-3 0h3" />
+                            </svg>
+                        </div>
+                        <div>
+                            <p class="font-medium text-gray-900 dark:text-white">Swift (iOS)</p>
+                            <p class="text-xs text-gray-500 dark:text-gray-400">Bridge functions & ViewControllers</p>
                         </div>
                     </div>
-                    <div class="rounded-xl border border-gray-200 bg-white p-5 dark:border-gray-700 dark:bg-slate-800/50">
-                        <div class="flex items-center gap-3">
-                            <div class="grid size-10 shrink-0 place-items-center rounded-lg bg-green-100 text-green-600 dark:bg-green-900/30 dark:text-green-400">
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12c0 1.268-.63 2.39-1.593 3.068a3.745 3.745 0 0 1-1.043 3.296 3.745 3.745 0 0 1-3.296 1.043A3.745 3.745 0 0 1 12 21c-1.268 0-2.39-.63-3.068-1.593a3.746 3.746 0 0 1-3.296-1.043 3.745 3.745 0 0 1-1.043-3.296A3.745 3.745 0 0 1 3 12c0-1.268.63-2.39 1.593-3.068a3.745 3.745 0 0 1 1.043-3.296 3.746 3.746 0 0 1 3.296-1.043A3.746 3.746 0 0 1 12 3c1.268 0 2.39.63 3.068 1.593a3.746 3.746 0 0 1 3.296 1.043 3.746 3.746 0 0 1 1.043 3.296A3.745 3.745 0 0 1 21 12Z" />
-                                </svg>
-                            </div>
-                            <div>
-                                <h3 class="font-semibold text-gray-900 dark:text-white">Validation Tools</h3>
-                                <p class="text-sm text-gray-500 dark:text-gray-400">Catch errors before you build</p>
-                            </div>
+                    <div class="flex items-start gap-3 rounded-xl border border-gray-200 bg-white p-4 dark:border-gray-700 dark:bg-slate-800/50">
+                        <div class="grid size-8 shrink-0 place-items-center rounded-lg bg-indigo-100 text-indigo-600 dark:bg-indigo-900/30 dark:text-indigo-400">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-4">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" />
+                            </svg>
+                        </div>
+                        <div>
+                            <p class="font-medium text-gray-900 dark:text-white">nativephp.json Manifest</p>
+                            <p class="text-xs text-gray-500 dark:text-gray-400">Dependencies, features & metadata</p>
+                        </div>
+                    </div>
+                    <div class="flex items-start gap-3 rounded-xl border border-gray-200 bg-white p-4 dark:border-gray-700 dark:bg-slate-800/50">
+                        <div class="grid size-8 shrink-0 place-items-center rounded-lg bg-yellow-100 text-yellow-600 dark:bg-yellow-900/30 dark:text-yellow-400">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-4">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M17.25 6.75 22.5 12l-5.25 5.25m-10.5 0L1.5 12l5.25-5.25m7.5-3-4.5 16.5" />
+                            </svg>
+                        </div>
+                        <div>
+                            <p class="font-medium text-gray-900 dark:text-white">JavaScript Bridge</p>
+                            <p class="text-xs text-gray-500 dark:text-gray-400">Client-side module for WebView calls</p>
+                        </div>
+                    </div>
+                    <div class="flex items-start gap-3 rounded-xl border border-gray-200 bg-white p-4 dark:border-gray-700 dark:bg-slate-800/50">
+                        <div class="grid size-8 shrink-0 place-items-center rounded-lg bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-4">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75m-3-7.036A11.959 11.959 0 0 1 3.598 6 11.99 11.99 0 0 0 3 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285Z" />
+                            </svg>
+                        </div>
+                        <div>
+                            <p class="font-medium text-gray-900 dark:text-white">Permissions & Entitlements</p>
+                            <p class="text-xs text-gray-500 dark:text-gray-400">Info.plist, AndroidManifest intents & activities</p>
+                        </div>
+                    </div>
+                    <div class="flex items-start gap-3 rounded-xl border border-gray-200 bg-white p-4 dark:border-gray-700 dark:bg-slate-800/50">
+                        <div class="grid size-8 shrink-0 place-items-center rounded-lg bg-teal-100 text-teal-600 dark:bg-teal-900/30 dark:text-teal-400">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-4">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99" />
+                            </svg>
+                        </div>
+                        <div>
+                            <p class="font-medium text-gray-900 dark:text-white">Lifecycle Hooks</p>
+                            <p class="text-xs text-gray-500 dark:text-gray-400">Build pipeline hooks for custom logic</p>
+                        </div>
+                    </div>
+                    <div class="flex items-start gap-3 rounded-xl border border-gray-200 bg-white p-4 dark:border-gray-700 dark:bg-slate-800/50">
+                        <div class="grid size-8 shrink-0 place-items-center rounded-lg bg-green-100 text-green-600 dark:bg-green-900/30 dark:text-green-400">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-4">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" />
+                            </svg>
+                        </div>
+                        <div>
+                            <p class="font-medium text-gray-900 dark:text-white">Readme, Docs & AI Guidelines</p>
+                            <p class="text-xs text-gray-500 dark:text-gray-400">Documentation and Boost AI context</p>
                         </div>
                     </div>
                 </div>
+                <p>
+                    The agents also understand how to <strong>broadcast events from native code back to your Laravel app and WebView</strong>, so your Livewire components can react to native callbacks in real time.
+                </p>
+
+                {{-- Tips --}}
+                <h2>Tips for Best Results</h2>
+
+                <h3>Tell it which SDK you're wrapping</h3>
+                <p>
+                    If you're wrapping a specific native SDK, link to its documentation so the agent can reference the API surface. For example: <em>"Build a plugin wrapping <a href="https://developers.google.com/ml-kit" target="_blank">Google ML Kit</a> for text recognition."</em>
+                </p>
+
+                <h3>Specify the package manager dependency</h3>
+                <p>
+                    Tell the agent exactly which native packages to use so it can configure the manifest correctly:
+                </p>
+                <ul>
+                    <li><strong>Gradle:</strong> <code>com.google.mlkit:text-recognition:16.0.0</code></li>
+                    <li><strong>CocoaPods:</strong> <code>GoogleMLKit/TextRecognition</code></li>
+                    <li><strong>Swift Package Manager:</strong> provide the repository URL</li>
+                </ul>
+
+                <h3>Be specific about what you need</h3>
+                <p>
+                    The more detail you give, the better the result. Mention specific features, permissions, or platform behaviors you care about.
+                </p>
 
                 {{-- Private Repository --}}
                 @if ($product->github_repo)
@@ -215,41 +294,6 @@
                         <li><strong>Ongoing updates</strong> — New agents and examples as NativePHP evolves</li>
                     </ul>
                 @endif
-
-                {{-- How It Works --}}
-                <h2>How It Works</h2>
-                <div class="not-prose">
-                    <ol class="mt-4 space-y-4">
-                        <li class="flex gap-4">
-                            <span class="grid size-8 shrink-0 place-items-center rounded-full bg-purple-100 text-sm font-bold text-purple-600 dark:bg-purple-900/30 dark:text-purple-400">1</span>
-                            <div>
-                                <p class="font-medium text-gray-900 dark:text-white">Connect your GitHub account</p>
-                                <p class="text-sm text-gray-500 dark:text-gray-400">After purchase, connect GitHub in your dashboard to get repository access</p>
-                            </div>
-                        </li>
-                        <li class="flex gap-4">
-                            <span class="grid size-8 shrink-0 place-items-center rounded-full bg-purple-100 text-sm font-bold text-purple-600 dark:bg-purple-900/30 dark:text-purple-400">2</span>
-                            <div>
-                                <p class="font-medium text-gray-900 dark:text-white">Install the agents</p>
-                                <p class="text-sm text-gray-500 dark:text-gray-400">Run <code class="rounded bg-gray-100 px-1.5 py-0.5 text-xs dark:bg-gray-700">php artisan native:plugin:install-agent</code> to add agents to your project</p>
-                            </div>
-                        </li>
-                        <li class="flex gap-4">
-                            <span class="grid size-8 shrink-0 place-items-center rounded-full bg-purple-100 text-sm font-bold text-purple-600 dark:bg-purple-900/30 dark:text-purple-400">3</span>
-                            <div>
-                                <p class="font-medium text-gray-900 dark:text-white">Describe what you need</p>
-                                <p class="text-sm text-gray-500 dark:text-gray-400">Tell Claude what your plugin should do in plain English</p>
-                            </div>
-                        </li>
-                        <li class="flex gap-4">
-                            <span class="grid size-8 shrink-0 place-items-center rounded-full bg-purple-100 text-sm font-bold text-purple-600 dark:bg-purple-900/30 dark:text-purple-400">4</span>
-                            <div>
-                                <p class="font-medium text-gray-900 dark:text-white">Get working code</p>
-                                <p class="text-sm text-gray-500 dark:text-gray-400">Receive production-ready Kotlin, Swift, and PHP with correct configurations</p>
-                            </div>
-                        </li>
-                    </ol>
-                </div>
 
                 {{-- Who It's For --}}
                 <h2>Perfect For</h2>
