@@ -424,7 +424,7 @@ class HandleInvoicePaidJob implements ShouldQueue
 
         if ($success) {
             // Update user's repo access timestamp based on the repo
-            if ($product->github_repo === 'ClaudePlugins') {
+            if ($product->github_repo === 'claude-code') {
                 $user->update([
                     'claude_plugins_repo_access_granted_at' => now(),
                 ]);

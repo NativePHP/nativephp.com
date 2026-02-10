@@ -11,7 +11,7 @@ class GitHubOAuth
 
     private const MOBILE_REPOSITORY = 'mobile';
 
-    private const CLAUDE_PLUGINS_REPOSITORY = 'ClaudePlugins';
+    private const CLAUDE_PLUGINS_REPOSITORY = 'claude-code';
 
     public function __construct(
         private ?string $token

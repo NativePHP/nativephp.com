@@ -168,7 +168,7 @@ class GitHubIntegrationController extends Controller
         $pluginDevKit = Product::where('slug', 'plugin-dev-kit')->first();
 
         if (! $pluginDevKit || ! $user->hasProductLicense($pluginDevKit)) {
-            return back()->with('error', 'You need a Plugin Dev Kit license to access the ClaudePlugins repository.');
+            return back()->with('error', 'You need a Plugin Dev Kit license to access the claude-code repository.');
         }
 
         $github = GitHubOAuth::make();

@@ -65,7 +65,7 @@ class ProductResource extends Resource
                     ->schema([
                         Forms\Components\TextInput::make('github_repo')
                             ->label('GitHub Repository Name')
-                            ->placeholder('ClaudePlugins')
+                            ->placeholder('claude-code')
                             ->helperText('Just the repository name (not the full URL). Leave empty if this product does not grant repo access.')
                             ->maxLength(255),
                     ]),

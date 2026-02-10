@@ -124,7 +124,7 @@
                 <div class="not-prose mt-4 space-y-3">
                     <div class="overflow-x-auto rounded-xl bg-gray-900 p-4 dark:bg-black">
                         <pre class="text-sm text-gray-100"><code><span class="text-gray-500"># Add the NativePHP plugin registry</span>
-<span class="text-purple-400">claude</span> plugin marketplace add nativephp/ClaudePlugins
+<span class="text-purple-400">claude</span> plugin marketplace add nativephp/claude-code
 
 <span class="text-gray-500"># Install the Plugin Dev Kit</span>
 <span class="text-purple-400">claude</span> plugin install nativephp-plugin-dev</code></pre>
@@ -255,7 +255,7 @@
                     </div>
                 </div>
                 <p>
-                    The agents also understand how to <strong>broadcast events from native code back to your Laravel app and WebView</strong>, so your Livewire components can react to native callbacks in real time.
+                    The agents also understand how to <strong>broadcast events from native code back to your Laravel app and WebView</strong>, so your app can react to native callbacks in real time.
                 </p>
 
                 {{-- Tips --}}

@@ -49,7 +49,7 @@ class ProductFactory extends Factory
         ]);
     }
 
-    public function withGitHubRepo(string $repo = 'ClaudePlugins'): static
+    public function withGitHubRepo(string $repo = 'claude-code'): static
     {
         return $this->state(fn (array $attributes) => [
             'github_repo' => $repo,

@@ -62,7 +62,7 @@
                 <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">About Integrations</h3>
                 <div class="prose dark:prose-invert prose-sm max-w-none text-gray-600 dark:text-gray-400">
                     <ul class="list-disc list-inside space-y-2">
-                        <li><strong>GitHub:</strong> Max license holders can access the private <code>nativephp/mobile</code> repository. Plugin Dev Kit license holders can access <code>nativephp/ClaudePlugins</code>.</li>
+                        <li><strong>GitHub:</strong> Max license holders can access the private <code>nativephp/mobile</code> repository. Plugin Dev Kit license holders can access <code>nativephp/claude-code</code>.</li>
                         <li><strong>Discord:</strong> Max license holders receive a special "Max" role in the NativePHP Discord server.</li>
                     </ul>
                     <p class="mt-4">

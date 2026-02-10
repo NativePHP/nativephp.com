@@ -17,7 +17,7 @@
                     </div>
                     <div class="ml-4">
                         <h3 class="font-medium text-gray-900 dark:text-white">
-                            <a href="https://github.com/nativephp/ClaudePlugins" target="_blank" rel="noopener noreferrer" class="hover:underline"><code>nativephp/ClaudePlugins</code></a> Repo Access
+                            <a href="https://github.com/nativephp/claude-code" target="_blank" rel="noopener noreferrer" class="hover:underline"><code>nativephp/claude-code</code></a> Repo Access
                         </h3>
                         <div class="mt-1 text-sm text-gray-600 dark:text-gray-400">
                             @if($user->github_username)
@@ -45,7 +45,7 @@
                 <div class="flex flex-wrap gap-2 lg:flex-shrink-0">
                     @if($user->github_username)
                         @if($collaboratorStatus === 'active')
-                            <a href="https://github.com/nativephp/ClaudePlugins" target="_blank" rel="noopener noreferrer" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-purple-600 hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500">
+                            <a href="https://github.com/nativephp/claude-code" target="_blank" rel="noopener noreferrer" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-purple-600 hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500">
                                 View Repo
                             </a>
                         @elseif($collaboratorStatus === 'pending')
