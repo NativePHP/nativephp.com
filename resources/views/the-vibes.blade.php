@@ -192,8 +192,8 @@
                     {{-- Image --}}
                     <div class="relative min-h-48 md:min-h-0">
                         <img
-                            src="{{ Vite::asset('resources/images/the-vibes/people-table.webp') }}"
-                            alt="People gathered around a table sharing food and conversation"
+                            src="{{ Vite::asset('resources/images/the-vibes/what-is-vibes.webp') }}"
+                            alt="The Vibes event atmosphere"
                             loading="lazy"
                             class="h-full w-full object-cover"
                         />
