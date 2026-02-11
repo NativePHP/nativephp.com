@@ -74,6 +74,7 @@ Route::view('privacy-policy', 'privacy-policy')->name('privacy-policy');
 Route::view('terms-of-service', 'terms-of-service')->name('terms-of-service');
 Route::view('partners', 'partners')->name('partners');
 Route::view('build-my-app', 'build-my-app')->name('build-my-app');
+Route::view('the-vibes', 'the-vibes')->name('the-vibes');
 
 // Public plugin directory routes
 Route::middleware(EnsureFeaturesAreActive::using(ShowPlugins::class))->group(function () {
