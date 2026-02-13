@@ -112,6 +112,104 @@
             </div>
         </section>
 
+        {{-- Early Bird Countdown --}}
+        <section
+            class="mt-10"
+            x-data="{
+                deadline: new Date('2026-04-01T00:00:00').getTime(),
+                days: 0,
+                hours: 0,
+                minutes: 0,
+                seconds: 0,
+                expired: false,
+                init() {
+                    this.tick();
+                    setInterval(() => this.tick(), 1000);
+                },
+                tick() {
+                    const now = Date.now();
+                    const diff = this.deadline - now;
+                    if (diff <= 0) {
+                        this.expired = true;
+                        return;
+                    }
+                    this.days = Math.floor(diff / (1000 * 60 * 60 * 24));
+                    this.hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                    this.minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+                    this.seconds = Math.floor((diff % (1000 * 60)) / 1000);
+                },
+            }"
+        >
+            <div
+                x-show="!expired"
+                x-init="
+                    () => {
+                        motion.inView($el, (element) => {
+                            motion.animate(
+                                $el,
+                                {
+                                    opacity: [0, 1],
+                                    y: [15, 0],
+                                },
+                                {
+                                    duration: 0.7,
+                                    ease: motion.backOut,
+                                },
+                            )
+                        })
+                    }
+                "
+                class="overflow-hidden rounded-2xl bg-gradient-to-r from-violet-600 to-indigo-400 p-6 text-white shadow-lg shadow-violet-500/20 dark:from-violet-400/90 dark:to-indigo-400/90 sm:p-8"
+            >
+                <div class="flex flex-col items-center gap-6 lg:flex-row lg:justify-between">
+                    {{-- Price Info --}}
+                    <div class="text-center lg:text-left">
+                        <p class="text-sm font-medium uppercase tracking-wider text-yellow-200">
+                            Early Bird Pricing
+                        </p>
+                        <div class="mt-2 flex items-baseline gap-3">
+                            <span class="text-4xl font-extrabold">$89</span>
+                            <span class="text-lg text-violet-200 line-through">$129</span>
+                        </div>
+                        <p class="mt-1 text-sm text-violet-200">
+                            Price increases April 1st
+                        </p>
+                    </div>
+
+                    {{-- Countdown --}}
+                    <div class="flex items-center gap-3 sm:gap-4">
+                        <div class="grid place-items-center">
+                            <span class="text-3xl font-bold tabular-nums sm:text-4xl" x-text="String(days).padStart(2, '0')">00</span>
+                            <span class="mt-1 text-xs font-medium uppercase tracking-wide text-violet-200">Days</span>
+                        </div>
+                        <span class="text-2xl font-bold text-violet-300">:</span>
+                        <div class="grid place-items-center">
+                            <span class="text-3xl font-bold tabular-nums sm:text-4xl" x-text="String(hours).padStart(2, '0')">00</span>
+                            <span class="mt-1 text-xs font-medium uppercase tracking-wide text-violet-200">Hours</span>
+                        </div>
+                        <span class="text-2xl font-bold text-violet-300">:</span>
+                        <div class="grid place-items-center">
+                            <span class="text-3xl font-bold tabular-nums sm:text-4xl" x-text="String(minutes).padStart(2, '0')">00</span>
+                            <span class="mt-1 text-xs font-medium uppercase tracking-wide text-violet-200">Mins</span>
+                        </div>
+                        <span class="text-2xl font-bold text-violet-300">:</span>
+                        <div class="grid place-items-center">
+                            <span class="text-3xl font-bold tabular-nums sm:text-4xl" x-text="String(seconds).padStart(2, '0')">00</span>
+                            <span class="mt-1 text-xs font-medium uppercase tracking-wide text-violet-200">Secs</span>
+                        </div>
+                    </div>
+
+                    {{-- CTA --}}
+                    <a
+                        href="https://luma.com/szs6n4ym"
+                        class="shrink-0 rounded-xl bg-white px-6 py-3 font-semibold text-violet-700 transition duration-200 hover:bg-violet-50"
+                    >
+                        Lock In $89
+                    </a>
+                </div>
+            </div>
+        </section>
+
         {{-- Hero Image --}}
         <section class="mt-16">
             <div
@@ -640,11 +738,12 @@
                         </div>
                         <h3 class="text-xl font-medium">Ticket Price</h3>
                     </div>
-                    <p class="mt-4 text-lg font-semibold">
-                        $89 per person
-                    </p>
+                    <div class="mt-4 flex items-baseline gap-2">
+                        <p class="text-lg font-semibold">$89 per person</p>
+                        <span class="text-sm text-gray-500 line-through dark:text-gray-500">$129</span>
+                    </div>
                     <p class="mt-1 text-gray-600 dark:text-gray-400">
-                        Includes local catering, drinks, and access to the entire event.
+                        Early bird pricing until April 1st. Includes catering, drinks, and full event access.
                     </p>
                 </div>
 
@@ -865,7 +964,7 @@
                         Get Your Ticket &mdash; $89
                     </a>
                     <span class="text-sm text-gray-500 dark:text-gray-500">
-                        July 30, 2026 &middot; Boston, MA &middot; 100 spots
+                        Early bird $89 &middot; $129 after April 1st &middot; 100 spots
                     </span>
                 </div>
             </div>
