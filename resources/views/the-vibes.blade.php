@@ -367,6 +367,184 @@
             </div>
         </section>
 
+        {{-- Venue Gallery Section --}}
+        <section
+            class="mt-20"
+            x-data="{
+                open: false,
+                current: 0,
+                images: [
+                    { src: 'https://www.uniquevenues.com/wp-content/uploads/2023/11/Small-Atrium-Lounge-scaled.jpeg', alt: 'Atrium lounge area' },
+                    { src: 'https://www.uniquevenues.com/wp-content/uploads/2023/11/Elisif_20230621_3502-websize-scaled.jpg', alt: 'Venue interior' },
+                    { src: 'https://www.uniquevenues.com/wp-content/uploads/2023/11/Elisif_20230621_3355-HDR-websize-scaled.jpg', alt: 'Venue space' },
+                    { src: 'https://www.uniquevenues.com/wp-content/uploads/2023/11/Assembly-Best-photo.jpeg', alt: 'Assembly hall' },
+                    { src: 'https://www.uniquevenues.com/wp-content/uploads/2023/11/Library-SMALL-scaled.jpg', alt: 'Library space' },
+                    { src: 'https://www.uniquevenues.com/wp-content/uploads/2023/11/Library-Atrium-SMALL--scaled.jpg', alt: 'Library atrium' },
+                ],
+                openLightbox(index) {
+                    this.current = index;
+                    this.open = true;
+                },
+                next() {
+                    this.current = (this.current + 1) % this.images.length;
+                },
+                prev() {
+                    this.current = (this.current - 1 + this.images.length) % this.images.length;
+                },
+            }"
+            @keydown.escape.window="open = false"
+            @keydown.arrow-right.window="if (open) next()"
+            @keydown.arrow-left.window="if (open) prev()"
+        >
+            <h2
+                x-init="
+                    () => {
+                        motion.inView($el, (element) => {
+                            motion.animate(
+                                $el,
+                                {
+                                    opacity: [0, 1],
+                                    y: [-10, 0],
+                                },
+                                {
+                                    duration: 0.7,
+                                    ease: motion.easeOut,
+                                },
+                            )
+                        })
+                    }
+                "
+                class="text-center text-3xl font-semibold"
+            >
+                The Venue
+            </h2>
+
+            {{-- Featured Image --}}
+            <div
+                x-init="
+                    () => {
+                        motion.inView($el, (element) => {
+                            motion.animate(
+                                $el,
+                                {
+                                    opacity: [0, 1],
+                                    y: [20, 0],
+                                },
+                                {
+                                    duration: 0.9,
+                                    ease: motion.easeOut,
+                                },
+                            )
+                        })
+                    }
+                "
+                class="mt-10 cursor-pointer overflow-hidden rounded-2xl"
+                @click="openLightbox(0)"
+            >
+                <img
+                    src="https://www.uniquevenues.com/wp-content/uploads/2023/11/Small-Atrium-Lounge-scaled.jpeg"
+                    alt="Atrium lounge area"
+                    loading="lazy"
+                    class="h-64 w-full object-cover transition duration-300 hover:scale-105 sm:h-80 md:h-[28rem]"
+                />
+            </div>
+
+            {{-- Thumbnail Grid --}}
+            <div
+                x-init="
+                    () => {
+                        motion.inView($el, (element) => {
+                            motion.animate(
+                                Array.from($el.children),
+                                {
+                                    y: [10, 0],
+                                    opacity: [0, 1],
+                                    scale: [0.95, 1],
+                                },
+                                {
+                                    duration: 0.7,
+                                    ease: motion.backOut,
+                                    delay: motion.stagger(0.08),
+                                },
+                            )
+                        })
+                    }
+                "
+                class="mt-4 grid grid-cols-5 gap-3"
+            >
+                <template x-for="(image, index) in images.slice(1)" :key="index">
+                    <div
+                        class="cursor-pointer overflow-hidden rounded-xl"
+                        @click="openLightbox(index + 1)"
+                    >
+                        <img
+                            :src="image.src"
+                            :alt="image.alt"
+                            loading="lazy"
+                            class="h-20 w-full object-cover transition duration-300 hover:scale-110 sm:h-24 md:h-32"
+                        />
+                    </div>
+                </template>
+            </div>
+
+            {{-- Lightbox Overlay --}}
+            <template x-teleport="body">
+                <div
+                    x-show="open"
+                    x-transition:enter="transition duration-300 ease-out"
+                    x-transition:enter-start="opacity-0"
+                    x-transition:enter-end="opacity-100"
+                    x-transition:leave="transition duration-200 ease-in"
+                    x-transition:leave-start="opacity-100"
+                    x-transition:leave-end="opacity-0"
+                    class="fixed inset-0 z-50 flex items-center justify-center bg-black/90 p-4 backdrop-blur-sm"
+                    @click.self="open = false"
+                >
+                    {{-- Close Button --}}
+                    <button
+                        @click="open = false"
+                        class="absolute right-4 top-4 rounded-full bg-white/10 p-2 text-white transition hover:bg-white/20"
+                    >
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="size-6">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+
+                    {{-- Previous Button --}}
+                    <button
+                        @click="prev()"
+                        class="absolute left-4 rounded-full bg-white/10 p-2 text-white transition hover:bg-white/20"
+                    >
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="size-6">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
+                        </svg>
+                    </button>
+
+                    {{-- Image --}}
+                    <img
+                        :src="images[current].src"
+                        :alt="images[current].alt"
+                        class="max-h-[85vh] max-w-full rounded-lg object-contain"
+                    />
+
+                    {{-- Next Button --}}
+                    <button
+                        @click="next()"
+                        class="absolute right-4 rounded-full bg-white/10 p-2 text-white transition hover:bg-white/20"
+                    >
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="size-6">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
+                        </svg>
+                    </button>
+
+                    {{-- Image Counter --}}
+                    <div class="absolute bottom-4 left-1/2 -translate-x-1/2 rounded-full bg-white/10 px-4 py-1.5 text-sm text-white">
+                        <span x-text="current + 1"></span> / <span x-text="images.length"></span>
+                    </div>
+                </div>
+            </template>
+        </section>
+
         <x-divider />
 
         {{-- Event Details Section --}}
@@ -445,10 +623,10 @@
                         <h3 class="text-xl font-medium">Location</h3>
                     </div>
                     <p class="mt-4 text-lg font-semibold">
-                        Boston, MA
+                        Loft on Two
                     </p>
                     <p class="mt-1 text-gray-600 dark:text-gray-400">
-                        Venue details coming soon. Near the Laracon US venue in the SoWa Arts District.
+                        One Financial Center, Boston, MA 02111
                     </p>
                 </div>
 
