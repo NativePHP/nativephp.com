@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Features\ShowAuthButtons;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\URL;
 use Laravel\Pennant\Feature;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
@@ -26,15 +27,18 @@ class MobileRouteTest extends TestCase
         $this
             ->withoutVite()
             ->get(route('pricing'))
-            ->assertDontSee('buy.stripe.com');
+            ->assertRedirect('/blog/nativephp-for-mobile-is-now-free');
     }
 
     #[Test]
     public function mobile_route_includes_mobile_pricing_livewire_component()
     {
+        $signedUrl = URL::signedRoute('alt-pricing');
+
         $this
             ->withoutVite()
-            ->get(route('pricing'))
+            ->get($signedUrl)
+            ->assertStatus(200)
             ->assertSeeLivewire('mobile-pricing');
     }
 }
