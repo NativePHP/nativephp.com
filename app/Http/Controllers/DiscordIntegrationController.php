@@ -32,7 +32,7 @@ class DiscordIntegrationController extends Controller
         $code = request('code');
 
         if (! $code) {
-            return redirect()->route('customer.integrations')
+            return to_route('customer.integrations')
                 ->with('error', 'Discord authorization was cancelled.');
         }
 
@@ -69,7 +69,7 @@ class DiscordIntegrationController extends Controller
             $discord = DiscordApi::make();
 
             if (! $discord->isGuildMember($discordUser['id'])) {
-                return redirect()->route('customer.integrations')
+                return to_route('customer.integrations')
                     ->with('warning', 'Discord account connected! Please join the NativePHP Discord server to receive the Max role.');
             }
 
@@ -81,15 +81,15 @@ class DiscordIntegrationController extends Controller
                         'discord_role_granted_at' => now(),
                     ]);
 
-                    return redirect()->route('customer.integrations')
+                    return to_route('customer.integrations')
                         ->with('success', 'Discord account connected and Max role assigned!');
                 }
 
-                return redirect()->route('customer.integrations')
+                return to_route('customer.integrations')
                     ->with('warning', 'Discord account connected, but we could not assign the Max role. Please try again later.');
             }
 
-            return redirect()->route('customer.integrations')
+            return to_route('customer.integrations')
                 ->with('success', 'Discord account connected successfully!');
         } catch (\Exception $e) {
             Log::error('Discord OAuth callback failed', [
@@ -97,7 +97,7 @@ class DiscordIntegrationController extends Controller
                 'trace' => $e->getTraceAsString(),
             ]);
 
-            return redirect()->route('customer.integrations')
+            return to_route('customer.integrations')
                 ->with('error', 'Failed to connect Discord account. Please try again.');
         }
     }

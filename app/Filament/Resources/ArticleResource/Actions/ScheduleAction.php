@@ -5,7 +5,6 @@ namespace App\Filament\Resources\ArticleResource\Actions;
 use App\Models\Article;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Tables\Actions\Action;
-use Illuminate\Support\Carbon;
 
 class ScheduleAction extends Action
 {
@@ -24,8 +23,8 @@ class ScheduleAction extends Action
                     ->afterOrEqual('now')
                     ->required(),
             ])
-            ->action(function (Article $article, array $data) {
-                $article->publish(Carbon::parse($data['published_at']));
+            ->action(function (Article $article, array $data): void {
+                $article->publish(\Illuminate\Support\Facades\Date::parse($data['published_at']));
             })
             ->requiresConfirmation();
     }

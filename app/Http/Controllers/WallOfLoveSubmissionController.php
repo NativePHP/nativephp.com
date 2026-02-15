@@ -20,7 +20,7 @@ class WallOfLoveSubmissionController extends Controller
         $hasExistingSubmission = auth()->user()->wallOfLoveSubmissions()->exists();
 
         if ($hasExistingSubmission) {
-            return redirect()->route('dashboard')->with('info', 'You have already submitted your story to the Wall of Love.');
+            return to_route('dashboard')->with('info', 'You have already submitted your story to the Wall of Love.');
         }
 
         return view('customer.wall-of-love.create');

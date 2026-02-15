@@ -26,14 +26,6 @@ class User extends Authenticatable implements FilamentUser
         'github_token',
     ];
 
-    protected $casts = [
-        'email_verified_at' => 'datetime',
-        'password' => 'hashed',
-        'mobile_repo_access_granted_at' => 'datetime',
-        'claude_plugins_repo_access_granted_at' => 'datetime',
-        'discord_role_granted_at' => 'datetime',
-    ];
-
     public function canAccessPanel(Panel $panel): bool
     {
         return $this->isAdmin();
@@ -117,7 +109,7 @@ class User extends Authenticatable implements FilamentUser
             ->where('assigned_email', $this->email)
             ->where('is_suspended', false)
             ->whereActive()
-            ->whereHas('parentLicense', function ($query) {
+            ->whereHas('parentLicense', function ($query): void {
                 $query->where('policy_name', 'max')
                     ->where('is_suspended', false)
                     ->whereActive();
@@ -172,31 +164,35 @@ class User extends Authenticatable implements FilamentUser
         return $this->licenses()->exists();
     }
 
-    public function getDisplayNameAttribute(): string
+    protected function displayName(): \Illuminate\Database\Eloquent\Casts\Attribute
     {
-        return $this->attributes['display_name'] ?? $this->name ?? 'Unknown';
+        return \Illuminate\Database\Eloquent\Casts\Attribute::make(get: function () {
+            return $this->attributes['display_name'] ?? $this->name ?? 'Unknown';
+        });
     }
 
-    public function getFirstNameAttribute(): ?string
+    protected function firstName(): \Illuminate\Database\Eloquent\Casts\Attribute
     {
-        if (empty($this->name)) {
-            return null;
-        }
+        return \Illuminate\Database\Eloquent\Casts\Attribute::make(get: function () {
+            if (empty($this->name)) {
+                return null;
+            }
+            $nameParts = explode(' ', $this->name, 2);
 
-        $nameParts = explode(' ', $this->name, 2);
-
-        return $nameParts[0];
+            return $nameParts[0];
+        });
     }
 
-    public function getLastNameAttribute(): ?string
+    protected function lastName(): \Illuminate\Database\Eloquent\Casts\Attribute
     {
-        if (empty($this->name)) {
-            return null;
-        }
+        return \Illuminate\Database\Eloquent\Casts\Attribute::make(get: function () {
+            if (empty($this->name)) {
+                return null;
+            }
+            $nameParts = explode(' ', $this->name, 2);
 
-        $nameParts = explode(' ', $this->name, 2);
-
-        return $nameParts[1] ?? null;
+            return $nameParts[1] ?? null;
+        });
     }
 
     public function findStripeCustomerRecords(): Collection
@@ -333,5 +329,16 @@ class User extends Authenticatable implements FilamentUser
         }
 
         return $this->isEligibleForFreePluginsOffer() && ! $this->hasClaimedFreePlugins();
+    }
+
+    protected function casts(): array
+    {
+        return [
+            'email_verified_at' => 'datetime',
+            'password' => 'hashed',
+            'mobile_repo_access_granted_at' => 'datetime',
+            'claude_plugins_repo_access_granted_at' => 'datetime',
+            'discord_role_granted_at' => 'datetime',
+        ];
     }
 }

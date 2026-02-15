@@ -13,12 +13,15 @@ class LicenseExpiryWarning extends Model
         'sent_at',
     ];
 
-    protected $casts = [
-        'sent_at' => 'datetime',
-    ];
-
     public function license(): BelongsTo
     {
         return $this->belongsTo(License::class);
+    }
+
+    protected function casts(): array
+    {
+        return [
+            'sent_at' => 'datetime',
+        ];
     }
 }

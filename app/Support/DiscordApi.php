@@ -18,9 +18,9 @@ class DiscordApi
     public static function make(): static
     {
         return new static(
-            config('services.discord.bot_token') ?? '',
-            config('services.discord.guild_id') ?? '',
-            config('services.discord.max_role_id') ?? ''
+            config('services.discord.bot_token', ''),
+            config('services.discord.guild_id', ''),
+            config('services.discord.max_role_id', '')
         );
     }
 

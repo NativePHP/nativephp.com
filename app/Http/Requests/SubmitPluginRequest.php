@@ -21,7 +21,7 @@ class SubmitPluginRequest extends FormRequest
                 'string',
                 'max:255',
                 'regex:/^[a-zA-Z0-9_.-]+\/[a-zA-Z0-9_.-]+$/',
-                function ($attribute, $value, $fail) {
+                function ($attribute, $value, $fail): void {
                     $url = 'https://github.com/'.trim($value, '/');
                     if (\App\Models\Plugin::where('repository_url', $url)->exists()) {
                         $fail('This repository has already been submitted.');
@@ -44,7 +44,7 @@ class SubmitPluginRequest extends FormRequest
 
     public function withValidator($validator): void
     {
-        $validator->after(function ($validator) {
+        $validator->after(function ($validator): void {
             if (! $this->user()->github_id) {
                 $validator->errors()->add('repository', 'You must connect your GitHub account to submit a plugin.');
             }

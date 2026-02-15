@@ -17,7 +17,7 @@ class DeveloperOnboardingController extends Controller
         $developerAccount = $user->developerAccount;
 
         if ($developerAccount && $developerAccount->hasCompletedOnboarding()) {
-            return redirect()->route('customer.developer.dashboard')
+            return to_route('customer.developer.dashboard')
                 ->with('message', 'Your developer account is already set up.');
         }
 
@@ -41,7 +41,7 @@ class DeveloperOnboardingController extends Controller
 
             return redirect($onboardingUrl);
         } catch (\Exception $e) {
-            return redirect()->route('customer.developer.onboarding')
+            return to_route('customer.developer.onboarding')
                 ->with('error', 'Unable to start onboarding. Please try again.');
         }
     }
@@ -52,7 +52,7 @@ class DeveloperOnboardingController extends Controller
         $developerAccount = $user->developerAccount;
 
         if (! $developerAccount) {
-            return redirect()->route('customer.developer.onboarding')
+            return to_route('customer.developer.onboarding')
                 ->with('error', 'Developer account not found.');
         }
 
@@ -65,11 +65,11 @@ class DeveloperOnboardingController extends Controller
                 ->whereNull('developer_account_id')
                 ->update(['developer_account_id' => $developerAccount->id]);
 
-            return redirect()->route('customer.developer.dashboard')
+            return to_route('customer.developer.dashboard')
                 ->with('success', 'Your developer account is now active!');
         }
 
-        return redirect()->route('customer.developer.onboarding')
+        return to_route('customer.developer.onboarding')
             ->with('message', 'Onboarding is not complete. Please finish the remaining steps.');
     }
 
@@ -79,7 +79,7 @@ class DeveloperOnboardingController extends Controller
         $developerAccount = $user->developerAccount;
 
         if (! $developerAccount) {
-            return redirect()->route('customer.developer.onboarding');
+            return to_route('customer.developer.onboarding');
         }
 
         try {
@@ -87,7 +87,7 @@ class DeveloperOnboardingController extends Controller
 
             return redirect($onboardingUrl);
         } catch (\Exception $e) {
-            return redirect()->route('customer.developer.onboarding')
+            return to_route('customer.developer.onboarding')
                 ->with('error', 'Unable to refresh onboarding. Please try again.');
         }
     }
@@ -98,7 +98,7 @@ class DeveloperOnboardingController extends Controller
         $developerAccount = $user->developerAccount;
 
         if (! $developerAccount || ! $developerAccount->hasCompletedOnboarding()) {
-            return redirect()->route('customer.developer.onboarding');
+            return to_route('customer.developer.onboarding');
         }
 
         $this->stripeConnectService->refreshAccountStatus($developerAccount);

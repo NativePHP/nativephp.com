@@ -52,14 +52,14 @@ class SendLicenseExpiryWarnings extends Command
 
             $query->where('expires_at', '>', now()->addDays($lowerBound)->startOfDay())
                 ->where('expires_at', '<=', now()->addDays($days)->endOfDay())
-                ->whereDoesntHave('expiryWarnings', function ($q) use ($days) {
+                ->whereDoesntHave('expiryWarnings', function ($q) use ($days): void {
                     $q->where('warning_days', $days);
                 });
         } else {
             // Normal mode: only licenses expiring on the exact target date
             $targetDate = now()->addDays($days)->startOfDay();
             $query->whereDate('expires_at', $targetDate)
-                ->whereDoesntHave('expiryWarnings', function ($q) use ($days) {
+                ->whereDoesntHave('expiryWarnings', function ($q) use ($days): void {
                     $q->where('warning_days', $days)
                         ->where('sent_at', '>=', now()->subHours(23)); // Prevent duplicate emails within 23 hours
                 });

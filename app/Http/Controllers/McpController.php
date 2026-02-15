@@ -22,7 +22,7 @@ class McpController extends Controller
     {
         $sessionId = Str::uuid()->toString();
 
-        return response()->stream(function () use ($sessionId) {
+        return response()->stream(function () use ($sessionId): void {
             // Send session info
             $this->sendSseEvent([
                 'type' => 'session',
@@ -51,7 +51,7 @@ class McpController extends Controller
                 echo ": keepalive\n\n";
                 ob_flush();
                 flush();
-                sleep(30);
+                \Illuminate\Support\Sleep::sleep(30);
             }
         }, 200, [
             'Content-Type' => 'text/event-stream',

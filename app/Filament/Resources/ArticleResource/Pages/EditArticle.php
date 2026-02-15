@@ -13,7 +13,7 @@ class EditArticle extends EditRecord
 
     protected function afterSave(): void
     {
-        $service = app(OgImageService::class);
+        $service = resolve(OgImageService::class);
 
         // Always regenerate the OG image on update to ensure it's current
         $ogImageUrl = $service->generate($this->record);
@@ -53,11 +53,11 @@ class EditArticle extends EditRecord
                         ->visible(fn ($get) => $get('publish_type') === 'schedule')
                         ->required(fn ($get) => $get('publish_type') === 'schedule'),
                 ])
-                ->action(function (array $data) {
+                ->action(function (array $data): void {
                     if ($data['publish_type'] === 'now') {
                         $this->record->publish();
                     } else {
-                        $this->record->publish(\Illuminate\Support\Carbon::parse($data['published_at']));
+                        $this->record->publish(\Illuminate\Support\Facades\Date::parse($data['published_at']));
                     }
                 }),
             Actions\DeleteAction::make(),

@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Jobs\SyncPluginReleases;
 use App\Models\Plugin;
 use App\Services\PluginSyncService;
 use Illuminate\Http\JsonResponse;
@@ -29,7 +28,7 @@ class PluginWebhookController extends Controller
             $syncService->sync($plugin);
 
             // Queue release sync for version records
-            SyncPluginReleases::dispatch($plugin);
+            dispatch(new \App\Jobs\SyncPluginReleases($plugin));
 
             return response()->json([
                 'success' => true,
@@ -57,7 +56,7 @@ class PluginWebhookController extends Controller
             return response()->json(['error' => 'Failed to sync plugin'], 500);
         }
 
-        SyncPluginReleases::dispatch($plugin);
+        dispatch(new \App\Jobs\SyncPluginReleases($plugin));
 
         return response()->json([
             'success' => true,

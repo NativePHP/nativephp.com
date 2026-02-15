@@ -82,7 +82,7 @@ class MatchUsersWithStripeCustomers extends Command
             $progressBar->advance();
 
             // Add a small delay to avoid rate limiting
-            usleep(100000); // 0.1 seconds
+            \Illuminate\Support\Sleep::usleep(100000); // 0.1 seconds
         }
 
         $progressBar->finish();

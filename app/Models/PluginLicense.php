@@ -14,13 +14,6 @@ class PluginLicense extends Model
 
     protected $guarded = [];
 
-    protected $casts = [
-        'price_paid' => 'integer',
-        'is_grandfathered' => 'boolean',
-        'purchased_at' => 'datetime',
-        'expires_at' => 'datetime',
-    ];
-
     /**
      * @return BelongsTo<User, PluginLicense>
      */
@@ -62,9 +55,10 @@ class PluginLicense extends Model
      * @param  Builder<PluginLicense>  $query
      * @return Builder<PluginLicense>
      */
-    public function scopeActive(Builder $query): Builder
+    #[\Illuminate\Database\Eloquent\Attributes\Scope]
+    protected function active(Builder $query): Builder
     {
-        return $query->where(function ($q) {
+        return $query->where(function ($q): void {
             $q->whereNull('expires_at')
                 ->orWhere('expires_at', '>', now());
         });
@@ -74,7 +68,8 @@ class PluginLicense extends Model
      * @param  Builder<PluginLicense>  $query
      * @return Builder<PluginLicense>
      */
-    public function scopeForUser(Builder $query, User $user): Builder
+    #[\Illuminate\Database\Eloquent\Attributes\Scope]
+    protected function forUser(Builder $query, User $user): Builder
     {
         return $query->where('user_id', $user->id);
     }
@@ -83,7 +78,8 @@ class PluginLicense extends Model
      * @param  Builder<PluginLicense>  $query
      * @return Builder<PluginLicense>
      */
-    public function scopeForPlugin(Builder $query, Plugin $plugin): Builder
+    #[\Illuminate\Database\Eloquent\Attributes\Scope]
+    protected function forPlugin(Builder $query, Plugin $plugin): Builder
     {
         return $query->where('plugin_id', $plugin->id);
     }
@@ -100,5 +96,15 @@ class PluginLicense extends Model
     public function isExpired(): bool
     {
         return ! $this->isActive();
+    }
+
+    protected function casts(): array
+    {
+        return [
+            'price_paid' => 'integer',
+            'is_grandfathered' => 'boolean',
+            'purchased_at' => 'datetime',
+            'expires_at' => 'datetime',
+        ];
     }
 }

@@ -49,7 +49,7 @@ class GitHubIntegrationController extends Controller
                 return $this->handleLogin($githubUser);
             }
 
-            return redirect()->route('customer.login')
+            return to_route('customer.login')
                 ->with('error', 'Please log in first to connect your GitHub account.');
         } catch (\Exception $e) {
             Log::error('GitHub OAuth callback failed', [
@@ -59,7 +59,7 @@ class GitHubIntegrationController extends Controller
 
             $route = Auth::check() ? 'customer.licenses' : 'customer.login';
 
-            return redirect()->route($route)
+            return to_route($route)
                 ->with('error', 'GitHub authentication failed. Please try again.');
         }
     }
@@ -80,7 +80,7 @@ class GitHubIntegrationController extends Controller
                 ->with('success', 'GitHub account connected successfully!');
         }
 
-        return redirect()->route('dashboard')
+        return to_route('dashboard')
             ->with('success', 'GitHub account connected successfully!');
     }
 
@@ -126,7 +126,7 @@ class GitHubIntegrationController extends Controller
 
         Auth::login($user, remember: true);
 
-        return redirect()->route('dashboard')
+        return to_route('dashboard')
             ->with('success', 'Account created successfully!');
     }
 

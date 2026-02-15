@@ -11,12 +11,6 @@ class PluginActivity extends Model
 {
     protected $guarded = [];
 
-    protected $casts = [
-        'type' => PluginActivityType::class,
-        'from_status' => PluginStatus::class,
-        'to_status' => PluginStatus::class,
-    ];
-
     /**
      * @return BelongsTo<Plugin, PluginActivity>
      */
@@ -31,5 +25,14 @@ class PluginActivity extends Model
     public function causer(): BelongsTo
     {
         return $this->belongsTo(User::class, 'causer_id');
+    }
+
+    protected function casts(): array
+    {
+        return [
+            'type' => PluginActivityType::class,
+            'from_status' => PluginStatus::class,
+            'to_status' => PluginStatus::class,
+        ];
     }
 }

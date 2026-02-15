@@ -2,7 +2,6 @@
 
 namespace App\Console\Commands;
 
-use App\Jobs\SyncPlugin;
 use App\Models\Plugin;
 use Illuminate\Console\Command;
 
@@ -26,7 +25,7 @@ class SyncPlugins extends Command
 
         $this->info("Dispatching sync jobs for {$count} plugins...");
 
-        $plugins->each(fn (Plugin $plugin) => SyncPlugin::dispatch($plugin));
+        $plugins->each(fn (Plugin $plugin) => dispatch(new \App\Jobs\SyncPlugin($plugin)));
 
         $this->info('Done. Jobs have been dispatched to the queue.');
 

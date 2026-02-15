@@ -16,13 +16,6 @@ class PluginBundle extends Model
 
     protected $guarded = [];
 
-    protected $casts = [
-        'price' => 'integer',
-        'is_active' => 'boolean',
-        'is_featured' => 'boolean',
-        'published_at' => 'datetime',
-    ];
-
     /**
      * @return BelongsToMany<Plugin>
      */
@@ -102,7 +95,8 @@ class PluginBundle extends Model
      * @param  Builder<PluginBundle>  $query
      * @return Builder<PluginBundle>
      */
-    public function scopeActive(Builder $query): Builder
+    #[\Illuminate\Database\Eloquent\Attributes\Scope]
+    protected function active(Builder $query): Builder
     {
         return $query->where('is_active', true)
             ->whereNotNull('published_at')
@@ -113,7 +107,8 @@ class PluginBundle extends Model
      * @param  Builder<PluginBundle>  $query
      * @return Builder<PluginBundle>
      */
-    public function scopeFeatured(Builder $query): Builder
+    #[\Illuminate\Database\Eloquent\Attributes\Scope]
+    protected function featured(Builder $query): Builder
     {
         return $query->where('is_featured', true);
     }
@@ -143,19 +138,23 @@ class PluginBundle extends Model
      * Calculate the total retail value of all plugins in the bundle.
      * Uses regular tier prices for comparison purposes.
      */
-    public function getRetailValueAttribute(): int
+    protected function retailValue(): \Illuminate\Database\Eloquent\Casts\Attribute
     {
-        return $this->plugins
-            ->filter(fn (Plugin $plugin) => $plugin->getRegularPrice())
-            ->sum(fn (Plugin $plugin) => $plugin->getRegularPrice()->amount);
+        return \Illuminate\Database\Eloquent\Casts\Attribute::make(get: function () {
+            return $this->plugins
+                ->filter(fn (Plugin $plugin) => $plugin->getRegularPrice())
+                ->sum(fn (Plugin $plugin) => $plugin->getRegularPrice()->amount);
+        });
     }
 
     /**
      * Get formatted retail value.
      */
-    public function getFormattedRetailValueAttribute(): string
+    protected function formattedRetailValue(): \Illuminate\Database\Eloquent\Casts\Attribute
     {
-        return '$'.number_format($this->retail_value / 100, 2);
+        return \Illuminate\Database\Eloquent\Casts\Attribute::make(get: function () {
+            return '$'.number_format($this->retail_value / 100, 2);
+        });
     }
 
     /**
@@ -173,13 +172,14 @@ class PluginBundle extends Model
     /**
      * Get formatted bundle price (uses regular tier price or legacy price column).
      */
-    public function getFormattedPriceAttribute(): string
+    protected function formattedPrice(): \Illuminate\Database\Eloquent\Casts\Attribute
     {
-        $price = $this->getRegularPrice();
+        return \Illuminate\Database\Eloquent\Casts\Attribute::make(get: function () {
+            $price = $this->getRegularPrice();
+            $amount = $price ? $price->amount : $this->price;
 
-        $amount = $price ? $price->amount : $this->price;
-
-        return '$'.number_format($amount / 100, 2);
+            return '$'.number_format($amount / 100, 2);
+        });
     }
 
     /**
@@ -210,12 +210,14 @@ class PluginBundle extends Model
     /**
      * Calculate the discount percentage (uses regular price for backwards compatibility).
      */
-    public function getDiscountPercentAttribute(): int
+    protected function discountPercent(): \Illuminate\Database\Eloquent\Casts\Attribute
     {
-        $price = $this->getRegularPrice();
-        $amount = $price ? $price->amount : $this->price;
+        return \Illuminate\Database\Eloquent\Casts\Attribute::make(get: function () {
+            $price = $this->getRegularPrice();
+            $amount = $price ? $price->amount : $this->price;
 
-        return $this->getDiscountPercentFor($amount);
+            return $this->getDiscountPercentFor($amount);
+        });
     }
 
     /**
@@ -240,12 +242,14 @@ class PluginBundle extends Model
     /**
      * Get the savings amount in cents (uses regular price for backwards compatibility).
      */
-    public function getSavingsAttribute(): int
+    protected function savings(): \Illuminate\Database\Eloquent\Casts\Attribute
     {
-        $price = $this->getRegularPrice();
-        $amount = $price ? $price->amount : $this->price;
+        return \Illuminate\Database\Eloquent\Casts\Attribute::make(get: function () {
+            $price = $this->getRegularPrice();
+            $amount = $price ? $price->amount : $this->price;
 
-        return $this->getSavingsFor($amount);
+            return $this->getSavingsFor($amount);
+        });
     }
 
     /**
@@ -267,9 +271,11 @@ class PluginBundle extends Model
     /**
      * Get formatted savings (uses regular price for backwards compatibility).
      */
-    public function getFormattedSavingsAttribute(): string
+    protected function formattedSavings(): \Illuminate\Database\Eloquent\Casts\Attribute
     {
-        return '$'.number_format($this->savings / 100, 2);
+        return \Illuminate\Database\Eloquent\Casts\Attribute::make(get: function () {
+            return '$'.number_format($this->savings / 100, 2);
+        });
     }
 
     /**
@@ -350,5 +356,15 @@ class PluginBundle extends Model
     public function getRouteKeyName(): string
     {
         return 'slug';
+    }
+
+    protected function casts(): array
+    {
+        return [
+            'price' => 'integer',
+            'is_active' => 'boolean',
+            'is_featured' => 'boolean',
+            'published_at' => 'datetime',
+        ];
     }
 }

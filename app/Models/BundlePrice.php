@@ -14,12 +14,6 @@ class BundlePrice extends Model
 
     protected $guarded = [];
 
-    protected $casts = [
-        'amount' => 'integer',
-        'is_active' => 'boolean',
-        'tier' => PriceTier::class,
-    ];
-
     /**
      * @return BelongsTo<PluginBundle, BundlePrice>
      */
@@ -32,7 +26,8 @@ class BundlePrice extends Model
      * @param  Builder<BundlePrice>  $query
      * @return Builder<BundlePrice>
      */
-    public function scopeActive(Builder $query): Builder
+    #[\Illuminate\Database\Eloquent\Attributes\Scope]
+    protected function active(Builder $query): Builder
     {
         return $query->where('is_active', true);
     }
@@ -41,7 +36,8 @@ class BundlePrice extends Model
      * @param  Builder<BundlePrice>  $query
      * @return Builder<BundlePrice>
      */
-    public function scopeForTier(Builder $query, PriceTier|string $tier): Builder
+    #[\Illuminate\Database\Eloquent\Attributes\Scope]
+    protected function forTier(Builder $query, PriceTier|string $tier): Builder
     {
         $tierValue = $tier instanceof PriceTier ? $tier->value : $tier;
 
@@ -53,16 +49,19 @@ class BundlePrice extends Model
      * @param  array<PriceTier>  $tiers
      * @return Builder<BundlePrice>
      */
-    public function scopeForTiers(Builder $query, array $tiers): Builder
+    #[\Illuminate\Database\Eloquent\Attributes\Scope]
+    protected function forTiers(Builder $query, array $tiers): Builder
     {
         $tierValues = array_map(fn ($t) => $t instanceof PriceTier ? $t->value : $t, $tiers);
 
         return $query->whereIn('tier', $tierValues);
     }
 
-    public function getFormattedAmountAttribute(): string
+    protected function formattedAmount(): \Illuminate\Database\Eloquent\Casts\Attribute
     {
-        return number_format($this->amount / 100, 2);
+        return \Illuminate\Database\Eloquent\Casts\Attribute::make(get: function () {
+            return number_format($this->amount / 100, 2);
+        });
     }
 
     public function isRegularTier(): bool
@@ -78,5 +77,14 @@ class BundlePrice extends Model
     public function isEapTier(): bool
     {
         return $this->tier === PriceTier::Eap;
+    }
+
+    protected function casts(): array
+    {
+        return [
+            'amount' => 'integer',
+            'is_active' => 'boolean',
+            'tier' => PriceTier::class,
+        ];
     }
 }

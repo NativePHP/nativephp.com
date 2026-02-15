@@ -40,7 +40,7 @@ class ViewSubscriptionItem extends ViewRecord
                         ->uuid()
                         ->helperText('Paste the license UUID from Anystack to import it into the system.'),
                 ])
-                ->action(function (array $data) {
+                ->action(function (array $data): void {
                     try {
                         $response = Anystack::api()
                             ->license($data['anystack_id'], Subscription::Mini->anystackProductId()) // any plan's product id will work

@@ -9,7 +9,6 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Support\Carbon;
 use Laravel\Cashier\SubscriptionItem;
 
 class License extends Model
@@ -17,12 +16,6 @@ class License extends Model
     use HasFactory;
 
     protected $guarded = [];
-
-    protected $casts = [
-        'expires_at' => 'datetime',
-        'is_suspended' => 'boolean',
-        'source' => LicenseSource::class,
-    ];
 
     /**
      * @return BelongsTo<User>
@@ -40,7 +33,8 @@ class License extends Model
         return $this->belongsTo(SubscriptionItem::class);
     }
 
-    public function scopeWhereActive(Builder $builder): Builder
+    #[\Illuminate\Database\Eloquent\Attributes\Scope]
+    protected function whereActive(Builder $builder): Builder
     {
         return $builder->where(fn ($where) => $where
             ->whereNull('expires_at')
@@ -64,14 +58,18 @@ class License extends Model
         return $this->hasMany(LicenseExpiryWarning::class);
     }
 
-    public function getAnystackProductIdAttribute(): string
+    protected function anystackProductId(): \Illuminate\Database\Eloquent\Casts\Attribute
     {
-        return Subscription::from($this->policy_name)->anystackProductId();
+        return \Illuminate\Database\Eloquent\Casts\Attribute::make(get: function () {
+            return Subscription::from($this->policy_name)->anystackProductId();
+        });
     }
 
-    public function getSubscriptionTypeAttribute(): Subscription
+    protected function subscriptionType(): \Illuminate\Database\Eloquent\Casts\Attribute
     {
-        return Subscription::from($this->policy_name);
+        return \Illuminate\Database\Eloquent\Casts\Attribute::make(get: function () {
+            return Subscription::from($this->policy_name);
+        });
     }
 
     public function supportsSubLicenses(): bool
@@ -79,22 +77,24 @@ class License extends Model
         return $this->subscriptionType->supportsSubLicenses();
     }
 
-    public function getSubLicenseLimitAttribute(): ?int
+    protected function subLicenseLimit(): \Illuminate\Database\Eloquent\Casts\Attribute
     {
-        return $this->subscriptionType->subLicenseLimit();
+        return \Illuminate\Database\Eloquent\Casts\Attribute::make(get: function () {
+            return $this->subscriptionType->subLicenseLimit();
+        });
     }
 
-    public function getRemainingSubLicensesAttribute(): ?int
+    protected function remainingSubLicenses(): \Illuminate\Database\Eloquent\Casts\Attribute
     {
-        $limit = $this->subLicenseLimit;
+        return \Illuminate\Database\Eloquent\Casts\Attribute::make(get: function () {
+            $limit = $this->subLicenseLimit;
+            if ($limit === null) {
+                return null; // Unlimited
+            }
+            $used = $this->subLicenses()->where('is_suspended', false)->count();
 
-        if ($limit === null) {
-            return null; // Unlimited
-        }
-
-        $used = $this->subLicenses()->where('is_suspended', false)->count();
-
-        return max(0, $limit - $used);
+            return max(0, $limit - $used);
+        });
     }
 
     public function canCreateSubLicense(): bool
@@ -119,7 +119,7 @@ class License extends Model
     public function isLegacy(): bool
     {
         return ! $this->subscription_item_id
-            && $this->created_at->lt(Carbon::create(2025, 5, 8));
+            && $this->created_at->lt(\Illuminate\Support\Facades\Date::create(2025, 5, 8));
     }
 
     public function suspendAllSubLicenses(): int
@@ -131,7 +131,7 @@ class License extends Model
     {
         parent::boot();
 
-        static::updated(function (self $license) {
+        static::updated(function (self $license): void {
             // If parent license is suspended, suspend all sub-licenses
             if ($license->isDirty('is_suspended') && $license->is_suspended) {
                 $license->suspendAllSubLicenses();
@@ -142,5 +142,14 @@ class License extends Model
                 $license->subLicenses()->update(['expires_at' => $license->expires_at]);
             }
         });
+    }
+
+    protected function casts(): array
+    {
+        return [
+            'expires_at' => 'datetime',
+            'is_suspended' => 'boolean',
+            'source' => LicenseSource::class,
+        ];
     }
 }

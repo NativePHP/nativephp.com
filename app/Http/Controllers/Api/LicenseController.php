@@ -6,7 +6,6 @@ use App\Enums\LicenseSource;
 use App\Enums\Subscription;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Api\LicenseResource;
-use App\Jobs\CreateAnystackLicenseJob;
 use App\Models\License;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -32,8 +31,8 @@ class LicenseController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'email' => 'required|email',
-            'name' => 'required|string|max:255',
+            'email' => ['required', 'email'],
+            'name' => ['required', 'string', 'max:255'],
             'subscription' => ['required', new Enum(Subscription::class)],
         ]);
 
@@ -49,14 +48,17 @@ class LicenseController extends Controller
         // Create the license via job
         $subscription = Subscription::from($validated['subscription']);
 
-        CreateAnystackLicenseJob::dispatchSync(
+        dispatch_sync(new \App\Jobs\CreateAnystackLicenseJob(
             user: $user,
             subscription: $subscription,
-            subscriptionItemId: null, // No subscription item for API-created licenses
-            firstName: null, // Set to null as requested
-            lastName: null,   // Set to null as requested
+            subscriptionItemId: null,
+            // No subscription item for API-created licenses
+            firstName: null,
+            // Set to null as requested
+            lastName: null,
+            // Set to null as requested
             source: LicenseSource::Bifrost
-        );
+        ));
 
         // Since we're using dispatchSync, the job has completed by this point
         // Find the created license

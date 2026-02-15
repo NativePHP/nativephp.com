@@ -19,7 +19,7 @@ class CustomerAuthController extends Controller
 
     public function showLogin(): View
     {
-        return view('auth.login');
+        return view(\Illuminate\Auth\Events\Login::class);
     }
 
     public function showRegister(): View
@@ -55,7 +55,7 @@ class CustomerAuthController extends Controller
                 try {
                     $this->cartService->addPlugin($cart, $plugin);
 
-                    return redirect()->route('cart.show')
+                    return to_route('cart.show')
                         ->with('success', "{$plugin->name} has been added to your cart!");
                 } catch (\Exception $e) {
                     // Plugin couldn't be added, continue to normal flow
@@ -86,7 +86,7 @@ class CustomerAuthController extends Controller
                 try {
                     $this->cartService->addPlugin($cart, $plugin);
 
-                    return redirect()->route('cart.show')
+                    return to_route('cart.show')
                         ->with('success', "{$plugin->name} has been added to your cart!");
                 } catch (\Exception $e) {
                     // Plugin couldn't be added, continue to normal flow
@@ -104,7 +104,7 @@ class CustomerAuthController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return redirect()->route('customer.login');
+        return to_route('customer.login');
     }
 
     public function showForgotPassword(): View
@@ -142,7 +142,7 @@ class CustomerAuthController extends Controller
 
         $status = \Illuminate\Support\Facades\Password::reset(
             $request->only('email', 'password', 'password_confirmation', 'token'),
-            function ($user, $password) {
+            function ($user, $password): void {
                 $user->forceFill([
                     'password' => $password,
                 ]);
@@ -152,7 +152,7 @@ class CustomerAuthController extends Controller
         );
 
         return $status === \Illuminate\Auth\Passwords\PasswordBroker::PASSWORD_RESET
-            ? redirect()->route('customer.login')->with('status', __($status))
+            ? to_route('customer.login')->with('status', __($status))
             : back()->withErrors(['email' => [__($status)]]);
     }
 }

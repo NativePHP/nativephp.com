@@ -19,7 +19,7 @@ use Illuminate\Support\Facades\Route;
 */
 
 // MCP Server routes (no session/cookies - fixes CSRF 419 errors)
-Route::prefix('mcp')->group(function () {
+Route::prefix('mcp')->group(function (): void {
     Route::get('sse', [McpController::class, 'sse'])->name('mcp.sse');
     Route::post('message', [McpController::class, 'message'])->name('mcp.message');
     Route::get('health', [McpController::class, 'health'])->name('mcp.health');
@@ -31,8 +31,8 @@ Route::prefix('mcp')->group(function () {
     Route::get('navigation/{platform}/{version}', [McpController::class, 'navigationApi'])->name('mcp.api.navigation');
 });
 
-Route::middleware('auth.api_key')->group(function () {
-    Route::prefix('plugins')->name('api.plugins.')->group(function () {
+Route::middleware('auth.api_key')->group(function (): void {
+    Route::prefix('plugins')->name('api.plugins.')->group(function (): void {
         Route::get('/access', [PluginAccessController::class, 'index'])->name('access');
         Route::get('/access/{vendor}/{package}', [PluginAccessController::class, 'checkAccess'])->name('access.check');
     });
@@ -43,6 +43,6 @@ Route::middleware('auth.api_key')->group(function () {
     Route::post('/temp-links', [TemporaryLinkController::class, 'store']);
 });
 
-Route::middleware('auth:sanctum')->group(function () {
+Route::middleware('auth:sanctum')->group(function (): void {
     Route::get('/user', fn (Request $request) => $request->user());
 });

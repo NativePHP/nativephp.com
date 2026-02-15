@@ -59,7 +59,7 @@ class LicensesChart extends ChartWidget
         $filter = $this->filter;
 
         $startDate = match ($filter) {
-            'today' => now()->startOfDay(),
+            'today' => today(),
             'week' => now()->subDays(7)->startOfDay(),
             'month' => now()->subDays(30)->startOfDay(),
             'year' => now()->startOfYear(),

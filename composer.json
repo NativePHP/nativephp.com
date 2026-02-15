@@ -34,6 +34,7 @@
         "torchlight/torchlight-commonmark": "^0.6.0"
     },
     "require-dev": {
+        "driftingly/rector-laravel": "^2.1",
         "fakerphp/faker": "^1.9.1",
         "laravel/boost": "^1.0",
         "laravel/pint": "^1.0",
@@ -41,6 +42,7 @@
         "mockery/mockery": "^1.4.4",
         "nunomaduro/collision": "^8.0",
         "phpunit/phpunit": "^11.0",
+        "rector/rector": "^2.3",
         "spatie/laravel-ignition": "^2.0"
     },
     "autoload": {

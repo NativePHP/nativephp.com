@@ -7,7 +7,6 @@ use App\Features\AllowPaidPlugins;
 use App\Http\Requests\SubmitPluginRequest;
 use App\Http\Requests\UpdatePluginDescriptionRequest;
 use App\Http\Requests\UpdatePluginLogoRequest;
-use App\Jobs\SyncPluginReleases;
 use App\Models\Plugin;
 use App\Services\GitHubUserService;
 use App\Services\PluginSyncService;
@@ -45,7 +44,7 @@ class CustomerPluginController extends Controller
 
         // Reject paid plugin submissions if the feature is disabled
         if ($request->type === 'paid' && ! Feature::active(AllowPaidPlugins::class)) {
-            return redirect()->route('customer.plugins.create')
+            return to_route('customer.plugins.create')
                 ->with('error', 'Paid plugin submissions are not currently available.');
         }
 
@@ -89,7 +88,7 @@ class CustomerPluginController extends Controller
         if (! $plugin->name) {
             $plugin->delete();
 
-            return redirect()->route('customer.plugins.create')
+            return to_route('customer.plugins.create')
                 ->with('error', 'Could not find a valid composer.json in the repository. Please ensure your repository contains a composer.json with a valid package name.');
         }
 
@@ -102,13 +101,13 @@ class CustomerPluginController extends Controller
                 ? "The namespace '{$namespace}' is reserved and cannot be used for plugin submissions."
                 : "The namespace '{$namespace}' is already claimed by another user. You cannot submit plugins under this namespace.";
 
-            return redirect()->route('customer.plugins.create')
+            return to_route('customer.plugins.create')
                 ->with('error', $errorMessage);
         }
 
         // Trigger Satis build for paid plugins so reviewers can test via Composer
         if ($plugin->isPaid()) {
-            SyncPluginReleases::dispatch($plugin);
+            dispatch(new \App\Jobs\SyncPluginReleases($plugin));
         }
 
         $successMessage = 'Your plugin has been submitted for review!';
@@ -116,7 +115,7 @@ class CustomerPluginController extends Controller
             $successMessage .= ' Please set up the webhook manually to enable automatic syncing.';
         }
 
-        return redirect()->route('customer.plugins.show', $this->pluginRouteParams($plugin))
+        return to_route('customer.plugins.show', $this->pluginRouteParams($plugin))
             ->with('success', $successMessage);
     }
 
@@ -143,7 +142,7 @@ class CustomerPluginController extends Controller
 
         $plugin->updateDescription($request->description, $user->id);
 
-        return redirect()->route('customer.plugins.show', $this->pluginRouteParams($plugin))
+        return to_route('customer.plugins.show', $this->pluginRouteParams($plugin))
             ->with('success', 'Plugin description updated successfully!');
     }
 
@@ -159,13 +158,13 @@ class CustomerPluginController extends Controller
 
         // Only rejected plugins can be resubmitted
         if (! $plugin->isRejected()) {
-            return redirect()->route('customer.plugins.index')
+            return to_route('customer.plugins.index')
                 ->with('error', 'Only rejected plugins can be resubmitted.');
         }
 
         $plugin->resubmit();
 
-        return redirect()->route('customer.plugins.index')
+        return to_route('customer.plugins.index')
             ->with('success', 'Your plugin has been resubmitted for review!');
     }
 
@@ -191,7 +190,7 @@ class CustomerPluginController extends Controller
             'icon_name' => null,
         ]);
 
-        return redirect()->route('customer.plugins.show', $this->pluginRouteParams($plugin))
+        return to_route('customer.plugins.show', $this->pluginRouteParams($plugin))
             ->with('success', 'Plugin logo updated successfully!');
     }
 
@@ -220,7 +219,7 @@ class CustomerPluginController extends Controller
             'icon_name' => $validated['icon_name'],
         ]);
 
-        return redirect()->route('customer.plugins.show', $this->pluginRouteParams($plugin))
+        return to_route('customer.plugins.show', $this->pluginRouteParams($plugin))
             ->with('success', 'Plugin icon updated successfully!');
     }
 
@@ -243,7 +242,7 @@ class CustomerPluginController extends Controller
             'icon_name' => null,
         ]);
 
-        return redirect()->route('customer.plugins.show', $this->pluginRouteParams($plugin))
+        return to_route('customer.plugins.show', $this->pluginRouteParams($plugin))
             ->with('success', 'Plugin icon removed successfully!');
     }
 
@@ -271,7 +270,7 @@ class CustomerPluginController extends Controller
             'display_name' => $validated['display_name'] ?: null,
         ]);
 
-        return redirect()->route('customer.plugins.index')
+        return to_route('customer.plugins.index')
             ->with('success', 'Display name updated successfully!');
     }
 }

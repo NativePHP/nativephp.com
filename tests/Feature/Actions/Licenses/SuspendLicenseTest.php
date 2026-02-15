@@ -31,7 +31,7 @@ class SuspendLicenseTest extends TestCase
             'is_suspended' => false,
         ]);
 
-        $action = app(SuspendLicense::class);
+        $action = resolve(SuspendLicense::class);
         $result = $action->handle($license);
 
         $this->assertTrue($license->fresh()->is_suspended);
@@ -59,7 +59,7 @@ class SuspendLicenseTest extends TestCase
 
         $this->expectException(\Illuminate\Http\Client\RequestException::class);
 
-        $action = app(SuspendLicense::class);
+        $action = resolve(SuspendLicense::class);
         $result = $action->handle($license);
 
         $this->assertFalse($license->fresh()->is_suspended);

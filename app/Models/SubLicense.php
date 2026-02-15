@@ -13,11 +13,6 @@ class SubLicense extends Model
 
     protected $guarded = [];
 
-    protected $casts = [
-        'expires_at' => 'datetime',
-        'is_suspended' => 'boolean',
-    ];
-
     protected $fillable = [
         'parent_license_id',
         'anystack_id',
@@ -32,7 +27,7 @@ class SubLicense extends Model
     {
         parent::boot();
 
-        static::creating(function (self $subLicense) {
+        static::creating(function (self $subLicense): void {
             // Sub-licenses must always come from Anystack with real license keys
             // Never auto-generate keys locally
 
@@ -51,7 +46,8 @@ class SubLicense extends Model
         return $this->belongsTo(License::class, 'parent_license_id');
     }
 
-    public function scopeWhereActive(Builder $builder): Builder
+    #[\Illuminate\Database\Eloquent\Attributes\Scope]
+    protected function whereActive(Builder $builder): Builder
     {
         return $builder->where(fn ($where) => $where
             ->where('is_suspended', false)
@@ -62,12 +58,14 @@ class SubLicense extends Model
         );
     }
 
-    public function scopeWhereSuspended(Builder $builder): Builder
+    #[\Illuminate\Database\Eloquent\Attributes\Scope]
+    protected function whereSuspended(Builder $builder): Builder
     {
         return $builder->where('is_suspended', true);
     }
 
-    public function scopeWhereExpired(Builder $builder): Builder
+    #[\Illuminate\Database\Eloquent\Attributes\Scope]
+    protected function whereExpired(Builder $builder): Builder
     {
         return $builder->where('is_suspended', false)
             ->whereNotNull('expires_at')
@@ -87,21 +85,30 @@ class SubLicense extends Model
                $this->expires_at->isPast();
     }
 
-    public function getStatusAttribute(): string
+    protected function status(): \Illuminate\Database\Eloquent\Casts\Attribute
     {
-        if ($this->is_suspended) {
-            return 'Suspended';
-        }
+        return \Illuminate\Database\Eloquent\Casts\Attribute::make(get: function () {
+            if ($this->is_suspended) {
+                return 'Suspended';
+            }
+            if ($this->expires_at && $this->expires_at->isPast()) {
+                return 'Expired';
+            }
 
-        if ($this->expires_at && $this->expires_at->isPast()) {
-            return 'Expired';
-        }
-
-        return 'Active';
+            return 'Active';
+        });
     }
 
     public function suspend(): bool
     {
         return $this->update(['is_suspended' => true]);
+    }
+
+    protected function casts(): array
+    {
+        return [
+            'expires_at' => 'datetime',
+            'is_suspended' => 'boolean',
+        ];
     }
 }

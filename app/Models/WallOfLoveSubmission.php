@@ -24,11 +24,6 @@ class WallOfLoveSubmission extends Model
         'promoted_testimonial',
     ];
 
-    protected $casts = [
-        'approved_at' => 'datetime',
-        'promoted' => 'boolean',
-    ];
-
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
@@ -58,7 +53,8 @@ class WallOfLoveSubmission extends Model
      * @param  Builder<WallOfLoveSubmission>  $query
      * @return Builder<WallOfLoveSubmission>
      */
-    public function scopeApproved(Builder $query): Builder
+    #[\Illuminate\Database\Eloquent\Attributes\Scope]
+    protected function approved(Builder $query): Builder
     {
         return $query->whereNotNull('approved_at');
     }
@@ -67,8 +63,17 @@ class WallOfLoveSubmission extends Model
      * @param  Builder<WallOfLoveSubmission>  $query
      * @return Builder<WallOfLoveSubmission>
      */
-    public function scopePromoted(Builder $query): Builder
+    #[\Illuminate\Database\Eloquent\Attributes\Scope]
+    protected function promoted(Builder $query): Builder
     {
         return $query->where('promoted', true);
+    }
+
+    protected function casts(): array
+    {
+        return [
+            'approved_at' => 'datetime',
+            'promoted' => 'boolean',
+        ];
     }
 }

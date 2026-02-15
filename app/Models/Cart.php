@@ -13,11 +13,6 @@ class Cart extends Model
 
     protected $guarded = [];
 
-    protected $casts = [
-        'expires_at' => 'datetime',
-        'completed_at' => 'datetime',
-    ];
-
     /**
      * @return BelongsTo<User, Cart>
      */
@@ -124,10 +119,18 @@ class Cart extends Model
         return PluginBundle::query()
             ->active()
             ->whereNotIn('id', $cartBundleIds)
-            ->whereHas('plugins', function ($query) use ($cartPluginIds) {
+            ->whereHas('plugins', function ($query) use ($cartPluginIds): void {
                 $query->whereIn('plugins.id', $cartPluginIds);
             })
             ->with('plugins')
             ->get();
+    }
+
+    protected function casts(): array
+    {
+        return [
+            'expires_at' => 'datetime',
+            'completed_at' => 'datetime',
+        ];
     }
 }

@@ -52,7 +52,7 @@ class WallOfLoveSubmissionForm extends Component
             'testimonial' => $this->testimonial ?: null,
         ]);
 
-        return redirect()->route('dashboard')->with('success', 'Thank you! Your submission has been received and is awaiting review.');
+        return to_route('dashboard')->with('success', 'Thank you! Your submission has been received and is awaiting review.');
     }
 
     public function render()

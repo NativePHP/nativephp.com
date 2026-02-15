@@ -43,7 +43,7 @@ class ImportAnystackContacts implements ShouldQueue
             ->json();
 
         collect($response['data'])
-            ->each(function (array $contact) {
+            ->each(function (array $contact): void {
                 dispatch(new UpsertUserFromAnystackContact($contact));
             });
 

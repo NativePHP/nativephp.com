@@ -20,7 +20,7 @@ class EditUser extends EditRecord
                     ->label('Create Stripe Customer')
                     ->color('gray')
                     ->icon('heroicon-o-credit-card')
-                    ->action(function (User $record) {
+                    ->action(function (User $record): void {
                         if ($record->hasStripeId()) {
                             Notification::make()
                                 ->danger()
@@ -46,16 +46,10 @@ class EditUser extends EditRecord
                             }))
                             ->required(),
                     ])
-                    ->action(function (array $data, User $record) {
+                    ->action(function (array $data, User $record): void {
                         $subscription = \App\Enums\Subscription::from($data['subscription']);
 
-                        \App\Jobs\CreateAnystackLicenseJob::dispatch(
-                            $record,
-                            $subscription,
-                            null,
-                            $record->first_name,
-                            $record->last_name,
-                        );
+                        dispatch(new \App\Jobs\CreateAnystackLicenseJob($record, $subscription, null, $record->first_name, $record->last_name));
                     }),
 
                 Actions\Action::make('sendPasswordReset')
@@ -63,7 +57,7 @@ class EditUser extends EditRecord
                     ->color('gray')
                     ->icon('heroicon-o-envelope')
                     ->requiresConfirmation()
-                    ->action(function (User $record) {
+                    ->action(function (User $record): void {
                         \Illuminate\Support\Facades\Password::sendResetLink(
                             ['email' => $record->email]
                         );

@@ -105,7 +105,7 @@ class HandleInvoicePaidJob implements ShouldQueue
         $subscriptionItemModel = SubscriptionItem::query()->where('stripe_id', $subscriptionItemId)->firstOrFail();
 
         // Calculate new expiry date from subscription period end
-        $newExpiryDate = \Carbon\Carbon::createFromTimestamp($subscription->current_period_end);
+        $newExpiryDate = \Illuminate\Support\Facades\Date::createFromTimestamp($subscription->current_period_end);
 
         // Link the subscription to the existing license (expiry will be updated by Anystack job)
         $license->update([
@@ -129,7 +129,7 @@ class HandleInvoicePaidJob implements ShouldQueue
     private function createLicense(): void
     {
         // Add some delay to allow all the Stripe events to come in
-        sleep(10);
+        \Illuminate\Support\Sleep::sleep(10);
 
         // Assert the invoice line item is for a price_id that relates to a license plan.
         $plan = Subscription::fromStripePriceId($this->invoice->lines->first()->price->id);
@@ -182,7 +182,7 @@ class HandleInvoicePaidJob implements ShouldQueue
         $subscription = Cashier::stripe()->subscriptions->retrieve($this->invoice->subscription);
 
         // Update the license expiry date to match the subscription's current period end
-        $newExpiryDate = \Carbon\Carbon::createFromTimestamp($subscription->current_period_end);
+        $newExpiryDate = \Illuminate\Support\Facades\Date::createFromTimestamp($subscription->current_period_end);
 
         // Update the Anystack license expiry date (which will also update the database on success)
         dispatch(new UpdateAnystackLicenseExpiryJob($license, $newExpiryDate));
@@ -551,7 +551,7 @@ class HandleInvoicePaidJob implements ShouldQueue
                 'status' => PayoutStatus::Pending,
             ]);
 
-            $stripeConnectService = app(StripeConnectService::class);
+            $stripeConnectService = resolve(StripeConnectService::class);
             $stripeConnectService->processTransfer($payout);
         }
 
@@ -591,7 +591,7 @@ class HandleInvoicePaidJob implements ShouldQueue
                 'status' => PayoutStatus::Pending,
             ]);
 
-            $stripeConnectService = app(StripeConnectService::class);
+            $stripeConnectService = resolve(StripeConnectService::class);
             $stripeConnectService->processTransfer($payout);
         }
 

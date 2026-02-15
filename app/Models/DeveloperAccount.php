@@ -14,13 +14,6 @@ class DeveloperAccount extends Model
 
     protected $guarded = [];
 
-    protected $casts = [
-        'stripe_connect_status' => StripeConnectStatus::class,
-        'payouts_enabled' => 'boolean',
-        'charges_enabled' => 'boolean',
-        'onboarding_completed_at' => 'datetime',
-    ];
-
     /**
      * @return BelongsTo<User, DeveloperAccount>
      */
@@ -58,5 +51,15 @@ class DeveloperAccount extends Model
     public function hasCompletedOnboarding(): bool
     {
         return $this->onboarding_completed_at !== null;
+    }
+
+    protected function casts(): array
+    {
+        return [
+            'stripe_connect_status' => StripeConnectStatus::class,
+            'payouts_enabled' => 'boolean',
+            'charges_enabled' => 'boolean',
+            'onboarding_completed_at' => 'datetime',
+        ];
     }
 }
