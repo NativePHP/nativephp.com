@@ -4,7 +4,7 @@ namespace Tests\Feature\Filament;
 
 use App\Enums\PluginTier;
 use App\Enums\PluginType;
-use App\Filament\Resources\PluginResource\Pages\ListPlugins;
+use App\Filament\Resources\PluginResource\Pages\EditPlugin;
 use App\Jobs\SyncPluginReleases;
 use App\Models\Plugin;
 use App\Models\User;
@@ -34,8 +34,8 @@ class ConvertPluginToPaidTest extends TestCase
         $plugin = Plugin::factory()->free()->approved()->create();
 
         Livewire::actingAs($this->admin)
-            ->test(ListPlugins::class)
-            ->callTableAction('convertToPaid', $plugin, data: [
+            ->test(EditPlugin::class, ['record' => $plugin->getRouteKey()])
+            ->callAction('convertToPaid', data: [
                 'tier' => PluginTier::Silver->value,
             ])
             ->assertNotified();
@@ -56,8 +56,8 @@ class ConvertPluginToPaidTest extends TestCase
         $plugin = Plugin::factory()->paid()->approved()->create();
 
         Livewire::actingAs($this->admin)
-            ->test(ListPlugins::class)
-            ->assertTableActionHidden('convertToPaid', $plugin);
+            ->test(EditPlugin::class, ['record' => $plugin->getRouteKey()])
+            ->assertActionHidden('convertToPaid');
     }
 
     public function test_convert_to_paid_is_visible_on_free_plugins(): void
@@ -65,7 +65,7 @@ class ConvertPluginToPaidTest extends TestCase
         $plugin = Plugin::factory()->free()->approved()->create();
 
         Livewire::actingAs($this->admin)
-            ->test(ListPlugins::class)
-            ->assertTableActionVisible('convertToPaid', $plugin);
+            ->test(EditPlugin::class, ['record' => $plugin->getRouteKey()])
+            ->assertActionVisible('convertToPaid');
     }
 }
