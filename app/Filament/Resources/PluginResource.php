@@ -7,13 +7,9 @@ use App\Enums\PluginTier;
 use App\Enums\PluginType;
 use App\Filament\Resources\PluginResource\Pages;
 use App\Filament\Resources\PluginResource\RelationManagers;
-use App\Jobs\SyncPluginReleases;
 use App\Models\Plugin;
-use App\Models\PluginLicense;
-use App\Models\User;
 use Filament\Forms;
 use Filament\Forms\Form;
-use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
@@ -116,7 +112,6 @@ class PluginResource extends Resource
                     ->label('Package Name')
                     ->searchable()
                     ->sortable()
-                    ->copyable()
                     ->fontFamily('mono'),
 
                 Tables\Columns\TextColumn::make('type')
@@ -170,183 +165,9 @@ class PluginResource extends Resource
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
-                // Approve Action
-                Tables\Actions\Action::make('approve')
-                    ->icon('heroicon-o-check')
-                    ->color('success')
-                    ->visible(fn (Plugin $record) => $record->isPending())
-                    ->action(fn (Plugin $record) => $record->approve(auth()->id()))
-                    ->requiresConfirmation()
-                    ->modalHeading('Approve Plugin')
-                    ->modalDescription(fn (Plugin $record) => "Are you sure you want to approve '{$record->name}'?"),
-
-                // Reject Action
-                Tables\Actions\Action::make('reject')
-                    ->icon('heroicon-o-x-mark')
-                    ->color('danger')
-                    ->visible(fn (Plugin $record) => $record->isPending() || $record->isApproved())
-                    ->form([
-                        Forms\Components\Textarea::make('rejection_reason')
-                            ->label('Reason for Rejection')
-                            ->required()
-                            ->rows(3)
-                            ->placeholder('Please explain why this plugin is being rejected...'),
-                    ])
-                    ->action(fn (Plugin $record, array $data) => $record->reject($data['rejection_reason'], auth()->id()))
-                    ->modalHeading('Reject Plugin')
-                    ->modalDescription(fn (Plugin $record) => "Are you sure you want to reject '{$record->name}'?"),
-
-                // External Links Group
-                Tables\Actions\ActionGroup::make([
-                    // View Listing Page (Approved plugins only)
-                    Tables\Actions\Action::make('viewListing')
-                        ->label('View Listing Page')
-                        ->icon('heroicon-o-eye')
-                        ->color('gray')
-                        ->url(fn (Plugin $record) => route('plugins.show', $record->routeParams()))
-                        ->openUrlInNewTab()
-                        ->visible(fn (Plugin $record) => $record->isApproved()),
-
-                    // Packagist Link (Free plugins only)
-                    Tables\Actions\Action::make('viewPackagist')
-                        ->label('View on Packagist')
-                        ->icon('heroicon-o-arrow-top-right-on-square')
-                        ->color('gray')
-                        ->url(fn (Plugin $record) => $record->getPackagistUrl())
-                        ->openUrlInNewTab()
-                        ->visible(fn (Plugin $record) => $record->isFree()),
-
-                    // GitHub Link (Free plugins only)
-                    Tables\Actions\Action::make('viewGithub')
-                        ->label('View on GitHub')
-                        ->icon('heroicon-o-arrow-top-right-on-square')
-                        ->color('gray')
-                        ->url(fn (Plugin $record) => $record->getGithubUrl())
-                        ->openUrlInNewTab()
-                        ->visible(fn (Plugin $record) => $record->isFree()),
-
-                    // Edit Description Action
-                    Tables\Actions\Action::make('editDescription')
-                        ->label('Edit Description')
-                        ->icon('heroicon-o-pencil-square')
-                        ->color('gray')
-                        ->form([
-                            Forms\Components\Textarea::make('description')
-                                ->label('Description')
-                                ->required()
-                                ->rows(5)
-                                ->maxLength(1000)
-                                ->default(fn (Plugin $record) => $record->description)
-                                ->placeholder('Describe what this plugin does...'),
-                        ])
-                        ->action(fn (Plugin $record, array $data) => $record->updateDescription($data['description'], auth()->id()))
-                        ->modalHeading('Edit Plugin Description')
-                        ->modalDescription(fn (Plugin $record) => "Update the description for '{$record->name}'"),
-
-                    Tables\Actions\Action::make('grantToUser')
-                        ->label('Grant to User')
-                        ->icon('heroicon-o-gift')
-                        ->color('success')
-                        ->form([
-                            Forms\Components\Select::make('user_id')
-                                ->label('User')
-                                ->searchable()
-                                ->getSearchResultsUsing(function (string $search): array {
-                                    return User::query()
-                                        ->where('name', 'like', "%{$search}%")
-                                        ->orWhere('email', 'like', "%{$search}%")
-                                        ->limit(50)
-                                        ->get()
-                                        ->mapWithKeys(fn (User $user) => [$user->id => "{$user->name} ({$user->email})"])
-                                        ->toArray();
-                                })
-                                ->required(),
-                        ])
-                        ->action(function (Plugin $record, array $data): void {
-                            $user = User::findOrFail($data['user_id']);
-
-                            $existingLicense = $user->pluginLicenses()
-                                ->where('plugin_id', $record->id)
-                                ->exists();
-
-                            if ($existingLicense) {
-                                Notification::make()
-                                    ->title('User already has a license for this plugin')
-                                    ->warning()
-                                    ->send();
-
-                                return;
-                            }
-
-                            PluginLicense::create([
-                                'user_id' => $user->id,
-                                'plugin_id' => $record->id,
-                                'price_paid' => 0,
-                                'currency' => 'USD',
-                                'is_grandfathered' => true,
-                                'purchased_at' => now(),
-                            ]);
-
-                            $user->getPluginLicenseKey();
-
-                            Notification::make()
-                                ->title("Granted '{$record->name}' license to {$user->name}")
-                                ->success()
-                                ->send();
-                        })
-                        ->modalHeading('Grant Plugin to User')
-                        ->modalDescription(fn (Plugin $record) => "Grant '{$record->name}' to a user for free.")
-                        ->modalSubmitActionLabel('Grant'),
-
-                    Tables\Actions\Action::make('convertToPaid')
-                        ->label('Convert to Paid')
-                        ->icon('heroicon-o-currency-dollar')
-                        ->color('success')
-                        ->visible(fn (Plugin $record) => $record->isFree())
-                        ->form([
-                            Forms\Components\Select::make('tier')
-                                ->label('Pricing Tier')
-                                ->options(PluginTier::class)
-                                ->required()
-                                ->helperText('This sets the pricing for the plugin.'),
-                        ])
-                        ->action(function (Plugin $record, array $data): void {
-                            $record->update([
-                                'type' => PluginType::Paid,
-                                'tier' => $data['tier'],
-                            ]);
-
-                            SyncPluginReleases::dispatch($record);
-
-                            Notification::make()
-                                ->title("Converted '{$record->name}' to paid")
-                                ->body('Plugin type updated, prices synced, and Satis ingestion queued.')
-                                ->success()
-                                ->send();
-                        })
-                        ->modalHeading('Convert Plugin to Paid')
-                        ->modalDescription(fn (Plugin $record) => "This will convert '{$record->name}' from free to paid, set up pricing, and trigger a Satis build so it's available via Composer.")
-                        ->modalSubmitActionLabel('Convert & Ingest'),
-
-                    Tables\Actions\ViewAction::make(),
-                ])
-                    ->label('More')
-                    ->icon('heroicon-m-ellipsis-vertical'),
             ])
             ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\BulkAction::make('approve')
-                        ->icon('heroicon-o-check')
-                        ->color('success')
-                        ->action(function ($records): void {
-                            $records->each(fn (Plugin $record) => $record->approve(auth()->id()));
-                        })
-                        ->requiresConfirmation()
-                        ->modalHeading('Approve Selected Plugins')
-                        ->modalDescription('Are you sure you want to approve all selected plugins?'),
 
-                    Tables\Actions\DeleteBulkAction::make(),
-                ]),
             ])
             ->defaultSort('created_at', 'desc');
     }
@@ -365,7 +186,6 @@ class PluginResource extends Resource
         return [
             'index' => Pages\ListPlugins::route('/'),
             'edit' => Pages\EditPlugin::route('/{record}/edit'),
-            'view' => Pages\ViewPlugin::route('/{record}'),
         ];
     }
 }
