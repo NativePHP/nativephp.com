@@ -5,9 +5,6 @@ namespace App\Http\Controllers;
 use App\Actions\SubLicenses\DeleteSubLicense;
 use App\Actions\SubLicenses\SuspendSubLicense;
 use App\Http\Requests\CreateSubLicenseRequest;
-use App\Jobs\CreateAnystackSubLicenseJob;
-use App\Jobs\RevokeMaxAccessJob;
-use App\Jobs\UpdateAnystackContactAssociationJob;
 use App\Models\License;
 use App\Models\SubLicense;
 use App\Notifications\SubLicenseAssignment;
@@ -30,15 +27,15 @@ class CustomerSubLicenseController extends Controller
         $license = $user->licenses()->where('key', $licenseKey)->firstOrFail();
 
         if (! $license->canCreateSubLicense()) {
-            return redirect()->route('customer.licenses.show', $licenseKey)->withErrors([
+            return to_route('customer.licenses.show', $licenseKey)->withErrors([
                 'sub_license' => 'Unable to create sub-license. Check license status and limits.',
             ]);
         }
 
         // Dispatch job to create sub-license in Anystack and then locally
-        CreateAnystackSubLicenseJob::dispatch($license, $request->name, $request->assigned_email);
+        dispatch(new \App\Jobs\CreateAnystackSubLicenseJob($license, $request->name, $request->assigned_email));
 
-        return redirect()->route('customer.licenses.show', $licenseKey)
+        return to_route('customer.licenses.show', $licenseKey)
             ->with('success', 'Sub-license is being created. You will receive an email notification when it\'s ready.');
     }
 
@@ -66,15 +63,15 @@ class CustomerSubLicenseController extends Controller
 
         // If the email was changed and there's a new email, update the contact association
         if ($oldEmail !== $request->assigned_email && $request->assigned_email) {
-            UpdateAnystackContactAssociationJob::dispatch($subLicense, $request->assigned_email);
+            dispatch(new \App\Jobs\UpdateAnystackContactAssociationJob($subLicense, $request->assigned_email));
         }
 
         // If the email was changed and this is a Max license, revoke access for the old email
         if ($oldEmail && $oldEmail !== $request->assigned_email && $license->policy_name === 'max') {
-            RevokeMaxAccessJob::dispatch($oldEmail);
+            dispatch(new \App\Jobs\RevokeMaxAccessJob($oldEmail));
         }
 
-        return redirect()->route('customer.licenses.show', $licenseKey)
+        return to_route('customer.licenses.show', $licenseKey)
             ->with('success', 'Sub-license updated successfully!');
     }
 
@@ -90,14 +87,14 @@ class CustomerSubLicenseController extends Controller
 
         $assignedEmail = $subLicense->assigned_email;
 
-        app(DeleteSubLicense::class)->handle($subLicense);
+        resolve(DeleteSubLicense::class)->handle($subLicense);
 
         // If this was a Max license and had an assigned email, revoke access
         if ($assignedEmail && $license->policy_name === 'max') {
-            RevokeMaxAccessJob::dispatch($assignedEmail);
+            dispatch(new \App\Jobs\RevokeMaxAccessJob($assignedEmail));
         }
 
-        return redirect()->route('customer.licenses.show', $licenseKey)
+        return to_route('customer.licenses.show', $licenseKey)
             ->with('success', 'Sub-license deleted successfully!');
     }
 
@@ -113,14 +110,14 @@ class CustomerSubLicenseController extends Controller
 
         $assignedEmail = $subLicense->assigned_email;
 
-        app(SuspendSubLicense::class)->handle($subLicense);
+        resolve(SuspendSubLicense::class)->handle($subLicense);
 
         // If this was a Max license and had an assigned email, revoke access
         if ($assignedEmail && $license->policy_name === 'max') {
-            RevokeMaxAccessJob::dispatch($assignedEmail);
+            dispatch(new \App\Jobs\RevokeMaxAccessJob($assignedEmail));
         }
 
-        return redirect()->route('customer.licenses.show', $licenseKey)
+        return to_route('customer.licenses.show', $licenseKey)
             ->with('success', 'Sub-license suspended successfully!');
     }
 
@@ -136,7 +133,7 @@ class CustomerSubLicenseController extends Controller
 
         // Verify the sub-license has an assigned email
         if (! $subLicense->assigned_email) {
-            return redirect()->route('customer.licenses.show', $licenseKey)
+            return to_route('customer.licenses.show', $licenseKey)
                 ->withErrors(['email' => 'This sub-license does not have an assigned email address.']);
         }
 
@@ -146,7 +143,7 @@ class CustomerSubLicenseController extends Controller
         if (RateLimiter::tooManyAttempts($rateLimiterKey, 1)) {
             $secondsUntilAvailable = RateLimiter::availableIn($rateLimiterKey);
 
-            return redirect()->route('customer.licenses.show', $licenseKey)
+            return to_route('customer.licenses.show', $licenseKey)
                 ->withErrors(['rate_limit' => "Please wait {$secondsUntilAvailable} seconds before sending another email for this license."]);
         }
 
@@ -157,7 +154,7 @@ class CustomerSubLicenseController extends Controller
         Notification::route('mail', $subLicense->assigned_email)
             ->notify(new SubLicenseAssignment($subLicense));
 
-        return redirect()->route('customer.licenses.show', $licenseKey)
+        return to_route('customer.licenses.show', $licenseKey)
             ->with('success', "License details sent to {$subLicense->assigned_email} successfully!");
     }
 }

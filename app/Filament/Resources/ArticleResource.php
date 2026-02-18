@@ -38,7 +38,7 @@ class ArticleResource extends Resource
                     ->required()
                     ->maxLength(255)
                     ->live(onBlur: true)
-                    ->afterStateUpdated(function (Article $article, Set $set, ?string $state) {
+                    ->afterStateUpdated(function (Article $article, Set $set, ?string $state): void {
                         if ($article->isPublished()) {
                             return;
                         }

@@ -307,7 +307,7 @@ class PluginResource extends Resource
                     Tables\Actions\BulkAction::make('approve')
                         ->icon('heroicon-o-check')
                         ->color('success')
-                        ->action(function ($records) {
+                        ->action(function ($records): void {
                             $records->each(fn (Plugin $record) => $record->approve(auth()->id()));
                         })
                         ->requiresConfirmation()

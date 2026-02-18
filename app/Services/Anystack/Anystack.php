@@ -16,7 +16,7 @@ final class Anystack
             throw new HttpClientException('Anystack API key is not configured.');
         }
 
-        return app(AnystackClient::class, ['apiKey' => $apiKey]);
+        return resolve(AnystackClient::class, ['apiKey' => $apiKey]);
     }
 
     public static function findContact(string $contactUuid): ?User

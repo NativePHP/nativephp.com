@@ -46,7 +46,7 @@ class ImportAnystackLicenses implements ShouldQueue
             ->json();
 
         collect($response['data'])
-            ->each(function (array $license) {
+            ->each(function (array $license): void {
                 dispatch(new UpsertLicenseFromAnystackLicense($license));
             });
 

@@ -39,7 +39,7 @@ class ListLicenses extends ListRecords
                         ->relationship('subscriptionItem', 'id')
                         ->searchable(),
                 ])
-                ->action(function (array $data) {
+                ->action(function (array $data): void {
                     try {
                         $response = Anystack::api()
                             ->license($data['anystack_id'], Subscription::Mini->anystackProductId()) // any plan's product id will work

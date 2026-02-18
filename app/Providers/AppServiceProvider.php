@@ -57,11 +57,11 @@ class AppServiceProvider extends ServiceProvider
         View::share('githubLink', 'https://github.com/nativephp');
 
         // Share cart count with navigation components
-        View::composer(['components.navigation-bar', 'components.navbar.mobile-menu'], function ($view) {
+        View::composer(['components.navigation-bar', 'components.navbar.mobile-menu'], function ($view): void {
             $cartCount = 0;
 
             if (Feature::active(ShowPlugins::class)) {
-                $cartService = app(CartService::class);
+                $cartService = resolve(CartService::class);
                 $cartCount = $cartService->getCartItemCount(Auth::user());
             }
 
@@ -71,7 +71,7 @@ class AppServiceProvider extends ServiceProvider
 
     private function sendFailingJobsToSentry(): void
     {
-        Queue::failing(static function (JobFailed $event) {
+        Queue::failing(static function (JobFailed $event): void {
             if (app()->bound('sentry')) {
                 configureScope(function (Scope $scope) use ($event): void {
                     $scope->setContext('job', [

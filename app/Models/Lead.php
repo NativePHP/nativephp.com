@@ -28,8 +28,10 @@ class Lead extends Model
         '50k_plus' => '$50,000+',
     ];
 
-    public function getBudgetLabelAttribute(): string
+    protected function budgetLabel(): \Illuminate\Database\Eloquent\Casts\Attribute
     {
-        return self::BUDGETS[$this->budget] ?? $this->budget;
+        return \Illuminate\Database\Eloquent\Casts\Attribute::make(get: function () {
+            return self::BUDGETS[$this->budget] ?? $this->budget;
+        });
     }
 }

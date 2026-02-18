@@ -39,7 +39,7 @@ class VersionSwitcher extends Component
             $this->page = 'introduction';
         }
 
-        return redirect()->route('docs.show', [
+        return to_route('docs.show', [
             'platform' => $this->platform,
             'version' => $this->version,
             'page' => $this->page,

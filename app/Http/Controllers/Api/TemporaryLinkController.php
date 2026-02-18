@@ -11,8 +11,8 @@ class TemporaryLinkController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'email' => 'required|email',
-            'route' => 'required|string',
+            'email' => ['required', 'email'],
+            'route' => ['required', 'string'],
         ]);
 
         $url = URL::temporarySignedRoute(

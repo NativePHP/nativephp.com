@@ -12,7 +12,7 @@ class CreateArticle extends CreateRecord
 
     protected function afterCreate(): void
     {
-        $service = app(OgImageService::class);
+        $service = resolve(OgImageService::class);
 
         $ogImageUrl = $service->generate($this->record);
 

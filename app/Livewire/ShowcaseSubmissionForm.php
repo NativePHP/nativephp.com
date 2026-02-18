@@ -167,11 +167,11 @@ class ShowcaseSubmissionForm extends Component
                     'approved_by' => null,
                 ]);
 
-                return redirect()->route('customer.showcase.index')
+                return to_route('customer.showcase.index')
                     ->with('warning', 'Your submission has been updated and sent back for review.');
             }
 
-            return redirect()->route('customer.showcase.index')
+            return to_route('customer.showcase.index')
                 ->with('success', 'Your submission has been updated.');
         }
 
@@ -180,7 +180,7 @@ class ShowcaseSubmissionForm extends Component
             ...$data,
         ]);
 
-        return redirect()->route('customer.showcase.index')
+        return to_route('customer.showcase.index')
             ->with('success', 'Thank you! Your app has been submitted for review.');
     }
 
@@ -199,7 +199,7 @@ class ShowcaseSubmissionForm extends Component
 
             $this->showcase->delete();
 
-            return redirect()->route('customer.showcase.index')
+            return to_route('customer.showcase.index')
                 ->with('success', 'Your submission has been deleted.');
         }
 

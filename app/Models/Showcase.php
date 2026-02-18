@@ -29,14 +29,6 @@ class Showcase extends Model
         'approved_by',
     ];
 
-    protected $casts = [
-        'screenshots' => 'array',
-        'has_mobile' => 'boolean',
-        'has_desktop' => 'boolean',
-        'certified_nativephp' => 'boolean',
-        'approved_at' => 'datetime',
-    ];
-
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
@@ -67,23 +59,38 @@ class Showcase extends Model
         return $this->approved_at !== null && $this->updated_at->isAfter($this->approved_at);
     }
 
-    public function scopeApproved(Builder $query): Builder
+    #[\Illuminate\Database\Eloquent\Attributes\Scope]
+    protected function approved(Builder $query): Builder
     {
         return $query->whereNotNull('approved_at');
     }
 
-    public function scopePending(Builder $query): Builder
+    #[\Illuminate\Database\Eloquent\Attributes\Scope]
+    protected function pending(Builder $query): Builder
     {
         return $query->whereNull('approved_at');
     }
 
-    public function scopeWithMobile(Builder $query): Builder
+    #[\Illuminate\Database\Eloquent\Attributes\Scope]
+    protected function withMobile(Builder $query): Builder
     {
         return $query->where('has_mobile', true);
     }
 
-    public function scopeWithDesktop(Builder $query): Builder
+    #[\Illuminate\Database\Eloquent\Attributes\Scope]
+    protected function withDesktop(Builder $query): Builder
     {
         return $query->where('has_desktop', true);
+    }
+
+    protected function casts(): array
+    {
+        return [
+            'screenshots' => 'array',
+            'has_mobile' => 'boolean',
+            'has_desktop' => 'boolean',
+            'certified_nativephp' => 'boolean',
+            'approved_at' => 'datetime',
+        ];
     }
 }

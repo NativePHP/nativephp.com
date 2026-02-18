@@ -21,10 +21,6 @@ class Article extends Model
         'published_at',
     ];
 
-    protected $casts = [
-        'published_at' => 'datetime',
-    ];
-
     public function getRouteKeyName()
     {
         return 'slug';
@@ -35,10 +31,11 @@ class Article extends Model
     | Scopes
     |--------------------------------------------------------------------------
     */
-    public function scopePublished(Builder $query): void
+    #[\Illuminate\Database\Eloquent\Attributes\Scope]
+    protected function published(Builder $query): void
     {
         $query
-            ->orderByDesc('published_at')
+            ->latest('published_at')
             ->whereNotNull('published_at')
             ->where('published_at', '<=', now());
     }
@@ -95,10 +92,17 @@ class Article extends Model
     {
         parent::boot();
 
-        static::creating(function ($article) {
+        static::creating(function ($article): void {
             if (auth()->check() && ! $article->author_id) {
                 $article->author_id = auth()->id();
             }
         });
+    }
+
+    protected function casts(): array
+    {
+        return [
+            'published_at' => 'datetime',
+        ];
     }
 }

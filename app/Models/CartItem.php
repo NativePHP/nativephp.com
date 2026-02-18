@@ -12,12 +12,6 @@ class CartItem extends Model
 
     protected $guarded = [];
 
-    protected $casts = [
-        'price_at_addition' => 'integer',
-        'bundle_price_at_addition' => 'integer',
-        'product_price_at_addition' => 'integer',
-    ];
-
     /**
      * @return BelongsTo<Cart, CartItem>
      */
@@ -147,5 +141,14 @@ class CartItem extends Model
         }
 
         return $this->plugin->name;
+    }
+
+    protected function casts(): array
+    {
+        return [
+            'price_at_addition' => 'integer',
+            'bundle_price_at_addition' => 'integer',
+            'product_price_at_addition' => 'integer',
+        ];
     }
 }

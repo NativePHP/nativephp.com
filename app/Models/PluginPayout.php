@@ -16,14 +16,6 @@ class PluginPayout extends Model
 
     protected $guarded = [];
 
-    protected $casts = [
-        'gross_amount' => 'integer',
-        'platform_fee' => 'integer',
-        'developer_amount' => 'integer',
-        'status' => PayoutStatus::class,
-        'transferred_at' => 'datetime',
-    ];
-
     /**
      * @return BelongsTo<PluginLicense, PluginPayout>
      */
@@ -44,7 +36,8 @@ class PluginPayout extends Model
      * @param  Builder<PluginPayout>  $query
      * @return Builder<PluginPayout>
      */
-    public function scopePending(Builder $query): Builder
+    #[\Illuminate\Database\Eloquent\Attributes\Scope]
+    protected function pending(Builder $query): Builder
     {
         return $query->where('status', PayoutStatus::Pending);
     }
@@ -53,7 +46,8 @@ class PluginPayout extends Model
      * @param  Builder<PluginPayout>  $query
      * @return Builder<PluginPayout>
      */
-    public function scopeTransferred(Builder $query): Builder
+    #[\Illuminate\Database\Eloquent\Attributes\Scope]
+    protected function transferred(Builder $query): Builder
     {
         return $query->where('status', PayoutStatus::Transferred);
     }
@@ -62,7 +56,8 @@ class PluginPayout extends Model
      * @param  Builder<PluginPayout>  $query
      * @return Builder<PluginPayout>
      */
-    public function scopeFailed(Builder $query): Builder
+    #[\Illuminate\Database\Eloquent\Attributes\Scope]
+    protected function failed(Builder $query): Builder
     {
         return $query->where('status', PayoutStatus::Failed);
     }
@@ -110,5 +105,16 @@ class PluginPayout extends Model
         $this->update([
             'status' => PayoutStatus::Failed,
         ]);
+    }
+
+    protected function casts(): array
+    {
+        return [
+            'gross_amount' => 'integer',
+            'platform_fee' => 'integer',
+            'developer_amount' => 'integer',
+            'status' => PayoutStatus::class,
+            'transferred_at' => 'datetime',
+        ];
     }
 }

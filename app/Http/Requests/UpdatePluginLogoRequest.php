@@ -16,7 +16,7 @@ class UpdatePluginLogoRequest extends FormRequest
         return [
             'logo' => [
                 'required',
-                'image',
+                'file',
                 'mimes:png,jpg,jpeg,svg,webp',
                 'max:1024',
                 'dimensions:min_width=100,min_height=100,max_width=1024,max_height=1024',

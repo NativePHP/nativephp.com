@@ -83,7 +83,7 @@ class CartController extends Controller
             // Store the added plugin ID to highlight it in the cart
             session()->flash('just_added_plugin_id', $plugin->id);
 
-            return redirect()->route('cart.show')
+            return to_route('cart.show')
                 ->with('success', '<strong>'.e($plugin->name).'</strong> has been added to your cart!');
         } catch (\InvalidArgumentException $e) {
             if ($request->wantsJson()) {
@@ -93,7 +93,7 @@ class CartController extends Controller
                 ], 400);
             }
 
-            return redirect()->back()->with('error', $e->getMessage());
+            return back()->with('error', $e->getMessage());
         }
     }
 
@@ -114,7 +114,7 @@ class CartController extends Controller
             ]);
         }
 
-        return redirect()->route('cart.show')->with('success', "{$plugin->name} removed from cart.");
+        return to_route('cart.show')->with('success', "{$plugin->name} removed from cart.");
     }
 
     public function addBundle(Request $request, PluginBundle $bundle): RedirectResponse|JsonResponse
@@ -135,7 +135,7 @@ class CartController extends Controller
 
             session()->flash('just_added_bundle_id', $bundle->id);
 
-            return redirect()->route('cart.show')
+            return to_route('cart.show')
                 ->with('success', '<strong>'.e($bundle->name).'</strong> has been added to your cart!');
         } catch (\InvalidArgumentException $e) {
             if ($request->wantsJson()) {
@@ -145,7 +145,7 @@ class CartController extends Controller
                 ], 400);
             }
 
-            return redirect()->back()->with('error', $e->getMessage());
+            return back()->with('error', $e->getMessage());
         }
     }
 
@@ -164,7 +164,7 @@ class CartController extends Controller
             ]);
         }
 
-        return redirect()->route('cart.show')->with('success', "{$bundle->name} removed from cart.");
+        return to_route('cart.show')->with('success', "{$bundle->name} removed from cart.");
     }
 
     public function exchangeForBundle(Request $request, PluginBundle $bundle): RedirectResponse
@@ -175,10 +175,10 @@ class CartController extends Controller
         try {
             $this->cartService->exchangeForBundle($cart, $bundle);
 
-            return redirect()->route('cart.show')
+            return to_route('cart.show')
                 ->with('success', 'Swapped individual plugins for <strong>'.e($bundle->name).'</strong> bundle and saved '.$bundle->formatted_savings.'!');
         } catch (\InvalidArgumentException $e) {
-            return redirect()->route('cart.show')->with('error', $e->getMessage());
+            return to_route('cart.show')->with('error', $e->getMessage());
         }
     }
 
@@ -200,7 +200,7 @@ class CartController extends Controller
 
             session()->flash('just_added_product_id', $product->id);
 
-            return redirect()->route('cart.show')
+            return to_route('cart.show')
                 ->with('success', '<strong>'.e($product->name).'</strong> has been added to your cart!');
         } catch (\InvalidArgumentException $e) {
             if ($request->wantsJson()) {
@@ -210,7 +210,7 @@ class CartController extends Controller
                 ], 400);
             }
 
-            return redirect()->back()->with('error', $e->getMessage());
+            return back()->with('error', $e->getMessage());
         }
     }
 
@@ -229,7 +229,7 @@ class CartController extends Controller
             ]);
         }
 
-        return redirect()->route('cart.show')->with('success', "{$product->name} removed from cart.");
+        return to_route('cart.show')->with('success', "{$product->name} removed from cart.");
     }
 
     public function clear(Request $request): RedirectResponse
@@ -239,7 +239,7 @@ class CartController extends Controller
 
         $cart->clear();
 
-        return redirect()->route('cart.show')->with('success', 'Cart cleared.');
+        return to_route('cart.show')->with('success', 'Cart cleared.');
     }
 
     public function checkout(Request $request): RedirectResponse
@@ -250,14 +250,14 @@ class CartController extends Controller
             // Store intended URL and redirect to login
             session(['url.intended' => route('cart.checkout')]);
 
-            return redirect()->route('customer.login')
+            return to_route('customer.login')
                 ->with('message', 'Please log in or create an account to complete your purchase.');
         }
 
         $cart = $this->cartService->getCart($user);
 
         if ($cart->isEmpty()) {
-            return redirect()->route('cart.show')
+            return to_route('cart.show')
                 ->with('error', 'Your cart is empty.');
         }
 
@@ -278,7 +278,7 @@ class CartController extends Controller
                 'trace' => $e->getTraceAsString(),
             ]);
 
-            return redirect()->route('cart.show')
+            return to_route('cart.show')
                 ->with('error', 'Unable to start checkout. Please try again.');
         }
     }
@@ -289,7 +289,7 @@ class CartController extends Controller
 
         // Validate session ID exists and looks like a real Stripe session ID
         if (! $sessionId || ! str_starts_with($sessionId, 'cs_')) {
-            return redirect()->route('cart.show')
+            return to_route('cart.show')
                 ->with('error', 'Invalid checkout session. Please try again.');
         }
 
@@ -366,7 +366,7 @@ class CartController extends Controller
 
     public function cancel(): RedirectResponse
     {
-        return redirect()->route('cart.show')
+        return to_route('cart.show')
             ->with('message', 'Checkout cancelled. Your cart items are still saved.');
     }
 

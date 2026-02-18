@@ -25,7 +25,7 @@ class CustomerLicenseManagementTest extends TestCase
     {
         $user = User::factory()->create();
 
-        $response = $this->actingAs($user)->get('/dashboard');
+        $response = $this->actingAs($user)->get('/customer/licenses');
 
         $response->assertStatus(200);
         $response->assertSee('Your Licenses');
@@ -36,7 +36,7 @@ class CustomerLicenseManagementTest extends TestCase
     {
         $user = User::factory()->create();
 
-        $response = $this->actingAs($user)->get('/dashboard');
+        $response = $this->actingAs($user)->get('/customer/licenses');
 
         $response->assertStatus(200);
         $response->assertSee('No licenses found');
@@ -57,7 +57,7 @@ class CustomerLicenseManagementTest extends TestCase
             'key' => 'test-key-2',
         ]);
 
-        $response = $this->actingAs($user)->get('/dashboard');
+        $response = $this->actingAs($user)->get('/customer/licenses');
 
         $response->assertStatus(200);
         $response->assertSee('Standard License');
@@ -80,7 +80,7 @@ class CustomerLicenseManagementTest extends TestCase
             'policy_name' => 'User 2 License',
         ]);
 
-        $response = $this->actingAs($user1)->get('/dashboard');
+        $response = $this->actingAs($user1)->get('/customer/licenses');
 
         $response->assertStatus(200);
         $response->assertSee('User 1 License');
@@ -145,7 +145,7 @@ class CustomerLicenseManagementTest extends TestCase
             'is_suspended' => true,
         ]);
 
-        $response = $this->actingAs($user)->get('/dashboard');
+        $response = $this->actingAs($user)->get('/customer/licenses');
 
         $response->assertStatus(200);
         $response->assertSee('Active');
@@ -233,7 +233,7 @@ class CustomerLicenseManagementTest extends TestCase
         $response->assertStatus(404);
     }
 
-    public function test_license_names_display_on_index_page(): void
+    public function test_license_names_display_on_list_page(): void
     {
         $user = User::factory()->create();
 
@@ -249,7 +249,7 @@ class CustomerLicenseManagementTest extends TestCase
             'name' => null,
         ]);
 
-        $response = $this->actingAs($user)->get('/dashboard');
+        $response = $this->actingAs($user)->get('/customer/licenses');
 
         $response->assertStatus(200);
         // Named license should show custom name prominently
@@ -288,5 +288,16 @@ class CustomerLicenseManagementTest extends TestCase
 
         $response->assertStatus(200);
         $response->assertSee('No name set');
+    }
+
+    public function test_dashboard_shows_license_count(): void
+    {
+        $user = User::factory()->create();
+        License::factory()->count(3)->create(['user_id' => $user->id]);
+
+        $response = $this->actingAs($user)->get('/dashboard');
+
+        $response->assertStatus(200);
+        $response->assertSee('Licenses');
     }
 }

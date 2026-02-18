@@ -19,7 +19,7 @@ class GitHubOAuth
 
     public static function make(): static
     {
-        return new static(config('services.github.token') ?? '');
+        return new static(config('services.github.token', ''));
     }
 
     /**

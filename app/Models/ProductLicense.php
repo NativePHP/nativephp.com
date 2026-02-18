@@ -13,11 +13,6 @@ class ProductLicense extends Model
 
     protected $guarded = [];
 
-    protected $casts = [
-        'price_paid' => 'integer',
-        'purchased_at' => 'datetime',
-    ];
-
     /**
      * @return BelongsTo<User, ProductLicense>
      */
@@ -38,7 +33,8 @@ class ProductLicense extends Model
      * @param  Builder<ProductLicense>  $query
      * @return Builder<ProductLicense>
      */
-    public function scopeForUser(Builder $query, User $user): Builder
+    #[\Illuminate\Database\Eloquent\Attributes\Scope]
+    protected function forUser(Builder $query, User $user): Builder
     {
         return $query->where('user_id', $user->id);
     }
@@ -47,8 +43,17 @@ class ProductLicense extends Model
      * @param  Builder<ProductLicense>  $query
      * @return Builder<ProductLicense>
      */
-    public function scopeForProduct(Builder $query, Product $product): Builder
+    #[\Illuminate\Database\Eloquent\Attributes\Scope]
+    protected function forProduct(Builder $query, Product $product): Builder
     {
         return $query->where('product_id', $product->id);
+    }
+
+    protected function casts(): array
+    {
+        return [
+            'price_paid' => 'integer',
+            'purchased_at' => 'datetime',
+        ];
     }
 }

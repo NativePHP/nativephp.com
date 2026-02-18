@@ -77,7 +77,7 @@ Route::view('build-my-app', 'build-my-app')->name('build-my-app');
 Route::view('the-vibes', 'the-vibes')->name('the-vibes');
 
 // Public plugin directory routes
-Route::middleware(EnsureFeaturesAreActive::using(ShowPlugins::class))->group(function () {
+Route::middleware(EnsureFeaturesAreActive::using(ShowPlugins::class))->group(function (): void {
     Route::get('plugins', [PluginDirectoryController::class, 'index'])->name('plugins');
     Route::get('plugins/marketplace', App\Livewire\PluginDirectory::class)->name('plugins.marketplace');
     Route::get('plugins/{vendor}/{package}', [PluginDirectoryController::class, 'show'])->name('plugins.show');
@@ -150,7 +150,7 @@ Route::get('docs/{page?}', function ($page = null) {
         }
     }
 
-    return redirect()->route('docs.show', [
+    return to_route('docs.show', [
         'platform' => $platform,
         'version' => $version,
         'page' => $page,
@@ -165,7 +165,7 @@ Route::get('license/{license}/renewal', [App\Http\Controllers\LicenseRenewalCont
 Route::post('license/{license}/renewal/checkout', [App\Http\Controllers\LicenseRenewalController::class, 'createCheckoutSession'])->name('license.renewal.checkout');
 
 // Customer authentication routes
-Route::middleware(['guest'])->group(function () {
+Route::middleware(['guest'])->group(function (): void {
     Route::get('login', [CustomerAuthController::class, 'showLogin'])->name('customer.login');
     Route::post('login', [CustomerAuthController::class, 'login']);
 
@@ -189,7 +189,7 @@ Route::post('logout', [CustomerAuthController::class, 'logout'])
 Route::get('auth/github/callback', [App\Http\Controllers\GitHubIntegrationController::class, 'handleCallback'])->name('github.callback');
 
 // GitHub OAuth routes (auth required)
-Route::middleware(['auth', EnsureFeaturesAreActive::using(ShowAuthButtons::class)])->group(function () {
+Route::middleware(['auth', EnsureFeaturesAreActive::using(ShowAuthButtons::class)])->group(function (): void {
     Route::get('auth/github', [App\Http\Controllers\GitHubIntegrationController::class, 'redirectToGitHub'])->name('github.redirect');
     Route::post('customer/github/request-access', [App\Http\Controllers\GitHubIntegrationController::class, 'requestRepoAccess'])->name('github.request-access');
     Route::post('customer/github/request-claude-plugins-access', [App\Http\Controllers\GitHubIntegrationController::class, 'requestClaudePluginsAccess'])->name('github.request-claude-plugins-access');
@@ -198,7 +198,7 @@ Route::middleware(['auth', EnsureFeaturesAreActive::using(ShowAuthButtons::class
 });
 
 // Discord OAuth routes
-Route::middleware(['auth', EnsureFeaturesAreActive::using(ShowAuthButtons::class)])->group(function () {
+Route::middleware(['auth', EnsureFeaturesAreActive::using(ShowAuthButtons::class)])->group(function (): void {
     Route::get('auth/discord', [App\Http\Controllers\DiscordIntegrationController::class, 'redirectToDiscord'])->name('discord.redirect');
     Route::get('auth/discord/callback', [App\Http\Controllers\DiscordIntegrationController::class, 'handleCallback'])->name('discord.callback');
     Route::delete('customer/discord/disconnect', [App\Http\Controllers\DiscordIntegrationController::class, 'disconnect'])->name('discord.disconnect');
@@ -220,7 +220,7 @@ Route::middleware(['auth', EnsureFeaturesAreActive::using(ShowAuthButtons::class
     ->name('dashboard');
 
 // Customer license management routes
-Route::middleware(['auth', EnsureFeaturesAreActive::using(ShowAuthButtons::class)])->prefix('customer')->name('customer.')->group(function () {
+Route::middleware(['auth', EnsureFeaturesAreActive::using(ShowAuthButtons::class)])->prefix('customer')->name('customer.')->group(function (): void {
     // License list page
     Route::get('licenses', [CustomerLicenseController::class, 'list'])->name('licenses.list');
     Route::view('integrations', 'customer.integrations')->name('integrations');
@@ -246,7 +246,7 @@ Route::middleware(['auth', EnsureFeaturesAreActive::using(ShowAuthButtons::class
     Route::get('showcase/{showcase}/edit', [App\Http\Controllers\CustomerShowcaseController::class, 'edit'])->name('showcase.edit');
 
     // Plugin management
-    Route::middleware(EnsureFeaturesAreActive::using(ShowPlugins::class))->group(function () {
+    Route::middleware(EnsureFeaturesAreActive::using(ShowPlugins::class))->group(function (): void {
         Route::get('plugins', [CustomerPluginController::class, 'index'])->name('plugins.index');
         Route::get('plugins/submit', [CustomerPluginController::class, 'create'])->name('plugins.create');
         Route::post('plugins', [CustomerPluginController::class, 'store'])->name('plugins.store');
@@ -284,7 +284,7 @@ Route::get('.well-known/assetlinks.json', [ApplinksController::class, 'assetLink
 Route::post('webhooks/plugins/{secret}', PluginWebhookController::class)->name('webhooks.plugins');
 
 // Plugin purchase routes
-Route::middleware(['auth', EnsureFeaturesAreActive::using(ShowAuthButtons::class), EnsureFeaturesAreActive::using(ShowPlugins::class)])->group(function () {
+Route::middleware(['auth', EnsureFeaturesAreActive::using(ShowAuthButtons::class), EnsureFeaturesAreActive::using(ShowPlugins::class)])->group(function (): void {
     Route::get('plugins/{vendor}/{package}/purchase', [PluginPurchaseController::class, 'show'])->name('plugins.purchase.show');
     Route::post('plugins/{vendor}/{package}/purchase', [PluginPurchaseController::class, 'checkout'])->name('plugins.purchase.checkout');
     Route::get('plugins/{vendor}/{package}/purchase/success', [PluginPurchaseController::class, 'success'])->name('plugins.purchase.success');
@@ -293,17 +293,17 @@ Route::middleware(['auth', EnsureFeaturesAreActive::using(ShowAuthButtons::class
 });
 
 // Bundle routes (public)
-Route::middleware(EnsureFeaturesAreActive::using(ShowPlugins::class))->group(function () {
+Route::middleware(EnsureFeaturesAreActive::using(ShowPlugins::class))->group(function (): void {
     Route::get('bundles/{bundle:slug}', [BundleController::class, 'show'])->name('bundles.show');
 });
 
 // Product routes (public)
-Route::middleware(EnsureFeaturesAreActive::using(ShowPlugins::class))->group(function () {
+Route::middleware(EnsureFeaturesAreActive::using(ShowPlugins::class))->group(function (): void {
     Route::get('products/{product:slug}', [ProductController::class, 'show'])->name('products.show');
 });
 
 // Cart routes (public - allows guest cart)
-Route::middleware(EnsureFeaturesAreActive::using(ShowPlugins::class))->group(function () {
+Route::middleware(EnsureFeaturesAreActive::using(ShowPlugins::class))->group(function (): void {
     Route::get('cart', [CartController::class, 'show'])->name('cart.show');
     Route::post('cart/add/{vendor}/{package}', [CartController::class, 'add'])->name('cart.add');
     Route::delete('cart/remove/{vendor}/{package}', [CartController::class, 'remove'])->name('cart.remove');
@@ -321,7 +321,7 @@ Route::middleware(EnsureFeaturesAreActive::using(ShowPlugins::class))->group(fun
 });
 
 // Developer onboarding routes
-Route::middleware(['auth', EnsureFeaturesAreActive::using(ShowAuthButtons::class), EnsureFeaturesAreActive::using(ShowPlugins::class)])->prefix('customer/developer')->name('customer.developer.')->group(function () {
+Route::middleware(['auth', EnsureFeaturesAreActive::using(ShowAuthButtons::class), EnsureFeaturesAreActive::using(ShowPlugins::class)])->prefix('customer/developer')->name('customer.developer.')->group(function (): void {
     Route::get('onboarding', [DeveloperOnboardingController::class, 'show'])->name('onboarding');
     Route::post('onboarding/start', [DeveloperOnboardingController::class, 'start'])->name('onboarding.start');
     Route::get('onboarding/return', [DeveloperOnboardingController::class, 'return'])->name('onboarding.return');

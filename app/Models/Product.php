@@ -14,12 +14,6 @@ class Product extends Model
 
     protected $guarded = [];
 
-    protected $casts = [
-        'is_active' => 'boolean',
-        'is_featured' => 'boolean',
-        'published_at' => 'datetime',
-    ];
-
     /**
      * @return HasMany<ProductPrice>
      */
@@ -82,7 +76,8 @@ class Product extends Model
      * @param  Builder<Product>  $query
      * @return Builder<Product>
      */
-    public function scopeActive(Builder $query): Builder
+    #[\Illuminate\Database\Eloquent\Attributes\Scope]
+    protected function active(Builder $query): Builder
     {
         return $query->where('is_active', true)
             ->whereNotNull('published_at')
@@ -93,7 +88,8 @@ class Product extends Model
      * @param  Builder<Product>  $query
      * @return Builder<Product>
      */
-    public function scopeFeatured(Builder $query): Builder
+    #[\Illuminate\Database\Eloquent\Attributes\Scope]
+    protected function featured(Builder $query): Builder
     {
         return $query->where('is_featured', true);
     }
@@ -140,17 +136,27 @@ class Product extends Model
     /**
      * Get formatted price (uses regular tier price).
      */
-    public function getFormattedPriceAttribute(): string
+    protected function formattedPrice(): \Illuminate\Database\Eloquent\Casts\Attribute
     {
-        $price = $this->getRegularPrice();
+        return \Illuminate\Database\Eloquent\Casts\Attribute::make(get: function () {
+            $price = $this->getRegularPrice();
+            $amount = $price ? $price->amount : 0;
 
-        $amount = $price ? $price->amount : 0;
-
-        return '$'.number_format($amount / 100, 2);
+            return '$'.number_format($amount / 100, 2);
+        });
     }
 
     public function getRouteKeyName(): string
     {
         return 'slug';
+    }
+
+    protected function casts(): array
+    {
+        return [
+            'is_active' => 'boolean',
+            'is_featured' => 'boolean',
+            'published_at' => 'datetime',
+        ];
     }
 }

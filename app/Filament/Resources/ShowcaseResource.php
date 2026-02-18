@@ -208,7 +208,7 @@ class ShowcaseResource extends Resource
                     Tables\Actions\BulkAction::make('approve')
                         ->icon('heroicon-o-check')
                         ->color('success')
-                        ->action(function ($records) {
+                        ->action(function ($records): void {
                             $records->each(fn (Showcase $record) => $record->update([
                                 'approved_at' => now(),
                                 'approved_by' => auth()->id(),

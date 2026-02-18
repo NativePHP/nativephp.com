@@ -74,13 +74,13 @@ class PluginDirectory extends Component
 
         $plugins = Plugin::query()
             ->approved()
-            ->when($this->search, function ($query) {
-                $query->where(function ($q) {
+            ->when($this->search, function ($query): void {
+                $query->where(function ($q): void {
                     $q->where('name', 'like', "%{$this->search}%")
                         ->orWhere('description', 'like', "%{$this->search}%");
                 });
             })
-            ->when($this->author, function ($query) {
+            ->when($this->author, function ($query): void {
                 $query->where('user_id', $this->author);
             })
             ->orderByDesc('featured')
@@ -90,8 +90,8 @@ class PluginDirectory extends Component
         $bundles = PluginBundle::query()
             ->active()
             ->with('plugins')
-            ->when($this->search, function ($query) {
-                $query->where(function ($q) {
+            ->when($this->search, function ($query): void {
+                $query->where(function ($q): void {
                     $q->where('name', 'like', "%{$this->search}%")
                         ->orWhere('description', 'like', "%{$this->search}%");
                 });

@@ -6,7 +6,6 @@ use App\Models\Article;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\Radio;
 use Filament\Tables\Actions\Action;
-use Illuminate\Support\Carbon;
 
 class PublishAction extends Action
 {
@@ -34,11 +33,11 @@ class PublishAction extends Action
                     ->visible(fn ($get) => $get('publish_type') === 'schedule')
                     ->required(fn ($get) => $get('publish_type') === 'schedule'),
             ])
-            ->action(function (Article $article, array $data) {
+            ->action(function (Article $article, array $data): void {
                 if ($data['publish_type'] === 'now') {
                     $article->publish();
                 } else {
-                    $article->publish(Carbon::parse($data['published_at']));
+                    $article->publish(\Illuminate\Support\Facades\Date::parse($data['published_at']));
                 }
             });
     }

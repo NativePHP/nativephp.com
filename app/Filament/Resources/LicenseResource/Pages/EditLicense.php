@@ -34,7 +34,7 @@ class EditLicense extends EditRecord
                     ->modalDescription('This will retrieve the latest license data from Anystack and update the local record.')
                     ->modalSubmitActionLabel('Sync License')
                     ->visible(fn () => filled($this->record->anystack_id))
-                    ->action(function () {
+                    ->action(function (): void {
                         try {
                             $response = Anystack::api()
                                 ->license($this->record->anystack_id, $this->record->anystack_product_id)
@@ -64,9 +64,9 @@ class EditLicense extends EditRecord
                     ->modalDescription('Are you sure you want to suspend this license?')
                     ->modalSubmitActionLabel('Suspend')
                     ->visible(fn () => ! $this->record->is_suspended)
-                    ->action(function () {
+                    ->action(function (): void {
                         try {
-                            app(SuspendLicense::class)->handle($this->record);
+                            resolve(SuspendLicense::class)->handle($this->record);
 
                             Notification::make()
                                 ->title('License suspended successfully')
@@ -89,9 +89,9 @@ class EditLicense extends EditRecord
                     ->modalDescription('Are you sure you want to remove the suspension for this license?')
                     ->modalSubmitActionLabel('Unsuspend')
                     ->visible(fn () => $this->record->is_suspended)
-                    ->action(function () {
+                    ->action(function (): void {
                         try {
-                            app(UnsuspendLicense::class)->handle($this->record);
+                            resolve(UnsuspendLicense::class)->handle($this->record);
 
                             Notification::make()
                                 ->title('License unsuspended successfully')
@@ -118,9 +118,9 @@ class EditLicense extends EditRecord
                             ->label('Also delete from Anystack')
                             ->default(true),
                     ])
-                    ->action(function (array $data) {
+                    ->action(function (array $data): void {
                         try {
-                            app(DeleteLicense::class)->handle($this->record, $data['delete_from_anystack']);
+                            resolve(DeleteLicense::class)->handle($this->record, $data['delete_from_anystack']);
 
                             Notification::make()
                                 ->title('License deleted successfully')

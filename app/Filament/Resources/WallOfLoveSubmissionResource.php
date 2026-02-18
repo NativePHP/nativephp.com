@@ -57,7 +57,7 @@ class WallOfLoveSubmissionResource extends Resource
                             ->helperText('Approved submissions appear on the Wall of Love.')
                             ->formatStateUsing(fn (?WallOfLoveSubmission $record) => $record?->isApproved() ?? false)
                             ->dehydrated(false)
-                            ->afterStateUpdated(function (bool $state, ?WallOfLoveSubmission $record) {
+                            ->afterStateUpdated(function (bool $state, ?WallOfLoveSubmission $record): void {
                                 if (! $record) {
                                     return;
                                 }
@@ -222,7 +222,7 @@ class WallOfLoveSubmissionResource extends Resource
                     Tables\Actions\BulkAction::make('approve')
                         ->icon('heroicon-o-check')
                         ->color('success')
-                        ->action(function ($records) {
+                        ->action(function ($records): void {
                             $records->each(fn (WallOfLoveSubmission $record) => $record->update([
                                 'approved_at' => now(),
                                 'approved_by' => auth()->id(),

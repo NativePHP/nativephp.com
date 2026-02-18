@@ -247,7 +247,7 @@ class ProcessPluginCheckoutJob implements ShouldQueue
                 'status' => PayoutStatus::Pending,
             ]);
 
-            $stripeConnectService = app(StripeConnectService::class);
+            $stripeConnectService = resolve(StripeConnectService::class);
             $stripeConnectService->processTransfer($payout);
         }
 
@@ -319,7 +319,7 @@ class ProcessPluginCheckoutJob implements ShouldQueue
             $isCartCheckout = isset($this->metadata['cart_id']);
 
             if ($isCartCheckout) {
-                $stripeConnectService = app(StripeConnectService::class);
+                $stripeConnectService = resolve(StripeConnectService::class);
                 $stripeConnectService->processTransfer($payout);
             } else {
                 // Single plugin purchase - transfer already happened via transfer_data

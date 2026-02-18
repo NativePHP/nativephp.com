@@ -14,11 +14,6 @@ class OpenCollectiveDonation extends Model
 
     protected $guarded = [];
 
-    protected $casts = [
-        'raw_payload' => 'array',
-        'claimed_at' => 'datetime',
-    ];
-
     /**
      * @return BelongsTo<User>
      */
@@ -38,5 +33,13 @@ class OpenCollectiveDonation extends Model
             'user_id' => $user->id,
             'claimed_at' => now(),
         ]);
+    }
+
+    protected function casts(): array
+    {
+        return [
+            'raw_payload' => 'array',
+            'claimed_at' => 'datetime',
+        ];
     }
 }

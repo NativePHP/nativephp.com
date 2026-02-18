@@ -43,7 +43,7 @@ class CustomerLicenseController extends Controller
         if (! $activeSubscription) {
             $highestTierLicense = $user->licenses()
                 ->whereIn('policy_name', ['max', 'pro', 'mini'])
-                ->orderByRaw("FIELD(policy_name, 'max', 'pro', 'mini')")
+                ->orderByRaw("CASE policy_name WHEN 'max' THEN 1 WHEN 'pro' THEN 2 WHEN 'mini' THEN 3 END")
                 ->first();
             $renewalLicenseKey = $highestTierLicense?->key;
         }
@@ -84,10 +84,9 @@ class CustomerLicenseController extends Controller
         $assignedSubLicenses = SubLicense::query()
             ->with('parentLicense')
             ->where('assigned_email', $user->email)
-            ->whereHas('parentLicense', function ($query) use ($user) {
+            ->whereHas('parentLicense', function ($query) use ($user): void {
                 $query->where('user_id', '!=', $user->id);
-            })
-            ->orderBy('created_at', 'desc')
+            })->latest()
             ->get();
 
         return view('customer.licenses.list', compact('licenses', 'assignedSubLicenses'));
@@ -117,7 +116,7 @@ class CustomerLicenseController extends Controller
             'name' => $request->name,
         ]);
 
-        return redirect()->route('customer.licenses.show', $licenseKey)
+        return to_route('customer.licenses.show', $licenseKey)
             ->with('success', 'License name updated successfully!');
     }
 
@@ -126,7 +125,7 @@ class CustomerLicenseController extends Controller
         $user = Auth::user();
         $user->regeneratePluginLicenseKey();
 
-        return redirect()->route('customer.purchased-plugins.index')
+        return to_route('customer.purchased-plugins.index')
             ->with('success', 'Your plugin license key has been rotated. Please update your Composer configuration with the new key.');
     }
 
@@ -136,13 +135,13 @@ class CustomerLicenseController extends Controller
 
         // Check if offer has expired
         if (now()->gt('2026-02-28 23:59:59')) {
-            return redirect()->route('dashboard')
+            return to_route('dashboard')
                 ->with('error', 'This offer has expired.');
         }
 
         // Verify eligibility
         if (! $user->isEligibleForFreePluginsOffer()) {
-            return redirect()->route('dashboard')
+            return to_route('dashboard')
                 ->with('error', 'You are not eligible for this offer.');
         }
 
@@ -152,7 +151,7 @@ class CustomerLicenseController extends Controller
             ->get();
 
         if ($freePlugins->isEmpty()) {
-            return redirect()->route('dashboard')
+            return to_route('dashboard')
                 ->with('error', 'The free plugins are not currently available.');
         }
 
@@ -182,11 +181,11 @@ class CustomerLicenseController extends Controller
         }
 
         if ($claimedCount === 0) {
-            return redirect()->route('dashboard')
+            return to_route('dashboard')
                 ->with('message', 'You have already claimed all the free plugins.');
         }
 
-        return redirect()->route('dashboard')
+        return to_route('dashboard')
             ->with('success', "Successfully claimed {$claimedCount} free plugin(s)! You can now install them via Composer.");
     }
 }

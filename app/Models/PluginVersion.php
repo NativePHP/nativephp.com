@@ -12,12 +12,6 @@ class PluginVersion extends Model
 
     protected $guarded = [];
 
-    protected $casts = [
-        'is_packaged' => 'boolean',
-        'packaged_at' => 'datetime',
-        'published_at' => 'datetime',
-    ];
-
     /**
      * @return BelongsTo<Plugin, PluginVersion>
      */
@@ -39,5 +33,14 @@ class PluginVersion extends Model
     public function getDownloadPath(): string
     {
         return $this->storage_path ?? '';
+    }
+
+    protected function casts(): array
+    {
+        return [
+            'is_packaged' => 'boolean',
+            'packaged_at' => 'datetime',
+            'published_at' => 'datetime',
+        ];
     }
 }

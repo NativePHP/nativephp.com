@@ -21,14 +21,14 @@ class PluginPurchaseController extends Controller
     public function show(Request $request, Plugin $plugin): View|RedirectResponse
     {
         if ($plugin->isFree()) {
-            return redirect()->route('plugins.show', $plugin);
+            return to_route('plugins.show', $plugin);
         }
 
         $user = $request->user();
         $bestPrice = $plugin->getBestPriceForUser($user);
 
         if (! $bestPrice) {
-            return redirect()->route('plugins.show', $plugin)
+            return to_route('plugins.show', $plugin)
                 ->with('error', 'This plugin is not available for purchase.');
         }
 
@@ -49,11 +49,11 @@ class PluginPurchaseController extends Controller
         $user = $request->user();
 
         if ($plugin->isFree()) {
-            return redirect()->route('plugins.show', $plugin);
+            return to_route('plugins.show', $plugin);
         }
 
         if (! $plugin->getBestPriceForUser($user)) {
-            return redirect()->route('plugins.show', $plugin)
+            return to_route('plugins.show', $plugin)
                 ->with('error', 'This plugin is not available for purchase.');
         }
 
@@ -63,11 +63,11 @@ class PluginPurchaseController extends Controller
         try {
             $this->cartService->addPlugin($cart, $plugin);
         } catch (\InvalidArgumentException $e) {
-            return redirect()->route('plugins.show', $plugin)
+            return to_route('plugins.show', $plugin)
                 ->with('error', $e->getMessage());
         }
 
-        return redirect()->route('cart.checkout');
+        return to_route('cart.checkout');
     }
 
     public function success(Request $request, Plugin $plugin): View|RedirectResponse
@@ -76,7 +76,7 @@ class PluginPurchaseController extends Controller
 
         // Validate session ID exists and looks like a real Stripe session ID
         if (! $sessionId || ! str_starts_with($sessionId, 'cs_')) {
-            return redirect()->route('plugins.show', $plugin)
+            return to_route('plugins.show', $plugin)
                 ->with('error', 'Invalid checkout session. Please try again.');
         }
 
@@ -130,7 +130,7 @@ class PluginPurchaseController extends Controller
 
     public function cancel(Request $request, Plugin $plugin): RedirectResponse
     {
-        return redirect()->route('plugins.show', $plugin)
+        return to_route('plugins.show', $plugin)
             ->with('message', 'Purchase cancelled.');
     }
 }

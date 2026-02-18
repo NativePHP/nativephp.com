@@ -4,7 +4,6 @@ namespace App\Livewire;
 
 use App\Enums\LicenseSource;
 use App\Enums\Subscription;
-use App\Jobs\CreateAnystackLicenseJob;
 use App\Models\OpenCollectiveDonation;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
@@ -116,14 +115,7 @@ class ClaimDonationLicense extends Component
         $lastName = $nameParts[1] ?? null;
 
         // Create the license
-        CreateAnystackLicenseJob::dispatch(
-            user: $user,
-            subscription: Subscription::Mini,
-            subscriptionItemId: null,
-            firstName: $firstName,
-            lastName: $lastName,
-            source: LicenseSource::OpenCollective
-        );
+        dispatch(new \App\Jobs\CreateAnystackLicenseJob(user: $user, subscription: Subscription::Mini, subscriptionItemId: null, firstName: $firstName, lastName: $lastName, source: LicenseSource::OpenCollective));
 
         // Mark donation as claimed
         $donation->markAsClaimed($user);

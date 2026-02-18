@@ -6,7 +6,6 @@ use App\Enums\PluginActivityType;
 use App\Enums\PluginStatus;
 use App\Enums\PluginTier;
 use App\Enums\PluginType;
-use App\Jobs\SyncPluginReleases;
 use App\Notifications\PluginApproved;
 use App\Notifications\PluginRejected;
 use App\Services\PluginSyncService;
@@ -55,23 +54,9 @@ class Plugin extends Model
 
     protected $guarded = [];
 
-    protected $casts = [
-        'status' => PluginStatus::class,
-        'type' => PluginType::class,
-        'tier' => PluginTier::class,
-        'approved_at' => 'datetime',
-        'featured' => 'boolean',
-        'is_active' => 'boolean',
-        'is_official' => 'boolean',
-        'composer_data' => 'array',
-        'nativephp_data' => 'array',
-        'last_synced_at' => 'datetime',
-        'webhook_installed' => 'boolean',
-    ];
-
     protected static function booted(): void
     {
-        static::created(function (Plugin $plugin) {
+        static::created(function (Plugin $plugin): void {
             $plugin->recordActivity(
                 PluginActivityType::Submitted,
                 null,
@@ -81,17 +66,17 @@ class Plugin extends Model
             );
         });
 
-        static::updated(function (Plugin $plugin) {
+        static::updated(function (Plugin $plugin): void {
             // When tier is set or changed, create/update prices automatically
             if ($plugin->wasChanged('tier') && $plugin->tier !== null) {
                 $plugin->syncPricesFromTier();
             }
         });
 
-        static::deleting(function (Plugin $plugin) {
+        static::deleting(function (Plugin $plugin): void {
             // Remove from Satis when plugin is deleted
             if ($plugin->name) {
-                app(SatisService::class)->removePackage($plugin->name);
+                resolve(SatisService::class)->removePackage($plugin->name);
             }
         });
     }
@@ -140,7 +125,7 @@ class Plugin extends Model
      */
     public function activities(): HasMany
     {
-        return $this->hasMany(PluginActivity::class)->orderBy('created_at', 'desc');
+        return $this->hasMany(PluginActivity::class)->latest();
     }
 
     /**
@@ -240,7 +225,7 @@ class Plugin extends Model
      */
     public function versions(): HasMany
     {
-        return $this->hasMany(PluginVersion::class)->orderBy('created_at', 'desc');
+        return $this->hasMany(PluginVersion::class)->latest();
     }
 
     /**
@@ -290,7 +275,8 @@ class Plugin extends Model
      * @param  Builder<Plugin>  $query
      * @return Builder<Plugin>
      */
-    public function scopeApproved(Builder $query): Builder
+    #[\Illuminate\Database\Eloquent\Attributes\Scope]
+    protected function approved(Builder $query): Builder
     {
         return $query->where('status', PluginStatus::Approved)
             ->where('is_active', true);
@@ -300,7 +286,8 @@ class Plugin extends Model
      * @param  Builder<Plugin>  $query
      * @return Builder<Plugin>
      */
-    public function scopeActive(Builder $query): Builder
+    #[\Illuminate\Database\Eloquent\Attributes\Scope]
+    protected function active(Builder $query): Builder
     {
         return $query->where('is_active', true);
     }
@@ -309,7 +296,8 @@ class Plugin extends Model
      * @param  Builder<Plugin>  $query
      * @return Builder<Plugin>
      */
-    public function scopeFeatured(Builder $query): Builder
+    #[\Illuminate\Database\Eloquent\Attributes\Scope]
+    protected function featured(Builder $query): Builder
     {
         return $query->where('featured', true);
     }
@@ -511,10 +499,10 @@ class Plugin extends Model
 
         $this->user->notify(new PluginApproved($this));
 
-        app(PluginSyncService::class)->sync($this);
+        resolve(PluginSyncService::class)->sync($this);
 
         if ($this->isPaid()) {
-            SyncPluginReleases::dispatch($this);
+            dispatch(new \App\Jobs\SyncPluginReleases($this));
         }
     }
 
@@ -591,5 +579,22 @@ class Plugin extends Model
             'note' => $note,
             'causer_id' => $causerId,
         ]);
+    }
+
+    protected function casts(): array
+    {
+        return [
+            'status' => PluginStatus::class,
+            'type' => PluginType::class,
+            'tier' => PluginTier::class,
+            'approved_at' => 'datetime',
+            'featured' => 'boolean',
+            'is_active' => 'boolean',
+            'is_official' => 'boolean',
+            'composer_data' => 'array',
+            'nativephp_data' => 'array',
+            'last_synced_at' => 'datetime',
+            'webhook_installed' => 'boolean',
+        ];
     }
 }

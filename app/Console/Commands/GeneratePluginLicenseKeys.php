@@ -48,7 +48,7 @@ class GeneratePluginLicenseKeys extends Command
         $bar = $this->output->createProgressBar($count);
         $bar->start();
 
-        $query->chunkById(100, function ($users) use ($bar) {
+        $query->chunkById(100, function ($users) use ($bar): void {
             foreach ($users as $user) {
                 $user->getPluginLicenseKey();
                 $bar->advance();

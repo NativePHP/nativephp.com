@@ -107,7 +107,7 @@ class ShowDocumentationController extends Controller
         $pageProperties['tableOfContents'] = $this->extractTableOfContents($document->body());
 
         $navigation = $this->getNavigation($platform, $version);
-        $pageProperties['navigation'] = Menu::build($navigation, function (Menu $menu, $nav) {
+        $pageProperties['navigation'] = Menu::build($navigation, function (Menu $menu, $nav): void {
             if (array_key_exists('path', $nav)) {
                 $menu->link($nav['path'], $nav['title']);
             } elseif (array_key_exists('children', $nav)) {
@@ -467,7 +467,7 @@ class ShowDocumentationController extends Controller
     protected function getMarkdownView($view, array $data = [], array $mergeData = []): View
     {
         /** @var ViewFactory $factory */
-        $factory = app(ViewFactory::class);
+        $factory = resolve(ViewFactory::class);
 
         $factory->addExtension('md', 'blade');
 
