@@ -6,6 +6,6 @@ class AllowPaidPlugins
 {
     public function resolve(mixed $scope): bool
     {
-        return false;
+        return true;
     }
 }
