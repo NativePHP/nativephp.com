@@ -75,23 +75,6 @@ class EditPlugin extends EditRecord
                     ->modalDescription(fn () => "This will convert '{$this->record->name}' from free to paid, set up pricing, and trigger a Satis build so it's available via Composer.")
                     ->modalSubmitActionLabel('Convert & Ingest'),
 
-                Actions\Action::make('editDescription')
-                    ->label('Edit Description')
-                    ->icon('heroicon-o-pencil-square')
-                    ->color('gray')
-                    ->form([
-                        Forms\Components\Textarea::make('description')
-                            ->label('Description')
-                            ->required()
-                            ->rows(5)
-                            ->maxLength(1000)
-                            ->default(fn () => $this->record->description)
-                            ->placeholder('Describe what this plugin does...'),
-                    ])
-                    ->action(fn (array $data) => $this->record->updateDescription($data['description'], auth()->id()))
-                    ->modalHeading('Edit Plugin Description')
-                    ->modalDescription(fn () => "Update the description for '{$this->record->name}'"),
-
                 Actions\Action::make('grantToUser')
                     ->label('Grant to User')
                     ->icon('heroicon-o-gift')
