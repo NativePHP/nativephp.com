@@ -164,7 +164,7 @@ class PluginResource extends Resource
                     ->label('Active'),
             ])
             ->actions([
-
+                Tables\Actions\EditAction::make(),
             ])
             ->bulkActions([
 
