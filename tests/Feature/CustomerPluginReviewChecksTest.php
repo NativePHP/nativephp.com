@@ -3,8 +3,10 @@
 namespace Tests\Feature;
 
 use App\Models\User;
+use App\Notifications\PluginSubmitted;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Notification;
 use Tests\TestCase;
 
 class CustomerPluginReviewChecksTest extends TestCase
@@ -14,6 +16,8 @@ class CustomerPluginReviewChecksTest extends TestCase
     /** @test */
     public function submitting_a_plugin_runs_review_checks(): void
     {
+        Notification::fake();
+
         $user = User::factory()->create([
             'github_id' => '12345',
         ]);
@@ -81,5 +85,76 @@ class CustomerPluginReviewChecksTest extends TestCase
         $this->assertTrue($plugin->review_checks['requires_mobile_sdk']);
         $this->assertEquals('^3.0.0', $plugin->review_checks['mobile_sdk_constraint']);
         $this->assertNotNull($plugin->reviewed_at);
+
+        Notification::assertSentTo($user, PluginSubmitted::class, function (PluginSubmitted $notification) use ($plugin) {
+            return $notification->plugin->id === $plugin->id;
+        });
+    }
+
+    /** @test */
+    public function plugin_submitted_email_includes_failing_checks(): void
+    {
+        Notification::fake();
+
+        $user = User::factory()->create([
+            'github_id' => '12345',
+        ]);
+
+        $repoSlug = 'acme/bare-plugin';
+        $base = "https://api.github.com/repos/{$repoSlug}";
+        $composerJson = json_encode([
+            'name' => 'acme/bare-plugin',
+            'description' => 'A bare plugin',
+            'require' => ['php' => '^8.1'],
+        ]);
+
+        Http::fake([
+            "{$base}/contents/README.md" => Http::response([
+                'content' => base64_encode('# Bare Plugin'),
+                'encoding' => 'base64',
+            ]),
+            "{$base}/contents/composer.json" => Http::response([
+                'content' => base64_encode($composerJson),
+                'encoding' => 'base64',
+            ]),
+            "{$base}/contents/nativephp.json" => Http::response([], 404),
+            "{$base}/contents/LICENSE*" => Http::response([], 404),
+            "{$base}/releases/latest" => Http::response([], 404),
+            "{$base}/tags*" => Http::response([]),
+            "https://raw.githubusercontent.com/{$repoSlug}/*" => Http::response('', 404),
+
+            $base => Http::response(['default_branch' => 'main']),
+            "{$base}/git/trees/main*" => Http::response([
+                'tree' => [
+                    ['path' => 'src/ServiceProvider.php', 'type' => 'blob'],
+                ],
+            ]),
+            "{$base}/readme" => Http::response([
+                'content' => base64_encode('# Bare Plugin'),
+                'encoding' => 'base64',
+            ]),
+        ]);
+
+        $this->actingAs($user)
+            ->post(route('customer.plugins.store'), [
+                'repository' => $repoSlug,
+                'type' => 'free',
+            ]);
+
+        $plugin = $user->plugins()->where('repository_url', "https://github.com/{$repoSlug}")->first();
+
+        Notification::assertSentTo($user, PluginSubmitted::class, function (PluginSubmitted $notification) use ($plugin) {
+            $mail = $notification->toMail($plugin->user);
+            $rendered = $mail->render()->toHtml();
+
+            // Should mention failing checks
+            $this->assertStringContainsString('Add iOS support', $rendered);
+            $this->assertStringContainsString('Add Android support', $rendered);
+            $this->assertStringContainsString('Add JavaScript support', $rendered);
+            $this->assertStringContainsString('Add a support email', $rendered);
+            $this->assertStringContainsString('nativephp/mobile SDK', $rendered);
+
+            return true;
+        });
     }
 }

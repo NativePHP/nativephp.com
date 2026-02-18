@@ -9,6 +9,7 @@ use App\Jobs\ReviewPluginRepository;
 use App\Jobs\SyncPluginReleases;
 use App\Models\PluginLicense;
 use App\Models\User;
+use App\Services\PluginSyncService;
 use Filament\Actions;
 use Filament\Forms;
 use Filament\Notifications\Notification;
@@ -218,6 +219,35 @@ class EditPlugin extends EditRecord
                             ->duration(15000)
                             ->color($passed === 5 ? 'success' : 'warning')
                             ->send();
+                    }),
+
+                Actions\Action::make('resync')
+                    ->label('Re-sync from GitHub')
+                    ->icon('heroicon-o-arrow-path')
+                    ->color('primary')
+                    ->visible(fn () => $this->record->repository_url !== null)
+                    ->requiresConfirmation()
+                    ->modalHeading('Re-sync Plugin')
+                    ->modalDescription(fn () => "This will re-fetch the README, composer.json, nativephp.json, license, and latest version from GitHub for '{$this->record->name}'.")
+                    ->action(function (): void {
+                        $syncService = app(PluginSyncService::class);
+                        $result = $syncService->sync($this->record);
+
+                        $this->record->refresh();
+
+                        if ($result) {
+                            Notification::make()
+                                ->title('Plugin synced successfully')
+                                ->body("README, versions, and metadata have been updated for '{$this->record->name}'.")
+                                ->success()
+                                ->send();
+                        } else {
+                            Notification::make()
+                                ->title('Sync failed')
+                                ->body('Could not fetch repository data. Check the repository URL and try again.')
+                                ->danger()
+                                ->send();
+                        }
                     }),
 
                 Actions\Action::make('viewGithub')

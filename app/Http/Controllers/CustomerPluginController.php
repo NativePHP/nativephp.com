@@ -9,6 +9,7 @@ use App\Http\Requests\UpdatePluginDescriptionRequest;
 use App\Http\Requests\UpdatePluginLogoRequest;
 use App\Jobs\ReviewPluginRepository;
 use App\Models\Plugin;
+use App\Notifications\PluginSubmitted;
 use App\Services\GitHubUserService;
 use App\Services\PluginSyncService;
 use Illuminate\Http\RedirectResponse;
@@ -107,6 +108,8 @@ class CustomerPluginController extends Controller
             return to_route('customer.plugins.create')
                 ->with('error', $errorMessage);
         }
+
+        $user->notify(new PluginSubmitted($plugin));
 
         $successMessage = 'Your plugin has been submitted for review!';
         if (! $webhookInstalled) {
