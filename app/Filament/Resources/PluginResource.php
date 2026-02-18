@@ -7,6 +7,7 @@ use App\Enums\PluginTier;
 use App\Enums\PluginType;
 use App\Filament\Resources\PluginResource\Pages;
 use App\Filament\Resources\PluginResource\RelationManagers;
+use App\Jobs\SyncPluginReleases;
 use App\Models\Plugin;
 use App\Models\PluginLicense;
 use App\Models\User;
@@ -296,6 +297,36 @@ class PluginResource extends Resource
                         ->modalHeading('Grant Plugin to User')
                         ->modalDescription(fn (Plugin $record) => "Grant '{$record->name}' to a user for free.")
                         ->modalSubmitActionLabel('Grant'),
+
+                    Tables\Actions\Action::make('convertToPaid')
+                        ->label('Convert to Paid')
+                        ->icon('heroicon-o-currency-dollar')
+                        ->color('success')
+                        ->visible(fn (Plugin $record) => $record->isFree())
+                        ->form([
+                            Forms\Components\Select::make('tier')
+                                ->label('Pricing Tier')
+                                ->options(PluginTier::class)
+                                ->required()
+                                ->helperText('This sets the pricing for the plugin.'),
+                        ])
+                        ->action(function (Plugin $record, array $data): void {
+                            $record->update([
+                                'type' => PluginType::Paid,
+                                'tier' => $data['tier'],
+                            ]);
+
+                            SyncPluginReleases::dispatch($record);
+
+                            Notification::make()
+                                ->title("Converted '{$record->name}' to paid")
+                                ->body('Plugin type updated, prices synced, and Satis ingestion queued.')
+                                ->success()
+                                ->send();
+                        })
+                        ->modalHeading('Convert Plugin to Paid')
+                        ->modalDescription(fn (Plugin $record) => "This will convert '{$record->name}' from free to paid, set up pricing, and trigger a Satis build so it's available via Composer.")
+                        ->modalSubmitActionLabel('Convert & Ingest'),
 
                     Tables\Actions\ViewAction::make(),
                 ])
