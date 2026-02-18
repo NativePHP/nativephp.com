@@ -19,7 +19,7 @@ class CustomerAuthController extends Controller
 
     public function showLogin(): View
     {
-        return view(\Illuminate\Auth\Events\Login::class);
+        return view('auth.login');
     }
 
     public function showRegister(): View

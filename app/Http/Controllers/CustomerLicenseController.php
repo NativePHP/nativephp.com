@@ -43,7 +43,7 @@ class CustomerLicenseController extends Controller
         if (! $activeSubscription) {
             $highestTierLicense = $user->licenses()
                 ->whereIn('policy_name', ['max', 'pro', 'mini'])
-                ->orderByRaw("FIELD(policy_name, 'max', 'pro', 'mini')")
+                ->orderByRaw("CASE policy_name WHEN 'max' THEN 1 WHEN 'pro' THEN 2 WHEN 'mini' THEN 3 END")
                 ->first();
             $renewalLicenseKey = $highestTierLicense?->key;
         }
