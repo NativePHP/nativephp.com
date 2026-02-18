@@ -13,6 +13,7 @@ use Filament\Actions;
 use Filament\Forms;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
+use Illuminate\Support\HtmlString;
 
 class EditPlugin extends EditRecord
 {
@@ -204,7 +205,7 @@ class EditPlugin extends EditRecord
                             }
 
                             return "✅ {$label}: {$value}";
-                        })->implode("\n");
+                        })->implode('<br>');
 
                         $passed = collect($checks)->only([
                             'supports_ios', 'supports_android', 'supports_js',
@@ -213,7 +214,7 @@ class EditPlugin extends EditRecord
 
                         Notification::make()
                             ->title("Review checks complete ({$passed}/5 passed)")
-                            ->body($lines)
+                            ->body(new HtmlString($lines))
                             ->duration(15000)
                             ->color($passed === 5 ? 'success' : 'warning')
                             ->send();
