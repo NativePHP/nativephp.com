@@ -105,11 +105,6 @@ class CustomerPluginController extends Controller
                 ->with('error', $errorMessage);
         }
 
-        // Trigger Satis build for paid plugins so reviewers can test via Composer
-        if ($plugin->isPaid()) {
-            dispatch(new \App\Jobs\SyncPluginReleases($plugin));
-        }
-
         $successMessage = 'Your plugin has been submitted for review!';
         if (! $webhookInstalled) {
             $successMessage .= ' Please set up the webhook manually to enable automatic syncing.';

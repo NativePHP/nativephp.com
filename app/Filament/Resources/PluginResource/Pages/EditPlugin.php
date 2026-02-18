@@ -75,6 +75,26 @@ class EditPlugin extends EditRecord
                     ->modalDescription(fn () => "This will convert '{$this->record->name}' from free to paid, set up pricing, and trigger a Satis build so it's available via Composer.")
                     ->modalSubmitActionLabel('Convert & Ingest'),
 
+                Actions\Action::make('syncToSatis')
+                    ->label(fn () => $this->record->isSatisSynced() ? 'Re-sync to Satis' : 'Sync to Satis')
+                    ->icon('heroicon-o-arrow-path')
+                    ->color('warning')
+                    ->visible(fn () => $this->record->isPaid())
+                    ->requiresConfirmation()
+                    ->modalHeading(fn () => $this->record->isSatisSynced() ? 'Re-sync to Satis' : 'Sync to Satis')
+                    ->modalDescription(fn () => $this->record->isSatisSynced()
+                        ? "Last synced: {$this->record->satis_synced_at->diffForHumans()}. This will trigger a new Satis build for '{$this->record->name}'."
+                        : "This will trigger a Satis build for '{$this->record->name}' so it's available via Composer.")
+                    ->action(function (): void {
+                        SyncPluginReleases::dispatch($this->record);
+
+                        Notification::make()
+                            ->title('Satis sync queued')
+                            ->body("A Satis build has been queued for '{$this->record->name}'.")
+                            ->success()
+                            ->send();
+                    }),
+
                 Actions\Action::make('grantToUser')
                     ->label('Grant to User')
                     ->icon('heroicon-o-gift')

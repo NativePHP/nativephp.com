@@ -88,13 +88,17 @@ class SyncPluginReleases implements ShouldQueue
             'has_new_releases' => $this->hasNewReleases,
         ]);
 
-        if ($this->triggerSatisBuild  && $this->plugin->isPaid()) {
+        if ($this->triggerSatisBuild && $this->plugin->isPaid()) {
             Log::info('[SyncPluginReleases] Triggering Satis build', [
                 'plugin_id' => $this->plugin->id,
                 'plugin_name' => $this->plugin->name,
             ]);
 
             $result = $satisService->build([$this->plugin], $this->getGitHubToken());
+
+            if ($result['success'] ?? false) {
+                $this->plugin->update(['satis_synced_at' => now()]);
+            }
 
             Log::info('[SyncPluginReleases] Satis build result', [
                 'plugin_id' => $this->plugin->id,

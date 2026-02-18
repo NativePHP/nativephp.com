@@ -271,6 +271,11 @@ class Plugin extends Model
         return $this->is_official ?? false;
     }
 
+    public function isSatisSynced(): bool
+    {
+        return $this->satis_synced_at !== null;
+    }
+
     /**
      * @param  Builder<Plugin>  $query
      * @return Builder<Plugin>
@@ -500,10 +505,6 @@ class Plugin extends Model
         $this->user->notify(new PluginApproved($this));
 
         resolve(PluginSyncService::class)->sync($this);
-
-        if ($this->isPaid()) {
-            dispatch(new \App\Jobs\SyncPluginReleases($this));
-        }
     }
 
     public function reject(string $reason, int $rejectedById): void
@@ -594,6 +595,7 @@ class Plugin extends Model
             'composer_data' => 'array',
             'nativephp_data' => 'array',
             'last_synced_at' => 'datetime',
+            'satis_synced_at' => 'datetime',
             'webhook_installed' => 'boolean',
         ];
     }

@@ -149,6 +149,14 @@ class PluginResource extends Resource
                     ->label('Active')
                     ->sortable(),
 
+                Tables\Columns\IconColumn::make('satis_synced_at')
+                    ->label('Satis')
+                    ->boolean()
+                    ->getStateUsing(fn (Plugin $record): bool => $record->isSatisSynced())
+                    ->tooltip(fn (Plugin $record): ?string => $record->satis_synced_at?->diffForHumans())
+                    ->visible(fn (): bool => true)
+                    ->sortable(),
+
                 Tables\Columns\TextColumn::make('created_at')
                     ->label('Submitted')
                     ->dateTime()
