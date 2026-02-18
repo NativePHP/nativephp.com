@@ -74,6 +74,39 @@ class PluginResource extends Resource
                     ])
                     ->columns(2),
 
+                Forms\Components\Section::make('Review Checks')
+                    ->schema([
+                        Forms\Components\Placeholder::make('reviewed_at_display')
+                            ->label('Last Reviewed')
+                            ->content(fn (?Plugin $record) => $record?->reviewed_at?->diffForHumans() ?? 'Never'),
+
+                        Forms\Components\Placeholder::make('review_ios')
+                            ->label('iOS Support')
+                            ->content(fn (?Plugin $record) => ($record?->review_checks['supports_ios'] ?? false) ? '✅ Found' : '❌ Missing'),
+
+                        Forms\Components\Placeholder::make('review_android')
+                            ->label('Android Support')
+                            ->content(fn (?Plugin $record) => ($record?->review_checks['supports_android'] ?? false) ? '✅ Found' : '❌ Missing'),
+
+                        Forms\Components\Placeholder::make('review_js')
+                            ->label('JS Support')
+                            ->content(fn (?Plugin $record) => ($record?->review_checks['supports_js'] ?? false) ? '✅ Found' : '❌ Missing'),
+
+                        Forms\Components\Placeholder::make('review_email')
+                            ->label('Support Email')
+                            ->content(fn (?Plugin $record) => ($record?->review_checks['has_support_email'] ?? false)
+                                ? '✅ '.($record->review_checks['support_email'] ?? '')
+                                : '❌ Missing'),
+
+                        Forms\Components\Placeholder::make('review_sdk')
+                            ->label('Requires nativephp/mobile')
+                            ->content(fn (?Plugin $record) => ($record?->review_checks['requires_mobile_sdk'] ?? false)
+                                ? '✅ '.($record->review_checks['mobile_sdk_constraint'] ?? '')
+                                : '❌ Missing'),
+                    ])
+                    ->columns(3)
+                    ->visible(fn (?Plugin $record) => $record?->review_checks !== null),
+
                 Forms\Components\Section::make('Submission Info')
                     ->schema([
                         Forms\Components\Select::make('user_id')
@@ -147,6 +180,13 @@ class PluginResource extends Resource
 
                 Tables\Columns\ToggleColumn::make('is_active')
                     ->label('Active')
+                    ->sortable(),
+
+                Tables\Columns\IconColumn::make('reviewed_at')
+                    ->label('Reviewed')
+                    ->boolean()
+                    ->getStateUsing(fn (Plugin $record): bool => $record->reviewed_at !== null)
+                    ->tooltip(fn (Plugin $record): ?string => $record->reviewed_at?->diffForHumans())
                     ->sortable(),
 
                 Tables\Columns\IconColumn::make('satis_synced_at')

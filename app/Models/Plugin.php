@@ -597,6 +597,8 @@ class Plugin extends Model
             'last_synced_at' => 'datetime',
             'satis_synced_at' => 'datetime',
             'webhook_installed' => 'boolean',
+            'review_checks' => 'array',
+            'reviewed_at' => 'datetime',
         ];
     }
 }

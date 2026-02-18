@@ -5,6 +5,7 @@ namespace App\Filament\Resources\PluginResource\Pages;
 use App\Enums\PluginTier;
 use App\Enums\PluginType;
 use App\Filament\Resources\PluginResource;
+use App\Jobs\ReviewPluginRepository;
 use App\Jobs\SyncPluginReleases;
 use App\Models\PluginLicense;
 use App\Models\User;
@@ -165,6 +166,58 @@ class EditPlugin extends EditRecord
                     ->url(fn () => $this->record->getPackagistUrl())
                     ->openUrlInNewTab()
                     ->visible(fn () => $this->record->isFree()),
+
+                Actions\Action::make('runReviewChecks')
+                    ->label('Run Review Checks')
+                    ->icon('heroicon-o-clipboard-document-check')
+                    ->color('primary')
+                    ->visible(fn () => $this->record->repository_url !== null)
+                    ->requiresConfirmation()
+                    ->modalHeading('Run Review Checks')
+                    ->modalDescription(fn () => "This will fetch the repository tree, README, and composer.json for '{$this->record->name}' and run automated checks.")
+                    ->action(function (): void {
+                        $checks = (new ReviewPluginRepository($this->record))->handle();
+
+                        if (empty($checks)) {
+                            Notification::make()
+                                ->title('Review checks failed')
+                                ->body('Could not fetch repository data. Check the repository URL.')
+                                ->danger()
+                                ->send();
+
+                            return;
+                        }
+
+                        $lines = collect([
+                            ['iOS support', $checks['supports_ios']],
+                            ['Android support', $checks['supports_android']],
+                            ['JS support', $checks['supports_js']],
+                            ['Support email', $checks['has_support_email'] ? $checks['support_email'] : false],
+                            ['Requires nativephp/mobile', $checks['requires_mobile_sdk'] ? $checks['mobile_sdk_constraint'] : false],
+                        ])->map(function (array $item): string {
+                            [$label, $value] = $item;
+                            if ($value === true) {
+                                return "✅ {$label}";
+                            }
+                            if ($value === false) {
+                                return "❌ {$label}";
+                            }
+
+                            return "✅ {$label}: {$value}";
+                        })->implode("\n");
+
+                        $passed = collect($checks)->only([
+                            'supports_ios', 'supports_android', 'supports_js',
+                            'has_support_email', 'requires_mobile_sdk',
+                        ])->filter()->count();
+
+                        Notification::make()
+                            ->title("Review checks complete ({$passed}/5 passed)")
+                            ->body($lines)
+                            ->duration(15000)
+                            ->color($passed === 5 ? 'success' : 'warning')
+                            ->send();
+                    }),
 
                 Actions\Action::make('viewGithub')
                     ->label('View on GitHub')

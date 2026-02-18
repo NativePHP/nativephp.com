@@ -15,7 +15,7 @@ use Illuminate\Support\Facades\Log;
 
 class SyncPluginReleases implements ShouldQueue
 {
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+    use Concerns\ResolvesGitHubToken, Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     public int $tries = 3;
 
@@ -192,29 +192,5 @@ class SyncPluginReleases implements ShouldQueue
         $this->hasNewReleases = true;
 
         return true;
-    }
-
-    protected function getGitHubToken(): ?string
-    {
-        $user = $this->plugin->user;
-
-        if ($user && $user->hasGitHubToken()) {
-            Log::debug('[SyncPluginReleases] Using plugin owner OAuth token', [
-                'plugin_id' => $this->plugin->id,
-                'user_id' => $user->id,
-                'github_username' => $user->github_username,
-            ]);
-
-            return $user->getGitHubToken();
-        }
-
-        $platformToken = config('services.github.token');
-
-        Log::debug('[SyncPluginReleases] Using platform GitHub token', [
-            'plugin_id' => $this->plugin->id,
-            'has_token' => ! empty($platformToken),
-        ]);
-
-        return $platformToken;
     }
 }
