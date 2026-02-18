@@ -14,6 +14,7 @@ use Filament\Actions;
 use Filament\Forms;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\HtmlString;
 
 class EditPlugin extends EditRecord
@@ -230,21 +231,46 @@ class EditPlugin extends EditRecord
                     ->modalHeading('Re-sync Plugin')
                     ->modalDescription(fn () => "This will re-fetch the README, composer.json, nativephp.json, license, and latest version from GitHub for '{$this->record->name}'.")
                     ->action(function (): void {
-                        $syncService = app(PluginSyncService::class);
-                        $result = $syncService->sync($this->record);
+                        Log::info('[Filament:Resync] Action triggered', [
+                            'plugin_id' => $this->record->id,
+                            'name' => $this->record->name,
+                            'repository_url' => $this->record->repository_url,
+                        ]);
 
-                        $this->record->refresh();
+                        try {
+                            $syncService = app(PluginSyncService::class);
+                            $result = $syncService->sync($this->record);
 
-                        if ($result) {
+                            Log::info('[Filament:Resync] Sync returned', [
+                                'plugin_id' => $this->record->id,
+                                'result' => $result,
+                            ]);
+
+                            $this->record->refresh();
+
+                            if ($result) {
+                                Notification::make()
+                                    ->title('Plugin synced successfully')
+                                    ->body("README, versions, and metadata have been updated for '{$this->record->name}'.")
+                                    ->success()
+                                    ->send();
+                            } else {
+                                Notification::make()
+                                    ->title('Sync failed')
+                                    ->body('Could not fetch repository data. Check the repository URL and try again.')
+                                    ->danger()
+                                    ->send();
+                            }
+                        } catch (\Throwable $e) {
+                            Log::error('[Filament:Resync] Exception', [
+                                'plugin_id' => $this->record->id,
+                                'error' => $e->getMessage(),
+                                'trace' => $e->getTraceAsString(),
+                            ]);
+
                             Notification::make()
-                                ->title('Plugin synced successfully')
-                                ->body("README, versions, and metadata have been updated for '{$this->record->name}'.")
-                                ->success()
-                                ->send();
-                        } else {
-                            Notification::make()
-                                ->title('Sync failed')
-                                ->body('Could not fetch repository data. Check the repository URL and try again.')
+                                ->title('Sync error')
+                                ->body($e->getMessage())
                                 ->danger()
                                 ->send();
                         }
