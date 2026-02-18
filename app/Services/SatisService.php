@@ -21,11 +21,11 @@ class SatisService
     /**
      * Trigger a full satis build with all approved plugins.
      */
-    public function buildAll(): array
+    public function buildAll(?string $githubToken = null): array
     {
         $plugins = $this->getApprovedPlugins();
 
-        return $this->triggerBuild($plugins);
+        return $this->triggerBuild($plugins, $githubToken);
     }
 
     /**
@@ -33,7 +33,7 @@ class SatisService
      *
      * @param  array<int, Plugin>|\Illuminate\Support\Collection  $plugins
      */
-    public function build($plugins): array
+    public function build($plugins, ?string $githubToken = null): array
     {
         $pluginData = collect($plugins)->map(fn (Plugin $plugin) => [
             'name' => $plugin->name,
@@ -41,7 +41,7 @@ class SatisService
             'is_official' => $plugin->is_official ?? false,
         ])->values()->all();
 
-        return $this->triggerBuild($pluginData);
+        return $this->triggerBuild($pluginData, $githubToken);
     }
 
     /**
@@ -120,7 +120,7 @@ class SatisService
     /**
      * @param  array<int, array{name: string, repository_url: string, type: string, is_official?: bool}>  $plugins
      */
-    protected function triggerBuild(array $plugins): array
+    protected function triggerBuild(array $plugins, ?string $githubToken = null): array
     {
         if (! $this->apiUrl || ! $this->apiKey) {
             return [
@@ -136,13 +136,19 @@ class SatisService
             ];
         }
 
+        $githubToken ??= config('services.github.token');
+
         try {
+            $payload = ['plugins' => $plugins];
+
+            if ($githubToken) {
+                $payload['github_token'] = $githubToken;
+            }
+
             $response = Http::withToken($this->apiKey)
                 ->accept('application/json')
                 ->timeout(30)
-                ->post("{$this->apiUrl}/api/build", [
-                    'plugins' => $plugins,
-                ]);
+                ->post("{$this->apiUrl}/api/build", $payload);
 
             if ($response->successful()) {
                 Log::info('Satis build triggered', [

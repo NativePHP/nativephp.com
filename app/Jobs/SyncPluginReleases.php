@@ -94,7 +94,7 @@ class SyncPluginReleases implements ShouldQueue
                 'plugin_name' => $this->plugin->name,
             ]);
 
-            $result = $satisService->build([$this->plugin]);
+            $result = $satisService->build([$this->plugin], $this->getGitHubToken());
 
             Log::info('[SyncPluginReleases] Satis build result', [
                 'plugin_id' => $this->plugin->id,
