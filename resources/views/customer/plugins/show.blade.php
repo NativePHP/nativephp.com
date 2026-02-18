@@ -143,6 +143,59 @@
                 </div>
             </div>
 
+            {{-- Review Checks --}}
+            @if ($plugin->review_checks)
+                <div class="mb-6 rounded-lg border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-gray-800">
+                    <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Review Checks</h2>
+                    <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">Automated checks run against your repository.</p>
+
+                    <ul class="mt-4 space-y-3">
+                        @php
+                            $checks = [
+                                ['key' => 'supports_ios', 'label' => 'iOS support (resources/ios/)'],
+                                ['key' => 'supports_android', 'label' => 'Android support (resources/android/)'],
+                                ['key' => 'supports_js', 'label' => 'JavaScript support (resources/js/)'],
+                                ['key' => 'has_support_email', 'label' => 'Support email in README'],
+                                ['key' => 'requires_mobile_sdk', 'label' => 'Requires nativephp/mobile SDK'],
+                            ];
+                        @endphp
+
+                        @foreach ($checks as $check)
+                            <li class="flex items-center gap-2">
+                                @if ($plugin->review_checks[$check['key']] ?? false)
+                                    <svg class="size-5 shrink-0 text-green-500" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd" />
+                                    </svg>
+                                @else
+                                    <svg class="size-5 shrink-0 text-gray-300 dark:text-gray-600" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.28 7.22a.75.75 0 00-1.06 1.06L8.94 10l-1.72 1.72a.75.75 0 101.06 1.06L10 11.06l1.72 1.72a.75.75 0 101.06-1.06L11.06 10l1.72-1.72a.75.75 0 00-1.06-1.06L10 8.94 8.28 7.22z" clip-rule="evenodd" />
+                                    </svg>
+                                @endif
+                                <span class="text-sm text-gray-700 dark:text-gray-300">{{ $check['label'] }}</span>
+                            </li>
+                        @endforeach
+                    </ul>
+
+                    @if ($plugin->review_checks['support_email'] ?? null)
+                        <p class="mt-3 text-xs text-gray-500 dark:text-gray-400">
+                            Support email: {{ $plugin->review_checks['support_email'] }}
+                        </p>
+                    @endif
+
+                    @if ($plugin->review_checks['mobile_sdk_constraint'] ?? null)
+                        <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                            SDK constraint: <code class="rounded bg-gray-100 px-1 dark:bg-gray-700">{{ $plugin->review_checks['mobile_sdk_constraint'] }}</code>
+                        </p>
+                    @endif
+
+                    @if ($plugin->reviewed_at)
+                        <p class="mt-3 text-xs text-gray-400 dark:text-gray-500">
+                            Last checked {{ $plugin->reviewed_at->diffForHumans() }}
+                        </p>
+                    @endif
+                </div>
+            @endif
+
             {{-- Plugin Icon --}}
             <div class="mb-6 rounded-lg border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-gray-800" x-data="{ mode: '{{ $plugin->hasLogo() ? 'upload' : 'gradient' }}' }">
                 <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Plugin Icon</h2>

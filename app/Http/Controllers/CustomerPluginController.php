@@ -7,6 +7,7 @@ use App\Features\AllowPaidPlugins;
 use App\Http\Requests\SubmitPluginRequest;
 use App\Http\Requests\UpdatePluginDescriptionRequest;
 use App\Http\Requests\UpdatePluginLogoRequest;
+use App\Jobs\ReviewPluginRepository;
 use App\Models\Plugin;
 use App\Services\GitHubUserService;
 use App\Services\PluginSyncService;
@@ -84,6 +85,8 @@ class CustomerPluginController extends Controller
         $plugin->update(['webhook_installed' => $webhookInstalled]);
 
         $syncService->sync($plugin);
+
+        (new ReviewPluginRepository($plugin))->handle();
 
         if (! $plugin->name) {
             $plugin->delete();

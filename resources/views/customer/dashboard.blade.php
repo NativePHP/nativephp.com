@@ -86,6 +86,16 @@
                         :href="route('customer.purchased-plugins.index')"
                         link-text="View plugins"
                     />
+
+                    {{-- Submit Plugin Card --}}
+                    <x-dashboard-card
+                        title="Plugin Marketplace"
+                        icon="code-bracket"
+                        color="indigo"
+                        description="Submit a plugin to the NativePHP marketplace"
+                        :href="route('customer.plugins.create')"
+                        link-text="Submit a plugin"
+                    />
                 @endfeature
 
                 {{-- Connected Accounts Card --}}
