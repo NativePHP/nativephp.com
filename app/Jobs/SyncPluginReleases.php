@@ -88,7 +88,7 @@ class SyncPluginReleases implements ShouldQueue
             'has_new_releases' => $this->hasNewReleases,
         ]);
 
-        if ($this->triggerSatisBuild && $this->hasNewReleases && $this->plugin->isPaid()) {
+        if ($this->triggerSatisBuild  && $this->plugin->isPaid()) {
             Log::info('[SyncPluginReleases] Triggering Satis build', [
                 'plugin_id' => $this->plugin->id,
                 'plugin_name' => $this->plugin->name,
