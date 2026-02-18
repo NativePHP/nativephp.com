@@ -329,6 +329,19 @@ Route::middleware(['auth', EnsureFeaturesAreActive::using(ShowAuthButtons::class
     Route::get('dashboard', [DeveloperOnboardingController::class, 'dashboard'])->name('dashboard');
 });
 
-Route::get('test', function () {
-    logger('TEST');
+Route::get('test-sync/{id}', function (int $id) {
+    $plugin = \App\Models\Plugin::findOrFail($id);
+    logger('[TestSync] Starting', ['plugin_id' => $plugin->id, 'name' => $plugin->name]);
+
+    $syncService = new \App\Services\PluginSyncService;
+    $result = $syncService->sync($plugin);
+
+    logger('[TestSync] Done', ['result' => $result]);
+
+    return response()->json([
+        'result' => $result,
+        'last_synced_at' => $plugin->fresh()->last_synced_at,
+        'has_readme' => $plugin->fresh()->readme_html !== null,
+        'readme_length' => strlen($plugin->fresh()->readme_html ?? ''),
+    ]);
 });
