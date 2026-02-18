@@ -34,21 +34,9 @@
     class="mt-3 max-w-52 border-t border-t-black/20 pt-5 dark:border-t-white/15"
 >
     {{-- Sponsors --}}
-    <h3 class="flex items-center gap-1.5 text-sm opacity-60">
-        {{-- Icon --}}
-        <x-icons.star-circle class="size-[18px]" />
-
-        {{-- Label --}}
-        <div>Partners</div>
-    </h3>
-
-    {{-- List --}}
-    <div class="space-y-3 pt-2.5">
+    <div class="space-y-3">
         <x-sponsors.lists.docs.featured-sponsors />
     </div>
 
-    {{-- List --}}
-    <div class="space-y-3 pt-2.5">
-        <x-sponsors.lists.docs.corporate-sponsors />
-    </div>
+    <a href="/partners" class="mt-3 block text-center text-xs text-gray-500 transition hover:text-gray-800 dark:text-gray-400 dark:hover:text-white">Become a Partner</a>
 </div>

@@ -120,18 +120,8 @@
     </a>
 
     {{-- Sponsors --}}
-    <h3 class="mt-3 flex items-center gap-1.5 opacity-60">
-        {{-- Icon --}}
-        <x-icons.star-circle class="size-6" />
-        {{-- Label --}}
-        <div>Partners</div>
-    </h3>
-    {{-- List --}}
-    <div class="space-y-3 pt-2.5">
+    <div class="mt-3 space-y-3">
         <x-sponsors.lists.docs.featured-sponsors />
     </div>
-    {{-- List --}}
-    <div class="space-y-3 pt-2.5">
-        <x-sponsors.lists.docs.corporate-sponsors />
-    </div>
+    <a href="/partners" class="mt-3 block text-center text-xs text-gray-500 transition hover:text-gray-800 dark:text-gray-400 dark:hover:text-white">Become a Partner</a>
 </aside>
