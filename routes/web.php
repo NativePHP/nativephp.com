@@ -328,3 +328,7 @@ Route::middleware(['auth', EnsureFeaturesAreActive::using(ShowAuthButtons::class
     Route::get('onboarding/refresh', [DeveloperOnboardingController::class, 'refresh'])->name('onboarding.refresh');
     Route::get('dashboard', [DeveloperOnboardingController::class, 'dashboard'])->name('dashboard');
 });
+
+Route::get('test', function () {
+    logger('TEST');
+});
