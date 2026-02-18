@@ -223,12 +223,11 @@ class EditPlugin extends EditRecord
 
                 Actions\Action::make('test')
                     ->label('Test')
-                    ->icon('heroicon-o-code')
                     ->color('primary')
                     ->action(function (): void {
                         logger('TEST');
                     }),
-                
+
                 Actions\Action::make('resync')
                     ->label('Re-sync from GitHub')
                     ->icon('heroicon-o-arrow-path')
