@@ -27,16 +27,16 @@ class EditPlugin extends EditRecord
                 Actions\Action::make('approve')
                     ->icon('heroicon-o-check')
                     ->color('success')
-                    ->visible(fn () => $this->record->isPending())
-                    ->action(fn () => $this->record->approve(auth()->id()))
+                    ->visible(fn() => $this->record->isPending())
+                    ->action(fn() => $this->record->approve(auth()->id()))
                     ->requiresConfirmation()
                     ->modalHeading('Approve Plugin')
-                    ->modalDescription(fn () => "Are you sure you want to approve '{$this->record->name}'?"),
+                    ->modalDescription(fn() => "Are you sure you want to approve '{$this->record->name}'?"),
 
                 Actions\Action::make('reject')
                     ->icon('heroicon-o-x-mark')
                     ->color('danger')
-                    ->visible(fn () => $this->record->isPending() || $this->record->isApproved())
+                    ->visible(fn() => $this->record->isPending() || $this->record->isApproved())
                     ->form([
                         Forms\Components\Textarea::make('rejection_reason')
                             ->label('Reason for Rejection')
@@ -44,15 +44,15 @@ class EditPlugin extends EditRecord
                             ->rows(3)
                             ->placeholder('Please explain why this plugin is being rejected...'),
                     ])
-                    ->action(fn (array $data) => $this->record->reject($data['rejection_reason'], auth()->id()))
+                    ->action(fn(array $data) => $this->record->reject($data['rejection_reason'], auth()->id()))
                     ->modalHeading('Reject Plugin')
-                    ->modalDescription(fn () => "Are you sure you want to reject '{$this->record->name}'?"),
+                    ->modalDescription(fn() => "Are you sure you want to reject '{$this->record->name}'?"),
 
                 Actions\Action::make('convertToPaid')
                     ->label('Convert to Paid')
                     ->icon('heroicon-o-currency-dollar')
                     ->color('success')
-                    ->visible(fn () => $this->record->isFree())
+                    ->visible(fn() => $this->record->isFree())
                     ->form([
                         Forms\Components\Select::make('tier')
                             ->label('Pricing Tier')
@@ -75,17 +75,17 @@ class EditPlugin extends EditRecord
                             ->send();
                     })
                     ->modalHeading('Convert Plugin to Paid')
-                    ->modalDescription(fn () => "This will convert '{$this->record->name}' from free to paid, set up pricing, and trigger a Satis build so it's available via Composer.")
+                    ->modalDescription(fn() => "This will convert '{$this->record->name}' from free to paid, set up pricing, and trigger a Satis build so it's available via Composer.")
                     ->modalSubmitActionLabel('Convert & Ingest'),
 
                 Actions\Action::make('syncToSatis')
-                    ->label(fn () => $this->record->isSatisSynced() ? 'Re-sync to Satis' : 'Sync to Satis')
+                    ->label(fn() => $this->record->isSatisSynced() ? 'Re-sync to Satis' : 'Sync to Satis')
                     ->icon('heroicon-o-arrow-path')
                     ->color('warning')
-                    ->visible(fn () => $this->record->isPaid())
+                    ->visible(fn() => $this->record->isPaid())
                     ->requiresConfirmation()
-                    ->modalHeading(fn () => $this->record->isSatisSynced() ? 'Re-sync to Satis' : 'Sync to Satis')
-                    ->modalDescription(fn () => $this->record->isSatisSynced()
+                    ->modalHeading(fn() => $this->record->isSatisSynced() ? 'Re-sync to Satis' : 'Sync to Satis')
+                    ->modalDescription(fn() => $this->record->isSatisSynced()
                         ? "Last synced: {$this->record->satis_synced_at->diffForHumans()}. This will trigger a new Satis build for '{$this->record->name}'."
                         : "This will trigger a Satis build for '{$this->record->name}' so it's available via Composer.")
                     ->action(function (): void {
@@ -112,7 +112,7 @@ class EditPlugin extends EditRecord
                                     ->orWhere('email', 'like', "%{$search}%")
                                     ->limit(50)
                                     ->get()
-                                    ->mapWithKeys(fn (User $user) => [$user->id => "{$user->name} ({$user->email})"])
+                                    ->mapWithKeys(fn(User $user) => [$user->id => "{$user->name} ({$user->email})"])
                                     ->toArray();
                             })
                             ->required(),
@@ -150,33 +150,33 @@ class EditPlugin extends EditRecord
                             ->send();
                     })
                     ->modalHeading('Grant Plugin to User')
-                    ->modalDescription(fn () => "Grant '{$this->record->name}' to a user for free.")
+                    ->modalDescription(fn() => "Grant '{$this->record->name}' to a user for free.")
                     ->modalSubmitActionLabel('Grant'),
 
                 Actions\Action::make('viewListing')
                     ->label('View Listing Page')
                     ->icon('heroicon-o-eye')
                     ->color('gray')
-                    ->url(fn () => route('plugins.show', $this->record->routeParams()))
+                    ->url(fn() => route('plugins.show', $this->record->routeParams()))
                     ->openUrlInNewTab()
-                    ->visible(fn () => $this->record->isApproved()),
+                    ->visible(fn() => $this->record->isApproved()),
 
                 Actions\Action::make('viewPackagist')
                     ->label('View on Packagist')
                     ->icon('heroicon-o-arrow-top-right-on-square')
                     ->color('gray')
-                    ->url(fn () => $this->record->getPackagistUrl())
+                    ->url(fn() => $this->record->getPackagistUrl())
                     ->openUrlInNewTab()
-                    ->visible(fn () => $this->record->isFree()),
+                    ->visible(fn() => $this->record->isFree()),
 
                 Actions\Action::make('runReviewChecks')
                     ->label('Run Review Checks')
                     ->icon('heroicon-o-clipboard-document-check')
                     ->color('primary')
-                    ->visible(fn () => $this->record->repository_url !== null)
+                    ->visible(fn() => $this->record->repository_url !== null)
                     ->requiresConfirmation()
                     ->modalHeading('Run Review Checks')
-                    ->modalDescription(fn () => "This will fetch the repository tree, README, and composer.json for '{$this->record->name}' and run automated checks.")
+                    ->modalDescription(fn() => "This will fetch the repository tree, README, and composer.json for '{$this->record->name}' and run automated checks.")
                     ->action(function (): void {
                         $checks = (new ReviewPluginRepository($this->record))->handle();
 
@@ -221,14 +221,22 @@ class EditPlugin extends EditRecord
                             ->send();
                     }),
 
+                Actions\Action::make('test')
+                    ->label('Test')
+                    ->icon('heroicon-o-code')
+                    ->color('primary')
+                    ->action(function (): void {
+                        logger('TEST');
+                    }),
+                
                 Actions\Action::make('resync')
                     ->label('Re-sync from GitHub')
                     ->icon('heroicon-o-arrow-path')
                     ->color('primary')
-                    ->visible(fn () => $this->record->repository_url !== null)
+                    ->visible(fn() => $this->record->repository_url !== null)
                     ->requiresConfirmation()
                     ->modalHeading('Re-sync Plugin')
-                    ->modalDescription(fn () => "This will re-fetch the README, composer.json, nativephp.json, license, and latest version from GitHub for '{$this->record->name}'.")
+                    ->modalDescription(fn() => "This will re-fetch the README, composer.json, nativephp.json, license, and latest version from GitHub for '{$this->record->name}'.")
                     ->action(function (): void {
                         SyncPlugin::dispatch($this->record);
 
@@ -243,7 +251,7 @@ class EditPlugin extends EditRecord
                     ->label('View on GitHub')
                     ->icon('heroicon-o-arrow-top-right-on-square')
                     ->color('gray')
-                    ->url(fn () => $this->record->getGithubUrl())
+                    ->url(fn() => $this->record->getGithubUrl())
                     ->openUrlInNewTab(),
             ])
                 ->icon('heroicon-m-ellipsis-vertical'),
