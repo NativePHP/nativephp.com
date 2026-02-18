@@ -97,12 +97,12 @@ class ReviewPluginRepositoryTest extends TestCase
             'repository_url' => 'https://github.com/acme/email-plugin',
         ]);
 
-        Http::fake($this->fakeGitHub('acme/email-plugin', readme: "# Plugin\n\nFor support contact help@example.com"));
+        Http::fake($this->fakeGitHub('acme/email-plugin', readme: "# Plugin\n\nFor support contact help@acmeplugins.com"));
 
         $checks = (new ReviewPluginRepository($plugin))->handle();
 
         $this->assertTrue($checks['has_support_email']);
-        $this->assertEquals('help@example.com', $checks['support_email']);
+        $this->assertEquals('help@acmeplugins.com', $checks['support_email']);
     }
 
     /** @test */
@@ -118,6 +118,21 @@ class ReviewPluginRepositoryTest extends TestCase
 
         $this->assertFalse($checks['has_support_email']);
         $this->assertNull($checks['support_email']);
+    }
+
+    /** @test */
+    public function it_skips_placeholder_emails_from_example_domains(): void
+    {
+        $plugin = Plugin::factory()->create([
+            'repository_url' => 'https://github.com/acme/placeholder-plugin',
+        ]);
+
+        Http::fake($this->fakeGitHub('acme/placeholder-plugin', readme: "# Plugin\n\nEmail: john@example.com\nReal support: support@realdomain.io"));
+
+        $checks = (new ReviewPluginRepository($plugin))->handle();
+
+        $this->assertTrue($checks['has_support_email']);
+        $this->assertEquals('support@realdomain.io', $checks['support_email']);
     }
 
     /** @test */
@@ -162,7 +177,7 @@ class ReviewPluginRepositoryTest extends TestCase
 
         Http::fake($this->fakeGitHub('acme/store-plugin',
             tree: [['path' => 'resources/ios/Bridge.swift', 'type' => 'blob']],
-            readme: 'Support: dev@example.com',
+            readme: 'Support: dev@storeplugin.io',
             composerRequire: ['nativephp/mobile' => '^3.0.0'],
         ));
 
@@ -178,7 +193,7 @@ class ReviewPluginRepositoryTest extends TestCase
         $this->assertTrue($plugin->review_checks['supports_ios']);
         $this->assertFalse($plugin->review_checks['supports_android']);
         $this->assertTrue($plugin->review_checks['has_support_email']);
-        $this->assertEquals('dev@example.com', $plugin->review_checks['support_email']);
+        $this->assertEquals('dev@storeplugin.io', $plugin->review_checks['support_email']);
         $this->assertTrue($plugin->review_checks['requires_mobile_sdk']);
     }
 

@@ -202,8 +202,16 @@ class ReviewPluginRepository implements ShouldQueue
 
     protected function extractEmail(string $content): ?string
     {
-        if (preg_match('/[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}/', $content, $matches)) {
-            return $matches[0];
+        $excludedDomains = ['example.com', 'example.org', 'example.net', 'test.com', 'localhost'];
+
+        if (preg_match_all('/[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}/', $content, $matches)) {
+            foreach ($matches[0] as $email) {
+                $domain = strtolower(substr($email, strpos($email, '@') + 1));
+
+                if (! in_array($domain, $excludedDomains, true)) {
+                    return $email;
+                }
+            }
         }
 
         return null;
