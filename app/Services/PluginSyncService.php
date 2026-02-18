@@ -11,23 +11,45 @@ class PluginSyncService
 {
     public function sync(Plugin $plugin): bool
     {
+        Log::info('[PluginSync] Starting sync', ['plugin_id' => $plugin->id, 'name' => $plugin->name]);
+
         $repo = $plugin->getRepositoryOwnerAndName();
 
         if (! $repo) {
-            Log::warning("Plugin {$plugin->id} has no valid repository URL");
+            Log::warning('[PluginSync] No valid repository URL', ['plugin_id' => $plugin->id]);
 
             return false;
         }
 
+        Log::info('[PluginSync] Fetching from GitHub', [
+            'plugin_id' => $plugin->id,
+            'owner' => $repo['owner'],
+            'repo' => $repo['repo'],
+        ]);
+
         $token = $this->getGitHubToken($plugin);
+
+        Log::info('[PluginSync] Token resolved', [
+            'plugin_id' => $plugin->id,
+            'has_token' => $token !== null,
+        ]);
 
         $readme = $this->fetchFileFromGitHub($repo['owner'], $repo['repo'], 'README.md', $token);
         $license = $this->fetchLicenseFile($repo['owner'], $repo['repo'], $token);
         $composerJson = $this->fetchFileFromGitHub($repo['owner'], $repo['repo'], 'composer.json', $token);
         $nativephpJson = $this->fetchFileFromGitHub($repo['owner'], $repo['repo'], 'nativephp.json', $token);
 
+        Log::info('[PluginSync] Fetch results', [
+            'plugin_id' => $plugin->id,
+            'has_readme' => $readme !== null,
+            'readme_length' => $readme ? strlen($readme) : 0,
+            'has_license' => $license !== null,
+            'has_composer_json' => $composerJson !== null,
+            'has_nativephp_json' => $nativephpJson !== null,
+        ]);
+
         if (! $composerJson) {
-            Log::warning("Plugin {$plugin->id}: Could not fetch composer.json");
+            Log::warning('[PluginSync] Could not fetch composer.json', ['plugin_id' => $plugin->id]);
 
             return false;
         }
@@ -70,9 +92,18 @@ class PluginSyncService
             $updateData['latest_version'] = ltrim($latestTag, 'v');
         }
 
+        Log::info('[PluginSync] Updating plugin', [
+            'plugin_id' => $plugin->id,
+            'fields' => array_keys($updateData),
+            'has_readme_html' => isset($updateData['readme_html']),
+            'latest_version' => $updateData['latest_version'] ?? null,
+            'ios_version' => $updateData['ios_version'] ?? null,
+            'android_version' => $updateData['android_version'] ?? null,
+        ]);
+
         $plugin->update($updateData);
 
-        Log::info("Plugin {$plugin->id} synced successfully");
+        Log::info('[PluginSync] Sync complete', ['plugin_id' => $plugin->id, 'name' => $plugin->name]);
 
         return true;
     }
