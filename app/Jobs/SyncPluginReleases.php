@@ -30,27 +30,87 @@ class SyncPluginReleases implements ShouldQueue
 
     public function handle(SatisService $satisService): void
     {
+        Log::info('[SyncPluginReleases] Starting sync', [
+            'plugin_id' => $this->plugin->id,
+            'plugin_name' => $this->plugin->name,
+            'plugin_type' => $this->plugin->type?->value,
+            'repository_url' => $this->plugin->repository_url,
+            'trigger_satis_build' => $this->triggerSatisBuild,
+        ]);
+
         $repo = $this->plugin->getRepositoryOwnerAndName();
 
         if (! $repo) {
-            Log::warning("Plugin {$this->plugin->id} has no valid repository URL");
+            Log::warning('[SyncPluginReleases] No valid repository URL, aborting', [
+                'plugin_id' => $this->plugin->id,
+                'plugin_name' => $this->plugin->name,
+                'repository_url' => $this->plugin->repository_url,
+            ]);
 
             return;
         }
 
         $token = $this->getGitHubToken();
 
+        Log::info('[SyncPluginReleases] Fetching releases from GitHub', [
+            'plugin_id' => $this->plugin->id,
+            'owner' => $repo['owner'],
+            'repo' => $repo['repo'],
+            'token_source' => $token ? ($this->plugin->user?->hasGitHubToken() ? 'user_oauth' : 'platform') : 'none',
+        ]);
+
         $releases = $this->fetchReleases($repo['owner'], $repo['repo'], $token);
 
+        Log::info('[SyncPluginReleases] Fetched releases', [
+            'plugin_id' => $this->plugin->id,
+            'release_count' => count($releases),
+            'tags' => collect($releases)->pluck('tag_name')->all(),
+        ]);
+
+        $newCount = 0;
+        $skippedCount = 0;
+
         foreach ($releases as $release) {
-            $this->processRelease($release);
+            if ($this->processRelease($release)) {
+                $newCount++;
+            } else {
+                $skippedCount++;
+            }
         }
 
         $this->plugin->update(['last_synced_at' => now()]);
 
-        // Trigger satis build if we have new releases
+        Log::info('[SyncPluginReleases] Processing complete', [
+            'plugin_id' => $this->plugin->id,
+            'plugin_name' => $this->plugin->name,
+            'new_releases' => $newCount,
+            'skipped_existing' => $skippedCount,
+            'has_new_releases' => $this->hasNewReleases,
+        ]);
+
         if ($this->triggerSatisBuild && $this->hasNewReleases && $this->plugin->isPaid()) {
-            $satisService->build([$this->plugin]);
+            Log::info('[SyncPluginReleases] Triggering Satis build', [
+                'plugin_id' => $this->plugin->id,
+                'plugin_name' => $this->plugin->name,
+            ]);
+
+            $result = $satisService->build([$this->plugin]);
+
+            Log::info('[SyncPluginReleases] Satis build result', [
+                'plugin_id' => $this->plugin->id,
+                'result' => $result,
+            ]);
+        } elseif ($this->triggerSatisBuild && $this->hasNewReleases && ! $this->plugin->isPaid()) {
+            Log::info('[SyncPluginReleases] Skipping Satis build - plugin is not paid', [
+                'plugin_id' => $this->plugin->id,
+                'plugin_name' => $this->plugin->name,
+                'plugin_type' => $this->plugin->type?->value,
+            ]);
+        } elseif (! $this->hasNewReleases) {
+            Log::info('[SyncPluginReleases] Skipping Satis build - no new releases', [
+                'plugin_id' => $this->plugin->id,
+                'plugin_name' => $this->plugin->name,
+            ]);
         }
     }
 
@@ -67,18 +127,28 @@ class SyncPluginReleases implements ShouldQueue
         ]);
 
         if ($response->failed()) {
-            Log::warning("Failed to fetch releases for {$owner}/{$repo}", [
+            Log::error('[SyncPluginReleases] GitHub API request failed', [
+                'plugin_id' => $this->plugin->id,
+                'owner' => $owner,
+                'repo' => $repo,
                 'status' => $response->status(),
                 'response' => $response->json(),
+                'rate_limit_remaining' => $response->header('X-RateLimit-Remaining'),
             ]);
 
             return [];
         }
 
+        Log::debug('[SyncPluginReleases] GitHub API response', [
+            'plugin_id' => $this->plugin->id,
+            'status' => $response->status(),
+            'rate_limit_remaining' => $response->header('X-RateLimit-Remaining'),
+        ]);
+
         return $response->json();
     }
 
-    protected function processRelease(array $release): void
+    protected function processRelease(array $release): bool
     {
         $tagName = $release['tag_name'];
         $version = ltrim($tagName, 'v');
@@ -88,7 +158,12 @@ class SyncPluginReleases implements ShouldQueue
             ->first();
 
         if ($existingVersion) {
-            return;
+            Log::debug('[SyncPluginReleases] Skipping existing version', [
+                'plugin_id' => $this->plugin->id,
+                'tag' => $tagName,
+            ]);
+
+            return false;
         }
 
         PluginVersion::create([
@@ -101,12 +176,18 @@ class SyncPluginReleases implements ShouldQueue
             'published_at' => $release['published_at'] ? now()->parse($release['published_at']) : null,
         ]);
 
-        Log::info('Created plugin version', [
+        Log::info('[SyncPluginReleases] Created new version', [
             'plugin_id' => $this->plugin->id,
+            'plugin_name' => $this->plugin->name,
             'version' => $version,
+            'tag' => $tagName,
+            'commit_sha' => $release['target_commitish'] ?? null,
+            'published_at' => $release['published_at'] ?? null,
         ]);
 
         $this->hasNewReleases = true;
+
+        return true;
     }
 
     protected function getGitHubToken(): ?string
@@ -114,9 +195,22 @@ class SyncPluginReleases implements ShouldQueue
         $user = $this->plugin->user;
 
         if ($user && $user->hasGitHubToken()) {
+            Log::debug('[SyncPluginReleases] Using plugin owner OAuth token', [
+                'plugin_id' => $this->plugin->id,
+                'user_id' => $user->id,
+                'github_username' => $user->github_username,
+            ]);
+
             return $user->getGitHubToken();
         }
 
-        return config('services.github.token');
+        $platformToken = config('services.github.token');
+
+        Log::debug('[SyncPluginReleases] Using platform GitHub token', [
+            'plugin_id' => $this->plugin->id,
+            'has_token' => ! empty($platformToken),
+        ]);
+
+        return $platformToken;
     }
 }
