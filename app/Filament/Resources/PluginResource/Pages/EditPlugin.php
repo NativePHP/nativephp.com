@@ -221,13 +221,6 @@ class EditPlugin extends EditRecord
                             ->send();
                     }),
 
-                Actions\Action::make('test')
-                    ->label('Test')
-                    ->color('primary')
-                    ->action(function (): void {
-                        logger('TEST');
-                    }),
-
                 Actions\Action::make('resync')
                     ->label('Re-sync from GitHub')
                     ->icon('heroicon-o-arrow-path')
