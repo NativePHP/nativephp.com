@@ -16,6 +16,7 @@ use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Illuminate\Support\HtmlString;
 
 class PluginResource extends Resource
 {
@@ -267,6 +268,26 @@ class PluginResource extends Resource
                                 return;
                             }
 
+                            $lines = collect([
+                                ['iOS support', $checks['supports_ios']],
+                                ['Android support', $checks['supports_android']],
+                                ['JS support', $checks['supports_js']],
+                                ['Support email', $checks['has_support_email'] ? $checks['support_email'] : false],
+                                ['Requires nativephp/mobile', $checks['requires_mobile_sdk'] ? $checks['mobile_sdk_constraint'] : false],
+                                ['iOS min_version', $checks['has_ios_min_version'] ? $checks['ios_min_version'] : false],
+                                ['Android min_version', $checks['has_android_min_version'] ? $checks['android_min_version'] : false],
+                            ])->map(function (array $item): string {
+                                [$label, $value] = $item;
+                                if ($value === true) {
+                                    return "✅ {$label}";
+                                }
+                                if ($value === false) {
+                                    return "❌ {$label}";
+                                }
+
+                                return "✅ {$label}: {$value}";
+                            })->implode('<br>');
+
                             $passed = collect($checks)->only([
                                 'supports_ios', 'supports_android', 'supports_js',
                                 'has_support_email', 'requires_mobile_sdk',
@@ -275,7 +296,9 @@ class PluginResource extends Resource
 
                             Notification::make()
                                 ->title("Review checks complete ({$passed}/7 passed)")
-                                ->success()
+                                ->body(new HtmlString($lines))
+                                ->duration(15000)
+                                ->color($passed === 7 ? 'success' : 'warning')
                                 ->send();
                         }),
                 ])
