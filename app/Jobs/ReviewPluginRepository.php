@@ -50,6 +50,7 @@ class ReviewPluginRepository implements ShouldQueue
         $tree = $this->fetchRepoTree($owner, $repoName, $defaultBranch, $token);
         $readme = $this->fetchReadme($owner, $repoName, $token);
         $composerJson = $this->fetchComposerJson($owner, $repoName, $token);
+        $nativephpJson = $this->fetchNativephpJson($owner, $repoName, $token);
 
         $checks = [
             'supports_ios' => $this->checkDirectoryHasFiles($tree, 'resources/ios/'),
@@ -59,6 +60,10 @@ class ReviewPluginRepository implements ShouldQueue
             'support_email' => null,
             'requires_mobile_sdk' => false,
             'mobile_sdk_constraint' => null,
+            'has_ios_min_version' => false,
+            'ios_min_version' => null,
+            'has_android_min_version' => false,
+            'android_min_version' => null,
         ];
 
         if ($readme) {
@@ -71,6 +76,16 @@ class ReviewPluginRepository implements ShouldQueue
             $mobileConstraint = $composerJson['require']['nativephp/mobile'] ?? null;
             $checks['requires_mobile_sdk'] = $mobileConstraint !== null;
             $checks['mobile_sdk_constraint'] = $mobileConstraint;
+        }
+
+        if ($nativephpJson) {
+            $iosMinVersion = $nativephpJson['ios']['min_version'] ?? null;
+            $checks['has_ios_min_version'] = $iosMinVersion !== null;
+            $checks['ios_min_version'] = $iosMinVersion;
+
+            $androidMinVersion = $nativephpJson['android']['min_version'] ?? null;
+            $checks['has_android_min_version'] = $androidMinVersion !== null;
+            $checks['android_min_version'] = $androidMinVersion;
         }
 
         $this->plugin->update([
@@ -169,6 +184,32 @@ class ReviewPluginRepository implements ShouldQueue
         }
 
         $response = $request->get("https://api.github.com/repos/{$owner}/{$repo}/contents/composer.json");
+
+        if ($response->failed()) {
+            return null;
+        }
+
+        $content = $response->json('content');
+        $encoding = $response->json('encoding');
+
+        if ($encoding === 'base64' && $content) {
+            $decoded = base64_decode($content);
+
+            return json_decode($decoded, true);
+        }
+
+        return null;
+    }
+
+    protected function fetchNativephpJson(string $owner, string $repo, ?string $token): ?array
+    {
+        $request = Http::timeout(30);
+
+        if ($token) {
+            $request = $request->withToken($token);
+        }
+
+        $response = $request->get("https://api.github.com/repos/{$owner}/{$repo}/contents/nativephp.json");
 
         if ($response->failed()) {
             return null;

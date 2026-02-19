@@ -7,9 +7,12 @@ use App\Enums\PluginTier;
 use App\Enums\PluginType;
 use App\Filament\Resources\PluginResource\Pages;
 use App\Filament\Resources\PluginResource\RelationManagers;
+use App\Jobs\ReviewPluginRepository;
+use App\Jobs\SyncPlugin;
 use App\Models\Plugin;
 use Filament\Forms;
 use Filament\Forms\Form;
+use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
@@ -103,8 +106,20 @@ class PluginResource extends Resource
                             ->content(fn (?Plugin $record) => ($record?->review_checks['requires_mobile_sdk'] ?? false)
                                 ? '✅ '.($record->review_checks['mobile_sdk_constraint'] ?? '')
                                 : '❌ Missing'),
+
+                        Forms\Components\Placeholder::make('review_ios_min_version')
+                            ->label('iOS min_version')
+                            ->content(fn (?Plugin $record) => ($record?->review_checks['has_ios_min_version'] ?? false)
+                                ? '✅ '.($record->review_checks['ios_min_version'] ?? '')
+                                : '❌ Missing'),
+
+                        Forms\Components\Placeholder::make('review_android_min_version')
+                            ->label('Android min_version')
+                            ->content(fn (?Plugin $record) => ($record?->review_checks['has_android_min_version'] ?? false)
+                                ? '✅ '.($record->review_checks['android_min_version'] ?? '')
+                                : '❌ Missing'),
                     ])
-                    ->columns(3)
+                    ->columns(4)
                     ->visible(fn (?Plugin $record) => $record?->review_checks !== null),
 
                 Forms\Components\Section::make('Submission Info')
@@ -212,6 +227,62 @@ class PluginResource extends Resource
                     ->label('Active'),
             ])
             ->actions([
+                Tables\Actions\ActionGroup::make([
+                    Tables\Actions\Action::make('resync')
+                        ->label('Re-sync from GitHub')
+                        ->icon('heroicon-o-arrow-path')
+                        ->color('primary')
+                        ->visible(fn (Plugin $record): bool => $record->repository_url !== null)
+                        ->requiresConfirmation()
+                        ->modalHeading('Re-sync Plugin')
+                        ->modalDescription(fn (Plugin $record): string => "This will re-fetch the README, composer.json, nativephp.json, license, and latest version from GitHub for '{$record->name}'.")
+                        ->action(function (Plugin $record): void {
+                            SyncPlugin::dispatch($record);
+
+                            Notification::make()
+                                ->title('Sync queued')
+                                ->body("A background sync has been queued for '{$record->name}'.")
+                                ->success()
+                                ->send();
+                        }),
+
+                    Tables\Actions\Action::make('runReviewChecks')
+                        ->label('Run Review Checks')
+                        ->icon('heroicon-o-clipboard-document-check')
+                        ->color('primary')
+                        ->visible(fn (Plugin $record): bool => $record->repository_url !== null)
+                        ->requiresConfirmation()
+                        ->modalHeading('Run Review Checks')
+                        ->modalDescription(fn (Plugin $record): string => "This will run automated checks for '{$record->name}'.")
+                        ->action(function (Plugin $record): void {
+                            $checks = (new ReviewPluginRepository($record))->handle();
+
+                            if (empty($checks)) {
+                                Notification::make()
+                                    ->title('Review checks failed')
+                                    ->body('Could not fetch repository data.')
+                                    ->danger()
+                                    ->send();
+
+                                return;
+                            }
+
+                            $passed = collect($checks)->only([
+                                'supports_ios', 'supports_android', 'supports_js',
+                                'has_support_email', 'requires_mobile_sdk',
+                                'has_ios_min_version', 'has_android_min_version',
+                            ])->filter()->count();
+
+                            Notification::make()
+                                ->title("Review checks complete ({$passed}/7 passed)")
+                                ->success()
+                                ->send();
+                        }),
+                ])
+                    ->icon('heroicon-o-bolt')
+                    ->color('primary')
+                    ->tooltip('Quick Actions'),
+
                 Tables\Actions\EditAction::make(),
             ])
             ->bulkActions([

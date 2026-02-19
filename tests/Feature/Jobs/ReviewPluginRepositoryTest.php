@@ -15,11 +15,11 @@ class ReviewPluginRepositoryTest extends TestCase
     /**
      * @return array<string, \GuzzleHttp\Promise\PromiseInterface>
      */
-    protected function fakeGitHub(string $repoSlug, array $tree = [], string $readme = '# Plugin', array $composerRequire = [], string $defaultBranch = 'main'): array
+    protected function fakeGitHub(string $repoSlug, array $tree = [], string $readme = '# Plugin', array $composerRequire = [], ?array $nativephpJson = null, string $defaultBranch = 'main'): array
     {
         $base = "https://api.github.com/repos/{$repoSlug}";
 
-        return [
+        $fakes = [
             $base => Http::response(['default_branch' => $defaultBranch]),
             "{$base}/git/trees/{$defaultBranch}*" => Http::response(['tree' => $tree]),
             "{$base}/readme" => Http::response([
@@ -31,6 +31,17 @@ class ReviewPluginRepositoryTest extends TestCase
                 'encoding' => 'base64',
             ]),
         ];
+
+        if ($nativephpJson !== null) {
+            $fakes["{$base}/contents/nativephp.json"] = Http::response([
+                'content' => base64_encode(json_encode($nativephpJson)),
+                'encoding' => 'base64',
+            ]);
+        } else {
+            $fakes["{$base}/contents/nativephp.json"] = Http::response([], 404);
+        }
+
+        return $fakes;
     }
 
     /** @test */
@@ -166,6 +177,62 @@ class ReviewPluginRepositoryTest extends TestCase
 
         $this->assertFalse($checks['requires_mobile_sdk']);
         $this->assertNull($checks['mobile_sdk_constraint']);
+    }
+
+    /** @test */
+    public function it_detects_ios_and_android_min_versions_from_nativephp_json(): void
+    {
+        $plugin = Plugin::factory()->create([
+            'repository_url' => 'https://github.com/acme/versioned-plugin',
+        ]);
+
+        Http::fake($this->fakeGitHub('acme/versioned-plugin', nativephpJson: [
+            'ios' => ['min_version' => '16.0'],
+            'android' => ['min_version' => '24'],
+        ]));
+
+        $checks = (new ReviewPluginRepository($plugin))->handle();
+
+        $this->assertTrue($checks['has_ios_min_version']);
+        $this->assertEquals('16.0', $checks['ios_min_version']);
+        $this->assertTrue($checks['has_android_min_version']);
+        $this->assertEquals('24', $checks['android_min_version']);
+    }
+
+    /** @test */
+    public function it_reports_missing_min_versions_when_no_nativephp_json(): void
+    {
+        $plugin = Plugin::factory()->create([
+            'repository_url' => 'https://github.com/acme/no-manifest-plugin',
+        ]);
+
+        Http::fake($this->fakeGitHub('acme/no-manifest-plugin'));
+
+        $checks = (new ReviewPluginRepository($plugin))->handle();
+
+        $this->assertFalse($checks['has_ios_min_version']);
+        $this->assertNull($checks['ios_min_version']);
+        $this->assertFalse($checks['has_android_min_version']);
+        $this->assertNull($checks['android_min_version']);
+    }
+
+    /** @test */
+    public function it_reports_missing_min_version_when_nativephp_json_has_partial_data(): void
+    {
+        $plugin = Plugin::factory()->create([
+            'repository_url' => 'https://github.com/acme/partial-plugin',
+        ]);
+
+        Http::fake($this->fakeGitHub('acme/partial-plugin', nativephpJson: [
+            'ios' => ['min_version' => '15.0'],
+        ]));
+
+        $checks = (new ReviewPluginRepository($plugin))->handle();
+
+        $this->assertTrue($checks['has_ios_min_version']);
+        $this->assertEquals('15.0', $checks['ios_min_version']);
+        $this->assertFalse($checks['has_android_min_version']);
+        $this->assertNull($checks['android_min_version']);
     }
 
     /** @test */
