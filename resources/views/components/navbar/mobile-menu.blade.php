@@ -2,8 +2,19 @@
     x-init="
         () => {
             // Sync Popover ➜ Alpine
-            $refs.mobilePopover.addEventListener('toggle', () => {
+            $refs.mobilePopover.addEventListener('toggle', (e) => {
                 showMobileMenu = $refs.mobilePopover.matches(':popover-open')
+
+                // Scroll past the banner when menu opens
+                if (e.newState === 'open') {
+                    const banner = document.querySelector('[data-site-banner]')
+                    if (banner) {
+                        const bannerBottom = banner.offsetTop + banner.offsetHeight
+                        if (window.scrollY < bannerBottom) {
+                            window.scrollTo({ top: bannerBottom, behavior: 'smooth' })
+                        }
+                    }
+                }
             })
 
             // Sync Alpine ➜ Popover

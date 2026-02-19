@@ -1,6 +1,7 @@
 <a
     href="/blog/nativephp-for-mobile-is-now-free"
     onclick="fathom.trackEvent('mobile_free_banner_click');"
+    data-site-banner
     class="group relative z-30 flex flex-col items-center justify-center gap-x-3 gap-y-2.5 overflow-hidden bg-gradient-to-r from-emerald-100 via-teal-50 to-cyan-100 px-5 py-3 select-none 3xs:flex-row dark:from-emerald-950/50 dark:via-teal-950/50 dark:to-cyan-950/50"
 >
     {{-- Label --}}

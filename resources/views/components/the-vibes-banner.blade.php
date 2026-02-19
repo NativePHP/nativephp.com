@@ -1,6 +1,7 @@
 <a
     href="/the-vibes"
     onclick="fathom.trackEvent('the_vibes_banner_click');"
+    data-site-banner
     class="group relative z-30 flex flex-col items-center justify-center gap-x-3 gap-y-2.5 overflow-hidden bg-gradient-to-r from-violet-100 via-indigo-50 to-violet-100 px-5 py-3 select-none 3xs:flex-row dark:from-violet-950/50 dark:via-indigo-950/50 dark:to-violet-950/50"
 >
     {{-- Label --}}

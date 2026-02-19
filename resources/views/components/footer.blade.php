@@ -325,6 +325,22 @@
                         </li>
                         <li>
                             <a
+                                href="/plugins"
+                                class="inline-block px-px py-1.5 transition duration-300 will-change-transform hover:translate-x-1 hover:text-gray-700 dark:hover:text-gray-300"
+                            >
+                                Plugins
+                            </a>
+                        </li>
+                        <li>
+                            <a
+                                href="{{ route('showcase', 'mobile') }}"
+                                class="inline-block px-px py-1.5 transition duration-300 will-change-transform hover:translate-x-1 hover:text-gray-700 dark:hover:text-gray-300"
+                            >
+                                Showcase
+                            </a>
+                        </li>
+                        <li>
+                            <a
                                 href="https://github.com/nativephp/mobile-air"
                                 class="inline-block px-px py-1.5 transition duration-300 will-change-transform hover:translate-x-1 hover:text-gray-700 dark:hover:text-gray-300"
                             >
@@ -353,6 +369,14 @@
                             class="inline-block px-px py-1.5 transition duration-300 will-change-transform hover:translate-x-1 hover:text-gray-700 dark:hover:text-gray-300"
                         >
                             Documentation
+                        </a>
+                    </li>
+                    <li>
+                        <a
+                            href="{{ route('showcase', 'desktop') }}"
+                            class="inline-block px-px py-1.5 transition duration-300 will-change-transform hover:translate-x-1 hover:text-gray-700 dark:hover:text-gray-300"
+                        >
+                            Showcase
                         </a>
                     </li>
                     <li>
