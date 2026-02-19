@@ -46,7 +46,7 @@
     href="{{ $partner['url'] }}"
     title="Learn more about {{ $partner['name'] }}"
     aria-label="Visit {{ $partner['name'] }} website"
-    class="flex w-full shrink-0 flex-col items-center gap-2 rounded-2xl bg-gray-100 px-5 py-4 transition duration-200 hover:bg-gray-200/70 hover:ring-1 hover:ring-black/60 dark:bg-mirage dark:hover:bg-haiti dark:hover:ring-cloud"
+    class="mx-auto flex w-full max-w-64 shrink-0 flex-col items-center gap-2 rounded-2xl bg-gray-100 px-5 py-4 transition duration-200 hover:bg-gray-200/70 hover:ring-1 hover:ring-black/60 dark:bg-mirage dark:hover:bg-haiti dark:hover:ring-cloud"
     rel="noopener sponsored"
 >
     <div class="flex w-full items-center justify-center px-2">

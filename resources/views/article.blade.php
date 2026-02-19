@@ -101,5 +101,11 @@
             {{-- Sidebar --}}
             <x-blog.sidebar />
         </div>
+
+        {{-- Mobile partner card --}}
+        <div class="mt-5 min-[850px]:hidden">
+            <x-sponsors.lists.docs.featured-sponsors />
+            <a href="/partners" class="mt-3 block text-center text-xs text-gray-500 transition hover:text-gray-800 dark:text-gray-400 dark:hover:text-white">Become a Partner</a>
+        </div>
     </section>
 </x-layout>
