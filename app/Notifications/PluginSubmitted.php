@@ -79,6 +79,8 @@ class PluginSubmitted extends Notification implements ShouldQueue
             'supports_js' => 'Add JavaScript support (resources/js/)',
             'has_support_email' => 'Add a support email to your README',
             'requires_mobile_sdk' => 'Require the nativephp/mobile SDK in composer.json',
+            'has_ios_min_version' => 'Set iOS min_version in nativephp.json',
+            'has_android_min_version' => 'Set Android min_version in nativephp.json',
         ];
 
         $failing = [];

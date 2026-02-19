@@ -10,6 +10,7 @@ use App\Filament\Resources\PluginResource\RelationManagers;
 use App\Jobs\ReviewPluginRepository;
 use App\Jobs\SyncPlugin;
 use App\Models\Plugin;
+use App\Notifications\PluginReviewChecksIncomplete;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Notifications\Notification;
@@ -121,6 +122,30 @@ class PluginResource extends Resource
                                 : '❌ Missing'),
                     ])
                     ->columns(4)
+                    ->headerActions([
+                        Forms\Components\Actions\Action::make('emailReviewChecks')
+                            ->label('Email Developer')
+                            ->icon('heroicon-o-envelope')
+                            ->color('warning')
+                            ->requiresConfirmation()
+                            ->modalHeading('Email Review Check Results')
+                            ->modalDescription(fn (?Plugin $record): ?string => $record
+                                ? "This will email {$record->user->email} with the passing and failing review checks for '{$record->name}', including links to the relevant docs."
+                                : null)
+                            ->action(function (?Plugin $record): void {
+                                if (! $record) {
+                                    return;
+                                }
+
+                                $record->user->notify(new PluginReviewChecksIncomplete($record));
+
+                                Notification::make()
+                                    ->title('Email sent')
+                                    ->body("Review check results emailed to {$record->user->email}.")
+                                    ->success()
+                                    ->send();
+                            }),
+                    ])
                     ->visible(fn (?Plugin $record) => $record?->review_checks !== null),
 
                 Forms\Components\Section::make('Submission Info')

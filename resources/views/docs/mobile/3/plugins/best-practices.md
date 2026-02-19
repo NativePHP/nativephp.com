@@ -249,13 +249,77 @@ checks beyond the Artisan command.
 Fix every warning too — they often indicate issues that will cause confusing failures for your users at build
 time or runtime.
 
+## Automated Review Checks
+
+When you submit your plugin, we run automated checks against your repository. These must all pass before
+your plugin can be approved. You can also run `php artisan native:plugin:validate` locally to catch issues early.
+
+### Required Items
+
+**iOS native code** — Your plugin must include native Swift code in `resources/ios/Sources/`. See
+[Bridge Functions](/docs/mobile/3/plugins/bridge-functions) for the implementation pattern.
+
+**Android native code** — Your plugin must include native Kotlin code in `resources/android/src/`. See
+[Bridge Functions](/docs/mobile/3/plugins/bridge-functions) for the implementation pattern.
+
+**JavaScript library** — Your plugin must include a JavaScript library in `resources/js/` that exports
+a function for every bridge function. This allows Inertia + Vue/React developers to call your native functions
+directly. See the [JavaScript Implementations](#javascript-implementations) section above.
+
+**Support email** — Your README must include a valid support email address so developers can reach you
+with questions or issues.
+
+**Require `nativephp/mobile`** — Your `composer.json` must require the `nativephp/mobile` SDK. This ensures
+your plugin is properly integrated with the NativePHP build pipeline:
+
+```json
+{
+    "require": {
+        "nativephp/mobile": "^3.0"
+    }
+}
+```
+
+**iOS `min_version`** — Your `nativephp.json` must specify a minimum iOS version. See
+[Advanced Configuration](/docs/mobile/3/plugins/advanced-configuration) for details:
+
+```json
+{
+    "ios": {
+        "min_version": "18.0"
+    }
+}
+```
+
+**Android `min_version`** — Your `nativephp.json` must specify a minimum Android SDK version. See
+[Advanced Configuration](/docs/mobile/3/plugins/advanced-configuration) for details:
+
+```json
+{
+    "android": {
+        "min_version": 33
+    }
+}
+```
+
 ## Checklist
 
 Before submitting your plugin to the [NativePHP Plugin Marketplace](https://nativephp.com/plugins), verify:
 
+**Automated checks (must pass):**
+
+- [ ] iOS native code in `resources/ios/Sources/`
+- [ ] Android native code in `resources/android/src/`
+- [ ] JavaScript library in `resources/js/`
+- [ ] Support email in your README
+- [ ] `nativephp/mobile` required in `composer.json`
+- [ ] iOS `min_version` set in `nativephp.json`
+- [ ] Android `min_version` set in `nativephp.json`
+
+**Documentation & quality:**
+
 - [ ] README documents installation, PHP usage, and JS usage with complete examples
 - [ ] README documents all public methods, events, and required permissions
-- [ ] JavaScript library exports a function for every bridge function
 - [ ] `php artisan native:plugin:validate` passes with zero errors
 - [ ] Tested on a physical Android device
 - [ ] Tested on a physical iOS device (if iOS is supported)
