@@ -297,7 +297,7 @@ your plugin is properly integrated with the NativePHP build pipeline:
 ```json
 {
     "android": {
-        "min_version": 33
+        "min_version": 29
     }
 }
 ```

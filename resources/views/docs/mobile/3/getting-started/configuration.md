@@ -67,68 +67,6 @@ The `cleanup_exclude_files` array in the config file allows you to specify files
 before bundling. This is useful for removing files like logs or other temporary files that aren't required for your app
 to function and bloat your downloads.
 
-## Permissions
-In general, the app stores don't want your app to have permissions (a.k.a entitlements) it doesn't need. 
-
-By default, all optional permissions are disabled.
-
-You may enable the features you intend to use simply by changing the value of the appropriate permission to `true`:
-
-```php
-    'permissions' => [
-        'biometric' => false,
-        'camera' => false,
-        'location' => false,
-        'microphone' => false,
-        'microphone_background' => false,
-        'network_state' => true,
-        'nfc' => false,
-        'push_notifications' => false,
-        'storage_read' => false,
-        'storage_write' => false,
-        'scanner' => false,
-        'vibrate' => false,
-    ],
-```
-
-For iOS, this will provide a sensible default description.
-
-### Custom permission descriptions
-
-For iOS, it's possible to define custom permission descriptions. In most cases, you are required to provide clear
-reasons why your app needs certain permissions. You can do this easily from the config file:
-
-```php
-    'permissions' => [
-        'biometric' => 'Access to the biometric sensor is needed to secure user resources',
-        //...
-    ],
-```
-
-### Available permissions
-
-- `biometric` - Allows your application to use fingerprint or face-recognition hardware (with a fallback to PIN code)
-    to secure parts of your application.
-- `camera` - Allows your application to request access to the device's camera, if present. Required for taking photos and
-    recording video. Note that the user may deny access and any camera functions will then result in a no-op.
-- `nfc` - Allows your application to request access to the device's NFC reader, if present.
-- `push_notifications` - Allows your application to request permissions to send push notifications. Note that the user
-    may deny this and any push notification functions will then result in a no-op.
-- `location` - Allows your application to request access to the device's GPS receiver, if present. Note that the user
-    may deny this and any location functions will then result in a no-op.
-- `vibrate` - In modern Android devices this is a requirement for most haptic feedback.
-- `storage_read` - Grants your app access to read from device storage locations. This is not required for basic app file manipulation.
-- `storage_write` - Allows your app to write to device storage. This is not required for basic app file manipulation.
-- `microphone` - Allows your application to request access to the device's microphone, if present. Required for audio
-    recording functionality. Note that the user may deny access and any microphone functions will then result in a no-op.
-- `microphone_background` - Allows your application to request access to the device's microphone, if present. Required
-  for audio recording functionality. Note that the user may deny access and any microphone functions will then result in
-  a no-op.
-- `scanner` - Allows your application to scan QR codes and barcodes. Note that the user may deny camera access and any
-    scanning functions will then result in a no-op.
-- `network_state` - Allows your application to access information about the device's network connectivity status. This
-    permission is enabled by default as it's commonly needed for basic network state detection.
-
 ## Orientation
 
 NativePHP (as of v1.10.3) allows users to custom specific orientations per device through the config file. The config
@@ -171,5 +109,42 @@ Using standard CSS responsive design principles, you can make your app work beau
 
 Once you've published an app with iPad support, it cannot be undone. If you wish to remove iPad support, you
 will need to change your `NATIVEPHP_APP_ID` and publish the app under a new App Store listing.
+
+</aside>
+
+## Android SDK Versions
+
+The `android` section of your config file lets you control which Android SDK versions are used when building your app.
+These are nested under the `android` key in `config/nativephp.php`:
+
+```php
+'android' => [
+    'compile_sdk' => env('NATIVEPHP_ANDROID_COMPILE_SDK', 36),
+    'min_sdk' => env('NATIVEPHP_ANDROID_MIN_SDK', 33),
+    'target_sdk' => env('NATIVEPHP_ANDROID_TARGET_SDK', 36),
+],
+```
+
+- `compile_sdk` - The SDK version used to compile your app. This determines which Android APIs are available to you
+    at build time. (default: `36`)
+- `min_sdk` - The minimum Android version your app supports. Devices running an older version won't be able to install
+    your app. (default: `33`, Android 13)
+- `target_sdk` - The SDK version your app is designed and tested against. Google Play uses this to apply appropriate
+    compatibility behaviors. (default: `36`)
+
+You can also set these via environment variables:
+
+```dotenv
+NATIVEPHP_ANDROID_COMPILE_SDK=36
+NATIVEPHP_ANDROID_MIN_SDK=33
+NATIVEPHP_ANDROID_TARGET_SDK=36
+```
+
+<aside>
+
+Most apps won't need to change these defaults. Only adjust them if you have a specific reason, such as supporting
+older devices or targeting a newer API level. Always ensure that `compile_sdk` >= `target_sdk` >= `min_sdk`.
+
+The lowest supported `min_sdk` is `29` (Android 10). Setting it lower than this is not supported.
 
 </aside>
