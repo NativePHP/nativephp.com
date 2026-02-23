@@ -20,8 +20,9 @@ return [
             'anystack_policy_id' => env('ANYSTACK_PRO_POLICY_ID'),
         ],
         'max' => [
-            'name' => 'Max',
+            'name' => 'Ultra',
             'stripe_price_id' => env('STRIPE_MAX_PRICE_ID'),
+            'stripe_price_id_monthly' => env('STRIPE_MAX_PRICE_ID_MONTHLY'),
             'stripe_price_id_eap' => env('STRIPE_MAX_PRICE_ID_EAP'),
             'stripe_price_id_discounted' => env('STRIPE_MAX_PRICE_ID_DISCOUNTED'),
             'stripe_payment_link' => env('STRIPE_MAX_PAYMENT_LINK'),

@@ -62,8 +62,7 @@ Route::post('opencollective/contribution', [OpenCollectiveWebhookController::cla
 Route::get('opencollective/claim', App\Livewire\ClaimDonationLicense::class)->name('opencollective.claim');
 
 Route::view('/', 'welcome')->name('welcome');
-Route::redirect('pricing', 'blog/nativephp-for-mobile-is-now-free')->name('pricing');
-Route::view('alt-pricing', 'alt-pricing')->name('alt-pricing')->middleware('signed');
+Route::view('ultra', 'pricing')->name('pricing');
 Route::view('wall-of-love', 'wall-of-love')->name('wall-of-love');
 Route::view('brand', 'brand')->name('brand');
 Route::get('showcase/{platform?}', [App\Http\Controllers\ShowcaseController::class, 'index'])

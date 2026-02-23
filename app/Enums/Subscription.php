@@ -34,6 +34,7 @@ enum Subscription: string
             config('subscriptions.plans.pro.stripe_price_id_eap') => self::Pro,
             'price_1RoZk0AyFo6rlwXqjkLj4hZ0',
             config('subscriptions.plans.max.stripe_price_id'),
+            config('subscriptions.plans.max.stripe_price_id_monthly'),
             config('subscriptions.plans.max.stripe_price_id_discounted'),
             config('subscriptions.plans.max.stripe_price_id_eap') => self::Max,
             default => throw new RuntimeException("Unknown Stripe price id: {$priceId}"),
@@ -57,7 +58,7 @@ enum Subscription: string
         return config("subscriptions.plans.{$this->value}.name");
     }
 
-    public function stripePriceId(bool $forceEap = false, bool $discounted = false): string
+    public function stripePriceId(bool $forceEap = false, bool $discounted = false, string $interval = 'year'): string
     {
         // EAP ends June 1st at midnight UTC
         if (now()->isBefore('2025-06-01 00:00:00') || $forceEap) {
@@ -66,6 +67,10 @@ enum Subscription: string
 
         if ($discounted) {
             return config("subscriptions.plans.{$this->value}.stripe_price_id_discounted");
+        }
+
+        if ($interval === 'month') {
+            return config("subscriptions.plans.{$this->value}.stripe_price_id_monthly");
         }
 
         return config("subscriptions.plans.{$this->value}.stripe_price_id");

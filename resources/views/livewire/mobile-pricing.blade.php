@@ -1,192 +1,231 @@
 <section
     id="pricing"
-    class="mx-auto mt-24 max-w-6xl"
+    class="mx-auto mt-24 max-w-2xl"
     aria-labelledby="pricing-heading"
 >
-    @if (! $discounted)
-        <header class="relative z-10 grid place-items-center text-center">
-            {{-- Section Heading --}}
-            <h2
-                id="pricing-heading"
-                x-init="
-                    () => {
-                        motion.inView($el, (element) => {
-                            motion.animate(
-                                $el,
-                                {
-                                    opacity: [0, 1],
-                                    x: [-10, 0],
-                                },
-                                {
-                                    duration: 0.7,
-                                    ease: motion.easeOut,
-                                },
-                            )
-                        })
-                    }
-                "
-                class="text-3xl font-semibold opacity-0"
-            >
-                Purchase a license
-            </h2>
+    <header class="relative z-10 grid place-items-center text-center">
+        <h2
+            id="pricing-heading"
+            x-init="
+                () => {
+                    motion.inView($el, (element) => {
+                        motion.animate(
+                            $el,
+                            {
+                                opacity: [0, 1],
+                                x: [-10, 0],
+                            },
+                            {
+                                duration: 0.7,
+                                ease: motion.easeOut,
+                            },
+                        )
+                    })
+                }
+            "
+            class="text-3xl font-semibold opacity-0"
+        >
+            Choose your plan
+        </h2>
 
-            {{-- Section Description --}}
-            <p
-                x-init="
-                    () => {
-                        motion.inView($el, (element) => {
-                            motion.animate(
-                                $el,
-                                {
-                                    opacity: [0, 1],
-                                    x: [10, 0],
-                                },
-                                {
-                                    duration: 0.7,
-                                    ease: motion.easeOut,
-                                },
-                            )
-                        })
-                    }
-                "
-                class="mx-auto max-w-xl pt-2 text-base/relaxed text-gray-600 opacity-0"
-            >
-                Start your journey to become a mobile developer
-            </p>
-        </header>
-    @endif
+        <p
+            x-init="
+                () => {
+                    motion.inView($el, (element) => {
+                        motion.animate(
+                            $el,
+                            {
+                                opacity: [0, 1],
+                                x: [10, 0],
+                            },
+                            {
+                                duration: 0.7,
+                                ease: motion.easeOut,
+                            },
+                        )
+                    })
+                }
+            "
+            class="mx-auto max-w-xl pt-2 text-base/relaxed text-gray-600 opacity-0 dark:text-gray-400"
+        >
+            Get the most out of NativePHP
+        </p>
+    </header>
 
-    {{-- Pricing Plans --}}
+    {{-- Interval Toggle --}}
     <div
-        x-init="
-            () => {
-                motion.inView($el, (element) => {
-                    motion.animate(
-                        Array.from($el.children),
-                        {
-                            y: [10, 0],
-                            opacity: [0, 1],
-                        },
-                        {
-                            duration: 0.7,
-                            ease: motion.circOut,
-                            delay: motion.stagger(0.1),
-                        },
-                    )
-                })
-            }
-        "
-        class="{{ $discounted ? 'grid-cols-1 md:grid-cols-2' : 'grid-cols-[repeat(auto-fill,minmax(19rem,1fr))]' }} mt-10 grid items-start gap-x-6 gap-y-8"
-        aria-label="Pricing plans"
+        x-data="{ interval: @entangle('interval') }"
+        class="mt-8 flex flex-col items-center gap-6"
     >
-        @if (! $discounted)
-            {{-- Mini Plan --}}
-            <div
-                class="h-full rounded-2xl bg-gray-100 p-7 opacity-0 dark:bg-mirage"
-                aria-labelledby="pro-plan-heading"
+        <div
+            class="inline-flex items-center gap-1 rounded-full bg-gray-100 p-1 dark:bg-mirage"
+            role="radiogroup"
+            aria-label="Billing interval"
+        >
+            <button
+                type="button"
+                @click="interval = 'month'"
+                :class="interval === 'month'
+                    ? 'bg-white text-black shadow-sm dark:bg-zinc-700 dark:text-white'
+                    : 'text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300'"
+                class="rounded-full px-5 py-2 text-sm font-medium transition"
+                role="radio"
+                :aria-checked="interval === 'month'"
             >
-                {{-- Plan Name --}}
-                <h3
-                    id="pro-plan-heading"
-                    class="text-3xl font-semibold"
-                >
-                    <span
-                        class="rounded-full bg-zinc-300 px-4 dark:bg-zinc-600"
-                    >
-                        Mini
-                    </span>
-                </h3>
+                Monthly
+            </button>
+            <button
+                type="button"
+                @click="interval = 'year'"
+                :class="interval === 'year'
+                    ? 'bg-white text-black shadow-sm dark:bg-zinc-700 dark:text-white'
+                    : 'text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300'"
+                class="rounded-full px-5 py-2 text-sm font-medium transition"
+                role="radio"
+                :aria-checked="interval === 'year'"
+            >
+                Annual
+            </button>
+        </div>
 
-                {{-- Price --}}
-                <div
-                    class="flex items-start gap-1.5 pt-5"
-                    aria-label="Price: FREE (with Bifrost subscription or OpenCollective donation)"
-                >
-                    <div class="text-5xl font-semibold">FREE</div>
-                    <div class="self-end pb-1.5 text-zinc-500">
-                        with
-                        <a
-                            href="/bifrost"
-                            target="_blank"
-                            class="underline underline-offset-2 transition-colors hover:text-zinc-400 dark:text-zinc-300 dark:hover:text-zinc-100"
-                        >
-                            Bifrost
-                        </a>
-                    </div>
+        {{-- Ultra Plan Card --}}
+        <div
+            x-init="
+                () => {
+                    motion.inView($el, (element) => {
+                        motion.animate(
+                            $el,
+                            {
+                                y: [10, 0],
+                                opacity: [0, 1],
+                            },
+                            {
+                                duration: 0.7,
+                                ease: motion.circOut,
+                            },
+                        )
+                    })
+                }
+            "
+            class="w-full rounded-2xl bg-gray-100 p-7 opacity-0 ring-1 ring-black dark:bg-black/50 dark:ring-white/20"
+            aria-labelledby="ultra-plan-heading"
+        >
+            {{-- Plan Name --}}
+            <h3
+                id="ultra-plan-heading"
+                class="text-3xl font-semibold"
+            >
+                <span class="rounded-full bg-zinc-300 px-4 dark:bg-zinc-600">
+                    Ultra
+                </span>
+            </h3>
+
+            {{-- Price --}}
+            <div
+                class="flex items-start gap-1.5 pt-5"
+                :aria-label="interval === 'month'
+                    ? 'Price: $35 per month'
+                    : 'Price: $350 per year'"
+            >
+                <div class="text-5xl font-semibold">
+                    $<span x-text="interval === 'month' ? '35' : '350'"></span>
                 </div>
-
-                <a
-                    href="https://bifrost.nativephp.com/register"
-                    class="my-5 block w-full rounded-2xl bg-zinc-200 py-4 text-center text-sm font-medium transition duration-200 ease-in-out hover:bg-zinc-800 hover:text-white dark:bg-slate-700/30 dark:hover:bg-slate-700/40"
-                    aria-label="Get started with a FREE Mini license via Bifrost"
-                >
-                    Get started with Bifrost
-                </a>
-
-                {{-- OpenCollective Alternative --}}
-                <div class="relative my-5">
-                    <div class="absolute inset-0 flex items-center">
-                        <div class="w-full border-t border-zinc-300 dark:border-zinc-600"></div>
-                    </div>
-                    <div class="relative flex justify-center text-sm">
-                        <span class="bg-gray-100 px-2 text-zinc-500 dark:bg-mirage">or</span>
-                    </div>
+                <div class="self-end pb-1.5 text-zinc-500">
+                    <span x-text="interval === 'month' ? 'per month' : 'per year'"></span>
                 </div>
-
-                <div class="mb-6 text-center">
-                    <p class="text-sm text-zinc-600 dark:text-zinc-400">
-                        Donate any amount via
-                        <a
-                            href="https://opencollective.com/nativephp"
-                            target="_blank"
-                            class="font-medium text-zinc-800 underline underline-offset-2 transition-colors hover:text-zinc-600 dark:text-zinc-200 dark:hover:text-zinc-100"
-                        >
-                            OpenCollective
-                        </a>
-                    </p>
-                    <a
-                        href="{{ route('opencollective.claim') }}"
-                        class="mt-3 inline-block rounded-xl bg-zinc-200 px-6 py-3 text-center text-sm font-medium transition duration-200 ease-in-out hover:bg-zinc-800 hover:text-white dark:bg-slate-700/30 dark:hover:bg-slate-700/40"
-                        aria-label="Claim your Mini license from an OpenCollective donation"
-                    >
-                        Already donated? Claim your license
-                    </a>
-                </div>
-
-                <x-pricing-plan-features plan-name="Mini" />
             </div>
-        @endif
 
-        {{-- Pro Plan --}}
-        <x-pricing-plan
-            name="Pro"
-            id="pro"
-            :features="[
-                'apps' => 'unlimited',
-                'keys' => 10,
-            ]"
-            price="200"
-            discounted_price="150"
-            :$discounted
-        />
+            {{-- Savings note --}}
+            <div
+                x-show="interval === 'year'"
+                x-transition
+                class="pt-1 text-sm text-emerald-600 dark:text-emerald-400"
+            >
+                Save $70/year vs monthly
+            </div>
 
-        {{-- Max Plan - Most Popular --}}
-        <x-pricing-plan
-            name="Max"
-            id="max"
-            :features="[
-                'apps' => 'unlimited',
-                'keys' => 'Unlimited',
-                'discord' => true,
-                'github' => true,
-                'priority' => true,
-                'support' => true,
-            ]"
-            price="350"
-            discounted_price="250"
-            :$discounted
-            :popular="true"
-        />
+            {{-- CTA Button --}}
+            @auth
+                <button
+                    type="button"
+                    wire:click="createCheckoutSession('max')"
+                    class="my-5 block w-full rounded-2xl bg-zinc-800 py-4 text-center text-sm font-medium text-white transition duration-200 ease-in-out hover:bg-zinc-700 dark:bg-white dark:text-black dark:hover:bg-zinc-200"
+                    aria-label="Get started with Ultra plan"
+                >
+                    Get started
+                </button>
+            @else
+                <button
+                    type="button"
+                    @click="$dispatch('open-purchase-modal', { plan: 'max' })"
+                    class="my-5 block w-full rounded-2xl bg-zinc-800 py-4 text-center text-sm font-medium text-white transition duration-200 ease-in-out hover:bg-zinc-700 dark:bg-white dark:text-black dark:hover:bg-zinc-200"
+                    aria-label="Get started with Ultra plan"
+                >
+                    Get started
+                </button>
+            @endauth
+
+            {{-- Features --}}
+            <div
+                class="space-y-2.5 text-sm"
+                aria-label="Ultra plan features"
+            >
+                <div class="flex items-center gap-2">
+                    <div
+                        class="grid size-7 shrink-0 place-items-center rounded-xl bg-[#D4FD7D] dark:bg-[#d68ffe] dark:text-black"
+                        aria-hidden="true"
+                    >
+                        <x-icons.checkmark class="size-5 shrink-0" />
+                    </div>
+                    <div class="font-medium">All first-party plugins for free</div>
+                </div>
+                <div class="flex items-center gap-2">
+                    <div
+                        class="grid size-7 shrink-0 place-items-center rounded-xl bg-[#D4FD7D] dark:bg-[#d68ffe] dark:text-black"
+                        aria-hidden="true"
+                    >
+                        <x-icons.checkmark class="size-5 shrink-0" />
+                    </div>
+                    <div class="font-medium">Discounts on third-party plugins</div>
+                </div>
+                <div class="flex items-center gap-2">
+                    <div
+                        class="grid size-7 shrink-0 place-items-center rounded-xl bg-[#D4FD7D] dark:bg-[#d68ffe] dark:text-black"
+                        aria-hidden="true"
+                    >
+                        <x-icons.checkmark class="size-5 shrink-0" />
+                    </div>
+                    <div class="font-medium">Claude Code Plugin Dev Kit for free</div>
+                </div>
+                <div class="flex items-center gap-2">
+                    <div
+                        class="grid size-7 shrink-0 place-items-center rounded-xl bg-[#D4FD7D] dark:bg-[#d68ffe] dark:text-black"
+                        aria-hidden="true"
+                    >
+                        <x-icons.checkmark class="size-5 shrink-0" />
+                    </div>
+                    <div class="font-medium">Discounts on NativePHP courses and apps</div>
+                </div>
+                <div class="flex items-center gap-2">
+                    <div
+                        class="grid size-7 shrink-0 place-items-center rounded-xl bg-[#D4FD7D] dark:bg-[#d68ffe] dark:text-black"
+                        aria-hidden="true"
+                    >
+                        <x-icons.checkmark class="size-5 shrink-0" />
+                    </div>
+                    <div class="font-medium">Premium support &mdash; expedited turnaround</div>
+                </div>
+                <div class="flex items-center gap-2">
+                    <div
+                        class="grid size-7 shrink-0 place-items-center rounded-xl bg-[#D4FD7D] dark:bg-[#d68ffe] dark:text-black"
+                        aria-hidden="true"
+                    >
+                        <x-icons.checkmark class="size-5 shrink-0" />
+                    </div>
+                    <div class="font-medium">Teams support &mdash; invite and manage members</div>
+                </div>
+            </div>
+        </div>
     </div>
 
     @guest
