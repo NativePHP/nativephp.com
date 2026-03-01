@@ -134,7 +134,7 @@ class CustomerLicenseController extends Controller
         $user = Auth::user();
 
         // Check if offer has expired
-        if (now()->gt('2026-02-28 23:59:59')) {
+        if (now()->gt('2026-05-31 23:59:59')) {
             return to_route('dashboard')
                 ->with('error', 'This offer has expired.');
         }
