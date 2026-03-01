@@ -301,12 +301,12 @@ class DocsSearchService
             $pos = strpos($contentLower, $term);
             if ($pos !== false) {
                 $start = max(0, $pos - 50);
-                $snippet = substr($content, $start, $length);
+                $snippet = mb_strcut($content, $start, $length, 'UTF-8');
 
                 if ($start > 0) {
                     $snippet = '...'.$snippet;
                 }
-                if ($start + $length < strlen($content)) {
+                if ($start + $length < mb_strlen($content, '8bit')) {
                     $snippet .= '...';
                 }
 
