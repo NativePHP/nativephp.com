@@ -11,6 +11,22 @@ Don't waste hours downloading, installing, and configuring Xcode and Android Stu
 1. Install the Jump app on your iOS or Android device
 2. Run the following commands:
 
+### New laravel app
+
+If you are creating new laravel app you can build using starter kit:
+
+```bash
+laravel new my-app --using=nativephp/mobile-starter
+
+cd my-app
+
+php artisan native:jump
+```
+
+### Existing laravel app
+
+If you already have a laravel app:
+
 ```bash
 composer require nativephp/mobile
 
@@ -55,5 +71,5 @@ php native run
 
 - **Community** - Join our [Discord](/discord) for support and discussions.
 - **Examples** - Check out the Kitchen Sink demo app
-    on [Android](https://play.google.com/store/apps/details?id=com.nativephp.kitchensinkapp) and
-    [iOS](https://testflight.apple.com/join/vm9Qtshy)!
+  on [Android](https://play.google.com/store/apps/details?id=com.nativephp.kitchensinkapp) and
+  [iOS](https://testflight.apple.com/join/vm9Qtshy)!
