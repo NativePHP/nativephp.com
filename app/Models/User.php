@@ -128,14 +128,6 @@ class User extends Authenticatable implements FilamentUser
     }
 
     /**
-     * @return HasOne<Team>
-     */
-    public function ownedTeam(): HasOne
-    {
-        return $this->hasOne(Team::class);
-    }
-
-    /**
      * @return HasMany<TeamUser>
      */
     public function teamMemberships(): HasMany
