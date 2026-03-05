@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\DeveloperAccount;
 use App\Services\StripeConnectService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -29,11 +30,25 @@ class DeveloperOnboardingController extends Controller
 
     public function start(Request $request): RedirectResponse
     {
+        $request->validate([
+            'accepted_plugin_terms' => ['required', 'accepted'],
+        ], [
+            'accepted_plugin_terms.required' => 'You must accept the Plugin Developer Terms and Conditions.',
+            'accepted_plugin_terms.accepted' => 'You must accept the Plugin Developer Terms and Conditions.',
+        ]);
+
         $user = $request->user();
         $developerAccount = $user->developerAccount;
 
         if (! $developerAccount) {
             $developerAccount = $this->stripeConnectService->createConnectAccount($user);
+        }
+
+        if (! $developerAccount->hasAcceptedCurrentTerms()) {
+            $developerAccount->update([
+                'accepted_plugin_terms_at' => now(),
+                'plugin_terms_version' => DeveloperAccount::CURRENT_PLUGIN_TERMS_VERSION,
+            ]);
         }
 
         try {
