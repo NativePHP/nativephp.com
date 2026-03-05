@@ -19,6 +19,7 @@ use App\Http\Controllers\ProductController;
 use App\Http\Controllers\PurchaseHistoryController;
 use App\Http\Controllers\ShowBlogController;
 use App\Http\Controllers\ShowDocumentationController;
+use App\Http\Controllers\TeamController;
 use App\Http\Controllers\TeamUserController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Str;
@@ -214,6 +215,9 @@ Route::get('callback', function (\Illuminate\Http\Request $request) {
     return response('Goodbye');
 })->name('callback');
 
+// Team invitation acceptance (public route - no auth required)
+Route::get('team/invitation/{token}', [TeamUserController::class, 'accept'])->name('team.invitation.accept');
+
 // Dashboard route
 Route::middleware(['auth', EnsureFeaturesAreActive::using(ShowAuthButtons::class)])
     ->get('dashboard', [CustomerLicenseController::class, 'index'])
@@ -271,24 +275,12 @@ Route::middleware(['auth', EnsureFeaturesAreActive::using(ShowAuthButtons::class
         return $user->redirectToBillingPortal(route('dashboard'));
     })->name('billing-portal');
 
-    // Team management routes (Ultra-only)
-    Route::get('team', function (\Illuminate\Http\Request $request) {
-        $user = $request->user();
-
-        if (! $user->hasUltraAccess()) {
-            abort(403, 'Ultra subscription required.');
-        }
-
-        $team = $user->ownedTeam;
-
-        if (! $team) {
-            abort(404);
-        }
-
-        return view('customer.team.index', compact('team'));
-    })->name('team.index');
-    Route::post('team/{team}/members', [TeamUserController::class, 'store'])->name('team.members.store');
-    Route::delete('team/{team}/members/{teamUser}', [TeamUserController::class, 'destroy'])->name('team.members.destroy');
+    // Team management routes
+    Route::get('team', [TeamController::class, 'index'])->name('team.index');
+    Route::post('team', [TeamController::class, 'store'])->name('team.store');
+    Route::post('team/invite', [TeamUserController::class, 'invite'])->name('team.invite');
+    Route::delete('team/users/{teamUser}', [TeamUserController::class, 'remove'])->name('team.users.remove');
+    Route::post('team/users/{teamUser}/resend', [TeamUserController::class, 'resend'])->name('team.users.resend');
 
     // Sub-license management routes
     Route::post('licenses/{licenseKey}/sub-licenses', [CustomerSubLicenseController::class, 'store'])->name('licenses.sub-licenses.store');

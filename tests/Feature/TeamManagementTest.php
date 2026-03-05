@@ -2,13 +2,26 @@
 
 namespace Tests\Feature;
 
-use App\Enums\Subscription;
+use App\Enums\PriceTier;
+use App\Enums\TeamUserStatus;
 use App\Features\ShowAuthButtons;
-use App\Livewire\TeamManager;
+use App\Jobs\RevokeTeamUserAccessJob;
+use App\Jobs\SuspendTeamJob;
+use App\Jobs\UnsuspendTeamJob;
+use App\Models\License;
+use App\Models\Plugin;
+use App\Models\Product;
+use App\Models\ProductLicense;
 use App\Models\Team;
 use App\Models\TeamUser;
 use App\Models\User;
+use App\Notifications\TeamInvitation;
+use App\Notifications\TeamUserRemoved;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Notification;
+use Illuminate\Support\Facades\Queue;
+use Laravel\Cashier\Subscription;
 use Laravel\Pennant\Feature;
 use Tests\TestCase;
 
@@ -16,482 +29,646 @@ class TeamManagementTest extends TestCase
 {
     use RefreshDatabase;
 
+    private const MAX_PRICE_ID = 'price_test_max_yearly';
+
     protected function setUp(): void
     {
         parent::setUp();
 
         Feature::define(ShowAuthButtons::class, true);
+
+        config(['subscriptions.plans.max.stripe_price_id' => self::MAX_PRICE_ID]);
     }
 
-    /**
-     * Create a paid Max subscription for a user so they have Ultra access.
-     */
-    private function createPaidMaxSubscription(User $user): \Laravel\Cashier\Subscription
+    private function createUltraUser(): User
     {
-        $user->update(['stripe_id' => 'cus_'.uniqid()]);
-
-        $subscription = \Laravel\Cashier\Subscription::factory()
-            ->for($user)
-            ->active()
-            ->create([
-                'stripe_price' => Subscription::Max->stripePriceId(),
-                'is_comped' => false,
-            ]);
-
-        \Laravel\Cashier\SubscriptionItem::factory()
-            ->for($subscription, 'subscription')
-            ->create([
-                'stripe_price' => Subscription::Max->stripePriceId(),
-                'quantity' => 1,
-            ]);
-
-        return $subscription;
-    }
-
-    /**
-     * Create a comped (free) Max subscription for a user — no Ultra access.
-     */
-    private function createCompedMaxSubscription(User $user): \Laravel\Cashier\Subscription
-    {
-        $user->update(['stripe_id' => 'cus_'.uniqid()]);
-
-        $subscription = \Laravel\Cashier\Subscription::factory()
-            ->for($user)
-            ->active()
-            ->create([
-                'stripe_price' => Subscription::Max->stripePriceId(),
-                'is_comped' => true,
-            ]);
-
-        \Laravel\Cashier\SubscriptionItem::factory()
-            ->for($subscription, 'subscription')
-            ->create([
-                'stripe_price' => Subscription::Max->stripePriceId(),
-                'quantity' => 1,
-            ]);
-
-        return $subscription;
-    }
-
-    public function test_total_seat_capacity_with_no_extra_seats(): void
-    {
-        $team = Team::factory()->create(['extra_seats' => 0]);
-
-        $this->assertEquals(Team::INCLUDED_SEATS, $team->totalSeatCapacity());
-    }
-
-    public function test_total_seat_capacity_with_extra_seats(): void
-    {
-        $team = Team::factory()->withExtraSeats(5)->create();
-
-        $this->assertEquals(Team::INCLUDED_SEATS + 5, $team->totalSeatCapacity());
-    }
-
-    public function test_occupied_seat_count_includes_active_and_pending(): void
-    {
-        $team = Team::factory()->create();
-
-        TeamUser::create([
-            'team_id' => $team->id,
-            'email' => 'active@example.com',
-            'role' => 'member',
-            'status' => 'active',
-            'accepted_at' => now(),
+        $user = User::factory()->create();
+        License::factory()->max()->active()->create(['user_id' => $user->id]);
+        Subscription::factory()->for($user)->active()->create([
+            'stripe_price' => self::MAX_PRICE_ID,
         ]);
 
-        TeamUser::create([
-            'team_id' => $team->id,
-            'email' => 'pending@example.com',
-            'role' => 'member',
-            'status' => 'pending',
-            'invitation_token' => 'test-token',
-            'invited_at' => now(),
+        return $user;
+    }
+
+    private function createTeamWithOwner(): array
+    {
+        $owner = $this->createUltraUser();
+        $team = Team::factory()->create(['user_id' => $owner->id, 'name' => 'Test Team']);
+
+        return [$owner, $team];
+    }
+
+    // ========================================
+    // Team Creation Tests
+    // ========================================
+
+    public function test_ultra_subscriber_can_create_team(): void
+    {
+        $user = $this->createUltraUser();
+
+        $response = $this->actingAs($user)
+            ->post(route('customer.team.store'), ['name' => 'My Team']);
+
+        $response->assertRedirect(route('customer.team.index'));
+        $response->assertSessionHas('success');
+
+        $this->assertDatabaseHas('teams', [
+            'user_id' => $user->id,
+            'name' => 'My Team',
+            'is_suspended' => false,
         ]);
-
-        $this->assertEquals(2, $team->occupiedSeatCount());
     }
 
-    public function test_available_seats_calculation(): void
+    public function test_non_ultra_user_cannot_create_team(): void
     {
-        $team = Team::factory()->withExtraSeats(2)->create();
+        $user = User::factory()->create();
 
-        // 10 included + 2 extra = 12 capacity
-        $this->assertEquals(12, $team->totalSeatCapacity());
+        $response = $this->actingAs($user)
+            ->post(route('customer.team.store'), ['name' => 'My Team']);
 
-        TeamUser::create([
-            'team_id' => $team->id,
-            'email' => 'member@example.com',
-            'role' => 'member',
-            'status' => 'active',
-            'accepted_at' => now(),
-        ]);
-
-        $this->assertEquals(11, $team->availableSeats());
-        $this->assertTrue($team->hasAvailableSeats());
+        $response->assertSessionHas('error');
+        $this->assertDatabaseMissing('teams', ['user_id' => $user->id]);
     }
 
-    public function test_has_available_seats_returns_false_when_full(): void
+    public function test_cannot_create_duplicate_team(): void
     {
-        $team = Team::factory()->create(['extra_seats' => 0]);
-
-        // Fill all included seats
-        for ($i = 0; $i < Team::INCLUDED_SEATS; $i++) {
-            TeamUser::create([
-                'team_id' => $team->id,
-                'email' => "member{$i}@example.com",
-                'role' => 'member',
-                'status' => 'active',
-                'accepted_at' => now(),
-            ]);
-        }
-
-        $this->assertFalse($team->hasAvailableSeats());
-        $this->assertEquals(0, $team->availableSeats());
-    }
-
-    public function test_can_remove_extra_seats_when_unoccupied(): void
-    {
-        $team = Team::factory()->withExtraSeats(3)->create();
-
-        // Only 5 members, included seats can hold them
-        for ($i = 0; $i < 5; $i++) {
-            TeamUser::create([
-                'team_id' => $team->id,
-                'email' => "member{$i}@example.com",
-                'role' => 'member',
-                'status' => 'active',
-                'accepted_at' => now(),
-            ]);
-        }
-
-        $this->assertTrue($team->canRemoveExtraSeats(3));
-    }
-
-    public function test_cannot_remove_extra_seats_when_occupied(): void
-    {
-        $team = Team::factory()->withExtraSeats(2)->create();
-
-        // Fill 11 seats (1 more than included)
-        for ($i = 0; $i < 11; $i++) {
-            TeamUser::create([
-                'team_id' => $team->id,
-                'email' => "member{$i}@example.com",
-                'role' => 'member',
-                'status' => 'active',
-                'accepted_at' => now(),
-            ]);
-        }
-
-        // Can't remove 2 seats because 11 members > 10 included
-        $this->assertFalse($team->canRemoveExtraSeats(2));
-
-        // Can remove 1 seat because 11 members <= 10 + 1
-        $this->assertTrue($team->canRemoveExtraSeats(1));
-    }
-
-    public function test_cannot_invite_when_no_seats_available(): void
-    {
-        $owner = User::factory()->create();
-        $this->createPaidMaxSubscription($owner);
-        $team = Team::factory()->create([
-            'user_id' => $owner->id,
-            'extra_seats' => 0,
-        ]);
-
-        // Fill all included seats
-        for ($i = 0; $i < Team::INCLUDED_SEATS; $i++) {
-            TeamUser::create([
-                'team_id' => $team->id,
-                'email' => "member{$i}@example.com",
-                'role' => 'member',
-                'status' => 'active',
-                'accepted_at' => now(),
-            ]);
-        }
+        [$owner, $team] = $this->createTeamWithOwner();
 
         $response = $this->actingAs($owner)
-            ->post("/customer/team/{$team->id}/members", [
-                'email' => 'new@example.com',
-            ]);
+            ->post(route('customer.team.store'), ['name' => 'Another Team']);
 
-        $response->assertSessionHasErrors('email');
+        $response->assertSessionHas('error');
+        $this->assertCount(1, Team::where('user_id', $owner->id)->get());
     }
 
-    public function test_can_invite_beyond_ten_with_extra_seats(): void
+    public function test_team_name_is_required(): void
     {
-        $owner = User::factory()->create();
-        $this->createPaidMaxSubscription($owner);
-        $team = Team::factory()->withExtraSeats(5)->create([
-            'user_id' => $owner->id,
-        ]);
+        $user = $this->createUltraUser();
 
-        // Fill 10 included seats
-        for ($i = 0; $i < Team::INCLUDED_SEATS; $i++) {
-            TeamUser::create([
-                'team_id' => $team->id,
-                'email' => "member{$i}@example.com",
-                'role' => 'member',
-                'status' => 'active',
-                'accepted_at' => now(),
-            ]);
-        }
+        $response = $this->actingAs($user)
+            ->post(route('customer.team.store'), ['name' => '']);
+
+        $response->assertSessionHasErrors('name');
+    }
+
+    // ========================================
+    // Invitation Tests
+    // ========================================
+
+    public function test_owner_can_invite_member_by_email(): void
+    {
+        Notification::fake();
+
+        [$owner, $team] = $this->createTeamWithOwner();
 
         $response = $this->actingAs($owner)
-            ->post("/customer/team/{$team->id}/members", [
-                'email' => 'eleventh@example.com',
-            ]);
+            ->post(route('customer.team.invite'), ['email' => 'member@example.com']);
 
         $response->assertSessionHas('success');
+
         $this->assertDatabaseHas('team_users', [
             'team_id' => $team->id,
-            'email' => 'eleventh@example.com',
-            'status' => 'pending',
-        ]);
-    }
-
-    public function test_pending_invitations_consume_seats(): void
-    {
-        $owner = User::factory()->create();
-        $this->createPaidMaxSubscription($owner);
-        $team = Team::factory()->create([
-            'user_id' => $owner->id,
-            'extra_seats' => 0,
+            'email' => 'member@example.com',
+            'status' => TeamUserStatus::Pending->value,
         ]);
 
-        // Fill all but one seat with active members
-        for ($i = 0; $i < Team::INCLUDED_SEATS - 1; $i++) {
-            TeamUser::create([
-                'team_id' => $team->id,
-                'email' => "member{$i}@example.com",
-                'role' => 'member',
-                'status' => 'active',
-                'accepted_at' => now(),
-            ]);
-        }
-
-        // Add a pending invitation for the last seat
-        TeamUser::create([
-            'team_id' => $team->id,
-            'email' => 'pending@example.com',
-            'role' => 'member',
-            'status' => 'pending',
-            'invitation_token' => 'test-token',
-            'invited_at' => now(),
-        ]);
-
-        // Now try to invite another - should fail
-        $response = $this->actingAs($owner)
-            ->post("/customer/team/{$team->id}/members", [
-                'email' => 'toomany@example.com',
-            ]);
-
-        $response->assertSessionHasErrors('email');
+        Notification::assertSentOnDemand(TeamInvitation::class);
     }
 
     public function test_cannot_invite_duplicate_email(): void
     {
-        $owner = User::factory()->create();
-        $this->createPaidMaxSubscription($owner);
-        $team = Team::factory()->create([
-            'user_id' => $owner->id,
-        ]);
+        Notification::fake();
 
-        TeamUser::create([
-            'team_id' => $team->id,
-            'email' => 'existing@example.com',
-            'role' => 'member',
-            'status' => 'active',
-            'accepted_at' => now(),
-        ]);
+        [$owner, $team] = $this->createTeamWithOwner();
 
-        $response = $this->actingAs($owner)
-            ->post("/customer/team/{$team->id}/members", [
-                'email' => 'existing@example.com',
-            ]);
-
-        $response->assertSessionHasErrors('email');
-    }
-
-    public function test_non_owner_cannot_invite_to_team(): void
-    {
-        $owner = User::factory()->create();
-        $otherUser = User::factory()->create();
-        $this->createPaidMaxSubscription($otherUser);
-        $team = Team::factory()->create(['user_id' => $owner->id]);
-
-        $response = $this->actingAs($otherUser)
-            ->post("/customer/team/{$team->id}/members", [
-                'email' => 'new@example.com',
-            ]);
-
-        $response->assertStatus(403);
-    }
-
-    public function test_owner_can_remove_team_member(): void
-    {
-        $owner = User::factory()->create();
-        $this->createPaidMaxSubscription($owner);
-        $team = Team::factory()->create(['user_id' => $owner->id]);
-
-        $member = TeamUser::create([
-            'team_id' => $team->id,
-            'email' => 'removeme@example.com',
-            'role' => 'member',
-            'status' => 'active',
-            'accepted_at' => now(),
-        ]);
-
-        $response = $this->actingAs($owner)
-            ->delete("/customer/team/{$team->id}/members/{$member->id}");
-
-        $response->assertSessionHas('success');
-        $this->assertDatabaseMissing('team_users', ['id' => $member->id]);
-    }
-
-    public function test_subscription_enum_is_extra_seat_price(): void
-    {
-        config(['subscriptions.plans.max.stripe_extra_seat_price_id' => 'price_seat_yearly']);
-        config(['subscriptions.plans.max.stripe_extra_seat_price_id_monthly' => 'price_seat_monthly']);
-
-        $this->assertTrue(Subscription::isExtraSeatPrice('price_seat_yearly'));
-        $this->assertTrue(Subscription::isExtraSeatPrice('price_seat_monthly'));
-        $this->assertFalse(Subscription::isExtraSeatPrice('price_some_other'));
-    }
-
-    public function test_subscription_enum_extra_seat_stripe_price_id(): void
-    {
-        config(['subscriptions.plans.max.stripe_extra_seat_price_id' => 'price_seat_yearly']);
-        config(['subscriptions.plans.max.stripe_extra_seat_price_id_monthly' => 'price_seat_monthly']);
-
-        $this->assertEquals('price_seat_yearly', Subscription::extraSeatStripePriceId('year'));
-        $this->assertEquals('price_seat_monthly', Subscription::extraSeatStripePriceId('month'));
-        $this->assertNull(Subscription::extraSeatStripePriceId('week'));
-    }
-
-    public function test_team_index_page_accessible_by_paying_team_owner(): void
-    {
-        $owner = User::factory()->create();
-        $this->createPaidMaxSubscription($owner);
-        $team = Team::factory()->create(['user_id' => $owner->id]);
-
-        $response = $this->actingAs($owner)->get('/customer/team');
-
-        $response->assertStatus(200);
-        $response->assertSeeLivewire(TeamManager::class);
-    }
-
-    public function test_team_index_returns_404_for_user_without_team(): void
-    {
-        $user = User::factory()->create();
-        $this->createPaidMaxSubscription($user);
-
-        $response = $this->actingAs($user)->get('/customer/team');
-
-        $response->assertStatus(404);
-    }
-
-    // ========================================
-    // Ultra Access (Paid vs Comped) Tests
-    // ========================================
-
-    public function test_has_ultra_access_returns_true_for_paid_max_subscription(): void
-    {
-        $user = User::factory()->create();
-        $this->createPaidMaxSubscription($user);
-
-        $this->assertTrue($user->hasUltraAccess());
-    }
-
-    public function test_has_ultra_access_returns_false_for_comped_max_subscription(): void
-    {
-        $user = User::factory()->create();
-        $this->createCompedMaxSubscription($user);
-
-        $this->assertFalse($user->hasUltraAccess());
-    }
-
-    public function test_has_ultra_access_returns_false_for_no_subscription(): void
-    {
-        $user = User::factory()->create();
-
-        $this->assertFalse($user->hasUltraAccess());
-    }
-
-    public function test_has_ultra_access_returns_false_for_pro_subscription(): void
-    {
-        $user = User::factory()->create(['stripe_id' => 'cus_'.uniqid()]);
-
-        $subscription = \Laravel\Cashier\Subscription::factory()
-            ->for($user)
-            ->active()
-            ->create([
-                'stripe_price' => Subscription::Pro->stripePriceId(),
-                'is_comped' => false,
-            ]);
-
-        \Laravel\Cashier\SubscriptionItem::factory()
-            ->for($subscription, 'subscription')
-            ->create([
-                'stripe_price' => Subscription::Pro->stripePriceId(),
-                'quantity' => 1,
-            ]);
-
-        $this->assertFalse($user->hasUltraAccess());
-    }
-
-    public function test_comped_user_cannot_access_team_page(): void
-    {
-        $owner = User::factory()->create();
-        $this->createCompedMaxSubscription($owner);
-        Team::factory()->create(['user_id' => $owner->id]);
-
-        $response = $this->actingAs($owner)->get('/customer/team');
-
-        $response->assertStatus(403);
-    }
-
-    public function test_comped_user_cannot_invite_team_members(): void
-    {
-        $owner = User::factory()->create();
-        $this->createCompedMaxSubscription($owner);
-        $team = Team::factory()->create(['user_id' => $owner->id]);
-
-        $response = $this->actingAs($owner)
-            ->post("/customer/team/{$team->id}/members", [
-                'email' => 'new@example.com',
-            ]);
-
-        $response->assertStatus(403);
-    }
-
-    public function test_comped_user_cannot_remove_team_members(): void
-    {
-        $owner = User::factory()->create();
-        $this->createCompedMaxSubscription($owner);
-        $team = Team::factory()->create(['user_id' => $owner->id]);
-
-        $member = TeamUser::create([
+        TeamUser::factory()->create([
             'team_id' => $team->id,
             'email' => 'member@example.com',
-            'role' => 'member',
-            'status' => 'active',
-            'accepted_at' => now(),
+            'status' => TeamUserStatus::Active,
         ]);
 
         $response = $this->actingAs($owner)
-            ->delete("/customer/team/{$team->id}/members/{$member->id}");
+            ->post(route('customer.team.invite'), ['email' => 'member@example.com']);
 
-        $response->assertStatus(403);
-        $this->assertDatabaseHas('team_users', ['id' => $member->id]);
+        $response->assertSessionHas('error');
     }
 
-    public function test_user_without_subscription_cannot_access_team_page(): void
+    public function test_cannot_invite_when_team_suspended(): void
     {
-        $owner = User::factory()->create();
-        Team::factory()->create(['user_id' => $owner->id]);
+        Notification::fake();
 
-        $response = $this->actingAs($owner)->get('/customer/team');
+        $owner = $this->createUltraUser();
+        $team = Team::factory()->suspended()->create(['user_id' => $owner->id]);
 
-        $response->assertStatus(403);
+        $response = $this->actingAs($owner)
+            ->post(route('customer.team.invite'), ['email' => 'member@example.com']);
+
+        $response->assertSessionHas('error');
+        Notification::assertNothingSent();
+    }
+
+    public function test_cannot_invite_beyond_10_member_limit(): void
+    {
+        Notification::fake();
+
+        [$owner, $team] = $this->createTeamWithOwner();
+
+        // Create 10 active members
+        TeamUser::factory()->count(10)->active()->create(['team_id' => $team->id]);
+
+        $response = $this->actingAs($owner)
+            ->post(route('customer.team.invite'), ['email' => 'extra@example.com']);
+
+        $response->assertSessionHas('error');
+    }
+
+    // ========================================
+    // Member Removal Tests
+    // ========================================
+
+    public function test_owner_can_remove_member(): void
+    {
+        Notification::fake();
+        Queue::fake();
+
+        [$owner, $team] = $this->createTeamWithOwner();
+
+        $member = TeamUser::factory()->active()->create([
+            'team_id' => $team->id,
+            'email' => 'member@example.com',
+        ]);
+
+        $response = $this->actingAs($owner)
+            ->delete(route('customer.team.users.remove', $member));
+
+        $response->assertSessionHas('success');
+
+        $member->refresh();
+        $this->assertEquals(TeamUserStatus::Removed, $member->status);
+
+        Notification::assertSentOnDemand(TeamUserRemoved::class);
+        Queue::assertPushed(RevokeTeamUserAccessJob::class);
+    }
+
+    public function test_non_owner_cannot_remove_member(): void
+    {
+        [$owner, $team] = $this->createTeamWithOwner();
+        $otherUser = User::factory()->create();
+
+        $member = TeamUser::factory()->active()->create(['team_id' => $team->id]);
+
+        $response = $this->actingAs($otherUser)
+            ->delete(route('customer.team.users.remove', $member));
+
+        $response->assertSessionHas('error');
+    }
+
+    // ========================================
+    // Invitation Acceptance Tests
+    // ========================================
+
+    public function test_authenticated_user_can_accept_invitation(): void
+    {
+        [$owner, $team] = $this->createTeamWithOwner();
+
+        $member = User::factory()->create(['email' => 'member@example.com']);
+        $teamUser = TeamUser::factory()->create([
+            'team_id' => $team->id,
+            'email' => 'member@example.com',
+            'invitation_token' => 'test-token-123',
+        ]);
+
+        $response = $this->actingAs($member)
+            ->get(route('team.invitation.accept', 'test-token-123'));
+
+        $response->assertRedirect(route('dashboard'));
+        $response->assertSessionHas('success');
+
+        $teamUser->refresh();
+        $this->assertEquals(TeamUserStatus::Active, $teamUser->status);
+        $this->assertEquals($member->id, $teamUser->user_id);
+        $this->assertNull($teamUser->invitation_token);
+    }
+
+    public function test_email_mismatch_rejects_acceptance(): void
+    {
+        [$owner, $team] = $this->createTeamWithOwner();
+
+        $otherUser = User::factory()->create(['email' => 'other@example.com']);
+        $teamUser = TeamUser::factory()->create([
+            'team_id' => $team->id,
+            'email' => 'member@example.com',
+            'invitation_token' => 'test-token-456',
+        ]);
+
+        $response = $this->actingAs($otherUser)
+            ->get(route('team.invitation.accept', 'test-token-456'));
+
+        $response->assertRedirect(route('dashboard'));
+        $response->assertSessionHas('error');
+
+        $teamUser->refresh();
+        $this->assertEquals(TeamUserStatus::Pending, $teamUser->status);
+    }
+
+    public function test_unauthenticated_user_stores_token_in_session(): void
+    {
+        [$owner, $team] = $this->createTeamWithOwner();
+
+        TeamUser::factory()->create([
+            'team_id' => $team->id,
+            'email' => 'newuser@example.com',
+            'invitation_token' => 'test-token-789',
+        ]);
+
+        $response = $this->get(route('team.invitation.accept', 'test-token-789'));
+
+        $response->assertRedirect(route('customer.login'));
+        $response->assertSessionHas('pending_team_invitation_token', 'test-token-789');
+    }
+
+    public function test_invitation_accepted_after_registration(): void
+    {
+        [$owner, $team] = $this->createTeamWithOwner();
+
+        $email = 'testuser@gmail.com';
+
+        $teamUser = TeamUser::factory()->create([
+            'team_id' => $team->id,
+            'email' => $email,
+            'invitation_token' => 'test-token-abc',
+        ]);
+
+        $response = $this->withSession(['pending_team_invitation_token' => 'test-token-abc'])
+            ->post(route('customer.register'), [
+                'name' => 'New User',
+                'email' => $email,
+                'password' => 'password123',
+                'password_confirmation' => 'password123',
+            ]);
+
+        $teamUser->refresh();
+        $this->assertEquals(TeamUserStatus::Active, $teamUser->status);
+        $this->assertNotNull($teamUser->user_id);
+    }
+
+    public function test_invitation_accepted_after_login(): void
+    {
+        [$owner, $team] = $this->createTeamWithOwner();
+
+        $member = User::factory()->create([
+            'email' => 'member@example.com',
+            'password' => bcrypt('password123'),
+        ]);
+
+        $teamUser = TeamUser::factory()->create([
+            'team_id' => $team->id,
+            'email' => 'member@example.com',
+            'invitation_token' => 'test-token-def',
+        ]);
+
+        $response = $this->withSession(['pending_team_invitation_token' => 'test-token-def'])
+            ->post(route('customer.login'), [
+                'email' => 'member@example.com',
+                'password' => 'password123',
+            ]);
+
+        $teamUser->refresh();
+        $this->assertEquals(TeamUserStatus::Active, $teamUser->status);
+        $this->assertEquals($member->id, $teamUser->user_id);
+    }
+
+    // ========================================
+    // Access Tests
+    // ========================================
+
+    public function test_team_owner_is_ultra_team_member(): void
+    {
+        [$owner, $team] = $this->createTeamWithOwner();
+
+        $this->assertTrue($owner->isUltraTeamMember());
+    }
+
+    public function test_team_owner_gets_official_plugin_access(): void
+    {
+        [$owner, $team] = $this->createTeamWithOwner();
+
+        $officialPlugin = Plugin::factory()->paid()->approved()->create([
+            'is_official' => true,
+        ]);
+
+        $this->assertTrue($owner->hasPluginAccess($officialPlugin));
+    }
+
+    public function test_suspended_team_owner_is_not_ultra_team_member(): void
+    {
+        $owner = $this->createUltraUser();
+        $team = Team::factory()->suspended()->create(['user_id' => $owner->id]);
+
+        $this->assertFalse($owner->isUltraTeamMember());
+    }
+
+    public function test_team_member_gets_official_plugin_access(): void
+    {
+        [$owner, $team] = $this->createTeamWithOwner();
+
+        $member = User::factory()->create();
+        TeamUser::factory()->active()->create([
+            'team_id' => $team->id,
+            'user_id' => $member->id,
+            'email' => $member->email,
+        ]);
+
+        $officialPlugin = Plugin::factory()->paid()->approved()->create([
+            'is_official' => true,
+        ]);
+
+        $this->assertTrue($member->hasPluginAccess($officialPlugin));
+    }
+
+    public function test_team_member_does_not_get_third_party_plugin_access(): void
+    {
+        [$owner, $team] = $this->createTeamWithOwner();
+
+        $member = User::factory()->create();
+        TeamUser::factory()->active()->create([
+            'team_id' => $team->id,
+            'user_id' => $member->id,
+            'email' => $member->email,
+        ]);
+
+        $thirdPartyPlugin = Plugin::factory()->paid()->approved()->create([
+            'is_official' => false,
+        ]);
+
+        $this->assertFalse($member->hasPluginAccess($thirdPartyPlugin));
+    }
+
+    public function test_team_member_gets_subscriber_pricing(): void
+    {
+        [$owner, $team] = $this->createTeamWithOwner();
+
+        $member = User::factory()->create();
+        TeamUser::factory()->active()->create([
+            'team_id' => $team->id,
+            'user_id' => $member->id,
+            'email' => $member->email,
+        ]);
+
+        $tiers = $member->getEligiblePriceTiers();
+
+        $this->assertContains(PriceTier::Subscriber, $tiers);
+    }
+
+    public function test_non_team_member_does_not_get_subscriber_pricing(): void
+    {
+        $user = User::factory()->create();
+
+        $tiers = $user->getEligiblePriceTiers();
+
+        $this->assertNotContains(PriceTier::Subscriber, $tiers);
+    }
+
+    public function test_team_member_gets_product_access_via_team(): void
+    {
+        $owner = $this->createUltraUser();
+        $team = Team::factory()->create(['user_id' => $owner->id]);
+
+        $product = Product::factory()->create(['slug' => 'plugin-dev-kit']);
+        ProductLicense::factory()->create([
+            'user_id' => $owner->id,
+            'product_id' => $product->id,
+        ]);
+
+        $member = User::factory()->create();
+        TeamUser::factory()->active()->create([
+            'team_id' => $team->id,
+            'user_id' => $member->id,
+            'email' => $member->email,
+        ]);
+
+        $this->assertTrue($member->hasProductLicense($product));
+    }
+
+    // ========================================
+    // Suspension Tests
+    // ========================================
+
+    public function test_team_suspended_on_subscription_cancel(): void
+    {
+        Queue::fake();
+
+        [$owner, $team] = $this->createTeamWithOwner();
+
+        $event = new \Laravel\Cashier\Events\WebhookReceived([
+            'type' => 'customer.subscription.deleted',
+            'data' => [
+                'object' => [
+                    'customer' => $owner->stripe_id ?? 'cus_test',
+                ],
+            ],
+        ]);
+
+        // We can't fully simulate Stripe, but we can test the job dispatch
+        // by calling SuspendTeamJob directly
+        $job = new SuspendTeamJob($owner->id);
+        $job->handle();
+
+        $team->refresh();
+        $this->assertTrue($team->is_suspended);
+    }
+
+    public function test_team_unsuspended_on_resubscribe(): void
+    {
+        $owner = $this->createUltraUser();
+        $team = Team::factory()->suspended()->create(['user_id' => $owner->id]);
+
+        $job = new UnsuspendTeamJob($owner->id);
+        $job->handle();
+
+        $team->refresh();
+        $this->assertFalse($team->is_suspended);
+    }
+
+    public function test_suspended_team_member_loses_access(): void
+    {
+        $owner = $this->createUltraUser();
+        $team = Team::factory()->suspended()->create(['user_id' => $owner->id]);
+
+        $member = User::factory()->create();
+        TeamUser::factory()->active()->create([
+            'team_id' => $team->id,
+            'user_id' => $member->id,
+            'email' => $member->email,
+        ]);
+
+        $this->assertFalse($member->isUltraTeamMember());
+    }
+
+    public function test_removed_member_loses_plugin_access(): void
+    {
+        [$owner, $team] = $this->createTeamWithOwner();
+
+        $member = User::factory()->create();
+        $teamUser = TeamUser::factory()->active()->create([
+            'team_id' => $team->id,
+            'user_id' => $member->id,
+            'email' => $member->email,
+        ]);
+
+        $officialPlugin = Plugin::factory()->paid()->approved()->create([
+            'is_official' => true,
+        ]);
+
+        $this->assertTrue($member->hasPluginAccess($officialPlugin));
+
+        $teamUser->remove();
+
+        // Clear cached state
+        $member->refresh();
+
+        $this->assertFalse($member->hasPluginAccess($officialPlugin));
+    }
+
+    // ========================================
+    // API Plugin Access Tests
+    // ========================================
+
+    public function test_api_returns_team_based_plugin_access(): void
+    {
+        config(['services.bifrost.api_key' => 'test-api-key']);
+
+        [$owner, $team] = $this->createTeamWithOwner();
+
+        $member = User::factory()->create([
+            'plugin_license_key' => 'test-key-123',
+        ]);
+        TeamUser::factory()->active()->create([
+            'team_id' => $team->id,
+            'user_id' => $member->id,
+            'email' => $member->email,
+        ]);
+
+        $officialPlugin = Plugin::factory()->paid()->approved()->create([
+            'is_official' => true,
+            'name' => 'nativephp/test-plugin',
+        ]);
+
+        $response = $this->withHeaders([
+            'X-API-Key' => 'test-api-key',
+            'PHP_AUTH_USER' => $member->email,
+            'PHP_AUTH_PW' => 'test-key-123',
+        ])->getJson('/api/plugins/access');
+
+        $response->assertOk();
+        $response->assertJsonFragment([
+            'name' => 'nativephp/test-plugin',
+            'access' => 'team',
+        ]);
+    }
+
+    // ========================================
+    // GitHub Dev Kit Access Tests
+    // ========================================
+
+    public function test_ultra_team_member_can_request_claude_plugins_access(): void
+    {
+        Http::fake(['github.com/*' => Http::response([], 201)]);
+
+        [$owner, $team] = $this->createTeamWithOwner();
+
+        $member = User::factory()->create(['github_username' => 'testuser']);
+        TeamUser::factory()->active()->create([
+            'team_id' => $team->id,
+            'user_id' => $member->id,
+            'email' => $member->email,
+        ]);
+
+        $response = $this->actingAs($member)
+            ->post(route('github.request-claude-plugins-access'));
+
+        $response->assertSessionHas('success');
+        $this->assertNotNull($member->fresh()->claude_plugins_repo_access_granted_at);
+    }
+
+    public function test_team_owner_can_request_claude_plugins_access(): void
+    {
+        Http::fake(['github.com/*' => Http::response([], 201)]);
+
+        [$owner, $team] = $this->createTeamWithOwner();
+        $owner->update(['github_username' => 'owneruser']);
+
+        $response = $this->actingAs($owner)
+            ->post(route('github.request-claude-plugins-access'));
+
+        $response->assertSessionHas('success');
+        $this->assertNotNull($owner->fresh()->claude_plugins_repo_access_granted_at);
+    }
+
+    public function test_non_team_member_without_product_license_cannot_request_claude_plugins_access(): void
+    {
+        $user = User::factory()->create(['github_username' => 'someuser']);
+
+        $response = $this->actingAs($user)
+            ->post(route('github.request-claude-plugins-access'));
+
+        $response->assertSessionHas('error');
+        $this->assertNull($user->fresh()->claude_plugins_repo_access_granted_at);
+    }
+
+    // ========================================
+    // Resend Invitation Tests
+    // ========================================
+
+    public function test_owner_can_resend_invitation(): void
+    {
+        Notification::fake();
+
+        [$owner, $team] = $this->createTeamWithOwner();
+
+        $invitation = TeamUser::factory()->create([
+            'team_id' => $team->id,
+            'email' => 'pending@example.com',
+        ]);
+
+        $response = $this->actingAs($owner)
+            ->post(route('customer.team.users.resend', $invitation));
+
+        $response->assertSessionHas('success');
+        Notification::assertSentOnDemand(TeamInvitation::class);
+    }
+
+    // ========================================
+    // View Tests
+    // ========================================
+
+    public function test_team_page_accessible_for_authenticated_user(): void
+    {
+        $user = User::factory()->create();
+
+        $response = $this->actingAs($user)->get(route('customer.team.index'));
+
+        $response->assertOk();
+    }
+
+    public function test_team_page_shows_create_form_for_ultra_user(): void
+    {
+        $user = $this->createUltraUser();
+
+        $response = $this->actingAs($user)->get(route('customer.team.index'));
+
+        $response->assertOk();
+        $response->assertSee('Create a Team');
+    }
+
+    public function test_team_page_shows_view_plans_for_non_ultra(): void
+    {
+        $user = User::factory()->create();
+
+        $response = $this->actingAs($user)->get(route('customer.team.index'));
+
+        $response->assertOk();
+        $response->assertSee('View Plans');
     }
 }

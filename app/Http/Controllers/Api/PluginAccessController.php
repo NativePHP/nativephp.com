@@ -151,19 +151,15 @@ class PluginAccessController extends Controller
             }
         }
 
-        // Plugins accessible via team membership
-        $teamOwner = $user->getTeamOwner();
+        // Ultra team members get access to all official paid plugins
+        if ($user->isUltraTeamMember()) {
+            $officialPlugins = Plugin::query()
+                ->where('type', \App\Enums\PluginType::Paid)
+                ->where('is_official', true)
+                ->whereNotNull('name')
+                ->get(['name']);
 
-        if ($teamOwner) {
-            $teamPlugins = $teamOwner->pluginLicenses()
-                ->active()
-                ->with('plugin:id,name')
-                ->get()
-                ->pluck('plugin')
-                ->filter()
-                ->unique('id');
-
-            foreach ($teamPlugins as $plugin) {
+            foreach ($officialPlugins as $plugin) {
                 if (! collect($plugins)->contains('name', $plugin->name)) {
                     $plugins[] = [
                         'name' => $plugin->name,

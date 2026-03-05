@@ -11,9 +11,11 @@ class Team extends Model
 {
     use HasFactory;
 
-    protected $guarded = [];
-
-    public const INCLUDED_SEATS = 10;
+    protected $fillable = [
+        'user_id',
+        'name',
+        'is_suspended',
+    ];
 
     /**
      * @return BelongsTo<User>
@@ -26,42 +28,58 @@ class Team extends Model
     /**
      * @return HasMany<TeamUser>
      */
-    public function members(): HasMany
+    public function users(): HasMany
     {
         return $this->hasMany(TeamUser::class);
     }
 
-    public function totalSeatCapacity(): int
+    /**
+     * @return HasMany<TeamUser>
+     */
+    public function activeUsers(): HasMany
     {
-        return self::INCLUDED_SEATS + $this->extra_seats;
+        return $this->hasMany(TeamUser::class)
+            ->where('status', \App\Enums\TeamUserStatus::Active);
     }
 
-    public function occupiedSeatCount(): int
+    /**
+     * @return HasMany<TeamUser>
+     */
+    public function pendingInvitations(): HasMany
     {
-        return $this->members()
-            ->whereIn('status', ['active', 'pending'])
-            ->count();
+        return $this->hasMany(TeamUser::class)
+            ->where('status', \App\Enums\TeamUserStatus::Pending);
     }
 
-    public function availableSeats(): int
+    public function activeUserCount(): int
     {
-        return $this->totalSeatCapacity() - $this->occupiedSeatCount();
+        return $this->activeUsers()->count();
     }
 
-    public function hasAvailableSeats(): bool
+    public function isOverIncludedLimit(): bool
     {
-        return $this->availableSeats() > 0;
+        return $this->activeUserCount() >= 10;
     }
 
-    public function canRemoveExtraSeats(int $count): bool
+    public function extraSeatsCount(): int
     {
-        $newCapacity = self::INCLUDED_SEATS + ($this->extra_seats - $count);
-
-        return $this->occupiedSeatCount() <= $newCapacity;
+        return max(0, $this->activeUserCount() - 10);
     }
 
-    protected $casts = [
-        'is_suspended' => 'boolean',
-        'extra_seats' => 'integer',
-    ];
+    public function suspend(): bool
+    {
+        return $this->update(['is_suspended' => true]);
+    }
+
+    public function unsuspend(): bool
+    {
+        return $this->update(['is_suspended' => false]);
+    }
+
+    protected function casts(): array
+    {
+        return [
+            'is_suspended' => 'boolean',
+        ];
+    }
 }

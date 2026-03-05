@@ -10,26 +10,26 @@ use Illuminate\Database\Eloquent\Factories\Factory;
  */
 class TeamFactory extends Factory
 {
+    /**
+     * Define the model's default state.
+     *
+     * @return array<string, mixed>
+     */
     public function definition(): array
     {
         return [
             'user_id' => User::factory(),
             'name' => fake()->company(),
             'is_suspended' => false,
-            'extra_seats' => 0,
         ];
     }
 
-    public function withExtraSeats(int $count): static
-    {
-        return $this->state(fn () => [
-            'extra_seats' => $count,
-        ]);
-    }
-
+    /**
+     * Indicate that the team is suspended.
+     */
     public function suspended(): static
     {
-        return $this->state(fn () => [
+        return $this->state(fn (array $attributes) => [
             'is_suspended' => true,
         ]);
     }

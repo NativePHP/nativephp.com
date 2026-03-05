@@ -95,12 +95,6 @@
                     </button>
                 </div>
 
-                <p class="text-center text-xs text-gray-500 dark:text-gray-400">
-                    By creating an account, you agree to our
-                    <a href="{{ route('terms-of-service') }}" class="text-blue-600 hover:text-blue-500 dark:text-blue-400">Terms of Service</a>
-                    and
-                    <a href="{{ route('privacy-policy') }}" class="text-blue-600 hover:text-blue-500 dark:text-blue-400">Privacy Policy</a>.
-                </p>
             </form>
 
             <div class="mt-6">
@@ -122,13 +116,14 @@
                     </a>
                 </div>
 
-                <p class="mt-4 text-center text-xs text-gray-500 dark:text-gray-400">
-                    By signing up with GitHub, you agree to our
-                    <a href="{{ route('terms-of-service') }}" class="text-blue-600 hover:text-blue-500 dark:text-blue-400">Terms of Service</a>
-                    and
-                    <a href="{{ route('privacy-policy') }}" class="text-blue-600 hover:text-blue-500 dark:text-blue-400">Privacy Policy</a>.
-                </p>
             </div>
+
+            <p class="mt-6 text-center text-xs text-gray-500 dark:text-gray-400">
+                By creating an account, you agree to our
+                <a href="{{ route('terms-of-service') }}" class="text-blue-600 hover:text-blue-500 dark:text-blue-400">Terms of Service</a>
+                and
+                <a href="{{ route('privacy-policy') }}" class="text-blue-600 hover:text-blue-500 dark:text-blue-400">Privacy Policy</a>.
+            </p>
         </div>
     </div>
 </x-layout>

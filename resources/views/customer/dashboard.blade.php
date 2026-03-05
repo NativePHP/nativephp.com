@@ -15,6 +15,27 @@
             </div>
         </header>
 
+        {{-- Session Messages --}}
+        <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            @if (session('success'))
+                <div class="mb-6 rounded-lg border border-emerald-200 bg-emerald-50 p-4 dark:border-emerald-800 dark:bg-emerald-900/20">
+                    <p class="text-sm text-emerald-800 dark:text-emerald-200">{{ session('success') }}</p>
+                </div>
+            @endif
+
+            @if (session('message'))
+                <div class="mb-6 rounded-lg border border-blue-200 bg-blue-50 p-4 dark:border-blue-800 dark:bg-blue-900/20">
+                    <p class="text-sm text-blue-800 dark:text-blue-200">{{ session('message') }}</p>
+                </div>
+            @endif
+
+            @if (session('error'))
+                <div class="mb-6 rounded-lg border border-red-200 bg-red-50 p-4 dark:border-red-800 dark:bg-red-900/20">
+                    <p class="text-sm text-red-800 dark:text-red-200">{{ session('error') }}</p>
+                </div>
+            @endif
+        </div>
+
         {{-- Banners --}}
         <div class="mx-auto mb-6 max-w-7xl px-4 sm:px-6 lg:px-8">
             <div class="grid grid-cols-1 gap-6 lg:grid-cols-2">
@@ -99,16 +120,27 @@
 
                 @endfeature
 
-                {{-- Team Management Card --}}
-                @if(auth()->user()->hasUltraAccess() && auth()->user()->ownedTeam)
+                {{-- Team Card --}}
+                @if($hasTeam)
                     <x-dashboard-card
                         title="Team"
-                        :count="auth()->user()->ownedTeam->occupiedSeatCount()"
+                        :value="$teamName"
+                        :badge="$teamMemberCount . ' members'"
+                        badge-color="blue"
                         icon="user-group"
-                        color="purple"
+                        color="teal"
                         :href="route('customer.team.index')"
                         link-text="Manage team"
-                        :description="auth()->user()->ownedTeam->occupiedSeatCount() . ' of ' . auth()->user()->ownedTeam->totalSeatCapacity() . ' seats used'"
+                    />
+                @elseif($hasMaxAccess)
+                    <x-dashboard-card
+                        title="Team"
+                        value="No team yet"
+                        icon="user-group"
+                        color="gray"
+                        :href="route('customer.team.index')"
+                        link-text="Create a team"
+                        description="Share your Ultra benefits with your team"
                     />
                 @endif
 
@@ -135,25 +167,5 @@
             </div>
         </div>
 
-        {{-- Session Messages --}}
-        <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            @if (session('success'))
-                <div class="mb-6 rounded-lg border border-emerald-200 bg-emerald-50 p-4 dark:border-emerald-800 dark:bg-emerald-900/20">
-                    <p class="text-sm text-emerald-800 dark:text-emerald-200">{{ session('success') }}</p>
-                </div>
-            @endif
-
-            @if (session('message'))
-                <div class="mb-6 rounded-lg border border-blue-200 bg-blue-50 p-4 dark:border-blue-800 dark:bg-blue-900/20">
-                    <p class="text-sm text-blue-800 dark:text-blue-200">{{ session('message') }}</p>
-                </div>
-            @endif
-
-            @if (session('error'))
-                <div class="mb-6 rounded-lg border border-red-200 bg-red-50 p-4 dark:border-red-800 dark:bg-red-900/20">
-                    <p class="text-sm text-red-800 dark:text-red-200">{{ session('error') }}</p>
-                </div>
-            @endif
-        </div>
     </div>
 </x-layout>

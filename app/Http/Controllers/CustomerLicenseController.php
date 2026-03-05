@@ -92,6 +92,13 @@ class CustomerLicenseController extends Controller
         // Total purchases (licenses + plugins)
         $totalPurchases = $licenseCount + $pluginLicenseCount;
 
+        // Team info
+        $ownedTeam = $user->ownedTeam;
+        $hasTeam = $ownedTeam !== null;
+        $teamName = $ownedTeam?->name;
+        $teamMemberCount = $ownedTeam?->activeUserCount() ?? 0;
+        $hasMaxAccess = $user->hasActiveUltraSubscription();
+
         return view('customer.dashboard', compact(
             'licenseCount',
             'isEapCustomer',
@@ -102,6 +109,10 @@ class CustomerLicenseController extends Controller
             'connectedAccountsCount',
             'connectedAccountsDescription',
             'totalPurchases',
+            'hasTeam',
+            'teamName',
+            'teamMemberCount',
+            'hasMaxAccess'
         ));
     }
 
