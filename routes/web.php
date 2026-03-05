@@ -19,6 +19,8 @@ use App\Http\Controllers\ProductController;
 use App\Http\Controllers\PurchaseHistoryController;
 use App\Http\Controllers\ShowBlogController;
 use App\Http\Controllers\ShowDocumentationController;
+use App\Http\Controllers\TeamController;
+use App\Http\Controllers\TeamUserController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Str;
 use Laravel\Pennant\Middleware\EnsureFeaturesAreActive;
@@ -62,8 +64,7 @@ Route::post('opencollective/contribution', [OpenCollectiveWebhookController::cla
 Route::get('opencollective/claim', App\Livewire\ClaimDonationLicense::class)->name('opencollective.claim');
 
 Route::view('/', 'welcome')->name('welcome');
-Route::redirect('pricing', 'blog/nativephp-for-mobile-is-now-free')->name('pricing');
-Route::view('alt-pricing', 'alt-pricing')->name('alt-pricing')->middleware('signed');
+Route::view('ultra', 'pricing')->name('pricing');
 Route::view('wall-of-love', 'wall-of-love')->name('wall-of-love');
 Route::view('brand', 'brand')->name('brand');
 Route::get('showcase/{platform?}', [App\Http\Controllers\ShowcaseController::class, 'index'])
@@ -214,6 +215,9 @@ Route::get('callback', function (\Illuminate\Http\Request $request) {
     return response('Goodbye');
 })->name('callback');
 
+// Team invitation acceptance (public route - no auth required)
+Route::get('team/invitation/{token}', [TeamUserController::class, 'accept'])->name('team.invitation.accept');
+
 // Dashboard route
 Route::middleware(['auth', EnsureFeaturesAreActive::using(ShowAuthButtons::class)])
     ->get('dashboard', [CustomerLicenseController::class, 'index'])
@@ -270,6 +274,13 @@ Route::middleware(['auth', EnsureFeaturesAreActive::using(ShowAuthButtons::class
 
         return $user->redirectToBillingPortal(route('dashboard'));
     })->name('billing-portal');
+
+    // Team management routes
+    Route::get('team', [TeamController::class, 'index'])->name('team.index');
+    Route::post('team', [TeamController::class, 'store'])->name('team.store');
+    Route::post('team/invite', [TeamUserController::class, 'invite'])->name('team.invite');
+    Route::delete('team/users/{teamUser}', [TeamUserController::class, 'remove'])->name('team.users.remove');
+    Route::post('team/users/{teamUser}/resend', [TeamUserController::class, 'resend'])->name('team.users.resend');
 
     // Sub-license management routes
     Route::post('licenses/{licenseKey}/sub-licenses', [CustomerSubLicenseController::class, 'store'])->name('licenses.sub-licenses.store');

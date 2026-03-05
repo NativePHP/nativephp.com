@@ -3,6 +3,7 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use App\Enums\TeamUserStatus;
 use Filament\Models\Contracts\FilamentUser;
 use Filament\Panel;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -34,6 +35,36 @@ class User extends Authenticatable implements FilamentUser
     public function isAdmin(): bool
     {
         return in_array($this->email, config('filament.users'), true);
+    }
+
+    /**
+     * @return HasOne<Team>
+     */
+    public function ownedTeam(): HasOne
+    {
+        return $this->hasOne(Team::class);
+    }
+
+    /**
+     * @return HasOne<TeamUser>
+     */
+    public function teamMembership(): HasOne
+    {
+        return $this->hasOne(TeamUser::class)->where('status', 'active');
+    }
+
+    /**
+     * Get the team owner if this user is an active team member.
+     */
+    public function getTeamOwner(): ?self
+    {
+        $membership = $this->teamMembership;
+
+        if (! $membership) {
+            return null;
+        }
+
+        return $membership->team->owner;
     }
 
     /**
@@ -81,9 +112,11 @@ class User extends Authenticatable implements FilamentUser
      */
     public function hasProductLicense(Product $product): bool
     {
-        return $this->productLicenses()
-            ->forProduct($product)
-            ->exists();
+        if ($this->productLicenses()->forProduct($product)->exists()) {
+            return true;
+        }
+
+        return $this->hasProductAccessViaTeam($product);
     }
 
     /**
@@ -92,6 +125,52 @@ class User extends Authenticatable implements FilamentUser
     public function developerAccount(): HasOne
     {
         return $this->hasOne(DeveloperAccount::class);
+    }
+
+    /**
+     * @return HasMany<TeamUser>
+     */
+    public function teamMemberships(): HasMany
+    {
+        return $this->hasMany(TeamUser::class);
+    }
+
+    public function isUltraTeamMember(): bool
+    {
+        // Team owners count as members
+        if ($this->ownedTeam && ! $this->ownedTeam->is_suspended) {
+            return true;
+        }
+
+        return TeamUser::query()
+            ->where('user_id', $this->id)
+            ->where('status', TeamUserStatus::Active)
+            ->whereHas('team', fn ($query) => $query->where('is_suspended', false))
+            ->exists();
+    }
+
+    public function activeTeamMembership(): ?TeamUser
+    {
+        return TeamUser::query()
+            ->where('user_id', $this->id)
+            ->where('status', TeamUserStatus::Active)
+            ->whereHas('team', fn ($query) => $query->where('is_suspended', false))
+            ->with('team')
+            ->first();
+    }
+
+    public function hasProductAccessViaTeam(Product $product): bool
+    {
+        $membership = $this->activeTeamMembership();
+
+        if (! $membership) {
+            return false;
+        }
+
+        // Check the owner's direct product licenses only (not via team) to avoid recursion
+        return $membership->team->owner->productLicenses()
+            ->forProduct($product)
+            ->exists();
     }
 
     public function hasActiveMaxLicense(): bool
@@ -122,6 +201,54 @@ class User extends Authenticatable implements FilamentUser
         return $this->hasActiveMaxLicense() || $this->hasActiveMaxSubLicense();
     }
 
+    public function hasActiveUltraSubscription(): bool
+    {
+        return $this->subscribedToPrice(array_filter([
+            config('subscriptions.plans.max.stripe_price_id'),
+            config('subscriptions.plans.max.stripe_price_id_monthly'),
+            config('subscriptions.plans.max.stripe_price_id_eap'),
+            config('subscriptions.plans.max.stripe_price_id_discounted'),
+        ]));
+    }
+
+    /**
+     * Check if the user has a paying (non-comped) Max subscription,
+     * qualifying them for Ultra benefits like Teams.
+     */
+    public function hasUltraAccess(): bool
+    {
+        $subscription = $this->subscription();
+
+        if (! $subscription || ! $subscription->active()) {
+            return false;
+        }
+
+        $planPriceId = $subscription->stripe_price;
+
+        if (! $planPriceId) {
+            foreach ($subscription->items as $item) {
+                if (! \App\Enums\Subscription::isExtraSeatPrice($item->stripe_price)) {
+                    $planPriceId = $item->stripe_price;
+                    break;
+                }
+            }
+        }
+
+        if (! $planPriceId) {
+            return false;
+        }
+
+        try {
+            if (\App\Enums\Subscription::fromStripePriceId($planPriceId) !== \App\Enums\Subscription::Max) {
+                return false;
+            }
+        } catch (\RuntimeException) {
+            return false;
+        }
+
+        return ! $subscription->is_comped;
+    }
+
     /**
      * Check if user was an Early Access Program customer.
      * EAP customers purchased before June 1, 2025.
@@ -143,7 +270,7 @@ class User extends Authenticatable implements FilamentUser
     {
         $tiers = [\App\Enums\PriceTier::Regular];
 
-        if ($this->subscribed()) {
+        if ($this->subscribed() || $this->isUltraTeamMember()) {
             $tiers[] = \App\Enums\PriceTier::Subscriber;
         }
 
@@ -233,10 +360,16 @@ class User extends Authenticatable implements FilamentUser
             return true;
         }
 
-        return $this->pluginLicenses()
-            ->forPlugin($plugin)
-            ->active()
-            ->exists();
+        if ($this->pluginLicenses()->forPlugin($plugin)->active()->exists()) {
+            return true;
+        }
+
+        // Ultra team members get access to all official (first-party) plugins
+        if ($plugin->isOfficial() && $this->isUltraTeamMember()) {
+            return true;
+        }
+
+        return false;
     }
 
     public function getGitHubToken(): ?string

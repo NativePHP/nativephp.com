@@ -22,13 +22,9 @@ class MobilePricingTest extends TestCase
 
         $component = Livewire::test(MobilePricing::class);
         $component->assertSeeHtml([
-            // 'wire:click="createCheckoutSession(\'mini\')"',
-            'wire:click="createCheckoutSession(\'pro\')"',
             'wire:click="createCheckoutSession(\'max\')"',
         ]);
         $component->assertDontSeeHtml([
-            // '@click="$dispatch(\'open-purchase-modal\', { plan: \'mini\' })"',
-            '@click="$dispatch(\'open-purchase-modal\', { plan: \'pro\' })"',
             '@click="$dispatch(\'open-purchase-modal\', { plan: \'max\' })"',
         ]);
     }
@@ -41,13 +37,9 @@ class MobilePricingTest extends TestCase
         Livewire::test(MobilePricing::class)
             ->assertSeeLivewire('purchase-modal')
             ->assertSeeHtml([
-                // '@click="$dispatch(\'open-purchase-modal\', { plan: \'mini\' })"',
-                '@click="$dispatch(\'open-purchase-modal\', { plan: \'pro\' })"',
                 '@click="$dispatch(\'open-purchase-modal\', { plan: \'max\' })"',
             ])
             ->assertDontSeeHtml([
-                // 'wire:click="createCheckoutSession(\'mini\')"',
-                'wire:click="createCheckoutSession(\'pro\')"',
                 'wire:click="createCheckoutSession(\'max\')"',
             ]);
     }
@@ -67,5 +59,20 @@ class MobilePricingTest extends TestCase
         Livewire::test(MobilePricing::class)
             ->call('handlePurchaseRequest', ['email' => 'invalid-email'])
             ->assertHasErrors('email');
+    }
+
+    #[Test]
+    public function default_interval_is_month()
+    {
+        Livewire::test(MobilePricing::class)
+            ->assertSet('interval', 'month');
+    }
+
+    #[Test]
+    public function interval_can_be_set_to_year()
+    {
+        Livewire::test(MobilePricing::class)
+            ->set('interval', 'year')
+            ->assertSet('interval', 'year');
     }
 }

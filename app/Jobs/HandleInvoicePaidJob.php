@@ -47,11 +47,20 @@ class HandleInvoicePaidJob implements ShouldQueue
 
         match ($this->invoice->billing_reason) {
             Invoice::BILLING_REASON_SUBSCRIPTION_CREATE => $this->handleSubscriptionCreated(),
-            Invoice::BILLING_REASON_SUBSCRIPTION_UPDATE => null, // TODO: Handle subscription update
+            Invoice::BILLING_REASON_SUBSCRIPTION_UPDATE => $this->handleSubscriptionUpdate(),
             Invoice::BILLING_REASON_SUBSCRIPTION_CYCLE => $this->handleSubscriptionRenewal(),
             Invoice::BILLING_REASON_MANUAL => $this->handleManualInvoice(),
             default => null,
         };
+    }
+
+    private function handleSubscriptionUpdate(): void
+    {
+        Log::info('HandleInvoicePaidJob: subscription update invoice received, no license action needed.', [
+            'invoice_id' => $this->invoice->id,
+        ]);
+
+        $this->updateSubscriptionCompedStatus();
     }
 
     private function handleSubscriptionCreated(): void
@@ -66,12 +75,14 @@ class HandleInvoicePaidJob implements ShouldQueue
 
         if ($isRenewal && $licenseKey && $licenseId) {
             $this->handleLegacyLicenseRenewal($subscription, $licenseKey, $licenseId);
+            $this->updateSubscriptionCompedStatus();
 
             return;
         }
 
         // Normal flow - create a new license
         $this->createLicense();
+        $this->updateSubscriptionCompedStatus();
     }
 
     private function handleLegacyLicenseRenewal($subscription, string $licenseKey, string $licenseId): void
@@ -98,7 +109,7 @@ class HandleInvoicePaidJob implements ShouldQueue
         }
 
         // Get the subscription item
-        if (blank($subscriptionItemId = $this->invoice->lines->first()->subscription_item)) {
+        if (blank($subscriptionItemId = $this->findPlanLineItem()->subscription_item)) {
             throw new UnexpectedValueException('Failed to retrieve the Stripe subscription item id from invoice lines.');
         }
 
@@ -132,10 +143,10 @@ class HandleInvoicePaidJob implements ShouldQueue
         \Illuminate\Support\Sleep::sleep(10);
 
         // Assert the invoice line item is for a price_id that relates to a license plan.
-        $plan = Subscription::fromStripePriceId($this->invoice->lines->first()->price->id);
+        $plan = Subscription::fromStripePriceId($this->findPlanLineItem()->price->id);
 
         // Assert the invoice line item relates to a subscription and has a subscription item id.
-        if (blank($subscriptionItemId = $this->invoice->lines->first()->subscription_item)) {
+        if (blank($subscriptionItemId = $this->findPlanLineItem()->subscription_item)) {
             throw new UnexpectedValueException('Failed to retrieve the Stripe subscription item id from invoice lines.');
         }
 
@@ -161,7 +172,7 @@ class HandleInvoicePaidJob implements ShouldQueue
     private function handleSubscriptionRenewal(): void
     {
         // Get the subscription item ID from the invoice line
-        if (blank($subscriptionItemId = $this->invoice->lines->first()->subscription_item)) {
+        if (blank($subscriptionItemId = $this->findPlanLineItem()->subscription_item)) {
             throw new UnexpectedValueException('Failed to retrieve the Stripe subscription item id from invoice lines.');
         }
 
@@ -195,6 +206,8 @@ class HandleInvoicePaidJob implements ShouldQueue
             'subscription_id' => $this->invoice->subscription,
             'invoice_id' => $this->invoice->id,
         ]);
+
+        $this->updateSubscriptionCompedStatus();
     }
 
     private function handleManualInvoice(): void
@@ -603,6 +616,42 @@ class HandleInvoicePaidJob implements ShouldQueue
         ]);
 
         return $license;
+    }
+
+    /**
+     * Mark the local Cashier subscription as comped if the invoice total is zero.
+     */
+    private function updateSubscriptionCompedStatus(): void
+    {
+        if (! $this->invoice->subscription) {
+            return;
+        }
+
+        $subscription = \Laravel\Cashier\Subscription::where('stripe_id', $this->invoice->subscription)->first();
+
+        if ($subscription) {
+            $invoiceTotal = $this->invoice->total ?? 0;
+
+            $subscription->update([
+                'is_comped' => $invoiceTotal <= 0,
+            ]);
+        }
+    }
+
+    /**
+     * Find the plan line item from invoice lines, filtering out extra seat price items.
+     */
+    private function findPlanLineItem(): ?\Stripe\StripeObject
+    {
+        foreach ($this->invoice->lines->data as $line) {
+            if ($line->price && Subscription::isExtraSeatPrice($line->price->id)) {
+                continue;
+            }
+
+            return $line;
+        }
+
+        return null;
     }
 
     private function billable(): User

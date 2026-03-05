@@ -247,6 +247,53 @@
                     </div>
                 </div>
             @endif
+
+            {{-- Team Plugins --}}
+            @if ($teamPlugins->isNotEmpty())
+                <h3 class="text-md mb-3 mt-8 font-medium text-gray-900 dark:text-white">
+                    Team Plugins
+                    <span class="text-sm font-normal text-gray-500 dark:text-gray-400">— shared by {{ $teamOwnerName }}</span>
+                </h3>
+                <div class="overflow-hidden rounded-md bg-white shadow dark:bg-gray-800">
+                    <ul class="divide-y divide-gray-200 dark:divide-gray-700">
+                        @foreach ($teamPlugins as $plugin)
+                            <li>
+                                <a href="{{ route('plugins.show', $plugin->routeParams()) }}" class="block hover:bg-gray-50 dark:hover:bg-gray-700">
+                                    <div class="px-4 py-4 sm:px-6">
+                                        <div class="flex items-center justify-between">
+                                            <div class="flex items-center">
+                                                <div class="shrink-0">
+                                                    @if ($plugin->hasLogo())
+                                                        <img src="{{ $plugin->getLogoUrl() }}" alt="{{ $plugin->name }}" class="size-10 rounded-lg object-cover">
+                                                    @elseif ($plugin->hasGradientIcon())
+                                                        <div class="grid size-10 place-items-center rounded-lg bg-gradient-to-br {{ $plugin->getGradientClasses() }} text-white">
+                                                            <x-dynamic-component :component="'heroicon-o-' . $plugin->icon_name" class="size-5" />
+                                                        </div>
+                                                    @else
+                                                        <div class="grid size-10 place-items-center rounded-lg bg-gradient-to-br from-indigo-500 to-purple-600 text-white">
+                                                            <x-vaadin-plug class="size-5" />
+                                                        </div>
+                                                    @endif
+                                                </div>
+                                                <div class="ml-4">
+                                                    <p class="text-sm font-medium text-blue-600 dark:text-blue-400">
+                                                        {{ $plugin->name }}
+                                                    </p>
+                                                    @if ($plugin->description)
+                                                        <p class="mt-0.5 line-clamp-1 text-xs text-gray-500 dark:text-gray-400">
+                                                            {{ $plugin->description }}
+                                                        </p>
+                                                    @endif
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </a>
+                            </li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
         </div>
     </div>
 </x-layout>

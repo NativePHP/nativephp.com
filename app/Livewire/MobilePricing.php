@@ -14,8 +14,7 @@ use Livewire\Component;
 
 class MobilePricing extends Component
 {
-    #[Locked]
-    public bool $discounted = false;
+    public string $interval = 'month';
 
     #[Locked]
     public $user;
@@ -73,7 +72,7 @@ class MobilePricing extends Component
         $user->createOrGetStripeCustomer();
 
         $checkout = $user
-            ->newSubscription('default', $subscription->stripePriceId(discounted: $this->discounted))
+            ->newSubscription('default', $subscription->stripePriceId(interval: $this->interval))
             ->allowPromotionCodes()
             ->checkout([
                 'success_url' => $this->successUrl(),

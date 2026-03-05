@@ -23,6 +23,28 @@ class CustomerPurchasedPluginsController extends Controller
             ->orderBy('purchased_at', 'desc')
             ->get();
 
-        return view('customer.purchased-plugins.index', compact('pluginLicenses', 'pluginLicenseKey'));
+        // Team plugins for team members
+        $teamPlugins = collect();
+        $teamOwnerName = null;
+        $teamMembership = $user->teamMembership;
+
+        if ($teamMembership) {
+            $teamOwner = $teamMembership->team->owner;
+            $teamOwnerName = $teamOwner->display_name;
+            $teamPlugins = $teamOwner->pluginLicenses()
+                ->active()
+                ->with('plugin')
+                ->get()
+                ->pluck('plugin')
+                ->filter()
+                ->unique('id');
+        }
+
+        return view('customer.purchased-plugins.index', compact(
+            'pluginLicenses',
+            'pluginLicenseKey',
+            'teamPlugins',
+            'teamOwnerName',
+        ));
     }
 }

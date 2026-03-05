@@ -26,13 +26,43 @@ class CustomerLicenseController extends Controller
         $licenseCount = $user->licenses()->count();
         $isEapCustomer = $user->isEapCustomer();
         $activeSubscription = $user->subscription();
-        $pluginLicenseCount = $user->pluginLicenses()->count();
+        $ownPluginIds = $user->pluginLicenses()->pluck('plugin_id');
+        $teamPluginCount = 0;
+        $teamMembership = $user->teamMembership;
+
+        if ($teamMembership) {
+            $teamPluginCount = $teamMembership->team->owner
+                ->pluginLicenses()
+                ->active()
+                ->whereNotIn('plugin_id', $ownPluginIds)
+                ->distinct('plugin_id')
+                ->count('plugin_id');
+        }
+
+        $pluginLicenseCount = $ownPluginIds->count() + $teamPluginCount;
 
         // Get subscription plan name
         $subscriptionName = null;
         if ($activeSubscription) {
             try {
-                $subscriptionName = \App\Enums\Subscription::fromStripePriceId($activeSubscription->stripe_price)->name();
+                // On multi-item subscriptions, stripe_price may be null.
+                // Find the plan price from subscription items, skipping extra seat prices.
+                $planPriceId = $activeSubscription->stripe_price;
+
+                if (! $planPriceId) {
+                    foreach ($activeSubscription->items as $item) {
+                        if (! \App\Enums\Subscription::isExtraSeatPrice($item->stripe_price)) {
+                            $planPriceId = $item->stripe_price;
+                            break;
+                        }
+                    }
+                }
+
+                if ($planPriceId) {
+                    $subscriptionName = \App\Enums\Subscription::fromStripePriceId($planPriceId)->name();
+                } else {
+                    $subscriptionName = ucfirst($activeSubscription->type);
+                }
             } catch (\RuntimeException) {
                 $subscriptionName = ucfirst($activeSubscription->type);
             }
@@ -62,6 +92,13 @@ class CustomerLicenseController extends Controller
         // Total purchases (licenses + plugins)
         $totalPurchases = $licenseCount + $pluginLicenseCount;
 
+        // Team info
+        $ownedTeam = $user->ownedTeam;
+        $hasTeam = $ownedTeam !== null;
+        $teamName = $ownedTeam?->name;
+        $teamMemberCount = $ownedTeam?->activeUserCount() ?? 0;
+        $hasMaxAccess = $user->hasActiveUltraSubscription();
+
         return view('customer.dashboard', compact(
             'licenseCount',
             'isEapCustomer',
@@ -71,7 +108,11 @@ class CustomerLicenseController extends Controller
             'renewalLicenseKey',
             'connectedAccountsCount',
             'connectedAccountsDescription',
-            'totalPurchases'
+            'totalPurchases',
+            'hasTeam',
+            'teamName',
+            'teamMemberCount',
+            'hasMaxAccess'
         ));
     }
 
