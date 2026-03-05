@@ -166,11 +166,23 @@ class Plugin extends Model
         $eligibleTiers = $user ? $user->getEligiblePriceTiers() : [\App\Enums\PriceTier::Regular];
 
         // Get the lowest active price for the user's eligible tiers
-        return $this->prices()
+        $bestPrice = $this->prices()
             ->active()
             ->forTiers($eligibleTiers)
             ->orderBy('amount', 'asc')
             ->first();
+
+        // Ultra subscribers get official plugins for free
+        if ($bestPrice && $user && $this->isOfficial() && $user->hasUltraAccess()) {
+            $freePrice = $bestPrice->replicate();
+            $freePrice->amount = 0;
+            $freePrice->id = $bestPrice->id;
+            $freePrice->exists = true;
+
+            return $freePrice;
+        }
+
+        return $bestPrice;
     }
 
     /**
@@ -268,7 +280,7 @@ class Plugin extends Model
 
     public function isOfficial(): bool
     {
-        return $this->is_official ?? false;
+        return ($this->is_official ?? false) || str_starts_with($this->name, 'nativephp/');
     }
 
     public function isSatisSynced(): bool

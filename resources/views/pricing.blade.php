@@ -166,6 +166,14 @@
                 </p>
             </x-faq-card>
 
+            <x-faq-card question="Can I purchase additional team seats?">
+                <p>
+                    Ultra includes 10 team seats. If you need more, extra
+                    seats can be purchased at $5/seat/month or $4/seat/year
+                    from your team settings page.
+                </p>
+            </x-faq-card>
+
             <x-faq-card question="What does premium support include?">
                 <p>
                     Premium support gives you expedited turnaround on

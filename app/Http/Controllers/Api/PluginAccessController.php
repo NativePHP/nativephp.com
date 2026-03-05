@@ -151,6 +151,28 @@ class PluginAccessController extends Controller
             }
         }
 
+        // Plugins accessible via team membership
+        $teamOwner = $user->getTeamOwner();
+
+        if ($teamOwner) {
+            $teamPlugins = $teamOwner->pluginLicenses()
+                ->active()
+                ->with('plugin:id,name')
+                ->get()
+                ->pluck('plugin')
+                ->filter()
+                ->unique('id');
+
+            foreach ($teamPlugins as $plugin) {
+                if (! collect($plugins)->contains('name', $plugin->name)) {
+                    $plugins[] = [
+                        'name' => $plugin->name,
+                        'access' => 'team',
+                    ];
+                }
+            }
+        }
+
         return $plugins;
     }
 }

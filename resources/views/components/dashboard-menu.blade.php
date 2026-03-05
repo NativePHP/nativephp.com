@@ -48,6 +48,11 @@
         <a href="{{ route('customer.integrations') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700">
             Integrations
         </a>
+        @if(auth()->user()->hasUltraAccess() && auth()->user()->ownedTeam)
+            <a href="{{ route('customer.team.index') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700">
+                Team Management
+            </a>
+        @endif
         <a href="{{ route('customer.billing-portal') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700">
             Manage Subscription
         </a>

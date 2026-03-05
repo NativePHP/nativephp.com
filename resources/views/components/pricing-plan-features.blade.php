@@ -48,6 +48,20 @@
             developer seats (keys)
         </div>
     </div>
+    @if($features['teams'] ?? false)
+        <div class="flex items-center gap-2">
+            <x-icons.user-single
+                class="size-5 shrink-0"
+                aria-hidden="true"
+            />
+            <div class="text-zinc-500">
+                Teams support &mdash;
+                <span class="font-medium text-black dark:text-white">10 seats</span>
+                included
+                <span class="text-xs">(extra: $5/seat/mo or $4/seat/yr)</span>
+            </div>
+        </div>
+    @endif
 </div>
 
 {{-- Divider - Decorative --}}

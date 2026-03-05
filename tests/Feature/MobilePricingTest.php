@@ -62,17 +62,17 @@ class MobilePricingTest extends TestCase
     }
 
     #[Test]
-    public function default_interval_is_year()
+    public function default_interval_is_month()
     {
         Livewire::test(MobilePricing::class)
-            ->assertSet('interval', 'year');
+            ->assertSet('interval', 'month');
     }
 
     #[Test]
-    public function interval_can_be_set_to_month()
+    public function interval_can_be_set_to_year()
     {
         Livewire::test(MobilePricing::class)
-            ->set('interval', 'month')
-            ->assertSet('interval', 'month');
+            ->set('interval', 'year')
+            ->assertSet('interval', 'year');
     }
 }

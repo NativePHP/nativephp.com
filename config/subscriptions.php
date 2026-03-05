@@ -28,6 +28,11 @@ return [
             'stripe_payment_link' => env('STRIPE_MAX_PAYMENT_LINK'),
             'anystack_product_id' => env('ANYSTACK_PRODUCT_ID'),
             'anystack_policy_id' => env('ANYSTACK_MAX_POLICY_ID'),
+            'stripe_extra_seat_price_id' => env('STRIPE_EXTRA_SEAT_PRICE_ID'),
+            'stripe_extra_seat_price_id_monthly' => env('STRIPE_EXTRA_SEAT_PRICE_ID_MONTHLY'),
+            'included_seats' => 10,
+            'extra_seat_price_yearly' => 4,
+            'extra_seat_price_monthly' => 5,
         ],
         'forever' => [
             'name' => 'Forever',

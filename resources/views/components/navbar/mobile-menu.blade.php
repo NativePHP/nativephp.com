@@ -88,7 +88,7 @@
             >
                 @php
                     $isHomeActive = request()->routeIs('welcome*');
-                    $isDocsActive = request()->is('docs*');
+                    $isUltraActive = request()->routeIs('pricing');
                     $isBlogActive = request()->routeIs('blog*');
                     $isPartnersActive = request()->routeIs('partners*');
                     $isServicesActive = request()->routeIs('build-my-app');
@@ -119,18 +119,18 @@
                     </a>
                 </div>
 
-                {{-- Docs Link --}}
+                {{-- Ultra Link --}}
                 <div>
                     <a
-                        href="/docs/"
+                        href="{{ route('pricing') }}"
                         @class([
                             'flex items-center gap-2 py-3 transition duration-200',
-                            'font-medium' => $isDocsActive,
-                            'opacity-50 hover:translate-x-1 hover:opacity-100' => ! $isDocsActive,
+                            'font-medium' => $isUltraActive,
+                            'opacity-50 hover:translate-x-1 hover:opacity-100' => ! $isUltraActive,
                         ])
-                        aria-current="{{ $isDocsActive ? 'page' : 'false' }}"
+                        aria-current="{{ $isUltraActive ? 'page' : 'false' }}"
                     >
-                        @if ($isDocsActive)
+                        @if ($isUltraActive)
                             <x-icons.right-arrow
                                 class="size-4 shrink-0"
                                 aria-hidden="true"
@@ -138,7 +138,7 @@
                             />
                         @endif
 
-                        <div>Docs</div>
+                        <div>Ultra</div>
                     </a>
                 </div>
 
@@ -379,7 +379,7 @@
                 aria-label="Social media"
             >
                 <div
-                    class="flex flex-wrap justify-center-safe gap-4 contrast-120"
+                    class="flex flex-wrap justify-center-safe gap-2 contrast-120"
                 >
                     <x-social-networks-all />
                 </div>

@@ -80,11 +80,14 @@
                 :class="interval === 'year'
                     ? 'bg-white text-black shadow-sm dark:bg-zinc-700 dark:text-white'
                     : 'text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300'"
-                class="rounded-full px-5 py-2 text-sm font-medium transition"
+                class="relative rounded-full px-5 py-2 text-sm font-medium transition"
                 role="radio"
                 :aria-checked="interval === 'year'"
             >
                 Annual
+                <span class="absolute -right-2 -top-2.5 rounded-full bg-emerald-100 px-1.5 py-0.5 text-[10px] font-semibold text-emerald-700 dark:bg-emerald-900/50 dark:text-emerald-300">
+                    Save 16%
+                </span>
             </button>
         </div>
 

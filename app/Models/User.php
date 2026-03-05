@@ -37,6 +37,36 @@ class User extends Authenticatable implements FilamentUser
     }
 
     /**
+     * @return HasOne<Team>
+     */
+    public function ownedTeam(): HasOne
+    {
+        return $this->hasOne(Team::class);
+    }
+
+    /**
+     * @return HasOne<TeamUser>
+     */
+    public function teamMembership(): HasOne
+    {
+        return $this->hasOne(TeamUser::class)->where('status', 'active');
+    }
+
+    /**
+     * Get the team owner if this user is an active team member.
+     */
+    public function getTeamOwner(): ?self
+    {
+        $membership = $this->teamMembership;
+
+        if (! $membership) {
+            return null;
+        }
+
+        return $membership->team->owner;
+    }
+
+    /**
      * @return HasMany<License>
      */
     public function licenses(): HasMany
@@ -120,6 +150,44 @@ class User extends Authenticatable implements FilamentUser
     public function hasMaxAccess(): bool
     {
         return $this->hasActiveMaxLicense() || $this->hasActiveMaxSubLicense();
+    }
+
+    /**
+     * Check if the user has a paying (non-comped) Max subscription,
+     * qualifying them for Ultra benefits like Teams.
+     */
+    public function hasUltraAccess(): bool
+    {
+        $subscription = $this->subscription();
+
+        if (! $subscription || ! $subscription->active()) {
+            return false;
+        }
+
+        $planPriceId = $subscription->stripe_price;
+
+        if (! $planPriceId) {
+            foreach ($subscription->items as $item) {
+                if (! \App\Enums\Subscription::isExtraSeatPrice($item->stripe_price)) {
+                    $planPriceId = $item->stripe_price;
+                    break;
+                }
+            }
+        }
+
+        if (! $planPriceId) {
+            return false;
+        }
+
+        try {
+            if (\App\Enums\Subscription::fromStripePriceId($planPriceId) !== \App\Enums\Subscription::Max) {
+                return false;
+            }
+        } catch (\RuntimeException) {
+            return false;
+        }
+
+        return ! $subscription->is_comped;
     }
 
     /**
@@ -233,10 +301,19 @@ class User extends Authenticatable implements FilamentUser
             return true;
         }
 
-        return $this->pluginLicenses()
-            ->forPlugin($plugin)
-            ->active()
-            ->exists();
+        // Check own active licenses
+        if ($this->pluginLicenses()->forPlugin($plugin)->active()->exists()) {
+            return true;
+        }
+
+        // Check team owner's licenses (team members inherit access)
+        $teamOwner = $this->getTeamOwner();
+
+        if ($teamOwner && $teamOwner->pluginLicenses()->forPlugin($plugin)->active()->exists()) {
+            return true;
+        }
+
+        return false;
     }
 
     public function getGitHubToken(): ?string

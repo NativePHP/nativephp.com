@@ -14,7 +14,7 @@ use Livewire\Component;
 
 class MobilePricing extends Component
 {
-    public string $interval = 'year';
+    public string $interval = 'month';
 
     #[Locked]
     public $user;

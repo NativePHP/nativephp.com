@@ -96,7 +96,21 @@
                         :href="route('customer.plugins.create')"
                         link-text="Submit a plugin"
                     />
+
                 @endfeature
+
+                {{-- Team Management Card --}}
+                @if(auth()->user()->hasUltraAccess() && auth()->user()->ownedTeam)
+                    <x-dashboard-card
+                        title="Team"
+                        :count="auth()->user()->ownedTeam->occupiedSeatCount()"
+                        icon="user-group"
+                        color="purple"
+                        :href="route('customer.team.index')"
+                        link-text="Manage team"
+                        :description="auth()->user()->ownedTeam->occupiedSeatCount() . ' of ' . auth()->user()->ownedTeam->totalSeatCapacity() . ' seats used'"
+                    />
+                @endif
 
                 {{-- Connected Accounts Card --}}
                 <x-dashboard-card

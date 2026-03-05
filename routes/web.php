@@ -19,6 +19,7 @@ use App\Http\Controllers\ProductController;
 use App\Http\Controllers\PurchaseHistoryController;
 use App\Http\Controllers\ShowBlogController;
 use App\Http\Controllers\ShowDocumentationController;
+use App\Http\Controllers\TeamUserController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Str;
 use Laravel\Pennant\Middleware\EnsureFeaturesAreActive;
@@ -269,6 +270,25 @@ Route::middleware(['auth', EnsureFeaturesAreActive::using(ShowAuthButtons::class
 
         return $user->redirectToBillingPortal(route('dashboard'));
     })->name('billing-portal');
+
+    // Team management routes (Ultra-only)
+    Route::get('team', function (\Illuminate\Http\Request $request) {
+        $user = $request->user();
+
+        if (! $user->hasUltraAccess()) {
+            abort(403, 'Ultra subscription required.');
+        }
+
+        $team = $user->ownedTeam;
+
+        if (! $team) {
+            abort(404);
+        }
+
+        return view('customer.team.index', compact('team'));
+    })->name('team.index');
+    Route::post('team/{team}/members', [TeamUserController::class, 'store'])->name('team.members.store');
+    Route::delete('team/{team}/members/{teamUser}', [TeamUserController::class, 'destroy'])->name('team.members.destroy');
 
     // Sub-license management routes
     Route::post('licenses/{licenseKey}/sub-licenses', [CustomerSubLicenseController::class, 'store'])->name('licenses.sub-licenses.store');
