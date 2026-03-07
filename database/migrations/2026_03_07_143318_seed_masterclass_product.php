@@ -22,7 +22,7 @@ return new class extends Migration
         ProductPrice::create([
             'product_id' => $product->id,
             'tier' => 'regular',
-            'amount' => 9900,
+            'amount' => 10100,
             'currency' => 'USD',
             'is_active' => true,
         ]);
