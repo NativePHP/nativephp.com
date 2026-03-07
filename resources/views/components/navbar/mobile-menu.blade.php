@@ -92,6 +92,7 @@
                     $isBlogActive = request()->routeIs('blog*');
                     $isPartnersActive = request()->routeIs('partners*');
                     $isServicesActive = request()->routeIs('build-my-app');
+                    $isCourseActive = request()->routeIs('course');
                     $isSponsorActive = request()->routeIs('sponsoring*');
                     $isLoginActive = request()->routeIs('customer.login*');
                 @endphp
@@ -241,6 +242,29 @@
                         @endif
 
                         <div>Develop</div>
+                    </a>
+                </div>
+
+                {{-- Course Link --}}
+                <div>
+                    <a
+                        href="{{ route('course') }}"
+                        @class([
+                            'flex items-center gap-2 py-3 transition duration-200',
+                            'font-medium' => $isCourseActive,
+                            'opacity-50 hover:translate-x-1 hover:opacity-100' => ! $isCourseActive,
+                        ])
+                        aria-current="{{ $isCourseActive ? 'page' : 'false' }}"
+                    >
+                        @if ($isCourseActive)
+                            <x-icons.right-arrow
+                                class="size-4 shrink-0"
+                                aria-hidden="true"
+                                focusable="false"
+                            />
+                        @endif
+
+                        <div>Learn</div>
                     </a>
                 </div>
 
