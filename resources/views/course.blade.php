@@ -609,6 +609,7 @@
                         action="{{ route('course.checkout') }}"
                         method="POST"
                         class="mt-8"
+                        id="checkout-form"
                     >
                         @csrf
                         <button
@@ -710,4 +711,12 @@
             </div>
         </section>
     </div>
+
+    @auth
+        @if (request('checkout'))
+            <script>
+                document.getElementById('checkout-form').submit();
+            </script>
+        @endif
+    @endauth
 </x-layout>

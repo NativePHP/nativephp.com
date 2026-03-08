@@ -70,7 +70,7 @@ Route::post('course/checkout', function (\Illuminate\Http\Request $request) {
     $user = $request->user();
 
     if (! $user) {
-        session(['url.intended' => route('course')]);
+        session(['url.intended' => route('course', ['checkout' => 1])]);
 
         return to_route('customer.login')
             ->with('message', 'Please log in or create an account to complete your purchase.');
