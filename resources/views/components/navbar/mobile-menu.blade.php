@@ -264,7 +264,10 @@
                             />
                         @endif
 
-                        <div>Learn</div>
+                        <div class="inline-flex items-center gap-2">
+                            Learn
+                            <span class="rounded-full bg-emerald-500 px-1.5 py-px text-[10px] font-bold leading-tight text-white">New</span>
+                        </div>
                     </a>
                 </div>
 
