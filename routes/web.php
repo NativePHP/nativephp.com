@@ -106,7 +106,7 @@ Route::post('course/checkout', function (\Illuminate\Http\Request $request) {
             ],
             'quantity' => 1,
         ]],
-        'success_url' => route('course').'?purchased=1',
+        'success_url' => route('cart.success').'?session_id={CHECKOUT_SESSION_ID}',
         'cancel_url' => route('course'),
         'customer' => $user->stripe_id,
         'metadata' => $metadata,
