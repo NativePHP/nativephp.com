@@ -64,7 +64,49 @@ Route::get('opencollective/claim', App\Livewire\ClaimDonationLicense::class)->na
 Route::view('/', 'welcome')->name('welcome');
 Route::redirect('pricing', 'blog/nativephp-for-mobile-is-now-free')->name('pricing');
 Route::view('alt-pricing', 'alt-pricing')->name('alt-pricing')->middleware('signed');
-Route::view('course', 'course')->name('course');
+Route::get('course', function (\Illuminate\Http\Request $request) {
+    $purchased = false;
+
+    if ($request->has('session_id') && $request->user()) {
+        try {
+            $session = \Laravel\Cashier\Cashier::stripe()->checkout->sessions->retrieve($request->query('session_id'));
+
+            if ($session->payment_status === 'paid' && ! empty($session->metadata['cart_id'])) {
+                $cart = \App\Models\Cart::with('items.product')->find($session->metadata['cart_id']);
+
+                if ($cart && ! $cart->isCompleted()) {
+                    $user = $request->user();
+
+                    foreach ($cart->items as $item) {
+                        if ($item->isProduct() && $item->product) {
+                            if (! \App\Models\ProductLicense::where('user_id', $user->id)->where('product_id', $item->product_id)->exists()) {
+                                \App\Models\ProductLicense::create([
+                                    'user_id' => $user->id,
+                                    'product_id' => $item->product_id,
+                                    'stripe_payment_intent_id' => $session->payment_intent,
+                                    'price_paid' => $item->product_price_at_addition,
+                                    'currency' => strtoupper($item->currency),
+                                    'purchased_at' => now(),
+                                ]);
+                            }
+                        }
+                    }
+
+                    $cart->markAsCompleted();
+                }
+
+                $purchased = true;
+            }
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::warning('Failed to verify checkout session', [
+                'session_id' => $request->query('session_id'),
+                'error' => $e->getMessage(),
+            ]);
+        }
+    }
+
+    return view('course', ['purchased' => $purchased]);
+})->name('course');
 
 Route::post('course/checkout', function (\Illuminate\Http\Request $request) {
     $user = $request->user();
@@ -106,7 +148,7 @@ Route::post('course/checkout', function (\Illuminate\Http\Request $request) {
             ],
             'quantity' => 1,
         ]],
-        'success_url' => route('course').'?purchased=1',
+        'success_url' => route('course').'?session_id={CHECKOUT_SESSION_ID}',
         'cancel_url' => route('course'),
         'customer' => $user->stripe_id,
         'metadata' => $metadata,

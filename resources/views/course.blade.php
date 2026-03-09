@@ -1,5 +1,34 @@
 <x-layout title="The NativePHP Masterclass">
     <div class="mx-auto max-w-5xl">
+        @if (! empty($purchased))
+            {{-- Purchase Success Banner --}}
+            <div
+                x-data="{ show: true }"
+                x-show="show"
+                x-transition
+                class="mt-6 rounded-2xl border border-emerald-200 bg-emerald-50 p-6 text-center dark:border-emerald-800 dark:bg-emerald-950/50"
+            >
+                <div class="flex flex-col items-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-10 text-emerald-600 dark:text-emerald-400">
+                        <path fill-rule="evenodd" d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12Zm13.36-1.814a.75.75 0 1 0-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 0 0-1.06 1.06l2.25 2.25a.75.75 0 0 0 1.14-.094l3.75-5.25Z" clip-rule="evenodd" />
+                    </svg>
+                    <h2 class="text-xl font-semibold text-emerald-800 dark:text-emerald-200">
+                        You're in! Thank you for your purchase.
+                    </h2>
+                    <p class="max-w-md text-emerald-700 dark:text-emerald-300">
+                        We'll notify you as soon as the masterclass is ready.
+                        Keep an eye on your inbox for updates and early access content.
+                    </p>
+                </div>
+            </div>
+        @endif
+
+        @if (session('error'))
+            <div class="mt-6 rounded-2xl border border-red-200 bg-red-50 p-4 text-center text-red-700 dark:border-red-800 dark:bg-red-950/50 dark:text-red-300">
+                {{ session('error') }}
+            </div>
+        @endif
+
         {{-- Hero Section --}}
         <section
             class="mt-12 md:mt-20"
