@@ -639,6 +639,48 @@
             </div>
         </section>
 
+        {{-- Timeline / Availability --}}
+        <section
+            class="mt-24"
+            aria-labelledby="timeline-heading"
+        >
+            <div
+                x-init="
+                    () => {
+                        motion.inView($el, (element) => {
+                            motion.animate(
+                                $el,
+                                {
+                                    opacity: [0, 1],
+                                    y: [20, 0],
+                                },
+                                {
+                                    duration: 0.7,
+                                    ease: motion.easeOut,
+                                },
+                            )
+                        })
+                    }
+                "
+                class="mx-auto max-w-2xl text-center"
+            >
+                <h2
+                    id="timeline-heading"
+                    class="text-3xl font-semibold"
+                >
+                    When Can I Start?
+                </h2>
+                <p class="mt-4 text-lg text-gray-600 dark:text-gray-400">
+                    The NativePHP Masterclass is coming <strong class="text-gray-900 dark:text-white">Summer/Fall 2026</strong>.
+                    We're putting the finishing touches on the content to make sure it's the best learning experience possible.
+                </p>
+                <p class="mt-4 text-gray-600 dark:text-gray-400">
+                    Grab the early bird price now and you'll be first in line when the doors open.
+                    Sign up below to stay in the loop.
+                </p>
+            </div>
+        </section>
+
         {{-- Email Signup --}}
         <section
             id="signup"
