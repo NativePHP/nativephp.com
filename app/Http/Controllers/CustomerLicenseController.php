@@ -31,9 +31,13 @@ class CustomerLicenseController extends Controller
         // Get subscription plan name
         $subscriptionName = null;
         if ($activeSubscription) {
-            try {
-                $subscriptionName = \App\Enums\Subscription::fromStripePriceId($activeSubscription->stripe_price)->name();
-            } catch (\RuntimeException) {
+            if ($activeSubscription->stripe_price) {
+                try {
+                    $subscriptionName = \App\Enums\Subscription::fromStripePriceId($activeSubscription->stripe_price)->name();
+                } catch (\RuntimeException) {
+                    $subscriptionName = ucfirst($activeSubscription->type);
+                }
+            } else {
                 $subscriptionName = ucfirst($activeSubscription->type);
             }
         }
