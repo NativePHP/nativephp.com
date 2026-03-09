@@ -1,11 +1,5 @@
 <x-layout title="The NativePHP Masterclass">
     <div class="mx-auto max-w-5xl">
-        @if (session('error'))
-            <div class="mt-6 rounded-2xl border border-red-200 bg-red-50 p-4 text-center text-red-700 dark:border-red-800 dark:bg-red-950/50 dark:text-red-300">
-                {{ session('error') }}
-            </div>
-        @endif
-
         {{-- Hero Section --}}
         <section
             class="mt-12 md:mt-20"
