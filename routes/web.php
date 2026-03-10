@@ -64,7 +64,15 @@ Route::get('opencollective/claim', App\Livewire\ClaimDonationLicense::class)->na
 Route::view('/', 'welcome')->name('welcome');
 Route::redirect('pricing', 'blog/nativephp-for-mobile-is-now-free')->name('pricing');
 Route::view('alt-pricing', 'alt-pricing')->name('alt-pricing')->middleware('signed');
-Route::view('course', 'course')->name('course');
+Route::get('course', function () {
+    $user = auth()->user();
+    $product = \App\Models\Product::where('slug', 'nativephp-masterclass')->first();
+    $alreadyOwned = $user && $product && $product->isOwnedBy($user);
+
+    return view('course', [
+        'alreadyOwned' => $alreadyOwned,
+    ]);
+})->name('course');
 
 Route::post('course/checkout', function (\Illuminate\Http\Request $request) {
     $user = $request->user();
