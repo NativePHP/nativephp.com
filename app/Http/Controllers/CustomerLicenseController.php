@@ -63,8 +63,9 @@ class CustomerLicenseController extends Controller
             default => 'No accounts connected',
         };
 
-        // Total purchases (licenses + plugins)
-        $totalPurchases = $licenseCount + $pluginLicenseCount;
+        // Total purchases (licenses + plugins + products)
+        $productLicenseCount = $user->productLicenses()->count();
+        $totalPurchases = $licenseCount + $pluginLicenseCount + $productLicenseCount;
 
         return view('customer.dashboard', compact(
             'licenseCount',
