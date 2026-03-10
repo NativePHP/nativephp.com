@@ -112,30 +112,39 @@
                     "
                     class="mt-8 flex flex-col items-center gap-4 sm:flex-row"
                 >
-                    <a
-                        href="#pricing"
-                        class="inline-flex items-center gap-2 rounded-xl bg-emerald-600 px-8 py-4 font-semibold text-white transition hover:bg-emerald-700"
-                    >
-                        Get Early Bird Access &mdash; $101
-                        <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            viewBox="0 0 20 20"
-                            fill="currentColor"
-                            class="size-5"
+                    @if ($alreadyOwned)
+                        <div class="inline-flex items-center gap-2 rounded-xl bg-emerald-100 px-8 py-4 font-semibold text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="size-5">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" />
+                            </svg>
+                            You Own This Course
+                        </div>
+                    @else
+                        <a
+                            href="#pricing"
+                            class="inline-flex items-center gap-2 rounded-xl bg-emerald-600 px-8 py-4 font-semibold text-white transition hover:bg-emerald-700"
                         >
-                            <path
-                                fill-rule="evenodd"
-                                d="M3 10a.75.75 0 0 1 .75-.75h10.638L10.23 5.29a.75.75 0 1 1 1.04-1.08l5.5 5.25a.75.75 0 0 1 0 1.08l-5.5 5.25a.75.75 0 1 1-1.04-1.08l4.158-3.96H3.75A.75.75 0 0 1 3 10Z"
-                                clip-rule="evenodd"
-                            />
-                        </svg>
-                    </a>
-                    <a
-                        href="#signup"
-                        class="text-sm font-medium text-gray-500 transition hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
-                    >
-                        or join the waitlist
-                    </a>
+                            Get Early Bird Access &mdash; $101
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 20 20"
+                                fill="currentColor"
+                                class="size-5"
+                            >
+                                <path
+                                    fill-rule="evenodd"
+                                    d="M3 10a.75.75 0 0 1 .75-.75h10.638L10.23 5.29a.75.75 0 1 1 1.04-1.08l5.5 5.25a.75.75 0 0 1 0 1.08l-5.5 5.25a.75.75 0 1 1-1.04-1.08l4.158-3.96H3.75A.75.75 0 0 1 3 10Z"
+                                    clip-rule="evenodd"
+                                />
+                            </svg>
+                        </a>
+                        <a
+                            href="#signup"
+                            class="text-sm font-medium text-gray-500 transition hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+                        >
+                            or join the waitlist
+                        </a>
+                    @endif
                 </div>
             </div>
         </section>
@@ -573,14 +582,28 @@
                         The NativePHP Masterclass
                     </h3>
 
-                    <div class="mt-4 flex items-baseline gap-2">
-                        <span class="text-5xl font-bold text-gray-900 dark:text-white">
-                            $101
-                        </span>
-                        <span class="text-gray-500 dark:text-gray-400">
-                            one-time payment
-                        </span>
-                    </div>
+                    @if ($alreadyOwned)
+                        <div class="mt-6 text-center">
+                            <div class="mx-auto grid size-14 place-items-center rounded-full bg-emerald-100 dark:bg-emerald-900/50">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="size-7 text-emerald-600 dark:text-emerald-400">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" />
+                                </svg>
+                            </div>
+                            <p class="mt-3 text-lg font-semibold text-emerald-700 dark:text-emerald-300">You Own This Course</p>
+                            <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">
+                                You'll be notified when the course launches.
+                            </p>
+                        </div>
+                    @else
+                        <div class="mt-4 flex items-baseline gap-2">
+                            <span class="text-5xl font-bold text-gray-900 dark:text-white">
+                                $101
+                            </span>
+                            <span class="text-gray-500 dark:text-gray-400">
+                                one-time payment
+                            </span>
+                        </div>
+                    @endif
 
                     <ul class="mt-8 space-y-3">
                         <li class="flex items-center gap-3">
@@ -605,36 +628,38 @@
                         </li>
                     </ul>
 
-                    <form
-                        action="{{ route('course.checkout') }}"
-                        method="POST"
-                        class="mt-8"
-                        id="checkout-form"
-                    >
-                        @csrf
-                        <button
-                            type="submit"
-                            class="flex w-full items-center justify-center gap-2 rounded-xl bg-emerald-600 px-8 py-4 text-center font-semibold text-white transition hover:bg-emerald-700"
+                    @unless ($alreadyOwned)
+                        <form
+                            action="{{ route('course.checkout') }}"
+                            method="POST"
+                            class="mt-8"
+                            id="checkout-form"
                         >
-                            Get Early Bird Access
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                viewBox="0 0 20 20"
-                                fill="currentColor"
-                                class="size-5"
+                            @csrf
+                            <button
+                                type="submit"
+                                class="flex w-full items-center justify-center gap-2 rounded-xl bg-emerald-600 px-8 py-4 text-center font-semibold text-white transition hover:bg-emerald-700"
                             >
-                                <path
-                                    fill-rule="evenodd"
-                                    d="M3 10a.75.75 0 0 1 .75-.75h10.638L10.23 5.29a.75.75 0 1 1 1.04-1.08l5.5 5.25a.75.75 0 0 1 0 1.08l-5.5 5.25a.75.75 0 1 1-1.04-1.08l4.158-3.96H3.75A.75.75 0 0 1 3 10Z"
-                                    clip-rule="evenodd"
-                                />
-                            </svg>
-                        </button>
-                    </form>
+                                Get Early Bird Access
+                                <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    viewBox="0 0 20 20"
+                                    fill="currentColor"
+                                    class="size-5"
+                                >
+                                    <path
+                                        fill-rule="evenodd"
+                                        d="M3 10a.75.75 0 0 1 .75-.75h10.638L10.23 5.29a.75.75 0 1 1 1.04-1.08l5.5 5.25a.75.75 0 0 1 0 1.08l-5.5 5.25a.75.75 0 1 1-1.04-1.08l4.158-3.96H3.75A.75.75 0 0 1 3 10Z"
+                                        clip-rule="evenodd"
+                                    />
+                                </svg>
+                            </button>
+                        </form>
 
-                    <p class="mt-4 text-center text-xs text-gray-500 dark:text-gray-400">
-                        Early bird pricing won't last forever. Lock in the lowest price today.
-                    </p>
+                        <p class="mt-4 text-center text-xs text-gray-500 dark:text-gray-400">
+                            Early bird pricing won't last forever. Lock in the lowest price today.
+                        </p>
+                    @endunless
                 </div>
             </div>
         </section>
@@ -755,7 +780,7 @@
     </div>
 
     @auth
-        @if (request('checkout'))
+        @if (request('checkout') && ! $alreadyOwned)
             <script>
                 document.getElementById('checkout-form').submit();
             </script>
