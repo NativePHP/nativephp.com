@@ -208,4 +208,57 @@ class DeveloperTermsTest extends TestCase
         $response->assertStatus(200);
         $response->assertSee('You accepted the');
     }
+
+    /** @test */
+    public function submitting_plugin_without_terms_redirects_to_onboarding(): void
+    {
+        $user = User::factory()->create([
+            'github_id' => '12345',
+            'github_username' => 'testdev',
+        ]);
+
+        $response = $this->actingAs($user)
+            ->post(route('customer.plugins.store'), [
+                'type' => 'free',
+                'repository' => 'testdev/my-plugin',
+            ]);
+
+        $response->assertRedirect(route('customer.developer.onboarding'));
+        $response->assertSessionHas('message');
+    }
+
+    /** @test */
+    public function plugin_create_page_shows_onboarding_warning_without_terms(): void
+    {
+        $user = User::factory()->create([
+            'github_id' => '12345',
+            'github_username' => 'testdev',
+        ]);
+
+        $response = $this->actingAs($user)
+            ->get(route('customer.plugins.create'));
+
+        $response->assertStatus(200);
+        $response->assertSee('Developer Onboarding Required');
+        $response->assertSee('Complete Developer Onboarding');
+        $response->assertDontSee('Select Repository');
+    }
+
+    /** @test */
+    public function plugin_create_page_does_not_show_warning_when_terms_accepted(): void
+    {
+        $user = User::factory()->create([
+            'github_id' => '12345',
+            'github_username' => 'testdev',
+        ]);
+        DeveloperAccount::factory()->withAcceptedTerms()->create([
+            'user_id' => $user->id,
+        ]);
+
+        $response = $this->actingAs($user)
+            ->get(route('customer.plugins.create'));
+
+        $response->assertStatus(200);
+        $response->assertDontSee('Developer Onboarding Required');
+    }
 }

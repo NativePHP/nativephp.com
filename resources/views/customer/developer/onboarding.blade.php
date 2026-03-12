@@ -61,11 +61,7 @@
                             @endif
                         </h2>
                         <p class="mt-2 text-gray-600 dark:text-gray-400">
-                            @if ($hasExistingAccount)
-                                You've started the onboarding process. Complete the remaining steps to start receiving payouts.
-                            @else
-                                Connect your Stripe account to receive payments when users purchase your plugins.
-                            @endif
+                            Connect your Stripe account to receive payments when users purchase your plugins.
                         </p>
                     </div>
 
@@ -234,7 +230,7 @@
                     <div>
                         <h4 class="font-medium text-gray-900 dark:text-white">What do I need to get started?</h4>
                         <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">
-                            You'll need a Stripe account (or create one during onboarding), a GitHub repository for your plugin, and a nativephp.json configuration file.
+                            You'll need a Stripe account (or create one during onboarding), a GitHub account and a private repository for your plugin.
                         </p>
                     </div>
                 </div>

@@ -17,7 +17,7 @@ class DeveloperOnboardingController extends Controller
         $user = $request->user();
         $developerAccount = $user->developerAccount;
 
-        if ($developerAccount && $developerAccount->hasCompletedOnboarding()) {
+        if ($developerAccount && $developerAccount->hasCompletedOnboarding() && $developerAccount->hasAcceptedCurrentTerms()) {
             return to_route('customer.developer.dashboard')
                 ->with('message', 'Your developer account is already set up.');
         }
