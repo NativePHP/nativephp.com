@@ -64,6 +64,76 @@ Route::get('opencollective/claim', App\Livewire\ClaimDonationLicense::class)->na
 Route::view('/', 'welcome')->name('welcome');
 Route::redirect('pricing', 'blog/nativephp-for-mobile-is-now-free')->name('pricing');
 Route::view('alt-pricing', 'alt-pricing')->name('alt-pricing')->middleware('signed');
+Route::get('course', function () {
+    $user = auth()->user();
+    $product = \App\Models\Product::where('slug', 'nativephp-masterclass')->first();
+    $alreadyOwned = $user && $product && $product->isOwnedBy($user);
+
+    return view('course', [
+        'alreadyOwned' => $alreadyOwned,
+    ]);
+})->name('course');
+
+Route::post('course/checkout', function (\Illuminate\Http\Request $request) {
+    $user = $request->user();
+
+    if (! $user) {
+        session(['url.intended' => route('course', ['checkout' => 1])]);
+
+        return to_route('customer.login')
+            ->with('message', 'Please log in or create an account to complete your purchase.');
+    }
+
+    $product = \App\Models\Product::where('slug', 'nativephp-masterclass')->firstOrFail();
+
+    if ($product->isOwnedBy($user)) {
+        return to_route('course')->with('error', 'You already own this course.');
+    }
+
+    $cartService = resolve(\App\Services\CartService::class);
+    $cart = $cartService->getCart($user);
+    $cartService->addProduct($cart, $product);
+
+    $cart->load('items.product');
+    $item = $cart->items->where('product_id', $product->id)->first();
+
+    $user->createOrGetStripeCustomer();
+
+    $metadata = ['cart_id' => (string) $cart->id];
+
+    $session = \Laravel\Cashier\Cashier::stripe()->checkout->sessions->create([
+        'mode' => 'payment',
+        'line_items' => [[
+            'price_data' => [
+                'currency' => strtolower($item->currency),
+                'unit_amount' => $item->product_price_at_addition,
+                'product_data' => [
+                    'name' => $product->name,
+                    'description' => $product->description,
+                ],
+            ],
+            'quantity' => 1,
+        ]],
+        'success_url' => route('cart.success').'?session_id={CHECKOUT_SESSION_ID}',
+        'cancel_url' => route('course'),
+        'customer' => $user->stripe_id,
+        'metadata' => $metadata,
+        'allow_promotion_codes' => true,
+        'billing_address_collection' => 'required',
+        'invoice_creation' => [
+            'enabled' => true,
+            'invoice_data' => [
+                'description' => 'NativePHP Masterclass Purchase',
+                'metadata' => $metadata,
+            ],
+        ],
+    ]);
+
+    $cart->update(['stripe_checkout_session_id' => $session->id]);
+
+    return redirect($session->url);
+})->name('course.checkout');
+
 Route::view('wall-of-love', 'wall-of-love')->name('wall-of-love');
 Route::view('brand', 'brand')->name('brand');
 Route::get('showcase/{platform?}', [App\Http\Controllers\ShowcaseController::class, 'index'])

@@ -31,11 +31,13 @@ class CustomerLicenseController extends Controller
         // Get subscription plan name
         $subscriptionName = null;
         if ($activeSubscription) {
-            try {
-                $subscriptionName = $activeSubscription->stripe_price
-                    ? \App\Enums\Subscription::fromStripePriceId($activeSubscription->stripe_price)->name()
-                    : ucfirst($activeSubscription->type);
-            } catch (\RuntimeException) {
+            if ($activeSubscription->stripe_price) {
+                try {
+                    $subscriptionName = \App\Enums\Subscription::fromStripePriceId($activeSubscription->stripe_price)->name();
+                } catch (\RuntimeException) {
+                    $subscriptionName = ucfirst($activeSubscription->type);
+                }
+            } else {
                 $subscriptionName = ucfirst($activeSubscription->type);
             }
         }
@@ -61,8 +63,9 @@ class CustomerLicenseController extends Controller
             default => 'No accounts connected',
         };
 
-        // Total purchases (licenses + plugins)
-        $totalPurchases = $licenseCount + $pluginLicenseCount;
+        // Total purchases (licenses + plugins + products)
+        $productLicenseCount = $user->productLicenses()->count();
+        $totalPurchases = $licenseCount + $pluginLicenseCount + $productLicenseCount;
 
         $developerAccount = $user->developerAccount;
 

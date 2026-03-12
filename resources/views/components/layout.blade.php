@@ -104,7 +104,7 @@
         }"
         x-resize="
             width = $width
-            if (width >= 1024) {
+            if (width >= 1280) {
                 showMobileMenu = false
                 showDocsMenu = false
             }
