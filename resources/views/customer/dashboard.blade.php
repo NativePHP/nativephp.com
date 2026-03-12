@@ -127,6 +127,8 @@
                         :value="$teamName"
                         :badge="$teamMemberCount . ' members'"
                         badge-color="blue"
+                        :second-badge="$teamPendingCount > 0 ? $teamPendingCount . ' pending' : null"
+                        second-badge-color="yellow"
                         icon="user-group"
                         color="teal"
                         :href="route('customer.team.index')"

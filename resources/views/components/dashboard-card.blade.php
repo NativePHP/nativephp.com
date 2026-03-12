@@ -9,6 +9,8 @@
     'description' => null,
     'badge' => null,
     'badgeColor' => 'green',
+    'secondBadge' => null,
+    'secondBadgeColor' => 'yellow',
 ])
 
 @php
@@ -45,7 +47,7 @@
                     <dt class="truncate text-sm font-medium text-gray-500 dark:text-gray-400">
                         {{ $title }}
                     </dt>
-                    <dd class="flex items-baseline">
+                    <dd class="flex flex-wrap items-baseline gap-y-1">
                         @if($count !== null)
                             <span class="text-2xl font-semibold text-gray-900 dark:text-white">
                                 {{ $count }}
@@ -55,9 +57,18 @@
                                 {{ $value }}
                             </span>
                         @endif
-                        @if($badge)
-                            <span class="{{ $badgeClasses[$badgeColor] ?? $badgeClasses['green'] }} ml-2 inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium">
-                                {{ $badge }}
+                        @if($badge || $secondBadge)
+                            <span class="flex w-full items-center gap-1.5 lg:ml-2 lg:w-auto">
+                                @if($badge)
+                                    <span class="{{ $badgeClasses[$badgeColor] ?? $badgeClasses['green'] }} inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium">
+                                        {{ $badge }}
+                                    </span>
+                                @endif
+                                @if($secondBadge)
+                                    <span class="{{ $badgeClasses[$secondBadgeColor] ?? $badgeClasses['yellow'] }} inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium">
+                                        {{ $secondBadge }}
+                                    </span>
+                                @endif
                             </span>
                         @endif
                     </dd>

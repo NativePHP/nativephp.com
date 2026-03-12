@@ -46,19 +46,11 @@ class User extends Authenticatable implements FilamentUser
     }
 
     /**
-     * @return HasOne<TeamUser>
-     */
-    public function teamMembership(): HasOne
-    {
-        return $this->hasOne(TeamUser::class)->where('status', 'active');
-    }
-
-    /**
      * Get the team owner if this user is an active team member.
      */
     public function getTeamOwner(): ?self
     {
-        $membership = $this->teamMembership;
+        $membership = $this->activeTeamMembership();
 
         if (! $membership) {
             return null;
@@ -203,6 +195,12 @@ class User extends Authenticatable implements FilamentUser
 
     public function hasActiveUltraSubscription(): bool
     {
+        $subscription = $this->subscription();
+
+        if (! $subscription || $subscription->is_comped) {
+            return false;
+        }
+
         return $this->subscribedToPrice(array_filter([
             config('subscriptions.plans.max.stripe_price_id'),
             config('subscriptions.plans.max.stripe_price_id_monthly'),

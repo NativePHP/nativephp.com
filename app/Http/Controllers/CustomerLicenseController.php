@@ -28,7 +28,7 @@ class CustomerLicenseController extends Controller
         $activeSubscription = $user->subscription();
         $ownPluginIds = $user->pluginLicenses()->pluck('plugin_id');
         $teamPluginCount = 0;
-        $teamMembership = $user->teamMembership;
+        $teamMembership = $user->activeTeamMembership();
 
         if ($teamMembership) {
             $teamPluginCount = $teamMembership->team->owner
@@ -97,6 +97,7 @@ class CustomerLicenseController extends Controller
         $hasTeam = $ownedTeam !== null;
         $teamName = $ownedTeam?->name;
         $teamMemberCount = $ownedTeam?->activeUserCount() ?? 0;
+        $teamPendingCount = $ownedTeam?->pendingInvitations()->count() ?? 0;
         $hasMaxAccess = $user->hasActiveUltraSubscription();
 
         return view('customer.dashboard', compact(
@@ -112,6 +113,7 @@ class CustomerLicenseController extends Controller
             'hasTeam',
             'teamName',
             'teamMemberCount',
+            'teamPendingCount',
             'hasMaxAccess'
         ));
     }

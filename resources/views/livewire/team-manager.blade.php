@@ -44,53 +44,104 @@
         </div>
     @endif
 
-    {{-- Member Count --}}
-    <div class="mb-4 flex items-center justify-between">
-        <h3 class="text-lg font-medium text-gray-900 dark:text-white">
-            Team Members
-            <span class="ml-2 text-sm text-gray-500 dark:text-gray-400">
-                ({{ $activeMembers->count() }} / 10 seats)
-            </span>
-        </h3>
-    </div>
+    {{-- Seat Management --}}
+    <div class="mb-6 rounded-lg bg-white p-6 shadow dark:bg-gray-800">
+        <div class="flex items-center justify-between">
+            <div>
+                <h3 class="text-lg font-medium text-gray-900 dark:text-white">Seats</h3>
+                <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                    {{ $team->occupiedSeatCount() }} of {{ $team->totalSeatCapacity() }} seats used
+                    @if($team->extra_seats > 0)
+                        <span class="text-indigo-600 dark:text-indigo-400">({{ $team->extra_seats }} extra)</span>
+                    @endif
+                </p>
+            </div>
+            @if(!$team->is_suspended)
+                <div class="flex items-center gap-2" x-data="{ showAddModal: {{ session('show_add_seats') ? 'true' : 'false' }}, showRemoveModal: false, addQty: 1, removeQty: 1 }" @seats-updated.window="showAddModal = false; showRemoveModal = false; addQty = 1; removeQty = 1">
+                    <button
+                        type="button"
+                        @click="showAddModal = true"
+                        class="inline-flex items-center gap-1.5 rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-indigo-700"
+                    >
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-4"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>
+                        Add Seats
+                    </button>
+                    @if($removableSeats > 0)
+                        <button
+                            type="button"
+                            @click="showRemoveModal = true"
+                            class="inline-flex items-center gap-1.5 rounded-md bg-gray-200 px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600"
+                        >
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-4"><path stroke-linecap="round" stroke-linejoin="round" d="M5 12h14" /></svg>
+                            Remove Seats
+                        </button>
+                    @endif
 
-    {{-- Active Members --}}
-    @if($activeMembers->isNotEmpty())
-        <div class="overflow-hidden rounded-lg bg-white shadow dark:bg-gray-800">
-            <ul role="list" class="divide-y divide-gray-200 dark:divide-gray-700">
-                @foreach($activeMembers as $member)
-                    <li class="px-4 py-4" wire:key="member-{{ $member->id }}">
-                        <div class="flex items-center justify-between">
-                            <div class="flex-1">
-                                <p class="text-sm font-medium text-gray-900 dark:text-white">
-                                    {{ $member->user?->display_name ?? $member->email }}
-                                </p>
-                                <p class="text-sm text-gray-500 dark:text-gray-400">
-                                    {{ $member->email }}
-                                </p>
-                                @if($member->accepted_at)
-                                    <p class="mt-1 text-xs text-gray-400 dark:text-gray-500">
-                                        Joined {{ $member->accepted_at->diffForHumans() }}
-                                    </p>
-                                @endif
+                    {{-- Add Seats Modal --}}
+                    <div x-show="showAddModal" x-cloak class="fixed inset-0 z-50 flex items-center justify-center bg-gray-500/60 backdrop-blur-sm dark:bg-gray-900/60" @click.self="showAddModal = false">
+                        <div class="w-full max-w-md rounded-lg bg-white p-6 shadow-xl dark:bg-gray-800" @click.stop>
+                            <h3 class="text-lg font-medium text-gray-900 dark:text-white">Add Extra Seats</h3>
+                            <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">
+                                Extra seats cost ${{ $extraSeatPriceMonthly }}/mo or ${{ $extraSeatPriceYearly }}/yr per seat, matching your current billing interval.
+                            </p>
+                            <div class="mt-4 flex items-center gap-3">
+                                <label class="text-sm font-medium text-gray-700 dark:text-gray-300">Quantity</label>
+                                <input type="number" x-model.number="addQty" min="1" max="50" class="w-20 rounded-md border-gray-300 text-center shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white sm:text-sm" />
                             </div>
-                            <form method="POST" action="{{ route('customer.team.users.remove', $member) }}" onsubmit="return confirm('Are you sure you want to remove this member?')">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" class="text-sm text-red-600 hover:text-red-500 dark:text-red-400 dark:hover:text-red-300">
-                                    Remove
+                            <div class="mt-6 flex justify-end gap-3">
+                                <button type="button" @click="showAddModal = false" class="rounded-md bg-gray-200 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600">
+                                    Cancel
                                 </button>
-                            </form>
+                                <button
+                                    type="button"
+                                    @click="$wire.addSeats(addQty)"
+                                    wire:loading.attr="disabled"
+                                    class="inline-flex items-center gap-2 rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700 disabled:opacity-50"
+                                >
+                                    <svg wire:loading wire:target="addSeats" class="size-4 animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path></svg>
+                                    <span wire:loading.remove wire:target="addSeats">Confirm</span>
+                                    <span wire:loading wire:target="addSeats">Processing...</span>
+                                </button>
+                            </div>
                         </div>
-                    </li>
-                @endforeach
-            </ul>
+                    </div>
+
+                    {{-- Remove Seats Modal --}}
+                    <div x-show="showRemoveModal" x-cloak class="fixed inset-0 z-50 flex items-center justify-center bg-gray-500/60 backdrop-blur-sm dark:bg-gray-900/60" @click.self="showRemoveModal = false">
+                        <div class="w-full max-w-md rounded-lg bg-white p-6 shadow-xl dark:bg-gray-800" @click.stop>
+                            <h3 class="text-lg font-medium text-gray-900 dark:text-white">Remove Extra Seats</h3>
+                            <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">
+                                You currently have {{ $team->extra_seats }} extra seat(s). Seats are removed immediately and you'll be credited for the unused time on your next bill.
+                            </p>
+                            <div class="mt-4 flex items-center gap-3">
+                                <label class="text-sm font-medium text-gray-700 dark:text-gray-300">Quantity</label>
+                                <input type="number" x-model.number="removeQty" min="1" :max="{{ $removableSeats }}" class="w-20 rounded-md border-gray-300 text-center shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white sm:text-sm" />
+                            </div>
+                            <div class="mt-6 flex justify-end gap-3">
+                                <button type="button" @click="showRemoveModal = false" class="rounded-md bg-gray-200 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600">
+                                    Cancel
+                                </button>
+                                <button
+                                    type="button"
+                                    @click="$wire.removeSeats(removeQty)"
+                                    wire:loading.attr="disabled"
+                                    class="inline-flex items-center gap-2 rounded-md bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700 disabled:opacity-50"
+                                >
+                                    <svg wire:loading wire:target="removeSeats" class="size-4 animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path></svg>
+                                    <span wire:loading.remove wire:target="removeSeats">Remove</span>
+                                    <span wire:loading wire:target="removeSeats">Processing...</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            @endif
         </div>
-    @endif
+    </div>
 
     {{-- Pending Invitations --}}
     @if($pendingInvitations->isNotEmpty())
-        <div class="mt-6">
+        <div class="mb-6">
             <h3 class="mb-4 text-lg font-medium text-gray-900 dark:text-white">
                 Pending Invitations
                 <span class="ml-2 text-sm text-gray-500 dark:text-gray-400">
@@ -135,9 +186,48 @@
         </div>
     @endif
 
-    @if($activeMembers->isEmpty() && $pendingInvitations->isEmpty())
+    {{-- Team Members --}}
+    <div class="mb-4 flex items-center justify-between">
+        <h3 class="text-lg font-medium text-gray-900 dark:text-white">
+            Team Members
+        </h3>
+    </div>
+
+    {{-- Active Members --}}
+    @if($activeMembers->isNotEmpty())
+        <div class="overflow-hidden rounded-lg bg-white shadow dark:bg-gray-800">
+            <ul role="list" class="divide-y divide-gray-200 dark:divide-gray-700">
+                @foreach($activeMembers as $member)
+                    <li class="px-4 py-4" wire:key="member-{{ $member->id }}">
+                        <div class="flex items-center justify-between">
+                            <div class="flex-1">
+                                <p class="text-sm font-medium text-gray-900 dark:text-white">
+                                    {{ $member->user?->display_name ?? $member->email }}
+                                </p>
+                                <p class="text-sm text-gray-500 dark:text-gray-400">
+                                    {{ $member->email }}
+                                </p>
+                                @if($member->accepted_at)
+                                    <p class="mt-1 text-xs text-gray-400 dark:text-gray-500">
+                                        Joined {{ $member->accepted_at->diffForHumans() }}
+                                    </p>
+                                @endif
+                            </div>
+                            <form method="POST" action="{{ route('customer.team.users.remove', $member) }}" onsubmit="return confirm('Are you sure you want to remove this member?')">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="text-sm text-red-600 hover:text-red-500 dark:text-red-400 dark:hover:text-red-300">
+                                    Remove
+                                </button>
+                            </form>
+                        </div>
+                    </li>
+                @endforeach
+            </ul>
+        </div>
+    @else
         <div class="rounded-lg bg-white p-8 text-center shadow dark:bg-gray-800">
-            <p class="text-sm text-gray-500 dark:text-gray-400">No team members yet. Invite someone to get started.</p>
+            <p class="text-sm text-gray-500 dark:text-gray-400">No active team members yet. Invite someone to get started.</p>
         </div>
     @endif
 </div>

@@ -168,19 +168,20 @@ class TeamManagementTest extends TestCase
         Notification::assertNothingSent();
     }
 
-    public function test_cannot_invite_beyond_10_member_limit(): void
+    public function test_cannot_invite_beyond_seat_limit(): void
     {
         Notification::fake();
 
         [$owner, $team] = $this->createTeamWithOwner();
 
-        // Create 10 active members
+        // Create 10 active members to fill all seats
         TeamUser::factory()->count(10)->active()->create(['team_id' => $team->id]);
 
         $response = $this->actingAs($owner)
             ->post(route('customer.team.invite'), ['email' => 'extra@example.com']);
 
-        $response->assertSessionHas('error');
+        $response->assertSessionHas('show_add_seats', true);
+        Notification::assertNothingSent();
     }
 
     // ========================================

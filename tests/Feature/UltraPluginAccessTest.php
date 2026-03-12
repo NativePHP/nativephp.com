@@ -238,12 +238,7 @@ class UltraPluginAccessTest extends TestCase
             'name' => 'nativephp/licensed-plugin',
             'type' => PluginType::Paid,
             'is_active' => true,
-        ]);
-
-        PluginLicense::factory()->create([
-            'user_id' => $owner->id,
-            'plugin_id' => $plugin->id,
-            'expires_at' => null,
+            'is_official' => true,
         ]);
 
         $this->assertTrue($member->hasPluginAccess($plugin));
@@ -270,21 +265,13 @@ class UltraPluginAccessTest extends TestCase
             'name' => 'nativephp/licensed-plugin',
             'type' => PluginType::Paid,
             'is_active' => true,
-        ]);
-
-        PluginLicense::factory()->create([
-            'user_id' => $owner->id,
-            'plugin_id' => $plugin->id,
-            'expires_at' => null,
+            'is_official' => true,
         ]);
 
         $this->assertTrue($member->hasPluginAccess($plugin));
 
         // Remove from team
         $teamUser->delete();
-
-        // Clear cached relationship
-        $member->unsetRelation('teamMembership');
 
         $this->assertFalse($member->hasPluginAccess($plugin));
     }
@@ -301,6 +288,7 @@ class UltraPluginAccessTest extends TestCase
             'name' => 'nativephp/licensed-plugin',
             'type' => PluginType::Paid,
             'is_active' => true,
+            'is_official' => true,
         ]);
 
         PluginLicense::factory()->create([
@@ -333,6 +321,7 @@ class UltraPluginAccessTest extends TestCase
             'name' => 'nativephp/licensed-plugin',
             'type' => PluginType::Paid,
             'is_active' => true,
+            'is_official' => true,
         ]);
 
         PluginLicense::factory()->create([
@@ -370,6 +359,7 @@ class UltraPluginAccessTest extends TestCase
             'type' => PluginType::Paid,
             'status' => PluginStatus::Approved,
             'is_active' => true,
+            'is_official' => true,
         ]);
 
         PluginLicense::factory()->create([
@@ -420,6 +410,7 @@ class UltraPluginAccessTest extends TestCase
             'type' => PluginType::Paid,
             'status' => PluginStatus::Approved,
             'is_active' => true,
+            'is_official' => true,
         ]);
 
         PluginLicense::factory()->create([

@@ -52,9 +52,8 @@ class TeamUserController extends Controller
             return back()->with('error', 'This email has already been invited or is an active member.');
         }
 
-        // Hard cap at 10 for initial release
         if ($team->isOverIncludedLimit()) {
-            return back()->with('error', 'Your team has reached the maximum of 10 members. Need more seats? Contact us.');
+            return back()->with('show_add_seats', true);
         }
 
         $member = $team->users()->create([

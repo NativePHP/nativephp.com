@@ -196,6 +196,100 @@
                 <input type="hidden" name="type" value="free" />
                 @endfeature
 
+                {{-- Author Display Name (only show if not set) --}}
+                @unless(auth()->user()->display_name)
+                <div class="rounded-lg border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-gray-800">
+                    <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Author Display Name</h2>
+                    <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">
+                        This is how your name will appear on your plugins in the directory. You can change this later.
+                    </p>
+                    <div class="mt-4">
+                        <input
+                            type="text"
+                            name="display_name"
+                            value="{{ old('display_name') }}"
+                            placeholder="{{ auth()->user()->name }}"
+                            class="block w-full rounded-md border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+                        />
+                        <p class="mt-2 text-xs text-gray-500 dark:text-gray-500">
+                            Leave blank to use your account name: <span class="font-medium">{{ auth()->user()->name }}</span>
+                        </p>
+                    </div>
+                </div>
+                @endunless
+
+                {{-- Stripe Connect (only show when paid selected and not connected) --}}
+                @feature(App\Features\AllowPaidPlugins::class)
+                <div
+                    x-show="pluginType === 'paid'"
+                    x-transition:enter="transition ease-out duration-200"
+                    x-transition:enter-start="opacity-0 -translate-y-2"
+                    x-transition:enter-end="opacity-100 translate-y-0"
+                >
+                    @if ($developerAccount && $developerAccount->hasCompletedOnboarding())
+                        <div class="rounded-lg border border-green-200 bg-green-50 p-6 dark:border-green-800 dark:bg-green-900/20">
+                            <div class="flex items-start gap-4">
+                                <div class="flex size-10 shrink-0 items-center justify-center rounded-lg bg-green-100 text-green-600 dark:bg-green-900/50 dark:text-green-400">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="size-5">
+                                        <path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 0 1 .143 1.052l-8 10.5a.75.75 0 0 1-1.127.075l-4.5-4.5a.75.75 0 0 1 1.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 0 1 1.05-.143Z" clip-rule="evenodd" />
+                                    </svg>
+                                </div>
+                                <div>
+                                    <h3 class="text-sm font-semibold text-green-900 dark:text-green-100">Stripe Connect Active</h3>
+                                    <p class="mt-1 text-sm text-green-700 dark:text-green-300">
+                                        Your account is ready to receive payouts for paid plugin sales.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    @elseif ($developerAccount)
+                        <div class="rounded-lg border border-yellow-200 bg-yellow-50 p-6 dark:border-yellow-800 dark:bg-yellow-900/20">
+                            <div class="flex items-start gap-4">
+                                <div class="flex size-10 shrink-0 items-center justify-center rounded-lg bg-yellow-100 text-yellow-600 dark:bg-yellow-900/50 dark:text-yellow-400">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                                    </svg>
+                                </div>
+                                <div>
+                                    <h3 class="text-sm font-semibold text-yellow-900 dark:text-yellow-100">Stripe Setup Incomplete</h3>
+                                    <p class="mt-1 text-sm text-yellow-700 dark:text-yellow-300">
+                                        You need to complete your Stripe Connect setup before you can submit a paid plugin.
+                                    </p>
+                                    <a href="{{ route('customer.developer.onboarding.refresh') }}" class="mt-3 inline-flex items-center rounded-md bg-yellow-600 px-3 py-1.5 text-sm font-medium text-white shadow-sm hover:bg-yellow-700">
+                                        Continue Setup
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="ml-1.5 size-4">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
+                                        </svg>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    @else
+                        <div class="rounded-lg border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-gray-800">
+                            <div class="flex items-start gap-4">
+                                <div class="flex size-10 shrink-0 items-center justify-center rounded-lg bg-indigo-100 text-indigo-600 dark:bg-indigo-900/50 dark:text-indigo-400">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-3.75 3h15a2.25 2.25 0 0 0 2.25-2.25V6.75A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25v10.5A2.25 2.25 0 0 0 4.5 19.5Z" />
+                                    </svg>
+                                </div>
+                                <div>
+                                    <h3 class="text-sm font-semibold text-gray-900 dark:text-white">Connect Stripe to Sell Plugins</h3>
+                                    <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">
+                                        To submit a paid plugin, you need to connect your Stripe account. You'll earn 70% of each sale.
+                                    </p>
+                                    <a href="{{ route('customer.developer.onboarding') }}" class="mt-3 inline-flex items-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 dark:bg-indigo-500 dark:hover:bg-indigo-600">
+                                        Connect Stripe
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="ml-1.5 size-4">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
+                                        </svg>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    @endif
+                </div>
+                @endfeature
+
                 {{-- Repository Selection (for all plugins) --}}
                 <div class="rounded-lg border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-gray-800">
                     <div class="mb-4 flex items-center justify-between">

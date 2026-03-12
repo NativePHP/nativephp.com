@@ -26,7 +26,7 @@ class CustomerPurchasedPluginsController extends Controller
         // Team plugins for team members
         $teamPlugins = collect();
         $teamOwnerName = null;
-        $teamMembership = $user->teamMembership;
+        $teamMembership = $user->activeTeamMembership();
 
         if ($teamMembership) {
             $teamOwner = $teamMembership->team->owner;

@@ -37,12 +37,20 @@ class CustomerPluginController extends Controller
 
     public function create(): View
     {
-        return view('customer.plugins.create');
+        $user = Auth::user();
+        $developerAccount = $user->developerAccount;
+
+        return view('customer.plugins.create', compact('developerAccount'));
     }
 
     public function store(SubmitPluginRequest $request, PluginSyncService $syncService): RedirectResponse
     {
         $user = Auth::user();
+
+        // Save display name if provided during submission
+        if ($request->filled('display_name') && ! $user->display_name) {
+            $user->update(['display_name' => $request->input('display_name')]);
+        }
 
         // Reject paid plugin submissions if the feature is disabled
         if ($request->type === 'paid' && ! Feature::active(AllowPaidPlugins::class)) {

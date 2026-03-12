@@ -15,6 +15,7 @@ class Team extends Model
         'user_id',
         'name',
         'is_suspended',
+        'extra_seats',
     ];
 
     /**
@@ -56,14 +57,34 @@ class Team extends Model
         return $this->activeUsers()->count();
     }
 
+    public function includedSeats(): int
+    {
+        return config('subscriptions.plans.max.included_seats', 10);
+    }
+
+    public function totalSeatCapacity(): int
+    {
+        return $this->includedSeats() + ($this->extra_seats ?? 0);
+    }
+
+    public function occupiedSeatCount(): int
+    {
+        return $this->activeUserCount() + $this->pendingInvitations()->count();
+    }
+
+    public function availableSeats(): int
+    {
+        return max(0, $this->totalSeatCapacity() - $this->occupiedSeatCount());
+    }
+
     public function isOverIncludedLimit(): bool
     {
-        return $this->activeUserCount() >= 10;
+        return $this->occupiedSeatCount() >= $this->totalSeatCapacity();
     }
 
     public function extraSeatsCount(): int
     {
-        return max(0, $this->activeUserCount() - 10);
+        return max(0, $this->activeUserCount() - $this->includedSeats());
     }
 
     public function suspend(): bool

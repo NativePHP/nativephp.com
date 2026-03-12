@@ -280,7 +280,7 @@ class Plugin extends Model
 
     public function isOfficial(): bool
     {
-        return ($this->is_official ?? false) || str_starts_with($this->name, 'nativephp/');
+        return $this->is_official ?? false;
     }
 
     public function isSatisSynced(): bool
