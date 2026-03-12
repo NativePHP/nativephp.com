@@ -64,6 +64,11 @@ php artisan native:install
 
 The NativePHP installer takes care of setting up and configuring your Laravel application to work with iOS and Android.
 
+If you're using an Inertia starter kit (React or Vue), the installer will offer to automatically configure the
+[`nativephpMobile` Vite plugin](/docs/getting-started/development#the-codenativephpmobilecode-vite-plugin) in your
+`vite.config.js`. This is required for HMR and correct asset loading on iOS. You can also pass `--with-vite` to skip
+the prompt.
+
 You may be prompted about whether you would like to install the ICU-enabled PHP binaries. You should install these if
 your application relies on the `intl` PHP extension.
 
