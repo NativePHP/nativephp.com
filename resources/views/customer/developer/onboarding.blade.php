@@ -97,7 +97,7 @@
                     </div>
 
                     {{-- Status for existing account --}}
-                    @if ($hasExistingAccount && $developerAccount)
+                    @if ($hasExistingAccount && $developerAccount && !$developerAccount->hasCompletedOnboarding())
                         <div class="mt-8 rounded-lg border border-yellow-200 bg-yellow-50 p-4 dark:border-yellow-800 dark:bg-yellow-900/20">
                             <div class="flex items-center gap-3">
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5 text-yellow-600 dark:text-yellow-400">

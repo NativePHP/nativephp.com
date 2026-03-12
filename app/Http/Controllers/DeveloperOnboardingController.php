@@ -51,6 +51,12 @@ class DeveloperOnboardingController extends Controller
             ]);
         }
 
+        // If Stripe onboarding is already complete, skip the Stripe redirect
+        if ($developerAccount->hasCompletedOnboarding()) {
+            return to_route('customer.plugins.create')
+                ->with('success', 'Terms accepted! You can now submit plugins.');
+        }
+
         try {
             $onboardingUrl = $this->stripeConnectService->createOnboardingLink($developerAccount);
 

@@ -64,6 +64,8 @@ class CustomerLicenseController extends Controller
         // Total purchases (licenses + plugins)
         $totalPurchases = $licenseCount + $pluginLicenseCount;
 
+        $developerAccount = $user->developerAccount;
+
         return view('customer.dashboard', compact(
             'licenseCount',
             'isEapCustomer',
@@ -73,7 +75,8 @@ class CustomerLicenseController extends Controller
             'renewalLicenseKey',
             'connectedAccountsCount',
             'connectedAccountsDescription',
-            'totalPurchases'
+            'totalPurchases',
+            'developerAccount'
         ));
     }
 

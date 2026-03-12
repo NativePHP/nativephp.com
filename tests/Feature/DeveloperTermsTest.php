@@ -251,7 +251,7 @@ class DeveloperTermsTest extends TestCase
             'github_id' => '12345',
             'github_username' => 'testdev',
         ]);
-        DeveloperAccount::factory()->withAcceptedTerms()->create([
+        DeveloperAccount::factory()->onboarded()->withAcceptedTerms()->create([
             'user_id' => $user->id,
         ]);
 
@@ -260,5 +260,26 @@ class DeveloperTermsTest extends TestCase
 
         $response->assertStatus(200);
         $response->assertDontSee('Developer Onboarding Required');
+        $response->assertDontSee('have been updated');
+    }
+
+    /** @test */
+    public function plugin_create_page_shows_updated_terms_banner_for_outdated_version(): void
+    {
+        $user = User::factory()->create([
+            'github_id' => '12345',
+            'github_username' => 'testdev',
+        ]);
+        DeveloperAccount::factory()->onboarded()->withAcceptedTerms('0.9')->create([
+            'user_id' => $user->id,
+        ]);
+
+        $response = $this->actingAs($user)
+            ->get(route('customer.plugins.create'));
+
+        $response->assertStatus(200);
+        $response->assertDontSee('Developer Onboarding Required');
+        $response->assertSee('have been updated');
+        $response->assertSee('Review &amp; Accept', false);
     }
 }
