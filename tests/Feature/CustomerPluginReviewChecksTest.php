@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Models\DeveloperAccount;
 use App\Models\User;
 use App\Notifications\PluginSubmitted;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -20,6 +21,9 @@ class CustomerPluginReviewChecksTest extends TestCase
 
         $user = User::factory()->create([
             'github_id' => '12345',
+        ]);
+        DeveloperAccount::factory()->onboarded()->withAcceptedTerms()->create([
+            'user_id' => $user->id,
         ]);
 
         $repoSlug = 'acme/test-plugin';
@@ -98,6 +102,9 @@ class CustomerPluginReviewChecksTest extends TestCase
 
         $user = User::factory()->create([
             'github_id' => '12345',
+        ]);
+        DeveloperAccount::factory()->onboarded()->withAcceptedTerms()->create([
+            'user_id' => $user->id,
         ]);
 
         $repoSlug = 'acme/bare-plugin';

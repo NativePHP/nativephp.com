@@ -61,11 +61,7 @@
                             @endif
                         </h2>
                         <p class="mt-2 text-gray-600 dark:text-gray-400">
-                            @if ($hasExistingAccount)
-                                You've started the onboarding process. Complete the remaining steps to start receiving payouts.
-                            @else
-                                Connect your Stripe account to receive payments when users purchase your plugins.
-                            @endif
+                            Connect your Stripe account to receive payments when users purchase your plugins.
                         </p>
                     </div>
 
@@ -101,7 +97,7 @@
                     </div>
 
                     {{-- Status for existing account --}}
-                    @if ($hasExistingAccount && $developerAccount)
+                    @if ($hasExistingAccount && $developerAccount && !$developerAccount->hasCompletedOnboarding())
                         <div class="mt-8 rounded-lg border border-yellow-200 bg-yellow-50 p-4 dark:border-yellow-800 dark:bg-yellow-900/20">
                             <div class="flex items-center gap-3">
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5 text-yellow-600 dark:text-yellow-400">
@@ -115,13 +111,86 @@
                         </div>
                     @endif
 
-                    {{-- CTA Button --}}
+                    {{-- Developer Terms Agreement --}}
                     <div class="mt-8">
-                        <form action="{{ route('customer.developer.onboarding.start') }}" method="POST">
+                        <form action="{{ route('customer.developer.onboarding.start') }}" method="POST" x-data="{ termsAccepted: {{ ($developerAccount?->hasAcceptedCurrentTerms()) ? 'true' : 'false' }} }">
                             @csrf
+
+                            @if ($developerAccount?->hasAcceptedCurrentTerms())
+                                {{-- Already accepted terms, just include hidden field --}}
+                                <input type="hidden" name="accepted_plugin_terms" value="1" />
+
+                                <div class="mb-6 rounded-lg border border-emerald-200 bg-emerald-50 p-4 dark:border-emerald-800 dark:bg-emerald-900/20">
+                                    <div class="flex items-center gap-3">
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="size-5 shrink-0 text-emerald-500">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" />
+                                        </svg>
+                                        <p class="text-sm text-emerald-800 dark:text-emerald-200">
+                                            You accepted the <a href="{{ route('developer-terms') }}" class="font-medium underline" target="_blank">Plugin Developer Terms and Conditions</a> on {{ $developerAccount->accepted_plugin_terms_at->format('F j, Y') }}.
+                                        </p>
+                                    </div>
+                                </div>
+                            @else
+                                {{-- Terms acceptance required --}}
+                                <div class="mb-6 rounded-lg border border-gray-200 bg-gray-50 p-6 dark:border-gray-700 dark:bg-gray-700/50">
+                                    <h3 class="font-semibold text-gray-900 dark:text-white">Plugin Developer Terms and Conditions</h3>
+                                    <p class="mt-2 text-sm text-gray-600 dark:text-gray-400">
+                                        Before you can sell plugins on the Marketplace, you must agree to the following key terms:
+                                    </p>
+
+                                    <ul class="mt-4 space-y-3 text-sm text-gray-600 dark:text-gray-400">
+                                        <li class="flex items-start gap-3">
+                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="mt-0.5 size-5 shrink-0 text-indigo-500">
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12m-3-2.818.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                                            </svg>
+                                            <span><strong class="text-gray-900 dark:text-white">30% Platform Fee</strong> &mdash; NativePHP retains 30% of each sale to cover payment processing, hosting, and platform maintenance</span>
+                                        </li>
+                                        <li class="flex items-start gap-3">
+                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="mt-0.5 size-5 shrink-0 text-indigo-500">
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75m-3-7.036A11.959 11.959 0 0 1 3.598 6 11.99 11.99 0 0 0 3 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285Z" />
+                                            </svg>
+                                            <span><strong class="text-gray-900 dark:text-white">Your Responsibility</strong> &mdash; You are solely responsible for your plugin's quality, performance, and customer support</span>
+                                        </li>
+                                        <li class="flex items-start gap-3">
+                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="mt-0.5 size-5 shrink-0 text-indigo-500">
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 6h9.75M10.5 6a1.5 1.5 0 1 1-3 0m3 0a1.5 1.5 0 1 0-3 0M3.75 6H7.5m3 12h9.75m-9.75 0a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m-3.75 0H7.5m9-6h3.75m-3.75 0a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m-9.75 0h9.75" />
+                                            </svg>
+                                            <span><strong class="text-gray-900 dark:text-white">Listing Criteria</strong> &mdash; NativePHP sets and may change listing standards at any time, and may remove plugins at its discretion</span>
+                                        </li>
+                                        <li class="flex items-start gap-3">
+                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="mt-0.5 size-5 shrink-0 text-indigo-500">
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="M9.568 3H5.25A2.25 2.25 0 0 0 3 5.25v4.318c0 .597.237 1.17.659 1.591l9.581 9.581c.699.699 1.78.872 2.607.33a18.095 18.095 0 0 0 5.223-5.223c.542-.827.369-1.908-.33-2.607L11.16 3.66A2.25 2.25 0 0 0 9.568 3Z" />
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="M6 6h.008v.008H6V6Z" />
+                                            </svg>
+                                            <span><strong class="text-gray-900 dark:text-white">Pricing & Discounts</strong> &mdash; NativePHP sets plugin prices and may offer discounts at its discretion</span>
+                                        </li>
+                                    </ul>
+
+                                    <div class="mt-6 border-t border-gray-200 pt-4 dark:border-gray-600">
+                                        <label class="flex items-start gap-3 cursor-pointer">
+                                            <input
+                                                type="checkbox"
+                                                name="accepted_plugin_terms"
+                                                value="1"
+                                                x-model="termsAccepted"
+                                                class="mt-0.5 size-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500 dark:border-gray-600 dark:bg-gray-700"
+                                            />
+                                            <span class="text-sm text-gray-700 dark:text-gray-300">
+                                                I have read and agree to the
+                                                <a href="{{ route('developer-terms') }}" class="font-medium text-indigo-600 underline hover:text-indigo-500 dark:text-indigo-400" target="_blank">Plugin Developer Terms and Conditions</a>
+                                            </span>
+                                        </label>
+                                        @error('accepted_plugin_terms')
+                                            <p class="mt-2 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
+                                        @enderror
+                                    </div>
+                                </div>
+                            @endif
+
                             <button
                                 type="submit"
-                                class="w-full rounded-lg bg-indigo-600 px-6 py-3 text-center text-base font-semibold text-white shadow-sm transition hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                                class="w-full rounded-lg bg-indigo-600 px-6 py-3 text-center text-base font-semibold text-white shadow-sm transition hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                                :disabled="!termsAccepted"
                             >
                                 @if ($hasExistingAccount)
                                     Continue Onboarding
@@ -161,7 +230,7 @@
                     <div>
                         <h4 class="font-medium text-gray-900 dark:text-white">What do I need to get started?</h4>
                         <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">
-                            You'll need a Stripe account (or create one during onboarding), a GitHub repository for your plugin, and a nativephp.json configuration file.
+                            You'll need a Stripe account (or create one during onboarding), a GitHub account and a private repository for your plugin.
                         </p>
                     </div>
                 </div>

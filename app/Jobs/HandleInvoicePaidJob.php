@@ -16,6 +16,7 @@ use App\Models\PluginPrice;
 use App\Models\Product;
 use App\Models\ProductLicense;
 use App\Models\User;
+use App\Notifications\PluginSaleCompleted;
 use App\Services\StripeConnectService;
 use App\Support\GitHubOAuth;
 use Illuminate\Bus\Queueable;
@@ -233,6 +234,9 @@ class HandleInvoicePaidJob implements ShouldQueue
 
         // Ensure user has a plugin license key
         $user->getPluginLicenseKey();
+
+        // Notify developers of their sales
+        $this->sendDeveloperSaleNotifications($this->invoice->id);
     }
 
     private function processCartPurchase(string $cartId): void
@@ -295,6 +299,9 @@ class HandleInvoicePaidJob implements ShouldQueue
 
         // Ensure user has a plugin license key
         $user->getPluginLicenseKey();
+
+        // Notify developers of their sales
+        $this->sendDeveloperSaleNotifications($this->invoice->id);
 
         Log::info('Cart purchase completed', [
             'invoice_id' => $this->invoice->id,
@@ -603,6 +610,29 @@ class HandleInvoicePaidJob implements ShouldQueue
         ]);
 
         return $license;
+    }
+
+    private function sendDeveloperSaleNotifications(string $invoiceId): void
+    {
+        $payouts = PluginPayout::query()
+            ->whereHas('pluginLicense', fn ($query) => $query->where('stripe_invoice_id', $invoiceId))
+            ->with(['pluginLicense.plugin', 'developerAccount.user'])
+            ->get();
+
+        if ($payouts->isEmpty()) {
+            return;
+        }
+
+        $payouts->groupBy('developer_account_id')
+            ->each(function ($developerPayouts) {
+                $developerAccount = $developerPayouts->first()->developerAccount;
+
+                if (! $developerAccount || ! $developerAccount->user) {
+                    return;
+                }
+
+                $developerAccount->user->notify(new PluginSaleCompleted($developerPayouts));
+            });
     }
 
     private function billable(): User

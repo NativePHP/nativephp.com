@@ -12,6 +12,8 @@ class DeveloperAccount extends Model
 {
     use HasFactory;
 
+    public const CURRENT_PLUGIN_TERMS_VERSION = '1.0';
+
     protected $guarded = [];
 
     /**
@@ -53,6 +55,17 @@ class DeveloperAccount extends Model
         return $this->onboarding_completed_at !== null;
     }
 
+    public function hasAcceptedPluginTerms(): bool
+    {
+        return $this->accepted_plugin_terms_at !== null;
+    }
+
+    public function hasAcceptedCurrentTerms(): bool
+    {
+        return $this->hasAcceptedPluginTerms()
+            && $this->plugin_terms_version === self::CURRENT_PLUGIN_TERMS_VERSION;
+    }
+
     protected function casts(): array
     {
         return [
@@ -60,6 +73,7 @@ class DeveloperAccount extends Model
             'payouts_enabled' => 'boolean',
             'charges_enabled' => 'boolean',
             'onboarding_completed_at' => 'datetime',
+            'accepted_plugin_terms_at' => 'datetime',
         ];
     }
 }

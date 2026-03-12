@@ -47,10 +47,10 @@
                     aria-hidden="true"
                 />
                 <time
-                    datetime="2025-04-30"
+                    datetime="2026-03-05"
                     class="text-sm"
                 >
-                    April 30, 2025
+                    March 5, 2026
                 </time>
             </div>
         </header>
@@ -234,6 +234,37 @@
                 to access Content arising from any cancellation or deletion,
                 including any claims of interference with business or
                 contractual relations.
+            </p>
+
+            <h2>Third-Party Plugins</h2>
+
+            <p>
+                The Platform may offer plugins, extensions, or add-ons developed
+                by independent third-party developers ("Third-Party Plugins").
+                Third-Party Plugins are not developed, maintained, or supported
+                by Bifrost Technology, LLC.
+            </p>
+
+            <p>
+                We make no representations or warranties regarding the quality,
+                performance, reliability, security, or compatibility of any
+                Third-Party Plugin. Third-Party Plugins are provided "as-is"
+                and your use of them is at your own risk.
+            </p>
+
+            <p>
+                We are not liable for any damages, losses, or issues arising
+                from your use of or reliance on any Third-Party Plugin,
+                including but not limited to data loss, system failures,
+                security vulnerabilities, or incompatibility with your
+                applications. The developer of the Third-Party Plugin is solely
+                responsible for its functionality, support, and any claims
+                arising from its use.
+            </p>
+
+            <p>
+                Third-party plugin developers are subject to separate
+                <a href="/developer-terms">Plugin Developer Terms and Conditions</a>.
             </p>
 
             <h2>Warranties</h2>
