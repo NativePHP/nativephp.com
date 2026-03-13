@@ -142,9 +142,12 @@ class SatisSyncTest extends TestCase
         $this->assertEquals(1, $result['plugins_count']);
 
         Http::assertSent(function ($request) use ($paidPlugin) {
-            $plugins = $request->data()['plugins'] ?? [];
+            $data = $request->data();
+            $plugins = $data['plugins'] ?? [];
 
-            return count($plugins) === 1 && $plugins[0]['name'] === $paidPlugin->name;
+            return count($plugins) === 1
+                && $plugins[0]['name'] === $paidPlugin->name
+                && $data['full_build'] === true;
         });
     }
 }
