@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Enums\PluginType;
 use App\Models\Plugin;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
@@ -107,6 +108,7 @@ class SatisService
     {
         return Plugin::query()
             ->approved()
+            ->where('type', PluginType::Paid)
             ->get()
             ->map(fn (Plugin $plugin) => [
                 'name' => $plugin->name,

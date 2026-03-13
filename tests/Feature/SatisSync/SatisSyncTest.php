@@ -9,6 +9,7 @@ use App\Models\User;
 use App\Services\SatisService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Bus;
+use Illuminate\Support\Facades\Http;
 use Livewire\Livewire;
 use Tests\TestCase;
 
@@ -123,5 +124,27 @@ class SatisSyncTest extends TestCase
         ]);
 
         $this->assertTrue($plugin->isSatisSynced());
+    }
+
+    public function test_build_all_only_includes_paid_plugins(): void
+    {
+        Http::fake(['*' => Http::response(['job_id' => 'test-123', 'message' => 'Build started'], 200)]);
+
+        config(['services.satis.url' => 'https://satis.test', 'services.satis.api_key' => 'test-key']);
+
+        $paidPlugin = Plugin::factory()->paid()->approved()->create();
+        Plugin::factory()->free()->approved()->create();
+
+        $service = new SatisService;
+        $result = $service->buildAll();
+
+        $this->assertTrue($result['success']);
+        $this->assertEquals(1, $result['plugins_count']);
+
+        Http::assertSent(function ($request) use ($paidPlugin) {
+            $plugins = $request->data()['plugins'] ?? [];
+
+            return count($plugins) === 1 && $plugins[0]['name'] === $paidPlugin->name;
+        });
     }
 }
