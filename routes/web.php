@@ -220,11 +220,19 @@ Route::get('docs/{page?}', function ($page = null) {
         }
     }
 
-    return to_route('docs.show', [
-        'platform' => $platform,
-        'version' => $version,
-        'page' => $page,
-    ]);
+    try {
+        return to_route('docs.show', [
+            'platform' => $platform,
+            'version' => $version,
+            'page' => $page,
+        ]);
+    } catch (\Illuminate\Routing\Exceptions\UrlGenerationException) {
+        return to_route('docs.show', [
+            'platform' => $platform,
+            'version' => $version,
+            'page' => 'introduction',
+        ]);
+    }
 })->name('docs')->where('page', '.*');
 
 Route::get('order/{checkoutSessionId}', App\Livewire\OrderSuccess::class)->name('order.success');

@@ -32,11 +32,11 @@ class DeveloperOnboardingController extends Controller
         $user = $request->user();
         $developerAccount = $user->developerAccount;
 
-        if (! $developerAccount) {
-            $developerAccount = $this->stripeConnectService->createConnectAccount($user);
-        }
-
         try {
+            if (! $developerAccount) {
+                $developerAccount = $this->stripeConnectService->createConnectAccount($user);
+            }
+
             $onboardingUrl = $this->stripeConnectService->createOnboardingLink($developerAccount);
 
             return redirect($onboardingUrl);
