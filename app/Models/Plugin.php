@@ -47,9 +47,12 @@ class Plugin extends Model
      */
     public function routeParams(): array
     {
-        [$vendor, $package] = explode('/', $this->name);
+        $parts = explode('/', $this->name ?? '');
 
-        return ['vendor' => $vendor, 'package' => $package];
+        return [
+            'vendor' => $parts[0] ?? '',
+            'package' => $parts[1] ?? '',
+        ];
     }
 
     protected $guarded = [];

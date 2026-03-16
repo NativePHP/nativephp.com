@@ -3,16 +3,20 @@
 namespace App\Livewire;
 
 use Illuminate\View\ViewException;
+use Livewire\Attributes\Locked;
 use Livewire\Component;
 
 class VersionSwitcher extends Component
 {
+    #[Locked]
     public string $platform;
 
+    #[Locked]
     public array $versions;
 
     public int $version;
 
+    #[Locked]
     public string $page;
 
     public function mount(array $versions)

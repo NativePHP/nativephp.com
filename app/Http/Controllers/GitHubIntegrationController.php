@@ -57,7 +57,7 @@ class GitHubIntegrationController extends Controller
                 'trace' => $e->getTraceAsString(),
             ]);
 
-            $route = Auth::check() ? 'customer.licenses' : 'customer.login';
+            $route = Auth::check() ? 'customer.licenses.list' : 'customer.login';
 
             return to_route($route)
                 ->with('error', 'GitHub authentication failed. Please try again.');
