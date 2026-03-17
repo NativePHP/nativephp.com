@@ -32,14 +32,21 @@ Build and run your app on a device or simulator.
 php artisan native:run {os?} {udid?}
 ```
 
-| Option | Description |
-|--------|-------------|
-| `os` | Target platform: `ios` or `android` |
-| `udid` | Specific device/simulator UDID |
-| `--build=debug` | Build type: `debug`, `release`, or `bundle` |
-| `--watch` | Enable hot reloading during development |
-| `--start-url=` | Initial URL/path to load (e.g., `/dashboard`) |
+| Option | Description                                       |
+|--------|---------------------------------------------------|
+| `os` | Target platform: `ios/i` or `android/a`           |
+| `udid` | Specific device/simulator UDID                    |
+| `--build=debug` | Build type: `debug`, `release`, or `bundle`       |
+| `--watch` | Enable hot reloading during development           |
+| `--start-url=` | Initial URL/path to load (e.g., `/dashboard`)     |
 | `--no-tty` | Disable TTY mode for non-interactive environments |
+
+<aside>
+
+Before building, `native:run` checks for unregistered plugins and warns you if any are found. You can register them
+with `php artisan native:plugin:register`.
+
+</aside>
 
 ### native:watch
 
@@ -49,10 +56,10 @@ Watch for file changes and sync to a running mobile app.
 php artisan native:watch {platform?} {target?}
 ```
 
-| Option | Description |
-|--------|-------------|
-| `platform` | Target platform: `ios` or `android` |
-| `target` | The device/simulator UDID to watch |
+| Option | Description                             |
+|--------|-----------------------------------------|
+| `platform` | Target platform: `ios/i` or `android/a` |
+| `target` | The device/simulator UDID to watch      |
 
 ### native:jump
 
@@ -62,14 +69,16 @@ Start the NativePHP development server for testing mobile apps without building.
 php artisan native:jump
 ```
 
-| Option | Description |
-|--------|-------------|
-| `--platform=` | Target platform: `android` or `ios` |
-| `--host=0.0.0.0` | Host address to serve on |
-| `--http-port=` | HTTP port to serve on |
+| Option                | Description |
+|-----------------------|-------------|
+| `--platform=`         | Target platform: `android` or `ios` |
+| `ios/i`               | Shorthand for `--platform=ios` |
+| `android/a`           | Shorthand for `--platform=android` |
+| `--host=0.0.0.0`      | Host address to serve on |
+| `--http-port=`        | HTTP port to serve on |
 | `--laravel-port=8000` | Laravel dev server port to proxy to |
-| `--no-mdns` | Disable mDNS service advertisement |
-| `--skip-build` | Skip building if `app.zip` exists |
+| `--no-mdns`           | Disable mDNS service advertisement |
+| `--skip-build`        | Skip building if `app.zip` exists |
 
 ### native:open
 
@@ -79,9 +88,9 @@ Open the native project in Xcode or Android Studio.
 php artisan native:open {os?}
 ```
 
-| Option | Description |
-|--------|-------------|
-| `os` | Target platform: `ios` or `android` |
+| Option | Description                             |
+|--------|-----------------------------------------|
+| `os` | Target platform: `ios/i` or `android/a` |
 
 ### native:tail
 
@@ -119,12 +128,12 @@ Package your app for distribution with signing.
 php artisan native:package {platform}
 ```
 
-| Option | Description |
-|--------|-------------|
-| `platform` | Target platform: `android` or `ios` |
-| `--build-type=release` | Build type: `release` or `bundle` |
-| `--output=` | Output directory for signed artifacts |
-| `--jump-by=` | Skip ahead in version numbering |
+| Option | Description                                       |
+|--------|---------------------------------------------------|
+| `platform` | Target platform: `android/a` or `ios/i`           |
+| `--build-type=release` | Build type: `release` or `bundle`                 |
+| `--output=` | Output directory for signed artifacts             |
+| `--jump-by=` | Skip ahead in version numbering                   |
 | `--no-tty` | Disable TTY mode for non-interactive environments |
 
 **Android Options:**
@@ -181,10 +190,10 @@ Generate signing credentials for iOS and Android.
 php artisan native:credentials {platform?}
 ```
 
-| Option | Description |
-|--------|-------------|
-| `platform` | Target platform: `android`, `ios`, or `both` |
-| `--reset` | Generate new keystore and PEM certificate |
+| Option | Description                                      |
+|--------|--------------------------------------------------|
+| `platform` | Target platform: `android/a`, `ios/i`, or `both` |
+| `--reset` | Generate new keystore and PEM certificate        |
 
 ### native:check-build-number
 
@@ -219,15 +228,15 @@ php artisan native:plugin:list
 
 ### native:plugin:register
 
-Register a plugin in your NativeServiceProvider.
+Register a plugin in your NativeServiceProvider. When called without arguments, discovers all unregistered plugins and lets you register them.
 
 ```shell
-php artisan native:plugin:register {plugin}
+php artisan native:plugin:register {plugin?}
 ```
 
 | Option | Description |
 |--------|-------------|
-| `plugin` | Package name (e.g., `vendor/plugin-name`) |
+| `plugin` | Package name (e.g., `vendor/plugin-name`). Optional — omit to discover unregistered plugins |
 | `--remove` | Remove the plugin instead of adding it |
 | `--force` | Skip conflict warnings |
 
