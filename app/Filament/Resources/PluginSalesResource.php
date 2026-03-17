@@ -9,6 +9,7 @@ use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 
 class PluginSalesResource extends Resource
 {
@@ -71,19 +72,19 @@ class PluginSalesResource extends Resource
             ->filters([
                 Tables\Filters\SelectFilter::make('user_id')
                     ->label('User')
-                    ->relationship('user', 'email')
+                    ->relationship('user', 'email', fn (Builder $query) => $query->whereNotNull('email'))
                     ->searchable()
                     ->preload(),
 
                 Tables\Filters\SelectFilter::make('plugin_id')
                     ->label('Plugin')
-                    ->relationship('plugin', 'name')
+                    ->relationship('plugin', 'name', fn (Builder $query) => $query->whereNotNull('name'))
                     ->searchable()
                     ->preload(),
 
                 Tables\Filters\SelectFilter::make('plugin_bundle_id')
                     ->label('Bundle')
-                    ->relationship('pluginBundle', 'name')
+                    ->relationship('pluginBundle', 'name', fn (Builder $query) => $query->whereNotNull('name'))
                     ->searchable()
                     ->preload(),
 
