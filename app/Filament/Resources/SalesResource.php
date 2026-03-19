@@ -2,18 +2,18 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\PluginSalesResource\Pages;
-use App\Filament\Resources\PluginSalesResource\Widgets\PluginSalesStats;
-use App\Models\PluginLicense;
+use App\Filament\Resources\SalesResource\Pages;
+use App\Filament\Resources\SalesResource\Widgets\SalesStats;
+use App\Models\Sale;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 
-class PluginSalesResource extends Resource
+class SalesResource extends Resource
 {
-    protected static ?string $model = PluginLicense::class;
+    protected static ?string $model = Sale::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-banknotes';
 
@@ -27,7 +27,7 @@ class PluginSalesResource extends Resource
 
     protected static ?string $pluralModelLabel = 'Sales';
 
-    protected static ?string $slug = 'plugin-sales';
+    protected static ?string $slug = 'sales';
 
     public static function form(Form $form): Form
     {
@@ -48,24 +48,20 @@ class PluginSalesResource extends Resource
                     ->searchable()
                     ->sortable(),
 
-                Tables\Columns\TextColumn::make('plugin.name')
-                    ->label('Plugin')
+                Tables\Columns\TextColumn::make('product_name')
+                    ->label('Product')
+                    ->description(fn (Sale $record): ?string => $record->bundle_name ? "Bundle: {$record->bundle_name}" : null)
                     ->searchable()
                     ->sortable()
                     ->fontFamily('mono'),
 
-                Tables\Columns\TextColumn::make('pluginBundle.name')
-                    ->label('Bundle')
-                    ->placeholder('-')
-                    ->sortable(),
-
                 Tables\Columns\TextColumn::make('price_paid')
                     ->label('Amount')
-                    ->formatStateUsing(fn (int $state, PluginLicense $record): string => '$'.number_format($state / 100, 2).' '.$record->currency)
+                    ->formatStateUsing(fn (int $state, Sale $record): string => '$'.number_format($state / 100, 2).' '.$record->currency)
                     ->sortable(),
 
-                Tables\Columns\IconColumn::make('is_grandfathered')
-                    ->label('Grandfathered')
+                Tables\Columns\IconColumn::make('is_comped')
+                    ->label('Comped')
                     ->boolean()
                     ->sortable(),
             ])
@@ -76,20 +72,17 @@ class PluginSalesResource extends Resource
                     ->searchable()
                     ->preload(),
 
-                Tables\Filters\SelectFilter::make('plugin_id')
-                    ->label('Plugin')
-                    ->relationship('plugin', 'name', fn (Builder $query) => $query->whereNotNull('name'))
-                    ->searchable()
-                    ->preload(),
+                Tables\Filters\SelectFilter::make('product_name')
+                    ->label('Product')
+                    ->options(fn (): array => Sale::query()
+                        ->whereNotNull('product_name')
+                        ->distinct()
+                        ->pluck('product_name', 'product_name')
+                        ->toArray())
+                    ->searchable(),
 
-                Tables\Filters\SelectFilter::make('plugin_bundle_id')
-                    ->label('Bundle')
-                    ->relationship('pluginBundle', 'name', fn (Builder $query) => $query->whereNotNull('name'))
-                    ->searchable()
-                    ->preload(),
-
-                Tables\Filters\TernaryFilter::make('is_grandfathered')
-                    ->label('Grandfathered'),
+                Tables\Filters\TernaryFilter::make('is_comped')
+                    ->label('Comped'),
             ])
             ->actions([])
             ->bulkActions([])
@@ -104,14 +97,14 @@ class PluginSalesResource extends Resource
     public static function getWidgets(): array
     {
         return [
-            PluginSalesStats::class,
+            SalesStats::class,
         ];
     }
 
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListPluginSales::route('/'),
+            'index' => Pages\ListSales::route('/'),
         ];
     }
 

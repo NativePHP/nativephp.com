@@ -1,14 +1,14 @@
 <?php
 
-namespace App\Filament\Resources\PluginSalesResource\Widgets;
+namespace App\Filament\Resources\SalesResource\Widgets;
 
-use App\Filament\Resources\PluginSalesResource\Pages\ListPluginSales;
-use App\Models\PluginLicense;
+use App\Filament\Resources\SalesResource\Pages\ListSales;
+use App\Models\Sale;
 use Filament\Widgets\Concerns\InteractsWithPageTable;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
 
-class PluginSalesStats extends BaseWidget
+class SalesStats extends BaseWidget
 {
     use InteractsWithPageTable;
 
@@ -16,15 +16,15 @@ class PluginSalesStats extends BaseWidget
 
     protected function getTablePage(): string
     {
-        return ListPluginSales::class;
+        return ListSales::class;
     }
 
     protected function getStats(): array
     {
         $filteredQuery = $this->getPageTableQuery();
 
-        $grandTotalRevenue = PluginLicense::sum('price_paid');
-        $grandTotalSales = PluginLicense::count();
+        $grandTotalRevenue = Sale::sum('price_paid');
+        $grandTotalSales = Sale::count();
 
         $filteredRevenue = (clone $filteredQuery)->sum('price_paid');
         $filteredSales = (clone $filteredQuery)->count();
