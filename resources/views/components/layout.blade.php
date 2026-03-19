@@ -104,7 +104,7 @@
         }"
         x-resize="
             width = $width
-            if (width >= 1280) {
+            if (window.matchMedia('(min-width: 80rem)').matches) {
                 showMobileMenu = false
                 showDocsMenu = false
             }
