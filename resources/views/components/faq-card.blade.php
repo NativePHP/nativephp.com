@@ -10,7 +10,7 @@
     <div
         x-data="{ open: false }"
         x-on:click="open = !open"
-        class="group/faq-card grid cursor-pointer select-none grid-cols-[1.8rem,1fr,2.5rem] gap-x-3 rounded-2xl px-5 py-5 ring-1 transition-all duration-200"
+        class="group/faq-card grid cursor-pointer select-none grid-cols-[1.8rem_1fr_2.5rem] gap-x-3 rounded-2xl px-5 py-5 ring-1 transition-all duration-200"
         :class="{ 'ring-gray-200 hover:bg-gray-100 dark:ring-white/20 dark:hover:bg-gray-900/50': !open, 'ring-black/10 bg-gray-100 dark:ring-white/20 dark:bg-gray-900/50': open }"
     >
         {{-- Number --}}

@@ -2,27 +2,48 @@
 
 namespace Tests\Feature;
 
-use Illuminate\Support\Facades\Config;
+use App\Features\ShowAuthButtons;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\URL;
+use Laravel\Pennant\Feature;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
 class MobileRouteTest extends TestCase
 {
-    #[Test]
-    public function mobile_route_includes_stripe_payment_links()
+    use RefreshDatabase;
+
+    protected function setUp(): void
     {
-        $mockLinks = [
-            'mini' => ['stripe_payment_link' => 'https://buy.stripe.com/mini-payment'],
-            'pro' => ['stripe_payment_link' => 'https://buy.stripe.com/pro-payment'],
-            'max' => ['stripe_payment_link' => 'https://buy.stripe.com/max-payment'],
-        ];
+        parent::setUp();
 
-        Config::set('subscriptions.plans', $mockLinks);
+        // Enable the auth feature flag since the pricing page might reference it
+        Feature::define(ShowAuthButtons::class, false);
+    }
 
-        $response = $this->withoutVite()->get(route('early-adopter'))->getContent();
+    #[Test]
+    public function pricing_route_redirects_to_blog_post()
+    {
+        $this
+            ->get(route('pricing'))
+            ->assertRedirect('blog/nativephp-for-mobile-is-now-free');
+    }
 
-        $this->assertStringContainsString($mockLinks['mini']['stripe_payment_link'], $response);
-        $this->assertStringContainsString($mockLinks['pro']['stripe_payment_link'], $response);
-        $this->assertStringContainsString($mockLinks['max']['stripe_payment_link'], $response);
+    #[Test]
+    public function alt_pricing_route_does_not_include_stripe_payment_links()
+    {
+        $this
+            ->withoutVite()
+            ->get(URL::signedRoute('alt-pricing'))
+            ->assertDontSee('buy.stripe.com');
+    }
+
+    #[Test]
+    public function alt_pricing_route_includes_mobile_pricing_livewire_component()
+    {
+        $this
+            ->withoutVite()
+            ->get(URL::signedRoute('alt-pricing'))
+            ->assertSeeLivewire('mobile-pricing');
     }
 }

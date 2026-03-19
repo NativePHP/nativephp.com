@@ -10,4 +10,4 @@ Also, be sure to read our [contributing guidelines](CONTRIBUTING.md) for help ge
 
 ## Issues
 
-Please raise any issues on the [NativePHP/laravel](https://github.com/NativePHP/laravel/issues) repo.
+Please raise any issues on the [NativePHP/desktop](https://github.com/nativephp/desktop/issues) repo.

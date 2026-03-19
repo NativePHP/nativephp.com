@@ -46,11 +46,40 @@ class ShowDocumentationController extends Controller
         } catch (InvalidArgumentException $e) {
             return $this->redirectToFirstNavigationPage($navigation, $page);
         }
+        $title = $pageProperties['title'].' - NativePHP '.$platform.' v'.$version;
+        $description = Arr::exists($pageProperties, 'description') ? $pageProperties['description'] : 'NativePHP documentation for '.$platform.' v'.$version;
 
-        SEOTools::setTitle($pageProperties['title'].' - NativePHP '.$platform.' v'.$version);
-        SEOTools::setDescription(Arr::exists($pageProperties, 'description') ? $pageProperties['description'] : '');
+        SEOTools::setTitle($title);
+        SEOTools::setDescription($description);
+
+        // Set OpenGraph metadata
+        SEOTools::opengraph()->setTitle($pageProperties['title']);
+        SEOTools::opengraph()->setDescription($description);
+        SEOTools::opengraph()->setType('article');
+
+        // Set Twitter Card metadata
+        SEOTools::twitter()->setTitle($pageProperties['title']);
+        SEOTools::twitter()->setDescription($description);
 
         return view('docs.index')->with($pageProperties);
+    }
+
+    public function serveRawMarkdown(Request $request, string $platform, string $version, string $page)
+    {
+        abort_unless(is_dir(resource_path('views/docs/'.$platform.'/'.$version)), 404);
+
+        $filePath = resource_path("views/docs/{$platform}/{$version}/{$page}.md");
+
+        if (! file_exists($filePath)) {
+            abort(404);
+        }
+
+        $content = file_get_contents($filePath);
+
+        return response($content, 200, [
+            'Content-Type' => 'text/plain; charset=utf-8',
+            'Content-Disposition' => 'inline; filename="'.basename($filePath).'"',
+        ]);
     }
 
     protected function getPageProperties($platform, $version, $page = null): array
@@ -65,27 +94,33 @@ class ShowDocumentationController extends Controller
         $pageProperties = $document->matter();
 
         $versionProperties = YamlFrontMatter::parseFile(resource_path("views/docs/{$platform}/{$version}/_index.md"));
-        $pageProperties = array_merge($pageProperties, $versionProperties->matter());
+
+        $pageProperties = array_merge($versionProperties->matter(), $pageProperties);
 
         $pageProperties['platform'] = $platform;
         $pageProperties['version'] = $version;
         $pageProperties['pagePath'] = request()->path();
 
-        $pageProperties['content'] = CommonMark::convertToHtml($document->body());
+        $pageProperties['content'] = CommonMark::convertToHtml($document->body(), [
+            'user' => auth()->user(),
+        ]);
         $pageProperties['tableOfContents'] = $this->extractTableOfContents($document->body());
 
         $navigation = $this->getNavigation($platform, $version);
-        $pageProperties['navigation'] = Menu::build($navigation, function (Menu $menu, $nav) {
+        $pageProperties['navigation'] = Menu::build($navigation, function (Menu $menu, $nav): void {
             if (array_key_exists('path', $nav)) {
                 $menu->link($nav['path'], $nav['title']);
             } elseif (array_key_exists('children', $nav)) {
                 $menu->setItemParentAttribute('x-data', '{ open: $el.classList.contains(\'active\') }');
 
+                // Find first navigable path (could be direct child or nested in subsection)
+                $firstPath = $this->findFirstPath($nav['children']);
+
                 $header = Html::raw('
-                    <a href="'.$nav['children'][0]['path'].'" class="flex items-center gap-2 justify-between" x-on:click.prevent="open = !open">
+                    <a href="'.$firstPath.'" class="flex items-center gap-2 justify-between" x-on:click.prevent="open = !open">
                         <span>'.$nav['title'].'</span>
                         <span class="text-gray-400 dark:text-gray-600">
-                            <svg class="size-3 transition duration-300 will-change-transform ease-in-out" :class="{\'rotate-180\': open,}" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <svg class="size-3 transition duration-300 will-change-transform ease-in-out" :class="open ? \'rotate-180\' : \'rotate-90\'" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"></path>
                             </svg>
                         </span>
@@ -98,7 +133,41 @@ class ShowDocumentationController extends Controller
                         'x-collapse' => '',
                     ]);
                 foreach ($nav['children'] as $child) {
-                    $submenu->link($child['path'], $child['title']);
+                    if (isset($child['is_subsection']) && $child['is_subsection']) {
+                        // 3rd tier: subsection with its own children
+                        // Check if any child page is active
+                        $hasActivePage = collect($child['children'])->contains(fn ($c) => isset($c['path']) && $c['path'] === '/'.request()->path());
+
+                        $firstChildPath = isset($child['children'][0]) ? $child['children'][0]['path'] : '#';
+                        $subHeader = Html::raw('
+                            <div x-data="{ subOpen: '.($hasActivePage ? 'true' : 'false').' }">
+                            <a href="'.$firstChildPath.'" class="subsection-header" x-on:click.prevent="subOpen = !subOpen">
+                                <span>'.$child['title'].'</span>
+                                <span class="text-gray-400 dark:text-gray-600">
+                                    <svg class="size-2.5 transition duration-300 will-change-transform ease-in-out" :class="subOpen ? \'rotate-180\' : \'rotate-90\'" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"></path>
+                                    </svg>
+                                </span>
+                            </a>
+                            ');
+
+                        $subSubmenu = Menu::new()
+                            ->setAttributes([
+                                'x-show' => 'subOpen',
+                                'x-collapse' => '',
+                                'class' => 'third-tier',
+                            ]);
+
+                        foreach ($child['children'] as $subChild) {
+                            $subSubmenu->link($subChild['path'], $subChild['title']);
+                        }
+
+                        $subSubmenu->append('</div>');
+
+                        $submenu->submenu($subHeader, $subSubmenu);
+                    } else {
+                        $submenu->link($child['path'], $child['title']);
+                    }
                 }
 
                 $menu->submenu($header, $submenu);
@@ -113,24 +182,19 @@ class ShowDocumentationController extends Controller
         $pageProperties['nextPage'] = null;
         $pageProperties['previousPage'] = null;
 
-        foreach ($navigation as $i => $section) {
-            foreach ($section['children'] as $key => $child) {
-                if ($child['path'] === '/'.$pageProperties['pagePath']) {
-                    if (isset($section['children'][$key + 1])) {
-                        $pageProperties['nextPage'] = $section['children'][$key + 1];
-                    } elseif (isset($navigation[$i + 1])) {
-                        $navigation[$i + 1]['children'][0]['title'] = $navigation[$i + 1]['title'].': '.$navigation[$i + 1]['children'][0]['title'];
-                        $pageProperties['nextPage'] = $navigation[$i + 1]['children'][0];
-                    }
+        // Flatten all navigable pages for prev/next calculation
+        $flatPages = $this->flattenNavigationPages($navigation);
+        $currentPath = '/'.$pageProperties['pagePath'];
 
-                    if (isset($section['children'][$key - 1])) {
-                        $pageProperties['previousPage'] = $section['children'][$key - 1];
-                    } elseif (isset($navigation[$i - 1])) {
-                        $lastChild = count($navigation[$i - 1]['children']) - 1;
-                        $navigation[$i - 1]['children'][$lastChild]['title'] = $navigation[$i - 1]['title'].': '.$navigation[$i - 1]['children'][$lastChild]['title'];
-                        $pageProperties['previousPage'] = $navigation[$i - 1]['children'][$lastChild];
-                    }
+        foreach ($flatPages as $index => $page) {
+            if ($page['path'] === $currentPath) {
+                if (isset($flatPages[$index + 1])) {
+                    $pageProperties['nextPage'] = $flatPages[$index + 1];
                 }
+                if (isset($flatPages[$index - 1])) {
+                    $pageProperties['previousPage'] = $flatPages[$index - 1];
+                }
+                break;
             }
         }
 
@@ -188,6 +252,7 @@ class ShowDocumentationController extends Controller
                 'order' => $parsedSection->matter('order', 0),
             ];
 
+            // Get direct child pages (depth 0)
             $subSections = (new Finder)
                 ->files()
                 ->notName('_index.md')
@@ -217,12 +282,108 @@ class ShowDocumentationController extends Controller
                 ]);
             }
 
+            // Check for nested subsections (3rd tier)
+            $nestedSections = (new Finder)
+                ->files()
+                ->name('_index.md')
+                ->depth(1)
+                ->in($section->getPath());
+
+            /** @var SplFileInfo $nestedSection */
+            foreach ($nestedSections as $nestedSection) {
+                $parsedNested = YamlFrontMatter::parse($nestedSection->getContents());
+
+                $nestedEntry = [
+                    'title' => $parsedNested->matter('title', ''),
+                    'order' => $parsedNested->matter('order', 0),
+                    'is_subsection' => true,
+                ];
+
+                // Get pages within this nested section
+                $nestedPages = (new Finder)
+                    ->files()
+                    ->notName('_index.md')
+                    ->name('*.md')
+                    ->depth(0)
+                    ->in($nestedSection->getPath());
+
+                $nestedChildren = collect();
+
+                /** @var SplFileInfo $nestedPage */
+                foreach ($nestedPages as $nestedPage) {
+                    $parsedPage = YamlFrontMatter::parse($nestedPage->getContents());
+
+                    $path = Str::after($nestedPage->getPath(), $basePath).'/'.$nestedPage->getBasename('.md');
+
+                    $title = $parsedPage->matter('title', '');
+
+                    if ($title === '') {
+                        $content = CommonMark::convertToHtml($nestedPage->getContents());
+                        $title = $this->extractTitle($content);
+                    }
+
+                    $nestedChildren->push([
+                        'path' => $path,
+                        'title' => $title,
+                        'order' => $parsedPage->matter('order', 0),
+                    ]);
+                }
+
+                $nestedEntry['children'] = $nestedChildren->sortBy('order')->values()->toArray();
+                $children->push($nestedEntry);
+            }
+
             $navigationEntry['children'] = $children->sortBy('order')->values()->toArray();
 
             $navigation->push($navigationEntry);
         }
 
         return $navigation->sortBy('order')->values()->toArray();
+    }
+
+    protected function findFirstPath(array $children): string
+    {
+        foreach ($children as $child) {
+            if (isset($child['path'])) {
+                return $child['path'];
+            }
+            if (isset($child['children']) && ! empty($child['children'])) {
+                $path = $this->findFirstPath($child['children']);
+                if ($path !== '#') {
+                    return $path;
+                }
+            }
+        }
+
+        return '#';
+    }
+
+    protected function flattenNavigationPages(array $navigation): array
+    {
+        $pages = [];
+
+        foreach ($navigation as $section) {
+            if (isset($section['path'])) {
+                $pages[] = $section;
+            }
+            if (isset($section['children'])) {
+                foreach ($section['children'] as $child) {
+                    if (isset($child['path'])) {
+                        $pages[] = $child;
+                    }
+                    // Handle 3rd tier (subsections)
+                    if (isset($child['is_subsection']) && isset($child['children'])) {
+                        foreach ($child['children'] as $subChild) {
+                            if (isset($subChild['path'])) {
+                                $pages[] = $subChild;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        return $pages;
     }
 
     protected function extractTableOfContents(string $document): array
@@ -306,7 +467,7 @@ class ShowDocumentationController extends Controller
     protected function getMarkdownView($view, array $data = [], array $mergeData = []): View
     {
         /** @var ViewFactory $factory */
-        $factory = app(ViewFactory::class);
+        $factory = resolve(ViewFactory::class);
 
         $factory->addExtension('md', 'blade');
 

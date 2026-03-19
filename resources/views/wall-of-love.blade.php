@@ -1,0 +1,175 @@
+<x-layout title="Thank You to Our Early Adopters">
+    {{-- Hero Section --}}
+    <section
+        class="mt-10 md:mt-14"
+        aria-labelledby="hero-heading"
+    >
+        <header class="relative z-10 grid place-items-center">
+            {{-- Blurred circle - Decorative --}}
+            <div
+                class="absolute top-0 right-1/2 -z-30 size-60 translate-x-1/2 rounded-full bg-purple-100/70 blur-3xl md:w-80 dark:bg-slate-500/30"
+                aria-hidden="true"
+            ></div>
+
+            {{-- Primary Heading --}}
+            <h1
+                id="hero-heading"
+                x-init="
+                    () => {
+                        motion.inView($el, () => {
+                            gsap.fromTo(
+                                $el,
+                                { autoAlpha: 0, y: -10 },
+                                { autoAlpha: 1, y: 0, duration: 0.7, ease: 'power2.out' },
+                            )
+                        })
+                    }
+                "
+                class="font-bold"
+            >
+                <div class="relative">
+                    <div
+                        class="bg-gradient-to-br from-zinc-900 to-zinc-500 bg-clip-text text-5xl tracking-tighter text-transparent sm:text-6xl dark:from-white"
+                    >
+                        Thank
+                    </div>
+
+                    <div class="absolute -top-4 left-45">
+                        <x-icons.star
+                            x-init="
+                                () => {
+                                    gsap.to($el, {
+                                        rotate: 180,
+                                        duration: 3,
+                                        repeat: -1,
+                                        ease: 'linear',
+                                    })
+                                }
+                            "
+                            class="size-5 text-gray-600 dark:text-gray-300"
+                            aria-hidden="true"
+                        />
+                    </div>
+                </div>
+                <div class="flex items-center gap-2">
+                    <div
+                        class="bg-gradient-to-br from-purple-600 to-purple-300 bg-clip-text text-5xl tracking-tighter text-transparent sm:text-6xl dark:bg-gradient-to-t"
+                    >
+                        You!
+                    </div>
+                    <div
+                        class="bg-gradient-to-br from-purple-500 to-purple-300 bg-clip-text text-lg leading-6 text-transparent dark:bg-gradient-to-tl"
+                    >
+                        <div>Early</div>
+                        <div>Adopters</div>
+                    </div>
+                </div>
+            </h1>
+
+            <div class="mt-5 flex items-center justify-center gap-1">
+                <div
+                    class="size-2.5 rounded-sm bg-gradient-to-tl from-rose-400/70 to-rose-300/70"
+                ></div>
+                <div
+                    class="size-2.5 rounded-sm bg-gradient-to-tl from-pink-400/70 to-pink-300/70"
+                ></div>
+                <div
+                    class="size-2.5 rounded-sm bg-gradient-to-tl from-fuchsia-400/70 to-fuchsia-300/70"
+                ></div>
+                <div
+                    class="size-2.5 rounded-sm bg-gradient-to-tl from-purple-400/70 to-purple-300/70"
+                ></div>
+                <div
+                    class="size-2.5 rounded-sm bg-gradient-to-tl from-violet-400/70 to-violet-300/70"
+                ></div>
+                <div
+                    class="size-2.5 rounded-sm bg-gradient-to-tl from-indigo-400/70 to-indigo-300/70"
+                ></div>
+            </div>
+
+            {{-- Description --}}
+            <p
+                x-init="
+                    () => {
+                        motion.inView($el, () => {
+                            gsap.fromTo(
+                                $el,
+                                { autoAlpha: 0, y: 10 },
+                                { autoAlpha: 1, y: 0, duration: 0.7, ease: 'power2.out' },
+                            )
+                        })
+                    }
+                "
+                class="mx-auto mt-5 max-w-2xl text-center text-base/relaxed text-gray-600 sm:text-lg/relaxed dark:text-gray-400"
+            >
+                Every great story starts with a small circle of believers. You
+                stood with us at the beginning, and your support will always be
+                part of the NativePHP story.
+            </p>
+        </header>
+    </section>
+
+    {{-- List --}}
+    @php
+        // Get approved submissions
+        $approvedSubmissions = App\Models\WallOfLoveSubmission::whereNotNull('approved_at')
+            ->inRandomOrder()
+            ->get();
+
+        // Check if any submissions have user-uploaded images
+        $hasAnyUserImages = $approvedSubmissions->contains(fn ($s) => ! empty($s->photo_path));
+
+        // Convert approved submissions to the format expected by the component
+        $earlyAdopters = $approvedSubmissions
+            ->map(function ($submission) use ($hasAnyUserImages) {
+                $hasUserImage = ! empty($submission->photo_path);
+
+                return [
+                    'name' => $submission->name,
+                    'title' => $submission->company,
+                    'url' => $submission->url,
+                    'image' => $hasUserImage
+                        ? asset('storage/' . $submission->photo_path)
+                        : 'https://avatars.laravel.cloud/' . rand(1, 70) . '?vibe=' . array_rand(['ocean', 'stealth', 'bubble', 'ice']),
+                    'hasUserImage' => $hasUserImage,
+                    // Only allow featured if has user image (unless no submissions have images)
+                    'featured' => ($hasAnyUserImages ? $hasUserImage : true) && rand(0, 4) === 0,
+                    'testimonial' => $submission->testimonial,
+                ];
+            })
+            ->toArray();
+    @endphp
+
+    @if (count($earlyAdopters) > 0)
+        <div
+            class="relative z-10 mt-10 grid place-items-center 2xs:block 2xs:columns-[10rem] xl:columns-[12rem]"
+        >
+            @foreach ($earlyAdopters as $adopter)
+                <x-wall-of-love.early-adopter-card
+                    :name="$adopter['name']"
+                    :image="$adopter['image']"
+                    :url="$adopter['url'] ?? null"
+                    :title="$adopter['title'] ?? null"
+                    :featured="$adopter['featured'] ?? false"
+                    :hasUserImage="$adopter['hasUserImage'] ?? false"
+                />
+            @endforeach
+        </div>
+    @else
+        <div class="relative z-10 mt-10 text-center">
+            <div
+                class="mx-auto max-w-md rounded-2xl border border-gray-200 bg-white p-8 backdrop-blur-sm dark:border-gray-700 dark:bg-gray-800/50"
+            >
+                <div class="mb-4 text-6xl">🚀</div>
+                <h3
+                    class="mb-2 text-xl font-semibold text-gray-900 dark:text-white"
+                >
+                    Coming Soon!
+                </h3>
+                <p class="text-gray-600 dark:text-gray-400">
+                    Our early adopters will appear here soon.
+                </p>
+            </div>
+        </div>
+    @endif
+</x-layout>

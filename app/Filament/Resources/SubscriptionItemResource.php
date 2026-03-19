@@ -1,0 +1,129 @@
+<?php
+
+namespace App\Filament\Resources;
+
+use App\Enums\Subscription as SubscriptionEnum;
+use Filament\Forms;
+use Filament\Forms\Form;
+use Filament\Resources\Resource;
+use Filament\Tables;
+use Filament\Tables\Table;
+use Laravel\Cashier\SubscriptionItem;
+
+class SubscriptionItemResource extends Resource
+{
+    protected static ?string $model = SubscriptionItem::class;
+
+    protected static ?string $navigationGroup = 'Billing';
+
+    protected static ?string $navigationLabel = 'Subscription Items';
+
+    protected static ?int $navigationSort = 2;
+
+    public static function form(Form $form): Form
+    {
+        return $form
+            ->schema([
+                Forms\Components\Section::make('Subscription Item Details')
+                    ->schema([
+                        Forms\Components\Select::make('subscription_id')
+                            ->relationship('subscription', 'id')
+                            ->searchable()
+                            ->disabled(),
+                        Forms\Components\TextInput::make('stripe_id')
+                            ->disabled(),
+                        Forms\Components\TextInput::make('stripe_product')
+                            ->disabled(),
+                        Forms\Components\TextInput::make('stripe_price')
+                            ->disabled(),
+                        Forms\Components\TextInput::make('quantity')
+                            ->disabled(),
+                    ])->columns(2),
+            ]);
+    }
+
+    public static function table(Table $table): Table
+    {
+        return $table
+            ->defaultSort('id', 'desc')
+            ->columns([
+                Tables\Columns\TextColumn::make('id')
+                    ->sortable()
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('subscription.user.email')
+                    ->sortable()
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('subscription.id')
+                    ->numeric()
+                    ->sortable()
+                    ->url(fn ($record) => SubscriptionResource::getUrl('view', ['record' => $record->subscription])),
+                Tables\Columns\TextColumn::make('subscription.stripe_status')
+                    ->label('Subscription Status')
+                    ->badge()
+                    ->color(fn (string $state): string => match ($state) {
+                        'active' => 'success',
+                        'canceled' => 'danger',
+                        'incomplete' => 'warning',
+                        'incomplete_expired' => 'danger',
+                        'past_due' => 'warning',
+                        'trialing' => 'info',
+                        'unpaid' => 'danger',
+                        default => 'gray',
+                    }),
+                Tables\Columns\TextColumn::make('stripe_id')
+                    ->searchable()
+                    ->copyable(),
+                Tables\Columns\TextColumn::make('stripe_product')
+                    ->searchable()
+                    ->copyable(),
+                Tables\Columns\TextColumn::make('stripe_price')
+                    ->label('Plan')
+                    ->formatStateUsing(function ($state) {
+                        try {
+                            return SubscriptionEnum::fromStripePriceId($state)->name();
+                        } catch (\Exception $e) {
+                            return $state;
+                        }
+                    })
+                    ->searchable()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('quantity')
+                    ->numeric()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('created_at')
+                    ->dateTime()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                Tables\Columns\TextColumn::make('updated_at')
+                    ->dateTime()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+            ])
+            ->actions([
+                Tables\Actions\Action::make('view_on_stripe')
+                    ->label('View on Stripe')
+                    ->color('gray')
+                    ->icon('heroicon-o-arrow-top-right-on-square')
+                    ->url(fn (SubscriptionItem $record) => 'https://dashboard.stripe.com/subscriptions/'.$record->subscription->stripe_id)
+                    ->openUrlInNewTab(),
+            ])
+            ->recordUrl(
+                fn ($record) => static::getUrl('view', ['record' => $record])
+            );
+    }
+
+    public static function getRelations(): array
+    {
+        return [
+            //
+        ];
+    }
+
+    public static function getPages(): array
+    {
+        return [
+            'index' => SubscriptionItemResource\Pages\ListSubscriptionItems::route('/'),
+            'view' => SubscriptionItemResource\Pages\ViewSubscriptionItem::route('/{record}'),
+        ];
+    }
+}

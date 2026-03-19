@@ -19,13 +19,13 @@ This means that while some issues can be solved within NativePHP it's also very 
 ### The layers
 
 - Your application, built on Laravel, using your local installations of PHP & Node.
-- NativePHP's development tools (`native:serve` and `native:build`) manage the Electron/Tauri build processes - this is
+- NativePHP's development tools (`native:serve` and `native:build`) manage the Electron build processes - this is
   what creates your Application Bundle.
 - NativePHP moves the appropriate version of a statically-compiled binary of PHP into your application's bundle - when
   your app boots, it's _this_ version of PHP that is being used to execute your PHP code, not your system's version of
   PHP. 
-- Electron & Tauri use suites of platform-specific build tools and dependencies - Electron's ecosystem is mostly
-  Javascript based, Tauri's is mostly Rust based. Much of this will be hidden away in your `vendor` directory.
+- Electron uses a suite of platform-specific build tools and dependencies - Electron's ecosystem is mostly
+  Javascript based. Much of this will be hidden away in your `vendor` directory.
 - The operating system (OS) and its architecture (arch) - you can't build an application for one architecture and
   distribute it to a different OS/arch. It won't work. You must build your application to match the OS+arch combination
   where you want it to run.
@@ -138,6 +138,6 @@ C:\path\to\your\app\dist\win-unpacked\resources\app.asar.unpacked\resources\php\
 If you've found a bug, please [open an issue](https://github.com/nativephp/laravel/issues/new) on GitHub.
 
 There's also [Discussions](https://github.com/orgs/NativePHP/discussions) and
-[Discord](https://discord.gg/X62tWNStZK) for live chat.
+[Discord]({{ $discordLink }}) for live chat.
 
 Come join us! We want you to succeed.

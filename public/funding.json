@@ -19,19 +19,14 @@
             "url": "https://nativephp.com/"
         },
         "repositoryUrl": {
-            "url": "https://github.com/nativephp/laravel",
-            "wellKnown": "https://github.com/nativephp/laravel/raw/main/.well-known/funding-manifest-urls"
+            "url": "https://github.com/nativephp/desktop",
+            "wellKnown": "https://github.com/nativephp/desktop/raw/main/.well-known/funding-manifest-urls"
         },
         "licenses": ["spdx:MIT"],
-        "tags": ["php", "laravel", "electron", "tauri"]
+        "tags": ["php", "laravel", "electron"]
     }],
     "funding": {
         "channels": [
-            {
-                "guid": "github-sponsors",
-                "type": "other",
-                "address": "https://github.com/sponsors/simonhamp"
-            },
             {
                 "guid": "open-collective",
                 "type": "other",

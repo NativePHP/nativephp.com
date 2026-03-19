@@ -3,63 +3,33 @@ title: Installation
 order: 100
 ---
 
-## Requirements
+## Get a license
 
-1. PHP 8.3+
-2. Laravel 10 or higher
-3. An Apple Silicon Mac running macOS 12+ with Xcode 16+
-4. An active [Apple Developer account](https://developer.apple.com/)
-5. [A NativePHP for mobile license](https://nativephp.com/mobile)
-6. _Optional_ iOS device
+Before you begin, you will need to [purchase a license](/mobile).
 
-
-#### For iOS
-1. An Apple Mac (ideally Silicon) running macOS 12+ with Xcode 16+ 
-2. An active [Apple Developer account](https://developer.apple.com/)
-3. You can download Xcode from the Mac App Store
-
-#### For Android
-1. [Android Studio Giraffe (or later)](https://developer.android.com/studio)
-2. The following environment variables set.
-3. You should be able to successfully run `java -v` and `adb devices` from the terminal.
-4. **Windows only**: You must have [7zip](https://www.7-zip.org/) installed.
-
-#### For macOS
-```shell
-export JAVA_HOME=$(/usr/libexec/java_home -v 17) // This isn't required if JAVA_HOME is already set in the Windows Env Variables
-export ANDROID_SDK_ROOT=$HOME/Library/Android/sdk
-export PATH=$PATH:$JAVA_HOME/bin:$ANDROID_HOME/emulator:$ANDROID_HOME/tools:$ANDROID_HOME/tools/bin:$ANDROID_HOME/platform-tools
-```
-
-#### For Windows
-```shell
-set ANDROID_SDK_ROOT=C:\Users\yourname\AppData\Local\Android\Sdk
-set PATH=%PATH%;%JAVA_HOME%\bin;%ANDROID_SDK_ROOT%\platform-tools
-
-# This isn't required if JAVA_HOME is already set in the Windows Env Variables
-set JAVA_HOME=C:\Program Files\Microsoft\jdk-17.0.8.7-hotspot
-```
-
-> **Note** You cannot build iOS apps on Windows or Linux
-
-You don't _need_ a physical iOS/Android device to compile your application and test it for your app, as NativePHP for mobile supports
-the iOS Simulator and Android emulators. However, we highly recommend that you test your application on a real device before submitting to the
-App/Google Play Store.
-
-## Laravel
-
-NativePHP for mobile is built to work with Laravel. You can install it into an existing Laravel application, or
-[start a new one](https://laravel.com/docs/installation). The most painless way to get PHP and Node up and running on your system is with
-[Laravel Herd](https://herd.laravel.com). It's fast and free!
-
-
-## Install NativePHP for mobile
-
-To make NativePHP for mobile a reality has taken a lot of work and will continue to require even more. For this reason,
+To make NativePHP for Mobile a reality has taken a lot of work and will continue to require even more. For this reason,
 it's not open source, and you are not free to distribute or modify its source code.
 
-Before you begin, you will need to purchase a license.
-Licenses can be obtained [here](https://nativephp.com/mobile).
+Your license fee goes straight back into the NativePHP project and community, enabling us to:
+- Develop premium features for everyone.
+- Provide first-class support.
+- Sponsor our dependencies.
+- Donate to our contributors.
+- Support community events.
+- Ensure that the whole NativePHP project remains viable for a long time to come.
+
+Thank you for supporting the project in this way! 🙏
+
+## Install the Composer package
+
+<aside>
+
+#### We love Laravel
+
+NativePHP for Mobile is built to work with Laravel. We recommend that you create a
+[new Laravel application](https://laravel.com/docs/installation) for your NativePHP application.
+
+</aside>
 
 Once you have your license, you will need to add the following to your `composer.json`:
 
@@ -76,6 +46,21 @@ Then run:
 ```shell
 composer require nativephp/mobile
 ```
+<aside>
+
+If you experience a cURL error when running this command, make sure you are running PHP 8.3+ in your CLI.
+
+</aside>
+
+<aside>
+
+#### Windows Performance Tip
+
+Add `C:\temp` as well as the project folder to your Windows Defender exclusions list to significantly speed up Composer
+installs during app compilation. This prevents its real-time scanning from processing the many temporary files created
+during the build process, which slows the process considerably.
+
+</aside>
 
 If this is the first time you're installing the package, you will be prompted to authenticate. Your username is the
 email address you used when purchasing your license. Your password is your license key.
@@ -83,22 +68,68 @@ email address you used when purchasing your license. Your password is your licen
 This package contains all the libraries, classes, commands, and interfaces that your application will need to work with
 iOS and Android.
 
-**Before** running the `install` command it is important to set the following variables in your `.env`:
+## Run the NativePHP installer
 
-```shell
-NATIVEPHP_APP_ID=com.nativephp.yourapp
+**Before** running the `install` command, it is important to set the following variables in your `.env`:
+
+```dotenv
+NATIVEPHP_APP_ID=com.yourcompany.yourapp
 NATIVEPHP_APP_VERSION="DEBUG"
 NATIVEPHP_APP_VERSION_CODE="1"
 ```
 
-## Run the NativePHP installer
+Find out more about these options in
+[Configuration](/docs/getting-started/configuration#codenativephp-app-idcode).
+
+<aside>
+
+#### Setting your Apple Developer Team ID
+
+It may be useful to set your development team. You can do this via your `.env` file. Your development team ID can be
+found in your [Apple Developer account](https://developer.apple.com/account), under 'Membership details'.
+
+![](/img/docs/team-id.png)
+
+```dotenv
+NATIVEPHP_DEVELOPMENT_TEAM={your team ID}
+```
+
+</aside>
+
 
 ```shell
 php artisan native:install
 ```
 
-The NativePHP installer works similarly to NativePHP for desktop, taking care of setting up and configuring your Laravel
-application to work with iOS and/or Android.
+The NativePHP installer takes care of setting up and configuring your Laravel application to work with iOS and Android.
+
+You may be prompted about whether you would like to install the ICU-enabled PHP binaries. You should install these if
+your application relies on the `intl` PHP extension.
+
+If you don't need `intl` or are not sure, choose the default, non-ICU builds.
+
+<aside>
+
+#### Planning to use Filament?
+
+Filament requires `intl` support so you will need ICU-supported binaries.
+
+</aside>
+
+### The `nativephp` Directory
+
+After running: `php artisan native:install` you’ll see a new `nativephp` directory at the root of your Laravel project
+as well as a `config/nativephp.php` config file.
+
+The `nativephp` folder contains the native application project files needed to build your app for the desired platforms.
+
+You should not need to manually open or edit any native project files under normal circumstances. NativePHP handles
+the heavy lifting for you.
+
+**You should treat this directory as ephemeral.** When upgrading the NativePHP package, it will be necessary to run
+`php artisan native:install --force`, which completely rebuilds this directory, deleting all files within.
+
+For this reason, we also recommend you add the `nativephp` folder to your `.gitignore`.
 
 ## Start your app
 
@@ -111,17 +142,17 @@ Once you're ready:
 php artisan native:run
 ```
 
-This will start compiling your application and boot it on whichever device you select.
+Just follow the prompts! This will start compiling your application and boot it on whichever device you select.
 
 ### Running on a real device
 
-#### For iOS
-If you want to run your app on a real mobile device, you need to make sure the device is in
+#### On iOS
+If you want to run your app on a real iOS device, you need to make sure it is in
 [Developer Mode](https://developer.apple.com/documentation/xcode/enabling-developer-mode-on-a-device)
 and that it's been added to your Apple Developer account as
 [a registered device](https://developer.apple.com/account/resources/devices/list).
 
-#### For Android
+#### On Android
 On Android you need to [enable developer options](https://developer.android.com/studio/debug/dev-options#enable)
 and have USB debugging (ADB) enabled.
 

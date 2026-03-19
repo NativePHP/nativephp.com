@@ -425,3 +425,60 @@ Menu::make()
     Menu::quit(),
 );
 ```
+
+## Context Menu
+
+You may wish to add a custom native context menu to the elements in the views of your application and override the default one.
+
+You can use the `Native` JavaScript helper provided by NativePHP's preload script.
+
+This object exposes the `contextMenu()` method which takes an array of objects that matches the 
+[MenuItem](https://www.electronjs.org/docs/latest/api/menu-item) constructor's `options` argument.
+
+```js
+Native.contextMenu([
+    {
+        label: 'Edit',
+        accelerator: 'e',
+        click(menuItem, window, event) {
+            // Code to execute when the menu item is clicked
+        },
+    },
+    // Other options
+]);
+```
+
+You can listen for the `contextmenu` event to show your custom context menu:
+
+```js
+const element = document.getElementById('your-element');
+
+element.addEventListener('contextmenu', (event) => {
+    event.preventDefault();
+
+    Native.contextMenu([
+        {
+            label: 'Duplicate',
+            accelerator: 'd',
+            click() {
+                duplicateEntry(element.dataset.id);
+            },
+        },
+        {
+            label: 'Edit',
+            accelerator: 'e',
+            click() {
+                showEditForm(element.dataset.id);
+            },
+        },
+        {
+            label: 'Delete',
+            click() {
+                if (confirm('Are you sure you want to delete this entry?')) {
+                    deleteEntry(element.dataset.id);
+                }
+            },
+        },
+    ]);
+});
+```

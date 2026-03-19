@@ -6,7 +6,7 @@ order: 300
 ## Development
 
 ```shell
-php artisan native:serve
+php artisan native:run
 ```
 
 NativePHP isn't prescriptive about how you develop your application. You can build it in the way you're most comfortable
@@ -20,7 +20,7 @@ This is known as 'running a dev build'.
 
 ### What does the `native:serve` command do?
 
-The `native:serve` command runs the Electron/Tauri 'debug build' commands, which build your application with various
+The `native:serve` command runs the Electron 'debug build' commands, which build your application with various
 debug options set to help make debugging easier, such as allowing you to show the Dev Tools in the embedded web view.
 
 It also keeps the connection to the terminal open so you can see and inspect useful output from your app, such as logs,
@@ -102,6 +102,8 @@ For more details, see the [Databases](/docs/digging-deeper/databases) section.
 The `native:serve` and `native:build` commands look for the following icon files when building your application:
 
 - `public/icon.png` - your main icon, used on the Desktop, Dock and app switcher.
+- `public/icon.ico` - if it exists, it is used as an icon file for Windows (optional).
+- `public/icon.icns` - if it exists, it is used as an icon file for macOS (optional).
 - `public/IconTemplate.png` - used in the Menu Bar on non-retina displays.
 - `public/IconTemplate@2x.png` - used in the Menu Bar on retina displays.
 

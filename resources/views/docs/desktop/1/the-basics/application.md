@@ -23,6 +23,13 @@ To quit the app, use the `quit` method:
 App::quit();
 ```
 
+### Relaunch the app
+To relaunch the app, use the `relaunch` method. This will quit the app and relaunch it.
+
+```php
+App::relaunch();
+```
+
 ### Focus the app
 
 To focus the app, use the `focus` method.
@@ -62,6 +69,28 @@ To get the current app version, use the `version` method. The version is defined
 ```php
 $version = App::version();
 ```
+
+### Locale information
+
+The facade offers several methods for accessing some of the system's localisation information.
+This data can be helpful for localising your application, e.g. if you want to suggest the corresponding language to the user on first launch.
+
+```php
+App::getLocale(); // e.g. "de", "fr-FR"
+App::getLocaleCountryCode(); // e.g. "US", "DE"
+App::getSystemLocale(); // e.g. "it-IT", "de-DE"
+```
+
+The `getLocale` method will return the locale used by the app.
+Dependening on the user's settings, this might include both the language and the country / region or the language only.
+It is based on Chromiums `l10n_util` library; see [this page](https://source.chromium.org/chromium/chromium/src/+/main:ui/base/l10n/l10n_util.cc) to see possible values.
+
+`getLocaleCountryCode` returns the user's system country code (using the [ISO 3166 code](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2)).
+This information is pulled from native OS APIs. If it is not possible to detect this information, an empty string will be returned.
+
+With `getSystemLocale` you can access the system-wide locale setting. This is the locale set at the operating system level, not necessarily what the app is using.
+Under Windows and Linux, Chromium's `i18n` library is used to evaluate this information. macOS will use `[NSLocale currentLocale]`.
+
 
 ### App Badge Count
 _Only available on macOS and Linux_

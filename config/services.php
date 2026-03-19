@@ -34,4 +34,43 @@ return [
     'anystack' => [
         'key' => env('ANYSTACK_API_KEY'),
     ],
+
+    'bifrost' => [
+        'api_key' => env('BIFROST_API_KEY'),
+    ],
+
+    'opencollective' => [
+        'webhook_secret' => env('OPENCOLLECTIVE_WEBHOOK_SECRET'),
+    ],
+
+    'github' => [
+        'client_id' => env('GITHUB_CLIENT_ID'),
+        'client_secret' => env('GITHUB_CLIENT_SECRET'),
+        'redirect' => env('APP_URL').'/auth/github/callback',
+        'token' => env('GITHUB_TOKEN'),
+    ],
+
+    'discord' => [
+        'client_id' => env('DISCORD_CLIENT_ID'),
+        'client_secret' => env('DISCORD_CLIENT_SECRET'),
+        'redirect' => env('APP_URL').'/auth/discord/callback',
+        'bot_token' => env('DISCORD_BOT_TOKEN'),
+        'guild_id' => env('DISCORD_GUILD_ID'),
+        'max_role_id' => env('DISCORD_MAX_ROLE_ID'),
+    ],
+
+    'turnstile' => [
+        'site_key' => env('TURNSTILE_SITE_KEY'),
+        'secret_key' => env('TURNSTILE_SECRET_KEY'),
+    ],
+
+    'satis' => [
+        'url' => env('SATIS_API_URL', 'https://plugins.nativephp.com'),
+        'api_key' => env('SATIS_API_KEY'),
+    ],
+
+    'stripe_connect' => [
+        'client_id' => env('STRIPE_CONNECT_CLIENT_ID'),
+        'platform_fee_percent' => 30,
+    ],
 ];

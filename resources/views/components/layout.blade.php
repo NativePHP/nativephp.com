@@ -2,11 +2,34 @@
 <html
     lang="{{ str_replace('_', '-', app()->getLocale()) }}"
     x-data="{
-        darkMode: $persist(
-            window.matchMedia('(prefers-color-scheme: dark)').matches,
-        ),
+        // Persisted theme preference: 'light' | 'dark' | 'system'
+        themePreference: $persist('system').as('themeMode'),
+        // Effective dark-mode flag derived from preference + OS
+        isDark: false,
+        prefersDarkQuery: window.matchMedia('(prefers-color-scheme: dark)'),
+        applyTheme() {
+            this.isDark =
+                this.themePreference === 'dark' ||
+                (this.themePreference === 'system' && this.prefersDarkQuery.matches)
+        },
+        init() {
+            const valid = ['light', 'dark', 'system']
+
+            // Initial compute
+            this.applyTheme()
+
+            // React to OS preference changes while in 'system' mode
+            this.prefersDarkQuery.addEventListener('change', () => {
+                if (this.themePreference === 'system') {
+                    this.applyTheme()
+                }
+            })
+
+            // React to user-selected preference changes
+            this.$watch('themePreference', () => this.applyTheme())
+        },
     }"
-    x-bind:class="{ 'dark': darkMode === true }"
+    x-bind:class="{ 'dark': isDark === true }"
 >
     <head>
         <meta
@@ -27,7 +50,14 @@
             content="{{ csrf_token() }}"
         />
 
-        <title>NativePHP{{ isset($title) ? ' | ' . $title : '' }}</title>
+        @php
+            $seoTitle = SEOMeta::getTitle();
+            $defaultSeoTitle = config('seotools.meta.defaults.title');
+        @endphp
+
+        @if ($seoTitle === $defaultSeoTitle)
+            <title>{{ isset($title) ? $title . ' - ' : '' }}NativePHP</title>
+        @endif
 
         {{-- Favicon --}}
         <link
@@ -41,11 +71,14 @@
         {!! Twitter::generate() !!}
 
         <!-- Fathom - beautiful, simple website analytics -->
-        <script
-            src="https://cdn.usefathom.com/script.js"
-            data-site="HALHTNZU"
-            defer
-        ></script>
+        @production
+            <script
+                src="https://cdn.usefathom.com/script.js"
+                data-site="HALHTNZU"
+                defer
+            ></script>
+        @endproduction
+
         <!-- / Fathom -->
 
         {{-- Styles --}}
@@ -56,12 +89,14 @@
         </style>
         @livewireStyles
         @vite('resources/css/app.css')
+        @stack('head')
     </head>
     <body
         x-cloak
         x-data="{
-            showDocsNavigation: false,
-            scrolled: window.scrollY > 50,
+            showMobileMenu: false,
+            showDocsMenu: false,
+            scrolled: window.scrollY > 1,
             width: window.innerWidth,
             get showPlatformSwitcherHeader() {
                 return ! this.scrolled && this.width >= 1024
@@ -69,24 +104,28 @@
         }"
         x-resize="
             width = $width
-            if (width >= 1024) showDocsNavigation = false
+            if (window.matchMedia('(min-width: 80rem)').matches) {
+                showMobileMenu = false
+                showDocsMenu = false
+            }
         "
         x-init="
             window.addEventListener('scroll', () => {
-                scrolled = window.scrollY > 50
+                scrolled = window.scrollY > 1
             })
         "
-        x-effect="
-            if (showDocsNavigation) {
-                document.body.style.overflow = 'hidden'
-            } else {
-                document.body.style.overflow = ''
-            }
-        "
-        class="min-h-screen overflow-x-clip font-poppins antialiased selection:bg-black selection:text-[#b4a9ff] dark:bg-[#050714] dark:text-white"
+        class="font-poppins min-h-screen overflow-x-clip antialiased selection:bg-black selection:text-[#b4a9ff] dark:bg-[#050714] dark:text-white"
     >
-        <x-navigation-bar :hasMenu="$hasMenu ?? false" />
-        {{ $slot }}
+        <x-the-vibes-banner />
+
+        <x-navigation-bar />
+
+        <div
+            class="mx-auto w-full max-w-5xl px-5 lg:px-3 xl:max-w-7xl 2xl:max-w-360"
+        >
+            {{ $slot }}
+        </div>
+
         <x-footer />
         @livewireScriptConfig
         @vite('resources/js/app.js')

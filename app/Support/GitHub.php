@@ -13,17 +13,26 @@ class GitHub
 
     public const PACKAGE_LARAVEL = 'nativephp/laravel';
 
+    public const PACKAGE_DESKTOP = 'nativephp/desktop';
+
     public const PACKAGE_PHP_BIN = 'nativephp/php-bin';
 
     public function __construct(
         private string $package
     ) {}
 
+    public static function desktop(): static
+    {
+        return new static(static::PACKAGE_DESKTOP);
+    }
+
+    // V1
     public static function electron(): static
     {
         return new static(static::PACKAGE_ELECTRON);
     }
 
+    // V1
     public static function laravel(): static
     {
         return new static(static::PACKAGE_LARAVEL);

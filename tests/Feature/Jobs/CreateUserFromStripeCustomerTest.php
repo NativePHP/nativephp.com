@@ -6,6 +6,7 @@ use App\Jobs\CreateUserFromStripeCustomer;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\ValidationException;
 use Stripe\Customer;
 use Tests\TestCase;
 
@@ -95,5 +96,23 @@ class CreateUserFromStripeCustomerTest extends TestCase
             'email' => 'noname@example.com',
             'stripe_id' => 'cus_noname123',
         ]);
+    }
+
+    /** @test */
+    public function it_fails_when_customer_has_no_email()
+    {
+        $customer = Customer::constructFrom([
+            'id' => 'cus_noemail123',
+            'name' => 'No Email',
+            'email' => '',
+        ]);
+
+        $job = new CreateUserFromStripeCustomer($customer);
+
+        $this->expectException(ValidationException::class);
+
+        $job->handle();
+
+        $this->assertDatabaseCount('users', 0);
     }
 }

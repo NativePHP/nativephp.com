@@ -21,7 +21,7 @@ class StripeWebhookRouteTest extends TestCase
     {
         $reflection = new \ReflectionClass(VerifyCsrfToken::class);
         $property = $reflection->getProperty('except');
-        $exceptPaths = $property->getValue(app(VerifyCsrfToken::class));
+        $exceptPaths = $property->getValue(resolve(VerifyCsrfToken::class));
 
         $this->assertContains('stripe/webhook', $exceptPaths);
     }

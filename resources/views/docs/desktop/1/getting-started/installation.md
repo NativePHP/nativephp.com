@@ -41,7 +41,7 @@ php artisan native:install
 ```
 
 The NativePHP installer takes care of publishing the NativePHP service provider, which bootstraps the necessary
-dependencies for your application to work with the runtime you're using: Electron or Tauri.
+dependencies for your application to work with Electron.
 
 It also publishes the NativePHP configuration file to `config/nativephp.php`.
 

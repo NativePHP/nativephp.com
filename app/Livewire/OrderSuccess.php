@@ -3,11 +3,13 @@
 namespace App\Livewire;
 
 use App\Enums\Subscription;
-use Illuminate\Support\Facades\Cache;
+use App\Models\License;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Laravel\Cashier\Cashier;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Title;
 use Livewire\Component;
+use Stripe\Exception\InvalidRequestException;
 
 #[Layout('components.layout')]
 #[Title('Thank You for Your Purchase')]
@@ -30,68 +32,44 @@ class OrderSuccess extends Component
 
     public function loadData(): void
     {
-        $this->email = $this->loadEmail();
-        $this->licenseKey = $this->loadLicenseKey();
-        $this->subscription = $this->loadSubscription();
-    }
+        try {
+            $subscriptionId = Cashier::stripe()->checkout->sessions->retrieve($this->checkoutSessionId)->subscription;
+        } catch (InvalidRequestException $e) {
+            $this->redirect('/mobile');
 
-    private function loadEmail(): ?string
-    {
-        if ($email = session($this->sessionKey('email'))) {
-            return $email;
+            return;
         }
 
-        $stripe = Cashier::stripe();
-        $checkoutSession = $stripe->checkout->sessions->retrieve($this->checkoutSessionId);
+        $subscriptionRecord = Cashier::$subscriptionModel::query()
+            ->whereNotNull('stripe_id')
+            ->where('stripe_id', $subscriptionId)
+            ->first();
 
-        if (! ($email = $checkoutSession?->customer_details?->email)) {
-            return null;
+        if (! $subscriptionRecord) {
+            return;
         }
 
-        session()->put($this->sessionKey('email'), $email);
+        $subscriptionItem = Cashier::$subscriptionItemModel::query()
+            ->whereBelongsTo($subscriptionRecord)
+            ->first();
 
-        return $email;
-    }
+        if (! $subscriptionItem) {
+            report(new ModelNotFoundException("No subscription item found for subscription record [{$subscriptionRecord->id}]."));
 
-    private function loadLicenseKey(): ?string
-    {
-        if ($licenseKey = session($this->sessionKey('license_key'))) {
-            return $licenseKey;
+            return;
         }
 
-        if (! $this->email) {
-            return null;
+        try {
+            $this->subscription = Subscription::fromStripePriceId($subscriptionItem->stripe_price);
+        } catch (\RuntimeException $e) {
+            report($e);
+
+            return;
         }
 
-        if ($licenseKey = Cache::get($this->email.'.license_key')) {
-            session()->put($this->sessionKey('license_key'), $licenseKey);
-        }
-
-        return $licenseKey;
-    }
-
-    private function loadSubscription(): ?Subscription
-    {
-        if ($subscription = session($this->sessionKey('subscription'))) {
-            return Subscription::tryFrom($subscription);
-        }
-
-        $stripe = Cashier::stripe();
-        $priceId = $stripe->checkout->sessions->allLineItems($this->checkoutSessionId)->first()?->price->id;
-
-        if (! $priceId) {
-            return null;
-        }
-
-        $subscription = Subscription::fromStripePriceId($priceId);
-
-        session()->put($this->sessionKey('subscription'), $subscription->value);
-
-        return $subscription;
-    }
-
-    private function sessionKey(string $key): string
-    {
-        return "{$this->checkoutSessionId}.{$key}";
+        $this->email = $subscriptionRecord->user->email;
+        $this->licenseKey = License::query()
+            ->whereBelongsTo($subscriptionItem)
+            ->first()?->key;
     }
 }

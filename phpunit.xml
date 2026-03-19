@@ -5,9 +5,6 @@
          colors="true"
 >
     <testsuites>
-        <testsuite name="Unit">
-            <directory suffix="Test.php">./tests/Unit</directory>
-        </testsuite>
         <testsuite name="Feature">
             <directory suffix="Test.php">./tests/Feature</directory>
         </testsuite>
@@ -21,11 +18,29 @@
         <env name="APP_ENV" value="testing"/>
         <env name="BCRYPT_ROUNDS" value="4"/>
         <env name="CACHE_DRIVER" value="array"/>
-        <!-- <env name="DB_CONNECTION" value="sqlite"/> -->
-        <!-- <env name="DB_DATABASE" value=":memory:"/> -->
+        <env name="DB_CONNECTION" value="sqlite"/>
+        <env name="DB_DATABASE" value=":memory:"/>
         <env name="MAIL_MAILER" value="array"/>
         <env name="QUEUE_CONNECTION" value="sync"/>
         <env name="SESSION_DRIVER" value="array"/>
         <env name="TELESCOPE_ENABLED" value="false"/>
+        <env name="STRIPE_KEY" value="pk_test_key"/>
+        <env name="STRIPE_SECRET" value="sk_test_secret"/>
+        <env name="STRIPE_WEBHOOK_SECRET" value="whsec_secret"/>
+        <env name="STRIPE_MINI_PRICE_ID" value="price_mini"/>
+        <env name="STRIPE_PRO_PRICE_ID" value="price_pro"/>
+        <env name="STRIPE_MAX_PRICE_ID" value="price_max"/>
+        <env name="STRIPE_MINI_PRICE_ID_EAP" value="price_mini_eap"/>
+        <env name="STRIPE_PRO_PRICE_ID_EAP" value="price_pro_eap"/>
+        <env name="STRIPE_MAX_PRICE_ID_EAP" value="price_max_eap"/>
+        <env name="STRIPE_MINI_PAYMENT_LINK" value="https://buy.stripe.com/test_mini"/>
+        <env name="STRIPE_PRO_PAYMENT_LINK" value="https://buy.stripe.com/test_pro"/>
+        <env name="STRIPE_MAX_PAYMENT_LINK" value="https://buy.stripe.com/test_max"/>
+        <env name="ANYSTACK_API_KEY" value="as_test_key"/>
+        <env name="ANYSTACK_PRODUCT_ID" value="as_prod_id"/>
+        <env name="ANYSTACK_MINI_POLICY_ID" value="pol_mini"/>
+        <env name="ANYSTACK_PRO_POLICY_ID" value="pol_pro"/>
+        <env name="ANYSTACK_MAX_POLICY_ID" value="pol_max"/>
+        <env name="BIFROST_API_KEY" value="fake_key"/>
     </php>
 </phpunit>

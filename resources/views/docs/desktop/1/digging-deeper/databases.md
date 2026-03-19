@@ -40,7 +40,7 @@ You do not need to do anything special to configure your application to use SQLi
 In [development](/docs/getting-started/development), your application uses a database called `nativephp.sqlite`
 which is created in the build directory.
 
-NativePHP forces your application to use this database when it is running within the Electron/Tauri environment so that
+NativePHP forces your application to use this database when it is running within the Electron environment so that
 it doesn't modify any other SQLite databases you may already be using.
 
 ## Migrations

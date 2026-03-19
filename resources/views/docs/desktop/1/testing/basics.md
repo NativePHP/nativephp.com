@@ -4,7 +4,7 @@ order: 99
 ---
 # Understanding fake test doubles
 When working with a NativePHP application, you may encounter an elevated level of difficulty when writing tests for your code.
-This is because NativePHP relies on an Electron/Tauri application to be open at all times, listening to HTTP requests. Obviously,
+This is because NativePHP relies on an Electron application to be open at all times, listening to HTTP requests. Obviously,
 emulating this in a test environment can be cumbersome. You will often hit an HTTP error, and this is normal. This is where
 NativePHP's fake test doubles come in.
 
