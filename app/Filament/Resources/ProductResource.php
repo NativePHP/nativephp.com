@@ -9,9 +9,10 @@ use App\Models\ProductLicense;
 use App\Models\User;
 use App\Notifications\ProductGranted;
 use Filament\Forms;
-use Filament\Forms\Form;
 use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
+use Filament\Schemas;
+use Filament\Schemas\Schema;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Support\Str;
@@ -20,19 +21,19 @@ class ProductResource extends Resource
 {
     protected static ?string $model = Product::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-cube';
+    protected static \BackedEnum|string|null $navigationIcon = 'heroicon-o-cube';
 
     protected static ?string $navigationLabel = 'Products';
 
-    protected static ?string $navigationGroup = 'Products';
+    protected static \UnitEnum|string|null $navigationGroup = 'Products';
 
     protected static ?int $navigationSort = 3;
 
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return $form
+        return $schema
             ->schema([
-                Forms\Components\Section::make('Product Details')
+                Schemas\Components\Section::make('Product Details')
                     ->schema([
                         Forms\Components\TextInput::make('name')
                             ->required()
@@ -65,7 +66,7 @@ class ProductResource extends Resource
                     ])
                     ->columns(2),
 
-                Forms\Components\Section::make('GitHub Integration')
+                Schemas\Components\Section::make('GitHub Integration')
                     ->schema([
                         Forms\Components\TextInput::make('github_repo')
                             ->label('GitHub Repository Name')
@@ -74,7 +75,7 @@ class ProductResource extends Resource
                             ->maxLength(255),
                     ]),
 
-                Forms\Components\Section::make('Publishing')
+                Schemas\Components\Section::make('Publishing')
                     ->schema([
                         Forms\Components\Toggle::make('is_active')
                             ->label('Active')

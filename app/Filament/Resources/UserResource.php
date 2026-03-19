@@ -6,8 +6,9 @@ use App\Filament\Resources\UserResource\Pages;
 use App\Filament\Resources\UserResource\RelationManagers;
 use App\Models\User;
 use Filament\Forms;
-use Filament\Forms\Form;
 use Filament\Resources\Resource;
+use Filament\Schemas;
+use Filament\Schemas\Schema;
 use Filament\Tables;
 use Filament\Tables\Table;
 
@@ -15,13 +16,13 @@ class UserResource extends Resource
 {
     protected static ?string $model = User::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-user';
+    protected static \BackedEnum|string|null $navigationIcon = 'heroicon-o-user';
 
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return $form
+        return $schema
             ->schema([
-                Forms\Components\Section::make('User Information')
+                Schemas\Components\Section::make('User Information')
                     ->schema([
                         Forms\Components\TextInput::make('name')
                             ->maxLength(255),
@@ -36,7 +37,7 @@ class UserResource extends Resource
                             ->required(fn (string $context): bool => $context === 'create')
                             ->maxLength(255),
                     ])->columns(2),
-                Forms\Components\Section::make('Billing Information')
+                Schemas\Components\Section::make('Billing Information')
                     ->schema([
                         Forms\Components\TextInput::make('stripe_id')
                             ->maxLength(255)

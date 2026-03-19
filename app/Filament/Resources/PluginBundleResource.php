@@ -11,9 +11,10 @@ use App\Models\PluginLicense;
 use App\Models\User;
 use App\Notifications\BundleGranted;
 use Filament\Forms;
-use Filament\Forms\Form;
 use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
+use Filament\Schemas;
+use Filament\Schemas\Schema;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Support\Str;
@@ -22,19 +23,19 @@ class PluginBundleResource extends Resource
 {
     protected static ?string $model = PluginBundle::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-squares-plus';
+    protected static \BackedEnum|string|null $navigationIcon = 'heroicon-o-squares-plus';
 
     protected static ?string $navigationLabel = 'Bundles';
 
-    protected static ?string $navigationGroup = 'Products';
+    protected static \UnitEnum|string|null $navigationGroup = 'Products';
 
     protected static ?int $navigationSort = 2;
 
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return $form
+        return $schema
             ->schema([
-                Forms\Components\Section::make('Bundle Details')
+                Schemas\Components\Section::make('Bundle Details')
                     ->schema([
                         Forms\Components\TextInput::make('name')
                             ->required()
@@ -67,7 +68,7 @@ class PluginBundleResource extends Resource
                     ])
                     ->columns(2),
 
-                Forms\Components\Section::make('Included Plugins')
+                Schemas\Components\Section::make('Included Plugins')
                     ->schema([
                         Forms\Components\Select::make('plugins')
                             ->relationship(
@@ -88,7 +89,7 @@ class PluginBundleResource extends Resource
                             ->optionsLimit(50),
                     ]),
 
-                Forms\Components\Section::make('Publishing')
+                Schemas\Components\Section::make('Publishing')
                     ->schema([
                         Forms\Components\Toggle::make('is_active')
                             ->label('Active')

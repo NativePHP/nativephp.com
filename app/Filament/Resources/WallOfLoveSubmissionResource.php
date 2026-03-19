@@ -5,8 +5,9 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\WallOfLoveSubmissionResource\Pages;
 use App\Models\WallOfLoveSubmission;
 use Filament\Forms;
-use Filament\Forms\Form;
 use Filament\Resources\Resource;
+use Filament\Schemas;
+use Filament\Schemas\Schema;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
@@ -15,17 +16,17 @@ class WallOfLoveSubmissionResource extends Resource
 {
     protected static ?string $model = WallOfLoveSubmission::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-heart';
+    protected static \BackedEnum|string|null $navigationIcon = 'heroicon-o-heart';
 
     protected static ?string $navigationLabel = 'Wall of Love';
 
     protected static ?string $pluralModelLabel = 'Wall of Love Submissions';
 
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return $form
+        return $schema
             ->schema([
-                Forms\Components\Section::make('Submission Details')
+                Schemas\Components\Section::make('Submission Details')
                     ->schema([
                         Forms\Components\TextInput::make('name')
                             ->required()
@@ -50,7 +51,7 @@ class WallOfLoveSubmissionResource extends Resource
                             ->rows(4),
                     ]),
 
-                Forms\Components\Section::make('Status & Promotion')
+                Schemas\Components\Section::make('Status & Promotion')
                     ->schema([
                         Forms\Components\Toggle::make('is_approved')
                             ->label('Approved')

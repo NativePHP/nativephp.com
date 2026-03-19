@@ -3,9 +3,9 @@
 namespace App\Filament\Resources\ArticleResource\Actions;
 
 use App\Models\Article;
+use Filament\Actions\Action;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\Radio;
-use Filament\Tables\Actions\Action;
 
 class PublishAction extends Action
 {

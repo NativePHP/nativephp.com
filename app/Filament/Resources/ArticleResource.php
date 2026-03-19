@@ -7,14 +7,14 @@ use App\Filament\Resources\ArticleResource\Actions\PublishAction;
 use App\Filament\Resources\ArticleResource\Actions\UnpublishAction;
 use App\Filament\Resources\ArticleResource\Pages;
 use App\Models\Article;
+use Filament\Actions\ActionGroup;
 use Filament\Forms\Components\MarkdownEditor;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
-use Filament\Forms\Form;
 use Filament\Forms\Set;
 use Filament\Resources\Resource;
+use Filament\Schemas\Schema;
 use Filament\Tables;
-use Filament\Tables\Actions\ActionGroup;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Contracts\Database\Eloquent\Builder;
@@ -28,11 +28,11 @@ class ArticleResource extends Resource
 
     protected static ?string $recordTitleAttribute = 'title';
 
-    protected static ?string $navigationIcon = 'heroicon-o-newspaper';
+    protected static \BackedEnum|string|null $navigationIcon = 'heroicon-o-newspaper';
 
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return $form
+        return $schema
             ->schema([
                 TextInput::make('title')
                     ->required()

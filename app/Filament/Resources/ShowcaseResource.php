@@ -5,8 +5,9 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\ShowcaseResource\Pages;
 use App\Models\Showcase;
 use Filament\Forms;
-use Filament\Forms\Form;
 use Filament\Resources\Resource;
+use Filament\Schemas;
+use Filament\Schemas\Schema;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
@@ -15,17 +16,17 @@ class ShowcaseResource extends Resource
 {
     protected static ?string $model = Showcase::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-square-3-stack-3d';
+    protected static \BackedEnum|string|null $navigationIcon = 'heroicon-o-square-3-stack-3d';
 
     protected static ?string $navigationLabel = 'Showcase';
 
     protected static ?string $pluralModelLabel = 'Showcase Submissions';
 
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return $form
+        return $schema
             ->schema([
-                Forms\Components\Section::make('App Details')
+                Schemas\Components\Section::make('App Details')
                     ->schema([
                         Forms\Components\Select::make('user_id')
                             ->label('Submitted By')
@@ -59,7 +60,7 @@ class ShowcaseResource extends Resource
                             ->reorderable(),
                     ]),
 
-                Forms\Components\Section::make('Platform Availability')
+                Schemas\Components\Section::make('Platform Availability')
                     ->schema([
                         Forms\Components\Toggle::make('has_mobile')
                             ->label('Mobile App')
@@ -69,7 +70,7 @@ class ShowcaseResource extends Resource
                             ->label('Desktop App')
                             ->live(),
 
-                        Forms\Components\Fieldset::make('Mobile Links')
+                        Schemas\Components\Fieldset::make('Mobile Links')
                             ->visible(fn (Forms\Get $get) => $get('has_mobile'))
                             ->schema([
                                 Forms\Components\TextInput::make('app_store_url')
@@ -83,7 +84,7 @@ class ShowcaseResource extends Resource
                                     ->maxLength(255),
                             ]),
 
-                        Forms\Components\Fieldset::make('Desktop Downloads')
+                        Schemas\Components\Fieldset::make('Desktop Downloads')
                             ->visible(fn (Forms\Get $get) => $get('has_desktop'))
                             ->schema([
                                 Forms\Components\TextInput::make('windows_download_url')
@@ -103,7 +104,7 @@ class ShowcaseResource extends Resource
                             ]),
                     ]),
 
-                Forms\Components\Section::make('Certification')
+                Schemas\Components\Section::make('Certification')
                     ->schema([
                         Forms\Components\Toggle::make('certified_nativephp')
                             ->label('Certified as built with NativePHP')

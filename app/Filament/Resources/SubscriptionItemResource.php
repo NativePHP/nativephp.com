@@ -4,8 +4,9 @@ namespace App\Filament\Resources;
 
 use App\Enums\Subscription as SubscriptionEnum;
 use Filament\Forms;
-use Filament\Forms\Form;
 use Filament\Resources\Resource;
+use Filament\Schemas;
+use Filament\Schemas\Schema;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Laravel\Cashier\SubscriptionItem;
@@ -14,17 +15,17 @@ class SubscriptionItemResource extends Resource
 {
     protected static ?string $model = SubscriptionItem::class;
 
-    protected static ?string $navigationGroup = 'Billing';
+    protected static \UnitEnum|string|null $navigationGroup = 'Billing';
 
     protected static ?string $navigationLabel = 'Subscription Items';
 
     protected static ?int $navigationSort = 2;
 
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return $form
+        return $schema
             ->schema([
-                Forms\Components\Section::make('Subscription Item Details')
+                Schemas\Components\Section::make('Subscription Item Details')
                     ->schema([
                         Forms\Components\Select::make('subscription_id')
                             ->relationship('subscription', 'id')

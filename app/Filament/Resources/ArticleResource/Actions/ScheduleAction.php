@@ -3,8 +3,8 @@
 namespace App\Filament\Resources\ArticleResource\Actions;
 
 use App\Models\Article;
+use Filament\Actions\Action;
 use Filament\Forms\Components\DateTimePicker;
-use Filament\Tables\Actions\Action;
 
 class ScheduleAction extends Action
 {
