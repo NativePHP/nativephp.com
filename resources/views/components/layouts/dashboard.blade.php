@@ -86,7 +86,7 @@
             <flux:sidebar.header>
                 <flux:sidebar.brand
                     href="{{ route('welcome') }}"
-                    logo="{{ asset('images/nativephp-logo.svg') }}"
+                    logo="{{ asset('favicon.svg') }}"
                     name="NativePHP"
                 />
                 <flux:sidebar.collapse class="lg:hidden" />
@@ -143,15 +143,13 @@
                     Manage Subscription
                 </flux:sidebar.item>
 
-                <flux:sidebar.item icon="cog-6-tooth" href="{{ route('customer.billing-portal') }}">
-                    Settings
-                </flux:sidebar.item>
             </flux:sidebar.nav>
 
             <flux:dropdown position="top" align="start" class="max-lg:hidden">
                 <flux:sidebar.profile name="{{ auth()->user()->name ?? auth()->user()->email }}" />
 
                 <flux:menu>
+                    <flux:menu.item icon="cog-6-tooth" href="{{ route('customer.settings') }}">Settings</flux:menu.item>
                     <flux:menu.item icon="arrow-right-start-on-rectangle" x-on:click.prevent="$refs.logoutForm.submit()">
                         Log out
                     </flux:menu.item>
@@ -173,6 +171,7 @@
                 <flux:profile name="{{ auth()->user()->name ?? auth()->user()->email }}" />
 
                 <flux:menu>
+                    <flux:menu.item icon="cog-6-tooth" href="{{ route('customer.settings') }}">Settings</flux:menu.item>
                     <flux:menu.item icon="arrow-right-start-on-rectangle" x-on:click.prevent="document.querySelector('form[x-ref=logoutForm]').submit()">
                         Log out
                     </flux:menu.item>

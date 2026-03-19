@@ -7,8 +7,6 @@ use App\Http\Controllers\Auth\CustomerAuthController;
 use App\Http\Controllers\BundleController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\CustomerLicenseController;
-use App\Http\Controllers\CustomerPluginController;
-use App\Http\Controllers\CustomerPurchasedPluginsController;
 use App\Http\Controllers\CustomerSubLicenseController;
 use App\Http\Controllers\DeveloperOnboardingController;
 use App\Http\Controllers\OpenCollectiveWebhookController;
@@ -16,7 +14,6 @@ use App\Http\Controllers\PluginDirectoryController;
 use App\Http\Controllers\PluginPurchaseController;
 use App\Http\Controllers\PluginWebhookController;
 use App\Http\Controllers\ProductController;
-use App\Http\Controllers\PurchaseHistoryController;
 use App\Http\Controllers\ShowBlogController;
 use App\Http\Controllers\ShowDocumentationController;
 use Illuminate\Support\Facades\Route;
@@ -299,48 +296,44 @@ Route::get('callback', function (\Illuminate\Http\Request $request) {
 })->name('callback');
 
 // Dashboard route
-Route::middleware(['auth', EnsureFeaturesAreActive::using(ShowAuthButtons::class)])
-    ->get('dashboard', [CustomerLicenseController::class, 'index'])
-    ->name('dashboard');
+Route::middleware(['auth', EnsureFeaturesAreActive::using(ShowAuthButtons::class)])->group(function (): void {
+    Route::livewire('dashboard', \App\Livewire\Customer\Dashboard::class)->name('dashboard');
+});
 
 // Customer license management routes
 Route::middleware(['auth', EnsureFeaturesAreActive::using(ShowAuthButtons::class)])->prefix('customer')->name('customer.')->group(function (): void {
+    // Settings page
+    Route::livewire('settings', \App\Livewire\Customer\Settings::class)->name('settings');
+
     // License list page
-    Route::get('licenses', [CustomerLicenseController::class, 'list'])->name('licenses.list');
-    Route::view('integrations', 'customer.integrations')->name('integrations');
+    Route::livewire('licenses', \App\Livewire\Customer\Licenses\Index::class)->name('licenses.list');
+    Route::livewire('integrations', \App\Livewire\Customer\Integrations::class)->name('integrations');
 
     // Purchased plugins page (requires ShowPlugins feature)
-    Route::middleware(EnsureFeaturesAreActive::using(ShowPlugins::class))
-        ->get('purchased-plugins', [CustomerPurchasedPluginsController::class, 'index'])
-        ->name('purchased-plugins.index');
+    Route::middleware(EnsureFeaturesAreActive::using(ShowPlugins::class))->group(function (): void {
+        Route::livewire('purchased-plugins', \App\Livewire\Customer\PurchasedPlugins\Index::class)->name('purchased-plugins.index');
+    });
 
     // Purchase history page
-    Route::get('purchase-history', [PurchaseHistoryController::class, 'index'])->name('purchase-history.index');
-    Route::get('licenses/{licenseKey}', [CustomerLicenseController::class, 'show'])->name('licenses.show');
+    Route::livewire('purchase-history', \App\Livewire\Customer\PurchaseHistory\Index::class)->name('purchase-history.index');
+    Route::livewire('licenses/{licenseKey}', \App\Livewire\Customer\Licenses\Show::class)->name('licenses.show');
     Route::patch('licenses/{licenseKey}', [CustomerLicenseController::class, 'update'])->name('licenses.update');
     Route::post('plugin-license-key/rotate', [CustomerLicenseController::class, 'rotatePluginLicenseKey'])->name('plugin-license-key.rotate');
     Route::post('claim-free-plugins', [CustomerLicenseController::class, 'claimFreePlugins'])->name('claim-free-plugins');
 
     // Wall of Love submission
-    Route::get('wall-of-love/create', [App\Http\Controllers\WallOfLoveSubmissionController::class, 'create'])->name('wall-of-love.create');
+    Route::livewire('wall-of-love/create', \App\Livewire\Customer\WallOfLove\Create::class)->name('wall-of-love.create');
 
     // Showcase submissions
-    Route::get('showcase', [App\Http\Controllers\CustomerShowcaseController::class, 'index'])->name('showcase.index');
-    Route::get('showcase/create', [App\Http\Controllers\CustomerShowcaseController::class, 'create'])->name('showcase.create');
-    Route::get('showcase/{showcase}/edit', [App\Http\Controllers\CustomerShowcaseController::class, 'edit'])->name('showcase.edit');
+    Route::livewire('showcase', \App\Livewire\Customer\Showcase\Index::class)->name('showcase.index');
+    Route::livewire('showcase/create', \App\Livewire\Customer\Showcase\Create::class)->name('showcase.create');
+    Route::livewire('showcase/{showcase}/edit', \App\Livewire\Customer\Showcase\Edit::class)->name('showcase.edit');
 
     // Plugin management
     Route::middleware(EnsureFeaturesAreActive::using(ShowPlugins::class))->group(function (): void {
-        Route::get('plugins', [CustomerPluginController::class, 'index'])->name('plugins.index');
-        Route::get('plugins/submit', [CustomerPluginController::class, 'create'])->name('plugins.create');
-        Route::post('plugins', [CustomerPluginController::class, 'store'])->name('plugins.store');
-        Route::patch('plugins/display-name', [CustomerPluginController::class, 'updateDisplayName'])->name('plugins.display-name');
-        Route::get('plugins/{vendor}/{package}', [CustomerPluginController::class, 'show'])->name('plugins.show');
-        Route::patch('plugins/{vendor}/{package}', [CustomerPluginController::class, 'update'])->name('plugins.update');
-        Route::post('plugins/{vendor}/{package}/resubmit', [CustomerPluginController::class, 'resubmit'])->name('plugins.resubmit');
-        Route::post('plugins/{vendor}/{package}/logo', [CustomerPluginController::class, 'updateLogo'])->name('plugins.logo.update');
-        Route::post('plugins/{vendor}/{package}/icon', [CustomerPluginController::class, 'updateIcon'])->name('plugins.icon.update');
-        Route::delete('plugins/{vendor}/{package}/logo', [CustomerPluginController::class, 'deleteLogo'])->name('plugins.logo.delete');
+        Route::livewire('plugins', \App\Livewire\Customer\Plugins\Index::class)->name('plugins.index');
+        Route::livewire('plugins/submit', \App\Livewire\Customer\Plugins\Create::class)->name('plugins.create');
+        Route::livewire('plugins/{vendor}/{package}', \App\Livewire\Customer\Plugins\Show::class)->name('plugins.show');
     });
 
     // Billing portal
@@ -406,9 +399,9 @@ Route::middleware(EnsureFeaturesAreActive::using(ShowPlugins::class))->group(fun
 
 // Developer onboarding routes
 Route::middleware(['auth', EnsureFeaturesAreActive::using(ShowAuthButtons::class), EnsureFeaturesAreActive::using(ShowPlugins::class)])->prefix('customer/developer')->name('customer.developer.')->group(function (): void {
-    Route::get('onboarding', [DeveloperOnboardingController::class, 'show'])->name('onboarding');
+    Route::livewire('onboarding', \App\Livewire\Customer\Developer\Onboarding::class)->name('onboarding');
     Route::post('onboarding/start', [DeveloperOnboardingController::class, 'start'])->name('onboarding.start');
     Route::get('onboarding/return', [DeveloperOnboardingController::class, 'return'])->name('onboarding.return');
     Route::get('onboarding/refresh', [DeveloperOnboardingController::class, 'refresh'])->name('onboarding.refresh');
-    Route::get('dashboard', [DeveloperOnboardingController::class, 'dashboard'])->name('dashboard');
+    Route::livewire('dashboard', \App\Livewire\Customer\Developer\Dashboard::class)->name('dashboard');
 });
