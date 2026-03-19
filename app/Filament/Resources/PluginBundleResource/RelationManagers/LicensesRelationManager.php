@@ -2,9 +2,11 @@
 
 namespace App\Filament\Resources\PluginBundleResource\RelationManagers;
 
+use App\Models\PluginLicense;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 
 class LicensesRelationManager extends RelationManager
 {
@@ -15,18 +17,48 @@ class LicensesRelationManager extends RelationManager
     public function table(Table $table): Table
     {
         return $table
+            ->modifyQueryUsing(function (Builder $query): void {
+                $bundleId = $this->ownerRecord->getKey();
+
+                $query
+                    ->select('plugin_licenses.*')
+                    ->addSelect([
+                        'sale_total' => PluginLicense::query()
+                            ->selectRaw('SUM(price_paid)')
+                            ->whereColumn('user_id', 'plugin_licenses.user_id')
+                            ->whereColumn('purchased_at', 'plugin_licenses.purchased_at')
+                            ->where('plugin_bundle_id', $bundleId),
+                        'sale_plugins_count' => PluginLicense::query()
+                            ->selectRaw('COUNT(*)')
+                            ->whereColumn('user_id', 'plugin_licenses.user_id')
+                            ->whereColumn('purchased_at', 'plugin_licenses.purchased_at')
+                            ->where('plugin_bundle_id', $bundleId),
+                    ])
+                    ->whereIn('plugin_licenses.id', function ($sub) use ($bundleId): void {
+                        $sub->selectRaw('MIN(id)')
+                            ->from('plugin_licenses as pl')
+                            ->where('pl.plugin_bundle_id', $bundleId)
+                            ->groupBy('pl.user_id', 'pl.purchased_at');
+                    });
+            })
             ->columns([
                 Tables\Columns\TextColumn::make('user.email')
                     ->label('User')
                     ->searchable(),
 
-                Tables\Columns\TextColumn::make('plugin.name')
-                    ->label('Plugin')
-                    ->fontFamily('mono'),
+                Tables\Columns\TextColumn::make('sale_plugins_count')
+                    ->label('Plugins')
+                    ->badge(),
 
-                Tables\Columns\TextColumn::make('price_paid')
-                    ->label('Allocated Amount')
-                    ->formatStateUsing(fn (int $state): string => '$'.number_format($state / 100, 2)),
+                Tables\Columns\TextColumn::make('sale_total')
+                    ->label('Total')
+                    ->formatStateUsing(fn (?int $state, PluginLicense $record): string => $record->is_grandfathered
+                        ? '$0.00'
+                        : '$'.number_format(($state ?? 0) / 100, 2)),
+
+                Tables\Columns\IconColumn::make('is_grandfathered')
+                    ->label('Granted')
+                    ->boolean(),
 
                 Tables\Columns\TextColumn::make('purchased_at')
                     ->dateTime()
