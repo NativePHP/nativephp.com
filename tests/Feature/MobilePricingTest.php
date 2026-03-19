@@ -6,6 +6,7 @@ use App\Livewire\MobilePricing;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Auth;
+use Laravel\Cashier\Cashier;
 use Livewire\Livewire;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
@@ -14,8 +15,22 @@ class MobilePricingTest extends TestCase
 {
     use RefreshDatabase;
 
+    private const PRO_PRICE_ID = 'price_test_pro_yearly';
+
+    private const MAX_PRICE_ID = 'price_test_max_yearly';
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        config([
+            'subscriptions.plans.pro.stripe_price_id' => self::PRO_PRICE_ID,
+            'subscriptions.plans.max.stripe_price_id' => self::MAX_PRICE_ID,
+        ]);
+    }
+
     #[Test]
-    public function authenticated_users_will_directly_create_checkout_session()
+    public function authenticated_users_without_subscription_see_checkout_button()
     {
         $user = User::factory()->create();
         Auth::login($user);
@@ -74,5 +89,103 @@ class MobilePricingTest extends TestCase
         Livewire::test(MobilePricing::class)
             ->set('interval', 'year')
             ->assertSet('interval', 'year');
+    }
+
+    #[Test]
+    public function existing_subscriber_sees_upgrade_button()
+    {
+        $user = User::factory()->create(['stripe_id' => 'cus_'.uniqid()]);
+        Auth::login($user);
+
+        $subscription = Cashier::$subscriptionModel::factory()
+            ->for($user)
+            ->active()
+            ->create(['stripe_price' => self::PRO_PRICE_ID]);
+
+        Cashier::$subscriptionItemModel::factory()
+            ->for($subscription, 'subscription')
+            ->create(['stripe_price' => self::PRO_PRICE_ID]);
+
+        Livewire::test(MobilePricing::class)
+            ->assertSee('Upgrade to Ultra')
+            ->assertDontSeeHtml('wire:click="createCheckoutSession(\'max\')"');
+    }
+
+    #[Test]
+    public function ultra_subscriber_sees_already_on_ultra_message()
+    {
+        $user = User::factory()->create(['stripe_id' => 'cus_'.uniqid()]);
+        Auth::login($user);
+
+        $subscription = Cashier::$subscriptionModel::factory()
+            ->for($user)
+            ->active()
+            ->create([
+                'stripe_price' => self::MAX_PRICE_ID,
+                'is_comped' => false,
+            ]);
+
+        Cashier::$subscriptionItemModel::factory()
+            ->for($subscription, 'subscription')
+            ->create(['stripe_price' => self::MAX_PRICE_ID]);
+
+        Livewire::test(MobilePricing::class)
+            ->assertSee('on Ultra', escape: false)
+            ->assertDontSee('Upgrade to Ultra')
+            ->assertDontSeeHtml('wire:click="createCheckoutSession(\'max\')"');
+    }
+
+    #[Test]
+    public function comped_max_subscriber_sees_upgrade_button()
+    {
+        $user = User::factory()->create(['stripe_id' => 'cus_'.uniqid()]);
+        Auth::login($user);
+
+        $subscription = Cashier::$subscriptionModel::factory()
+            ->for($user)
+            ->active()
+            ->create([
+                'stripe_price' => self::MAX_PRICE_ID,
+                'is_comped' => true,
+            ]);
+
+        Cashier::$subscriptionItemModel::factory()
+            ->for($subscription, 'subscription')
+            ->create(['stripe_price' => self::MAX_PRICE_ID]);
+
+        Livewire::test(MobilePricing::class)
+            ->assertSee('Upgrade to Ultra')
+            ->assertDontSee('on Ultra', escape: false);
+    }
+
+    #[Test]
+    public function upgrade_modal_shows_confirm_button_for_existing_subscriber()
+    {
+        $user = User::factory()->create(['stripe_id' => 'cus_'.uniqid()]);
+        Auth::login($user);
+
+        $subscription = Cashier::$subscriptionModel::factory()
+            ->for($user)
+            ->active()
+            ->create(['stripe_price' => self::PRO_PRICE_ID]);
+
+        Cashier::$subscriptionItemModel::factory()
+            ->for($subscription, 'subscription')
+            ->create(['stripe_price' => self::PRO_PRICE_ID]);
+
+        Livewire::test(MobilePricing::class)
+            ->assertSeeHtml('wire:click="upgradeSubscription"')
+            ->assertSee('Confirm upgrade');
+    }
+
+    #[Test]
+    public function upgrade_modal_not_shown_for_users_without_subscription()
+    {
+        $user = User::factory()->create();
+        Auth::login($user);
+
+        Livewire::test(MobilePricing::class)
+            ->assertDontSeeHtml('wire:click="upgradeSubscription"')
+            ->assertDontSee('Confirm upgrade');
     }
 }

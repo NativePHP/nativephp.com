@@ -23,7 +23,7 @@ class MobilePricing extends Component
         'purchase-request-submitted' => 'handlePurchaseRequest',
     ];
 
-    public function mount()
+    public function mount(): void
     {
         if (request()->has('email')) {
             $this->user = $this->findOrCreateUser(request()->query('email'));
@@ -54,16 +54,12 @@ class MobilePricing extends Component
         $user = $user?->exists ? $user : Auth::user();
 
         if (! $user) {
-            // TODO: return a flash message or notification to the user that there
-            //   was an error.
             Log::error('Failed to create checkout session. User does not exist and user is not authenticated.');
 
             return;
         }
 
         if (! ($subscription = Subscription::tryFrom($plan))) {
-            // TODO: return a flash message or notification to the user that there
-            //   was an error.
             Log::error('Failed to create checkout session. Invalid subscription plan name provided.');
 
             return;
@@ -90,6 +86,31 @@ class MobilePricing extends Component
             ]);
 
         return redirect($checkout->url);
+    }
+
+    public function upgradeSubscription(): mixed
+    {
+        $user = Auth::user();
+
+        if (! $user) {
+            Log::error('Failed to upgrade subscription. User is not authenticated.');
+
+            return null;
+        }
+
+        $subscription = $user->subscription('default');
+
+        if (! $subscription || ! $subscription->active()) {
+            Log::error('Failed to upgrade subscription. No active subscription found.');
+
+            return null;
+        }
+
+        $newPriceId = Subscription::Max->stripePriceId(interval: $this->interval);
+
+        $subscription->skipTrial()->swapAndInvoice($newPriceId);
+
+        return redirect(route('customer.dashboard'))->with('success', 'Your subscription has been upgraded to Ultra!');
     }
 
     private function findOrCreateUser(string $email): User
@@ -119,6 +140,31 @@ class MobilePricing extends Component
 
     public function render()
     {
-        return view('livewire.mobile-pricing');
+        $hasExistingSubscription = false;
+        $currentPlanName = null;
+        $isAlreadyUltra = false;
+
+        if ($user = Auth::user()) {
+            $subscription = $user->subscription('default');
+
+            if ($subscription && $subscription->active()) {
+                $hasExistingSubscription = true;
+                $isAlreadyUltra = $user->hasActiveUltraSubscription();
+
+                try {
+                    $currentPlanName = Subscription::fromStripePriceId(
+                        $subscription->items->first()?->stripe_price ?? $subscription->stripe_price
+                    )->name();
+                } catch (\Exception $e) {
+                    $currentPlanName = 'your current plan';
+                }
+            }
+        }
+
+        return view('livewire.mobile-pricing', [
+            'hasExistingSubscription' => $hasExistingSubscription,
+            'currentPlanName' => $currentPlanName,
+            'isAlreadyUltra' => $isAlreadyUltra,
+        ]);
     }
 }

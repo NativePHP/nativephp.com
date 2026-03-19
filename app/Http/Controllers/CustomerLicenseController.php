@@ -99,6 +99,7 @@ class CustomerLicenseController extends Controller
         $teamMemberCount = $ownedTeam?->activeUserCount() ?? 0;
         $teamPendingCount = $ownedTeam?->pendingInvitations()->count() ?? 0;
         $hasMaxAccess = $user->hasActiveUltraSubscription();
+        $showUltraUpsell = ! $hasMaxAccess && ($licenseCount > 0 || $activeSubscription);
 
         return view('customer.dashboard', compact(
             'licenseCount',
@@ -114,7 +115,8 @@ class CustomerLicenseController extends Controller
             'teamName',
             'teamMemberCount',
             'teamPendingCount',
-            'hasMaxAccess'
+            'hasMaxAccess',
+            'showUltraUpsell'
         ));
     }
 

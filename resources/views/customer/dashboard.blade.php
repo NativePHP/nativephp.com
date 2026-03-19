@@ -36,6 +36,29 @@
             @endif
         </div>
 
+        {{-- Ultra Upsell --}}
+        @if($showUltraUpsell)
+            <div class="mx-auto mb-6 max-w-7xl px-4 sm:px-6 lg:px-8">
+                <div class="relative overflow-hidden rounded-lg border border-indigo-200 bg-gradient-to-r from-indigo-50 to-purple-50 p-6 shadow-sm dark:border-indigo-800 dark:from-indigo-950/50 dark:to-purple-950/50">
+                    <div class="absolute -right-6 -top-6 size-32 rounded-full bg-indigo-500/10 dark:bg-indigo-400/10"></div>
+                    <div class="relative flex items-center justify-between gap-4">
+                        <div>
+                            <h3 class="text-lg font-semibold text-indigo-900 dark:text-indigo-100">Upgrade to Ultra</h3>
+                            <p class="mt-1 text-sm text-indigo-700 dark:text-indigo-300">
+                                Get access to all official plugins, team sharing, and more with an Ultra subscription.
+                            </p>
+                        </div>
+                        <a href="{{ route('pricing') }}" class="inline-flex shrink-0 items-center rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 dark:bg-indigo-500 dark:hover:bg-indigo-600">
+                            Learn more
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="ml-2 size-4">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        @endif
+
         {{-- Banners --}}
         <div class="mx-auto mb-6 max-w-7xl px-4 sm:px-6 lg:px-8">
             <div class="grid grid-cols-1 gap-6 lg:grid-cols-2">

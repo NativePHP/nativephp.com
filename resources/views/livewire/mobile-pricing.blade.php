@@ -54,7 +54,7 @@
 
     {{-- Interval Toggle --}}
     <div
-        x-data="{ interval: @entangle('interval') }"
+        x-data="{ interval: @entangle('interval'), showUpgradeModal: false }"
         class="mt-8 flex flex-col items-center gap-6"
     >
         <div
@@ -149,14 +149,29 @@
 
             {{-- CTA Button --}}
             @auth
-                <button
-                    type="button"
-                    wire:click="createCheckoutSession('max')"
-                    class="my-5 block w-full rounded-2xl bg-zinc-800 py-4 text-center text-sm font-medium text-white transition duration-200 ease-in-out hover:bg-zinc-700 dark:bg-white dark:text-black dark:hover:bg-zinc-200"
-                    aria-label="Get started with Ultra plan"
-                >
-                    Get started
-                </button>
+                @if($isAlreadyUltra)
+                    <div class="my-5 block w-full rounded-2xl bg-emerald-100 py-4 text-center text-sm font-medium text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-300">
+                        You're on Ultra
+                    </div>
+                @elseif($hasExistingSubscription)
+                    <button
+                        type="button"
+                        @click="showUpgradeModal = true"
+                        class="my-5 block w-full rounded-2xl bg-zinc-800 py-4 text-center text-sm font-medium text-white transition duration-200 ease-in-out hover:bg-zinc-700 dark:bg-white dark:text-black dark:hover:bg-zinc-200"
+                        aria-label="Upgrade to Ultra plan"
+                    >
+                        Upgrade to Ultra
+                    </button>
+                @else
+                    <button
+                        type="button"
+                        wire:click="createCheckoutSession('max')"
+                        class="my-5 block w-full rounded-2xl bg-zinc-800 py-4 text-center text-sm font-medium text-white transition duration-200 ease-in-out hover:bg-zinc-700 dark:bg-white dark:text-black dark:hover:bg-zinc-200"
+                        aria-label="Get started with Ultra plan"
+                    >
+                        Get started
+                    </button>
+                @endif
             @else
                 <button
                     type="button"
@@ -229,6 +244,101 @@
                 </div>
             </div>
         </div>
+
+        {{-- Upgrade Confirmation Modal --}}
+        @auth
+            @if($hasExistingSubscription && !$isAlreadyUltra)
+                <template x-teleport="body">
+                    <div
+                        x-show="showUpgradeModal"
+                        x-transition.opacity
+                        class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
+                        @keydown.escape.window="showUpgradeModal = false"
+                    >
+                        <div
+                            x-show="showUpgradeModal"
+                            x-transition
+                            @click.outside="showUpgradeModal = false"
+                            class="w-full max-w-md rounded-2xl bg-white p-6 shadow-xl dark:bg-zinc-900"
+                        >
+                            <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Upgrade to Ultra</h3>
+                            <p class="mt-2 text-sm text-gray-600 dark:text-gray-400">
+                                You're upgrading from <strong>{{ $currentPlanName }}</strong> to <strong>Ultra</strong>.
+                                You'll be charged the prorated difference immediately and your new billing cycle will begin.
+                            </p>
+
+                            {{-- Interval Toggle --}}
+                            <div class="mt-4">
+                                <label class="text-sm font-medium text-gray-700 dark:text-gray-300">Billing interval</label>
+                                <div class="mt-2 inline-flex items-center gap-1 rounded-full bg-gray-100 p-1 dark:bg-zinc-800" role="radiogroup" aria-label="Upgrade billing interval">
+                                    <button
+                                        type="button"
+                                        @click="interval = 'month'"
+                                        :class="interval === 'month'
+                                            ? 'bg-white text-black shadow-sm dark:bg-zinc-600 dark:text-white'
+                                            : 'text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300'"
+                                        class="rounded-full px-4 py-1.5 text-sm font-medium transition"
+                                        role="radio"
+                                        :aria-checked="interval === 'month'"
+                                    >
+                                        Monthly
+                                    </button>
+                                    <button
+                                        type="button"
+                                        @click="interval = 'year'"
+                                        :class="interval === 'year'
+                                            ? 'bg-white text-black shadow-sm dark:bg-zinc-600 dark:text-white'
+                                            : 'text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300'"
+                                        class="rounded-full px-4 py-1.5 text-sm font-medium transition"
+                                        role="radio"
+                                        :aria-checked="interval === 'year'"
+                                    >
+                                        Annual
+                                    </button>
+                                </div>
+                            </div>
+
+                            {{-- Price Preview --}}
+                            <div class="mt-4 rounded-lg bg-gray-50 p-3 dark:bg-zinc-800">
+                                <div class="flex items-baseline justify-between">
+                                    <span class="text-sm text-gray-600 dark:text-gray-400">Ultra</span>
+                                    <span class="text-lg font-semibold text-gray-900 dark:text-white">
+                                        $<span x-text="interval === 'month' ? '35' : '350'"></span><span class="text-sm font-normal text-gray-500">/<span x-text="interval === 'month' ? 'mo' : 'yr'"></span></span>
+                                    </span>
+                                </div>
+                                <div
+                                    x-show="interval === 'year'"
+                                    x-transition
+                                    class="mt-1 text-xs text-emerald-600 dark:text-emerald-400"
+                                >
+                                    Save $70/year vs monthly
+                                </div>
+                            </div>
+
+                            {{-- Actions --}}
+                            <div class="mt-6 flex gap-3">
+                                <button
+                                    type="button"
+                                    @click="showUpgradeModal = false"
+                                    class="flex-1 rounded-xl border border-gray-300 px-4 py-2.5 text-sm font-medium text-gray-700 transition hover:bg-gray-50 dark:border-zinc-700 dark:text-gray-300 dark:hover:bg-zinc-800"
+                                >
+                                    Cancel
+                                </button>
+                                <button
+                                    type="button"
+                                    wire:click="upgradeSubscription"
+                                    wire:loading.attr="disabled"
+                                    class="flex-1 rounded-xl bg-zinc-800 px-4 py-2.5 text-sm font-medium text-white transition hover:bg-zinc-700 disabled:opacity-50 dark:bg-white dark:text-black dark:hover:bg-zinc-200"
+                                >
+                                    <span wire:loading.remove wire:target="upgradeSubscription">Confirm upgrade</span>
+                                    <span wire:loading wire:target="upgradeSubscription">Upgrading...</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </template>
+            @endif
+        @endauth
     </div>
 
     @guest
