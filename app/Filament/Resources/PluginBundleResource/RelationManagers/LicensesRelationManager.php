@@ -24,15 +24,17 @@ class LicensesRelationManager extends RelationManager
                     ->select('plugin_licenses.*')
                     ->addSelect([
                         'sale_total' => PluginLicense::query()
-                            ->selectRaw('SUM(price_paid)')
-                            ->whereColumn('user_id', 'plugin_licenses.user_id')
-                            ->whereColumn('purchased_at', 'plugin_licenses.purchased_at')
-                            ->where('plugin_bundle_id', $bundleId),
+                            ->from('plugin_licenses as sale_pl')
+                            ->selectRaw('SUM(sale_pl.price_paid)')
+                            ->whereColumn('sale_pl.user_id', 'plugin_licenses.user_id')
+                            ->whereColumn('sale_pl.purchased_at', 'plugin_licenses.purchased_at')
+                            ->where('sale_pl.plugin_bundle_id', $bundleId),
                         'sale_plugins_count' => PluginLicense::query()
+                            ->from('plugin_licenses as count_pl')
                             ->selectRaw('COUNT(*)')
-                            ->whereColumn('user_id', 'plugin_licenses.user_id')
-                            ->whereColumn('purchased_at', 'plugin_licenses.purchased_at')
-                            ->where('plugin_bundle_id', $bundleId),
+                            ->whereColumn('count_pl.user_id', 'plugin_licenses.user_id')
+                            ->whereColumn('count_pl.purchased_at', 'plugin_licenses.purchased_at')
+                            ->where('count_pl.plugin_bundle_id', $bundleId),
                     ])
                     ->whereIn('plugin_licenses.id', function ($sub) use ($bundleId): void {
                         $sub->selectRaw('MIN(id)')
