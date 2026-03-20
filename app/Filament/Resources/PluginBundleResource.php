@@ -9,6 +9,7 @@ use App\Models\Plugin;
 use App\Models\PluginBundle;
 use App\Models\PluginLicense;
 use App\Models\User;
+use App\Notifications\BundleGranted;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Notifications\Notification;
@@ -190,7 +191,7 @@ class PluginBundleResource extends Resource
                             $user = User::findOrFail($data['user_id']);
                             $record->loadMissing('plugins');
 
-                            $grantedCount = 0;
+                            $grantedPlugins = collect();
 
                             foreach ($record->plugins as $plugin) {
                                 $existingLicense = $user->pluginLicenses()
@@ -211,13 +212,17 @@ class PluginBundleResource extends Resource
                                     'purchased_at' => now(),
                                 ]);
 
-                                $grantedCount++;
+                                $grantedPlugins->push($plugin);
                             }
 
                             $user->getPluginLicenseKey();
 
+                            if ($grantedPlugins->isNotEmpty()) {
+                                $user->notify(new BundleGranted($record, $grantedPlugins));
+                            }
+
                             Notification::make()
-                                ->title("Granted {$grantedCount} plugin license(s) to {$user->name}")
+                                ->title("Granted {$grantedPlugins->count()} plugin license(s) to {$user->name}")
                                 ->success()
                                 ->send();
                         })

@@ -89,7 +89,7 @@ class GrantPluginToBundleOwners extends Command
                     'plugin_bundle_id' => $bundle->id,
                     'price_paid' => 0,
                     'currency' => 'USD',
-                    'is_grandfathered' => false,
+                    'is_grandfathered' => true,
                     'purchased_at' => now(),
                 ]);
 

@@ -47,6 +47,7 @@ class GrantPluginToBundleOwnersTest extends TestCase
                 'plugin_id' => $newPlugin->id,
                 'plugin_bundle_id' => $bundle->id,
                 'price_paid' => 0,
+                'is_grandfathered' => true,
             ]);
         }
 
