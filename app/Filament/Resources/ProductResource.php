@@ -7,6 +7,7 @@ use App\Filament\Resources\ProductResource\RelationManagers;
 use App\Models\Product;
 use App\Models\ProductLicense;
 use App\Models\User;
+use App\Notifications\ProductGranted;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Notifications\Notification;
@@ -196,6 +197,8 @@ class ProductResource extends Resource
                                 'is_comped' => true,
                                 'purchased_at' => now(),
                             ]);
+
+                            $user->notify(new ProductGranted($record));
 
                             Notification::make()
                                 ->title("Granted {$record->name} to {$user->name}")

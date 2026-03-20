@@ -10,6 +10,9 @@ use App\Filament\Resources\PluginResource\RelationManagers;
 use App\Jobs\ReviewPluginRepository;
 use App\Jobs\SyncPlugin;
 use App\Models\Plugin;
+use App\Models\PluginLicense;
+use App\Models\User;
+use App\Notifications\PluginGranted;
 use App\Notifications\PluginReviewChecksIncomplete;
 use Filament\Forms;
 use Filament\Forms\Form;
@@ -271,6 +274,62 @@ class PluginResource extends Resource
                                 ->success()
                                 ->send();
                         }),
+
+                    Tables\Actions\Action::make('grantToUser')
+                        ->label('Grant to User')
+                        ->icon('heroicon-o-gift')
+                        ->color('success')
+                        ->form([
+                            Forms\Components\Select::make('user_id')
+                                ->label('User')
+                                ->searchable()
+                                ->getSearchResultsUsing(function (string $search): array {
+                                    return User::query()
+                                        ->where('name', 'like', "%{$search}%")
+                                        ->orWhere('email', 'like', "%{$search}%")
+                                        ->limit(50)
+                                        ->get()
+                                        ->mapWithKeys(fn (User $user) => [$user->id => "{$user->name} ({$user->email})"])
+                                        ->toArray();
+                                })
+                                ->required(),
+                        ])
+                        ->action(function (Plugin $record, array $data): void {
+                            $user = User::findOrFail($data['user_id']);
+
+                            $existingLicense = $user->pluginLicenses()
+                                ->where('plugin_id', $record->id)
+                                ->exists();
+
+                            if ($existingLicense) {
+                                Notification::make()
+                                    ->title('User already has a license for this plugin')
+                                    ->warning()
+                                    ->send();
+
+                                return;
+                            }
+
+                            PluginLicense::create([
+                                'user_id' => $user->id,
+                                'plugin_id' => $record->id,
+                                'price_paid' => 0,
+                                'currency' => 'USD',
+                                'is_grandfathered' => true,
+                                'purchased_at' => now(),
+                            ]);
+
+                            $user->getPluginLicenseKey();
+                            $user->notify(new PluginGranted($record));
+
+                            Notification::make()
+                                ->title("Granted '{$record->name}' license to {$user->name}")
+                                ->success()
+                                ->send();
+                        })
+                        ->modalHeading('Grant Plugin to User')
+                        ->modalDescription(fn (Plugin $record): string => "Grant '{$record->name}' to a user for free.")
+                        ->modalSubmitActionLabel('Grant'),
 
                     Tables\Actions\Action::make('runReviewChecks')
                         ->label('Run Review Checks')

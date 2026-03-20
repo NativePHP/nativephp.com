@@ -28,9 +28,10 @@ class ProductGranted extends Notification implements ShouldQueue
     {
         return (new MailMessage)
             ->subject("You've been granted access to {$this->product->name}!")
-            ->greeting('Great news!')
-            ->line("You've been granted access to **{$this->product->name}**.")
-            ->line('Thank you for being a NativePHP customer!');
+            ->markdown('mail.product-granted', [
+                'product' => $this->product,
+                'url' => route('products.show', $this->product),
+            ]);
     }
 
     /**
