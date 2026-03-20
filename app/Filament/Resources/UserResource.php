@@ -119,6 +119,7 @@ class UserResource extends Resource
     {
         return [
             RelationManagers\PluginLicensesRelationManager::class,
+            RelationManagers\ProductLicensesRelationManager::class,
             RelationManagers\LicensesRelationManager::class,
             RelationManagers\SubscriptionsRelationManager::class,
         ];

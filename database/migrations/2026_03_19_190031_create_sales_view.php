@@ -33,7 +33,7 @@ return new class extends Migration
                 NULL AS bundle_name,
                 pdl.price_paid,
                 pdl.currency,
-                0 AS is_comped,
+                pdl.is_comped,
                 pdl.purchased_at,
                 pdl.created_at,
                 pdl.updated_at

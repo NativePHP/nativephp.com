@@ -53,6 +53,7 @@ class ProductLicense extends Model
     {
         return [
             'price_paid' => 'integer',
+            'is_comped' => 'boolean',
             'purchased_at' => 'datetime',
         ];
     }
