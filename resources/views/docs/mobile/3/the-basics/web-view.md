@@ -128,5 +128,18 @@ But note that this will overwrite any changes you've made to your copy of this c
 
 </aside>
 
+## WebView Compatibility
+
+On Android, the web view is powered by the system's built-in WebView component, which varies by device and OS version.
+Older Android versions ship with older WebView engines that may not support modern CSS features.
+
+For example, Tailwind CSS v4 uses `@theme` and other newer CSS features that are not supported on older WebView
+versions. If you are targeting a lower `min_sdk` to support older devices, consider using Tailwind CSS v3 or another
+CSS framework that generates compatible output. You can configure your minimum SDK version in your
+[Android SDK Versions](/docs/mobile/3/getting-started/configuration#android-sdk-versions) settings.
+
+Always test your app on emulators running your minimum supported Android version to catch these issues early. You can
+create emulators for older API levels in Android Studio's Virtual Device Manager.
+
 With just a few small changes, we've been able to define a layout that will work well on a multitude of devices
 without having to add complex calculations or lots of device-specific CSS rules to our code.

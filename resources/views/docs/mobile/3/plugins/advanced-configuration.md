@@ -314,7 +314,7 @@ Specify minimum platform versions your plugin requires:
 ```json
 {
     "android": {
-        "min_version": 33
+        "min_version": 29
     },
     "ios": {
         "min_version": "18.0"
@@ -322,10 +322,10 @@ Specify minimum platform versions your plugin requires:
 }
 ```
 
-- **Android** — Minimum SDK version (integer, e.g., `33` for Android 13)
+- **Android** — Minimum SDK version (integer, e.g., `29` for Android 10)
 - **iOS** — Minimum iOS version (string, e.g., `"18.0"`)
 
-NativePHP currently requires a minimum of Android SDK 33 and iOS 18. Your plugin's minimum versions cannot be lower
+NativePHP currently supports a minimum of Android SDK 29 and iOS 18. Your plugin's minimum versions cannot be lower
 than these. Use this field when your plugin requires a higher version than NativePHP's baseline.
 
 If a user's app targets a lower version than your plugin requires, they'll receive a warning during plugin validation.
