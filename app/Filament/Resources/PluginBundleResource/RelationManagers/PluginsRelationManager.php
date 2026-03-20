@@ -2,9 +2,11 @@
 
 namespace App\Filament\Resources\PluginBundleResource\RelationManagers;
 
+use Filament\Forms;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Illuminate\Support\Facades\Artisan;
 
 class PluginsRelationManager extends RelationManager
 {
@@ -46,7 +48,33 @@ class PluginsRelationManager extends RelationManager
             ->headerActions([
                 Tables\Actions\AttachAction::make()
                     ->preloadRecordSelect()
-                    ->recordSelectSearchColumns(['name']),
+                    ->recordSelectSearchColumns(['name'])
+                    ->form(fn (Tables\Actions\AttachAction $action): array => [
+                        $action->getRecordSelect(),
+                        Forms\Components\Toggle::make('grant_to_existing_owners')
+                            ->label('Grant to existing bundle owners')
+                            ->helperText('Create free licenses for users who already purchased this bundle and send them an email.')
+                            ->default(true),
+                    ])
+                    ->after(function (array $data) {
+                        if (! ($data['grant_to_existing_owners'] ?? false)) {
+                            return;
+                        }
+
+                        /** @var \App\Models\PluginBundle $bundle */
+                        $bundle = $this->getOwnerRecord();
+
+                        $plugin = \App\Models\Plugin::find($data['recordId']);
+
+                        if (! $plugin) {
+                            return;
+                        }
+
+                        Artisan::call('plugins:grant-to-bundle-owners', [
+                            'bundle' => $bundle->slug,
+                            'plugin' => $plugin->name,
+                        ]);
+                    }),
             ])
             ->actions([
                 Tables\Actions\DetachAction::make(),
