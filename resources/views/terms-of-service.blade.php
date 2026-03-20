@@ -47,10 +47,10 @@
                     aria-hidden="true"
                 />
                 <time
-                    datetime="2026-03-05"
+                    datetime="2026-03-20"
                     class="text-sm"
                 >
-                    March 5, 2026
+                    March 20, 2026
                 </time>
             </div>
         </header>
@@ -179,10 +179,24 @@
             </p>
 
             <h2>Refund Policy</h2>
+
+            <h3>Platform Subscription</h3>
             <p>
-                Due to the nature of the Service, no returns are accepted.
-                Refunds are offered on a case-by-case basis at our sole
-                discretion.
+                Due to the nature of the Service, no returns are accepted for
+                platform subscriptions. Refunds are offered on a case-by-case
+                basis at our sole discretion.
+            </p>
+
+            <h3>Plugin Purchases</h3>
+            <p>
+                You may request a refund for any third-party Plugin purchase
+                within fourteen (14) days of the original purchase date. Refund
+                requests must be submitted to
+                <a href="mailto:support@nativephp.com">support@nativephp.com</a>.
+                After fourteen (14) days, all Plugin sales are final. Refunds
+                are processed at our sole discretion and may be declined if the
+                Plugin was used in a production application or if the refund
+                request is deemed abusive.
             </p>
 
             <h2>Publicity</h2>

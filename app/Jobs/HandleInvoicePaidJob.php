@@ -17,7 +17,6 @@ use App\Models\Product;
 use App\Models\ProductLicense;
 use App\Models\User;
 use App\Notifications\PluginSaleCompleted;
-use App\Services\StripeConnectService;
 use App\Support\GitHubOAuth;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -549,17 +548,15 @@ class HandleInvoicePaidJob implements ShouldQueue
         if ($plugin->developerAccount && $plugin->developerAccount->canReceivePayouts() && $amount > 0) {
             $split = PluginPayout::calculateSplit($amount);
 
-            $payout = PluginPayout::create([
+            PluginPayout::create([
                 'plugin_license_id' => $license->id,
                 'developer_account_id' => $plugin->developerAccount->id,
                 'gross_amount' => $amount,
                 'platform_fee' => $split['platform_fee'],
                 'developer_amount' => $split['developer_amount'],
                 'status' => PayoutStatus::Pending,
+                'eligible_for_payout_at' => now()->addDays(15),
             ]);
-
-            $stripeConnectService = resolve(StripeConnectService::class);
-            $stripeConnectService->processTransfer($payout);
         }
 
         Log::info('Created plugin license from invoice', [
@@ -589,17 +586,15 @@ class HandleInvoicePaidJob implements ShouldQueue
         if ($plugin->developerAccount && $plugin->developerAccount->canReceivePayouts() && $allocatedAmount > 0) {
             $split = PluginPayout::calculateSplit($allocatedAmount);
 
-            $payout = PluginPayout::create([
+            PluginPayout::create([
                 'plugin_license_id' => $license->id,
                 'developer_account_id' => $plugin->developerAccount->id,
                 'gross_amount' => $allocatedAmount,
                 'platform_fee' => $split['platform_fee'],
                 'developer_amount' => $split['developer_amount'],
                 'status' => PayoutStatus::Pending,
+                'eligible_for_payout_at' => now()->addDays(15),
             ]);
-
-            $stripeConnectService = resolve(StripeConnectService::class);
-            $stripeConnectService->processTransfer($payout);
         }
 
         Log::info('Created bundle plugin license from invoice', [

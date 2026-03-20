@@ -47,10 +47,10 @@
                     aria-hidden="true"
                 />
                 <time
-                    datetime="2026-03-05"
+                    datetime="2026-03-20"
                     class="text-sm"
                 >
-                    March 5, 2026
+                    March 20, 2026
                 </time>
             </div>
         </header>
@@ -153,6 +153,25 @@
                 As a condition of selling Plugins on the Marketplace, the
                 Developer must complete the Stripe Connect onboarding process
                 and maintain an active Stripe Connect account in good standing.
+            </p>
+
+            <p>
+                Developer payouts are subject to a holding period of fifteen
+                (15) days from the date of each sale. During this period, the
+                sale proceeds are held by NativePHP to allow for the processing
+                of any Customer refund requests. Following the holding period,
+                the Developer Share will be transferred to the Developer's
+                Stripe Connect account, subject to the Developer's account
+                being in good standing.
+            </p>
+
+            <p>
+                In the event that a refund is issued to a Customer during the
+                holding period, the corresponding Developer Share for that sale
+                will not be paid out. If a refund is issued after the Developer
+                Share has been transferred, NativePHP reserves the right to
+                deduct the refunded Developer Share amount from future payouts
+                or to request repayment from the Developer.
             </p>
 
             <p>
