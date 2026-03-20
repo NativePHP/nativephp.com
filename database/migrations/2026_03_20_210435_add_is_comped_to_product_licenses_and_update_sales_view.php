@@ -9,9 +9,11 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::table('product_licenses', function (Blueprint $table) {
-            $table->boolean('is_comped')->default(false)->after('currency')->index();
-        });
+        if (! Schema::hasColumn('product_licenses', 'is_comped')) {
+            Schema::table('product_licenses', function (Blueprint $table) {
+                $table->boolean('is_comped')->default(false)->after('currency')->index();
+            });
+        }
 
         DB::statement('DROP VIEW IF EXISTS sales_view');
 
