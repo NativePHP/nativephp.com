@@ -105,5 +105,7 @@ class CoursePageTest extends TestCase
         $this->assertNotNull($capturedParams, 'Stripe checkout session should have been created');
         $this->assertStringContainsString(route('cart.success'), $capturedParams['success_url']);
         $this->assertStringContainsString('{CHECKOUT_SESSION_ID}', $capturedParams['success_url']);
+        $this->assertEquals(['enabled' => true], $capturedParams['tax_id_collection']);
+        $this->assertEquals(['name' => 'auto', 'address' => 'auto'], $capturedParams['customer_update']);
     }
 }
