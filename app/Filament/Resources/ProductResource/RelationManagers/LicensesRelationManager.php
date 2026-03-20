@@ -36,6 +36,10 @@ class LicensesRelationManager extends RelationManager
                     ])
                     ->default('USD'),
 
+                Forms\Components\Toggle::make('is_comped')
+                    ->label('Comped')
+                    ->default(false),
+
                 Forms\Components\DateTimePicker::make('purchased_at')
                     ->default(now()),
             ]);
@@ -61,6 +65,11 @@ class LicensesRelationManager extends RelationManager
                     ->money('usd', divideBy: 100)
                     ->sortable(),
 
+                Tables\Columns\IconColumn::make('is_comped')
+                    ->label('Comped')
+                    ->boolean()
+                    ->sortable(),
+
                 Tables\Columns\TextColumn::make('purchased_at')
                     ->label('Purchased')
                     ->dateTime()
@@ -72,7 +81,8 @@ class LicensesRelationManager extends RelationManager
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                //
+                Tables\Filters\TernaryFilter::make('is_comped')
+                    ->label('Comped'),
             ])
             ->headerActions([
                 Tables\Actions\CreateAction::make(),
