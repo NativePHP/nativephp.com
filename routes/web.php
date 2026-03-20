@@ -117,9 +117,14 @@ Route::post('course/checkout', function (\Illuminate\Http\Request $request) {
         'success_url' => route('cart.success').'?session_id={CHECKOUT_SESSION_ID}',
         'cancel_url' => route('course'),
         'customer' => $user->stripe_id,
+        'customer_update' => [
+            'name' => 'auto',
+            'address' => 'auto',
+        ],
         'metadata' => $metadata,
         'allow_promotion_codes' => true,
         'billing_address_collection' => 'required',
+        'tax_id_collection' => ['enabled' => true],
         'invoice_creation' => [
             'enabled' => true,
             'invoice_data' => [
