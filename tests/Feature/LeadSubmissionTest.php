@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use App\Livewire\LeadSubmissionForm;
 use App\Models\Lead;
 use App\Notifications\LeadReceived;
+use App\Notifications\NewLeadSubmitted;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Notification;
@@ -59,6 +60,13 @@ class LeadSubmissionTest extends TestCase
         Notification::assertSentTo(
             Lead::first(),
             LeadReceived::class
+        );
+
+        Notification::assertSentOnDemand(
+            NewLeadSubmitted::class,
+            function ($notification, $channels, $notifiable) {
+                return $notifiable->routes['mail'] === 'sales@nativephp.com';
+            }
         );
     }
 
