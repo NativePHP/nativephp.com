@@ -35,7 +35,11 @@ class Dashboard extends Component
     #[Computed]
     public function plugins(): Collection
     {
-        return auth()->user()->plugins()->withCount('licenses')->get();
+        return auth()->user()->plugins()
+            ->where('status', \App\Enums\PluginStatus::Approved)
+            ->where('type', \App\Enums\PluginType::Paid)
+            ->withCount('licenses')
+            ->get();
     }
 
     #[Computed]

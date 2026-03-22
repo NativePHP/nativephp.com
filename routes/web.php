@@ -272,17 +272,17 @@ Route::get('auth/github/callback', [App\Http\Controllers\GitHubIntegrationContro
 // GitHub OAuth routes (auth required)
 Route::middleware(['auth', EnsureFeaturesAreActive::using(ShowAuthButtons::class)])->group(function (): void {
     Route::get('auth/github', [App\Http\Controllers\GitHubIntegrationController::class, 'redirectToGitHub'])->name('github.redirect');
-    Route::post('customer/github/request-access', [App\Http\Controllers\GitHubIntegrationController::class, 'requestRepoAccess'])->name('github.request-access');
-    Route::post('customer/github/request-claude-plugins-access', [App\Http\Controllers\GitHubIntegrationController::class, 'requestClaudePluginsAccess'])->name('github.request-claude-plugins-access');
-    Route::delete('customer/github/disconnect', [App\Http\Controllers\GitHubIntegrationController::class, 'disconnect'])->name('github.disconnect');
-    Route::get('customer/github/repositories', [App\Http\Controllers\GitHubIntegrationController::class, 'repositories'])->name('github.repositories');
+    Route::post('dashboard/github/request-access', [App\Http\Controllers\GitHubIntegrationController::class, 'requestRepoAccess'])->name('github.request-access');
+    Route::post('dashboard/github/request-claude-plugins-access', [App\Http\Controllers\GitHubIntegrationController::class, 'requestClaudePluginsAccess'])->name('github.request-claude-plugins-access');
+    Route::delete('dashboard/github/disconnect', [App\Http\Controllers\GitHubIntegrationController::class, 'disconnect'])->name('github.disconnect');
+    Route::get('dashboard/github/repositories', [App\Http\Controllers\GitHubIntegrationController::class, 'repositories'])->name('github.repositories');
 });
 
 // Discord OAuth routes
 Route::middleware(['auth', EnsureFeaturesAreActive::using(ShowAuthButtons::class)])->group(function (): void {
     Route::get('auth/discord', [App\Http\Controllers\DiscordIntegrationController::class, 'redirectToDiscord'])->name('discord.redirect');
     Route::get('auth/discord/callback', [App\Http\Controllers\DiscordIntegrationController::class, 'handleCallback'])->name('discord.callback');
-    Route::delete('customer/discord/disconnect', [App\Http\Controllers\DiscordIntegrationController::class, 'disconnect'])->name('discord.disconnect');
+    Route::delete('dashboard/discord/disconnect', [App\Http\Controllers\DiscordIntegrationController::class, 'disconnect'])->name('discord.disconnect');
 });
 
 Route::get('callback', function (\Illuminate\Http\Request $request) {
@@ -301,7 +301,7 @@ Route::middleware(['auth', EnsureFeaturesAreActive::using(ShowAuthButtons::class
 });
 
 // Customer license management routes
-Route::middleware(['auth', EnsureFeaturesAreActive::using(ShowAuthButtons::class)])->prefix('customer')->name('customer.')->group(function (): void {
+Route::middleware(['auth', EnsureFeaturesAreActive::using(ShowAuthButtons::class)])->prefix('dashboard')->name('customer.')->group(function (): void {
     // Settings page
     Route::livewire('settings', \App\Livewire\Customer\Settings::class)->name('settings');
 
@@ -328,13 +328,6 @@ Route::middleware(['auth', EnsureFeaturesAreActive::using(ShowAuthButtons::class
     Route::livewire('showcase', \App\Livewire\Customer\Showcase\Index::class)->name('showcase.index');
     Route::livewire('showcase/create', \App\Livewire\Customer\Showcase\Create::class)->name('showcase.create');
     Route::livewire('showcase/{showcase}/edit', \App\Livewire\Customer\Showcase\Edit::class)->name('showcase.edit');
-
-    // Plugin management
-    Route::middleware(EnsureFeaturesAreActive::using(ShowPlugins::class))->group(function (): void {
-        Route::livewire('plugins', \App\Livewire\Customer\Plugins\Index::class)->name('plugins.index');
-        Route::livewire('plugins/submit', \App\Livewire\Customer\Plugins\Create::class)->name('plugins.create');
-        Route::livewire('plugins/{vendor}/{package}', \App\Livewire\Customer\Plugins\Show::class)->name('plugins.show');
-    });
 
     // Billing portal
     Route::get('billing-portal', function (\Illuminate\Http\Request $request) {
@@ -397,11 +390,21 @@ Route::middleware(EnsureFeaturesAreActive::using(ShowPlugins::class))->group(fun
     Route::get('cart/cancel', [CartController::class, 'cancel'])->name('cart.cancel');
 });
 
-// Developer onboarding routes
-Route::middleware(['auth', EnsureFeaturesAreActive::using(ShowAuthButtons::class), EnsureFeaturesAreActive::using(ShowPlugins::class)])->prefix('customer/developer')->name('customer.developer.')->group(function (): void {
-    Route::livewire('onboarding', \App\Livewire\Customer\Developer\Onboarding::class)->name('onboarding');
-    Route::post('onboarding/start', [DeveloperOnboardingController::class, 'start'])->name('onboarding.start');
-    Route::get('onboarding/return', [DeveloperOnboardingController::class, 'return'])->name('onboarding.return');
-    Route::get('onboarding/refresh', [DeveloperOnboardingController::class, 'refresh'])->name('onboarding.refresh');
-    Route::livewire('dashboard', \App\Livewire\Customer\Developer\Dashboard::class)->name('dashboard');
+// Developer routes
+Route::middleware(['auth', EnsureFeaturesAreActive::using(ShowAuthButtons::class), EnsureFeaturesAreActive::using(ShowPlugins::class)])->prefix('dashboard/developer')->group(function (): void {
+    Route::name('customer.developer.')->group(function (): void {
+        Route::livewire('/', \App\Livewire\Customer\Developer\Dashboard::class)->name('dashboard');
+        Route::livewire('onboarding', \App\Livewire\Customer\Developer\Onboarding::class)->name('onboarding');
+        Route::post('onboarding/start', [DeveloperOnboardingController::class, 'start'])->name('onboarding.start');
+        Route::get('onboarding/return', [DeveloperOnboardingController::class, 'return'])->name('onboarding.return');
+        Route::get('onboarding/refresh', [DeveloperOnboardingController::class, 'refresh'])->name('onboarding.refresh');
+        Route::livewire('settings', \App\Livewire\Customer\Developer\Settings::class)->name('settings');
+    });
+
+    // Plugin management (keeps customer.plugins.* route names)
+    Route::name('customer.')->group(function (): void {
+        Route::livewire('plugins', \App\Livewire\Customer\Plugins\Index::class)->name('plugins.index');
+        Route::livewire('plugins/submit', \App\Livewire\Customer\Plugins\Create::class)->name('plugins.create');
+        Route::livewire('plugins/{vendor}/{package}', \App\Livewire\Customer\Plugins\Show::class)->name('plugins.show');
+    });
 });

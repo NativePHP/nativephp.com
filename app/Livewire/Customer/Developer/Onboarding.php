@@ -17,7 +17,6 @@ class Onboarding extends Component
 
         if ($developerAccount && $developerAccount->hasCompletedOnboarding()) {
             $this->redirect(route('customer.developer.dashboard'), navigate: true);
-            session()->flash('message', 'Your developer account is already set up.');
         }
     }
 

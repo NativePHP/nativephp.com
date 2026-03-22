@@ -53,45 +53,12 @@
         </flux:card>
     </div>
 
-    {{-- Account Status --}}
-    <flux:card class="mt-8">
-        <flux:heading size="lg">Stripe Account Status</flux:heading>
-        <flux:separator class="my-4" />
-
-        <div class="flex items-center justify-between">
-            <div class="flex items-center gap-3">
-                @if ($this->developerAccount->canReceivePayouts())
-                    <div class="flex size-10 items-center justify-center rounded-full bg-emerald-100 dark:bg-emerald-900/30">
-                        <x-heroicon-s-check class="size-5 text-emerald-600 dark:text-emerald-400" />
-                    </div>
-                    <div>
-                        <p class="font-medium text-gray-900 dark:text-white">Account Active</p>
-                        <flux:text>Your account is fully set up to receive payouts</flux:text>
-                    </div>
-                @else
-                    <div class="flex size-10 items-center justify-center rounded-full bg-yellow-100 dark:bg-yellow-900/30">
-                        <x-heroicon-s-exclamation-triangle class="size-5 text-yellow-600 dark:text-yellow-400" />
-                    </div>
-                    <div>
-                        <p class="font-medium text-gray-900 dark:text-white">Action Required</p>
-                        <flux:text>Additional information needed for payouts</flux:text>
-                    </div>
-                @endif
-            </div>
-            @if (! $this->developerAccount->canReceivePayouts())
-                <flux:button variant="primary" href="{{ route('customer.developer.onboarding') }}">
-                    Complete Setup
-                </flux:button>
-            @endif
-        </div>
-    </flux:card>
-
     {{-- Two Column Layout --}}
     <div class="mt-8 grid grid-cols-1 gap-8 lg:grid-cols-2">
         {{-- Plugins --}}
         <flux:card>
             <div class="flex items-center justify-between">
-                <flux:heading size="lg">Your Plugins</flux:heading>
+                <flux:heading size="lg">Your Premium Plugins</flux:heading>
                 <flux:button variant="ghost" size="sm" href="{{ route('customer.plugins.index') }}">View all</flux:button>
             </div>
             <flux:separator class="my-4" />
@@ -102,19 +69,6 @@
                         <div class="flex items-center justify-between">
                             <div class="min-w-0 flex-1">
                                 <p class="truncate font-medium text-gray-900 dark:text-white">{{ $plugin->name }}</p>
-                                <div class="mt-1 flex items-center gap-2">
-                                    @if ($plugin->status === \App\Enums\PluginStatus::Approved)
-                                        <flux:badge color="green" size="sm">Approved</flux:badge>
-                                    @elseif ($plugin->status === \App\Enums\PluginStatus::Pending)
-                                        <flux:badge color="yellow" size="sm">Pending</flux:badge>
-                                    @else
-                                        <flux:badge color="red" size="sm">Rejected</flux:badge>
-                                    @endif
-
-                                    @if ($plugin->isPaid())
-                                        <flux:badge color="indigo" size="sm">Paid</flux:badge>
-                                    @endif
-                                </div>
                             </div>
                             <div class="ml-4 text-right">
                                 <flux:text class="font-medium">{{ $plugin->licenses_count }} sales</flux:text>
@@ -124,10 +78,10 @@
                 @empty
                     <x-customer.empty-state
                         icon="puzzle-piece"
-                        title="No plugins yet"
-                        description="Submit your first plugin to start selling."
+                        title="No premium plugins yet"
+                        description="Submit a paid plugin to start selling."
                     >
-                        <flux:button variant="primary" size="sm" href="{{ route('customer.plugins.create') }}">Submit your first plugin</flux:button>
+                        <flux:button variant="primary" size="sm" href="{{ route('customer.plugins.create') }}">Submit a plugin</flux:button>
                     </x-customer.empty-state>
                 @endforelse
             </div>

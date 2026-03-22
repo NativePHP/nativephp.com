@@ -4,6 +4,25 @@
         <flux:text>Welcome back, {{ auth()->user()->first_name ?? auth()->user()->name }}</flux:text>
     </div>
 
+    {{-- Session Messages --}}
+    @if (session('success'))
+        <flux:callout variant="success" icon="check-circle" class="mb-6">
+            <flux:callout.text>{{ session('success') }}</flux:callout.text>
+        </flux:callout>
+    @endif
+
+    @if (session('message'))
+        <flux:callout variant="secondary" icon="information-circle" class="mb-6">
+            <flux:callout.text>{{ session('message') }}</flux:callout.text>
+        </flux:callout>
+    @endif
+
+    @if (session('error'))
+        <flux:callout variant="danger" icon="x-circle" class="mb-6">
+            <flux:callout.text>{{ session('error') }}</flux:callout.text>
+        </flux:callout>
+    @endif
+
     {{-- Banners --}}
     <div class="mb-6 grid grid-cols-1 gap-6 lg:grid-cols-2">
         @feature(App\Features\ShowPlugins::class)
@@ -106,24 +125,4 @@
         />
     </div>
 
-    {{-- Session Messages --}}
-    <div class="mt-6">
-        @if (session('success'))
-            <flux:callout variant="success" icon="check-circle" class="mb-4">
-                <flux:callout.text>{{ session('success') }}</flux:callout.text>
-            </flux:callout>
-        @endif
-
-        @if (session('message'))
-            <flux:callout variant="secondary" icon="information-circle" class="mb-4">
-                <flux:callout.text>{{ session('message') }}</flux:callout.text>
-            </flux:callout>
-        @endif
-
-        @if (session('error'))
-            <flux:callout variant="danger" icon="x-circle" class="mb-4">
-                <flux:callout.text>{{ session('error') }}</flux:callout.text>
-            </flux:callout>
-        @endif
-    </div>
 </div>

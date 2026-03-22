@@ -22,7 +22,7 @@ class CustomerShowcaseIndexTest extends TestCase
 
     public function test_guest_cannot_view_showcase_page(): void
     {
-        $response = $this->get('/customer/showcase');
+        $response = $this->get('/dashboard/showcase');
 
         $response->assertRedirect('/login');
     }
@@ -31,7 +31,7 @@ class CustomerShowcaseIndexTest extends TestCase
     {
         $user = User::factory()->create();
 
-        $response = $this->actingAs($user)->get('/customer/showcase');
+        $response = $this->actingAs($user)->get('/dashboard/showcase');
 
         $response->assertStatus(200);
         $response->assertSee('Your Showcase Submissions');
@@ -42,7 +42,7 @@ class CustomerShowcaseIndexTest extends TestCase
     {
         $user = User::factory()->create();
 
-        $response = $this->actingAs($user)->get('/customer/showcase');
+        $response = $this->actingAs($user)->get('/dashboard/showcase');
 
         $response->assertStatus(200);
         $response->assertSee('No submissions yet');
@@ -60,7 +60,7 @@ class CustomerShowcaseIndexTest extends TestCase
             'has_desktop' => false,
         ]);
 
-        $response = $this->actingAs($user)->get('/customer/showcase');
+        $response = $this->actingAs($user)->get('/dashboard/showcase');
 
         $response->assertStatus(200);
         $response->assertSee('My Test App');
@@ -83,7 +83,7 @@ class CustomerShowcaseIndexTest extends TestCase
             'title' => 'User 2 App',
         ]);
 
-        $response = $this->actingAs($user1)->get('/customer/showcase');
+        $response = $this->actingAs($user1)->get('/dashboard/showcase');
 
         $response->assertStatus(200);
         $response->assertSee('User 1 App');
@@ -99,7 +99,7 @@ class CustomerShowcaseIndexTest extends TestCase
             'title' => 'Pending App',
         ]);
 
-        $response = $this->actingAs($user)->get('/customer/showcase');
+        $response = $this->actingAs($user)->get('/dashboard/showcase');
 
         $response->assertStatus(200);
         $response->assertSee('Pending App');
@@ -115,7 +115,7 @@ class CustomerShowcaseIndexTest extends TestCase
             'title' => 'Both Platforms App',
         ]);
 
-        $response = $this->actingAs($user)->get('/customer/showcase');
+        $response = $this->actingAs($user)->get('/dashboard/showcase');
 
         $response->assertStatus(200);
         $response->assertSee('Mobile');

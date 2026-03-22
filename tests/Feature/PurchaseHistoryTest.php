@@ -23,7 +23,7 @@ class PurchaseHistoryTest extends TestCase
 
     public function test_guest_cannot_view_purchase_history(): void
     {
-        $response = $this->get('/customer/purchase-history');
+        $response = $this->get('/dashboard/purchase-history');
 
         $response->assertRedirect('/login');
     }
@@ -41,7 +41,7 @@ class PurchaseHistoryTest extends TestCase
             'purchased_at' => now()->subDay(),
         ]);
 
-        $response = $this->actingAs($user)->get('/customer/purchase-history');
+        $response = $this->actingAs($user)->get('/dashboard/purchase-history');
 
         $response->assertStatus(200);
         $response->assertSee('Plugin Dev Kit');
@@ -70,7 +70,7 @@ class PurchaseHistoryTest extends TestCase
             'purchased_at' => now()->subDay(),
         ]);
 
-        $response = $this->actingAs($user)->get('/customer/purchase-history');
+        $response = $this->actingAs($user)->get('/dashboard/purchase-history');
 
         $response->assertStatus(200);
         $response->assertSee('Plugin Dev Kit');
@@ -97,7 +97,7 @@ class PurchaseHistoryTest extends TestCase
     {
         $user = User::factory()->create();
 
-        $response = $this->actingAs($user)->get('/customer/purchase-history');
+        $response = $this->actingAs($user)->get('/dashboard/purchase-history');
 
         $response->assertStatus(200);
         $response->assertSee('No purchases yet');
@@ -114,7 +114,7 @@ class PurchaseHistoryTest extends TestCase
             'purchased_at' => now(),
         ]);
 
-        $response = $this->actingAs($user)->get('/customer/purchase-history');
+        $response = $this->actingAs($user)->get('/dashboard/purchase-history');
 
         $response->assertStatus(200);
         $response->assertSee('Active');

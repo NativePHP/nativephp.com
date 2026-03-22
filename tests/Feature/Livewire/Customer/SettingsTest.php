@@ -29,14 +29,14 @@ class SettingsTest extends TestCase
     {
         $user = User::factory()->create();
 
-        $response = $this->withoutVite()->actingAs($user)->get('/customer/settings');
+        $response = $this->withoutVite()->actingAs($user)->get('/dashboard/settings');
 
         $response->assertStatus(200);
     }
 
     public function test_settings_page_requires_authentication(): void
     {
-        $response = $this->withoutVite()->get('/customer/settings');
+        $response = $this->withoutVite()->get('/dashboard/settings');
 
         $response->assertRedirect('/login');
     }

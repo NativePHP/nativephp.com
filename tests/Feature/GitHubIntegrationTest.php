@@ -37,7 +37,7 @@ class GitHubIntegrationTest extends TestCase
             'is_suspended' => false,
         ]);
 
-        $response = $this->actingAs($user)->get('/customer/integrations');
+        $response = $this->actingAs($user)->get('/dashboard/integrations');
 
         $response->assertStatus(200);
         $response->assertSee('nativephp/mobile');
@@ -57,7 +57,7 @@ class GitHubIntegrationTest extends TestCase
             'is_suspended' => false,
         ]);
 
-        $response = $this->actingAs($user)->get('/customer/integrations');
+        $response = $this->actingAs($user)->get('/dashboard/integrations');
 
         $response->assertStatus(200);
         $response->assertDontSee('Repo Access');
@@ -78,7 +78,7 @@ class GitHubIntegrationTest extends TestCase
             'is_suspended' => false,
         ]);
 
-        $response = $this->actingAs($user)->get('/customer/integrations');
+        $response = $this->actingAs($user)->get('/dashboard/integrations');
 
         $response->assertStatus(200);
         $response->assertSee('Connected as');
@@ -104,7 +104,7 @@ class GitHubIntegrationTest extends TestCase
         ]);
 
         $response = $this->actingAs($user)
-            ->post('/customer/github/request-access');
+            ->post('/dashboard/github/request-access');
 
         $response->assertRedirect();
         $response->assertSessionHas('success');
@@ -131,7 +131,7 @@ class GitHubIntegrationTest extends TestCase
         ]);
 
         $response = $this->actingAs($user)
-            ->post('/customer/github/request-access');
+            ->post('/dashboard/github/request-access');
 
         $response->assertRedirect();
         $response->assertSessionHas('error');
@@ -148,7 +148,7 @@ class GitHubIntegrationTest extends TestCase
         ]);
 
         $response = $this->actingAs($user)
-            ->post('/customer/github/request-access');
+            ->post('/dashboard/github/request-access');
 
         $response->assertRedirect();
         $response->assertSessionHas('error', 'Please connect your GitHub account first.');
@@ -173,7 +173,7 @@ class GitHubIntegrationTest extends TestCase
         ]);
 
         $response = $this->actingAs($user)
-            ->delete('/customer/github/disconnect');
+            ->delete('/dashboard/github/disconnect');
 
         $response->assertRedirect();
         $response->assertSessionHas('success');
@@ -254,7 +254,7 @@ class GitHubIntegrationTest extends TestCase
             'is_suspended' => false,
         ]);
 
-        $response = $this->actingAs($user)->get('/customer/integrations');
+        $response = $this->actingAs($user)->get('/dashboard/integrations');
 
         $response->assertStatus(200);
         $response->assertSee('Access Granted');
@@ -283,7 +283,7 @@ class GitHubIntegrationTest extends TestCase
             'is_suspended' => false,
         ]);
 
-        $response = $this->actingAs($user)->get('/customer/integrations');
+        $response = $this->actingAs($user)->get('/dashboard/integrations');
 
         $response->assertStatus(200);
         $response->assertSee('Invitation Pending');

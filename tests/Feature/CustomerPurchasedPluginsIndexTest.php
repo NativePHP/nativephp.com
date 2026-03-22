@@ -25,7 +25,7 @@ class CustomerPurchasedPluginsIndexTest extends TestCase
 
     public function test_guest_cannot_view_purchased_plugins_page(): void
     {
-        $response = $this->get('/customer/purchased-plugins');
+        $response = $this->get('/dashboard/purchased-plugins');
 
         $response->assertRedirect('/login');
     }
@@ -34,7 +34,7 @@ class CustomerPurchasedPluginsIndexTest extends TestCase
     {
         $user = User::factory()->create();
 
-        $response = $this->actingAs($user)->get('/customer/purchased-plugins');
+        $response = $this->actingAs($user)->get('/dashboard/purchased-plugins');
 
         $response->assertStatus(200);
         $response->assertSee('Purchased Plugins');
@@ -45,7 +45,7 @@ class CustomerPurchasedPluginsIndexTest extends TestCase
     {
         $user = User::factory()->create();
 
-        $response = $this->actingAs($user)->get('/customer/purchased-plugins');
+        $response = $this->actingAs($user)->get('/dashboard/purchased-plugins');
 
         $response->assertStatus(200);
         $response->assertSee('No plugins yet');
@@ -63,7 +63,7 @@ class CustomerPurchasedPluginsIndexTest extends TestCase
             'purchased_at' => now(),
         ]);
 
-        $response = $this->actingAs($user)->get('/customer/purchased-plugins');
+        $response = $this->actingAs($user)->get('/dashboard/purchased-plugins');
 
         $response->assertStatus(200);
         $response->assertSee('acme/test-plugin-123');
@@ -87,7 +87,7 @@ class CustomerPurchasedPluginsIndexTest extends TestCase
             'plugin_id' => $plugin2->id,
         ]);
 
-        $response = $this->actingAs($user1)->get('/customer/purchased-plugins');
+        $response = $this->actingAs($user1)->get('/dashboard/purchased-plugins');
 
         $response->assertStatus(200);
         $response->assertSee('acme/user1-plugin-111');
@@ -98,7 +98,7 @@ class CustomerPurchasedPluginsIndexTest extends TestCase
     {
         $user = User::factory()->create();
 
-        $response = $this->actingAs($user)->get('/customer/purchased-plugins');
+        $response = $this->actingAs($user)->get('/dashboard/purchased-plugins');
 
         $response->assertStatus(200);
         $response->assertSee('Your Plugin Credentials');

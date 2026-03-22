@@ -115,18 +115,21 @@
                     <flux:sidebar.item href="{{ route('customer.showcase.index') }}" :current="request()->routeIs('customer.showcase.*')">
                         Showcase
                     </flux:sidebar.item>
-                    <flux:sidebar.item href="{{ route('customer.wall-of-love.create') }}" :current="request()->routeIs('customer.wall-of-love.*')">
-                        Wall of Love
+                    <flux:sidebar.item href="https://discord.gg/nativephp" target="_blank">
+                        Discord
                     </flux:sidebar.item>
                 </flux:sidebar.group>
 
                 @feature(App\Features\ShowPlugins::class)
                     <flux:sidebar.group expandable heading="Developer" class="grid">
+                        <flux:sidebar.item href="{{ route('customer.developer.onboarding') }}" :current="request()->routeIs('customer.developer.onboarding', 'customer.developer.dashboard')">
+                            Hub
+                        </flux:sidebar.item>
                         <flux:sidebar.item href="{{ route('customer.plugins.index') }}" :current="request()->routeIs('customer.plugins.*')">
                             My Plugins
                         </flux:sidebar.item>
-                        <flux:sidebar.item href="{{ route('customer.developer.onboarding') }}" :current="request()->routeIs('customer.developer.*')">
-                            Developer Hub
+                        <flux:sidebar.item href="{{ route('customer.developer.settings') }}" :current="request()->routeIs('customer.developer.settings')">
+                            Settings
                         </flux:sidebar.item>
                     </flux:sidebar.group>
                 @endfeature

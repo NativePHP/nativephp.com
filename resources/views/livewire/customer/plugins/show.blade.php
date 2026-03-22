@@ -22,6 +22,17 @@
             </flux:callout>
         @endif
 
+        {{-- Rejection Reason --}}
+        @if ($plugin->isRejected() && $plugin->rejection_reason)
+            <flux:callout variant="danger" icon="x-circle" class="mb-6">
+                <flux:callout.heading>Rejection Reason</flux:callout.heading>
+                <flux:callout.text>{{ $plugin->rejection_reason }}</flux:callout.text>
+                <x-slot name="actions">
+                    <flux:button variant="danger" wire:click="resubmit">Resubmit for Review</flux:button>
+                </x-slot>
+            </flux:callout>
+        @endif
+
         {{-- Webhook Status --}}
         @if ($plugin->webhook_secret)
             @if ($plugin->webhook_installed)
@@ -262,15 +273,5 @@
             </form>
         </flux:card>
 
-        {{-- Rejection Reason --}}
-        @if ($plugin->isRejected() && $plugin->rejection_reason)
-            <flux:callout variant="danger" icon="x-circle">
-                <flux:callout.heading>Rejection Reason</flux:callout.heading>
-                <flux:callout.text>{{ $plugin->rejection_reason }}</flux:callout.text>
-                <x-slot name="actions">
-                    <flux:button variant="danger" wire:click="resubmit">Resubmit for Review</flux:button>
-                </x-slot>
-            </flux:callout>
-        @endif
     </div>
 </div>

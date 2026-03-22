@@ -32,14 +32,14 @@ class DeveloperPagesTest extends TestCase
     {
         $user = User::factory()->create();
 
-        $response = $this->withoutVite()->actingAs($user)->get('/customer/developer/onboarding');
+        $response = $this->withoutVite()->actingAs($user)->get('/dashboard/developer/onboarding');
 
         $response->assertStatus(200);
     }
 
     public function test_onboarding_page_requires_authentication(): void
     {
-        $response = $this->withoutVite()->get('/customer/developer/onboarding');
+        $response = $this->withoutVite()->get('/dashboard/developer/onboarding');
 
         $response->assertRedirect('/login');
     }
@@ -112,14 +112,14 @@ class DeveloperPagesTest extends TestCase
             $mock->shouldReceive('refreshAccountStatus')->once();
         });
 
-        $response = $this->withoutVite()->actingAs($user)->get('/customer/developer/dashboard');
+        $response = $this->withoutVite()->actingAs($user)->get('/dashboard/developer');
 
         $response->assertStatus(200);
     }
 
     public function test_developer_dashboard_requires_authentication(): void
     {
-        $response = $this->withoutVite()->get('/customer/developer/dashboard');
+        $response = $this->withoutVite()->get('/dashboard/developer');
 
         $response->assertRedirect('/login');
     }
@@ -163,23 +163,6 @@ class DeveloperPagesTest extends TestCase
             ->assertSee('Pending Payouts')
             ->assertSee('Published Plugins')
             ->assertSee('Total Sales')
-            ->assertSee('Stripe Account Status')
-            ->assertStatus(200);
-    }
-
-    public function test_developer_dashboard_shows_account_active_when_payouts_enabled(): void
-    {
-        $user = User::factory()->create();
-        DeveloperAccount::factory()->completedOnboarding()->create(['user_id' => $user->id]);
-
-        $this->mock(StripeConnectService::class, function ($mock): void {
-            $mock->shouldReceive('refreshAccountStatus')->once();
-        });
-
-        Livewire::actingAs($user)
-            ->test(Dashboard::class)
-            ->assertSee('Account Active')
-            ->assertSee('Your account is fully set up to receive payouts')
             ->assertStatus(200);
     }
 
@@ -194,7 +177,7 @@ class DeveloperPagesTest extends TestCase
 
         Livewire::actingAs($user)
             ->test(Dashboard::class)
-            ->assertSee('No plugins yet')
+            ->assertSee('No premium plugins yet')
             ->assertSee('No payouts yet')
             ->assertStatus(200);
     }

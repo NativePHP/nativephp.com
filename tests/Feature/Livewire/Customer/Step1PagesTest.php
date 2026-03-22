@@ -33,14 +33,14 @@ class Step1PagesTest extends TestCase
     {
         $user = User::factory()->create();
 
-        $response = $this->withoutVite()->actingAs($user)->get('/customer/integrations');
+        $response = $this->withoutVite()->actingAs($user)->get('/dashboard/integrations');
 
         $response->assertStatus(200);
     }
 
     public function test_integrations_page_requires_authentication(): void
     {
-        $response = $this->withoutVite()->get('/customer/integrations');
+        $response = $this->withoutVite()->get('/dashboard/integrations');
 
         $response->assertRedirect('/login');
     }
@@ -62,14 +62,14 @@ class Step1PagesTest extends TestCase
     {
         $user = User::factory()->create();
 
-        $response = $this->withoutVite()->actingAs($user)->get('/customer/showcase/create');
+        $response = $this->withoutVite()->actingAs($user)->get('/dashboard/showcase/create');
 
         $response->assertStatus(200);
     }
 
     public function test_showcase_create_page_requires_authentication(): void
     {
-        $response = $this->withoutVite()->get('/customer/showcase/create');
+        $response = $this->withoutVite()->get('/dashboard/showcase/create');
 
         $response->assertRedirect('/login');
     }
@@ -92,7 +92,7 @@ class Step1PagesTest extends TestCase
         $user = User::factory()->create();
         $showcase = Showcase::factory()->create(['user_id' => $user->id]);
 
-        $response = $this->withoutVite()->actingAs($user)->get("/customer/showcase/{$showcase->id}/edit");
+        $response = $this->withoutVite()->actingAs($user)->get("/dashboard/showcase/{$showcase->id}/edit");
 
         $response->assertStatus(200);
     }
@@ -103,7 +103,7 @@ class Step1PagesTest extends TestCase
         $otherUser = User::factory()->create();
         $showcase = Showcase::factory()->create(['user_id' => $otherUser->id]);
 
-        $response = $this->withoutVite()->actingAs($user)->get("/customer/showcase/{$showcase->id}/edit");
+        $response = $this->withoutVite()->actingAs($user)->get("/dashboard/showcase/{$showcase->id}/edit");
 
         $response->assertStatus(403);
     }
@@ -112,7 +112,7 @@ class Step1PagesTest extends TestCase
     {
         $showcase = Showcase::factory()->create();
 
-        $response = $this->withoutVite()->get("/customer/showcase/{$showcase->id}/edit");
+        $response = $this->withoutVite()->get("/dashboard/showcase/{$showcase->id}/edit");
 
         $response->assertRedirect('/login');
     }
@@ -139,7 +139,7 @@ class Step1PagesTest extends TestCase
             'created_at' => '2025-01-15',
         ]);
 
-        $response = $this->withoutVite()->actingAs($user)->get('/customer/wall-of-love/create');
+        $response = $this->withoutVite()->actingAs($user)->get('/dashboard/wall-of-love/create');
 
         $response->assertStatus(200);
     }
@@ -148,7 +148,7 @@ class Step1PagesTest extends TestCase
     {
         $user = User::factory()->create();
 
-        $response = $this->withoutVite()->actingAs($user)->get('/customer/wall-of-love/create');
+        $response = $this->withoutVite()->actingAs($user)->get('/dashboard/wall-of-love/create');
 
         $response->assertStatus(404);
     }
@@ -169,7 +169,7 @@ class Step1PagesTest extends TestCase
 
     public function test_wall_of_love_page_requires_authentication(): void
     {
-        $response = $this->withoutVite()->get('/customer/wall-of-love/create');
+        $response = $this->withoutVite()->get('/dashboard/wall-of-love/create');
 
         $response->assertRedirect('/login');
     }

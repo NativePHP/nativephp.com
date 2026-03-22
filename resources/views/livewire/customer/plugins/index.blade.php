@@ -48,36 +48,6 @@
         </flux:card>
     </div>
 
-    {{-- Author Display Name Section --}}
-    <flux:card class="mt-8">
-        <div class="flex items-start gap-4">
-            <div class="flex size-12 shrink-0 items-center justify-center rounded-lg bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-400">
-                <x-heroicon-o-user class="size-6" />
-            </div>
-            <div class="flex-1">
-                <flux:heading size="lg">Author Display Name</flux:heading>
-                <flux:text class="mt-1">
-                    This is how your name will appear on your plugins in the directory.
-                </flux:text>
-                <form wire:submit="updateDisplayName" class="mt-4 flex gap-3">
-                    <div class="flex-1">
-                        <flux:input
-                            wire:model="displayName"
-                            placeholder="{{ auth()->user()->name }}"
-                        />
-                        @error('displayName')
-                            <flux:text class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</flux:text>
-                        @enderror
-                    </div>
-                    <flux:button type="submit" variant="primary">Save</flux:button>
-                </form>
-                <flux:text class="mt-2 text-xs">
-                    Leave blank to use your account name: <span class="font-medium">{{ auth()->user()->name }}</span>
-                </flux:text>
-            </div>
-        </div>
-    </flux:card>
-
     {{-- Stripe Connect Section --}}
     @feature(App\Features\AllowPaidPlugins::class)
     <div class="mt-8">
@@ -134,11 +104,17 @@
     @endif
 
     {{-- Submitted Plugins List --}}
-    @if ($this->plugins->count() > 0)
-        <div class="mt-8">
-            <flux:heading size="lg">Your Submitted Plugins</flux:heading>
-            <flux:text class="mt-1">Track the status of your plugin submissions.</flux:text>
+    <div class="mt-8">
+        <flux:heading size="lg">Your Submitted Plugins</flux:heading>
+        <flux:text class="mt-1">Track the status of your plugin submissions.</flux:text>
 
+        <flux:radio.group wire:model.live="status" variant="segmented" class="mt-4">
+            <flux:radio value="pending" label="Pending ({{ $this->pluginCounts['pending'] }})" />
+            <flux:radio value="rejected" label="Rejected ({{ $this->pluginCounts['rejected'] }})" />
+            <flux:radio value="approved" label="Approved ({{ $this->pluginCounts['approved'] }})" />
+        </flux:radio.group>
+
+        @if ($this->plugins->count() > 0)
             <flux:table class="mt-4">
                 <flux:table.columns>
                     <flux:table.column>Plugin</flux:table.column>
@@ -180,25 +156,17 @@
                             </flux:table.cell>
                         </flux:table.row>
 
-                        {{-- Rejection Reason --}}
-                        @if ($plugin->isRejected() && $plugin->rejection_reason)
-                            <flux:table.row :key="'rejection-' . $plugin->id">
-                                <flux:table.cell colspan="3">
-                                    <flux:callout variant="danger" icon="x-circle">
-                                        <flux:callout.heading>Rejection Reason</flux:callout.heading>
-                                        <flux:callout.text>{{ $plugin->rejection_reason }}</flux:callout.text>
-                                        <x-slot name="actions">
-                                            <flux:button size="sm" variant="danger" wire:click="resubmitPlugin({{ $plugin->id }})">
-                                                Resubmit for Review
-                                            </flux:button>
-                                        </x-slot>
-                                    </flux:callout>
-                                </flux:table.cell>
-                            </flux:table.row>
-                        @endif
                     @endforeach
                 </flux:table.rows>
             </flux:table>
-        </div>
-    @endif
+        @else
+            <div class="mt-4">
+                <x-customer.empty-state
+                    icon="puzzle-piece"
+                    title="No {{ $status }} plugins"
+                    description="No plugins match this filter."
+                />
+            </div>
+        @endif
+    </div>
 </div>
