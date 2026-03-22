@@ -248,6 +248,7 @@ class EditPlugin extends EditRecord
                     ->label('View on GitHub')
                     ->icon('heroicon-o-arrow-top-right-on-square')
                     ->color('gray')
+                    ->visible(fn () => $this->record->repository_url !== null)
                     ->url(fn () => $this->record->getGithubUrl())
                     ->openUrlInNewTab(),
             ])
