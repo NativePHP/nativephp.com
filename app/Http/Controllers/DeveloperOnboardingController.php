@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\DeveloperAccount;
 use App\Services\StripeConnectService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -16,7 +17,7 @@ class DeveloperOnboardingController extends Controller
         $user = $request->user();
         $developerAccount = $user->developerAccount;
 
-        if ($developerAccount && $developerAccount->hasCompletedOnboarding()) {
+        if ($developerAccount && $developerAccount->hasCompletedOnboarding() && $developerAccount->hasAcceptedCurrentTerms()) {
             return to_route('customer.developer.dashboard')
                 ->with('message', 'Your developer account is already set up.');
         }
@@ -29,14 +30,34 @@ class DeveloperOnboardingController extends Controller
 
     public function start(Request $request): RedirectResponse
     {
+        $request->validate([
+            'accepted_plugin_terms' => ['required', 'accepted'],
+        ], [
+            'accepted_plugin_terms.required' => 'You must accept the Plugin Developer Terms and Conditions.',
+            'accepted_plugin_terms.accepted' => 'You must accept the Plugin Developer Terms and Conditions.',
+        ]);
+
         $user = $request->user();
         $developerAccount = $user->developerAccount;
 
-        try {
-            if (! $developerAccount) {
-                $developerAccount = $this->stripeConnectService->createConnectAccount($user);
-            }
+        if (! $developerAccount) {
+            $developerAccount = $this->stripeConnectService->createConnectAccount($user);
+        }
 
+        if (! $developerAccount->hasAcceptedCurrentTerms()) {
+            $developerAccount->update([
+                'accepted_plugin_terms_at' => now(),
+                'plugin_terms_version' => DeveloperAccount::CURRENT_PLUGIN_TERMS_VERSION,
+            ]);
+        }
+
+        // If Stripe onboarding is already complete, skip the Stripe redirect
+        if ($developerAccount->hasCompletedOnboarding()) {
+            return to_route('customer.plugins.create')
+                ->with('success', 'Terms accepted! You can now submit plugins.');
+        }
+
+        try {
             $onboardingUrl = $this->stripeConnectService->createOnboardingLink($developerAccount);
 
             return redirect($onboardingUrl);

@@ -9,7 +9,6 @@ use App\Models\PluginLicense;
 use App\Models\PluginPayout;
 use App\Models\PluginPrice;
 use App\Models\User;
-use App\Services\StripeConnectService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -238,17 +237,15 @@ class ProcessPluginCheckoutJob implements ShouldQueue
         if ($plugin->developerAccount && $plugin->developerAccount->canReceivePayouts() && $allocatedAmount > 0) {
             $split = PluginPayout::calculateSplit($allocatedAmount);
 
-            $payout = PluginPayout::create([
+            PluginPayout::create([
                 'plugin_license_id' => $license->id,
                 'developer_account_id' => $plugin->developerAccount->id,
                 'gross_amount' => $allocatedAmount,
                 'platform_fee' => $split['platform_fee'],
                 'developer_amount' => $split['developer_amount'],
                 'status' => PayoutStatus::Pending,
+                'eligible_for_payout_at' => now()->addDays(15),
             ]);
-
-            $stripeConnectService = resolve(StripeConnectService::class);
-            $stripeConnectService->processTransfer($payout);
         }
 
         Log::info('Created bundle license', [
@@ -305,30 +302,15 @@ class ProcessPluginCheckoutJob implements ShouldQueue
         if ($plugin->developerAccount && $plugin->developerAccount->canReceivePayouts()) {
             $split = PluginPayout::calculateSplit($amount);
 
-            $payout = PluginPayout::create([
+            PluginPayout::create([
                 'plugin_license_id' => $license->id,
                 'developer_account_id' => $plugin->developerAccount->id,
                 'gross_amount' => $amount,
                 'platform_fee' => $split['platform_fee'],
                 'developer_amount' => $split['developer_amount'],
                 'status' => PayoutStatus::Pending,
+                'eligible_for_payout_at' => now()->addDays(15),
             ]);
-
-            // For cart checkouts, we need to manually transfer since transfer_data wasn't used
-            // For single plugin checkouts, transfer_data already handled the transfer at checkout time
-            $isCartCheckout = isset($this->metadata['cart_id']);
-
-            if ($isCartCheckout) {
-                $stripeConnectService = resolve(StripeConnectService::class);
-                $stripeConnectService->processTransfer($payout);
-            } else {
-                // Single plugin purchase - transfer already happened via transfer_data
-                // Just mark the payout as transferred for tracking
-                $payout->update([
-                    'status' => PayoutStatus::Transferred,
-                    'transferred_at' => now(),
-                ]);
-            }
         }
 
         return $license;

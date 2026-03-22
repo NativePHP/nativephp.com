@@ -115,6 +115,7 @@ class PluginPayout extends Model
             'developer_amount' => 'integer',
             'status' => PayoutStatus::class,
             'transferred_at' => 'datetime',
+            'eligible_for_payout_at' => 'datetime',
         ];
     }
 }

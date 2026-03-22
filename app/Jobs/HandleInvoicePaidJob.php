@@ -16,7 +16,7 @@ use App\Models\PluginPrice;
 use App\Models\Product;
 use App\Models\ProductLicense;
 use App\Models\User;
-use App\Services\StripeConnectService;
+use App\Notifications\PluginSaleCompleted;
 use App\Support\GitHubOAuth;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -233,6 +233,9 @@ class HandleInvoicePaidJob implements ShouldQueue
 
         // Ensure user has a plugin license key
         $user->getPluginLicenseKey();
+
+        // Notify developers of their sales
+        $this->sendDeveloperSaleNotifications($this->invoice->id);
     }
 
     private function processCartPurchase(string $cartId): void
@@ -295,6 +298,9 @@ class HandleInvoicePaidJob implements ShouldQueue
 
         // Ensure user has a plugin license key
         $user->getPluginLicenseKey();
+
+        // Notify developers of their sales
+        $this->sendDeveloperSaleNotifications($this->invoice->id);
 
         Log::info('Cart purchase completed', [
             'invoice_id' => $this->invoice->id,
@@ -542,17 +548,15 @@ class HandleInvoicePaidJob implements ShouldQueue
         if ($plugin->developerAccount && $plugin->developerAccount->canReceivePayouts() && $amount > 0) {
             $split = PluginPayout::calculateSplit($amount);
 
-            $payout = PluginPayout::create([
+            PluginPayout::create([
                 'plugin_license_id' => $license->id,
                 'developer_account_id' => $plugin->developerAccount->id,
                 'gross_amount' => $amount,
                 'platform_fee' => $split['platform_fee'],
                 'developer_amount' => $split['developer_amount'],
                 'status' => PayoutStatus::Pending,
+                'eligible_for_payout_at' => now()->addDays(15),
             ]);
-
-            $stripeConnectService = resolve(StripeConnectService::class);
-            $stripeConnectService->processTransfer($payout);
         }
 
         Log::info('Created plugin license from invoice', [
@@ -582,17 +586,15 @@ class HandleInvoicePaidJob implements ShouldQueue
         if ($plugin->developerAccount && $plugin->developerAccount->canReceivePayouts() && $allocatedAmount > 0) {
             $split = PluginPayout::calculateSplit($allocatedAmount);
 
-            $payout = PluginPayout::create([
+            PluginPayout::create([
                 'plugin_license_id' => $license->id,
                 'developer_account_id' => $plugin->developerAccount->id,
                 'gross_amount' => $allocatedAmount,
                 'platform_fee' => $split['platform_fee'],
                 'developer_amount' => $split['developer_amount'],
                 'status' => PayoutStatus::Pending,
+                'eligible_for_payout_at' => now()->addDays(15),
             ]);
-
-            $stripeConnectService = resolve(StripeConnectService::class);
-            $stripeConnectService->processTransfer($payout);
         }
 
         Log::info('Created bundle plugin license from invoice', [
@@ -603,6 +605,29 @@ class HandleInvoicePaidJob implements ShouldQueue
         ]);
 
         return $license;
+    }
+
+    private function sendDeveloperSaleNotifications(string $invoiceId): void
+    {
+        $payouts = PluginPayout::query()
+            ->whereHas('pluginLicense', fn ($query) => $query->where('stripe_invoice_id', $invoiceId))
+            ->with(['pluginLicense.plugin', 'developerAccount.user'])
+            ->get();
+
+        if ($payouts->isEmpty()) {
+            return;
+        }
+
+        $payouts->groupBy('developer_account_id')
+            ->each(function ($developerPayouts) {
+                $developerAccount = $developerPayouts->first()->developerAccount;
+
+                if (! $developerAccount || ! $developerAccount->user) {
+                    return;
+                }
+
+                $developerAccount->user->notify(new PluginSaleCompleted($developerPayouts));
+            });
     }
 
     private function billable(): User
