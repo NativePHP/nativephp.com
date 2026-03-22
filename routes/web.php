@@ -305,6 +305,9 @@ Route::middleware(['auth', EnsureFeaturesAreActive::using(ShowAuthButtons::class
     // Settings page
     Route::livewire('settings', \App\Livewire\Customer\Settings::class)->name('settings');
 
+    // Notifications page
+    Route::livewire('notifications', \App\Livewire\Customer\Notifications::class)->name('notifications');
+
     // License list page
     Route::livewire('licenses', \App\Livewire\Customer\Licenses\Index::class)->name('licenses.list');
     Route::livewire('integrations', \App\Livewire\Customer\Integrations::class)->name('integrations');

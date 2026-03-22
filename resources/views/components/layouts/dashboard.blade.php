@@ -137,7 +137,13 @@
 
             <flux:sidebar.spacer />
 
+            @php $unreadCount = auth()->user()->unreadNotifications()->count(); @endphp
+
             <flux:sidebar.nav>
+                <flux:sidebar.item icon="bell" href="{{ route('customer.notifications') }}" :current="request()->routeIs('customer.notifications')" :badge="$unreadCount > 0 ? $unreadCount : null">
+                    Notifications
+                </flux:sidebar.item>
+
                 <flux:sidebar.item icon="link" href="{{ route('customer.integrations') }}" :current="request()->routeIs('customer.integrations')">
                     Integrations
                 </flux:sidebar.item>
@@ -169,6 +175,13 @@
             <flux:sidebar.toggle class="lg:hidden" icon="bars-2" inset="left" />
 
             <flux:spacer />
+
+            <a href="{{ route('customer.notifications') }}" class="relative p-2 text-zinc-500 hover:text-zinc-700 dark:text-zinc-400 dark:hover:text-zinc-200">
+                <x-heroicon-o-bell class="size-5" />
+                @if ($unreadCount > 0)
+                    <span class="absolute right-1 top-1 size-2 rounded-full bg-blue-500"></span>
+                @endif
+            </a>
 
             <flux:dropdown position="top" align="start">
                 <flux:profile name="{{ auth()->user()->name ?? auth()->user()->email }}" />
