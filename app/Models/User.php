@@ -197,7 +197,19 @@ class User extends Authenticatable implements FilamentUser
     {
         $subscription = $this->subscription();
 
-        if (! $subscription || $subscription->is_comped) {
+        if (! $subscription) {
+            return false;
+        }
+
+        // Comped Ultra subs use a dedicated price — always grant Ultra access
+        $compedUltraPriceId = config('subscriptions.plans.max.stripe_price_id_comped');
+
+        if ($compedUltraPriceId && $this->subscribedToPrice($compedUltraPriceId)) {
+            return true;
+        }
+
+        // Legacy comped Max subs should not get Ultra access
+        if ($subscription->is_comped) {
             return false;
         }
 
@@ -210,8 +222,8 @@ class User extends Authenticatable implements FilamentUser
     }
 
     /**
-     * Check if the user has a paying (non-comped) Max subscription,
-     * qualifying them for Ultra benefits like Teams.
+     * Check if the user has Ultra access (paying or comped Ultra),
+     * qualifying them for Ultra benefits like Teams and free plugins.
      */
     public function hasUltraAccess(): bool
     {
@@ -219,6 +231,13 @@ class User extends Authenticatable implements FilamentUser
 
         if (! $subscription || ! $subscription->active()) {
             return false;
+        }
+
+        // Comped Ultra subs always get full access
+        $compedUltraPriceId = config('subscriptions.plans.max.stripe_price_id_comped');
+
+        if ($compedUltraPriceId && $this->subscribedToPrice($compedUltraPriceId)) {
+            return true;
         }
 
         $planPriceId = $subscription->stripe_price;
@@ -244,6 +263,7 @@ class User extends Authenticatable implements FilamentUser
             return false;
         }
 
+        // Legacy comped Max subs don't get Ultra access
         return ! $subscription->is_comped;
     }
 

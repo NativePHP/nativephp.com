@@ -58,7 +58,8 @@ enum Subscription: string
             config('subscriptions.plans.max.stripe_price_id'),
             config('subscriptions.plans.max.stripe_price_id_monthly'),
             config('subscriptions.plans.max.stripe_price_id_discounted'),
-            config('subscriptions.plans.max.stripe_price_id_eap') => self::Max,
+            config('subscriptions.plans.max.stripe_price_id_eap'),
+            config('subscriptions.plans.max.stripe_price_id_comped') => self::Max,
             default => throw new RuntimeException("Unknown Stripe price id: {$priceId}"),
         };
     }

@@ -25,6 +25,7 @@ return [
             'stripe_price_id_monthly' => env('STRIPE_MAX_PRICE_ID_MONTHLY'),
             'stripe_price_id_eap' => env('STRIPE_MAX_PRICE_ID_EAP'),
             'stripe_price_id_discounted' => env('STRIPE_MAX_PRICE_ID_DISCOUNTED'),
+            'stripe_price_id_comped' => env('STRIPE_ULTRA_COMP_PRICE_ID'),
             'stripe_payment_link' => env('STRIPE_MAX_PAYMENT_LINK'),
             'anystack_product_id' => env('ANYSTACK_PRODUCT_ID'),
             'anystack_policy_id' => env('ANYSTACK_MAX_POLICY_ID'),

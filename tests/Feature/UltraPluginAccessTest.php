@@ -18,6 +18,36 @@ class UltraPluginAccessTest extends TestCase
 {
     use RefreshDatabase;
 
+    private const COMPED_ULTRA_PRICE_ID = 'price_test_ultra_comped';
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        config(['subscriptions.plans.max.stripe_price_id_comped' => self::COMPED_ULTRA_PRICE_ID]);
+    }
+
+    private function createCompedUltraSubscription(User $user): \Laravel\Cashier\Subscription
+    {
+        $user->update(['stripe_id' => 'cus_'.uniqid()]);
+
+        $subscription = \Laravel\Cashier\Subscription::factory()
+            ->for($user)
+            ->active()
+            ->create([
+                'stripe_price' => self::COMPED_ULTRA_PRICE_ID,
+            ]);
+
+        \Laravel\Cashier\SubscriptionItem::factory()
+            ->for($subscription, 'subscription')
+            ->create([
+                'stripe_price' => self::COMPED_ULTRA_PRICE_ID,
+                'quantity' => 1,
+            ]);
+
+        return $subscription;
+    }
+
     private function createPaidMaxSubscription(User $user): \Laravel\Cashier\Subscription
     {
         $user->update(['stripe_id' => 'cus_'.uniqid()]);
@@ -478,5 +508,51 @@ class UltraPluginAccessTest extends TestCase
 
         $response->assertStatus(200);
         $response->assertDontSee('Team Plugins');
+    }
+
+    // ---- Comped Ultra subscriptions ----
+
+    public function test_comped_ultra_user_has_active_ultra_subscription(): void
+    {
+        $user = User::factory()->create();
+        $this->createCompedUltraSubscription($user);
+
+        $this->assertTrue($user->hasActiveUltraSubscription());
+    }
+
+    public function test_comped_ultra_user_has_ultra_access(): void
+    {
+        $user = User::factory()->create();
+        $this->createCompedUltraSubscription($user);
+
+        $this->assertTrue($user->hasUltraAccess());
+    }
+
+    public function test_comped_ultra_user_gets_free_official_plugin(): void
+    {
+        $user = User::factory()->create();
+        $this->createCompedUltraSubscription($user);
+        $plugin = $this->createOfficialPlugin();
+
+        $bestPrice = $plugin->getBestPriceForUser($user);
+
+        $this->assertNotNull($bestPrice);
+        $this->assertEquals(0, $bestPrice->amount);
+    }
+
+    public function test_legacy_comped_max_does_not_have_active_ultra_subscription(): void
+    {
+        $user = User::factory()->create();
+        $this->createCompedMaxSubscription($user);
+
+        $this->assertFalse($user->hasActiveUltraSubscription());
+    }
+
+    public function test_legacy_comped_max_does_not_have_ultra_access(): void
+    {
+        $user = User::factory()->create();
+        $this->createCompedMaxSubscription($user);
+
+        $this->assertFalse($user->hasUltraAccess());
     }
 }
