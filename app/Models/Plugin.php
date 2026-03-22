@@ -315,9 +315,9 @@ class Plugin extends Model
         return "https://packagist.org/packages/{$this->name}";
     }
 
-    public function getGithubUrl(): string
+    public function getGithubUrl(): ?string
     {
-        return "https://github.com/{$this->name}";
+        return $this->repository_url;
     }
 
     public function getWebhookUrl(): ?string
