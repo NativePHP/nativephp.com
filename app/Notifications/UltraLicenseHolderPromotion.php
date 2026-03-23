@@ -7,9 +7,11 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
-class MaxToUltraAnnouncement extends Notification implements ShouldQueue
+class UltraLicenseHolderPromotion extends Notification implements ShouldQueue
 {
     use Queueable;
+
+    public function __construct(public string $planName) {}
 
     public function via($notifiable): array
     {
@@ -22,10 +24,10 @@ class MaxToUltraAnnouncement extends Notification implements ShouldQueue
         $greeting = $firstName ? "Hi {$firstName}," : 'Hi there,';
 
         return (new MailMessage)
-            ->subject('Your Max Plan is Now NativePHP Ultra')
+            ->subject('Unlock More with NativePHP Ultra')
             ->greeting($greeting)
-            ->line('We have some exciting news: **your Max plan has been upgraded to NativePHP Ultra** - at no extra cost.')
-            ->line('Here\'s what you now get as an Ultra subscriber:')
+            ->line("You previously purchased a **{$this->planName}** license - thank you for supporting NativePHP early on!")
+            ->line('Although NativePHP for Mobile is now free and open source and doesn\'t require licenses any more, we\'ve created a subscription plan that gives you some incredible benefits:')
             ->line('- **Teams** - invite up to 10 collaborators to share your plugin access')
             ->line('- **Free official plugins** - every NativePHP-published plugin, included with your subscription')
             ->line('- **Plugin Dev Kit** - tools and resources to build and publish your own plugins')
@@ -34,8 +36,8 @@ class MaxToUltraAnnouncement extends Notification implements ShouldQueue
             ->line('- **Exclusive content** - tutorials, guides, and deep dives just for Ultra members')
             ->line('- **Shape the roadmap** - your feedback directly influences what we build next')
             ->line('---')
-            ->line('**Nothing changes on your end.** Your billing stays exactly the same - you just get more.')
-            ->action('See All Ultra Benefits', route('pricing'))
+            ->line('Ultra is available with **annual or monthly billing** - choose what works best for you.')
+            ->action('See Ultra Plans', route('pricing'))
             ->salutation("Cheers,\n\nThe NativePHP Team");
     }
 }

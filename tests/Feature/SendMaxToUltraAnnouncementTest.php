@@ -245,6 +245,7 @@ class SendMaxToUltraAnnouncementTest extends TestCase
 
         $this->assertStringContainsString('Teams', $rendered);
         $this->assertStringContainsString('Free official plugins', $rendered);
+        $this->assertStringContainsString('Plugin Dev Kit', $rendered);
         $this->assertStringContainsString('Priority support', $rendered);
         $this->assertStringContainsString('Early access', $rendered);
         $this->assertStringContainsString('Exclusive content', $rendered);

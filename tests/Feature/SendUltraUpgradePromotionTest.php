@@ -199,10 +199,12 @@ class SendUltraUpgradePromotionTest extends TestCase
 
         $this->assertStringContainsString('Teams', $rendered);
         $this->assertStringContainsString('Free official plugins', $rendered);
+        $this->assertStringContainsString('Plugin Dev Kit', $rendered);
         $this->assertStringContainsString('Priority support', $rendered);
         $this->assertStringContainsString('Early access', $rendered);
         $this->assertStringContainsString('Exclusive content', $rendered);
         $this->assertStringContainsString('Shape the roadmap', $rendered);
+        $this->assertStringContainsString('monthly billing', $rendered);
     }
 
     public function test_notification_mentions_prorated_billing(): void
