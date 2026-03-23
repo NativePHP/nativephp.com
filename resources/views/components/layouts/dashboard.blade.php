@@ -155,7 +155,7 @@
             </flux:sidebar.nav>
 
             <flux:dropdown position="top" align="start" class="max-lg:hidden">
-                <flux:sidebar.profile name="{{ auth()->user()->name ?? auth()->user()->email }}" />
+                <flux:sidebar.profile :name="auth()->user()->name ?? auth()->user()->email" />
 
                 <flux:menu>
                     <flux:menu.item icon="cog-6-tooth" href="{{ route('customer.settings') }}">Settings</flux:menu.item>
@@ -184,7 +184,7 @@
             </a>
 
             <flux:dropdown position="top" align="start">
-                <flux:profile name="{{ auth()->user()->name ?? auth()->user()->email }}" />
+                <flux:profile :name="auth()->user()->name ?? auth()->user()->email" />
 
                 <flux:menu>
                     <flux:menu.item icon="cog-6-tooth" href="{{ route('customer.settings') }}">Settings</flux:menu.item>
