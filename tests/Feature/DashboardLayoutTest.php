@@ -19,7 +19,7 @@ class DashboardLayoutTest extends TestCase
         $response = $this->withoutVite()->actingAs($user)->get('/dashboard');
 
         $response->assertStatus(200);
-        $response->assertDontSee('D&#039;Hooghe', false);
-        $response->assertSee("Timmy D'Hooghe", false);
+        $response->assertDontSee('D&amp;#039;Hooghe', false);
+        $response->assertSee("Timmy D'Hooghe");
     }
 }
