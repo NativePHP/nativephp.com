@@ -4,9 +4,10 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\OpenCollectiveDonationResource\Pages;
 use App\Models\OpenCollectiveDonation;
+use Filament\Actions;
 use Filament\Infolists;
-use Filament\Infolists\Infolist;
 use Filament\Resources\Resource;
+use Filament\Schemas\Schema;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
@@ -16,9 +17,9 @@ class OpenCollectiveDonationResource extends Resource
 {
     protected static ?string $model = OpenCollectiveDonation::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-heart';
+    protected static \BackedEnum|string|null $navigationIcon = 'heroicon-o-heart';
 
-    protected static ?string $navigationGroup = 'Billing';
+    protected static \UnitEnum|string|null $navigationGroup = 'Billing';
 
     protected static ?string $navigationLabel = 'OpenCollective Donations';
 
@@ -33,9 +34,9 @@ class OpenCollectiveDonationResource extends Resource
         return false;
     }
 
-    public static function infolist(Infolist $infolist): Infolist
+    public static function infolist(Schema $schema): Schema
     {
-        return $infolist
+        return $schema
             ->schema([
                 Infolists\Components\Section::make('Donation Details')
                     ->schema([
@@ -135,7 +136,7 @@ class OpenCollectiveDonationResource extends Resource
                     ->query(fn (Builder $query): Builder => $query->whereNotNull('interval')),
             ])
             ->actions([
-                Tables\Actions\ViewAction::make(),
+                Actions\ViewAction::make(),
             ]);
     }
 

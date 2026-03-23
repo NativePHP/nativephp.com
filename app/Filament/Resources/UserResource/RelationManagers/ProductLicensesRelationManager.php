@@ -2,9 +2,10 @@
 
 namespace App\Filament\Resources\UserResource\RelationManagers;
 
+use Filament\Actions;
 use Filament\Forms;
-use Filament\Forms\Form;
 use Filament\Resources\RelationManagers\RelationManager;
+use Filament\Schemas\Schema;
 use Filament\Tables;
 use Filament\Tables\Table;
 
@@ -14,7 +15,7 @@ class ProductLicensesRelationManager extends RelationManager
 
     protected static ?string $title = 'Products';
 
-    public function form(Form $form): Form
+    public function form(Schema $form): Schema
     {
         return $form
             ->schema([
@@ -57,7 +58,7 @@ class ProductLicensesRelationManager extends RelationManager
                     ->label('Comped'),
             ])
             ->headerActions([
-                Tables\Actions\CreateAction::make()
+                Actions\CreateAction::make()
                     ->mutateFormDataUsing(function (array $data): array {
                         $data['price_paid'] = 0;
                         $data['currency'] = 'USD';
@@ -66,7 +67,7 @@ class ProductLicensesRelationManager extends RelationManager
                     }),
             ])
             ->actions([
-                Tables\Actions\DeleteAction::make(),
+                Actions\DeleteAction::make(),
             ]);
     }
 }

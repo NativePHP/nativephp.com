@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\Subscription;
 use App\Models\Plugin;
 use App\Models\PluginLicense;
 use App\Models\SubLicense;
@@ -33,7 +34,7 @@ class CustomerLicenseController extends Controller
         if ($activeSubscription) {
             if ($activeSubscription->stripe_price) {
                 try {
-                    $subscriptionName = \App\Enums\Subscription::fromStripePriceId($activeSubscription->stripe_price)->name();
+                    $subscriptionName = Subscription::fromStripePriceId($activeSubscription->stripe_price)->name();
                 } catch (\RuntimeException) {
                     $subscriptionName = ucfirst($activeSubscription->type);
                 }

@@ -14,10 +14,13 @@ use App\Models\PluginLicense;
 use App\Models\User;
 use App\Notifications\PluginGranted;
 use App\Notifications\PluginReviewChecksIncomplete;
+use Filament\Actions;
+use Filament\Actions\Action;
 use Filament\Forms;
-use Filament\Forms\Form;
 use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
+use Filament\Schemas;
+use Filament\Schemas\Schema;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Support\HtmlString;
@@ -26,26 +29,26 @@ class PluginResource extends Resource
 {
     protected static ?string $model = Plugin::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-puzzle-piece';
+    protected static \BackedEnum|string|null $navigationIcon = 'heroicon-o-puzzle-piece';
 
     protected static ?string $navigationLabel = 'Plugins';
 
-    protected static ?string $navigationGroup = 'Products';
+    protected static \UnitEnum|string|null $navigationGroup = 'Products';
 
     protected static ?int $navigationSort = 1;
 
     protected static ?string $pluralModelLabel = 'Plugins';
 
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return $form
+        return $schema
             ->schema([
-                Forms\Components\Section::make('Plugin Details')
+                Schemas\Components\Section::make('Plugin Details')
                     ->schema([
                         Forms\Components\Placeholder::make('logo_preview')
                             ->label('Logo')
                             ->content(fn (?Plugin $record) => $record?->hasLogo()
-                                ? new \Illuminate\Support\HtmlString('<img src="'.e($record->getLogoUrl()).'" alt="Logo" class="w-16 h-16 rounded-lg object-cover" />')
+                                ? new HtmlString('<img src="'.e($record->getLogoUrl()).'" alt="Logo" class="w-16 h-16 rounded-lg object-cover" />')
                                 : 'No logo')
                             ->visible(fn (?Plugin $record) => $record !== null),
 
@@ -82,7 +85,7 @@ class PluginResource extends Resource
                     ])
                     ->columns(2),
 
-                Forms\Components\Section::make('Review Checks')
+                Schemas\Components\Section::make('Review Checks')
                     ->schema([
                         Forms\Components\Placeholder::make('reviewed_at_display')
                             ->label('Last Reviewed')
@@ -126,7 +129,7 @@ class PluginResource extends Resource
                     ])
                     ->columns(4)
                     ->headerActions([
-                        Forms\Components\Actions\Action::make('emailReviewChecks')
+                        Action::make('emailReviewChecks')
                             ->label('Email Developer')
                             ->icon('heroicon-o-envelope')
                             ->color('warning')
@@ -151,7 +154,7 @@ class PluginResource extends Resource
                     ])
                     ->visible(fn (?Plugin $record) => $record?->review_checks !== null),
 
-                Forms\Components\Section::make('Submission Info')
+                Schemas\Components\Section::make('Submission Info')
                     ->schema([
                         Forms\Components\Select::make('user_id')
                             ->relationship('user', 'email')
@@ -256,8 +259,8 @@ class PluginResource extends Resource
                     ->label('Active'),
             ])
             ->actions([
-                Tables\Actions\ActionGroup::make([
-                    Tables\Actions\Action::make('resync')
+                Actions\ActionGroup::make([
+                    Action::make('resync')
                         ->label('Re-sync from GitHub')
                         ->icon('heroicon-o-arrow-path')
                         ->color('primary')
@@ -275,7 +278,7 @@ class PluginResource extends Resource
                                 ->send();
                         }),
 
-                    Tables\Actions\Action::make('grantToUser')
+                    Action::make('grantToUser')
                         ->label('Grant to User')
                         ->icon('heroicon-o-gift')
                         ->color('success')
@@ -331,7 +334,7 @@ class PluginResource extends Resource
                         ->modalDescription(fn (Plugin $record): string => "Grant '{$record->name}' to a user for free.")
                         ->modalSubmitActionLabel('Grant'),
 
-                    Tables\Actions\Action::make('runReviewChecks')
+                    Action::make('runReviewChecks')
                         ->label('Run Review Checks')
                         ->icon('heroicon-o-clipboard-document-check')
                         ->color('primary')
@@ -390,7 +393,7 @@ class PluginResource extends Resource
                     ->color('primary')
                     ->tooltip('Quick Actions'),
 
-                Tables\Actions\EditAction::make(),
+                Actions\EditAction::make(),
             ])
             ->bulkActions([
 

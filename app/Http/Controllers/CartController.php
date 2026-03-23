@@ -13,6 +13,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\View\View;
 use Laravel\Cashier\Cashier;
+use Stripe\Checkout\Session;
+use Stripe\Exception\InvalidRequestException;
 
 class CartController extends Controller
 {
@@ -378,7 +380,7 @@ class CartController extends Controller
         return response()->json(['count' => $count]);
     }
 
-    protected function createMultiItemCheckoutSession($cart, $user): \Stripe\Checkout\Session
+    protected function createMultiItemCheckoutSession($cart, $user): Session
     {
         // Eager load items with plugins, bundles, and products to avoid any stale data issues
         $cart->load('items.plugin', 'items.pluginBundle.plugins', 'items.product');
@@ -500,7 +502,7 @@ class CartController extends Controller
         // Verify the customer exists in Stripe
         try {
             Cashier::stripe()->customers->retrieve($user->stripe_id);
-        } catch (\Stripe\Exception\InvalidRequestException $e) {
+        } catch (InvalidRequestException $e) {
             // Customer doesn't exist in Stripe, create a new one
             if (str_contains($e->getMessage(), 'No such customer')) {
                 Log::warning('Stripe customer not found, creating new customer', [

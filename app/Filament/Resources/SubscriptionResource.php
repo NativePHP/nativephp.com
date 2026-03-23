@@ -3,9 +3,11 @@
 namespace App\Filament\Resources;
 
 use App\Enums\Subscription as SubscriptionEnum;
+use Filament\Actions;
 use Filament\Forms;
-use Filament\Forms\Form;
 use Filament\Resources\Resource;
+use Filament\Schemas;
+use Filament\Schemas\Schema;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
@@ -15,19 +17,19 @@ class SubscriptionResource extends Resource
 {
     protected static ?string $model = Subscription::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-credit-card';
+    protected static \BackedEnum|string|null $navigationIcon = 'heroicon-o-credit-card';
 
-    protected static ?string $navigationGroup = 'Billing';
+    protected static \UnitEnum|string|null $navigationGroup = 'Billing';
 
     protected static ?string $navigationLabel = 'Subscriptions';
 
     protected static ?int $navigationSort = 1;
 
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return $form
+        return $schema
             ->schema([
-                Forms\Components\Section::make('Subscription Details')
+                Schemas\Components\Section::make('Subscription Details')
                     ->schema([
                         Forms\Components\Select::make('user_id')
                             ->relationship('user', 'email')
@@ -125,7 +127,7 @@ class SubscriptionResource extends Resource
                     ->query(fn (Builder $query): Builder => $query->where('stripe_status', 'canceled')),
             ])
             ->actions([
-                Tables\Actions\Action::make('view_on_stripe')
+                Actions\Action::make('view_on_stripe')
                     ->label('View on Stripe')
                     ->color('gray')
                     ->icon('heroicon-o-arrow-top-right-on-square')

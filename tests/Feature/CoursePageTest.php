@@ -5,6 +5,8 @@ namespace Tests\Feature;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use PHPUnit\Framework\Attributes\Test;
+use Stripe\Customer;
+use Stripe\StripeClient;
 use Tests\TestCase;
 
 class CoursePageTest extends TestCase
@@ -81,9 +83,9 @@ class CoursePageTest extends TestCase
 
         $mockCustomers = new class
         {
-            public function retrieve(): \Stripe\Customer
+            public function retrieve(): Customer
             {
-                return \Stripe\Customer::constructFrom([
+                return Customer::constructFrom([
                     'id' => 'cus_test123',
                     'name' => 'Test User',
                     'email' => 'test@example.com',
@@ -91,11 +93,11 @@ class CoursePageTest extends TestCase
             }
         };
 
-        $mockStripeClient = $this->createMock(\Stripe\StripeClient::class);
+        $mockStripeClient = $this->createMock(StripeClient::class);
         $mockStripeClient->checkout = $mockCheckout;
         $mockStripeClient->customers = $mockCustomers;
 
-        $this->app->bind(\Stripe\StripeClient::class, fn () => $mockStripeClient);
+        $this->app->bind(StripeClient::class, fn () => $mockStripeClient);
 
         $this
             ->actingAs($user)

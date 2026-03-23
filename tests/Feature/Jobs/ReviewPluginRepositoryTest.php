@@ -4,6 +4,7 @@ namespace Tests\Feature\Jobs;
 
 use App\Jobs\ReviewPluginRepository;
 use App\Models\Plugin;
+use GuzzleHttp\Promise\PromiseInterface;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Http;
 use Tests\TestCase;
@@ -13,7 +14,7 @@ class ReviewPluginRepositoryTest extends TestCase
     use RefreshDatabase;
 
     /**
-     * @return array<string, \GuzzleHttp\Promise\PromiseInterface>
+     * @return array<string, PromiseInterface>
      */
     protected function fakeGitHub(string $repoSlug, array $tree = [], string $readme = '# Plugin', array $composerRequire = [], ?array $nativephpJson = null, string $defaultBranch = 'main'): array
     {

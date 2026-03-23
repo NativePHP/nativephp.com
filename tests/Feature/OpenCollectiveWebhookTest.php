@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Http\Middleware\VerifyCsrfToken;
 use App\Models\OpenCollectiveDonation;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Config;
 use PHPUnit\Framework\Attributes\Test;
@@ -142,7 +143,7 @@ class OpenCollectiveWebhookTest extends TestCase
     public function donation_can_be_marked_as_claimed(): void
     {
         $donation = OpenCollectiveDonation::factory()->create();
-        $user = \App\Models\User::factory()->create();
+        $user = User::factory()->create();
 
         $this->assertFalse($donation->isClaimed());
 

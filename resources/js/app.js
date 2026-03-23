@@ -5,7 +5,7 @@ import { gsap } from 'gsap'
 import {
     Livewire,
     Alpine,
-} from '../../vendor/livewire/livewire/dist/livewire.esm'
+} from '../../vendor/livewire/livewire/dist/livewire.esm.js'
 import codeBlock from './alpine/codeBlock.js'
 import copyMarkdown from './alpine/copyMarkdown.js'
 import docsearch from '@docsearch/js'

@@ -128,6 +128,7 @@
 
         <x-footer />
         @livewireScriptConfig
+        @fluxScripts
         @vite('resources/js/app.js')
         @vite('resources/css/docsearch.css')
     </body>

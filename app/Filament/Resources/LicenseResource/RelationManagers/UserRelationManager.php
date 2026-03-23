@@ -3,8 +3,8 @@
 namespace App\Filament\Resources\LicenseResource\RelationManagers;
 
 use App\Filament\Resources\UserResource;
-use Filament\Forms\Form;
 use Filament\Resources\RelationManagers\RelationManager;
+use Filament\Schemas\Schema;
 use Filament\Tables\Table;
 
 class UserRelationManager extends RelationManager
@@ -23,9 +23,9 @@ class UserRelationManager extends RelationManager
 
     protected static bool $hasEditAction = false;
 
-    public function form(Form $form): Form
+    public function form(Schema $schema): Schema
     {
-        return UserResource::form($form);
+        return UserResource::form($schema);
     }
 
     public function table(Table $table): Table

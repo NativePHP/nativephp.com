@@ -44,7 +44,7 @@ class LicenseKeyGenerated extends Notification implements ShouldQueue
             ->action('View Installation Guide', url('/docs/mobile/1/getting-started/installation'))
             ->line('If you need to manage your subscription for this license, you can do so on [Stripe](https://billing.stripe.com/p/login/4gwaGV5VK0uU44E288).')
             ->line("If you have any questions, please don't hesitate to reach out to our support team.")
-            ->lineIf($this->subscription !== Subscription::Mini, 'As a Pro or Max subscriber, you can manage license keys associated with your license in our [License Manager](https://nativephp.com/customer/licenses).')
+            ->lineIf($this->subscription !== Subscription::Mini, 'As a Pro or Max subscriber, you can manage license keys associated with your license in our [License Manager]('.route('customer.licenses.list').').')
             ->lineIf($this->subscription === Subscription::Max, 'As a Max subscriber, you also have access to the NativePHP/mobile repository. To access it, please log in to [Anystack](https://auth.anystack.sh/?accountType=customer) using the same email address you used for your purchase.')
             ->salutation("Happy coding!\n\nThe NativePHP Team")
             ->success();

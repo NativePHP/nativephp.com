@@ -19,7 +19,7 @@ class ProcessPayoutTransferTest extends TestCase
 
     public function test_calls_process_transfer_on_stripe_connect_service(): void
     {
-        $developerAccount = DeveloperAccount::factory()->onboarded()->create();
+        $developerAccount = DeveloperAccount::factory()->create();
         $plugin = Plugin::factory()->paid()->create(['user_id' => $developerAccount->user_id]);
         $license = PluginLicense::factory()->create(['plugin_id' => $plugin->id]);
 

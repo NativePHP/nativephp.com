@@ -3,11 +3,13 @@
 namespace Tests\Feature;
 
 use App\Features\ShowAuthButtons;
+use App\Livewire\Customer\Dashboard;
 use App\Models\Product;
 use App\Models\ProductLicense;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Laravel\Pennant\Feature;
+use Livewire\Livewire;
 use Tests\TestCase;
 
 class PurchaseHistoryTest extends TestCase
@@ -23,7 +25,7 @@ class PurchaseHistoryTest extends TestCase
 
     public function test_guest_cannot_view_purchase_history(): void
     {
-        $response = $this->get('/customer/purchase-history');
+        $response = $this->get('/dashboard/purchase-history');
 
         $response->assertRedirect('/login');
     }
@@ -41,7 +43,7 @@ class PurchaseHistoryTest extends TestCase
             'purchased_at' => now()->subDay(),
         ]);
 
-        $response = $this->actingAs($user)->get('/customer/purchase-history');
+        $response = $this->actingAs($user)->get('/dashboard/purchase-history');
 
         $response->assertStatus(200);
         $response->assertSee('Plugin Dev Kit');
@@ -70,7 +72,7 @@ class PurchaseHistoryTest extends TestCase
             'purchased_at' => now()->subDay(),
         ]);
 
-        $response = $this->actingAs($user)->get('/customer/purchase-history');
+        $response = $this->actingAs($user)->get('/dashboard/purchase-history');
 
         $response->assertStatus(200);
         $response->assertSee('Plugin Dev Kit');
@@ -87,17 +89,18 @@ class PurchaseHistoryTest extends TestCase
             'product_id' => $product->id,
         ]);
 
-        $response = $this->actingAs($user)->get('/dashboard');
+        Livewire::actingAs($user)
+            ->test(Dashboard::class)
+            ->assertOk();
 
-        $response->assertStatus(200);
-        $response->assertViewHas('totalPurchases', 1);
+        $this->assertEquals(1, $user->productLicenses()->count());
     }
 
     public function test_purchase_history_shows_empty_state_when_no_purchases(): void
     {
         $user = User::factory()->create();
 
-        $response = $this->actingAs($user)->get('/customer/purchase-history');
+        $response = $this->actingAs($user)->get('/dashboard/purchase-history');
 
         $response->assertStatus(200);
         $response->assertSee('No purchases yet');
@@ -114,7 +117,7 @@ class PurchaseHistoryTest extends TestCase
             'purchased_at' => now(),
         ]);
 
-        $response = $this->actingAs($user)->get('/customer/purchase-history');
+        $response = $this->actingAs($user)->get('/dashboard/purchase-history');
 
         $response->assertStatus(200);
         $response->assertSee('Active');

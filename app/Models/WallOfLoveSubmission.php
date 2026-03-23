@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Attributes\Scope;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -53,7 +54,7 @@ class WallOfLoveSubmission extends Model
      * @param  Builder<WallOfLoveSubmission>  $query
      * @return Builder<WallOfLoveSubmission>
      */
-    #[\Illuminate\Database\Eloquent\Attributes\Scope]
+    #[Scope]
     protected function approved(Builder $query): Builder
     {
         return $query->whereNotNull('approved_at');
@@ -63,7 +64,7 @@ class WallOfLoveSubmission extends Model
      * @param  Builder<WallOfLoveSubmission>  $query
      * @return Builder<WallOfLoveSubmission>
      */
-    #[\Illuminate\Database\Eloquent\Attributes\Scope]
+    #[Scope]
     protected function promoted(Builder $query): Builder
     {
         return $query->where('promoted', true);
