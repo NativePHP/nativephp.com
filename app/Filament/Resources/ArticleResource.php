@@ -7,6 +7,7 @@ use App\Filament\Resources\ArticleResource\Actions\PublishAction;
 use App\Filament\Resources\ArticleResource\Actions\UnpublishAction;
 use App\Filament\Resources\ArticleResource\Pages;
 use App\Models\Article;
+use Filament\Actions;
 use Filament\Actions\ActionGroup;
 use Filament\Forms\Components\MarkdownEditor;
 use Filament\Forms\Components\Textarea;
@@ -14,7 +15,6 @@ use Filament\Forms\Components\TextInput;
 use Filament\Forms\Set;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
-use Filament\Tables;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Contracts\Database\Eloquent\Builder;
@@ -98,14 +98,14 @@ class ArticleResource extends Resource
             ->actions([
                 ActionGroup::make([
                     PreviewAction::make('preview'),
-                    Tables\Actions\EditAction::make()->url(fn ($record) => static::getUrl('edit', ['record' => $record->id])),
+                    Actions\EditAction::make()->url(fn ($record) => static::getUrl('edit', ['record' => $record->id])),
                     UnpublishAction::make('unpublish'),
                     PublishAction::make('publish'),
                 ]),
             ])
             ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+                Actions\BulkActionGroup::make([
+                    Actions\DeleteBulkAction::make(),
                 ]),
             ])
             ->defaultSort('published_at', 'desc');

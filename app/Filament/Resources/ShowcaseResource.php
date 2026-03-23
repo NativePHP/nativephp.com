@@ -4,6 +4,7 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\ShowcaseResource\Pages;
 use App\Models\Showcase;
+use Filament\Actions;
 use Filament\Forms;
 use Filament\Resources\Resource;
 use Filament\Schemas;
@@ -177,7 +178,7 @@ class ShowcaseResource extends Resource
                         ->whereColumn('updated_at', '>', 'approved_at')),
             ])
             ->actions([
-                Tables\Actions\Action::make('approve')
+                Actions\Action::make('approve')
                     ->icon('heroicon-o-check')
                     ->color('success')
                     ->visible(fn (Showcase $record) => $record->isPending())
@@ -189,7 +190,7 @@ class ShowcaseResource extends Resource
                     ->modalHeading('Approve Submission')
                     ->modalDescription('Are you sure you want to approve this app for the Showcase?'),
 
-                Tables\Actions\Action::make('unapprove')
+                Actions\Action::make('unapprove')
                     ->icon('heroicon-o-x-mark')
                     ->color('warning')
                     ->visible(fn (Showcase $record) => $record->isApproved())
@@ -201,12 +202,12 @@ class ShowcaseResource extends Resource
                     ->modalHeading('Unapprove Submission')
                     ->modalDescription('This will remove the app from the public Showcase.'),
 
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make(),
+                Actions\EditAction::make(),
+                Actions\DeleteAction::make(),
             ])
             ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\BulkAction::make('approve')
+                Actions\BulkActionGroup::make([
+                    Actions\BulkAction::make('approve')
                         ->icon('heroicon-o-check')
                         ->color('success')
                         ->action(function ($records): void {
@@ -219,7 +220,7 @@ class ShowcaseResource extends Resource
                         ->modalHeading('Approve Selected Submissions')
                         ->modalDescription('Are you sure you want to approve all selected submissions?'),
 
-                    Tables\Actions\DeleteBulkAction::make(),
+                    Actions\DeleteBulkAction::make(),
                 ]),
             ])
             ->defaultSort('created_at', 'desc');

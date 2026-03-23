@@ -10,6 +10,7 @@ use App\Models\PluginBundle;
 use App\Models\PluginLicense;
 use App\Models\User;
 use App\Notifications\BundleGranted;
+use Filament\Actions;
 use Filament\Forms;
 use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
@@ -158,10 +159,10 @@ class PluginBundleResource extends Resource
                 Tables\Filters\TernaryFilter::make('is_featured'),
             ])
             ->actions([
-                Tables\Actions\ViewAction::make(),
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\ActionGroup::make([
-                    Tables\Actions\Action::make('viewListing')
+                Actions\ViewAction::make(),
+                Actions\EditAction::make(),
+                Actions\ActionGroup::make([
+                    Actions\Action::make('viewListing')
                         ->label('View Listing Page')
                         ->icon('heroicon-o-eye')
                         ->color('gray')
@@ -169,7 +170,7 @@ class PluginBundleResource extends Resource
                         ->openUrlInNewTab()
                         ->visible(fn (PluginBundle $record) => $record->is_active && $record->published_at?->isPast()),
 
-                    Tables\Actions\Action::make('grantToUser')
+                    Actions\Action::make('grantToUser')
                         ->label('Grant to User')
                         ->icon('heroicon-o-gift')
                         ->color('success')
@@ -235,8 +236,8 @@ class PluginBundleResource extends Resource
                     ->icon('heroicon-m-ellipsis-vertical'),
             ])
             ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+                Actions\BulkActionGroup::make([
+                    Actions\DeleteBulkAction::make(),
                 ]),
             ])
             ->defaultSort('created_at', 'desc');

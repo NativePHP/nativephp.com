@@ -8,7 +8,7 @@ use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\DeveloperAccount>
+ * @extends Factory<DeveloperAccount>
  */
 class DeveloperAccountFactory extends Factory
 {
@@ -36,16 +36,6 @@ class DeveloperAccountFactory extends Factory
             'payouts_enabled' => false,
             'charges_enabled' => false,
             'onboarding_completed_at' => null,
-        ]);
-    }
-
-    public function completedOnboarding(): static
-    {
-        return $this->state(fn () => [
-            'stripe_connect_status' => StripeConnectStatus::Active,
-            'payouts_enabled' => true,
-            'charges_enabled' => true,
-            'onboarding_completed_at' => now(),
         ]);
     }
 

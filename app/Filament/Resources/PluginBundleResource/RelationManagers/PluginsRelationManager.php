@@ -2,6 +2,9 @@
 
 namespace App\Filament\Resources\PluginBundleResource\RelationManagers;
 
+use App\Models\Plugin;
+use App\Models\PluginBundle;
+use Filament\Actions;
 use Filament\Forms;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
@@ -46,10 +49,10 @@ class PluginsRelationManager extends RelationManager
             ->reorderable('sort_order')
             ->defaultSort('sort_order')
             ->headerActions([
-                Tables\Actions\AttachAction::make()
+                Actions\AttachAction::make()
                     ->preloadRecordSelect()
                     ->recordSelectSearchColumns(['name'])
-                    ->form(fn (Tables\Actions\AttachAction $action): array => [
+                    ->form(fn (Actions\AttachAction $action): array => [
                         $action->getRecordSelect(),
                         Forms\Components\Toggle::make('grant_to_existing_owners')
                             ->label('Grant to existing bundle owners')
@@ -61,10 +64,10 @@ class PluginsRelationManager extends RelationManager
                             return;
                         }
 
-                        /** @var \App\Models\PluginBundle $bundle */
+                        /** @var PluginBundle $bundle */
                         $bundle = $this->getOwnerRecord();
 
-                        $plugin = \App\Models\Plugin::find($data['recordId']);
+                        $plugin = Plugin::find($data['recordId']);
 
                         if (! $plugin) {
                             return;
@@ -77,11 +80,11 @@ class PluginsRelationManager extends RelationManager
                     }),
             ])
             ->actions([
-                Tables\Actions\DetachAction::make(),
+                Actions\DetachAction::make(),
             ])
             ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DetachBulkAction::make(),
+                Actions\BulkActionGroup::make([
+                    Actions\DetachBulkAction::make(),
                 ]),
             ]);
     }

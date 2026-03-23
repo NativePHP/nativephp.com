@@ -3,6 +3,7 @@
 namespace App\Filament\Resources;
 
 use App\Enums\Subscription as SubscriptionEnum;
+use Filament\Actions;
 use Filament\Forms;
 use Filament\Resources\Resource;
 use Filament\Schemas;
@@ -126,7 +127,7 @@ class SubscriptionResource extends Resource
                     ->query(fn (Builder $query): Builder => $query->where('stripe_status', 'canceled')),
             ])
             ->actions([
-                Tables\Actions\Action::make('view_on_stripe')
+                Actions\Action::make('view_on_stripe')
                     ->label('View on Stripe')
                     ->color('gray')
                     ->icon('heroicon-o-arrow-top-right-on-square')

@@ -4,6 +4,7 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\WallOfLoveSubmissionResource\Pages;
 use App\Models\WallOfLoveSubmission;
+use Filament\Actions;
 use Filament\Forms;
 use Filament\Resources\Resource;
 use Filament\Schemas;
@@ -164,7 +165,7 @@ class WallOfLoveSubmissionResource extends Resource
                     ->falseLabel('Not Promoted'),
             ])
             ->actions([
-                Tables\Actions\Action::make('approve')
+                Actions\Action::make('approve')
                     ->icon('heroicon-o-check')
                     ->color('success')
                     ->visible(fn (WallOfLoveSubmission $record) => $record->isPending())
@@ -176,7 +177,7 @@ class WallOfLoveSubmissionResource extends Resource
                     ->modalHeading('Approve Submission')
                     ->modalDescription('Are you sure you want to approve this submission for the Wall of Love?'),
 
-                Tables\Actions\Action::make('unapprove')
+                Actions\Action::make('unapprove')
                     ->icon('heroicon-o-x-mark')
                     ->color('warning')
                     ->visible(fn (WallOfLoveSubmission $record) => $record->isApproved())
@@ -188,7 +189,7 @@ class WallOfLoveSubmissionResource extends Resource
                     ->modalHeading('Unapprove Submission')
                     ->modalDescription('Are you sure you want to unapprove this submission?'),
 
-                Tables\Actions\Action::make('promote')
+                Actions\Action::make('promote')
                     ->icon('heroicon-o-star')
                     ->color('warning')
                     ->visible(fn (WallOfLoveSubmission $record) => $record->isApproved() && ! $record->isPromoted())
@@ -206,7 +207,7 @@ class WallOfLoveSubmissionResource extends Resource
                     ->modalHeading('Promote to Homepage')
                     ->modalDescription('This will display this testimonial in the feedback section on the homepage.'),
 
-                Tables\Actions\Action::make('unpromote')
+                Actions\Action::make('unpromote')
                     ->icon('heroicon-o-x-mark')
                     ->color('gray')
                     ->visible(fn (WallOfLoveSubmission $record) => $record->isPromoted())
@@ -215,12 +216,12 @@ class WallOfLoveSubmissionResource extends Resource
                     ->modalHeading('Remove from Homepage')
                     ->modalDescription('This will remove this testimonial from the homepage feedback section.'),
 
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make(),
+                Actions\EditAction::make(),
+                Actions\DeleteAction::make(),
             ])
             ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\BulkAction::make('approve')
+                Actions\BulkActionGroup::make([
+                    Actions\BulkAction::make('approve')
                         ->icon('heroicon-o-check')
                         ->color('success')
                         ->action(function ($records): void {
@@ -233,7 +234,7 @@ class WallOfLoveSubmissionResource extends Resource
                         ->modalHeading('Approve Selected Submissions')
                         ->modalDescription('Are you sure you want to approve all selected submissions?'),
 
-                    Tables\Actions\DeleteBulkAction::make(),
+                    Actions\DeleteBulkAction::make(),
                 ]),
             ])
             ->defaultSort('created_at', 'desc');

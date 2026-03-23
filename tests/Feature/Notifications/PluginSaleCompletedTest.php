@@ -20,7 +20,6 @@ class PluginSaleCompletedTest extends TestCase
     {
         $developer = User::factory()->create();
         $developerAccount = DeveloperAccount::factory()
-            ->onboarded()
             ->withAcceptedTerms()
             ->create(['user_id' => $developer->id]);
 
@@ -60,7 +59,6 @@ class PluginSaleCompletedTest extends TestCase
     {
         $developer = User::factory()->create();
         $developerAccount = DeveloperAccount::factory()
-            ->onboarded()
             ->withAcceptedTerms()
             ->create(['user_id' => $developer->id]);
 
@@ -129,7 +127,6 @@ class PluginSaleCompletedTest extends TestCase
 
         $developer = User::factory()->create();
         $developerAccount = DeveloperAccount::factory()
-            ->onboarded()
             ->withAcceptedTerms()
             ->create(['user_id' => $developer->id]);
 
@@ -167,7 +164,6 @@ class PluginSaleCompletedTest extends TestCase
     {
         $developer = User::factory()->create();
         $developerAccount = DeveloperAccount::factory()
-            ->onboarded()
             ->withAcceptedTerms()
             ->create(['user_id' => $developer->id]);
 

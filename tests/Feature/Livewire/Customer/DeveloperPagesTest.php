@@ -71,7 +71,7 @@ class DeveloperPagesTest extends TestCase
     public function test_onboarding_redirects_if_already_completed(): void
     {
         $user = User::factory()->create();
-        DeveloperAccount::factory()->completedOnboarding()->create(['user_id' => $user->id]);
+        DeveloperAccount::factory()->create(['user_id' => $user->id]);
 
         Livewire::actingAs($user)
             ->test(Onboarding::class)
@@ -106,7 +106,7 @@ class DeveloperPagesTest extends TestCase
     public function test_developer_dashboard_renders_for_completed_account(): void
     {
         $user = User::factory()->create();
-        DeveloperAccount::factory()->completedOnboarding()->create(['user_id' => $user->id]);
+        DeveloperAccount::factory()->create(['user_id' => $user->id]);
 
         $this->mock(StripeConnectService::class, function ($mock): void {
             $mock->shouldReceive('refreshAccountStatus')->once();
@@ -150,7 +150,7 @@ class DeveloperPagesTest extends TestCase
     public function test_developer_dashboard_shows_stats_and_status(): void
     {
         $user = User::factory()->create();
-        DeveloperAccount::factory()->completedOnboarding()->create(['user_id' => $user->id]);
+        DeveloperAccount::factory()->create(['user_id' => $user->id]);
 
         $this->mock(StripeConnectService::class, function ($mock): void {
             $mock->shouldReceive('refreshAccountStatus')->once();
@@ -169,7 +169,7 @@ class DeveloperPagesTest extends TestCase
     public function test_developer_dashboard_shows_empty_states(): void
     {
         $user = User::factory()->create();
-        DeveloperAccount::factory()->completedOnboarding()->create(['user_id' => $user->id]);
+        DeveloperAccount::factory()->create(['user_id' => $user->id]);
 
         $this->mock(StripeConnectService::class, function ($mock): void {
             $mock->shouldReceive('refreshAccountStatus')->once();

@@ -4,6 +4,7 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\OpenCollectiveDonationResource\Pages;
 use App\Models\OpenCollectiveDonation;
+use Filament\Actions;
 use Filament\Infolists;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
@@ -135,7 +136,7 @@ class OpenCollectiveDonationResource extends Resource
                     ->query(fn (Builder $query): Builder => $query->whereNotNull('interval')),
             ])
             ->actions([
-                Tables\Actions\ViewAction::make(),
+                Actions\ViewAction::make(),
             ]);
     }
 

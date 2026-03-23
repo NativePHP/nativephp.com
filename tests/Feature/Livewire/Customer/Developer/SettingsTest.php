@@ -115,7 +115,7 @@ class SettingsTest extends TestCase
     public function test_active_developer_account_shows_status_badge(): void
     {
         $user = User::factory()->create();
-        DeveloperAccount::factory()->completedOnboarding()->create(['user_id' => $user->id]);
+        DeveloperAccount::factory()->create(['user_id' => $user->id]);
 
         Livewire::actingAs($user)
             ->test(Settings::class)

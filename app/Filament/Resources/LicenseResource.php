@@ -5,6 +5,7 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\LicenseResource\Pages;
 use App\Filament\Resources\LicenseResource\RelationManagers;
 use App\Models\License;
+use Filament\Actions;
 use Filament\Forms;
 use Filament\Resources\Resource;
 use Filament\Schemas;
@@ -90,9 +91,9 @@ class LicenseResource extends Resource
                     ->label('Suspended'),
             ])
             ->actions([
-                Tables\Actions\ActionGroup::make([
-                    Tables\Actions\EditAction::make(),
-                    Tables\Actions\Action::make('viewUser')
+                Actions\ActionGroup::make([
+                    Actions\EditAction::make(),
+                    Actions\Action::make('viewUser')
                         ->label('View User')
                         ->icon('heroicon-o-user')
                         ->color('primary')

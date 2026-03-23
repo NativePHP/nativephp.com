@@ -3,11 +3,13 @@
 namespace Tests\Feature;
 
 use App\Features\ShowAuthButtons;
+use App\Livewire\Customer\Dashboard;
 use App\Models\Product;
 use App\Models\ProductLicense;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Laravel\Pennant\Feature;
+use Livewire\Livewire;
 use Tests\TestCase;
 
 class PurchaseHistoryTest extends TestCase
@@ -87,10 +89,11 @@ class PurchaseHistoryTest extends TestCase
             'product_id' => $product->id,
         ]);
 
-        $response = $this->actingAs($user)->get('/dashboard');
+        Livewire::actingAs($user)
+            ->test(Dashboard::class)
+            ->assertOk();
 
-        $response->assertStatus(200);
-        $response->assertViewHas('totalPurchases', 1);
+        $this->assertEquals(1, $user->productLicenses()->count());
     }
 
     public function test_purchase_history_shows_empty_state_when_no_purchases(): void
