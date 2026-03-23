@@ -4,7 +4,6 @@ namespace App\Models;
 
 use App\Models\SupportTicket\Reply;
 use App\SupportTicket\Status;
-use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -21,11 +20,18 @@ class SupportTicket extends Model
         'subject',
         'message',
         'status',
+        'product',
+        'issue_type',
+        'metadata',
     ];
 
-    protected $casts = [
-        'status' => Status::class,
-    ];
+    protected function casts(): array
+    {
+        return [
+            'status' => Status::class,
+            'metadata' => 'array',
+        ];
+    }
 
     protected static function booted()
     {

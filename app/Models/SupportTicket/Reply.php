@@ -16,6 +16,7 @@ class Reply extends Model
 
     protected $fillable = [
         'support_ticket_id',
+        'user_id',
         'message',
         'attachments',
         'note',

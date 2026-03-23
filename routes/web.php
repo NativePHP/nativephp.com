@@ -2,6 +2,7 @@
 
 use App\Features\ShowAuthButtons;
 use App\Features\ShowPlugins;
+use App\Http\Controllers\Account\Support\TicketController;
 use App\Http\Controllers\ApplinksController;
 use App\Http\Controllers\Auth\CustomerAuthController;
 use App\Http\Controllers\BundleController;
@@ -197,9 +198,11 @@ Route::get('docs/{platform}/{page?}', function (string $platform, $page = null) 
     ->where('page', '.*')
     ->name('docs.latest');
 
+// Docs platform chooser
+Route::view('docs', 'docs.chooser')->name('docs');
+
 // Forward unversioned requests to the latest version
-Route::get('docs/{page?}', function ($page = null) {
-    $page ??= 'introduction';
+Route::get('docs/{page}', function (string $page) {
     $version = session('viewing_docs_version', '1');
     $platform = session('viewing_docs_platform', 'mobile');
 
@@ -233,7 +236,7 @@ Route::get('docs/{page?}', function ($page = null) {
             'page' => 'introduction',
         ]);
     }
-})->name('docs')->where('page', '.*');
+})->name('docs.unversioned')->where('page', '.*');
 
 Route::get('order/{checkoutSessionId}', App\Livewire\OrderSuccess::class)->name('order.success');
 
@@ -397,6 +400,32 @@ Route::middleware(EnsureFeaturesAreActive::using(ShowPlugins::class))->group(fun
     Route::get('cart/status/{sessionId}', [CartController::class, 'status'])->name('cart.status')->middleware('auth');
     Route::get('cart/cancel', [CartController::class, 'cancel'])->name('cart.cancel');
 });
+
+// Support
+Route::prefix('support')
+    ->middleware('auth:web')
+    ->group(function (): void {
+        Route::get('/', function () {
+            return view('support.index');
+        })
+            ->withoutMiddleware(['auth:web'])
+            ->name('support.index');
+
+        Route::prefix('tickets')
+            ->group(function (): void {
+                Route::get('/', [TicketController::class, 'index'])->name('support.tickets');
+                Route::get('/create', \App\Livewire\CreateSupportTicket::class)->name('support.tickets.create');
+
+                Route::get('/{supportTicket}', [TicketController::class, 'show'])
+                    ->name('support.tickets.show');
+
+                Route::post('/{supportTicket}/reply', [TicketController::class, 'reply'])
+                    ->name('support.tickets.reply');
+
+                Route::post('/{supportTicket}/close', [TicketController::class, 'closeTicket'])
+                    ->name('support.tickets.close');
+            });
+    });
 
 // Developer onboarding routes
 Route::middleware(['auth', EnsureFeaturesAreActive::using(ShowAuthButtons::class), EnsureFeaturesAreActive::using(ShowPlugins::class)])->prefix('customer/developer')->name('customer.developer.')->group(function (): void {

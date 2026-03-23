@@ -1,0 +1,894 @@
+<?php
+
+namespace Tests\Feature;
+
+use App\Livewire\CreateSupportTicket;
+use App\Models\License;
+use App\Models\Plugin;
+use App\Models\SupportTicket;
+use App\Models\SupportTicket\Reply;
+use App\Models\User;
+use App\Notifications\SupportTicketReplied;
+use App\Notifications\SupportTicketSubmitted;
+use App\Notifications\SupportTicketUserReplied;
+use App\SupportTicket\Status;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Notification;
+use Livewire\Livewire;
+use PHPUnit\Framework\Attributes\Test;
+use Tests\TestCase;
+
+class SupportTicketTest extends TestCase
+{
+    use RefreshDatabase;
+
+    #[Test]
+    public function guests_cannot_access_create_ticket_page(): void
+    {
+        $this->get(route('support.tickets.create'))
+            ->assertRedirect();
+    }
+
+    #[Test]
+    public function authenticated_users_can_access_create_ticket_page(): void
+    {
+        $user = User::factory()->create();
+
+        $this->actingAs($user)
+            ->get(route('support.tickets.create'))
+            ->assertOk()
+            ->assertSeeLivewire(CreateSupportTicket::class);
+    }
+
+    #[Test]
+    public function wizard_starts_at_step_1(): void
+    {
+        $user = User::factory()->create();
+
+        Livewire::actingAs($user)
+            ->test(CreateSupportTicket::class)
+            ->assertSet('currentStep', 1)
+            ->assertSee('Which product is this about?');
+    }
+
+    #[Test]
+    public function a_product_must_be_selected(): void
+    {
+        $user = User::factory()->create();
+
+        Livewire::actingAs($user)
+            ->test(CreateSupportTicket::class)
+            ->call('nextStep')
+            ->assertHasErrors('selectedProduct')
+            ->assertSet('currentStep', 1);
+    }
+
+    #[Test]
+    public function product_must_be_a_valid_value(): void
+    {
+        $user = User::factory()->create();
+
+        Livewire::actingAs($user)
+            ->test(CreateSupportTicket::class)
+            ->set('selectedProduct', 'invalid')
+            ->call('nextStep')
+            ->assertHasErrors('selectedProduct')
+            ->assertSet('currentStep', 1);
+    }
+
+    #[Test]
+    public function selecting_mobile_advances_to_step_2(): void
+    {
+        $user = User::factory()->create();
+
+        Livewire::actingAs($user)
+            ->test(CreateSupportTicket::class)
+            ->set('selectedProduct', 'mobile')
+            ->call('nextStep')
+            ->assertSet('currentStep', 2);
+    }
+
+    #[Test]
+    public function mobile_selection_shows_area_type_and_bug_fields_on_step_2(): void
+    {
+        $user = User::factory()->create();
+
+        Livewire::actingAs($user)
+            ->test(CreateSupportTicket::class)
+            ->set('selectedProduct', 'mobile')
+            ->call('nextStep')
+            ->assertSet('currentStep', 2)
+            ->assertSee('What is the issue related to?')
+            ->assertSee('Bug report details')
+            ->assertDontSee('Describe your issue');
+    }
+
+    #[Test]
+    public function desktop_selection_shows_bug_fields_but_not_area_on_step_2(): void
+    {
+        $user = User::factory()->create();
+
+        Livewire::actingAs($user)
+            ->test(CreateSupportTicket::class)
+            ->set('selectedProduct', 'desktop')
+            ->call('nextStep')
+            ->assertSet('currentStep', 2)
+            ->assertSee('Bug report details')
+            ->assertDontSee('Describe your issue')
+            ->assertDontSee('Which area?');
+    }
+
+    #[Test]
+    public function bifrost_selection_shows_issue_type_on_step_2(): void
+    {
+        $user = User::factory()->create();
+
+        Livewire::actingAs($user)
+            ->test(CreateSupportTicket::class)
+            ->set('selectedProduct', 'bifrost')
+            ->call('nextStep')
+            ->assertSet('currentStep', 2)
+            ->assertSee('Issue type')
+            ->assertSee('Describe your issue')
+            ->assertDontSee('Bug report details');
+    }
+
+    #[Test]
+    public function nativephp_com_selection_shows_issue_type_on_step_2(): void
+    {
+        $user = User::factory()->create();
+
+        Livewire::actingAs($user)
+            ->test(CreateSupportTicket::class)
+            ->set('selectedProduct', 'nativephp.com')
+            ->call('nextStep')
+            ->assertSet('currentStep', 2)
+            ->assertSee('Issue type')
+            ->assertSee('Describe your issue')
+            ->assertDontSee('Bug report details');
+    }
+
+    #[Test]
+    public function bug_report_fields_are_required_when_shown(): void
+    {
+        $user = User::factory()->create();
+
+        Livewire::actingAs($user)
+            ->test(CreateSupportTicket::class)
+            ->set('selectedProduct', 'desktop')
+            ->call('nextStep')
+            ->assertSet('currentStep', 2)
+            ->call('nextStep')
+            ->assertHasErrors(['tryingToDo', 'whatHappened', 'reproductionSteps', 'environment'])
+            ->assertSet('currentStep', 2);
+    }
+
+    #[Test]
+    public function mobile_area_type_is_required_when_mobile_selected(): void
+    {
+        $user = User::factory()->create();
+
+        Livewire::actingAs($user)
+            ->test(CreateSupportTicket::class)
+            ->set('selectedProduct', 'mobile')
+            ->call('nextStep')
+            ->assertSet('currentStep', 2)
+            ->set('tryingToDo', 'Test')
+            ->set('whatHappened', 'Test')
+            ->set('reproductionSteps', 'Test')
+            ->set('environment', 'Test')
+            ->call('nextStep')
+            ->assertHasErrors('mobileAreaType')
+            ->assertSet('currentStep', 2);
+    }
+
+    #[Test]
+    public function mobile_area_is_required_when_plugin_type_selected(): void
+    {
+        $user = User::factory()->create();
+
+        Livewire::actingAs($user)
+            ->test(CreateSupportTicket::class)
+            ->set('selectedProduct', 'mobile')
+            ->call('nextStep')
+            ->assertSet('currentStep', 2)
+            ->set('mobileAreaType', 'plugin')
+            ->set('tryingToDo', 'Test')
+            ->set('whatHappened', 'Test')
+            ->set('reproductionSteps', 'Test')
+            ->set('environment', 'Test')
+            ->call('nextStep')
+            ->assertHasErrors('mobileArea')
+            ->assertSet('currentStep', 2);
+    }
+
+    #[Test]
+    public function mobile_core_type_does_not_require_mobile_area(): void
+    {
+        $user = User::factory()->create();
+
+        Livewire::actingAs($user)
+            ->test(CreateSupportTicket::class)
+            ->set('selectedProduct', 'mobile')
+            ->call('nextStep')
+            ->assertSet('currentStep', 2)
+            ->set('mobileAreaType', 'core')
+            ->set('tryingToDo', 'Test')
+            ->set('whatHappened', 'Test')
+            ->set('reproductionSteps', 'Test')
+            ->set('environment', 'Test')
+            ->call('nextStep')
+            ->assertHasNoErrors('mobileArea')
+            ->assertSet('currentStep', 3);
+    }
+
+    #[Test]
+    public function issue_type_is_required_when_bifrost_selected(): void
+    {
+        $user = User::factory()->create();
+
+        Livewire::actingAs($user)
+            ->test(CreateSupportTicket::class)
+            ->set('selectedProduct', 'bifrost')
+            ->call('nextStep')
+            ->assertSet('currentStep', 2)
+            ->set('subject', 'Test subject')
+            ->set('message', 'Test message')
+            ->call('nextStep')
+            ->assertHasErrors('issueType')
+            ->assertSet('currentStep', 2);
+    }
+
+    #[Test]
+    public function issue_type_must_be_valid_value(): void
+    {
+        $user = User::factory()->create();
+
+        Livewire::actingAs($user)
+            ->test(CreateSupportTicket::class)
+            ->set('selectedProduct', 'bifrost')
+            ->call('nextStep')
+            ->set('issueType', 'invalid_type')
+            ->set('subject', 'Test subject')
+            ->set('message', 'Test message')
+            ->call('nextStep')
+            ->assertHasErrors('issueType')
+            ->assertSet('currentStep', 2);
+    }
+
+    #[Test]
+    public function subject_is_required_on_step_2(): void
+    {
+        $user = User::factory()->create();
+
+        Livewire::actingAs($user)
+            ->test(CreateSupportTicket::class)
+            ->set('selectedProduct', 'bifrost')
+            ->call('nextStep')
+            ->set('issueType', 'bug')
+            ->set('message', 'Some message')
+            ->call('nextStep')
+            ->assertHasErrors('subject')
+            ->assertSet('currentStep', 2);
+    }
+
+    #[Test]
+    public function message_is_required_on_step_2(): void
+    {
+        $user = User::factory()->create();
+
+        Livewire::actingAs($user)
+            ->test(CreateSupportTicket::class)
+            ->set('selectedProduct', 'bifrost')
+            ->call('nextStep')
+            ->set('issueType', 'bug')
+            ->set('subject', 'Some subject')
+            ->call('nextStep')
+            ->assertHasErrors('message')
+            ->assertSet('currentStep', 2);
+    }
+
+    #[Test]
+    public function subject_cannot_exceed_255_characters(): void
+    {
+        $user = User::factory()->create();
+
+        Livewire::actingAs($user)
+            ->test(CreateSupportTicket::class)
+            ->set('selectedProduct', 'bifrost')
+            ->call('nextStep')
+            ->set('issueType', 'bug')
+            ->set('subject', str_repeat('a', 256))
+            ->set('message', 'Some message')
+            ->call('nextStep')
+            ->assertHasErrors('subject')
+            ->assertSet('currentStep', 2);
+    }
+
+    #[Test]
+    public function message_cannot_exceed_5000_characters(): void
+    {
+        $user = User::factory()->create();
+
+        Livewire::actingAs($user)
+            ->test(CreateSupportTicket::class)
+            ->set('selectedProduct', 'bifrost')
+            ->call('nextStep')
+            ->set('issueType', 'bug')
+            ->set('subject', 'Some subject')
+            ->set('message', str_repeat('a', 5001))
+            ->call('nextStep')
+            ->assertHasErrors('message')
+            ->assertSet('currentStep', 2);
+    }
+
+    #[Test]
+    public function full_desktop_submission_creates_ticket_with_bug_report_data(): void
+    {
+        $user = User::factory()->create();
+
+        Livewire::actingAs($user)
+            ->test(CreateSupportTicket::class)
+            ->set('selectedProduct', 'desktop')
+            ->call('nextStep')
+            ->set('tryingToDo', 'Build an app')
+            ->set('whatHappened', 'It crashed')
+            ->set('reproductionSteps', '1. Open app 2. Click button')
+            ->set('environment', 'macOS 14, Electron 28')
+            ->call('nextStep')
+            ->assertSet('currentStep', 3)
+            ->call('submit')
+            ->assertRedirect();
+
+        $ticket = SupportTicket::where('user_id', $user->id)->first();
+
+        $this->assertNotNull($ticket);
+        $this->assertEquals('desktop', $ticket->product);
+        $this->assertEquals('Build an app', $ticket->subject);
+        $this->assertStringContainsString('Build an app', $ticket->message);
+        $this->assertStringContainsString('It crashed', $ticket->message);
+        $this->assertStringContainsString('1. Open app 2. Click button', $ticket->message);
+        $this->assertStringContainsString('macOS 14, Electron 28', $ticket->message);
+        $this->assertNull($ticket->issue_type);
+        $this->assertEquals('Build an app', $ticket->metadata['trying_to_do']);
+        $this->assertEquals('It crashed', $ticket->metadata['what_happened']);
+    }
+
+    #[Test]
+    public function bifrost_submission_stores_product_and_issue_type(): void
+    {
+        $user = User::factory()->create();
+
+        Livewire::actingAs($user)
+            ->test(CreateSupportTicket::class)
+            ->set('selectedProduct', 'bifrost')
+            ->call('nextStep')
+            ->set('issueType', 'feature_request')
+            ->set('subject', 'Feature request')
+            ->set('message', 'Please add this feature.')
+            ->call('nextStep')
+            ->assertSet('currentStep', 3)
+            ->call('submit')
+            ->assertRedirect();
+
+        $ticket = SupportTicket::where('subject', 'Feature request')->first();
+
+        $this->assertNotNull($ticket);
+        $this->assertEquals('bifrost', $ticket->product);
+        $this->assertEquals('feature_request', $ticket->issue_type);
+        $this->assertNull($ticket->metadata);
+    }
+
+    #[Test]
+    public function submission_redirects_to_show_page(): void
+    {
+        $user = User::factory()->create();
+
+        Livewire::actingAs($user)
+            ->test(CreateSupportTicket::class)
+            ->set('selectedProduct', 'nativephp.com')
+            ->call('nextStep')
+            ->set('issueType', 'other')
+            ->set('subject', 'Redirect test')
+            ->set('message', 'Testing redirect after creation.')
+            ->call('nextStep')
+            ->assertSet('currentStep', 3)
+            ->call('submit')
+            ->assertRedirect();
+
+        $ticket = SupportTicket::where('subject', 'Redirect test')->first();
+
+        $this->assertNotNull($ticket);
+        $this->assertNotEmpty(route('support.tickets.show', $ticket));
+    }
+
+    #[Test]
+    public function step_3_shows_full_summary_including_environment_and_reproduction_steps(): void
+    {
+        $user = User::factory()->create();
+
+        Livewire::actingAs($user)
+            ->test(CreateSupportTicket::class)
+            ->set('selectedProduct', 'desktop')
+            ->call('nextStep')
+            ->set('tryingToDo', 'Build an app')
+            ->set('whatHappened', 'It crashed')
+            ->set('reproductionSteps', '1. Open app 2. Click button')
+            ->set('environment', 'macOS 14, PHP 8.4')
+            ->call('nextStep')
+            ->assertSet('currentStep', 3)
+            ->assertSee('Review your request')
+            ->assertSee('Desktop')
+            ->assertSee('Build an app')
+            ->assertSee('It crashed')
+            ->assertSee('1. Open app 2. Click button')
+            ->assertSee('macOS 14, PHP 8.4');
+    }
+
+    #[Test]
+    public function support_page_shows_priority_support_for_max_plan_users(): void
+    {
+        $user = User::factory()->create();
+
+        License::factory()->max()->active()->create(['user_id' => $user->id]);
+
+        $this->actingAs($user)
+            ->get(route('support.index'))
+            ->assertOk()
+            ->assertSee('Priority Support')
+            ->assertSee('Submit a Ticket');
+    }
+
+    #[Test]
+    public function support_page_does_not_show_priority_support_for_non_max_users(): void
+    {
+        $user = User::factory()->create();
+
+        License::factory()->pro()->active()->create(['user_id' => $user->id]);
+
+        $this->actingAs($user)
+            ->get(route('support.index'))
+            ->assertOk()
+            ->assertDontSee('Priority Support');
+    }
+
+    #[Test]
+    public function support_page_does_not_show_priority_support_for_guests(): void
+    {
+        $this->get(route('support.index'))
+            ->assertOk()
+            ->assertDontSee('Priority Support');
+    }
+
+    #[Test]
+    public function changing_product_resets_all_step_2_fields(): void
+    {
+        $user = User::factory()->create();
+
+        Livewire::actingAs($user)
+            ->test(CreateSupportTicket::class)
+            ->set('selectedProduct', 'mobile')
+            ->call('nextStep')
+            ->set('mobileAreaType', 'plugin')
+            ->set('mobileArea', 'jump')
+            ->set('tryingToDo', 'Something')
+            ->set('whatHappened', 'Something else')
+            ->set('reproductionSteps', 'Steps here')
+            ->set('environment', 'macOS')
+            ->call('previousStep')
+            ->set('selectedProduct', 'nativephp.com')
+            ->assertSet('mobileAreaType', '')
+            ->assertSet('mobileArea', '')
+            ->assertSet('tryingToDo', '')
+            ->assertSet('whatHappened', '')
+            ->assertSet('reproductionSteps', '')
+            ->assertSet('environment', '')
+            ->assertSet('subject', '')
+            ->assertSet('message', '')
+            ->assertSet('issueType', '');
+    }
+
+    #[Test]
+    public function ticket_index_shows_create_button_link(): void
+    {
+        $user = User::factory()->create();
+
+        $this->actingAs($user)
+            ->get(route('support.tickets'))
+            ->assertOk()
+            ->assertSee(route('support.tickets.create'));
+    }
+
+    #[Test]
+    public function back_button_returns_to_previous_step(): void
+    {
+        $user = User::factory()->create();
+
+        Livewire::actingAs($user)
+            ->test(CreateSupportTicket::class)
+            ->set('selectedProduct', 'desktop')
+            ->call('nextStep')
+            ->assertSet('currentStep', 2)
+            ->call('previousStep')
+            ->assertSet('currentStep', 1);
+    }
+
+    #[Test]
+    public function plugin_type_shows_official_plugins_in_select(): void
+    {
+        $user = User::factory()->create();
+
+        Plugin::factory()->create([
+            'name' => 'nativephp/mobile-camera',
+            'is_official' => true,
+            'user_id' => $user->id,
+        ]);
+
+        Livewire::actingAs($user)
+            ->test(CreateSupportTicket::class)
+            ->set('selectedProduct', 'mobile')
+            ->call('nextStep')
+            ->set('mobileAreaType', 'plugin')
+            ->assertSee('nativephp/mobile-camera')
+            ->assertSee('Jump');
+    }
+
+    #[Test]
+    public function mobile_plugin_submission_stores_area_in_metadata(): void
+    {
+        $user = User::factory()->create();
+
+        Livewire::actingAs($user)
+            ->test(CreateSupportTicket::class)
+            ->set('selectedProduct', 'mobile')
+            ->call('nextStep')
+            ->set('mobileAreaType', 'plugin')
+            ->set('mobileArea', 'jump')
+            ->set('tryingToDo', 'Navigate between screens')
+            ->set('whatHappened', 'App froze')
+            ->set('reproductionSteps', '1. Open app 2. Navigate')
+            ->set('environment', 'iOS 17, iPhone 15')
+            ->call('nextStep')
+            ->assertSet('currentStep', 3)
+            ->call('submit')
+            ->assertRedirect();
+
+        $ticket = SupportTicket::where('user_id', $user->id)->first();
+
+        $this->assertNotNull($ticket);
+        $this->assertEquals('mobile', $ticket->product);
+        $this->assertEquals('Navigate between screens', $ticket->subject);
+        $this->assertEquals('plugin', $ticket->metadata['mobile_area_type']);
+        $this->assertEquals('jump', $ticket->metadata['mobile_area']);
+        $this->assertEquals('Navigate between screens', $ticket->metadata['trying_to_do']);
+    }
+
+    #[Test]
+    public function mobile_core_submission_stores_area_type_without_area(): void
+    {
+        $user = User::factory()->create();
+
+        Livewire::actingAs($user)
+            ->test(CreateSupportTicket::class)
+            ->set('selectedProduct', 'mobile')
+            ->call('nextStep')
+            ->set('mobileAreaType', 'core')
+            ->set('tryingToDo', 'Build an app')
+            ->set('whatHappened', 'It crashed')
+            ->set('reproductionSteps', '1. Run build')
+            ->set('environment', 'iOS 17')
+            ->call('nextStep')
+            ->assertSet('currentStep', 3)
+            ->call('submit')
+            ->assertRedirect();
+
+        $ticket = SupportTicket::where('user_id', $user->id)->first();
+
+        $this->assertNotNull($ticket);
+        $this->assertEquals('mobile', $ticket->product);
+        $this->assertEquals('Build an app', $ticket->subject);
+        $this->assertEquals('core', $ticket->metadata['mobile_area_type']);
+        $this->assertArrayNotHasKey('mobile_area', $ticket->metadata);
+    }
+
+    #[Test]
+    public function submitting_a_ticket_sends_notification_to_support_email(): void
+    {
+        Notification::fake();
+
+        $user = User::factory()->create();
+
+        Livewire::actingAs($user)
+            ->test(CreateSupportTicket::class)
+            ->set('selectedProduct', 'bifrost')
+            ->call('nextStep')
+            ->set('issueType', 'bug')
+            ->set('subject', 'Notification test')
+            ->set('message', 'Testing notification dispatch.')
+            ->call('nextStep')
+            ->assertSet('currentStep', 3)
+            ->call('submit')
+            ->assertRedirect();
+
+        Notification::assertSentOnDemand(
+            SupportTicketSubmitted::class,
+            function (SupportTicketSubmitted $notification, array $channels, object $notifiable) {
+                return $notifiable->routes['mail'] === 'support@nativephp.com'
+                    && $notification->ticket->subject === 'Notification test';
+            }
+        );
+    }
+
+    #[Test]
+    public function authenticated_user_can_reply_to_their_open_ticket(): void
+    {
+        $user = User::factory()->create();
+        $ticket = SupportTicket::factory()->create(['user_id' => $user->id]);
+
+        $this->actingAs($user)
+            ->post(route('support.tickets.reply', $ticket), [
+                'message' => 'This is my reply.',
+            ])
+            ->assertRedirect(route('support.tickets.show', $ticket));
+
+        $this->assertDatabaseHas('replies', [
+            'support_ticket_id' => $ticket->id,
+            'user_id' => $user->id,
+            'message' => 'This is my reply.',
+            'note' => false,
+        ]);
+    }
+
+    #[Test]
+    public function user_reply_sends_notification_to_support_email(): void
+    {
+        Notification::fake();
+
+        $user = User::factory()->create();
+        $ticket = SupportTicket::factory()->create(['user_id' => $user->id]);
+
+        $this->actingAs($user)
+            ->post(route('support.tickets.reply', $ticket), [
+                'message' => 'I have more info.',
+            ])
+            ->assertRedirect();
+
+        Notification::assertSentOnDemand(
+            SupportTicketUserReplied::class,
+            function (SupportTicketUserReplied $notification, array $channels, object $notifiable) use ($ticket) {
+                return $notifiable->routes['mail'] === 'support@nativephp.com'
+                    && $notification->ticket->is($ticket)
+                    && $notification->reply->message === 'I have more info.';
+            }
+        );
+    }
+
+    #[Test]
+    public function user_cannot_reply_to_a_closed_ticket(): void
+    {
+        $user = User::factory()->create();
+        $ticket = SupportTicket::factory()->create([
+            'user_id' => $user->id,
+            'status' => Status::CLOSED,
+        ]);
+
+        $this->actingAs($user)
+            ->post(route('support.tickets.reply', $ticket), [
+                'message' => 'This should fail.',
+            ])
+            ->assertForbidden();
+    }
+
+    #[Test]
+    public function user_cannot_reply_to_another_users_ticket(): void
+    {
+        $user = User::factory()->create();
+        $otherUser = User::factory()->create();
+        $ticket = SupportTicket::factory()->create(['user_id' => $otherUser->id]);
+
+        $this->actingAs($user)
+            ->post(route('support.tickets.reply', $ticket), [
+                'message' => 'This should fail.',
+            ])
+            ->assertForbidden();
+    }
+
+    #[Test]
+    public function reply_message_is_required(): void
+    {
+        $user = User::factory()->create();
+        $ticket = SupportTicket::factory()->create(['user_id' => $user->id]);
+
+        $this->actingAs($user)
+            ->post(route('support.tickets.reply', $ticket), [
+                'message' => '',
+            ])
+            ->assertSessionHasErrors('message');
+    }
+
+    #[Test]
+    public function ticket_show_page_displays_inline_reply_form_for_open_ticket(): void
+    {
+        $user = User::factory()->create();
+        $ticket = SupportTicket::factory()->create(['user_id' => $user->id]);
+
+        $this->actingAs($user)
+            ->get(route('support.tickets.show', $ticket))
+            ->assertOk()
+            ->assertSee('Add a reply')
+            ->assertSee(route('support.tickets.reply', $ticket));
+    }
+
+    #[Test]
+    public function ticket_show_page_hides_reply_form_for_closed_ticket(): void
+    {
+        $user = User::factory()->create();
+        $ticket = SupportTicket::factory()->create([
+            'user_id' => $user->id,
+            'status' => Status::CLOSED,
+        ]);
+
+        $this->actingAs($user)
+            ->get(route('support.tickets.show', $ticket))
+            ->assertOk()
+            ->assertDontSee('Add a reply');
+    }
+
+    #[Test]
+    public function ticket_show_page_hides_internal_notes_from_ticket_owner(): void
+    {
+        $user = User::factory()->create();
+        $admin = User::factory()->create();
+        $ticket = SupportTicket::factory()->create(['user_id' => $user->id]);
+
+        Reply::factory()->create([
+            'support_ticket_id' => $ticket->id,
+            'user_id' => $admin->id,
+            'message' => 'Visible staff reply',
+            'note' => false,
+        ]);
+
+        Reply::factory()->create([
+            'support_ticket_id' => $ticket->id,
+            'user_id' => $admin->id,
+            'message' => 'Secret internal note',
+            'note' => true,
+        ]);
+
+        $this->actingAs($user)
+            ->get(route('support.tickets.show', $ticket))
+            ->assertOk()
+            ->assertSee('Visible staff reply')
+            ->assertDontSee('Secret internal note');
+    }
+
+    #[Test]
+    public function admin_reply_sends_notification_to_ticket_owner(): void
+    {
+        Notification::fake();
+
+        $user = User::factory()->create();
+        $admin = User::factory()->create();
+        $ticket = SupportTicket::factory()->create(['user_id' => $user->id]);
+
+        $reply = Reply::factory()->create([
+            'support_ticket_id' => $ticket->id,
+            'user_id' => $admin->id,
+            'message' => 'We are looking into this.',
+            'note' => false,
+        ]);
+
+        $ticket->user->notify(new SupportTicketReplied($ticket, $reply));
+
+        Notification::assertSentTo(
+            $user,
+            SupportTicketReplied::class,
+            function (SupportTicketReplied $notification) use ($ticket, $reply) {
+                return $notification->ticket->is($ticket)
+                    && $notification->reply->is($reply);
+            }
+        );
+    }
+
+    #[Test]
+    public function internal_note_reply_does_not_send_notification_to_ticket_owner(): void
+    {
+        Notification::fake();
+
+        $user = User::factory()->create();
+        $admin = User::factory()->create();
+        $ticket = SupportTicket::factory()->create(['user_id' => $user->id]);
+
+        Reply::factory()->create([
+            'support_ticket_id' => $ticket->id,
+            'user_id' => $admin->id,
+            'message' => 'Internal note only.',
+            'note' => true,
+        ]);
+
+        // The RepliesRelationManager skips notification for notes,
+        // so we verify no notification was sent.
+        Notification::assertNotSentTo($user, SupportTicketReplied::class);
+    }
+
+    #[Test]
+    public function support_ticket_replied_notification_contains_correct_mail_content(): void
+    {
+        $user = User::factory()->create(['name' => 'Jane Doe']);
+        $ticket = SupportTicket::factory()->create([
+            'user_id' => $user->id,
+            'subject' => 'Login issue',
+        ]);
+        $reply = Reply::factory()->create([
+            'support_ticket_id' => $ticket->id,
+            'message' => 'We have fixed the login issue.',
+        ]);
+
+        $notification = new SupportTicketReplied($ticket, $reply);
+        $mail = $notification->toMail($user);
+
+        $this->assertStringContainsString('Login issue', $mail->subject);
+        $this->assertStringContainsString('Hi Jane', $mail->greeting);
+    }
+
+    #[Test]
+    public function ticket_show_page_displays_submission_details_section(): void
+    {
+        $user = User::factory()->create();
+        $ticket = SupportTicket::factory()->create([
+            'user_id' => $user->id,
+            'product' => 'mobile',
+            'message' => 'Original submission message',
+            'metadata' => [
+                'trying_to_do' => 'Build an app',
+                'what_happened' => 'It crashed',
+            ],
+        ]);
+
+        $this->actingAs($user)
+            ->get(route('support.tickets.show', $ticket))
+            ->assertOk()
+            ->assertSee('Submission Details')
+            ->assertSee('Mobile')
+            ->assertDontSee('Original submission message')
+            ->assertSee('Build an app')
+            ->assertSee('It crashed');
+    }
+
+    #[Test]
+    public function ticket_show_page_hides_original_message_for_desktop_tickets(): void
+    {
+        $user = User::factory()->create();
+        $ticket = SupportTicket::factory()->create([
+            'user_id' => $user->id,
+            'product' => 'desktop',
+            'message' => 'Auto-generated bug report message',
+            'metadata' => [
+                'trying_to_do' => 'Run the app',
+            ],
+        ]);
+
+        $this->actingAs($user)
+            ->get(route('support.tickets.show', $ticket))
+            ->assertOk()
+            ->assertDontSee('Original Message')
+            ->assertSee('Run the app');
+    }
+
+    #[Test]
+    public function ticket_show_page_shows_original_message_for_non_bug_report_tickets(): void
+    {
+        $user = User::factory()->create();
+        $ticket = SupportTicket::factory()->create([
+            'user_id' => $user->id,
+            'product' => 'nativephp.com',
+            'message' => 'I have a billing question.',
+        ]);
+
+        $this->actingAs($user)
+            ->get(route('support.tickets.show', $ticket))
+            ->assertOk()
+            ->assertSee('Original Message')
+            ->assertSee('I have a billing question.');
+    }
+}

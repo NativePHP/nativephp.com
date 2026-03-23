@@ -4,10 +4,17 @@ namespace App\Policies;
 
 use App\Models\SupportTicket;
 use App\Models\User;
+use App\SupportTicket\Status;
 use Illuminate\Auth\Access\Response;
 
 class SupportTicketPolicy
 {
+    public function reply(User $user, SupportTicket $supportTicket): bool
+    {
+        return $supportTicket->user_id === $user->id
+            && $supportTicket->status !== Status::CLOSED;
+    }
+
     public function closeTicket(User $user, SupportTicket $supportTicket): bool
     {
         return $supportTicket->user_id === $user->id;
@@ -18,7 +25,7 @@ class SupportTicketPolicy
      */
     public function viewAny(User $user): bool
     {
-        return false;
+        return $user->isAdmin();
     }
 
     /**
@@ -26,6 +33,10 @@ class SupportTicketPolicy
      */
     public function view(User $user, SupportTicket $supportTicket): Response
     {
+        if ($user->isAdmin()) {
+            return Response::allow();
+        }
+
         return $user->id === $supportTicket->user_id
             ? Response::allow()
             : Response::denyAsNotFound('Ticket not found.');

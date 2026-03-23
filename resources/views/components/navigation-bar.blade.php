@@ -184,6 +184,25 @@
                     </span>
                 </a>
 
+                {{-- Decorative circle --}}
+                <div
+                    class="size-[3px] rotate-45 rounded-xs bg-gray-400 transition duration-200 dark:opacity-60"
+                    aria-hidden="true"
+                ></div>
+
+                {{-- Link --}}
+                <a
+                    href="{{ route('support.index') }}"
+                    @class([
+                        'transition duration-200',
+                        'font-medium' => request()->routeIs('support.*'),
+                        'opacity-60 hover:opacity-100' => ! request()->routeIs('support.*'),
+                    ])
+                    aria-current="{{ request()->routeIs('support.*') ? 'page' : 'false' }}"
+                >
+                    Support
+                </a>
+
                 {{-- Login/Logout --}}
                 @feature(App\Features\ShowAuthButtons::class)
                     {{-- Decorative circle --}}
