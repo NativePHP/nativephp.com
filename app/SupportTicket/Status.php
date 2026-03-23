@@ -12,6 +12,6 @@ enum Status: string
 
     public function translated(): string
     {
-        return __('account.support_ticket.status.' . $this->value);
+        return __('account.support_ticket.status.'.$this->value);
     }
 }

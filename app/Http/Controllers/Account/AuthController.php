@@ -27,14 +27,14 @@ class AuthController extends Controller
      *
      * @TODO Implement additional brute-force protection with custom blocked IPs model.
      *
-     * @param LoginRequest $request
-     * @throws \Illuminate\Validation\ValidationException
      * @return \Illuminate\Http\RedirectResponse
+     *
+     * @throws \Illuminate\Validation\ValidationException
      */
     public function processLogin(LoginRequest $request)
     {
         $credentials = $request->only('email', 'password');
-        $key = 'login-attempt:' . $request->ip();
+        $key = 'login-attempt:'.$request->ip();
         $attemptsPerHour = 5;
 
         if (\RateLimiter::tooManyAttempts($key, $attemptsPerHour)) {
@@ -46,7 +46,7 @@ class AuthController extends Controller
                 ->withInput($request->only(['email', 'remember']))
                 ->withErrors([
                     'email' => 'Too many login attempts. Please try again in '
-                        . $blockedUntil . ' minutes.',
+                        .$blockedUntil.' minutes.',
                 ]);
         }
 
