@@ -52,6 +52,7 @@ class DeveloperPagesTest extends TestCase
             ->test(Onboarding::class)
             ->assertSee('Start Selling Plugins')
             ->assertSee('Connect with Stripe')
+            ->assertSee('Plugin Developer Terms and Conditions')
             ->assertStatus(200);
     }
 
@@ -65,6 +66,20 @@ class DeveloperPagesTest extends TestCase
             ->assertSee('Complete Your Onboarding')
             ->assertSee('Continue Onboarding')
             ->assertSee('Onboarding Incomplete')
+            ->assertSee('Plugin Developer Terms and Conditions')
+            ->assertStatus(200);
+    }
+
+    public function test_onboarding_component_shows_terms_accepted_for_existing_account_with_terms(): void
+    {
+        $user = User::factory()->create();
+        DeveloperAccount::factory()->pending()->withAcceptedTerms()->create(['user_id' => $user->id]);
+
+        Livewire::actingAs($user)
+            ->test(Onboarding::class)
+            ->assertSee('Continue Onboarding')
+            ->assertSee('You accepted the')
+            ->assertDontSee('I have read and agree to the')
             ->assertStatus(200);
     }
 

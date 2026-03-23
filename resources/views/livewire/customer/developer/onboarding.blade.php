@@ -77,11 +77,67 @@
                 </flux:callout>
             @endif
 
-            {{-- CTA Button --}}
+            {{-- Developer Terms Agreement & CTA Button --}}
             <div class="mt-6">
-                <form action="{{ route('customer.developer.onboarding.start') }}" method="POST">
+                <form action="{{ route('customer.developer.onboarding.start') }}" method="POST" x-data="{ termsAccepted: {{ ($this->developerAccount?->hasAcceptedCurrentTerms()) ? 'true' : 'false' }} }">
                     @csrf
-                    <flux:button type="submit" variant="primary" class="w-full">
+
+                    @if ($this->developerAccount?->hasAcceptedCurrentTerms())
+                        <input type="hidden" name="accepted_plugin_terms" value="1" />
+
+                        <flux:callout variant="success" icon="check-circle" class="mb-6">
+                            <flux:callout.text>
+                                You accepted the <a href="{{ route('developer-terms') }}" class="font-medium underline" target="_blank">Plugin Developer Terms and Conditions</a> on {{ $this->developerAccount->accepted_plugin_terms_at->format('F j, Y') }}.
+                            </flux:callout.text>
+                        </flux:callout>
+                    @else
+                        <div class="mb-6 rounded-lg border border-gray-200 bg-gray-50 p-6 dark:border-gray-700 dark:bg-gray-700/50">
+                            <flux:heading>Plugin Developer Terms and Conditions</flux:heading>
+                            <flux:text class="mt-2">
+                                Before you can sell plugins on the Marketplace, you must agree to the following key terms:
+                            </flux:text>
+
+                            <ul class="mt-4 space-y-3 text-sm text-gray-600 dark:text-gray-400">
+                                <li class="flex items-start gap-3">
+                                    <x-heroicon-o-currency-dollar class="mt-0.5 size-5 shrink-0 text-indigo-500" />
+                                    <span><strong class="text-gray-900 dark:text-white">30% Platform Fee</strong> &mdash; NativePHP retains 30% of each sale to cover payment processing, hosting, and platform maintenance</span>
+                                </li>
+                                <li class="flex items-start gap-3">
+                                    <x-heroicon-o-shield-check class="mt-0.5 size-5 shrink-0 text-indigo-500" />
+                                    <span><strong class="text-gray-900 dark:text-white">Your Responsibility</strong> &mdash; You are solely responsible for your plugin's quality, performance, and customer support</span>
+                                </li>
+                                <li class="flex items-start gap-3">
+                                    <x-heroicon-o-adjustments-horizontal class="mt-0.5 size-5 shrink-0 text-indigo-500" />
+                                    <span><strong class="text-gray-900 dark:text-white">Listing Criteria</strong> &mdash; NativePHP sets and may change listing standards at any time, and may remove plugins at its discretion</span>
+                                </li>
+                                <li class="flex items-start gap-3">
+                                    <x-heroicon-o-tag class="mt-0.5 size-5 shrink-0 text-indigo-500" />
+                                    <span><strong class="text-gray-900 dark:text-white">Pricing & Discounts</strong> &mdash; NativePHP sets plugin prices and may offer discounts at its discretion</span>
+                                </li>
+                            </ul>
+
+                            <div class="mt-6 border-t border-gray-200 pt-4 dark:border-gray-600">
+                                <label class="flex cursor-pointer items-start gap-3">
+                                    <input
+                                        type="checkbox"
+                                        name="accepted_plugin_terms"
+                                        value="1"
+                                        x-model="termsAccepted"
+                                        class="mt-0.5 size-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500 dark:border-gray-600 dark:bg-gray-700"
+                                    />
+                                    <span class="text-sm text-gray-700 dark:text-gray-300">
+                                        I have read and agree to the
+                                        <a href="{{ route('developer-terms') }}" class="font-medium text-indigo-600 underline hover:text-indigo-500 dark:text-indigo-400" target="_blank">Plugin Developer Terms and Conditions</a>
+                                    </span>
+                                </label>
+                                @error('accepted_plugin_terms')
+                                    <flux:text class="mt-2 text-red-600 dark:text-red-400">{{ $message }}</flux:text>
+                                @enderror
+                            </div>
+                        </div>
+                    @endif
+
+                    <flux:button type="submit" variant="primary" class="w-full" x-bind:disabled="!termsAccepted">
                         @if ($this->hasExistingAccount)
                             Continue Onboarding
                         @else
