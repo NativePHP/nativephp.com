@@ -2,6 +2,7 @@
 
 namespace App\Notifications;
 
+use App\Models\Plugin;
 use App\Models\PluginBundle;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -14,7 +15,7 @@ class BundleGranted extends Notification implements ShouldQueue
     use Queueable;
 
     /**
-     * @param  Collection<int, \App\Models\Plugin>  $grantedPlugins
+     * @param  Collection<int, Plugin>  $grantedPlugins
      */
     public function __construct(
         public PluginBundle $bundle,

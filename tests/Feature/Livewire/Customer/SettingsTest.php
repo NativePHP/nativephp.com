@@ -7,6 +7,7 @@ use App\Livewire\Customer\Settings;
 use App\Models\License;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Laravel\Pennant\Feature;
 use Livewire\Livewire;
@@ -220,7 +221,7 @@ class SettingsTest extends TestCase
         $user = User::factory()->create(['github_id' => '12345']);
 
         // Bypass the hashed cast to set an empty password
-        \Illuminate\Support\Facades\DB::table('users')
+        DB::table('users')
             ->where('id', $user->id)
             ->update(['password' => '']);
 

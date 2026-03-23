@@ -6,6 +6,7 @@ use App\Enums\Subscription;
 use App\Models\License;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
+use Stripe\StripeClient;
 
 class LicenseRenewalController extends Controller
 {
@@ -56,7 +57,7 @@ class LicenseRenewalController extends Controller
         }
 
         // Create Stripe checkout session
-        $stripe = new \Stripe\StripeClient(config('cashier.secret'));
+        $stripe = new StripeClient(config('cashier.secret'));
 
         $checkoutSession = $stripe->checkout->sessions->create([
             'payment_method_types' => ['card'],

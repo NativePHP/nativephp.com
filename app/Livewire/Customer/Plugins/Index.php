@@ -4,7 +4,6 @@ namespace App\Livewire\Customer\Plugins;
 
 use App\Enums\PluginStatus;
 use App\Models\DeveloperAccount;
-
 use Illuminate\Database\Eloquent\Collection;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\Layout;

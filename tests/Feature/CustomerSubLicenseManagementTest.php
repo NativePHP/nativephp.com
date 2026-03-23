@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Features\ShowAuthButtons;
+use App\Jobs\CreateAnystackSubLicenseJob;
 use App\Livewire\SubLicenseManager;
 use App\Models\License;
 use App\Models\SubLicense;
@@ -49,7 +50,7 @@ class CustomerSubLicenseManagementTest extends TestCase
         $response->assertRedirect("/dashboard/licenses/{$license->key}")
             ->assertSessionHas('success', 'Sub-license is being created. You will receive an email notification when it\'s ready.');
 
-        Queue::assertPushed(\App\Jobs\CreateAnystackSubLicenseJob::class);
+        Queue::assertPushed(CreateAnystackSubLicenseJob::class);
     }
 
     public function test_customer_can_create_sub_license_without_name(): void
@@ -75,7 +76,7 @@ class CustomerSubLicenseManagementTest extends TestCase
         $response->assertRedirect("/dashboard/licenses/{$license->key}")
             ->assertSessionHas('success', 'Sub-license is being created. You will receive an email notification when it\'s ready.');
 
-        Queue::assertPushed(\App\Jobs\CreateAnystackSubLicenseJob::class);
+        Queue::assertPushed(CreateAnystackSubLicenseJob::class);
     }
 
     public function test_customer_cannot_create_sub_license_for_suspended_license(): void

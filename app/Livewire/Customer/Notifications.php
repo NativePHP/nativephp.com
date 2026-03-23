@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Customer;
 
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Title;
@@ -15,7 +16,7 @@ class Notifications extends Component
     use WithPagination;
 
     #[Computed]
-    public function notifications(): \Illuminate\Contracts\Pagination\LengthAwarePaginator
+    public function notifications(): LengthAwarePaginator
     {
         return auth()->user()->notifications()->latest()->paginate(20);
     }

@@ -5,6 +5,7 @@ namespace Tests\Feature\Livewire\Customer;
 use App\Features\ShowAuthButtons;
 use App\Livewire\Customer\Notifications;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Notifications\DatabaseNotification;
 use Illuminate\Support\Str;
@@ -161,7 +162,7 @@ class NotificationsTest extends TestCase
     /**
      * Create a database notification for a user.
      */
-    private function createNotification(User $user, array $data, ?\Carbon\Carbon $createdAt = null, ?\Carbon\Carbon $readAt = null): DatabaseNotification
+    private function createNotification(User $user, array $data, ?Carbon $createdAt = null, ?Carbon $readAt = null): DatabaseNotification
     {
         return DatabaseNotification::create([
             'id' => Str::uuid()->toString(),

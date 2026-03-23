@@ -2,6 +2,8 @@
 
 namespace App\Livewire\Customer\Developer;
 
+use App\Enums\PluginStatus;
+use App\Enums\PluginType;
 use App\Services\StripeConnectService;
 use Illuminate\Database\Eloquent\Collection;
 use Livewire\Attributes\Computed;
@@ -36,8 +38,8 @@ class Dashboard extends Component
     public function plugins(): Collection
     {
         return auth()->user()->plugins()
-            ->where('status', \App\Enums\PluginStatus::Approved)
-            ->where('type', \App\Enums\PluginType::Paid)
+            ->where('status', PluginStatus::Approved)
+            ->where('type', PluginType::Paid)
             ->withCount('licenses')
             ->get();
     }

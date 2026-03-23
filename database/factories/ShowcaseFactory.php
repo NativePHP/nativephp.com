@@ -2,12 +2,13 @@
 
 namespace Database\Factories;
 
+use App\Models\Showcase;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\Storage;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Showcase>
+ * @extends Factory<Showcase>
  */
 class ShowcaseFactory extends Factory
 {

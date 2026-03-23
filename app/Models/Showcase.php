@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Attributes\Scope;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -59,25 +60,25 @@ class Showcase extends Model
         return $this->approved_at !== null && $this->updated_at->isAfter($this->approved_at);
     }
 
-    #[\Illuminate\Database\Eloquent\Attributes\Scope]
+    #[Scope]
     protected function approved(Builder $query): Builder
     {
         return $query->whereNotNull('approved_at');
     }
 
-    #[\Illuminate\Database\Eloquent\Attributes\Scope]
+    #[Scope]
     protected function pending(Builder $query): Builder
     {
         return $query->whereNull('approved_at');
     }
 
-    #[\Illuminate\Database\Eloquent\Attributes\Scope]
+    #[Scope]
     protected function withMobile(Builder $query): Builder
     {
         return $query->where('has_mobile', true);
     }
 
-    #[\Illuminate\Database\Eloquent\Attributes\Scope]
+    #[Scope]
     protected function withDesktop(Builder $query): Builder
     {
         return $query->where('has_desktop', true);

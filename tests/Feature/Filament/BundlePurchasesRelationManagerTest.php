@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Filament;
 
+use App\Filament\Resources\PluginBundleResource\Pages\ViewPluginBundle;
 use App\Filament\Resources\PluginBundleResource\RelationManagers\LicensesRelationManager;
 use App\Models\Plugin;
 use App\Models\PluginBundle;
@@ -50,7 +51,7 @@ class BundlePurchasesRelationManagerTest extends TestCase
         Livewire::actingAs($this->admin)
             ->test(LicensesRelationManager::class, [
                 'ownerRecord' => $this->bundle,
-                'pageClass' => \App\Filament\Resources\PluginBundleResource\Pages\ViewPluginBundle::class,
+                'pageClass' => ViewPluginBundle::class,
             ])
             ->assertCanSeeTableRecords(
                 PluginLicense::where('plugin_bundle_id', $this->bundle->id)
@@ -146,7 +147,7 @@ class BundlePurchasesRelationManagerTest extends TestCase
         Livewire::actingAs($this->admin)
             ->test(LicensesRelationManager::class, [
                 'ownerRecord' => $this->bundle,
-                'pageClass' => \App\Filament\Resources\PluginBundleResource\Pages\ViewPluginBundle::class,
+                'pageClass' => ViewPluginBundle::class,
             ])
             ->assertCountTableRecords(2);
     }
@@ -232,7 +233,7 @@ class BundlePurchasesRelationManagerTest extends TestCase
         Livewire::actingAs($this->admin)
             ->test(LicensesRelationManager::class, [
                 'ownerRecord' => $this->bundle,
-                'pageClass' => \App\Filament\Resources\PluginBundleResource\Pages\ViewPluginBundle::class,
+                'pageClass' => ViewPluginBundle::class,
             ])
             ->assertCountTableRecords(1);
     }

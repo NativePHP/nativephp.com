@@ -9,6 +9,7 @@ use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Facades\Http;
+use Laravel\Cashier\SubscriptionItem;
 use PHPUnit\Framework\Attributes\Test;
 use Stripe\Customer;
 use Stripe\StripeClient;
@@ -199,7 +200,7 @@ class StripePurchaseHandlingTest extends TestCase
                 'stripe_price' => Subscription::Max->stripePriceId(),
                 'quantity' => 1,
             ]);
-        \Laravel\Cashier\SubscriptionItem::factory()
+        SubscriptionItem::factory()
             ->for($user->subscriptions->first(), 'subscription')
             ->create([
                 'stripe_id' => 'si_test',

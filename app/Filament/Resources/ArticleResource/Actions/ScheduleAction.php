@@ -5,6 +5,7 @@ namespace App\Filament\Resources\ArticleResource\Actions;
 use App\Models\Article;
 use Filament\Actions\Action;
 use Filament\Forms\Components\DateTimePicker;
+use Illuminate\Support\Facades\Date;
 
 class ScheduleAction extends Action
 {
@@ -24,7 +25,7 @@ class ScheduleAction extends Action
                     ->required(),
             ])
             ->action(function (Article $article, array $data): void {
-                $article->publish(\Illuminate\Support\Facades\Date::parse($data['published_at']));
+                $article->publish(Date::parse($data['published_at']));
             })
             ->requiresConfirmation();
     }
