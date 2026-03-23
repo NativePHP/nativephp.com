@@ -2,6 +2,9 @@
 
 namespace Database\Seeders;
 
+use App\Models\License;
+use App\Models\User;
+use App\Models\WallOfLoveSubmission;
 use Illuminate\Database\Seeder;
 
 class WallOfLoveSubmissionSeeder extends Seeder
@@ -12,7 +15,7 @@ class WallOfLoveSubmissionSeeder extends Seeder
     public function run(): void
     {
         // Get existing users or create new ones
-        $existingUsers = \App\Models\User::query()
+        $existingUsers = User::query()
             ->whereHas('licenses', function ($query) {
                 $query->where('created_at', '<', '2025-06-01');
             })
@@ -23,12 +26,12 @@ class WallOfLoveSubmissionSeeder extends Seeder
             $users = $existingUsers;
         } else {
             // Create some users with simple licenses (without subscription_item_id)
-            $users = \App\Models\User::factory()
+            $users = User::factory()
                 ->count(10)
                 ->create()
                 ->each(function ($user) {
                     // Give each user an early adopter license (before June 1st, 2025)
-                    \App\Models\License::factory()->create([
+                    License::factory()->create([
                         'user_id' => $user->id,
                         'subscription_item_id' => null, // Skip the subscription item relationship
                         'created_at' => fake()->dateTimeBetween('2024-01-01', '2025-05-31'),
@@ -38,15 +41,15 @@ class WallOfLoveSubmissionSeeder extends Seeder
         }
 
         // Get or create an admin user for approvals
-        $admin = \App\Models\User::query()
+        $admin = User::query()
             ->where('email', 'admin@example.com')
-            ->first() ?? \App\Models\User::factory()->create([
+            ->first() ?? User::factory()->create([
                 'name' => 'Admin User',
                 'email' => 'admin@example.com',
             ]);
 
         // Create approved submissions (will be displayed on the wall of love page)
-        \App\Models\WallOfLoveSubmission::factory()
+        WallOfLoveSubmission::factory()
             ->count(15)
             ->approved()
             ->create([
@@ -55,7 +58,7 @@ class WallOfLoveSubmissionSeeder extends Seeder
             ]);
 
         // Create pending submissions (waiting for approval)
-        \App\Models\WallOfLoveSubmission::factory()
+        WallOfLoveSubmission::factory()
             ->count(5)
             ->pending()
             ->create([

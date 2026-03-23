@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Attributes\Scope;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -33,7 +34,7 @@ class ProductLicense extends Model
      * @param  Builder<ProductLicense>  $query
      * @return Builder<ProductLicense>
      */
-    #[\Illuminate\Database\Eloquent\Attributes\Scope]
+    #[Scope]
     protected function forUser(Builder $query, User $user): Builder
     {
         return $query->where('user_id', $user->id);
@@ -43,7 +44,7 @@ class ProductLicense extends Model
      * @param  Builder<ProductLicense>  $query
      * @return Builder<ProductLicense>
      */
-    #[\Illuminate\Database\Eloquent\Attributes\Scope]
+    #[Scope]
     protected function forProduct(Builder $query, Product $product): Builder
     {
         return $query->where('product_id', $product->id);
@@ -53,6 +54,7 @@ class ProductLicense extends Model
     {
         return [
             'price_paid' => 'integer',
+            'is_comped' => 'boolean',
             'purchased_at' => 'datetime',
         ];
     }

@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\PayoutStatus;
+use Illuminate\Database\Eloquent\Attributes\Scope;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -36,7 +37,7 @@ class PluginPayout extends Model
      * @param  Builder<PluginPayout>  $query
      * @return Builder<PluginPayout>
      */
-    #[\Illuminate\Database\Eloquent\Attributes\Scope]
+    #[Scope]
     protected function pending(Builder $query): Builder
     {
         return $query->where('status', PayoutStatus::Pending);
@@ -46,7 +47,7 @@ class PluginPayout extends Model
      * @param  Builder<PluginPayout>  $query
      * @return Builder<PluginPayout>
      */
-    #[\Illuminate\Database\Eloquent\Attributes\Scope]
+    #[Scope]
     protected function transferred(Builder $query): Builder
     {
         return $query->where('status', PayoutStatus::Transferred);
@@ -56,7 +57,7 @@ class PluginPayout extends Model
      * @param  Builder<PluginPayout>  $query
      * @return Builder<PluginPayout>
      */
-    #[\Illuminate\Database\Eloquent\Attributes\Scope]
+    #[Scope]
     protected function failed(Builder $query): Builder
     {
         return $query->where('status', PayoutStatus::Failed);
@@ -115,6 +116,7 @@ class PluginPayout extends Model
             'developer_amount' => 'integer',
             'status' => PayoutStatus::class,
             'transferred_at' => 'datetime',
+            'eligible_for_payout_at' => 'datetime',
         ];
     }
 }

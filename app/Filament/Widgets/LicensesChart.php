@@ -7,13 +7,13 @@ use Filament\Widgets\ChartWidget;
 
 class LicensesChart extends ChartWidget
 {
-    protected static ?string $heading = 'New Licenses';
+    protected ?string $heading = 'New Licenses';
 
     protected static ?int $sort = 3;
 
-    protected static ?string $maxHeight = '300px';
+    protected ?string $maxHeight = '300px';
 
-    protected static string $color = 'success';
+    protected string $color = 'success';
 
     // Default filter value
     public ?string $filter = 'month';

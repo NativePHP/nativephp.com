@@ -4,11 +4,14 @@ namespace App\Models;
 
 use App\Enums\LicenseSource;
 use App\Enums\Subscription;
+use Illuminate\Database\Eloquent\Attributes\Scope;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Facades\Date;
 use Laravel\Cashier\SubscriptionItem;
 
 class License extends Model
@@ -33,7 +36,7 @@ class License extends Model
         return $this->belongsTo(SubscriptionItem::class);
     }
 
-    #[\Illuminate\Database\Eloquent\Attributes\Scope]
+    #[Scope]
     protected function whereActive(Builder $builder): Builder
     {
         return $builder->where(fn ($where) => $where
@@ -58,16 +61,16 @@ class License extends Model
         return $this->hasMany(LicenseExpiryWarning::class);
     }
 
-    protected function anystackProductId(): \Illuminate\Database\Eloquent\Casts\Attribute
+    protected function anystackProductId(): Attribute
     {
-        return \Illuminate\Database\Eloquent\Casts\Attribute::make(get: function () {
+        return Attribute::make(get: function () {
             return Subscription::from($this->policy_name)->anystackProductId();
         });
     }
 
-    protected function subscriptionType(): \Illuminate\Database\Eloquent\Casts\Attribute
+    protected function subscriptionType(): Attribute
     {
-        return \Illuminate\Database\Eloquent\Casts\Attribute::make(get: function () {
+        return Attribute::make(get: function () {
             return Subscription::from($this->policy_name);
         });
     }
@@ -77,16 +80,16 @@ class License extends Model
         return $this->subscriptionType->supportsSubLicenses();
     }
 
-    protected function subLicenseLimit(): \Illuminate\Database\Eloquent\Casts\Attribute
+    protected function subLicenseLimit(): Attribute
     {
-        return \Illuminate\Database\Eloquent\Casts\Attribute::make(get: function () {
+        return Attribute::make(get: function () {
             return $this->subscriptionType->subLicenseLimit();
         });
     }
 
-    protected function remainingSubLicenses(): \Illuminate\Database\Eloquent\Casts\Attribute
+    protected function remainingSubLicenses(): Attribute
     {
-        return \Illuminate\Database\Eloquent\Casts\Attribute::make(get: function () {
+        return Attribute::make(get: function () {
             $limit = $this->subLicenseLimit;
             if ($limit === null) {
                 return null; // Unlimited
@@ -119,7 +122,7 @@ class License extends Model
     public function isLegacy(): bool
     {
         return ! $this->subscription_item_id
-            && $this->created_at->lt(\Illuminate\Support\Facades\Date::create(2025, 5, 8));
+            && $this->created_at->lt(Date::create(2025, 5, 8));
     }
 
     public function suspendAllSubLicenses(): int

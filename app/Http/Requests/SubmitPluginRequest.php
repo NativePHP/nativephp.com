@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use App\Enums\PluginType;
+use App\Models\Plugin;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -23,7 +24,7 @@ class SubmitPluginRequest extends FormRequest
                 'regex:/^[a-zA-Z0-9_.-]+\/[a-zA-Z0-9_.-]+$/',
                 function ($attribute, $value, $fail): void {
                     $url = 'https://github.com/'.trim($value, '/');
-                    if (\App\Models\Plugin::where('repository_url', $url)->exists()) {
+                    if (Plugin::where('repository_url', $url)->exists()) {
                         $fail('This repository has already been submitted.');
                     }
                 },

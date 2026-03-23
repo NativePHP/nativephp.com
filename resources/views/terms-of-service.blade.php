@@ -47,10 +47,10 @@
                     aria-hidden="true"
                 />
                 <time
-                    datetime="2025-04-30"
+                    datetime="2026-03-20"
                     class="text-sm"
                 >
-                    April 30, 2025
+                    March 20, 2026
                 </time>
             </div>
         </header>
@@ -179,10 +179,24 @@
             </p>
 
             <h2>Refund Policy</h2>
+
+            <h3>Platform Subscription</h3>
             <p>
-                Due to the nature of the Service, no returns are accepted.
-                Refunds are offered on a case-by-case basis at our sole
-                discretion.
+                Due to the nature of the Service, no returns are accepted for
+                platform subscriptions. Refunds are offered on a case-by-case
+                basis at our sole discretion.
+            </p>
+
+            <h3>Plugin Purchases</h3>
+            <p>
+                You may request a refund for any third-party Plugin purchase
+                within fourteen (14) days of the original purchase date. Refund
+                requests must be submitted to
+                <a href="mailto:support@nativephp.com">support@nativephp.com</a>.
+                After fourteen (14) days, all Plugin sales are final. Refunds
+                are processed at our sole discretion and may be declined if the
+                Plugin was used in a production application or if the refund
+                request is deemed abusive.
             </p>
 
             <h2>Publicity</h2>
@@ -234,6 +248,37 @@
                 to access Content arising from any cancellation or deletion,
                 including any claims of interference with business or
                 contractual relations.
+            </p>
+
+            <h2>Third-Party Plugins</h2>
+
+            <p>
+                The Platform may offer plugins, extensions, or add-ons developed
+                by independent third-party developers ("Third-Party Plugins").
+                Third-Party Plugins are not developed, maintained, or supported
+                by Bifrost Technology, LLC.
+            </p>
+
+            <p>
+                We make no representations or warranties regarding the quality,
+                performance, reliability, security, or compatibility of any
+                Third-Party Plugin. Third-Party Plugins are provided "as-is"
+                and your use of them is at your own risk.
+            </p>
+
+            <p>
+                We are not liable for any damages, losses, or issues arising
+                from your use of or reliance on any Third-Party Plugin,
+                including but not limited to data loss, system failures,
+                security vulnerabilities, or incompatibility with your
+                applications. The developer of the Third-Party Plugin is solely
+                responsible for its functionality, support, and any claims
+                arising from its use.
+            </p>
+
+            <p>
+                Third-party plugin developers are subject to separate
+                <a href="/developer-terms">Plugin Developer Terms and Conditions</a>.
             </p>
 
             <h2>Warranties</h2>

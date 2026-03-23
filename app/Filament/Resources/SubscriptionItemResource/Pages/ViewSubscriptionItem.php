@@ -13,9 +13,9 @@ use App\Services\Anystack\Anystack;
 use Filament\Actions;
 use Filament\Forms\Components\TextInput;
 use Filament\Infolists\Components;
-use Filament\Infolists\Infolist;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\ViewRecord;
+use Filament\Schemas\Schema;
 use Laravel\Cashier\SubscriptionItem;
 
 /**
@@ -75,9 +75,9 @@ class ViewSubscriptionItem extends ViewRecord
         ];
     }
 
-    public function infolist(Infolist $infolist): Infolist
+    public function infolist(Schema $schema): Schema
     {
-        return $infolist
+        return $schema
             ->schema([
                 Components\Section::make('Subscription Item Details')
                     ->schema([

@@ -2,11 +2,15 @@
 
 namespace App\Filament\Resources\UserResource\Pages;
 
+use App\Enums\Subscription;
 use App\Filament\Resources\UserResource;
+use App\Jobs\CreateAnystackLicenseJob;
 use App\Models\User;
 use Filament\Actions;
+use Filament\Forms\Components\Select;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
+use Illuminate\Support\Facades\Password;
 
 class EditUser extends EditRecord
 {
@@ -39,17 +43,17 @@ class EditUser extends EditRecord
                     ->color('gray')
                     ->icon('heroicon-o-key')
                     ->form([
-                        \Filament\Forms\Components\Select::make('subscription')
+                        Select::make('subscription')
                             ->label('Subscription Plan')
-                            ->options(collect(\App\Enums\Subscription::cases())->mapWithKeys(function ($case) {
+                            ->options(collect(Subscription::cases())->mapWithKeys(function ($case) {
                                 return [$case->value => $case->name()];
                             }))
                             ->required(),
                     ])
                     ->action(function (array $data, User $record): void {
-                        $subscription = \App\Enums\Subscription::from($data['subscription']);
+                        $subscription = Subscription::from($data['subscription']);
 
-                        dispatch(new \App\Jobs\CreateAnystackLicenseJob($record, $subscription, null, $record->first_name, $record->last_name));
+                        dispatch(new CreateAnystackLicenseJob($record, $subscription, null, $record->first_name, $record->last_name));
                     }),
 
                 Actions\Action::make('sendPasswordReset')
@@ -58,7 +62,7 @@ class EditUser extends EditRecord
                     ->icon('heroicon-o-envelope')
                     ->requiresConfirmation()
                     ->action(function (User $record): void {
-                        \Illuminate\Support\Facades\Password::sendResetLink(
+                        Password::sendResetLink(
                             ['email' => $record->email]
                         );
                     }),

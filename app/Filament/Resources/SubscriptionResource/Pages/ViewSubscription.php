@@ -7,8 +7,8 @@ use App\Filament\Resources\SubscriptionResource;
 use App\Filament\Resources\UserResource;
 use Filament\Actions;
 use Filament\Infolists\Components;
-use Filament\Infolists\Infolist;
 use Filament\Resources\Pages\ViewRecord;
+use Filament\Schemas\Schema;
 
 class ViewSubscription extends ViewRecord
 {
@@ -26,9 +26,9 @@ class ViewSubscription extends ViewRecord
         ];
     }
 
-    public function infolist(Infolist $infolist): Infolist
+    public function infolist(Schema $schema): Schema
     {
-        return $infolist
+        return $schema
             ->schema([
                 Components\Section::make('Subscription Details')
                     ->schema([

@@ -5,9 +5,15 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\ProductResource\Pages;
 use App\Filament\Resources\ProductResource\RelationManagers;
 use App\Models\Product;
+use App\Models\ProductLicense;
+use App\Models\User;
+use App\Notifications\ProductGranted;
+use Filament\Actions;
 use Filament\Forms;
-use Filament\Forms\Form;
+use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
+use Filament\Schemas;
+use Filament\Schemas\Schema;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Support\Str;
@@ -16,19 +22,19 @@ class ProductResource extends Resource
 {
     protected static ?string $model = Product::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-cube';
+    protected static \BackedEnum|string|null $navigationIcon = 'heroicon-o-cube';
 
     protected static ?string $navigationLabel = 'Products';
 
-    protected static ?string $navigationGroup = 'Products';
+    protected static \UnitEnum|string|null $navigationGroup = 'Products';
 
     protected static ?int $navigationSort = 3;
 
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return $form
+        return $schema
             ->schema([
-                Forms\Components\Section::make('Product Details')
+                Schemas\Components\Section::make('Product Details')
                     ->schema([
                         Forms\Components\TextInput::make('name')
                             ->required()
@@ -61,7 +67,7 @@ class ProductResource extends Resource
                     ])
                     ->columns(2),
 
-                Forms\Components\Section::make('GitHub Integration')
+                Schemas\Components\Section::make('GitHub Integration')
                     ->schema([
                         Forms\Components\TextInput::make('github_repo')
                             ->label('GitHub Repository Name')
@@ -70,7 +76,7 @@ class ProductResource extends Resource
                             ->maxLength(255),
                     ]),
 
-                Forms\Components\Section::make('Publishing')
+                Schemas\Components\Section::make('Publishing')
                     ->schema([
                         Forms\Components\Toggle::make('is_active')
                             ->label('Active')
@@ -139,23 +145,78 @@ class ProductResource extends Resource
                 Tables\Filters\TernaryFilter::make('is_featured'),
             ])
             ->actions([
-                Tables\Actions\ViewAction::make(),
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\ActionGroup::make([
-                    Tables\Actions\Action::make('viewListing')
+                Actions\ViewAction::make(),
+                Actions\EditAction::make(),
+                Actions\ActionGroup::make([
+                    Actions\Action::make('viewListing')
                         ->label('View Listing Page')
                         ->icon('heroicon-o-eye')
                         ->color('gray')
                         ->url(fn (Product $record) => route('products.show', $record))
                         ->openUrlInNewTab()
                         ->visible(fn (Product $record) => $record->is_active && $record->published_at?->isPast()),
+
+                    Actions\Action::make('grantToUser')
+                        ->label('Grant to User')
+                        ->icon('heroicon-o-gift')
+                        ->color('success')
+                        ->form([
+                            Forms\Components\Select::make('user_id')
+                                ->label('User')
+                                ->searchable()
+                                ->getSearchResultsUsing(function (string $search): array {
+                                    return User::query()
+                                        ->where('name', 'like', "%{$search}%")
+                                        ->orWhere('email', 'like', "%{$search}%")
+                                        ->limit(50)
+                                        ->get()
+                                        ->mapWithKeys(fn (User $user) => [$user->id => "{$user->name} ({$user->email})"])
+                                        ->toArray();
+                                })
+                                ->required(),
+                        ])
+                        ->action(function (Product $record, array $data): void {
+                            $user = User::findOrFail($data['user_id']);
+
+                            $existingLicense = ProductLicense::where('user_id', $user->id)
+                                ->where('product_id', $record->id)
+                                ->exists();
+
+                            if ($existingLicense) {
+                                Notification::make()
+                                    ->title("{$user->name} already has a license for this product")
+                                    ->warning()
+                                    ->send();
+
+                                return;
+                            }
+
+                            ProductLicense::create([
+                                'user_id' => $user->id,
+                                'product_id' => $record->id,
+                                'price_paid' => 0,
+                                'currency' => 'USD',
+                                'is_comped' => true,
+                                'purchased_at' => now(),
+                            ]);
+
+                            $user->notify(new ProductGranted($record));
+
+                            Notification::make()
+                                ->title("Granted {$record->name} to {$user->name}")
+                                ->success()
+                                ->send();
+                        })
+                        ->modalHeading('Grant Product to User')
+                        ->modalDescription(fn (Product $record) => "Grant '{$record->name}' to a user for free.")
+                        ->modalSubmitActionLabel('Grant'),
                 ])
                     ->label('More')
                     ->icon('heroicon-m-ellipsis-vertical'),
             ])
             ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+                Actions\BulkActionGroup::make([
+                    Actions\DeleteBulkAction::make(),
                 ]),
             ])
             ->defaultSort('created_at', 'desc');

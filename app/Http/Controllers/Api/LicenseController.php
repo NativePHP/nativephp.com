@@ -6,6 +6,7 @@ use App\Enums\LicenseSource;
 use App\Enums\Subscription;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Api\LicenseResource;
+use App\Jobs\CreateAnystackLicenseJob;
 use App\Models\License;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -48,7 +49,7 @@ class LicenseController extends Controller
         // Create the license via job
         $subscription = Subscription::from($validated['subscription']);
 
-        dispatch_sync(new \App\Jobs\CreateAnystackLicenseJob(
+        dispatch_sync(new CreateAnystackLicenseJob(
             user: $user,
             subscription: $subscription,
             subscriptionItemId: null,

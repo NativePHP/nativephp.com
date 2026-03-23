@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\Subscription;
 use App\Models\Plugin;
 use App\Models\PluginLicense;
 use App\Models\SubLicense;
@@ -33,7 +34,7 @@ class CustomerLicenseController extends Controller
         if ($activeSubscription) {
             if ($activeSubscription->stripe_price) {
                 try {
-                    $subscriptionName = \App\Enums\Subscription::fromStripePriceId($activeSubscription->stripe_price)->name();
+                    $subscriptionName = Subscription::fromStripePriceId($activeSubscription->stripe_price)->name();
                 } catch (\RuntimeException) {
                     $subscriptionName = ucfirst($activeSubscription->type);
                 }
@@ -67,6 +68,8 @@ class CustomerLicenseController extends Controller
         $productLicenseCount = $user->productLicenses()->count();
         $totalPurchases = $licenseCount + $pluginLicenseCount + $productLicenseCount;
 
+        $developerAccount = $user->developerAccount;
+
         return view('customer.dashboard', compact(
             'licenseCount',
             'isEapCustomer',
@@ -76,7 +79,8 @@ class CustomerLicenseController extends Controller
             'renewalLicenseKey',
             'connectedAccountsCount',
             'connectedAccountsDescription',
-            'totalPurchases'
+            'totalPurchases',
+            'developerAccount'
         ));
     }
 

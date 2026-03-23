@@ -3,7 +3,7 @@
 namespace App\Filament\Resources\ArticleResource\Actions;
 
 use App\Models\Article;
-use Filament\Tables\Actions\Action;
+use Filament\Actions\Action;
 
 class PreviewAction extends Action
 {

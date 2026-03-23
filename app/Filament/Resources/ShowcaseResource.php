@@ -4,9 +4,11 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\ShowcaseResource\Pages;
 use App\Models\Showcase;
+use Filament\Actions;
 use Filament\Forms;
-use Filament\Forms\Form;
 use Filament\Resources\Resource;
+use Filament\Schemas;
+use Filament\Schemas\Schema;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
@@ -15,17 +17,17 @@ class ShowcaseResource extends Resource
 {
     protected static ?string $model = Showcase::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-square-3-stack-3d';
+    protected static \BackedEnum|string|null $navigationIcon = 'heroicon-o-square-3-stack-3d';
 
     protected static ?string $navigationLabel = 'Showcase';
 
     protected static ?string $pluralModelLabel = 'Showcase Submissions';
 
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return $form
+        return $schema
             ->schema([
-                Forms\Components\Section::make('App Details')
+                Schemas\Components\Section::make('App Details')
                     ->schema([
                         Forms\Components\Select::make('user_id')
                             ->label('Submitted By')
@@ -59,7 +61,7 @@ class ShowcaseResource extends Resource
                             ->reorderable(),
                     ]),
 
-                Forms\Components\Section::make('Platform Availability')
+                Schemas\Components\Section::make('Platform Availability')
                     ->schema([
                         Forms\Components\Toggle::make('has_mobile')
                             ->label('Mobile App')
@@ -69,7 +71,7 @@ class ShowcaseResource extends Resource
                             ->label('Desktop App')
                             ->live(),
 
-                        Forms\Components\Fieldset::make('Mobile Links')
+                        Schemas\Components\Fieldset::make('Mobile Links')
                             ->visible(fn (Forms\Get $get) => $get('has_mobile'))
                             ->schema([
                                 Forms\Components\TextInput::make('app_store_url')
@@ -83,7 +85,7 @@ class ShowcaseResource extends Resource
                                     ->maxLength(255),
                             ]),
 
-                        Forms\Components\Fieldset::make('Desktop Downloads')
+                        Schemas\Components\Fieldset::make('Desktop Downloads')
                             ->visible(fn (Forms\Get $get) => $get('has_desktop'))
                             ->schema([
                                 Forms\Components\TextInput::make('windows_download_url')
@@ -103,7 +105,7 @@ class ShowcaseResource extends Resource
                             ]),
                     ]),
 
-                Forms\Components\Section::make('Certification')
+                Schemas\Components\Section::make('Certification')
                     ->schema([
                         Forms\Components\Toggle::make('certified_nativephp')
                             ->label('Certified as built with NativePHP')
@@ -176,7 +178,7 @@ class ShowcaseResource extends Resource
                         ->whereColumn('updated_at', '>', 'approved_at')),
             ])
             ->actions([
-                Tables\Actions\Action::make('approve')
+                Actions\Action::make('approve')
                     ->icon('heroicon-o-check')
                     ->color('success')
                     ->visible(fn (Showcase $record) => $record->isPending())
@@ -188,7 +190,7 @@ class ShowcaseResource extends Resource
                     ->modalHeading('Approve Submission')
                     ->modalDescription('Are you sure you want to approve this app for the Showcase?'),
 
-                Tables\Actions\Action::make('unapprove')
+                Actions\Action::make('unapprove')
                     ->icon('heroicon-o-x-mark')
                     ->color('warning')
                     ->visible(fn (Showcase $record) => $record->isApproved())
@@ -200,12 +202,12 @@ class ShowcaseResource extends Resource
                     ->modalHeading('Unapprove Submission')
                     ->modalDescription('This will remove the app from the public Showcase.'),
 
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make(),
+                Actions\EditAction::make(),
+                Actions\DeleteAction::make(),
             ])
             ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\BulkAction::make('approve')
+                Actions\BulkActionGroup::make([
+                    Actions\BulkAction::make('approve')
                         ->icon('heroicon-o-check')
                         ->color('success')
                         ->action(function ($records): void {
@@ -218,7 +220,7 @@ class ShowcaseResource extends Resource
                         ->modalHeading('Approve Selected Submissions')
                         ->modalDescription('Are you sure you want to approve all selected submissions?'),
 
-                    Tables\Actions\DeleteBulkAction::make(),
+                    Actions\DeleteBulkAction::make(),
                 ]),
             ])
             ->defaultSort('created_at', 'desc');

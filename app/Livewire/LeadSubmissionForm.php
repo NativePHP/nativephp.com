@@ -79,7 +79,7 @@ class LeadSubmissionForm extends Component
 
         $lead->notify(new LeadReceived);
 
-        Notification::route('mail', 'support@nativephp.com')
+        Notification::route('mail', 'sales@nativephp.com')
             ->notify(new NewLeadSubmitted($lead));
 
         $this->submitted = true;

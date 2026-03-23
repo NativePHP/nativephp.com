@@ -5,9 +5,11 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\UserResource\Pages;
 use App\Filament\Resources\UserResource\RelationManagers;
 use App\Models\User;
+use Filament\Actions;
 use Filament\Forms;
-use Filament\Forms\Form;
 use Filament\Resources\Resource;
+use Filament\Schemas;
+use Filament\Schemas\Schema;
 use Filament\Tables;
 use Filament\Tables\Table;
 
@@ -15,13 +17,13 @@ class UserResource extends Resource
 {
     protected static ?string $model = User::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-user';
+    protected static \BackedEnum|string|null $navigationIcon = 'heroicon-o-user';
 
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return $form
+        return $schema
             ->schema([
-                Forms\Components\Section::make('User Information')
+                Schemas\Components\Section::make('User Information')
                     ->schema([
                         Forms\Components\TextInput::make('name')
                             ->maxLength(255),
@@ -36,7 +38,7 @@ class UserResource extends Resource
                             ->required(fn (string $context): bool => $context === 'create')
                             ->maxLength(255),
                     ])->columns(2),
-                Forms\Components\Section::make('Billing Information')
+                Schemas\Components\Section::make('Billing Information')
                     ->schema([
                         Forms\Components\TextInput::make('stripe_id')
                             ->maxLength(255)
@@ -87,16 +89,16 @@ class UserResource extends Resource
                 //
             ])
             ->actions([
-                Tables\Actions\ActionGroup::make([
-                    Tables\Actions\EditAction::make(),
-                    Tables\Actions\Action::make('view_on_stripe')
+                Actions\ActionGroup::make([
+                    Actions\EditAction::make(),
+                    Actions\Action::make('view_on_stripe')
                         ->label('View on Stripe')
                         ->color('gray')
                         ->icon('heroicon-o-arrow-top-right-on-square')
                         ->url(fn (User $record) => 'https://dashboard.stripe.com/customers/'.$record->stripe_id)
                         ->openUrlInNewTab()
                         ->visible(fn (User $record) => filled($record->stripe_id)),
-                    Tables\Actions\Action::make('view_on_anystack')
+                    Actions\Action::make('view_on_anystack')
                         ->label('View on Anystack')
                         ->color('gray')
                         ->icon('heroicon-o-arrow-top-right-on-square')
@@ -106,8 +108,8 @@ class UserResource extends Resource
                 ])->label('Actions')->icon('heroicon-m-ellipsis-vertical'),
             ])
             ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+                Actions\BulkActionGroup::make([
+                    Actions\DeleteBulkAction::make(),
                 ]),
             ])
             ->recordUrl(
@@ -119,6 +121,7 @@ class UserResource extends Resource
     {
         return [
             RelationManagers\PluginLicensesRelationManager::class,
+            RelationManagers\ProductLicensesRelationManager::class,
             RelationManagers\LicensesRelationManager::class,
             RelationManagers\SubscriptionsRelationManager::class,
         ];

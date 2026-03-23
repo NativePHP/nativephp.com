@@ -7,13 +7,13 @@ use Filament\Widgets\ChartWidget;
 
 class UsersChart extends ChartWidget
 {
-    protected static ?string $heading = 'New Users';
+    protected ?string $heading = 'New Users';
 
     protected static ?int $sort = 2;
 
-    protected static ?string $maxHeight = '300px';
+    protected ?string $maxHeight = '300px';
 
-    protected static string $color = 'primary';
+    protected string $color = 'primary';
 
     // Default filter value
     public ?string $filter = 'month';

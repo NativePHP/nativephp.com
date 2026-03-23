@@ -23,6 +23,11 @@ class Kernel extends ConsoleKernel
             ->dailyAt('10:30')
             ->onOneServer()
             ->runInBackground();
+
+        // Process developer payouts that have passed the 15-day holding period
+        $schedule->command('payouts:process-eligible')
+            ->dailyAt('11:00')
+            ->onOneServer();
     }
 
     /**

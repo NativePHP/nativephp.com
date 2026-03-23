@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Features\ShowAuthButtons;
+use App\Jobs\CreateAnystackSubLicenseJob;
 use App\Livewire\SubLicenseManager;
 use App\Models\License;
 use App\Models\SubLicense;
@@ -42,14 +43,14 @@ class CustomerSubLicenseManagementTest extends TestCase
         ]);
 
         $response = $this->actingAs($user)
-            ->post("/customer/licenses/{$license->key}/sub-licenses", [
+            ->post("/dashboard/licenses/{$license->key}/sub-licenses", [
                 'name' => 'Development Team',
             ]);
 
-        $response->assertRedirect("/customer/licenses/{$license->key}")
+        $response->assertRedirect("/dashboard/licenses/{$license->key}")
             ->assertSessionHas('success', 'Sub-license is being created. You will receive an email notification when it\'s ready.');
 
-        Queue::assertPushed(\App\Jobs\CreateAnystackSubLicenseJob::class);
+        Queue::assertPushed(CreateAnystackSubLicenseJob::class);
     }
 
     public function test_customer_can_create_sub_license_without_name(): void
@@ -68,14 +69,14 @@ class CustomerSubLicenseManagementTest extends TestCase
         ]);
 
         $response = $this->actingAs($user)
-            ->post("/customer/licenses/{$license->key}/sub-licenses", [
+            ->post("/dashboard/licenses/{$license->key}/sub-licenses", [
                 'name' => '',
             ]);
 
-        $response->assertRedirect("/customer/licenses/{$license->key}")
+        $response->assertRedirect("/dashboard/licenses/{$license->key}")
             ->assertSessionHas('success', 'Sub-license is being created. You will receive an email notification when it\'s ready.');
 
-        Queue::assertPushed(\App\Jobs\CreateAnystackSubLicenseJob::class);
+        Queue::assertPushed(CreateAnystackSubLicenseJob::class);
     }
 
     public function test_customer_cannot_create_sub_license_for_suspended_license(): void
@@ -88,11 +89,11 @@ class CustomerSubLicenseManagementTest extends TestCase
         ]);
 
         $response = $this->actingAs($user)
-            ->post("/customer/licenses/{$license->key}/sub-licenses", [
+            ->post("/dashboard/licenses/{$license->key}/sub-licenses", [
                 'name' => 'Development Team',
             ]);
 
-        $response->assertRedirect("/customer/licenses/{$license->key}")
+        $response->assertRedirect("/dashboard/licenses/{$license->key}")
             ->assertSessionHasErrors(['sub_license']);
 
         $this->assertDatabaseMissing('sub_licenses', [
@@ -111,11 +112,11 @@ class CustomerSubLicenseManagementTest extends TestCase
         ]);
 
         $response = $this->actingAs($user)
-            ->post("/customer/licenses/{$license->key}/sub-licenses", [
+            ->post("/dashboard/licenses/{$license->key}/sub-licenses", [
                 'name' => 'Development Team',
             ]);
 
-        $response->assertRedirect("/customer/licenses/{$license->key}")
+        $response->assertRedirect("/dashboard/licenses/{$license->key}")
             ->assertSessionHasErrors(['sub_license']);
 
         $this->assertDatabaseMissing('sub_licenses', [
@@ -136,11 +137,11 @@ class CustomerSubLicenseManagementTest extends TestCase
         ]);
 
         $response = $this->actingAs($user)
-            ->patch("/customer/licenses/{$license->key}/sub-licenses/{$subLicense->id}", [
+            ->patch("/dashboard/licenses/{$license->key}/sub-licenses/{$subLicense->id}", [
                 'name' => 'New Name',
             ]);
 
-        $response->assertRedirect("/customer/licenses/{$license->key}")
+        $response->assertRedirect("/dashboard/licenses/{$license->key}")
             ->assertSessionHas('success', 'Sub-license updated successfully!');
 
         $this->assertDatabaseHas('sub_licenses', [
@@ -166,9 +167,9 @@ class CustomerSubLicenseManagementTest extends TestCase
         ]);
 
         $response = $this->actingAs($user)
-            ->patch("/customer/licenses/{$license->key}/sub-licenses/{$subLicense->id}/suspend");
+            ->patch("/dashboard/licenses/{$license->key}/sub-licenses/{$subLicense->id}/suspend");
 
-        $response->assertRedirect("/customer/licenses/{$license->key}")
+        $response->assertRedirect("/dashboard/licenses/{$license->key}")
             ->assertSessionHas('success', 'Sub-license suspended successfully!');
 
         $this->assertDatabaseHas('sub_licenses', [
@@ -193,9 +194,9 @@ class CustomerSubLicenseManagementTest extends TestCase
         ]);
 
         $response = $this->actingAs($user)
-            ->delete("/customer/licenses/{$license->key}/sub-licenses/{$subLicense->id}");
+            ->delete("/dashboard/licenses/{$license->key}/sub-licenses/{$subLicense->id}");
 
-        $response->assertRedirect("/customer/licenses/{$license->key}")
+        $response->assertRedirect("/dashboard/licenses/{$license->key}")
             ->assertSessionHas('success', 'Sub-license deleted successfully!');
 
         $this->assertDatabaseMissing('sub_licenses', [
@@ -217,7 +218,7 @@ class CustomerSubLicenseManagementTest extends TestCase
 
         // Try to update another user's sub-license
         $response = $this->actingAs($user1)
-            ->patch("/customer/licenses/{$license2->key}/sub-licenses/{$subLicense->id}", [
+            ->patch("/dashboard/licenses/{$license2->key}/sub-licenses/{$subLicense->id}", [
                 'name' => 'Malicious Update',
             ]);
 
@@ -225,7 +226,7 @@ class CustomerSubLicenseManagementTest extends TestCase
 
         // Try to delete another user's sub-license
         $response = $this->actingAs($user1)
-            ->delete("/customer/licenses/{$license2->key}/sub-licenses/{$subLicense->id}");
+            ->delete("/dashboard/licenses/{$license2->key}/sub-licenses/{$subLicense->id}");
 
         $response->assertStatus(404);
     }
@@ -242,7 +243,7 @@ class CustomerSubLicenseManagementTest extends TestCase
 
         // Try to manage sub-license using wrong parent license key
         $response = $this->actingAs($user)
-            ->patch("/customer/licenses/{$license1->key}/sub-licenses/{$subLicense->id}", [
+            ->patch("/dashboard/licenses/{$license1->key}/sub-licenses/{$subLicense->id}", [
                 'name' => 'Wrong Parent',
             ]);
 
@@ -325,7 +326,7 @@ class CustomerSubLicenseManagementTest extends TestCase
             'is_suspended' => true,
         ]);
 
-        $response = $this->actingAs($user)->get("/customer/licenses/{$license->key}");
+        $response = $this->actingAs($user)->get("/dashboard/licenses/{$license->key}");
 
         $response->assertStatus(200);
         $response->assertSee('Keys');
@@ -347,7 +348,7 @@ class CustomerSubLicenseManagementTest extends TestCase
 
         // Test name too long
         $response = $this->actingAs($user)
-            ->post("/customer/licenses/{$license->key}/sub-licenses", [
+            ->post("/dashboard/licenses/{$license->key}/sub-licenses", [
                 'name' => str_repeat('a', 256), // 256 characters, should fail
             ]);
 
