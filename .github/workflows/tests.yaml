@@ -47,6 +47,9 @@ jobs:
           key: ${{ runner.os }}-${{ matrix.php }}-composer-${{ hashFiles('**/composer.lock') }}
           restore-keys: ${{ runner.os }}-${{ matrix.php }}-composer-
 
+      - name: Configure Flux Pro auth
+        run: composer config http-basic.composer.fluxui.dev "${{ secrets.FLUX_EMAIL }}" "${{ secrets.FLUX_LICENSE_KEY }}"
+
       - name: Install Dependencies
         run: composer install -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
 

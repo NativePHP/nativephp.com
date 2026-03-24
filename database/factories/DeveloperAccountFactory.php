@@ -26,6 +26,8 @@ class DeveloperAccountFactory extends Factory
             'payouts_enabled' => true,
             'charges_enabled' => true,
             'onboarding_completed_at' => now(),
+            'country' => 'US',
+            'payout_currency' => 'USD',
         ];
     }
 
