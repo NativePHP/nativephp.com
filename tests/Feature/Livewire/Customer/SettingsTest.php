@@ -50,9 +50,20 @@ class SettingsTest extends TestCase
             ->test(Settings::class)
             ->assertSee('Settings')
             ->assertSee('Name')
+            ->assertSee('Email Address')
             ->assertSee('Password')
             ->assertSee('Delete Account')
             ->assertStatus(200);
+    }
+
+    public function test_settings_page_displays_user_email(): void
+    {
+        $user = User::factory()->create(['email' => 'jane@example.com']);
+
+        $response = $this->withoutVite()->actingAs($user)->get('/dashboard/settings');
+
+        $response->assertOk();
+        $response->assertSee('jane@example.com');
     }
 
     // --- Update Name ---

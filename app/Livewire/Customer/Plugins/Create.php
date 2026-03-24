@@ -10,6 +10,7 @@ use App\Notifications\PluginSubmitted;
 use App\Services\GitHubUserService;
 use App\Services\PluginSyncService;
 use Laravel\Pennant\Feature;
+use Livewire\Attributes\Computed;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Title;
 use Livewire\Component;
@@ -20,14 +21,46 @@ class Create extends Component
 {
     public string $pluginType = 'free';
 
+    public string $selectedOwner = '';
+
     public string $repository = '';
 
-    /** @var array<int, array{id: int, full_name: string, private: bool}> */
+    /** @var array<int, array{id: int, full_name: string, name: string, owner: string, private: bool}> */
     public array $repositories = [];
 
     public bool $loadingRepos = false;
 
     public bool $reposLoaded = false;
+
+    #[Computed]
+    public function owners(): array
+    {
+        return collect($this->repositories)
+            ->pluck('owner')
+            ->unique()
+            ->sort(SORT_NATURAL | SORT_FLAG_CASE)
+            ->values()
+            ->toArray();
+    }
+
+    #[Computed]
+    public function ownerRepositories(): array
+    {
+        if ($this->selectedOwner === '') {
+            return [];
+        }
+
+        return collect($this->repositories)
+            ->where('owner', $this->selectedOwner)
+            ->sortBy('name', SORT_NATURAL | SORT_FLAG_CASE)
+            ->values()
+            ->toArray();
+    }
+
+    public function updatedSelectedOwner(): void
+    {
+        $this->repository = '';
+    }
 
     public function mount(): void
     {
@@ -53,6 +86,8 @@ class Create extends Component
                     ->map(fn ($repo) => [
                         'id' => $repo['id'],
                         'full_name' => $repo['full_name'],
+                        'name' => $repo['name'],
+                        'owner' => explode('/', $repo['full_name'])[0],
                         'private' => $repo['private'] ?? false,
                     ])
                     ->toArray();

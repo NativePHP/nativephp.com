@@ -1,16 +1,14 @@
 <div>
     <div class="mb-6">
         <flux:heading size="xl">Purchase History</flux:heading>
-        <flux:text>All your NativePHP purchases in one place</flux:text>
+        <flux:text>All your NativePHP purchases in one place. Bifrost subscriptions are managed separately and won't appear here.</flux:text>
     </div>
 
     @if($this->purchases->count() > 0)
         <flux:table>
             <flux:table.columns>
                 <flux:table.column>Purchase</flux:table.column>
-                <flux:table.column>Type</flux:table.column>
                 <flux:table.column>Price</flux:table.column>
-                <flux:table.column>Status</flux:table.column>
                 <flux:table.column>Date</flux:table.column>
             </flux:table.columns>
 
@@ -18,7 +16,7 @@
                 @foreach($this->purchases as $purchase)
                     <flux:table.row :key="$loop->index">
                         <flux:table.cell>
-                            <div>
+                            <div class="max-w-xs">
                                 @if($purchase['href'])
                                     <a href="{{ $purchase['href'] }}" class="font-medium text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300">
                                         {{ $purchase['name'] }}
@@ -27,25 +25,9 @@
                                     <span class="font-medium">{{ $purchase['name'] }}</span>
                                 @endif
                                 @if($purchase['description'])
-                                    <flux:text class="text-xs">{{ $purchase['description'] }}</flux:text>
+                                    <flux:text class="truncate text-xs">{{ $purchase['description'] }}</flux:text>
                                 @endif
                             </div>
-                        </flux:table.cell>
-
-                        <flux:table.cell>
-                            @php
-                                $typeColor = match($purchase['type']) {
-                                    'subscription' => 'blue',
-                                    'product' => 'amber',
-                                    'plugin' => 'purple',
-                                    default => 'zinc',
-                                };
-                                $typeLabel = ucfirst($purchase['type'] === 'subscription' ? 'license' : $purchase['type']);
-                            @endphp
-                            <flux:badge color="{{ $typeColor }}">{{ $typeLabel }}</flux:badge>
-                            @if(isset($purchase['is_grandfathered']) && $purchase['is_grandfathered'])
-                                <flux:badge color="yellow" class="ml-1">Free</flux:badge>
-                            @endif
                         </flux:table.cell>
 
                         <flux:table.cell>
@@ -56,10 +38,6 @@
                             @else
                                 &mdash;
                             @endif
-                        </flux:table.cell>
-
-                        <flux:table.cell>
-                            <x-customer.status-badge :status="$purchase['is_active'] ? 'Active' : 'Expired'" />
                         </flux:table.cell>
 
                         <flux:table.cell>

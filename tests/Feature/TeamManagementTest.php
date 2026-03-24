@@ -21,6 +21,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Queue;
+use Laravel\Cashier\Events\WebhookReceived;
 use Laravel\Cashier\Subscription;
 use Laravel\Pennant\Feature;
 use Tests\TestCase;
@@ -462,7 +463,7 @@ class TeamManagementTest extends TestCase
 
         [$owner, $team] = $this->createTeamWithOwner();
 
-        $event = new \Laravel\Cashier\Events\WebhookReceived([
+        $event = new WebhookReceived([
             'type' => 'customer.subscription.deleted',
             'data' => [
                 'object' => [
@@ -671,5 +672,55 @@ class TeamManagementTest extends TestCase
 
         $response->assertOk();
         $response->assertSee('View Plans');
+    }
+
+    // ========================================
+    // Team Name Update Tests
+    // ========================================
+
+    public function test_owner_can_update_team_name(): void
+    {
+        [$owner, $team] = $this->createTeamWithOwner();
+
+        $response = $this->actingAs($owner)
+            ->patch(route('customer.team.update'), ['name' => 'New Team Name']);
+
+        $response->assertRedirect();
+        $response->assertSessionHas('success');
+
+        $this->assertDatabaseHas('teams', [
+            'id' => $team->id,
+            'name' => 'New Team Name',
+        ]);
+    }
+
+    public function test_non_owner_cannot_update_team_name(): void
+    {
+        $user = User::factory()->create();
+
+        $response = $this->actingAs($user)
+            ->patch(route('customer.team.update'), ['name' => 'Hacked']);
+
+        $response->assertSessionHas('error');
+    }
+
+    public function test_team_name_update_requires_name(): void
+    {
+        [$owner, $team] = $this->createTeamWithOwner();
+
+        $response = $this->actingAs($owner)
+            ->patch(route('customer.team.update'), ['name' => '']);
+
+        $response->assertSessionHasErrors('name');
+    }
+
+    public function test_team_page_shows_team_name_as_heading_for_owner(): void
+    {
+        [$owner, $team] = $this->createTeamWithOwner();
+
+        $response = $this->actingAs($owner)->get(route('customer.team.index'));
+
+        $response->assertOk();
+        $response->assertSee($team->name);
     }
 }

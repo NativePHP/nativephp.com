@@ -1,233 +1,178 @@
 <div>
     @if($team->is_suspended)
-        <div class="mb-6 rounded-lg border border-yellow-200 bg-yellow-50 p-4 dark:border-yellow-800 dark:bg-yellow-900/20">
-            <div class="flex">
-                <div class="shrink-0">
-                    <svg class="h-5 w-5 text-yellow-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                        <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
-                    </svg>
-                </div>
-                <div class="ml-3">
-                    <p class="text-sm text-yellow-700 dark:text-yellow-300">
-                        Your team is currently suspended. Reactivate your Ultra subscription to restore team benefits.
-                    </p>
-                </div>
-            </div>
-        </div>
+        <flux:callout variant="warning" icon="exclamation-triangle" class="mb-6">
+            <flux:callout.text>Your team is currently suspended. Reactivate your Ultra subscription to restore team benefits.</flux:callout.text>
+        </flux:callout>
     @endif
 
     {{-- Invite Form --}}
     @if(!$team->is_suspended)
-        <div class="mb-6 rounded-lg bg-white p-6 shadow dark:bg-gray-800">
-            <h3 class="text-lg font-medium text-gray-900 dark:text-white">Invite a Team Member</h3>
+        <flux:card class="mb-6">
+            <flux:heading size="lg">Invite a Team Member</flux:heading>
             <form method="POST" action="{{ route('customer.team.invite') }}" class="mt-4 flex gap-4">
                 @csrf
                 <div class="flex-1">
-                    <input
-                        type="email"
-                        name="email"
-                        placeholder="email@example.com"
-                        required
-                        class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white sm:text-sm"
-                    >
+                    <flux:input type="email" name="email" placeholder="email@example.com" required />
                 </div>
-                <button
-                    type="submit"
-                    class="inline-flex items-center rounded-md border border-transparent bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-                >
-                    Send Invite
-                </button>
+                <flux:button type="submit" variant="primary">Send Invite</flux:button>
             </form>
             @error('email')
-                <p class="mt-2 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
+                <flux:text class="mt-2 text-red-600 dark:text-red-400">{{ $message }}</flux:text>
             @enderror
-        </div>
+        </flux:card>
     @endif
 
     {{-- Seat Management --}}
-    <div class="mb-6 rounded-lg bg-white p-6 shadow dark:bg-gray-800">
+    <flux:card class="mb-6">
         <div class="flex items-center justify-between">
             <div>
-                <h3 class="text-lg font-medium text-gray-900 dark:text-white">Seats</h3>
-                <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                <flux:heading size="lg">Seats</flux:heading>
+                <flux:text class="mt-1">
                     {{ $team->occupiedSeatCount() }} of {{ $team->totalSeatCapacity() }} seats used
                     @if($team->extra_seats > 0)
                         <span class="text-indigo-600 dark:text-indigo-400">({{ $team->extra_seats }} extra)</span>
                     @endif
-                </p>
+                </flux:text>
             </div>
             @if(!$team->is_suspended)
-                <div class="flex items-center gap-2" x-data="{ showAddModal: {{ session('show_add_seats') ? 'true' : 'false' }}, showRemoveModal: false, addQty: 1, removeQty: 1 }" @seats-updated.window="showAddModal = false; showRemoveModal = false; addQty = 1; removeQty = 1">
-                    <button
-                        type="button"
-                        @click="showAddModal = true"
-                        class="inline-flex items-center gap-1.5 rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-indigo-700"
-                    >
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-4"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>
-                        Add Seats
-                    </button>
+                <div class="flex items-center gap-2">
+                    <flux:modal.trigger name="add-seats">
+                        <flux:button variant="primary" size="sm" icon="plus">Add Seats</flux:button>
+                    </flux:modal.trigger>
                     @if($removableSeats > 0)
-                        <button
-                            type="button"
-                            @click="showRemoveModal = true"
-                            class="inline-flex items-center gap-1.5 rounded-md bg-gray-200 px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600"
-                        >
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-4"><path stroke-linecap="round" stroke-linejoin="round" d="M5 12h14" /></svg>
-                            Remove Seats
-                        </button>
+                        <flux:modal.trigger name="remove-seats">
+                            <flux:button variant="ghost" size="sm" icon="minus">Remove Seats</flux:button>
+                        </flux:modal.trigger>
                     @endif
-
-                    {{-- Add Seats Modal --}}
-                    <div x-show="showAddModal" x-cloak class="fixed inset-0 z-50 flex items-center justify-center bg-gray-500/60 backdrop-blur-sm dark:bg-gray-900/60" @click.self="showAddModal = false">
-                        <div class="w-full max-w-md rounded-lg bg-white p-6 shadow-xl dark:bg-gray-800" @click.stop>
-                            <h3 class="text-lg font-medium text-gray-900 dark:text-white">Add Extra Seats</h3>
-                            <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">
-                                Extra seats cost ${{ $extraSeatPriceMonthly }}/mo or ${{ $extraSeatPriceYearly }}/yr per seat, matching your current billing interval.
-                            </p>
-                            <div class="mt-4 flex items-center gap-3">
-                                <label class="text-sm font-medium text-gray-700 dark:text-gray-300">Quantity</label>
-                                <input type="number" x-model.number="addQty" min="1" max="50" class="w-20 rounded-md border-gray-300 text-center shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white sm:text-sm" />
-                            </div>
-                            <div class="mt-6 flex justify-end gap-3">
-                                <button type="button" @click="showAddModal = false" class="rounded-md bg-gray-200 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600">
-                                    Cancel
-                                </button>
-                                <button
-                                    type="button"
-                                    @click="$wire.addSeats(addQty)"
-                                    wire:loading.attr="disabled"
-                                    class="inline-flex items-center gap-2 rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700 disabled:opacity-50"
-                                >
-                                    <svg wire:loading wire:target="addSeats" class="size-4 animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path></svg>
-                                    <span wire:loading.remove wire:target="addSeats">Confirm</span>
-                                    <span wire:loading wire:target="addSeats">Processing...</span>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-
-                    {{-- Remove Seats Modal --}}
-                    <div x-show="showRemoveModal" x-cloak class="fixed inset-0 z-50 flex items-center justify-center bg-gray-500/60 backdrop-blur-sm dark:bg-gray-900/60" @click.self="showRemoveModal = false">
-                        <div class="w-full max-w-md rounded-lg bg-white p-6 shadow-xl dark:bg-gray-800" @click.stop>
-                            <h3 class="text-lg font-medium text-gray-900 dark:text-white">Remove Extra Seats</h3>
-                            <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">
-                                You currently have {{ $team->extra_seats }} extra seat(s). Seats are removed immediately and you'll be credited for the unused time on your next bill.
-                            </p>
-                            <div class="mt-4 flex items-center gap-3">
-                                <label class="text-sm font-medium text-gray-700 dark:text-gray-300">Quantity</label>
-                                <input type="number" x-model.number="removeQty" min="1" :max="{{ $removableSeats }}" class="w-20 rounded-md border-gray-300 text-center shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white sm:text-sm" />
-                            </div>
-                            <div class="mt-6 flex justify-end gap-3">
-                                <button type="button" @click="showRemoveModal = false" class="rounded-md bg-gray-200 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600">
-                                    Cancel
-                                </button>
-                                <button
-                                    type="button"
-                                    @click="$wire.removeSeats(removeQty)"
-                                    wire:loading.attr="disabled"
-                                    class="inline-flex items-center gap-2 rounded-md bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700 disabled:opacity-50"
-                                >
-                                    <svg wire:loading wire:target="removeSeats" class="size-4 animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path></svg>
-                                    <span wire:loading.remove wire:target="removeSeats">Remove</span>
-                                    <span wire:loading wire:target="removeSeats">Processing...</span>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
                 </div>
             @endif
         </div>
-    </div>
+    </flux:card>
+
+    {{-- Add Seats Modal --}}
+    <flux:modal name="add-seats" class="max-w-md" x-init="{{ session('show_add_seats') ? '$flux.modal(\'add-seats\').show()' : '' }}">
+        <div x-data="{ addQty: 1 }">
+            <flux:heading size="lg">Add Extra Seats</flux:heading>
+            <flux:text class="mt-2">
+                Extra seats cost ${{ $extraSeatPriceMonthly }}/mo or ${{ $extraSeatPriceYearly }}/yr per seat, matching your current billing interval.
+            </flux:text>
+            <div class="mt-4">
+                <flux:input type="number" label="Quantity" x-model.number="addQty" min="1" max="50" class="w-24" />
+            </div>
+            <div class="mt-6 flex justify-end gap-3">
+                <flux:modal.close>
+                    <flux:button variant="ghost">Cancel</flux:button>
+                </flux:modal.close>
+                <flux:button
+                    variant="primary"
+                    x-on:click="$wire.addSeats(addQty)"
+                    wire:loading.attr="disabled"
+                >
+                    <span wire:loading.remove wire:target="addSeats">Confirm</span>
+                    <span wire:loading wire:target="addSeats">Processing...</span>
+                </flux:button>
+            </div>
+        </div>
+    </flux:modal>
+
+    {{-- Remove Seats Modal --}}
+    @if($removableSeats > 0)
+        <flux:modal name="remove-seats" class="max-w-md">
+            <div x-data="{ removeQty: 1 }">
+                <flux:heading size="lg">Remove Extra Seats</flux:heading>
+                <flux:text class="mt-2">
+                    You currently have {{ $team->extra_seats }} extra seat(s). Seats are removed immediately and you'll be credited for the unused time on your next bill.
+                </flux:text>
+                <div class="mt-4">
+                    <flux:input type="number" label="Quantity" x-model.number="removeQty" min="1" max="{{ $removableSeats }}" class="w-24" />
+                </div>
+                <div class="mt-6 flex justify-end gap-3">
+                    <flux:modal.close>
+                        <flux:button variant="ghost">Cancel</flux:button>
+                    </flux:modal.close>
+                    <flux:button
+                        variant="danger"
+                        x-on:click="$wire.removeSeats(removeQty)"
+                        wire:loading.attr="disabled"
+                    >
+                        <span wire:loading.remove wire:target="removeSeats">Remove</span>
+                        <span wire:loading wire:target="removeSeats">Processing...</span>
+                    </flux:button>
+                </div>
+            </div>
+        </flux:modal>
+    @endif
 
     {{-- Pending Invitations --}}
     @if($pendingInvitations->isNotEmpty())
         <div class="mb-6">
-            <h3 class="mb-4 text-lg font-medium text-gray-900 dark:text-white">
+            <flux:heading size="lg" class="mb-4">
                 Pending Invitations
-                <span class="ml-2 text-sm text-gray-500 dark:text-gray-400">
-                    ({{ $pendingInvitations->count() }})
-                </span>
-            </h3>
-            <div class="overflow-hidden rounded-lg bg-white shadow dark:bg-gray-800">
-                <ul role="list" class="divide-y divide-gray-200 dark:divide-gray-700">
-                    @foreach($pendingInvitations as $invitation)
-                        <li class="px-4 py-4" wire:key="invitation-{{ $invitation->id }}">
-                            <div class="flex items-center justify-between">
-                                <div class="flex-1">
-                                    <p class="text-sm font-medium text-gray-900 dark:text-white">
-                                        {{ $invitation->email }}
-                                    </p>
+                <flux:badge size="sm" class="ml-2">{{ $pendingInvitations->count() }}</flux:badge>
+            </flux:heading>
+            <flux:card class="!p-0">
+                <flux:table>
+                    <flux:table.rows>
+                        @foreach($pendingInvitations as $invitation)
+                            <flux:table.row wire:key="invitation-{{ $invitation->id }}">
+                                <flux:table.cell class="flex-1">
+                                    <flux:text class="font-medium">{{ $invitation->email }}</flux:text>
                                     @if($invitation->invited_at)
-                                        <p class="mt-1 text-xs text-gray-400 dark:text-gray-500">
-                                            Invited {{ $invitation->invited_at->diffForHumans() }}
-                                        </p>
+                                        <flux:text class="text-xs">Invited {{ $invitation->invited_at->diffForHumans() }}</flux:text>
                                     @endif
-                                </div>
-                                <div class="flex items-center gap-3">
+                                </flux:table.cell>
+                                <flux:table.cell class="flex justify-end gap-3">
                                     <form method="POST" action="{{ route('customer.team.users.resend', $invitation) }}">
                                         @csrf
-                                        <button type="submit" class="text-sm text-blue-600 hover:text-blue-500 dark:text-blue-400 dark:hover:text-blue-300">
-                                            Resend
-                                        </button>
+                                        <flux:button type="submit" variant="ghost" size="sm">Resend</flux:button>
                                     </form>
                                     <form method="POST" action="{{ route('customer.team.users.remove', $invitation) }}" onsubmit="return confirm('Cancel this invitation?')">
                                         @csrf
                                         @method('DELETE')
-                                        <button type="submit" class="text-sm text-red-600 hover:text-red-500 dark:text-red-400 dark:hover:text-red-300">
-                                            Cancel
-                                        </button>
+                                        <flux:button type="submit" variant="ghost" size="sm" class="text-red-600 hover:text-red-500 dark:text-red-400">Cancel</flux:button>
                                     </form>
-                                </div>
-                            </div>
-                        </li>
-                    @endforeach
-                </ul>
-            </div>
+                                </flux:table.cell>
+                            </flux:table.row>
+                        @endforeach
+                    </flux:table.rows>
+                </flux:table>
+            </flux:card>
         </div>
     @endif
 
     {{-- Team Members --}}
-    <div class="mb-4 flex items-center justify-between">
-        <h3 class="text-lg font-medium text-gray-900 dark:text-white">
-            Team Members
-        </h3>
+    <div class="mb-4">
+        <flux:heading size="lg">Team Members</flux:heading>
     </div>
 
-    {{-- Active Members --}}
     @if($activeMembers->isNotEmpty())
-        <div class="overflow-hidden rounded-lg bg-white shadow dark:bg-gray-800">
-            <ul role="list" class="divide-y divide-gray-200 dark:divide-gray-700">
-                @foreach($activeMembers as $member)
-                    <li class="px-4 py-4" wire:key="member-{{ $member->id }}">
-                        <div class="flex items-center justify-between">
-                            <div class="flex-1">
-                                <p class="text-sm font-medium text-gray-900 dark:text-white">
-                                    {{ $member->user?->display_name ?? $member->email }}
-                                </p>
-                                <p class="text-sm text-gray-500 dark:text-gray-400">
-                                    {{ $member->email }}
-                                </p>
+        <flux:card class="!p-0">
+            <flux:table>
+                <flux:table.rows>
+                    @foreach($activeMembers as $member)
+                        <flux:table.row wire:key="member-{{ $member->id }}">
+                            <flux:table.cell class="flex-1">
+                                <flux:text class="font-medium">{{ $member->user?->display_name ?? $member->email }}</flux:text>
+                                <flux:text class="text-sm">{{ $member->email }}</flux:text>
                                 @if($member->accepted_at)
-                                    <p class="mt-1 text-xs text-gray-400 dark:text-gray-500">
-                                        Joined {{ $member->accepted_at->diffForHumans() }}
-                                    </p>
+                                    <flux:text class="text-xs">Joined {{ $member->accepted_at->diffForHumans() }}</flux:text>
                                 @endif
-                            </div>
-                            <form method="POST" action="{{ route('customer.team.users.remove', $member) }}" onsubmit="return confirm('Are you sure you want to remove this member?')">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" class="text-sm text-red-600 hover:text-red-500 dark:text-red-400 dark:hover:text-red-300">
-                                    Remove
-                                </button>
-                            </form>
-                        </div>
-                    </li>
-                @endforeach
-            </ul>
-        </div>
+                            </flux:table.cell>
+                            <flux:table.cell class="flex justify-end">
+                                <form method="POST" action="{{ route('customer.team.users.remove', $member) }}" onsubmit="return confirm('Are you sure you want to remove this member?')">
+                                    @csrf
+                                    @method('DELETE')
+                                    <flux:button type="submit" variant="ghost" size="sm" class="text-red-600 hover:text-red-500 dark:text-red-400">Remove</flux:button>
+                                </form>
+                            </flux:table.cell>
+                        </flux:table.row>
+                    @endforeach
+                </flux:table.rows>
+            </flux:table>
+        </flux:card>
     @else
-        <div class="rounded-lg bg-white p-8 text-center shadow dark:bg-gray-800">
-            <p class="text-sm text-gray-500 dark:text-gray-400">No active team members yet. Invite someone to get started.</p>
-        </div>
+        <flux:card>
+            <flux:text class="text-center">No active team members yet. Invite someone to get started.</flux:text>
+        </flux:card>
     @endif
 </div>

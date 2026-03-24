@@ -56,7 +56,7 @@
                 </x-slot>
             </flux:callout>
         @else
-            <form wire:submit="submitPlugin">
+            <form wire:submit="submitPlugin" class="space-y-8">
                 {{-- Plugin Type --}}
                 @feature(App\Features\AllowPaidPlugins::class)
                 <flux:card>
@@ -105,20 +105,76 @@
                         Choose the repository containing your plugin. We'll automatically set up a webhook to keep your plugin in sync.
                     </flux:text>
 
-                    <div class="mt-6">
+                    <div class="mt-6 space-y-4">
                         @if($loadingRepos)
                             <div class="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
                                 <flux:icon.loading class="size-5" />
                                 <span>Loading repositories...</span>
                             </div>
                         @elseif($reposLoaded)
-                            <flux:select wire:model="repository" label="Repository" placeholder="Select a repository...">
-                                @foreach($repositories as $repo)
-                                    <flux:select.option value="{{ $repo['full_name'] }}">
-                                        {{ $repo['full_name'] }}{{ $repo['private'] ? ' (private)' : '' }}
-                                    </flux:select.option>
+                            <flux:select wire:model.live="selectedOwner" label="Account" placeholder="Select an account...">
+                                @foreach($this->owners as $owner)
+                                    <flux:select.option value="{{ $owner }}">{{ $owner }}</flux:select.option>
                                 @endforeach
                             </flux:select>
+
+                            @if($selectedOwner)
+                                <div
+                                    wire:key="repo-search-{{ $selectedOwner }}"
+                                    x-data="{
+                                        search: '',
+                                        open: false,
+                                        repos: @js($this->ownerRepositories),
+                                        get filtered() {
+                                            if (!this.search) return this.repos;
+                                            const q = this.search.toLowerCase();
+                                            return this.repos.filter(r => r.name.toLowerCase().includes(q));
+                                        },
+                                        select(repo) {
+                                            $wire.set('repository', repo.full_name);
+                                            this.search = repo.name + (repo.private ? ' (private)' : '');
+                                            this.open = false;
+                                        },
+                                    }"
+                                    @click.outside="open = false"
+                                    class="relative"
+                                >
+                                    <flux:input
+                                        x-model="search"
+                                        @focus="open = true"
+                                        @keydown.escape.prevent="open = false"
+                                        label="Repository"
+                                        placeholder="Search repositories..."
+                                        icon="magnifying-glass"
+                                        autocomplete="off"
+                                    />
+
+                                    <div
+                                        x-show="open && filtered.length > 0"
+                                        x-cloak
+                                        class="absolute z-20 mt-1 max-h-60 w-full overflow-auto rounded-lg border border-zinc-200 bg-white shadow-lg dark:border-zinc-700 dark:bg-zinc-800"
+                                    >
+                                        <template x-for="repo in filtered" :key="repo.id">
+                                            <button
+                                                type="button"
+                                                @click="select(repo)"
+                                                class="flex w-full items-center gap-2 px-3 py-2 text-left text-sm hover:bg-zinc-100 dark:hover:bg-zinc-700"
+                                            >
+                                                <span x-text="repo.name" class="font-medium text-zinc-900 dark:text-white"></span>
+                                                <template x-if="repo.private">
+                                                    <span class="rounded-full bg-zinc-100 px-2 py-0.5 text-xs text-zinc-500 dark:bg-zinc-700 dark:text-zinc-400">private</span>
+                                                </template>
+                                            </button>
+                                        </template>
+                                    </div>
+
+                                    <template x-if="open && search && filtered.length === 0">
+                                        <div class="absolute z-20 mt-1 w-full rounded-lg border border-zinc-200 bg-white px-3 py-2 text-sm text-zinc-500 shadow-lg dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-400">
+                                            No repositories found.
+                                        </div>
+                                    </template>
+                                </div>
+                            @endif
                         @endif
                         @error('repository')
                             <flux:text class="mt-2 text-sm text-red-600 dark:text-red-400">{{ $message }}</flux:text>

@@ -5,6 +5,7 @@ namespace App\Livewire;
 use App\Enums\Subscription;
 use App\Enums\TeamUserStatus;
 use App\Models\Team;
+use Flux;
 use Livewire\Component;
 
 class TeamManager extends Component
@@ -57,7 +58,7 @@ class TeamManager extends Component
         $this->team->increment('extra_seats', $count);
         $this->team->refresh();
 
-        $this->dispatch('seats-updated');
+        Flux::modal('add-seats')->close();
     }
 
     public function removeSeats(int $count = 1): void
@@ -111,7 +112,7 @@ class TeamManager extends Component
         $this->team->decrement('extra_seats', $count);
         $this->team->refresh();
 
-        $this->dispatch('seats-updated');
+        Flux::modal('remove-seats')->close();
     }
 
     public function render()

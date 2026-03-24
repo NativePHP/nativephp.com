@@ -81,6 +81,31 @@
             />
         @endif
 
+        {{-- Team Card --}}
+        @if($this->hasUltraSubscription)
+            @if($this->ownedTeam)
+                <x-dashboard-card
+                    title="Team"
+                    :value="$this->ownedTeam->name"
+                    icon="user-group"
+                    color="purple"
+                    :href="route('customer.team.index')"
+                    link-text="Manage members"
+                    :description="$this->teamMemberCount === 1 ? '1 active member' : $this->teamMemberCount . ' active members'"
+                />
+            @else
+                <x-dashboard-card
+                    title="Team"
+                    value="No team yet"
+                    icon="user-group"
+                    color="gray"
+                    :href="route('customer.team.index')"
+                    link-text="Create a team"
+                    description="Invite up to 10 members to share Ultra benefits"
+                />
+            @endif
+        @endif
+
         {{-- Premium Plugins Card --}}
         @feature(App\Features\ShowPlugins::class)
             <x-dashboard-card

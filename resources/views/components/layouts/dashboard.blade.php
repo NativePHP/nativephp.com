@@ -120,6 +120,14 @@
                     </flux:sidebar.item>
                 </flux:sidebar.group>
 
+                @if(auth()->user()->hasActiveUltraSubscription() || auth()->user()->isUltraTeamMember())
+                    <flux:sidebar.group expandable heading="Team" class="grid">
+                        <flux:sidebar.item href="{{ route('customer.team.index') }}" :current="request()->routeIs('customer.team.*')">
+                            {{ auth()->user()->ownedTeam ? 'Manage' : 'Create Team' }}
+                        </flux:sidebar.item>
+                    </flux:sidebar.group>
+                @endif
+
                 @feature(App\Features\ShowPlugins::class)
                     <flux:sidebar.group expandable heading="Developer" class="grid">
                         <flux:sidebar.item href="{{ route('customer.developer.onboarding') }}" :current="request()->routeIs('customer.developer.onboarding', 'customer.developer.dashboard')">

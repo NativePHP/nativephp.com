@@ -46,4 +46,22 @@ class TeamController extends Controller
         return to_route('customer.team.index')
             ->with('success', 'Team created successfully!');
     }
+
+    public function update(Request $request): RedirectResponse
+    {
+        $user = Auth::user();
+        $team = $user->ownedTeam;
+
+        if (! $team) {
+            return back()->with('error', 'You do not own a team.');
+        }
+
+        $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+        ]);
+
+        $team->update(['name' => $request->name]);
+
+        return back()->with('success', 'Team name updated.');
+    }
 }

@@ -265,10 +265,8 @@ Route::get('docs/{page?}', function ($page = null) {
 
 Route::get('order/{checkoutSessionId}', OrderSuccess::class)->name('order.success');
 
-// License renewal routes
+// License renewal routes (public success page)
 Route::get('license/{license:key}/renewal/success', LicenseRenewalSuccess::class)->name('license.renewal.success');
-Route::get('license/{license}/renewal', [LicenseRenewalController::class, 'show'])->name('license.renewal');
-Route::post('license/{license}/renewal/checkout', [LicenseRenewalController::class, 'createCheckoutSession'])->name('license.renewal.checkout');
 
 // Customer authentication routes
 Route::middleware(['guest'])->group(function (): void {
@@ -329,6 +327,12 @@ Route::middleware(['auth', EnsureFeaturesAreActive::using(ShowAuthButtons::class
 });
 
 // Customer license management routes
+Route::middleware(['auth', EnsureFeaturesAreActive::using(ShowAuthButtons::class)])->prefix('dashboard')->group(function (): void {
+    // License renewal routes (no customer. prefix to preserve route names)
+    Route::get('license/{license}/renewal', [LicenseRenewalController::class, 'show'])->name('license.renewal');
+    Route::post('license/{license}/renewal/checkout', [LicenseRenewalController::class, 'createCheckoutSession'])->name('license.renewal.checkout');
+});
+
 Route::middleware(['auth', EnsureFeaturesAreActive::using(ShowAuthButtons::class)])->prefix('dashboard')->name('customer.')->group(function (): void {
     // Settings page
     Route::livewire('settings', Settings::class)->name('settings');
@@ -375,6 +379,7 @@ Route::middleware(['auth', EnsureFeaturesAreActive::using(ShowAuthButtons::class
     // Team management routes
     Route::get('team', [TeamController::class, 'index'])->name('team.index');
     Route::post('team', [TeamController::class, 'store'])->name('team.store');
+    Route::patch('team', [TeamController::class, 'update'])->name('team.update');
     Route::post('team/invite', [TeamUserController::class, 'invite'])->name('team.invite');
     Route::delete('team/users/{teamUser}', [TeamUserController::class, 'remove'])->name('team.users.remove');
     Route::post('team/users/{teamUser}/resend', [TeamUserController::class, 'resend'])->name('team.users.resend');
