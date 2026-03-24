@@ -7,6 +7,7 @@ use App\Models\User;
 use App\Notifications\UltraUpgradePromotion;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Notification;
+use Laravel\Cashier\SubscriptionItem;
 use Tests\TestCase;
 
 class SendUltraUpgradePromotionTest extends TestCase
@@ -34,7 +35,7 @@ class SendUltraUpgradePromotionTest extends TestCase
                 'is_comped' => $isComped,
             ]);
 
-        \Laravel\Cashier\SubscriptionItem::factory()
+        SubscriptionItem::factory()
             ->for($subscription, 'subscription')
             ->create([
                 'stripe_price' => $priceId,

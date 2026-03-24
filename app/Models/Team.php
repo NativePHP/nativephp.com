@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\TeamUserStatus;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -40,7 +41,7 @@ class Team extends Model
     public function activeUsers(): HasMany
     {
         return $this->hasMany(TeamUser::class)
-            ->where('status', \App\Enums\TeamUserStatus::Active);
+            ->where('status', TeamUserStatus::Active);
     }
 
     /**
@@ -49,7 +50,7 @@ class Team extends Model
     public function pendingInvitations(): HasMany
     {
         return $this->hasMany(TeamUser::class)
-            ->where('status', \App\Enums\TeamUserStatus::Pending);
+            ->where('status', TeamUserStatus::Pending);
     }
 
     public function activeUserCount(): int

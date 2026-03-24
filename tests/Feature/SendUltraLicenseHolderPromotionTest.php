@@ -8,6 +8,7 @@ use App\Models\User;
 use App\Notifications\UltraLicenseHolderPromotion;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Notification;
+use Laravel\Cashier\SubscriptionItem;
 use Tests\TestCase;
 
 class SendUltraLicenseHolderPromotionTest extends TestCase
@@ -35,7 +36,7 @@ class SendUltraLicenseHolderPromotionTest extends TestCase
                 'is_comped' => false,
             ]);
 
-        \Laravel\Cashier\SubscriptionItem::factory()
+        SubscriptionItem::factory()
             ->for($subscription, 'subscription')
             ->create([
                 'stripe_price' => $priceId,

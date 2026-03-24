@@ -3,6 +3,7 @@
 namespace App\Livewire\Customer\PurchasedPlugins;
 
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Collection as SupportCollection;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Title;
@@ -25,6 +26,32 @@ class Index extends Component
     public function pluginLicenseKey(): string
     {
         return auth()->user()->getPluginLicenseKey();
+    }
+
+    #[Computed]
+    public function teamPlugins(): SupportCollection
+    {
+        $membership = auth()->user()->activeTeamMembership();
+
+        if (! $membership) {
+            return collect();
+        }
+
+        return $membership->team->owner->pluginLicenses()
+            ->active()
+            ->with('plugin')
+            ->get()
+            ->pluck('plugin')
+            ->filter()
+            ->unique('id');
+    }
+
+    #[Computed]
+    public function teamOwnerName(): ?string
+    {
+        $membership = auth()->user()->activeTeamMembership();
+
+        return $membership?->team->owner->display_name;
     }
 
     public function rotateKey(): void

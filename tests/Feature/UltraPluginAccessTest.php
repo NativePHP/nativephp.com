@@ -11,7 +11,9 @@ use App\Models\PluginPrice;
 use App\Models\Team;
 use App\Models\TeamUser;
 use App\Models\User;
+use App\Services\CartService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Laravel\Cashier\SubscriptionItem;
 use Tests\TestCase;
 
 class UltraPluginAccessTest extends TestCase
@@ -38,7 +40,7 @@ class UltraPluginAccessTest extends TestCase
                 'stripe_price' => self::COMPED_ULTRA_PRICE_ID,
             ]);
 
-        \Laravel\Cashier\SubscriptionItem::factory()
+        SubscriptionItem::factory()
             ->for($subscription, 'subscription')
             ->create([
                 'stripe_price' => self::COMPED_ULTRA_PRICE_ID,
@@ -60,7 +62,7 @@ class UltraPluginAccessTest extends TestCase
                 'is_comped' => false,
             ]);
 
-        \Laravel\Cashier\SubscriptionItem::factory()
+        SubscriptionItem::factory()
             ->for($subscription, 'subscription')
             ->create([
                 'stripe_price' => Subscription::Max->stripePriceId(),
@@ -82,7 +84,7 @@ class UltraPluginAccessTest extends TestCase
                 'is_comped' => true,
             ]);
 
-        \Laravel\Cashier\SubscriptionItem::factory()
+        SubscriptionItem::factory()
             ->for($subscription, 'subscription')
             ->create([
                 'stripe_price' => Subscription::Max->stripePriceId(),
@@ -189,7 +191,7 @@ class UltraPluginAccessTest extends TestCase
 
         $this->actingAs($user);
 
-        $cartService = resolve(\App\Services\CartService::class);
+        $cartService = resolve(CartService::class);
         $cart = $cartService->getCart($user);
         $cartService->addPlugin($cart, $plugin);
 
@@ -225,7 +227,7 @@ class UltraPluginAccessTest extends TestCase
 
         $this->actingAs($user);
 
-        $cartService = resolve(\App\Services\CartService::class);
+        $cartService = resolve(CartService::class);
         $cart = $cartService->getCart($user);
         $cartService->addPlugin($cart, $plugin);
 

@@ -78,4 +78,54 @@
             <flux:button variant="primary" href="{{ route('plugins.marketplace') }}">Browse Plugins</flux:button>
         </x-customer.empty-state>
     @endif
+
+    {{-- Team Plugins --}}
+    @if($this->teamPlugins->isNotEmpty())
+        <flux:heading class="mb-3 mt-8">
+            Team Plugins
+            <span class="text-sm font-normal text-zinc-500 dark:text-white/70">— shared by {{ $this->teamOwnerName }}</span>
+        </flux:heading>
+        <flux:table>
+            <flux:table.columns>
+                <flux:table.column>Plugin</flux:table.column>
+                <flux:table.column>Access</flux:table.column>
+            </flux:table.columns>
+
+            <flux:table.rows>
+                @foreach($this->teamPlugins as $plugin)
+                    <flux:table.row :key="'team-' . $plugin->id">
+                        <flux:table.cell>
+                            <div class="flex items-center gap-3">
+                                <div class="shrink-0">
+                                    @if($plugin->hasLogo())
+                                        <img src="{{ $plugin->getLogoUrl() }}" alt="{{ $plugin->name }}" class="size-10 rounded-lg object-cover">
+                                    @elseif($plugin->hasGradientIcon())
+                                        <div class="grid size-10 place-items-center rounded-lg bg-gradient-to-br {{ $plugin->getGradientClasses() }} text-white">
+                                            <x-dynamic-component :component="'heroicon-o-' . $plugin->icon_name" class="size-5" />
+                                        </div>
+                                    @else
+                                        <div class="grid size-10 place-items-center rounded-lg bg-gradient-to-br from-indigo-500 to-purple-600 text-white">
+                                            <x-vaadin-plug class="size-5" />
+                                        </div>
+                                    @endif
+                                </div>
+                                <div>
+                                    <a href="{{ route('plugins.show', $plugin->routeParams()) }}" class="font-medium text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300">
+                                        {{ $plugin->name }}
+                                    </a>
+                                    @if($plugin->description)
+                                        <flux:text class="text-xs line-clamp-1">{{ $plugin->description }}</flux:text>
+                                    @endif
+                                </div>
+                            </div>
+                        </flux:table.cell>
+
+                        <flux:table.cell>
+                            <x-customer.status-badge status="Team" />
+                        </flux:table.cell>
+                    </flux:table.row>
+                @endforeach
+            </flux:table.rows>
+        </flux:table>
+    @endif
 </div>

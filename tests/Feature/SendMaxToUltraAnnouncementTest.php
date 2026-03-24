@@ -7,6 +7,7 @@ use App\Models\User;
 use App\Notifications\MaxToUltraAnnouncement;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Notification;
+use Laravel\Cashier\SubscriptionItem;
 use Tests\TestCase;
 
 class SendMaxToUltraAnnouncementTest extends TestCase
@@ -36,7 +37,7 @@ class SendMaxToUltraAnnouncementTest extends TestCase
                 'is_comped' => false,
             ]);
 
-        \Laravel\Cashier\SubscriptionItem::factory()
+        SubscriptionItem::factory()
             ->for($subscription, 'subscription')
             ->create([
                 'stripe_price' => $price,
@@ -58,7 +59,7 @@ class SendMaxToUltraAnnouncementTest extends TestCase
                 'is_comped' => true,
             ]);
 
-        \Laravel\Cashier\SubscriptionItem::factory()
+        SubscriptionItem::factory()
             ->for($subscription, 'subscription')
             ->create([
                 'stripe_price' => Subscription::Max->stripePriceId(),
@@ -80,7 +81,7 @@ class SendMaxToUltraAnnouncementTest extends TestCase
                 'is_comped' => false,
             ]);
 
-        \Laravel\Cashier\SubscriptionItem::factory()
+        SubscriptionItem::factory()
             ->for($subscription, 'subscription')
             ->create([
                 'stripe_price' => Subscription::Pro->stripePriceId(),
@@ -101,7 +102,7 @@ class SendMaxToUltraAnnouncementTest extends TestCase
                 'stripe_price' => self::COMPED_ULTRA_PRICE_ID,
             ]);
 
-        \Laravel\Cashier\SubscriptionItem::factory()
+        SubscriptionItem::factory()
             ->for($subscription, 'subscription')
             ->create([
                 'stripe_price' => self::COMPED_ULTRA_PRICE_ID,
