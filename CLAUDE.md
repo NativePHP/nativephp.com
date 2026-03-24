@@ -18,6 +18,8 @@ This application is a Laravel application and its main Laravel ecosystems packag
 - laravel/prompts (PROMPTS) - v0
 - laravel/sanctum (SANCTUM) - v4
 - laravel/socialite (SOCIALITE) - v5
+- livewire/flux (FLUXUI_FREE) - v2
+- livewire/flux-pro (FLUXUI_PRO) - v2
 - livewire/livewire (LIVEWIRE) - v4
 - laravel/mcp (MCP) - v0
 - laravel/pint (PINT) - v1
@@ -205,6 +207,28 @@ protected function isAccessible(User $user, ?string $path = null): bool
 - This application uses Laravel Pennant for feature flag management, providing a flexible system for controlling feature availability across different organizations and user types.
 - Use the `search-docs` tool, in combination with existing codebase conventions, to assist the user effectively with feature flags.
 
+=== fluxui-pro/core rules ===
+
+## Flux UI Pro
+
+- This project is using the Pro version of Flux UI. It has full access to the free components and variants, as well as full access to the Pro components and variants.
+- Flux UI is a component library for Livewire. Flux is a robust, hand-crafted UI component library for your Livewire applications. It's built using Tailwind CSS and provides a set of components that are easy to use and customize.
+- You should use Flux UI components when available.
+- Fallback to standard Blade components if Flux is unavailable.
+- If available, use the `search-docs` tool to get the exact documentation and code snippets available for this project.
+- Flux UI components look like this:
+
+<code-snippet name="Flux UI Component Example" lang="blade">
+    <flux:button variant="primary"/>
+</code-snippet>
+
+### Available Components
+This is correct as of Boost installation, but there may be additional components within the codebase.
+
+<available-flux-components>
+accordion, autocomplete, avatar, badge, brand, breadcrumbs, button, calendar, callout, card, chart, checkbox, command, composer, context, date-picker, dropdown, editor, field, file-upload, heading, icon, input, kanban, modal, navbar, otp-input, pagination, pillbox, popover, profile, radio, select, separator, skeleton, slider, switch, table, tabs, text, textarea, time-picker, toast, tooltip
+</available-flux-components>
+
 === livewire/core rules ===
 
 ## Livewire
@@ -250,47 +274,12 @@ protected function isAccessible(User $user, ?string $path = null): bool
     ->assertSeeLivewire(CreatePost::class);
 </code-snippet>
 
-=== livewire/v3 rules ===
-
-## Livewire 3
-
-### Key Changes From Livewire 2
-- These things changed in Livewire 3, but may not have been updated in this application. Verify this application's setup to ensure you conform with application conventions.
-    - Use `wire:model.live` for real-time updates, `wire:model` is now deferred by default.
-    - Components now use the `App\Livewire` namespace (not `App\Http\Livewire`).
-    - Use `$this->dispatch()` to dispatch events (not `emit` or `dispatchBrowserEvent`).
-    - Use the `components.layouts.app` view as the typical layout path (not `layouts.app`).
-
-### New Directives
-- `wire:show`, `wire:transition`, `wire:cloak`, `wire:offline`, `wire:target` are available for use. Use the documentation to find usage examples.
-
-### Alpine
-- Alpine is now included with Livewire; don't manually include Alpine.js.
-- Plugins included with Alpine: persist, intersect, collapse, and focus.
-
-### Lifecycle Hooks
-- You can listen for `livewire:init` to hook into Livewire initialization, and `fail.status === 419` for the page expiring:
-
-<code-snippet name="Livewire Init Hook Example" lang="js">
-document.addEventListener('livewire:init', function () {
-    Livewire.hook('request', ({ fail }) => {
-        if (fail && fail.status === 419) {
-            alert('Your session expired');
-        }
-    });
-
-    Livewire.hook('message.failed', (message, component) => {
-        console.error(message);
-    });
-});
-</code-snippet>
-
 === pint/core rules ===
 
 ## Laravel Pint Code Formatter
 
-- You must run `vendor/bin/pint --dirty` before finalizing changes to ensure your code matches the project's expected style.
-- Do not run `vendor/bin/pint --test`, simply run `vendor/bin/pint` to fix any formatting issues.
+- You must run `vendor/bin/pint --dirty --format agent` before finalizing changes to ensure your code matches the project's expected style.
+- Do not run `vendor/bin/pint --test --format agent`, simply run `vendor/bin/pint --format agent` to fix any formatting issues.
 
 === phpunit/core rules ===
 
