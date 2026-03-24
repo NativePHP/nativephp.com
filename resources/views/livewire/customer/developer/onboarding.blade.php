@@ -24,6 +24,14 @@
     @endif
 
     <div class="mx-auto max-w-3xl space-y-8">
+        {{-- Status for existing account --}}
+        @if ($this->hasExistingAccount && $this->developerAccount)
+            <flux:callout variant="warning" icon="exclamation-triangle">
+                <flux:callout.heading>Onboarding Incomplete</flux:callout.heading>
+                <flux:callout.text>Your Stripe account requires additional information before you can receive payouts.</flux:callout.text>
+            </flux:callout>
+        @endif
+
         {{-- Hero Card --}}
         <flux:card>
             <div class="p-4 text-center">
@@ -38,11 +46,7 @@
                     @endif
                 </flux:heading>
                 <flux:text class="mt-2">
-                    @if ($this->hasExistingAccount)
-                        You've started the onboarding process. Complete the remaining steps to start receiving payouts.
-                    @else
-                        Connect your Stripe account to receive payments when users purchase your plugins.
-                    @endif
+                    Connect your Stripe account to receive payments when users purchase your plugins.
                 </flux:text>
             </div>
 
@@ -68,14 +72,6 @@
                     </li>
                 </ul>
             </div>
-
-            {{-- Status for existing account --}}
-            @if ($this->hasExistingAccount && $this->developerAccount)
-                <flux:callout variant="warning" icon="exclamation-triangle" class="mt-6">
-                    <flux:callout.heading>Onboarding Incomplete</flux:callout.heading>
-                    <flux:callout.text>Your Stripe account requires additional information before you can receive payouts.</flux:callout.text>
-                </flux:callout>
-            @endif
 
             {{-- Country & Currency Selection --}}
             <div class="mt-6 rounded-lg border border-gray-200 bg-gray-50 p-6 dark:border-gray-700 dark:bg-gray-700/50">
