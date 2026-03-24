@@ -111,6 +111,10 @@
                     Purchase History
                 </flux:sidebar.item>
 
+                <flux:sidebar.item icon="chat-bubble-left-right" href="{{ route('customer.support.tickets') }}" :current="request()->routeIs('customer.support.*')">
+                    Support Tickets
+                </flux:sidebar.item>
+
                 <flux:sidebar.group expandable heading="Community" class="grid">
                     <flux:sidebar.item href="{{ route('customer.showcase.index') }}" :current="request()->routeIs('customer.showcase.*')">
                         Showcase

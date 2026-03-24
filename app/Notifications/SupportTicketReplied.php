@@ -35,6 +35,6 @@ class SupportTicketReplied extends Notification implements ShouldQueue
             ->line('Your support ticket has received a new reply.')
             ->line('**'.e($this->ticket->subject).'**')
             ->line(Str::limit($this->reply->message, 500))
-            ->action('View Ticket', route('support.tickets.show', $this->ticket));
+            ->action('View Ticket', route('customer.support.tickets.show', $this->ticket));
     }
 }

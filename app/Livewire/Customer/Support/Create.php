@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Livewire;
+namespace App\Livewire\Customer\Support;
 
 use App\Models\Plugin;
 use App\Models\SupportTicket;
@@ -8,10 +8,14 @@ use App\Notifications\SupportTicketSubmitted;
 use App\SupportTicket\Status;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Str;
+use Livewire\Attributes\Layout;
 use Livewire\Attributes\Locked;
+use Livewire\Attributes\Title;
 use Livewire\Component;
 
-class CreateSupportTicket extends Component
+#[Layout('components.layouts.dashboard')]
+#[Title('Submit a Request')]
+class Create extends Component
 {
     #[Locked]
     public int $currentStep = 1;
@@ -133,7 +137,7 @@ class CreateSupportTicket extends Component
         Notification::route('mail', 'support@nativephp.com')
             ->notify(new SupportTicketSubmitted($ticket));
 
-        $this->redirect(route('support.tickets.show', $ticket), navigate: false);
+        $this->redirect(route('customer.support.tickets.show', $ticket), navigate: false);
     }
 
     protected function validateStep1(): void
@@ -203,8 +207,8 @@ class CreateSupportTicket extends Component
                 ->pluck('name', 'id');
         }
 
-        return view('livewire.create-support-ticket', [
+        return view('livewire.customer.support.create', [
             'officialPlugins' => $officialPlugins,
-        ])->layout('components.layout', ['title' => 'Submit a Request - NativePHP']);
+        ]);
     }
 }

@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class TicketRepliesWidget extends Widget
 {
-    protected static string $view = 'filament.resources.support-ticket-resource.widgets.ticket-replies';
+    protected string $view = 'filament.resources.support-ticket-resource.widgets.ticket-replies';
 
     public ?Model $record = null;
 

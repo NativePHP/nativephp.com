@@ -1,72 +1,70 @@
 <x-filament-widgets::widget>
     <x-filament::section heading="Conversation">
         {{-- Reply form at top --}}
-        <form wire:submit="sendReply" class="mb-6">
-            <div class="space-y-3">
+        <form wire:submit="sendReply" style="margin-bottom: 1.5rem;">
+            <div style="display: flex; flex-direction: column; gap: 0.75rem;">
                 <textarea
                     wire:model="newMessage"
                     rows="3"
                     placeholder="Type your reply..."
-                    style="border-color: #d1d5db; background: white;"
-                    class="fi-textarea block w-full rounded-lg shadow-sm transition duration-75"
-                    onfocus="this.style.borderColor='#7c3aed'; this.style.boxShadow='0 0 0 1px #7c3aed inset'"
-                    onblur="this.style.borderColor='#d1d5db'; this.style.boxShadow='none'"
+                    style="display: block; width: 100%; border: 1px solid #d1d5db; border-radius: 0.5rem; padding: 0.5rem 0.75rem; font-size: 0.875rem; color: #111827; background: #ffffff; box-shadow: 0 1px 2px rgba(0,0,0,0.05);"
+                    onfocus="this.style.borderColor='#7c3aed'; this.style.boxShadow='0 0 0 1px #7c3aed'"
+                    onblur="this.style.borderColor='#d1d5db'; this.style.boxShadow='0 1px 2px rgba(0,0,0,0.05)'"
                 ></textarea>
                 @error('newMessage')
-                    <p style="color: #dc2626;" class="text-sm">{{ $message }}</p>
+                    <p style="font-size: 0.875rem; color: #dc2626;">{{ $message }}</p>
                 @enderror
-                <div class="flex items-center justify-between">
-                    <label class="inline-flex items-center gap-2 text-sm" style="color: #6b7280;">
-                        <input type="checkbox" wire:model="isNote" class="fi-checkbox-input rounded" />
+                <div style="display: flex; align-items: center; justify-content: space-between;">
+                    <label style="display: inline-flex; align-items: center; gap: 0.5rem; font-size: 0.875rem; color: #6b7280; cursor: pointer;">
+                        <input type="checkbox" wire:model="isNote" style="border-radius: 0.25rem;" />
                         Internal note (not visible to user)
                     </label>
-                    <button type="submit" wire:loading.attr="disabled" style="background-color: #7c3aed; color: white;" class="inline-flex items-center gap-1 rounded-lg px-3 py-2 text-sm font-semibold shadow-sm disabled:opacity-50"
-                        onmouseover="this.style.backgroundColor='#6d28d9'"
-                        onmouseout="this.style.backgroundColor='#7c3aed'"
-                    >
+                    <x-filament::button type="submit" wire:loading.attr="disabled" size="sm">
                         <span wire:loading.remove wire:target="sendReply">Send Reply</span>
                         <span wire:loading wire:target="sendReply">Sending...</span>
-                    </button>
+                    </x-filament::button>
                 </div>
             </div>
         </form>
 
         {{-- Messages list (reverse chronological) --}}
-        <div class="space-y-3">
+        <div style="display: flex; flex-direction: column; gap: 0.75rem;">
             @forelse ($record->replies()->with('user')->orderBy('created_at', 'desc')->get() as $reply)
                 @php
                     $isAdmin = $reply->user?->isAdmin();
                     $isNote = $reply->note;
+
+                    if ($isNote) {
+                        $bgColor = '#fefce8';
+                        $borderColor = '#facc15';
+                    } elseif ($isAdmin) {
+                        $bgColor = '#ede9fe';
+                        $borderColor = '#c4b5fd';
+                    } else {
+                        $bgColor = '#f3f4f6';
+                        $borderColor = '#d1d5db';
+                    }
                 @endphp
-                <div
-                    class="rounded-lg border p-3"
-                    @if ($isNote)
-                        style="background-color: #fefce8; border-color: #fbbf24;"
-                    @elseif ($isAdmin)
-                        style="background-color: #ede9fe; border-color: #c4b5fd;"
-                    @else
-                        style="background-color: #f9fafb; border-color: #e5e7eb;"
-                    @endif
-                >
-                    <div class="flex items-center justify-between gap-2">
-                        <div class="flex items-center gap-2">
-                            <span class="text-sm font-semibold" style="color: #111827;">
+                <div style="border-radius: 0.5rem; border: 1px solid {{ $borderColor }}; padding: 0.75rem; background-color: {{ $bgColor }};">
+                    <div style="display: flex; align-items: center; justify-content: space-between; gap: 0.5rem;">
+                        <div style="display: flex; align-items: center; gap: 0.5rem;">
+                            <span style="font-size: 0.875rem; font-weight: 600; color: #111827;">
                                 {{ $reply->user?->name ?? 'Unknown' }}
                             </span>
                             @if ($isNote)
-                                <span class="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium" style="background-color: #fef3c7; color: #92400e;">Note</span>
+                                <x-filament::badge color="warning" size="sm">Note</x-filament::badge>
                             @elseif ($isAdmin)
-                                <span class="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium" style="background-color: #ddd6fe; color: #5b21b6;">Staff</span>
+                                <x-filament::badge color="primary" size="sm">Staff</x-filament::badge>
                             @endif
                         </div>
-                        <span class="text-xs" style="color: #6b7280;">
+                        <span style="font-size: 0.75rem; color: #6b7280;">
                             {{ $reply->created_at->diffForHumans() }}
                         </span>
                     </div>
-                    <div class="mt-1 whitespace-pre-line text-sm" style="color: #374151;">{{ $reply->message }}</div>
+                    <div style="margin-top: 0.25rem; white-space: pre-line; font-size: 0.875rem; color: #374151;">{{ $reply->message }}</div>
                 </div>
             @empty
-                <p class="py-4 text-center text-sm" style="color: #6b7280;">No replies yet.</p>
+                <p style="padding: 1rem 0; text-align: center; font-size: 0.875rem; color: #6b7280;">No replies yet.</p>
             @endforelse
         </div>
     </x-filament::section>

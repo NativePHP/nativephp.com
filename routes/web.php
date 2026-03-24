@@ -2,7 +2,6 @@
 
 use App\Features\ShowAuthButtons;
 use App\Features\ShowPlugins;
-use App\Http\Controllers\Account\Support\TicketController;
 use App\Http\Controllers\ApplinksController;
 use App\Http\Controllers\Auth\CustomerAuthController;
 use App\Http\Controllers\BundleController;
@@ -345,6 +344,12 @@ Route::middleware(['auth', EnsureFeaturesAreActive::using(ShowAuthButtons::class
 
     // Purchase history page
     Route::livewire('purchase-history', App\Livewire\Customer\PurchaseHistory\Index::class)->name('purchase-history.index');
+
+    // Support tickets
+    Route::livewire('support/tickets', App\Livewire\Customer\Support\Index::class)->name('support.tickets');
+    Route::livewire('support/tickets/create', App\Livewire\Customer\Support\Create::class)->name('support.tickets.create');
+    Route::livewire('support/tickets/{supportTicket}', App\Livewire\Customer\Support\Show::class)->name('support.tickets.show');
+
     Route::livewire('licenses/{licenseKey}', Show::class)->name('licenses.show');
     Route::patch('licenses/{licenseKey}', [CustomerLicenseController::class, 'update'])->name('licenses.update');
     Route::post('plugin-license-key/rotate', [CustomerLicenseController::class, 'rotatePluginLicenseKey'])->name('plugin-license-key.rotate');
@@ -419,31 +424,8 @@ Route::middleware(EnsureFeaturesAreActive::using(ShowPlugins::class))->group(fun
     Route::get('cart/cancel', [CartController::class, 'cancel'])->name('cart.cancel');
 });
 
-// Support
-Route::prefix('support')
-    ->middleware('auth:web')
-    ->group(function (): void {
-        Route::get('/', function () {
-            return view('support.index');
-        })
-            ->withoutMiddleware(['auth:web'])
-            ->name('support.index');
-
-        Route::prefix('tickets')
-            ->group(function (): void {
-                Route::get('/', [TicketController::class, 'index'])->name('support.tickets');
-                Route::get('/create', \App\Livewire\CreateSupportTicket::class)->name('support.tickets.create');
-
-                Route::get('/{supportTicket}', [TicketController::class, 'show'])
-                    ->name('support.tickets.show');
-
-                Route::post('/{supportTicket}/reply', [TicketController::class, 'reply'])
-                    ->name('support.tickets.reply');
-
-                Route::post('/{supportTicket}/close', [TicketController::class, 'closeTicket'])
-                    ->name('support.tickets.close');
-            });
-    });
+// Support (public hub page)
+Route::get('support', fn () => view('support.index'))->name('support.index');
 
 // Developer routes
 Route::middleware(['auth', EnsureFeaturesAreActive::using(ShowAuthButtons::class), EnsureFeaturesAreActive::using(ShowPlugins::class)])->prefix('dashboard/developer')->group(function (): void {

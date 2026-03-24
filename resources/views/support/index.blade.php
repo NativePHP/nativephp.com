@@ -30,7 +30,7 @@
                         <div class="flex-1 text-center sm:text-left">
                             <h2 class="text-xl font-semibold text-gray-900 dark:text-white">Priority Support</h2>
                             <p class="mt-1 text-gray-600 dark:text-gray-400">As a Max plan subscriber, you have access to priority support. Submit a ticket and our team will get back to you as quickly as possible.</p>
-                            <a href="{{ route('support.tickets.create') }}" class="mt-4 inline-flex items-center rounded-md bg-violet-600 px-4 py-2 text-sm font-medium text-white shadow-sm transition duration-200 hover:bg-violet-700 dark:bg-violet-700 dark:hover:bg-violet-600">
+                            <a href="{{ route('customer.support.tickets.create') }}" class="mt-4 inline-flex items-center rounded-md bg-violet-600 px-4 py-2 text-sm font-medium text-white shadow-sm transition duration-200 hover:bg-violet-700 dark:bg-violet-700 dark:hover:bg-violet-600">
                                 <svg class="mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                                 </svg>

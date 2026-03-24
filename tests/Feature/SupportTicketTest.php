@@ -2,7 +2,9 @@
 
 namespace Tests\Feature;
 
-use App\Livewire\CreateSupportTicket;
+use App\Livewire\Customer\Support\Create;
+use App\Livewire\Customer\Support\Index;
+use App\Livewire\Customer\Support\Show;
 use App\Models\License;
 use App\Models\Plugin;
 use App\Models\SupportTicket;
@@ -25,7 +27,7 @@ class SupportTicketTest extends TestCase
     #[Test]
     public function guests_cannot_access_create_ticket_page(): void
     {
-        $this->get(route('support.tickets.create'))
+        $this->get(route('customer.support.tickets.create'))
             ->assertRedirect();
     }
 
@@ -35,9 +37,9 @@ class SupportTicketTest extends TestCase
         $user = User::factory()->create();
 
         $this->actingAs($user)
-            ->get(route('support.tickets.create'))
+            ->get(route('customer.support.tickets.create'))
             ->assertOk()
-            ->assertSeeLivewire(CreateSupportTicket::class);
+            ->assertSeeLivewire(Create::class);
     }
 
     #[Test]
@@ -46,7 +48,7 @@ class SupportTicketTest extends TestCase
         $user = User::factory()->create();
 
         Livewire::actingAs($user)
-            ->test(CreateSupportTicket::class)
+            ->test(Create::class)
             ->assertSet('currentStep', 1)
             ->assertSee('Which product is this about?');
     }
@@ -57,7 +59,7 @@ class SupportTicketTest extends TestCase
         $user = User::factory()->create();
 
         Livewire::actingAs($user)
-            ->test(CreateSupportTicket::class)
+            ->test(Create::class)
             ->call('nextStep')
             ->assertHasErrors('selectedProduct')
             ->assertSet('currentStep', 1);
@@ -69,7 +71,7 @@ class SupportTicketTest extends TestCase
         $user = User::factory()->create();
 
         Livewire::actingAs($user)
-            ->test(CreateSupportTicket::class)
+            ->test(Create::class)
             ->set('selectedProduct', 'invalid')
             ->call('nextStep')
             ->assertHasErrors('selectedProduct')
@@ -82,7 +84,7 @@ class SupportTicketTest extends TestCase
         $user = User::factory()->create();
 
         Livewire::actingAs($user)
-            ->test(CreateSupportTicket::class)
+            ->test(Create::class)
             ->set('selectedProduct', 'mobile')
             ->call('nextStep')
             ->assertSet('currentStep', 2);
@@ -94,7 +96,7 @@ class SupportTicketTest extends TestCase
         $user = User::factory()->create();
 
         Livewire::actingAs($user)
-            ->test(CreateSupportTicket::class)
+            ->test(Create::class)
             ->set('selectedProduct', 'mobile')
             ->call('nextStep')
             ->assertSet('currentStep', 2)
@@ -109,7 +111,7 @@ class SupportTicketTest extends TestCase
         $user = User::factory()->create();
 
         Livewire::actingAs($user)
-            ->test(CreateSupportTicket::class)
+            ->test(Create::class)
             ->set('selectedProduct', 'desktop')
             ->call('nextStep')
             ->assertSet('currentStep', 2)
@@ -124,7 +126,7 @@ class SupportTicketTest extends TestCase
         $user = User::factory()->create();
 
         Livewire::actingAs($user)
-            ->test(CreateSupportTicket::class)
+            ->test(Create::class)
             ->set('selectedProduct', 'bifrost')
             ->call('nextStep')
             ->assertSet('currentStep', 2)
@@ -139,7 +141,7 @@ class SupportTicketTest extends TestCase
         $user = User::factory()->create();
 
         Livewire::actingAs($user)
-            ->test(CreateSupportTicket::class)
+            ->test(Create::class)
             ->set('selectedProduct', 'nativephp.com')
             ->call('nextStep')
             ->assertSet('currentStep', 2)
@@ -154,7 +156,7 @@ class SupportTicketTest extends TestCase
         $user = User::factory()->create();
 
         Livewire::actingAs($user)
-            ->test(CreateSupportTicket::class)
+            ->test(Create::class)
             ->set('selectedProduct', 'desktop')
             ->call('nextStep')
             ->assertSet('currentStep', 2)
@@ -169,7 +171,7 @@ class SupportTicketTest extends TestCase
         $user = User::factory()->create();
 
         Livewire::actingAs($user)
-            ->test(CreateSupportTicket::class)
+            ->test(Create::class)
             ->set('selectedProduct', 'mobile')
             ->call('nextStep')
             ->assertSet('currentStep', 2)
@@ -188,7 +190,7 @@ class SupportTicketTest extends TestCase
         $user = User::factory()->create();
 
         Livewire::actingAs($user)
-            ->test(CreateSupportTicket::class)
+            ->test(Create::class)
             ->set('selectedProduct', 'mobile')
             ->call('nextStep')
             ->assertSet('currentStep', 2)
@@ -208,7 +210,7 @@ class SupportTicketTest extends TestCase
         $user = User::factory()->create();
 
         Livewire::actingAs($user)
-            ->test(CreateSupportTicket::class)
+            ->test(Create::class)
             ->set('selectedProduct', 'mobile')
             ->call('nextStep')
             ->assertSet('currentStep', 2)
@@ -228,7 +230,7 @@ class SupportTicketTest extends TestCase
         $user = User::factory()->create();
 
         Livewire::actingAs($user)
-            ->test(CreateSupportTicket::class)
+            ->test(Create::class)
             ->set('selectedProduct', 'bifrost')
             ->call('nextStep')
             ->assertSet('currentStep', 2)
@@ -245,7 +247,7 @@ class SupportTicketTest extends TestCase
         $user = User::factory()->create();
 
         Livewire::actingAs($user)
-            ->test(CreateSupportTicket::class)
+            ->test(Create::class)
             ->set('selectedProduct', 'bifrost')
             ->call('nextStep')
             ->set('issueType', 'invalid_type')
@@ -262,7 +264,7 @@ class SupportTicketTest extends TestCase
         $user = User::factory()->create();
 
         Livewire::actingAs($user)
-            ->test(CreateSupportTicket::class)
+            ->test(Create::class)
             ->set('selectedProduct', 'bifrost')
             ->call('nextStep')
             ->set('issueType', 'bug')
@@ -278,7 +280,7 @@ class SupportTicketTest extends TestCase
         $user = User::factory()->create();
 
         Livewire::actingAs($user)
-            ->test(CreateSupportTicket::class)
+            ->test(Create::class)
             ->set('selectedProduct', 'bifrost')
             ->call('nextStep')
             ->set('issueType', 'bug')
@@ -294,7 +296,7 @@ class SupportTicketTest extends TestCase
         $user = User::factory()->create();
 
         Livewire::actingAs($user)
-            ->test(CreateSupportTicket::class)
+            ->test(Create::class)
             ->set('selectedProduct', 'bifrost')
             ->call('nextStep')
             ->set('issueType', 'bug')
@@ -311,7 +313,7 @@ class SupportTicketTest extends TestCase
         $user = User::factory()->create();
 
         Livewire::actingAs($user)
-            ->test(CreateSupportTicket::class)
+            ->test(Create::class)
             ->set('selectedProduct', 'bifrost')
             ->call('nextStep')
             ->set('issueType', 'bug')
@@ -328,7 +330,7 @@ class SupportTicketTest extends TestCase
         $user = User::factory()->create();
 
         Livewire::actingAs($user)
-            ->test(CreateSupportTicket::class)
+            ->test(Create::class)
             ->set('selectedProduct', 'desktop')
             ->call('nextStep')
             ->set('tryingToDo', 'Build an app')
@@ -360,7 +362,7 @@ class SupportTicketTest extends TestCase
         $user = User::factory()->create();
 
         Livewire::actingAs($user)
-            ->test(CreateSupportTicket::class)
+            ->test(Create::class)
             ->set('selectedProduct', 'bifrost')
             ->call('nextStep')
             ->set('issueType', 'feature_request')
@@ -385,7 +387,7 @@ class SupportTicketTest extends TestCase
         $user = User::factory()->create();
 
         Livewire::actingAs($user)
-            ->test(CreateSupportTicket::class)
+            ->test(Create::class)
             ->set('selectedProduct', 'nativephp.com')
             ->call('nextStep')
             ->set('issueType', 'other')
@@ -399,7 +401,7 @@ class SupportTicketTest extends TestCase
         $ticket = SupportTicket::where('subject', 'Redirect test')->first();
 
         $this->assertNotNull($ticket);
-        $this->assertNotEmpty(route('support.tickets.show', $ticket));
+        $this->assertNotEmpty(route('customer.support.tickets.show', $ticket));
     }
 
     #[Test]
@@ -408,7 +410,7 @@ class SupportTicketTest extends TestCase
         $user = User::factory()->create();
 
         Livewire::actingAs($user)
-            ->test(CreateSupportTicket::class)
+            ->test(Create::class)
             ->set('selectedProduct', 'desktop')
             ->call('nextStep')
             ->set('tryingToDo', 'Build an app')
@@ -466,7 +468,7 @@ class SupportTicketTest extends TestCase
         $user = User::factory()->create();
 
         Livewire::actingAs($user)
-            ->test(CreateSupportTicket::class)
+            ->test(Create::class)
             ->set('selectedProduct', 'mobile')
             ->call('nextStep')
             ->set('mobileAreaType', 'plugin')
@@ -493,10 +495,9 @@ class SupportTicketTest extends TestCase
     {
         $user = User::factory()->create();
 
-        $this->actingAs($user)
-            ->get(route('support.tickets'))
-            ->assertOk()
-            ->assertSee(route('support.tickets.create'));
+        Livewire::actingAs($user)
+            ->test(Index::class)
+            ->assertSee(route('customer.support.tickets.create'));
     }
 
     #[Test]
@@ -505,7 +506,7 @@ class SupportTicketTest extends TestCase
         $user = User::factory()->create();
 
         Livewire::actingAs($user)
-            ->test(CreateSupportTicket::class)
+            ->test(Create::class)
             ->set('selectedProduct', 'desktop')
             ->call('nextStep')
             ->assertSet('currentStep', 2)
@@ -525,7 +526,7 @@ class SupportTicketTest extends TestCase
         ]);
 
         Livewire::actingAs($user)
-            ->test(CreateSupportTicket::class)
+            ->test(Create::class)
             ->set('selectedProduct', 'mobile')
             ->call('nextStep')
             ->set('mobileAreaType', 'plugin')
@@ -539,7 +540,7 @@ class SupportTicketTest extends TestCase
         $user = User::factory()->create();
 
         Livewire::actingAs($user)
-            ->test(CreateSupportTicket::class)
+            ->test(Create::class)
             ->set('selectedProduct', 'mobile')
             ->call('nextStep')
             ->set('mobileAreaType', 'plugin')
@@ -569,7 +570,7 @@ class SupportTicketTest extends TestCase
         $user = User::factory()->create();
 
         Livewire::actingAs($user)
-            ->test(CreateSupportTicket::class)
+            ->test(Create::class)
             ->set('selectedProduct', 'mobile')
             ->call('nextStep')
             ->set('mobileAreaType', 'core')
@@ -599,7 +600,7 @@ class SupportTicketTest extends TestCase
         $user = User::factory()->create();
 
         Livewire::actingAs($user)
-            ->test(CreateSupportTicket::class)
+            ->test(Create::class)
             ->set('selectedProduct', 'bifrost')
             ->call('nextStep')
             ->set('issueType', 'bug')
@@ -625,11 +626,11 @@ class SupportTicketTest extends TestCase
         $user = User::factory()->create();
         $ticket = SupportTicket::factory()->create(['user_id' => $user->id]);
 
-        $this->actingAs($user)
-            ->post(route('support.tickets.reply', $ticket), [
-                'message' => 'This is my reply.',
-            ])
-            ->assertRedirect(route('support.tickets.show', $ticket));
+        Livewire::actingAs($user)
+            ->test(Show::class, ['supportTicket' => $ticket])
+            ->set('replyMessage', 'This is my reply.')
+            ->call('reply')
+            ->assertHasNoErrors();
 
         $this->assertDatabaseHas('replies', [
             'support_ticket_id' => $ticket->id,
@@ -647,11 +648,11 @@ class SupportTicketTest extends TestCase
         $user = User::factory()->create();
         $ticket = SupportTicket::factory()->create(['user_id' => $user->id]);
 
-        $this->actingAs($user)
-            ->post(route('support.tickets.reply', $ticket), [
-                'message' => 'I have more info.',
-            ])
-            ->assertRedirect();
+        Livewire::actingAs($user)
+            ->test(Show::class, ['supportTicket' => $ticket])
+            ->set('replyMessage', 'I have more info.')
+            ->call('reply')
+            ->assertHasNoErrors();
 
         Notification::assertSentOnDemand(
             SupportTicketUserReplied::class,
@@ -672,10 +673,10 @@ class SupportTicketTest extends TestCase
             'status' => Status::CLOSED,
         ]);
 
-        $this->actingAs($user)
-            ->post(route('support.tickets.reply', $ticket), [
-                'message' => 'This should fail.',
-            ])
+        Livewire::actingAs($user)
+            ->test(Show::class, ['supportTicket' => $ticket])
+            ->set('replyMessage', 'This should fail.')
+            ->call('reply')
             ->assertForbidden();
     }
 
@@ -686,11 +687,9 @@ class SupportTicketTest extends TestCase
         $otherUser = User::factory()->create();
         $ticket = SupportTicket::factory()->create(['user_id' => $otherUser->id]);
 
-        $this->actingAs($user)
-            ->post(route('support.tickets.reply', $ticket), [
-                'message' => 'This should fail.',
-            ])
-            ->assertForbidden();
+        Livewire::actingAs($user)
+            ->test(Show::class, ['supportTicket' => $ticket])
+            ->assertNotFound();
     }
 
     #[Test]
@@ -699,11 +698,11 @@ class SupportTicketTest extends TestCase
         $user = User::factory()->create();
         $ticket = SupportTicket::factory()->create(['user_id' => $user->id]);
 
-        $this->actingAs($user)
-            ->post(route('support.tickets.reply', $ticket), [
-                'message' => '',
-            ])
-            ->assertSessionHasErrors('message');
+        Livewire::actingAs($user)
+            ->test(Show::class, ['supportTicket' => $ticket])
+            ->set('replyMessage', '')
+            ->call('reply')
+            ->assertHasErrors('replyMessage');
     }
 
     #[Test]
@@ -712,11 +711,9 @@ class SupportTicketTest extends TestCase
         $user = User::factory()->create();
         $ticket = SupportTicket::factory()->create(['user_id' => $user->id]);
 
-        $this->actingAs($user)
-            ->get(route('support.tickets.show', $ticket))
-            ->assertOk()
-            ->assertSee('Add a reply')
-            ->assertSee(route('support.tickets.reply', $ticket));
+        Livewire::actingAs($user)
+            ->test(Show::class, ['supportTicket' => $ticket])
+            ->assertSee('Add a reply');
     }
 
     #[Test]
@@ -728,9 +725,8 @@ class SupportTicketTest extends TestCase
             'status' => Status::CLOSED,
         ]);
 
-        $this->actingAs($user)
-            ->get(route('support.tickets.show', $ticket))
-            ->assertOk()
+        Livewire::actingAs($user)
+            ->test(Show::class, ['supportTicket' => $ticket])
             ->assertDontSee('Add a reply');
     }
 
@@ -755,9 +751,8 @@ class SupportTicketTest extends TestCase
             'note' => true,
         ]);
 
-        $this->actingAs($user)
-            ->get(route('support.tickets.show', $ticket))
-            ->assertOk()
+        Livewire::actingAs($user)
+            ->test(Show::class, ['supportTicket' => $ticket])
             ->assertSee('Visible staff reply')
             ->assertDontSee('Secret internal note');
     }
@@ -845,9 +840,8 @@ class SupportTicketTest extends TestCase
             ],
         ]);
 
-        $this->actingAs($user)
-            ->get(route('support.tickets.show', $ticket))
-            ->assertOk()
+        Livewire::actingAs($user)
+            ->test(Show::class, ['supportTicket' => $ticket])
             ->assertSee('Submission Details')
             ->assertSee('Mobile')
             ->assertDontSee('Original submission message')
@@ -868,9 +862,8 @@ class SupportTicketTest extends TestCase
             ],
         ]);
 
-        $this->actingAs($user)
-            ->get(route('support.tickets.show', $ticket))
-            ->assertOk()
+        Livewire::actingAs($user)
+            ->test(Show::class, ['supportTicket' => $ticket])
             ->assertDontSee('Original Message')
             ->assertSee('Run the app');
     }
@@ -885,10 +878,41 @@ class SupportTicketTest extends TestCase
             'message' => 'I have a billing question.',
         ]);
 
-        $this->actingAs($user)
-            ->get(route('support.tickets.show', $ticket))
-            ->assertOk()
+        Livewire::actingAs($user)
+            ->test(Show::class, ['supportTicket' => $ticket])
             ->assertSee('Original Message')
             ->assertSee('I have a billing question.');
+    }
+
+    #[Test]
+    public function user_can_close_their_ticket(): void
+    {
+        $user = User::factory()->create();
+        $ticket = SupportTicket::factory()->create(['user_id' => $user->id]);
+
+        Livewire::actingAs($user)
+            ->test(Show::class, ['supportTicket' => $ticket])
+            ->call('closeTicket')
+            ->assertHasNoErrors();
+
+        $this->assertEquals(Status::CLOSED, $ticket->fresh()->status);
+    }
+
+    #[Test]
+    public function guests_cannot_access_ticket_index(): void
+    {
+        $this->get(route('customer.support.tickets'))
+            ->assertRedirect();
+    }
+
+    #[Test]
+    public function authenticated_users_can_access_ticket_index(): void
+    {
+        $user = User::factory()->create();
+
+        $this->actingAs($user)
+            ->get(route('customer.support.tickets'))
+            ->assertOk()
+            ->assertSeeLivewire(Index::class);
     }
 }

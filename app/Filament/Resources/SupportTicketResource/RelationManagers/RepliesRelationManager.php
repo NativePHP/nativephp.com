@@ -5,8 +5,8 @@ namespace App\Filament\Resources\SupportTicketResource\RelationManagers;
 use App\Models\SupportTicket\Reply;
 use App\Notifications\SupportTicketReplied;
 use Filament\Forms;
-use Filament\Forms\Form;
 use Filament\Resources\RelationManagers\RelationManager;
+use Filament\Schemas\Schema;
 use Filament\Tables;
 use Filament\Tables\Table;
 
@@ -23,9 +23,9 @@ class RepliesRelationManager extends RelationManager
         return false;
     }
 
-    public function form(Form $form): Form
+    public function form(Schema $schema): Schema
     {
-        return $form
+        return $schema
             ->schema([
                 Forms\Components\Textarea::make('message')
                     ->required()
