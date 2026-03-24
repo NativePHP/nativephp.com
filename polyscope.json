@@ -2,7 +2,10 @@
   "scripts": {
     "setup": [
       "herd link",
-      "herd secure"
+      "herd secure",
+      "composer install",
+      "npm i",
+      "npm run build"
     ],
     "archive": [
       "herd unsecure",

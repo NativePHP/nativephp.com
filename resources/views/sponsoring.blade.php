@@ -86,6 +86,11 @@
 
             <ul>
                 <li>
+                    <a href="https://github.com/sponsors/nativephp">
+                        GitHub Sponsors
+                    </a>
+                </li>
+                <li>
                     <a href="https://opencollective.com/nativephp">
                         OpenCollective
                     </a>

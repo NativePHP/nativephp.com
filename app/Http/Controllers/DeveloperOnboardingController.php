@@ -4,8 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Models\DeveloperAccount;
 use App\Services\StripeConnectService;
+use App\Support\StripeConnectCountries;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 use Illuminate\View\View;
 
 class DeveloperOnboardingController extends Controller
@@ -32,16 +34,33 @@ class DeveloperOnboardingController extends Controller
     {
         $request->validate([
             'accepted_plugin_terms' => ['required', 'accepted'],
+            'country' => ['required', 'string', 'size:2', Rule::in(StripeConnectCountries::supportedCountryCodes())],
+            'payout_currency' => ['required', 'string', 'size:3'],
         ], [
             'accepted_plugin_terms.required' => 'You must accept the Plugin Developer Terms and Conditions.',
             'accepted_plugin_terms.accepted' => 'You must accept the Plugin Developer Terms and Conditions.',
+            'country.required' => 'Please select your country.',
+            'country.in' => 'The selected country is not supported for Stripe Connect.',
+            'payout_currency.required' => 'Please select a payout currency.',
         ]);
+
+        $country = strtoupper($request->input('country'));
+        $payoutCurrency = strtoupper($request->input('payout_currency'));
+
+        if (! StripeConnectCountries::isValidCurrencyForCountry($country, $payoutCurrency)) {
+            return back()->withErrors(['payout_currency' => 'The selected currency is not available for your country.']);
+        }
 
         $user = $request->user();
         $developerAccount = $user->developerAccount;
 
         if (! $developerAccount) {
-            $developerAccount = $this->stripeConnectService->createConnectAccount($user);
+            $developerAccount = $this->stripeConnectService->createConnectAccount($user, $country, $payoutCurrency);
+        } else {
+            $developerAccount->update([
+                'country' => $country,
+                'payout_currency' => $payoutCurrency,
+            ]);
         }
 
         if (! $developerAccount->hasAcceptedCurrentTerms()) {

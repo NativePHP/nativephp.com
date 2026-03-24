@@ -53,6 +53,7 @@ class DeveloperPagesTest extends TestCase
             ->assertSee('Start Selling Plugins')
             ->assertSee('Connect with Stripe')
             ->assertSee('Plugin Developer Terms and Conditions')
+            ->assertSee('Your Country')
             ->assertStatus(200);
     }
 
