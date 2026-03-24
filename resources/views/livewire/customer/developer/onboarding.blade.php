@@ -77,10 +77,51 @@
                 </flux:callout>
             @endif
 
+            {{-- Country & Currency Selection --}}
+            <div class="mt-6 rounded-lg border border-gray-200 bg-gray-50 p-6 dark:border-gray-700 dark:bg-gray-700/50">
+                <flux:heading>Your Country</flux:heading>
+                <flux:text class="mt-2">
+                    Select the country where your bank account is located. This determines which currencies are available for payouts.
+                </flux:text>
+
+                <div class="mt-4 space-y-4">
+                    <div>
+                        <flux:select wire:model.live="country" variant="listbox" searchable label="Country" placeholder="Select your country...">
+                            @foreach ($this->countries as $code => $details)
+                                <flux:select.option value="{{ $code }}">
+                                    {{ $details['flag'] }} {{ $details['name'] }}
+                                </flux:select.option>
+                            @endforeach
+                        </flux:select>
+                        @error('country')
+                            <flux:text class="mt-2 text-red-600 dark:text-red-400">{{ $message }}</flux:text>
+                        @enderror
+                    </div>
+
+                    @if (count($this->availableCurrencies) > 0)
+                        <div>
+                            <flux:select wire:model="payoutCurrency" label="Payout Currency">
+                                @foreach ($this->availableCurrencies as $code => $name)
+                                    <flux:select.option value="{{ $code }}">
+                                        {{ $name }} ({{ $code }})
+                                    </flux:select.option>
+                                @endforeach
+                            </flux:select>
+                            @error('payout_currency')
+                                <flux:text class="mt-2 text-red-600 dark:text-red-400">{{ $message }}</flux:text>
+                            @enderror
+                        </div>
+                    @endif
+                </div>
+            </div>
+
             {{-- Developer Terms Agreement & CTA Button --}}
             <div class="mt-6">
                 <form action="{{ route('customer.developer.onboarding.start') }}" method="POST" x-data="{ termsAccepted: {{ ($this->developerAccount?->hasAcceptedCurrentTerms()) ? 'true' : 'false' }} }">
                     @csrf
+
+                    <input type="hidden" name="country" value="{{ $this->country }}" />
+                    <input type="hidden" name="payout_currency" value="{{ $this->payoutCurrency }}" />
 
                     @if ($this->developerAccount?->hasAcceptedCurrentTerms())
                         <input type="hidden" name="accepted_plugin_terms" value="1" />
@@ -137,7 +178,7 @@
                         </div>
                     @endif
 
-                    <flux:button type="submit" variant="primary" class="w-full" x-bind:disabled="!termsAccepted">
+                    <flux:button type="submit" variant="primary" class="w-full" x-bind:disabled="!termsAccepted || !$wire.country">
                         @if ($this->hasExistingAccount)
                             Continue Onboarding
                         @else
