@@ -8,6 +8,7 @@ use App\Notifications\NewLeadSubmitted;
 use App\Rules\Turnstile;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\RateLimiter;
+use Livewire\Attributes\Locked;
 use Livewire\Component;
 
 class LeadSubmissionForm extends Component
@@ -24,6 +25,7 @@ class LeadSubmissionForm extends Component
 
     public string $turnstileToken = '';
 
+    #[Locked]
     public bool $submitted = false;
 
     protected function rules(): array
@@ -77,7 +79,7 @@ class LeadSubmissionForm extends Component
 
         $lead->notify(new LeadReceived);
 
-        Notification::route('mail', 'support@nativephp.com')
+        Notification::route('mail', 'sales@nativephp.com')
             ->notify(new NewLeadSubmitted($lead));
 
         $this->submitted = true;

@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\Notifiable;
@@ -28,9 +29,9 @@ class Lead extends Model
         '50k_plus' => '$50,000+',
     ];
 
-    protected function budgetLabel(): \Illuminate\Database\Eloquent\Casts\Attribute
+    protected function budgetLabel(): Attribute
     {
-        return \Illuminate\Database\Eloquent\Casts\Attribute::make(get: function () {
+        return Attribute::make(get: function () {
             return self::BUDGETS[$this->budget] ?? $this->budget;
         });
     }

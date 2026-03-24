@@ -2,6 +2,7 @@
 
 namespace App\Jobs;
 
+use App\Models\License;
 use App\Models\User;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -51,7 +52,7 @@ class HandleCustomerSubscriptionCreatedJob implements ShouldQueue
 
         if ($isRenewal && $licenseKey && $licenseId) {
             // This is a renewal - link the subscription to the existing license
-            $license = \App\Models\License::where('id', $licenseId)
+            $license = License::where('id', $licenseId)
                 ->where('key', $licenseKey)
                 ->where('user_id', $user->id) // Ensure user owns the license
                 ->first();

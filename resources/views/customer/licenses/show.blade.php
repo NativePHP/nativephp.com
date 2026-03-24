@@ -431,7 +431,7 @@
             const nameInput = document.getElementById('edit_name');
             const emailInput = document.getElementById('edit_assigned_email');
 
-            form.action = '/customer/licenses/{{ $license->key }}/sub-licenses/' + subLicenseId;
+            form.action = '/dashboard/licenses/{{ $license->key }}/sub-licenses/' + subLicenseId;
             nameInput.value = currentName || '';
             emailInput.value = currentEmail || '';
             modal.classList.remove('hidden');

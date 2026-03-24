@@ -47,10 +47,10 @@
                     aria-hidden="true"
                 />
                 <time
-                    datetime="2025-04-30"
+                    datetime="2026-03-05"
                     class="text-sm"
                 >
-                    April 30, 2025
+                    March 5, 2026
                 </time>
             </div>
         </header>
@@ -223,6 +223,45 @@
                 are aware that your child has provided us with personal
                 information, please contact us so that we will be able to take
                 the necessary actions.
+            </p>
+
+            <h2>Third-Party Plugin Purchases</h2>
+
+            <p>
+                The Platform offers plugins developed by independent third-party
+                developers ("Third-Party Plugins"). When you purchase a
+                Third-Party Plugin through the Marketplace, certain personal
+                data may be shared with the plugin developer to facilitate the
+                transaction and enable them to provide support for their plugin.
+            </p>
+
+            <p>This data may include:</p>
+
+            <ul>
+                <li>Your name and email address;</li>
+                <li>License information associated with your purchase;</li>
+                <li>
+                    Technical information necessary for plugin delivery and
+                    activation.
+                </li>
+            </ul>
+
+            <p>
+                This data sharing constitutes a legitimate interest under
+                applicable data protection laws, as it is necessary to fulfil
+                the transaction and enable the developer to deliver and support
+                their plugin. We require third-party plugin developers to handle
+                your data in compliance with applicable data protection
+                regulations.
+            </p>
+
+            <p>
+                We encourage you to review the privacy policies of third-party
+                plugin developers before making a purchase. We are not
+                responsible for the data practices of third-party developers
+                beyond the requirements set out in our
+                <a href="/developer-terms">
+                    Plugin Developer Terms and Conditions</a>.
             </p>
 
             <h2>Changes to This Privacy Policy</h2>

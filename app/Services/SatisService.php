@@ -2,7 +2,9 @@
 
 namespace App\Services;
 
+use App\Enums\PluginType;
 use App\Models\Plugin;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 
@@ -25,13 +27,13 @@ class SatisService
     {
         $plugins = $this->getApprovedPlugins();
 
-        return $this->triggerBuild($plugins, $githubToken);
+        return $this->triggerBuild($plugins, $githubToken, fullBuild: true);
     }
 
     /**
      * Trigger a satis build for specific plugins.
      *
-     * @param  array<int, Plugin>|\Illuminate\Support\Collection  $plugins
+     * @param  array<int, Plugin>|Collection  $plugins
      */
     public function build($plugins, ?string $githubToken = null): array
     {
@@ -107,6 +109,7 @@ class SatisService
     {
         return Plugin::query()
             ->approved()
+            ->where('type', PluginType::Paid)
             ->get()
             ->map(fn (Plugin $plugin) => [
                 'name' => $plugin->name,
@@ -120,7 +123,7 @@ class SatisService
     /**
      * @param  array<int, array{name: string, repository_url: string, type: string, is_official?: bool}>  $plugins
      */
-    protected function triggerBuild(array $plugins, ?string $githubToken = null): array
+    protected function triggerBuild(array $plugins, ?string $githubToken = null, bool $fullBuild = false): array
     {
         if (! $this->apiUrl || ! $this->apiKey) {
             return [
@@ -139,7 +142,10 @@ class SatisService
         $githubToken ??= config('services.github.token');
 
         try {
-            $payload = ['plugins' => $plugins];
+            $payload = [
+                'plugins' => $plugins,
+                'full_build' => $fullBuild,
+            ];
 
             if ($githubToken) {
                 $payload['github_token'] = $githubToken;

@@ -1,0 +1,15 @@
+{
+  "scripts": {
+    "setup": [
+      "herd link",
+      "herd secure"
+    ],
+    "archive": [
+      "herd unsecure",
+      "herd unlink"
+    ]
+  },
+  "preview": {
+    "url": "http://{{folder}}.test"
+  }
+}

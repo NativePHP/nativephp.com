@@ -37,19 +37,24 @@ class CustomerPluginController extends Controller
 
     public function create(): View
     {
-        $user = Auth::user();
-        $developerAccount = $user->developerAccount;
+        $developerAccount = Auth::user()->developerAccount;
 
-        return view('customer.plugins.create', compact('developerAccount'));
+        return view('customer.plugins.create', [
+            'hasAcceptedTerms' => $developerAccount?->hasAcceptedCurrentTerms() ?? false,
+            'hasCompletedOnboarding' => $developerAccount?->hasCompletedOnboarding() ?? false,
+        ]);
     }
 
     public function store(SubmitPluginRequest $request, PluginSyncService $syncService): RedirectResponse
     {
         $user = Auth::user();
 
-        // Save display name if provided during submission
-        if ($request->filled('display_name') && ! $user->display_name) {
-            $user->update(['display_name' => $request->input('display_name')]);
+        // Require developer onboarding and terms acceptance for all plugin submissions
+        $developerAccount = $user->developerAccount;
+
+        if (! $developerAccount || ! $developerAccount->hasAcceptedCurrentTerms()) {
+            return to_route('customer.developer.onboarding')
+                ->with('message', 'You must accept the Plugin Developer Terms and Conditions before submitting a plugin.');
         }
 
         // Reject paid plugin submissions if the feature is disabled

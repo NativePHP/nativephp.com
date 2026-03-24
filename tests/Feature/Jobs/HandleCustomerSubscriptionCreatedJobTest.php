@@ -10,6 +10,7 @@ use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Bus;
 use Laravel\Cashier\Events\WebhookHandled;
+use Laravel\Cashier\SubscriptionItem;
 use Stripe\Customer;
 use Stripe\StripeClient;
 use Tests\TestCase;
@@ -123,7 +124,7 @@ class HandleCustomerSubscriptionCreatedJobTest extends TestCase
                 'stripe_price' => $this->getTestWebhookPayload()['data']['object']['items']['data'][0]['price']['id'],
                 'quantity' => 1,
             ]);
-        $subscriptionItem = \Laravel\Cashier\SubscriptionItem::factory()
+        $subscriptionItem = SubscriptionItem::factory()
             ->for($subscription, 'subscription')
             ->create([
                 'stripe_id' => $this->getTestWebhookPayload()['data']['object']['items']['data'][0]['id'],

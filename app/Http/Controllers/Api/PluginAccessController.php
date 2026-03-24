@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Enums\PluginType;
 use App\Http\Controllers\Controller;
 use App\Models\Plugin;
 use App\Models\User;
@@ -105,7 +106,7 @@ class PluginAccessController extends Controller
         // Admins have access to ALL paid plugins (including pending) for review
         if ($user->isAdmin()) {
             $allPaidPlugins = Plugin::query()
-                ->where('type', \App\Enums\PluginType::Paid)
+                ->where('type', PluginType::Paid)
                 ->whereNotNull('name')
                 ->get(['name', 'status']);
 
@@ -122,7 +123,7 @@ class PluginAccessController extends Controller
         // Paid plugins the user has submitted
         $submittedPlugins = Plugin::query()
             ->where('user_id', $user->id)
-            ->where('type', \App\Enums\PluginType::Paid)
+            ->where('type', PluginType::Paid)
             ->get(['name']);
 
         foreach ($submittedPlugins as $plugin) {
@@ -154,7 +155,7 @@ class PluginAccessController extends Controller
         // Team members get access to official plugins and owner's purchased plugins
         if ($user->isUltraTeamMember()) {
             $officialPlugins = Plugin::query()
-                ->where('type', \App\Enums\PluginType::Paid)
+                ->where('type', PluginType::Paid)
                 ->where('is_official', true)
                 ->whereNotNull('name')
                 ->get(['name']);

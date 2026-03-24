@@ -98,6 +98,52 @@
                         </div>
                     </div>
                 </div>
+            @elseif (!$hasCompletedOnboarding)
+                {{-- Developer Onboarding Required (never onboarded) --}}
+                <div class="rounded-lg border border-amber-200 bg-amber-50 p-6 dark:border-amber-900/50 dark:bg-amber-900/20">
+                    <div class="flex">
+                        <div class="shrink-0">
+                            <svg class="size-5 text-amber-400" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M8.485 2.495c.673-1.167 2.357-1.167 3.03 0l6.28 10.875c.673 1.167-.17 2.625-1.516 2.625H3.72c-1.347 0-2.189-1.458-1.515-2.625L8.485 2.495zM10 5a.75.75 0 01.75.75v3.5a.75.75 0 01-1.5 0v-3.5A.75.75 0 0110 5zm0 9a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd" />
+                            </svg>
+                        </div>
+                        <div class="ml-3">
+                            <h3 class="text-sm font-medium text-amber-800 dark:text-amber-200">
+                                Developer Onboarding Required
+                            </h3>
+                            <div class="mt-2 text-sm text-amber-700 dark:text-amber-300">
+                                <p>
+                                    Before you can submit a plugin, you need to accept the
+                                    <a href="{{ route('developer-terms') }}" class="font-medium underline" target="_blank">Plugin Developer Terms and Conditions</a>
+                                    and complete the developer onboarding process.
+                                </p>
+                                <a href="{{ route('customer.developer.onboarding') }}" class="mt-4 inline-flex items-center rounded-md bg-amber-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-amber-500">
+                                    Complete Developer Onboarding
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="ml-2 size-4">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
+                                    </svg>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            @elseif (!$hasAcceptedTerms)
+                {{-- Updated terms need acceptance (already onboarded) --}}
+                <div class="rounded-lg border border-amber-200 bg-amber-50 p-4 dark:border-amber-900/50 dark:bg-amber-900/20">
+                    <div class="flex items-center justify-between gap-4">
+                        <div class="flex items-center gap-3">
+                            <svg class="size-5 shrink-0 text-amber-400" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M8.485 2.495c.673-1.167 2.357-1.167 3.03 0l6.28 10.875c.673 1.167-.17 2.625-1.516 2.625H3.72c-1.347 0-2.189-1.458-1.515-2.625L8.485 2.495zM10 5a.75.75 0 01.75.75v3.5a.75.75 0 01-1.5 0v-3.5A.75.75 0 0110 5zm0 9a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd" />
+                            </svg>
+                            <p class="text-sm font-medium text-amber-800 dark:text-amber-200">
+                                Our <a href="{{ route('developer-terms') }}" class="underline" target="_blank">Plugin Developer Terms and Conditions</a> have been updated. You must accept the new terms before you can submit new plugins.
+                            </p>
+                        </div>
+                        <a href="{{ route('customer.developer.onboarding') }}" class="shrink-0 rounded-md bg-amber-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-amber-500">
+                            Review &amp; Accept
+                        </a>
+                    </div>
+                </div>
             @else
             <form
                 method="POST"
@@ -349,35 +395,37 @@
                     x-transition:enter="transition ease-out duration-200"
                     x-transition:enter-start="opacity-0 -translate-y-2"
                     x-transition:enter-end="opacity-100 translate-y-0"
-                    class="rounded-lg border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-gray-800"
+                    class="space-y-6"
                 >
-                    <h3 class="text-sm font-medium text-gray-900 dark:text-white">How paid plugins work</h3>
-                    <ul class="mt-4 space-y-3 text-sm text-gray-600 dark:text-gray-400">
-                        <li class="flex items-start gap-3">
-                            <svg class="mt-0.5 size-5 shrink-0 text-indigo-500" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
-                            </svg>
-                            <span>We pull your code from GitHub when you tag a release</span>
-                        </li>
-                        <li class="flex items-start gap-3">
-                            <svg class="mt-0.5 size-5 shrink-0 text-indigo-500" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
-                            </svg>
-                            <span>We host and distribute your plugin via <code class="rounded bg-gray-100 px-1 py-0.5 dark:bg-gray-600">plugins.nativephp.com</code></span>
-                        </li>
-                        <li class="flex items-start gap-3">
-                            <svg class="mt-0.5 size-5 shrink-0 text-indigo-500" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
-                            </svg>
-                            <span>Customers install via Composer with their license key</span>
-                        </li>
-                        <li class="flex items-start gap-3">
-                            <svg class="mt-0.5 size-5 shrink-0 text-indigo-500" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
-                            </svg>
-                            <span>You get paid automatically via Stripe Connect</span>
-                        </li>
-                    </ul>
+                    <div class="rounded-lg border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-gray-800">
+                        <h3 class="text-sm font-medium text-gray-900 dark:text-white">How paid plugins work</h3>
+                        <ul class="mt-4 space-y-3 text-sm text-gray-600 dark:text-gray-400">
+                            <li class="flex items-start gap-3">
+                                <svg class="mt-0.5 size-5 shrink-0 text-indigo-500" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                                </svg>
+                                <span>We pull your code from GitHub when you tag a release</span>
+                            </li>
+                            <li class="flex items-start gap-3">
+                                <svg class="mt-0.5 size-5 shrink-0 text-indigo-500" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                                </svg>
+                                <span>We host and distribute your plugin via <code class="rounded bg-gray-100 px-1 py-0.5 dark:bg-gray-600">plugins.nativephp.com</code></span>
+                            </li>
+                            <li class="flex items-start gap-3">
+                                <svg class="mt-0.5 size-5 shrink-0 text-indigo-500" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                                </svg>
+                                <span>Customers install via Composer with their license key</span>
+                            </li>
+                            <li class="flex items-start gap-3">
+                                <svg class="mt-0.5 size-5 shrink-0 text-indigo-500" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                                </svg>
+                                <span>You get paid automatically via Stripe Connect</span>
+                            </li>
+                        </ul>
+                    </div>
                 </div>
                 @endfeature
 

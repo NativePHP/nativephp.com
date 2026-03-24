@@ -6,13 +6,16 @@ use App\Enums\PluginActivityType;
 use App\Enums\PluginStatus;
 use App\Enums\PluginTier;
 use App\Enums\PluginType;
+use App\Enums\PriceTier;
 use App\Notifications\PluginApproved;
 use App\Notifications\PluginRejected;
 use App\Services\PluginSyncService;
 use App\Services\SatisService;
+use Illuminate\Database\Eloquent\Attributes\Scope;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -33,7 +36,7 @@ class Plugin extends Model
     /**
      * Find a plugin by its vendor and package name, or fail.
      *
-     * @throws \Illuminate\Database\Eloquent\ModelNotFoundException
+     * @throws ModelNotFoundException
      */
     public static function findByVendorPackageOrFail(string $vendor, string $package): self
     {
@@ -47,9 +50,12 @@ class Plugin extends Model
      */
     public function routeParams(): array
     {
-        [$vendor, $package] = explode('/', $this->name);
+        $parts = explode('/', $this->name ?? '');
 
-        return ['vendor' => $vendor, 'package' => $package];
+        return [
+            'vendor' => $parts[0] ?? '',
+            'package' => $parts[1] ?? '',
+        ];
     }
 
     protected $guarded = [];
@@ -163,7 +169,7 @@ class Plugin extends Model
      */
     public function getBestPriceForUser(?User $user): ?PluginPrice
     {
-        $eligibleTiers = $user ? $user->getEligiblePriceTiers() : [\App\Enums\PriceTier::Regular];
+        $eligibleTiers = $user ? $user->getEligiblePriceTiers() : [PriceTier::Regular];
 
         // Get the lowest active price for the user's eligible tiers
         $bestPrice = $this->prices()
@@ -200,7 +206,7 @@ class Plugin extends Model
     {
         return $this->prices()
             ->active()
-            ->forTier(\App\Enums\PriceTier::Regular)
+            ->forTier(PriceTier::Regular)
             ->first() ?? $this->activePrice;
     }
 
@@ -292,7 +298,7 @@ class Plugin extends Model
      * @param  Builder<Plugin>  $query
      * @return Builder<Plugin>
      */
-    #[\Illuminate\Database\Eloquent\Attributes\Scope]
+    #[Scope]
     protected function approved(Builder $query): Builder
     {
         return $query->where('status', PluginStatus::Approved)
@@ -303,7 +309,7 @@ class Plugin extends Model
      * @param  Builder<Plugin>  $query
      * @return Builder<Plugin>
      */
-    #[\Illuminate\Database\Eloquent\Attributes\Scope]
+    #[Scope]
     protected function active(Builder $query): Builder
     {
         return $query->where('is_active', true);
@@ -313,7 +319,7 @@ class Plugin extends Model
      * @param  Builder<Plugin>  $query
      * @return Builder<Plugin>
      */
-    #[\Illuminate\Database\Eloquent\Attributes\Scope]
+    #[Scope]
     protected function featured(Builder $query): Builder
     {
         return $query->where('featured', true);
@@ -324,9 +330,9 @@ class Plugin extends Model
         return "https://packagist.org/packages/{$this->name}";
     }
 
-    public function getGithubUrl(): string
+    public function getGithubUrl(): ?string
     {
-        return "https://github.com/{$this->name}";
+        return $this->repository_url;
     }
 
     public function getWebhookUrl(): ?string

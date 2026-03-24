@@ -41,6 +41,10 @@
                                                         <div class="grid size-10 place-items-center rounded-lg bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400">
                                                             <x-heroicon-o-key class="size-5" />
                                                         </div>
+                                                    @elseif($purchase['type'] === 'product')
+                                                        <div class="grid size-10 place-items-center rounded-lg bg-amber-100 text-amber-600 dark:bg-amber-900/30 dark:text-amber-400">
+                                                            <x-heroicon-o-shopping-bag class="size-5" />
+                                                        </div>
                                                     @else
                                                         <div class="grid size-10 place-items-center rounded-lg bg-purple-100 text-purple-600 dark:bg-purple-900/30 dark:text-purple-400">
                                                             <x-heroicon-o-puzzle-piece class="size-5" />
@@ -62,6 +66,10 @@
                                                         @if($purchase['type'] === 'subscription')
                                                             <span class="ml-2 inline-flex items-center rounded-full bg-blue-100 px-2.5 py-0.5 text-xs font-medium text-blue-800 dark:bg-blue-900/30 dark:text-blue-400">
                                                                 License
+                                                            </span>
+                                                        @elseif($purchase['type'] === 'product')
+                                                            <span class="ml-2 inline-flex items-center rounded-full bg-amber-100 px-2.5 py-0.5 text-xs font-medium text-amber-800 dark:bg-amber-900/30 dark:text-amber-400">
+                                                                Product
                                                             </span>
                                                         @else
                                                             <span class="ml-2 inline-flex items-center rounded-full bg-purple-100 px-2.5 py-0.5 text-xs font-medium text-purple-800 dark:bg-purple-900/30 dark:text-purple-400">

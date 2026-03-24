@@ -10,6 +10,7 @@ use App\Jobs\SyncPlugin;
 use App\Jobs\SyncPluginReleases;
 use App\Models\PluginLicense;
 use App\Models\User;
+use App\Notifications\PluginGranted;
 use Filament\Actions;
 use Filament\Forms;
 use Filament\Notifications\Notification;
@@ -143,6 +144,7 @@ class EditPlugin extends EditRecord
                         ]);
 
                         $user->getPluginLicenseKey();
+                        $user->notify(new PluginGranted($this->record));
 
                         Notification::make()
                             ->title("Granted '{$this->record->name}' license to {$user->name}")
@@ -246,6 +248,7 @@ class EditPlugin extends EditRecord
                     ->label('View on GitHub')
                     ->icon('heroicon-o-arrow-top-right-on-square')
                     ->color('gray')
+                    ->visible(fn () => $this->record->repository_url !== null)
                     ->url(fn () => $this->record->getGithubUrl())
                     ->openUrlInNewTab(),
             ])

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\Subscription;
 use App\Models\Plugin;
 use App\Models\PluginLicense;
 use App\Models\SubLicense;
@@ -51,7 +52,7 @@ class CustomerLicenseController extends Controller
 
                 if (! $planPriceId) {
                     foreach ($activeSubscription->items as $item) {
-                        if (! \App\Enums\Subscription::isExtraSeatPrice($item->stripe_price)) {
+                        if (! Subscription::isExtraSeatPrice($item->stripe_price)) {
                             $planPriceId = $item->stripe_price;
                             break;
                         }
@@ -59,7 +60,7 @@ class CustomerLicenseController extends Controller
                 }
 
                 if ($planPriceId) {
-                    $subscriptionName = \App\Enums\Subscription::fromStripePriceId($planPriceId)->name();
+                    $subscriptionName = Subscription::fromStripePriceId($planPriceId)->name();
                 } else {
                     $subscriptionName = ucfirst($activeSubscription->type);
                 }
@@ -89,8 +90,11 @@ class CustomerLicenseController extends Controller
             default => 'No accounts connected',
         };
 
-        // Total purchases (licenses + plugins)
-        $totalPurchases = $licenseCount + $pluginLicenseCount;
+        // Total purchases (licenses + plugins + products)
+        $productLicenseCount = $user->productLicenses()->count();
+        $totalPurchases = $licenseCount + $pluginLicenseCount + $productLicenseCount;
+
+        $developerAccount = $user->developerAccount;
 
         // Team info
         $ownedTeam = $user->ownedTeam;
@@ -111,6 +115,7 @@ class CustomerLicenseController extends Controller
             'connectedAccountsCount',
             'connectedAccountsDescription',
             'totalPurchases',
+            'developerAccount',
             'hasTeam',
             'teamName',
             'teamMemberCount',
@@ -179,7 +184,7 @@ class CustomerLicenseController extends Controller
         $user = Auth::user();
 
         // Check if offer has expired
-        if (now()->gt('2026-02-28 23:59:59')) {
+        if (now()->gt('2026-05-31 23:59:59')) {
             return to_route('dashboard')
                 ->with('error', 'This offer has expired.');
         }

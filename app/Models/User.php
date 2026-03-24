@@ -3,9 +3,12 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use App\Enums\PriceTier;
+use App\Enums\Subscription;
 use App\Enums\TeamUserStatus;
 use Filament\Models\Contracts\FilamentUser;
 use Filament\Panel;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
@@ -244,7 +247,7 @@ class User extends Authenticatable implements FilamentUser
 
         if (! $planPriceId) {
             foreach ($subscription->items as $item) {
-                if (! \App\Enums\Subscription::isExtraSeatPrice($item->stripe_price)) {
+                if (! Subscription::isExtraSeatPrice($item->stripe_price)) {
                     $planPriceId = $item->stripe_price;
                     break;
                 }
@@ -256,7 +259,7 @@ class User extends Authenticatable implements FilamentUser
         }
 
         try {
-            if (\App\Enums\Subscription::fromStripePriceId($planPriceId) !== \App\Enums\Subscription::Max) {
+            if (Subscription::fromStripePriceId($planPriceId) !== Subscription::Max) {
                 return false;
             }
         } catch (\RuntimeException) {
@@ -282,18 +285,18 @@ class User extends Authenticatable implements FilamentUser
      * Get all price tiers the user is eligible for.
      * Always includes 'regular', plus any special tiers based on their status.
      *
-     * @return array<\App\Enums\PriceTier>
+     * @return array<PriceTier>
      */
     public function getEligiblePriceTiers(): array
     {
-        $tiers = [\App\Enums\PriceTier::Regular];
+        $tiers = [PriceTier::Regular];
 
         if ($this->subscribed() || $this->isUltraTeamMember()) {
-            $tiers[] = \App\Enums\PriceTier::Subscriber;
+            $tiers[] = PriceTier::Subscriber;
         }
 
         if ($this->isEapCustomer()) {
-            $tiers[] = \App\Enums\PriceTier::Eap;
+            $tiers[] = PriceTier::Eap;
         }
 
         return $tiers;
@@ -309,16 +312,16 @@ class User extends Authenticatable implements FilamentUser
         return $this->licenses()->exists();
     }
 
-    protected function displayName(): \Illuminate\Database\Eloquent\Casts\Attribute
+    protected function displayName(): Attribute
     {
-        return \Illuminate\Database\Eloquent\Casts\Attribute::make(get: function () {
+        return Attribute::make(get: function () {
             return $this->attributes['display_name'] ?? $this->name ?? 'Unknown';
         });
     }
 
-    protected function firstName(): \Illuminate\Database\Eloquent\Casts\Attribute
+    protected function firstName(): Attribute
     {
-        return \Illuminate\Database\Eloquent\Casts\Attribute::make(get: function () {
+        return Attribute::make(get: function () {
             if (empty($this->name)) {
                 return null;
             }
@@ -328,9 +331,9 @@ class User extends Authenticatable implements FilamentUser
         });
     }
 
-    protected function lastName(): \Illuminate\Database\Eloquent\Casts\Attribute
+    protected function lastName(): Attribute
     {
-        return \Illuminate\Database\Eloquent\Casts\Attribute::make(get: function () {
+        return Attribute::make(get: function () {
             if (empty($this->name)) {
                 return null;
             }
@@ -451,7 +454,7 @@ class User extends Authenticatable implements FilamentUser
      */
     public function hasClaimedFreePlugins(): bool
     {
-        $freePluginIds = \App\Models\Plugin::query()
+        $freePluginIds = Plugin::query()
             ->whereIn('name', self::FREE_PLUGINS_OFFER)
             ->pluck('id');
 

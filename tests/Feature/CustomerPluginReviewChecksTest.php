@@ -2,11 +2,14 @@
 
 namespace Tests\Feature;
 
+use App\Livewire\Customer\Plugins\Create;
+use App\Models\DeveloperAccount;
 use App\Models\User;
 use App\Notifications\PluginSubmitted;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Notification;
+use Livewire\Livewire;
 use Tests\TestCase;
 
 class CustomerPluginReviewChecksTest extends TestCase
@@ -20,6 +23,9 @@ class CustomerPluginReviewChecksTest extends TestCase
 
         $user = User::factory()->create([
             'github_id' => '12345',
+        ]);
+        DeveloperAccount::factory()->withAcceptedTerms()->create([
+            'user_id' => $user->id,
         ]);
 
         $repoSlug = 'acme/test-plugin';
@@ -65,13 +71,12 @@ class CustomerPluginReviewChecksTest extends TestCase
             ]),
         ]);
 
-        $response = $this->actingAs($user)
-            ->post(route('customer.plugins.store'), [
-                'repository' => $repoSlug,
-                'type' => 'free',
-            ]);
-
-        $response->assertRedirect();
+        Livewire::actingAs($user)
+            ->test(Create::class)
+            ->set('repository', $repoSlug)
+            ->set('pluginType', 'free')
+            ->call('submitPlugin')
+            ->assertRedirect();
 
         $plugin = $user->plugins()->where('repository_url', "https://github.com/{$repoSlug}")->first();
 
@@ -98,6 +103,9 @@ class CustomerPluginReviewChecksTest extends TestCase
 
         $user = User::factory()->create([
             'github_id' => '12345',
+        ]);
+        DeveloperAccount::factory()->withAcceptedTerms()->create([
+            'user_id' => $user->id,
         ]);
 
         $repoSlug = 'acme/bare-plugin';
@@ -135,11 +143,11 @@ class CustomerPluginReviewChecksTest extends TestCase
             ]),
         ]);
 
-        $this->actingAs($user)
-            ->post(route('customer.plugins.store'), [
-                'repository' => $repoSlug,
-                'type' => 'free',
-            ]);
+        Livewire::actingAs($user)
+            ->test(Create::class)
+            ->set('repository', $repoSlug)
+            ->set('pluginType', 'free')
+            ->call('submitPlugin');
 
         $plugin = $user->plugins()->where('repository_url', "https://github.com/{$repoSlug}")->first();
 

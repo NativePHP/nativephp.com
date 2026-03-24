@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 use Livewire\Attributes\Locked;
+use Livewire\Attributes\On;
 use Livewire\Component;
 
 class MobilePricing extends Component
@@ -19,10 +20,6 @@ class MobilePricing extends Component
     #[Locked]
     public $user;
 
-    protected $listeners = [
-        'purchase-request-submitted' => 'handlePurchaseRequest',
-    ];
-
     public function mount(): void
     {
         if (request()->has('email')) {
@@ -30,6 +27,7 @@ class MobilePricing extends Component
         }
     }
 
+    #[On('purchase-request-submitted')]
     public function handlePurchaseRequest(array $data)
     {
         if (! $this->user) {

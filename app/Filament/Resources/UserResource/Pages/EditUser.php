@@ -2,11 +2,17 @@
 
 namespace App\Filament\Resources\UserResource\Pages;
 
+use App\Enums\Subscription;
 use App\Filament\Resources\UserResource;
+use App\Jobs\CreateAnystackLicenseJob;
 use App\Models\User;
 use Filament\Actions;
+use Filament\Forms\Components\Placeholder;
+use Filament\Forms\Components\Radio;
+use Filament\Forms\Components\Select;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
+use Illuminate\Support\Facades\Password;
 
 class EditUser extends EditRecord
 {
@@ -50,17 +56,17 @@ class EditUser extends EditRecord
                             $currentPlan = 'their current plan';
 
                             try {
-                                $currentPlan = \App\Enums\Subscription::fromStripePriceId(
+                                $currentPlan = Subscription::fromStripePriceId(
                                     $existingSubscription->items->first()?->stripe_price ?? $existingSubscription->stripe_price
                                 )->name();
                             } catch (\Exception) {
                             }
 
-                            $fields[] = \Filament\Forms\Components\Placeholder::make('info')
+                            $fields[] = Placeholder::make('info')
                                 ->label('')
                                 ->content("This user has an active {$currentPlan} subscription. Choose when to switch them to the comped Ultra plan.");
 
-                            $fields[] = \Filament\Forms\Components\Radio::make('timing')
+                            $fields[] = Radio::make('timing')
                                 ->label('When to switch')
                                 ->options([
                                     'now' => 'Immediately — swap now and credit remaining value (swapAndInvoice)',
@@ -69,7 +75,7 @@ class EditUser extends EditRecord
                                 ->default('now')
                                 ->required();
                         } else {
-                            $fields[] = \Filament\Forms\Components\Placeholder::make('info')
+                            $fields[] = Placeholder::make('info')
                                 ->label('')
                                 ->content("This will create a free Ultra subscription for {$record->email}. A Stripe customer will be created if one doesn't exist.");
                         }
@@ -131,17 +137,17 @@ class EditUser extends EditRecord
                     ->color('gray')
                     ->icon('heroicon-o-key')
                     ->form([
-                        \Filament\Forms\Components\Select::make('subscription')
+                        Select::make('subscription')
                             ->label('Subscription Plan')
-                            ->options(collect(\App\Enums\Subscription::cases())->mapWithKeys(function ($case) {
+                            ->options(collect(Subscription::cases())->mapWithKeys(function ($case) {
                                 return [$case->value => $case->name()];
                             }))
                             ->required(),
                     ])
                     ->action(function (array $data, User $record): void {
-                        $subscription = \App\Enums\Subscription::from($data['subscription']);
+                        $subscription = Subscription::from($data['subscription']);
 
-                        dispatch(new \App\Jobs\CreateAnystackLicenseJob($record, $subscription, null, $record->first_name, $record->last_name));
+                        dispatch(new CreateAnystackLicenseJob($record, $subscription, null, $record->first_name, $record->last_name));
                     }),
 
                 Actions\Action::make('sendPasswordReset')
@@ -150,7 +156,7 @@ class EditUser extends EditRecord
                     ->icon('heroicon-o-envelope')
                     ->requiresConfirmation()
                     ->action(function (User $record): void {
-                        \Illuminate\Support\Facades\Password::sendResetLink(
+                        Password::sendResetLink(
                             ['email' => $record->email]
                         );
                     }),

@@ -3,23 +3,58 @@ title: Upgrade Guide
 order: 3
 ---
 
-### High Impact Changes
+## Upgrading To 3.1 From 3.0
 
-- [Remove the NativePHP Composer repository](#remove-the-nativephp-composer-repository)
-- [Plugin-based architecture](#plugin-architecture)
-- [Rebuild required](#rebuild-required)
+v3.1 is a drop-in upgrade with no breaking changes. The headline feature is a **persistent PHP runtime** that
+dramatically improves request performance.
 
-### Medium Impact Changes
 
-- [NativeServiceProvider](#nativeserviceprovider)
-- [Core APIs are now plugins](#core-apis-are-now-plugins)
-- [New plugin management commands](#plugin-management-commands)
+### Update your dependency
 
-### Low Impact Changes
+```json
+"require": {
+    "nativephp/mobile": "~3.0.0" // [tl! remove]
+    "nativephp/mobile": "~3.1.0" // [tl! add]
+}
+```
 
-- [Bridge functions](#bridge-functions)
-- [Command reference documentation](#command-reference)
-- [Plugin marketplace](#plugin-marketplace)
+```sh
+composer update
+php artisan native:install --force
+```
+
+<aside>
+
+The `--force` flag is important — it ensures the native project files, PHP binaries, and config are all updated
+to the v3.1 versions.
+
+</aside>
+
+
+## Android 8+ Support
+
+In order to support Android API 26 add the following to your `config/nativephp.php`:
+
+```php
+'android' => [
+    'compile_sdk' => env('NATIVEPHP_ANDROID_COMPILE_SDK', 36),
+    'min_sdk' => env('NATIVEPHP_ANDROID_MIN_SDK', 33),
+    'target_sdk' => env('NATIVEPHP_ANDROID_TARGET_SDK', 36),
+],
+```
+
+No code changes are required — this is handled entirely at the build level.
+
+## ICU/Intl Support on iOS
+
+iOS builds now include full **ICU support**, which means the PHP `intl` extension works on both platforms.
+This was previously only available on Android.
+
+This is a big deal — packages like [Filament](https://filamentphp.com) depend on `intl` for number formatting,
+date formatting, and pluralization. With v3.1, **Filament works on both iOS and Android** out of the box.
+
+ICU support remains optional via the `--with-icu` / `--without-icu` flags during installation it adds ~30MB to your app on Android and ~100MB on iOS.
+---
 
 ## Upgrading To 3.0 From 2.x
 

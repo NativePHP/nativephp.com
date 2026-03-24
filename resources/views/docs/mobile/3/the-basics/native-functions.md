@@ -9,8 +9,8 @@ that lets you focus on building your app. Build for both platforms while you dev
 Native device functions are called directly from your PHP code, giving you access to platform-specific features while
 maintaining the productivity and familiarity of Laravel development.
 
-These functions are called from your PHP code using an ever-growing list of classes. These classes are also wrapped in
-Laravel Facades for ease of access and testing, such as:
+These functions are called from your PHP code using an ever-growing set of [Plugins](../plugins/). Plugins contain PHP classes that
+are also wrapped in Laravel Facades for ease of access and testing, such as:
 
 ```php
 Native\Mobile\Facades\Biometrics
@@ -18,22 +18,21 @@ Native\Mobile\Facades\Browser
 Native\Mobile\Facades\Camera
 ```
 
-Each of these is covered in our [APIs](../apis/) section.
+Each of these is covered in their respective plugin's documentation.
 
 
 ## Run from anywhere
 
-All of our supported APIs are called through PHP. This means NativePHP for Mobile is not reliant upon a web view to
-function, and eventually we will fully support apps that don't use a web view as their main tool for rendering the UI.
-Though this will be optional, so you have total freedom of choice and could even build completely hybrid solutions.
+All native APIs are called through PHP. This means that your application is not reliant upon a web view to
+function.
 
-When using a web view and using JavaScript you may also interact with the native functions easily from JavaScript using
+However, when using a web view you may also interact with the native functions easily from JavaScript using
 our convenient `Native` library.
 
 This is especially useful if you're building applications with a SPA framework, like Vue or React, as you can simply
 import the functions you need and move a lot of work into the reactive part of your UI.
 
-### Install the plugin
+### Install the Node plugin
 
 To use the `Native` JavaScript library, you must install the plugin in your `package.json` file. Add the following
 section to the JSON: 
@@ -75,7 +74,7 @@ onUnmounted(() => {
 The library is fully typed, so your IDE should be able to pick up the available properties and methods to provide you
 with inline hints and code completion support.
 
-For the most part, the JavaScript APIs mirror the PHP APIs. Any key differences are noted in our API docs.
+For the most part, the JavaScript APIs mirror the PHP APIs. Any key differences are noted in each Plugin's docs.
 
 This approach uses the PHP interface under the hood, meaning the two implementations stay in lock-step with each other.
 So you'll never need to worry about whether an API is available only in one place or the other; they're all always

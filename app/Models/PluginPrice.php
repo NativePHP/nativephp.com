@@ -3,7 +3,9 @@
 namespace App\Models;
 
 use App\Enums\PriceTier;
+use Illuminate\Database\Eloquent\Attributes\Scope;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -26,7 +28,7 @@ class PluginPrice extends Model
      * @param  Builder<PluginPrice>  $query
      * @return Builder<PluginPrice>
      */
-    #[\Illuminate\Database\Eloquent\Attributes\Scope]
+    #[Scope]
     protected function active(Builder $query): Builder
     {
         return $query->where('is_active', true);
@@ -36,7 +38,7 @@ class PluginPrice extends Model
      * @param  Builder<PluginPrice>  $query
      * @return Builder<PluginPrice>
      */
-    #[\Illuminate\Database\Eloquent\Attributes\Scope]
+    #[Scope]
     protected function forTier(Builder $query, PriceTier|string $tier): Builder
     {
         $tierValue = $tier instanceof PriceTier ? $tier->value : $tier;
@@ -49,7 +51,7 @@ class PluginPrice extends Model
      * @param  array<PriceTier>  $tiers
      * @return Builder<PluginPrice>
      */
-    #[\Illuminate\Database\Eloquent\Attributes\Scope]
+    #[Scope]
     protected function forTiers(Builder $query, array $tiers): Builder
     {
         $tierValues = array_map(fn ($t) => $t instanceof PriceTier ? $t->value : $t, $tiers);
@@ -57,9 +59,9 @@ class PluginPrice extends Model
         return $query->whereIn('tier', $tierValues);
     }
 
-    protected function formattedAmount(): \Illuminate\Database\Eloquent\Casts\Attribute
+    protected function formattedAmount(): Attribute
     {
-        return \Illuminate\Database\Eloquent\Casts\Attribute::make(get: function () {
+        return Attribute::make(get: function () {
             return number_format($this->amount / 100, 2);
         });
     }

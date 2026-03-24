@@ -56,6 +56,58 @@ Note that this will make your application's boot up slightly slower as it must u
 But this ensures that you can iterate quickly during development, while providing a faster, more stable experience for
 end users once an app is published.
 
+## Persistent Runtime
+
+v3.1 introduces a persistent PHP runtime that boots Laravel once and reuses the kernel across all subsequent requests.
+This dramatically improves performance — from ~200-300ms per request down to ~5-30ms.
+
+The `runtime` section controls this behavior:
+
+```php
+'runtime' => [
+    'mode' => env('NATIVEPHP_RUNTIME_MODE', 'persistent'), // [tl! highlight]
+    'reset_instances' => true,
+    'gc_between_dispatches' => false,
+],
+```
+
+- `mode` — Set to `persistent` (default) to reuse the Laravel kernel, or `classic` to boot/shutdown per request.
+  If persistent boot fails, it falls back to classic mode automatically.
+- `reset_instances` — Whether to clear resolved facade instances between dispatches. (default: `true`)
+- `gc_between_dispatches` — Whether to run garbage collection between dispatches. Enable this if you notice memory
+  growth over time. (default: `false`)
+
+<aside>
+
+The persistent runtime handles Livewire state, router state, and facade instances automatically. You only need
+`onReset()` if you have custom static state that accumulates between requests.
+
+</aside>
+
+## Deep Links
+
+Configure deep linking to allow URLs to open your app directly:
+
+```php
+'deeplink_scheme' => env('NATIVEPHP_DEEPLINK_SCHEME'),
+'deeplink_host' => env('NATIVEPHP_DEEPLINK_HOST'),
+```
+
+The `deeplink_scheme` enables custom URL schemes (e.g. `myapp://some/path`), while `deeplink_host` enables
+verified HTTPS links and NFC tags (e.g. `https://your-host.com/path`).
+
+See the [Deep Links](../concepts/deep-links) documentation for full details.
+
+## Start URL
+
+Set the initial path that loads when your app starts:
+
+```php
+'start_url' => env('NATIVEPHP_START_URL', '/'),
+```
+
+This is useful if you want to land users on a specific page like `/dashboard` or `/onboarding` instead of the root.
+
 ## Cleanup `env` keys
 
 The `cleanup_env_keys` array in the config file allows you to specify keys that should be removed from the `.env` file
@@ -66,68 +118,6 @@ before bundling. This is useful for removing sensitive information like API keys
 The `cleanup_exclude_files` array in the config file allows you to specify files and folders that should be removed
 before bundling. This is useful for removing files like logs or other temporary files that aren't required for your app
 to function and bloat your downloads.
-
-## Permissions
-In general, the app stores don't want your app to have permissions (a.k.a entitlements) it doesn't need. 
-
-By default, all optional permissions are disabled.
-
-You may enable the features you intend to use simply by changing the value of the appropriate permission to `true`:
-
-```php
-    'permissions' => [
-        'biometric' => false,
-        'camera' => false,
-        'location' => false,
-        'microphone' => false,
-        'microphone_background' => false,
-        'network_state' => true,
-        'nfc' => false,
-        'push_notifications' => false,
-        'storage_read' => false,
-        'storage_write' => false,
-        'scanner' => false,
-        'vibrate' => false,
-    ],
-```
-
-For iOS, this will provide a sensible default description.
-
-### Custom permission descriptions
-
-For iOS, it's possible to define custom permission descriptions. In most cases, you are required to provide clear
-reasons why your app needs certain permissions. You can do this easily from the config file:
-
-```php
-    'permissions' => [
-        'biometric' => 'Access to the biometric sensor is needed to secure user resources',
-        //...
-    ],
-```
-
-### Available permissions
-
-- `biometric` - Allows your application to use fingerprint or face-recognition hardware (with a fallback to PIN code)
-    to secure parts of your application.
-- `camera` - Allows your application to request access to the device's camera, if present. Required for taking photos and
-    recording video. Note that the user may deny access and any camera functions will then result in a no-op.
-- `nfc` - Allows your application to request access to the device's NFC reader, if present.
-- `push_notifications` - Allows your application to request permissions to send push notifications. Note that the user
-    may deny this and any push notification functions will then result in a no-op.
-- `location` - Allows your application to request access to the device's GPS receiver, if present. Note that the user
-    may deny this and any location functions will then result in a no-op.
-- `vibrate` - In modern Android devices this is a requirement for most haptic feedback.
-- `storage_read` - Grants your app access to read from device storage locations. This is not required for basic app file manipulation.
-- `storage_write` - Allows your app to write to device storage. This is not required for basic app file manipulation.
-- `microphone` - Allows your application to request access to the device's microphone, if present. Required for audio
-    recording functionality. Note that the user may deny access and any microphone functions will then result in a no-op.
-- `microphone_background` - Allows your application to request access to the device's microphone, if present. Required
-  for audio recording functionality. Note that the user may deny access and any microphone functions will then result in
-  a no-op.
-- `scanner` - Allows your application to scan QR codes and barcodes. Note that the user may deny camera access and any
-    scanning functions will then result in a no-op.
-- `network_state` - Allows your application to access information about the device's network connectivity status. This
-    permission is enabled by default as it's commonly needed for basic network state detection.
 
 ## Orientation
 
@@ -171,5 +161,157 @@ Using standard CSS responsive design principles, you can make your app work beau
 
 Once you've published an app with iPad support, it cannot be undone. If you wish to remove iPad support, you
 will need to change your `NATIVEPHP_APP_ID` and publish the app under a new App Store listing.
+
+</aside>
+
+## Android SDK Versions
+
+The `android` section of your config file lets you control which Android SDK versions are used when building your app.
+These are nested under the `android` key in `config/nativephp.php`:
+
+```php
+'android' => [
+    'compile_sdk' => env('NATIVEPHP_ANDROID_COMPILE_SDK', 36),
+    'min_sdk' => env('NATIVEPHP_ANDROID_MIN_SDK', 33),
+    'target_sdk' => env('NATIVEPHP_ANDROID_TARGET_SDK', 36),
+],
+```
+
+- `compile_sdk` - The SDK version used to compile your app. This determines which Android APIs are available to you
+    at build time. (default: `36`)
+- `min_sdk` - The minimum Android version your app supports. Devices running an older version won't be able to install
+    your app. (default: `26`, Android 8)
+- `target_sdk` - The SDK version your app is designed and tested against. Google Play uses this to apply appropriate
+    compatibility behaviors. (default: `36`)
+
+You can also set these via environment variables:
+
+```dotenv
+NATIVEPHP_ANDROID_COMPILE_SDK=36
+NATIVEPHP_ANDROID_MIN_SDK=26
+NATIVEPHP_ANDROID_TARGET_SDK=36
+```
+
+<aside>
+
+Most apps won't need to change these defaults. Only adjust them if you have a specific reason, such as supporting
+older devices or targeting a newer API level. Always ensure that `compile_sdk` >= `target_sdk` >= `min_sdk`.
+
+The lowest supported `min_sdk` is `26` (Android 8). Setting it lower than this is not supported.
+
+</aside>
+
+## Android Build Configuration
+
+Fine-tune your Android build process with these options under the `android.build` key:
+
+```php
+'android' => [
+    'build' => [
+        'minify_enabled' => env('NATIVEPHP_ANDROID_MINIFY_ENABLED', false),
+        'shrink_resources' => env('NATIVEPHP_ANDROID_SHRINK_RESOURCES', false),
+        'obfuscate' => env('NATIVEPHP_ANDROID_OBFUSCATE', false),
+        'debug_symbols' => env('NATIVEPHP_ANDROID_DEBUG_SYMBOLS', 'FULL'),
+        'parallel_builds' => env('NATIVEPHP_ANDROID_PARALLEL_BUILDS', true),
+        'incremental_builds' => env('NATIVEPHP_ANDROID_INCREMENTAL_BUILDS', true),
+    ],
+],
+```
+
+- `minify_enabled` — Enable R8/ProGuard code shrinking. (default: `false`)
+- `shrink_resources` — Remove unused resources from the APK. (default: `false`)
+- `obfuscate` — Obfuscate class and method names. (default: `false`)
+- `debug_symbols` — Include debug symbols. Set to `FULL` for symbolicated crash reports. (default: `FULL`)
+- `parallel_builds` / `incremental_builds` — Gradle build performance options. (default: `true`)
+
+<aside>
+
+For production builds uploaded to the Play Store, consider enabling `minify_enabled` and `shrink_resources` to
+reduce your APK size. Test thoroughly after enabling these options.
+
+</aside>
+
+## Android Status Bar Style
+
+Control the color of the status bar and navigation bar icons:
+
+```php
+'android' => [
+    'status_bar_style' => env('NATIVEPHP_ANDROID_STATUS_BAR_STYLE', 'auto'),
+],
+```
+
+Options: `auto` (detect from system theme), `light` (white icons), or `dark` (dark icons).
+
+## Development Server
+
+Configure the development server used by `native:jump` and `native:watch`:
+
+```php
+'server' => [
+    'http_port' => env('NATIVEPHP_HTTP_PORT', 3000),
+    'ws_port' => env('NATIVEPHP_WS_PORT', 8081),
+    'service_name' => env('NATIVEPHP_SERVICE_NAME', 'NativePHP Server'),
+    'open_browser' => env('NATIVEPHP_OPEN_BROWSER', true),
+],
+```
+
+- `http_port` — The port for serving your app during development. (default: `3000`)
+- `ws_port` — The WebSocket port for hot reload communication. (default: `8081`)
+- `service_name` — The mDNS service name advertised on your network. (default: `NativePHP Server`)
+- `open_browser` — Automatically open a browser with a QR code when the server starts. (default: `true`)
+
+## Hot Reload
+
+Customize which files trigger hot reloads during development:
+
+```php
+'hot_reload' => [
+    'watch_paths' => [
+        'app',
+        'resources',
+        'routes',
+        'config',
+        'public',
+    ],
+    'exclude_patterns' => [
+        '\.git',
+        'storage',
+        'node_modules',
+    ],
+],
+```
+
+## Development Team (iOS)
+
+Set your Apple Developer Team ID for code signing:
+
+```php
+'development_team' => env('NATIVEPHP_DEVELOPMENT_TEAM'),
+```
+
+This is typically detected from your installed certificates, but you can override it here. Find your Team ID
+in your Apple Developer account under Membership details.
+
+## App Store Connect
+
+Configure automated iOS uploads with the App Store Connect API:
+
+```php
+'app_store_connect' => [
+    'api_key' => env('APP_STORE_API_KEY'),
+    'api_key_id' => env('APP_STORE_API_KEY_ID'),
+    'api_issuer_id' => env('APP_STORE_API_ISSUER_ID'),
+    'app_name' => env('APP_STORE_APP_NAME'),
+],
+```
+
+These credentials are used by `native:package --upload-to-app-store` to upload your IPA directly to
+App Store Connect without opening Xcode.
+
+<aside>
+
+Store these values in your `.env` file — never commit API keys to version control. Add them to your
+`cleanup_env_keys` array to ensure they're stripped from production builds.
 
 </aside>

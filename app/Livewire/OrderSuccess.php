@@ -59,7 +59,14 @@ class OrderSuccess extends Component
             return;
         }
 
-        $this->subscription = Subscription::fromStripePriceId($subscriptionItem->stripe_price);
+        try {
+            $this->subscription = Subscription::fromStripePriceId($subscriptionItem->stripe_price);
+        } catch (\RuntimeException $e) {
+            report($e);
+
+            return;
+        }
+
         $this->email = $subscriptionRecord->user->email;
         $this->licenseKey = License::query()
             ->whereBelongsTo($subscriptionItem)

@@ -65,7 +65,18 @@ class PluginSyncService
 
         if ($composerData) {
             if (isset($composerData['name']) && ! $plugin->name) {
-                $updateData['name'] = $composerData['name'];
+                $existing = Plugin::where('name', $composerData['name'])
+                    ->where('id', '!=', $plugin->id)
+                    ->exists();
+
+                if (! $existing) {
+                    $updateData['name'] = $composerData['name'];
+                } else {
+                    Log::warning('[PluginSync] Plugin name already taken', [
+                        'plugin_id' => $plugin->id,
+                        'name' => $composerData['name'],
+                    ]);
+                }
             }
 
             if (isset($composerData['description'])) {

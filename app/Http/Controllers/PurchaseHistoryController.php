@@ -61,8 +61,28 @@ class PurchaseHistoryController extends Controller
                 ];
             });
 
+        // Fetch product licenses (e.g. Plugin Dev Kit, Masterclass)
+        $productLicenses = $user->productLicenses()
+            ->with('product')
+            ->orderBy('purchased_at', 'desc')
+            ->get()
+            ->map(function ($productLicense) {
+                return [
+                    'type' => 'product',
+                    'name' => $productLicense->product->name ?? 'Product',
+                    'description' => $productLicense->product->description ?? null,
+                    'price' => $productLicense->price_paid,
+                    'currency' => $productLicense->currency,
+                    'purchased_at' => $productLicense->purchased_at,
+                    'expires_at' => null,
+                    'is_active' => true,
+                    'href' => $productLicense->product ? route('products.show', $productLicense->product) : null,
+                ];
+            });
+
         // Combine and sort by purchased_at descending
         $purchases = $licenses->concat($pluginLicenses)
+            ->concat($productLicenses)
             ->sortByDesc('purchased_at')
             ->values();
 

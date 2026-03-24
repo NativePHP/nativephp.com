@@ -2,7 +2,10 @@
 
 namespace App\Models;
 
+use App\Enums\PriceTier;
+use Illuminate\Database\Eloquent\Attributes\Scope;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -44,7 +47,7 @@ class Product extends Model
      */
     public function getBestPriceForUser(?User $user): ?ProductPrice
     {
-        $eligibleTiers = $user ? $user->getEligiblePriceTiers() : [\App\Enums\PriceTier::Regular];
+        $eligibleTiers = $user ? $user->getEligiblePriceTiers() : [PriceTier::Regular];
 
         return $this->prices()
             ->active()
@@ -68,7 +71,7 @@ class Product extends Model
     {
         return $this->prices()
             ->active()
-            ->forTier(\App\Enums\PriceTier::Regular)
+            ->forTier(PriceTier::Regular)
             ->first() ?? $this->activePrice;
     }
 
@@ -76,7 +79,7 @@ class Product extends Model
      * @param  Builder<Product>  $query
      * @return Builder<Product>
      */
-    #[\Illuminate\Database\Eloquent\Attributes\Scope]
+    #[Scope]
     protected function active(Builder $query): Builder
     {
         return $query->where('is_active', true)
@@ -88,7 +91,7 @@ class Product extends Model
      * @param  Builder<Product>  $query
      * @return Builder<Product>
      */
-    #[\Illuminate\Database\Eloquent\Attributes\Scope]
+    #[Scope]
     protected function featured(Builder $query): Builder
     {
         return $query->where('is_featured', true);
@@ -136,9 +139,9 @@ class Product extends Model
     /**
      * Get formatted price (uses regular tier price).
      */
-    protected function formattedPrice(): \Illuminate\Database\Eloquent\Casts\Attribute
+    protected function formattedPrice(): Attribute
     {
-        return \Illuminate\Database\Eloquent\Casts\Attribute::make(get: function () {
+        return Attribute::make(get: function () {
             $price = $this->getRegularPrice();
             $amount = $price ? $price->amount : 0;
 

@@ -12,6 +12,7 @@ use App\Models\PluginPrice;
 use App\Models\User;
 use Illuminate\Support\Facades\Log;
 use Laravel\Cashier\Cashier;
+use Stripe\Account;
 
 /**
  * Service for managing Stripe Connect accounts and processing developer payouts.
@@ -168,7 +169,7 @@ class StripeConnectService
         }
     }
 
-    protected function determineStatus(\Stripe\Account $account): StripeConnectStatus
+    protected function determineStatus(Account $account): StripeConnectStatus
     {
         if ($account->payouts_enabled && $account->charges_enabled) {
             return StripeConnectStatus::Active;

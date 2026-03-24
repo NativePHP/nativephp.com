@@ -16,17 +16,20 @@ use App\Models\PluginPrice;
 use App\Models\Product;
 use App\Models\ProductLicense;
 use App\Models\User;
-use App\Services\StripeConnectService;
+use App\Notifications\PluginSaleCompleted;
 use App\Support\GitHubOAuth;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Sleep;
 use Laravel\Cashier\Cashier;
 use Laravel\Cashier\SubscriptionItem;
 use Stripe\Invoice;
+use Stripe\StripeObject;
 use UnexpectedValueException;
 
 class HandleInvoicePaidJob implements ShouldQueue
@@ -116,7 +119,7 @@ class HandleInvoicePaidJob implements ShouldQueue
         $subscriptionItemModel = SubscriptionItem::query()->where('stripe_id', $subscriptionItemId)->firstOrFail();
 
         // Calculate new expiry date from subscription period end
-        $newExpiryDate = \Illuminate\Support\Facades\Date::createFromTimestamp($subscription->current_period_end);
+        $newExpiryDate = Date::createFromTimestamp($subscription->current_period_end);
 
         // Link the subscription to the existing license (expiry will be updated by Anystack job)
         $license->update([
@@ -140,7 +143,7 @@ class HandleInvoicePaidJob implements ShouldQueue
     private function createLicense(): void
     {
         // Add some delay to allow all the Stripe events to come in
-        \Illuminate\Support\Sleep::sleep(10);
+        Sleep::sleep(10);
 
         // Assert the invoice line item is for a price_id that relates to a license plan.
         $plan = Subscription::fromStripePriceId($this->findPlanLineItem()->price->id);
@@ -193,7 +196,7 @@ class HandleInvoicePaidJob implements ShouldQueue
         $subscription = Cashier::stripe()->subscriptions->retrieve($this->invoice->subscription);
 
         // Update the license expiry date to match the subscription's current period end
-        $newExpiryDate = \Illuminate\Support\Facades\Date::createFromTimestamp($subscription->current_period_end);
+        $newExpiryDate = Date::createFromTimestamp($subscription->current_period_end);
 
         // Update the Anystack license expiry date (which will also update the database on success)
         dispatch(new UpdateAnystackLicenseExpiryJob($license, $newExpiryDate));
@@ -246,6 +249,9 @@ class HandleInvoicePaidJob implements ShouldQueue
 
         // Ensure user has a plugin license key
         $user->getPluginLicenseKey();
+
+        // Notify developers of their sales
+        $this->sendDeveloperSaleNotifications($this->invoice->id);
     }
 
     private function processCartPurchase(string $cartId): void
@@ -308,6 +314,9 @@ class HandleInvoicePaidJob implements ShouldQueue
 
         // Ensure user has a plugin license key
         $user->getPluginLicenseKey();
+
+        // Notify developers of their sales
+        $this->sendDeveloperSaleNotifications($this->invoice->id);
 
         Log::info('Cart purchase completed', [
             'invoice_id' => $this->invoice->id,
@@ -555,17 +564,15 @@ class HandleInvoicePaidJob implements ShouldQueue
         if ($plugin->developerAccount && $plugin->developerAccount->canReceivePayouts() && $amount > 0) {
             $split = PluginPayout::calculateSplit($amount);
 
-            $payout = PluginPayout::create([
+            PluginPayout::create([
                 'plugin_license_id' => $license->id,
                 'developer_account_id' => $plugin->developerAccount->id,
                 'gross_amount' => $amount,
                 'platform_fee' => $split['platform_fee'],
                 'developer_amount' => $split['developer_amount'],
                 'status' => PayoutStatus::Pending,
+                'eligible_for_payout_at' => now()->addDays(15),
             ]);
-
-            $stripeConnectService = resolve(StripeConnectService::class);
-            $stripeConnectService->processTransfer($payout);
         }
 
         Log::info('Created plugin license from invoice', [
@@ -595,17 +602,15 @@ class HandleInvoicePaidJob implements ShouldQueue
         if ($plugin->developerAccount && $plugin->developerAccount->canReceivePayouts() && $allocatedAmount > 0) {
             $split = PluginPayout::calculateSplit($allocatedAmount);
 
-            $payout = PluginPayout::create([
+            PluginPayout::create([
                 'plugin_license_id' => $license->id,
                 'developer_account_id' => $plugin->developerAccount->id,
                 'gross_amount' => $allocatedAmount,
                 'platform_fee' => $split['platform_fee'],
                 'developer_amount' => $split['developer_amount'],
                 'status' => PayoutStatus::Pending,
+                'eligible_for_payout_at' => now()->addDays(15),
             ]);
-
-            $stripeConnectService = resolve(StripeConnectService::class);
-            $stripeConnectService->processTransfer($payout);
         }
 
         Log::info('Created bundle plugin license from invoice', [
@@ -641,7 +646,7 @@ class HandleInvoicePaidJob implements ShouldQueue
     /**
      * Find the plan line item from invoice lines, filtering out extra seat price items.
      */
-    private function findPlanLineItem(): ?\Stripe\StripeObject
+    private function findPlanLineItem(): ?StripeObject
     {
         foreach ($this->invoice->lines->data as $line) {
             if ($line->price && Subscription::isExtraSeatPrice($line->price->id)) {
@@ -652,6 +657,29 @@ class HandleInvoicePaidJob implements ShouldQueue
         }
 
         return null;
+    }
+
+    private function sendDeveloperSaleNotifications(string $invoiceId): void
+    {
+        $payouts = PluginPayout::query()
+            ->whereHas('pluginLicense', fn ($query) => $query->where('stripe_invoice_id', $invoiceId))
+            ->with(['pluginLicense.plugin', 'developerAccount.user'])
+            ->get();
+
+        if ($payouts->isEmpty()) {
+            return;
+        }
+
+        $payouts->groupBy('developer_account_id')
+            ->each(function ($developerPayouts) {
+                $developerAccount = $developerPayouts->first()->developerAccount;
+
+                if (! $developerAccount || ! $developerAccount->user) {
+                    return;
+                }
+
+                $developerAccount->user->notify(new PluginSaleCompleted($developerPayouts));
+            });
     }
 
     private function billable(): User

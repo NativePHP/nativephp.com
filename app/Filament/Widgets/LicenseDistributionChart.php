@@ -8,11 +8,11 @@ use Illuminate\Support\Facades\DB;
 
 class LicenseDistributionChart extends ChartWidget
 {
-    protected static ?string $heading = 'License Types';
+    protected ?string $heading = 'License Types';
 
     protected static ?int $sort = 4;
 
-    protected static ?string $maxHeight = '300px';
+    protected ?string $maxHeight = '300px';
 
     protected function getData(): array
     {

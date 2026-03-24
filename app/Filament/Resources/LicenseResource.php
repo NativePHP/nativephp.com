@@ -5,9 +5,11 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\LicenseResource\Pages;
 use App\Filament\Resources\LicenseResource\RelationManagers;
 use App\Models\License;
+use Filament\Actions;
 use Filament\Forms;
-use Filament\Forms\Form;
 use Filament\Resources\Resource;
+use Filament\Schemas;
+use Filament\Schemas\Schema;
 use Filament\Tables;
 use Filament\Tables\Table;
 
@@ -15,13 +17,13 @@ class LicenseResource extends Resource
 {
     protected static ?string $model = License::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-key';
+    protected static \BackedEnum|string|null $navigationIcon = 'heroicon-o-key';
 
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return $form
+        return $schema
             ->schema([
-                Forms\Components\Section::make('License Information')
+                Schemas\Components\Section::make('License Information')
                     ->schema([
                         Forms\Components\TextInput::make('id')
                             ->disabled(),
@@ -89,9 +91,9 @@ class LicenseResource extends Resource
                     ->label('Suspended'),
             ])
             ->actions([
-                Tables\Actions\ActionGroup::make([
-                    Tables\Actions\EditAction::make(),
-                    Tables\Actions\Action::make('viewUser')
+                Actions\ActionGroup::make([
+                    Actions\EditAction::make(),
+                    Actions\Action::make('viewUser')
                         ->label('View User')
                         ->icon('heroicon-o-user')
                         ->color('primary')
