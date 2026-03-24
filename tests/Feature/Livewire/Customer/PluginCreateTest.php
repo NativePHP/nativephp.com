@@ -5,8 +5,10 @@ namespace Tests\Feature\Livewire\Customer;
 use App\Features\ShowAuthButtons;
 use App\Features\ShowPlugins;
 use App\Livewire\Customer\Plugins\Create;
+use App\Models\Plugin;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Http;
 use Laravel\Pennant\Feature;
 use Livewire\Livewire;
 use Tests\TestCase;
@@ -41,6 +43,22 @@ class PluginCreateTest extends TestCase
             ['id' => 4, 'full_name' => 'my-org/another-repo', 'name' => 'another-repo', 'owner' => 'my-org', 'private' => false],
         ];
     }
+
+    private function fakeComposerJson(string $owner, string $repo, string $packageName): void
+    {
+        $composerJson = base64_encode(json_encode(['name' => $packageName]));
+
+        Http::fake([
+            "api.github.com/repos/{$owner}/{$repo}/contents/composer.json*" => Http::response([
+                'content' => $composerJson,
+            ]),
+            'api.github.com/*' => Http::response([], 404),
+        ]);
+    }
+
+    // ========================================
+    // Owner/Repository Selection Tests
+    // ========================================
 
     public function test_owners_are_extracted_from_repositories(): void
     {
@@ -112,5 +130,91 @@ class PluginCreateTest extends TestCase
         $ownerRepos = $component->get('ownerRepositories');
 
         $this->assertEmpty($ownerRepos);
+    }
+
+    // ========================================
+    // Namespace Validation Tests
+    // ========================================
+
+    public function test_submission_blocked_when_namespace_claimed_by_another_user(): void
+    {
+        $existingUser = User::factory()->create();
+        Plugin::factory()->for($existingUser)->create(['name' => 'acme/existing-plugin']);
+
+        $user = $this->createGitHubUser();
+
+        $this->fakeComposerJson('acme', 'new-plugin', 'acme/new-plugin');
+
+        Livewire::actingAs($user)->test(Create::class)
+            ->set('repository', 'acme/new-plugin')
+            ->set('pluginType', 'free')
+            ->call('submitPlugin')
+            ->assertNoRedirect();
+
+        $this->assertDatabaseMissing('plugins', [
+            'repository_url' => 'https://github.com/acme/new-plugin',
+        ]);
+    }
+
+    public function test_submission_blocked_for_reserved_namespace(): void
+    {
+        $user = $this->createGitHubUser();
+
+        $this->fakeComposerJson('nativephp', 'my-plugin', 'nativephp/my-plugin');
+
+        Livewire::actingAs($user)->test(Create::class)
+            ->set('repository', 'nativephp/my-plugin')
+            ->set('pluginType', 'free')
+            ->call('submitPlugin')
+            ->assertNoRedirect();
+
+        $this->assertDatabaseMissing('plugins', [
+            'repository_url' => 'https://github.com/nativephp/my-plugin',
+        ]);
+    }
+
+    public function test_submission_allowed_for_own_namespace(): void
+    {
+        $user = $this->createGitHubUser();
+        Plugin::factory()->for($user)->create(['name' => 'myvendor/first-plugin']);
+
+        $composerJson = base64_encode(json_encode(['name' => 'myvendor/second-plugin']));
+
+        Http::fake([
+            'api.github.com/repos/myvendor/second-plugin/contents/composer.json*' => Http::response([
+                'content' => $composerJson,
+            ]),
+            'api.github.com/repos/myvendor/second-plugin/hooks' => Http::response(['id' => 1]),
+            'api.github.com/*' => Http::response([], 404),
+        ]);
+
+        Livewire::actingAs($user)->test(Create::class)
+            ->set('repository', 'myvendor/second-plugin')
+            ->set('pluginType', 'free')
+            ->call('submitPlugin');
+
+        $this->assertDatabaseHas('plugins', [
+            'repository_url' => 'https://github.com/myvendor/second-plugin',
+            'user_id' => $user->id,
+        ]);
+    }
+
+    public function test_submission_blocked_when_composer_json_missing(): void
+    {
+        $user = $this->createGitHubUser();
+
+        Http::fake([
+            'api.github.com/*' => Http::response([], 404),
+        ]);
+
+        Livewire::actingAs($user)->test(Create::class)
+            ->set('repository', 'testuser/no-composer')
+            ->set('pluginType', 'free')
+            ->call('submitPlugin')
+            ->assertNoRedirect();
+
+        $this->assertDatabaseMissing('plugins', [
+            'repository_url' => 'https://github.com/testuser/no-composer',
+        ]);
     }
 }

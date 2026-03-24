@@ -136,14 +136,37 @@ class Create extends Component
             return;
         }
 
+        $repository = trim($this->repository, '/');
+        $repositoryUrl = 'https://github.com/'.$repository;
+        [$owner, $repo] = explode('/', $repository);
+
+        // Check composer.json and namespace availability before creating the plugin
+        $githubService = GitHubUserService::for($user);
+        $composerJson = $githubService->getComposerJson($owner, $repo);
+
+        if (! $composerJson || empty($composerJson['name'])) {
+            session()->flash('error', 'Could not find a valid composer.json in the repository. Please ensure your repository contains a composer.json with a valid package name.');
+
+            return;
+        }
+
+        $packageName = $composerJson['name'];
+        $namespace = explode('/', $packageName)[0] ?? null;
+
+        if ($namespace && ! Plugin::isNamespaceAvailableForUser($namespace, $user->id)) {
+            $errorMessage = Plugin::isReservedNamespace($namespace)
+                ? "The namespace '{$namespace}' is reserved and cannot be used for plugin submissions."
+                : "The namespace '{$namespace}' is already claimed by another user. You cannot submit plugins under this namespace.";
+
+            session()->flash('error', $errorMessage);
+
+            return;
+        }
+
         $developerAccountId = null;
         if ($this->pluginType === 'paid' && $user->developerAccount) {
             $developerAccountId = $user->developerAccount->id;
         }
-
-        $repository = trim($this->repository, '/');
-        $repositoryUrl = 'https://github.com/'.$repository;
-        [$owner, $repo] = explode('/', $repository);
 
         $plugin = $user->plugins()->create([
             'repository_url' => $repositoryUrl,
@@ -156,7 +179,6 @@ class Create extends Component
 
         $webhookInstalled = false;
         if ($user->hasGitHubToken()) {
-            $githubService = GitHubUserService::for($user);
             $webhookResult = $githubService->createWebhook(
                 $owner,
                 $repo,
@@ -176,19 +198,6 @@ class Create extends Component
             $plugin->delete();
 
             session()->flash('error', 'Could not find a valid composer.json in the repository. Please ensure your repository contains a composer.json with a valid package name.');
-
-            return;
-        }
-
-        $namespace = $plugin->getVendorNamespace();
-        if ($namespace && ! Plugin::isNamespaceAvailableForUser($namespace, $user->id)) {
-            $plugin->delete();
-
-            $errorMessage = Plugin::isReservedNamespace($namespace)
-                ? "The namespace '{$namespace}' is reserved and cannot be used for plugin submissions."
-                : "The namespace '{$namespace}' is already claimed by another user. You cannot submit plugins under this namespace.";
-
-            session()->flash('error', $errorMessage);
 
             return;
         }
