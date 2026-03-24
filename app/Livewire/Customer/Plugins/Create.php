@@ -9,6 +9,7 @@ use App\Models\Plugin;
 use App\Notifications\PluginSubmitted;
 use App\Services\GitHubUserService;
 use App\Services\PluginSyncService;
+use Illuminate\Support\Facades\Cache;
 use Laravel\Pennant\Feature;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\Layout;
@@ -65,13 +66,13 @@ class Create extends Component
     public function mount(): void
     {
         if (auth()->user()->github_id) {
-            $this->loadRepositories();
+            $this->loadingRepos = true;
         }
     }
 
     public function loadRepositories(): void
     {
-        if ($this->loadingRepos || $this->reposLoaded) {
+        if ($this->reposLoaded) {
             return;
         }
 
@@ -81,16 +82,23 @@ class Create extends Component
             $user = auth()->user();
 
             if ($user->hasGitHubToken()) {
-                $githubService = GitHubUserService::for($user);
-                $this->repositories = $githubService->getRepositories()
-                    ->map(fn ($repo) => [
-                        'id' => $repo['id'],
-                        'full_name' => $repo['full_name'],
-                        'name' => $repo['name'],
-                        'owner' => explode('/', $repo['full_name'])[0],
-                        'private' => $repo['private'] ?? false,
-                    ])
-                    ->toArray();
+                $cacheKey = "github_repos_{$user->id}";
+
+                $repos = Cache::remember($cacheKey, now()->addMinutes(5), function () use ($user) {
+                    $githubService = GitHubUserService::for($user);
+
+                    return $githubService->getRepositories()
+                        ->map(fn ($repo) => [
+                            'id' => $repo['id'],
+                            'full_name' => $repo['full_name'],
+                            'name' => $repo['name'],
+                            'owner' => explode('/', $repo['full_name'])[0],
+                            'private' => $repo['private'] ?? false,
+                        ])
+                        ->all();
+                });
+
+                $this->repositories = collect($repos)->values()->all();
             }
 
             $this->reposLoaded = true;
