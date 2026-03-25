@@ -15,7 +15,6 @@ use App\Http\Controllers\GitHubIntegrationController;
 use App\Http\Controllers\LicenseRenewalController;
 use App\Http\Controllers\OpenCollectiveWebhookController;
 use App\Http\Controllers\PluginDirectoryController;
-use App\Http\Controllers\PluginPurchaseController;
 use App\Http\Controllers\PluginWebhookController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ShowBlogController;
@@ -395,15 +394,6 @@ Route::middleware(['auth', EnsureFeaturesAreActive::using(ShowAuthButtons::class
 Route::get('.well-known/assetlinks.json', [ApplinksController::class, 'assetLinks']);
 
 Route::post('webhooks/plugins/{secret}', PluginWebhookController::class)->name('webhooks.plugins');
-
-// Plugin purchase routes
-Route::middleware(['auth', EnsureFeaturesAreActive::using(ShowAuthButtons::class), EnsureFeaturesAreActive::using(ShowPlugins::class)])->group(function (): void {
-    Route::get('plugins/{vendor}/{package}/purchase', [PluginPurchaseController::class, 'show'])->name('plugins.purchase.show');
-    Route::post('plugins/{vendor}/{package}/purchase', [PluginPurchaseController::class, 'checkout'])->name('plugins.purchase.checkout');
-    Route::get('plugins/{vendor}/{package}/purchase/success', [PluginPurchaseController::class, 'success'])->name('plugins.purchase.success');
-    Route::get('plugins/{vendor}/{package}/purchase/status/{sessionId}', [PluginPurchaseController::class, 'status'])->name('plugins.purchase.status');
-    Route::get('plugins/{vendor}/{package}/purchase/cancel', [PluginPurchaseController::class, 'cancel'])->name('plugins.purchase.cancel');
-});
 
 // Bundle routes (public)
 Route::middleware(EnsureFeaturesAreActive::using(ShowPlugins::class))->group(function (): void {
