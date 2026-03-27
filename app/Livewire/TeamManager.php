@@ -143,9 +143,14 @@ class TeamManager extends Component
             : config('subscriptions.plans.max.extra_seat_price_yearly', 4) * 12;
         $extraSeatInterval = $isMonthly ? 'mo' : 'yr';
 
-        // Calculate pro-rata fraction for the current billing period
+        // Calculate pro-rata fraction and billing summary from Stripe
         $proRataFraction = 1.0;
         $renewalDate = null;
+        $planPrice = null;
+        $seatsCost = null;
+        $extraSeatsQty = 0;
+        $nextBillTotal = null;
+        $billingInterval = $isMonthly ? 'mo' : 'yr';
 
         if ($subscription) {
             try {
@@ -160,6 +165,21 @@ class TeamManager extends Component
                 }
 
                 $renewalDate = $periodEnd->format('M j, Y');
+
+                // Extract billing amounts from Stripe subscription items
+                foreach ($stripeSubscription->items->data as $item) {
+                    $unitAmount = $item->price->unit_amount / 100;
+                    $qty = $item->quantity ?? 1;
+
+                    if (Subscription::isExtraSeatPrice($item->price->id)) {
+                        $seatsCost = $unitAmount * $qty;
+                        $extraSeatsQty = $qty;
+                    } else {
+                        $planPrice = $unitAmount;
+                    }
+                }
+
+                $nextBillTotal = ($planPrice ?? 0) + ($seatsCost ?? 0);
             } catch (\Exception) {
                 // Fall back to showing full price without pro-rata
             }
@@ -178,6 +198,11 @@ class TeamManager extends Component
             'proRataFraction' => $proRataFraction,
             'renewalDate' => $renewalDate,
             'removableSeats' => max(0, $removableSeats),
+            'planPrice' => $planPrice,
+            'seatsCost' => $seatsCost,
+            'extraSeatsQty' => $extraSeatsQty,
+            'nextBillTotal' => $nextBillTotal,
+            'billingInterval' => $billingInterval,
         ]);
     }
 }

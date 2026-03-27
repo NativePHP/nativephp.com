@@ -91,7 +91,7 @@ class TeamController extends Controller
             abort(403);
         }
 
-        // Official plugins (free for Ultra team members)
+        // All plugins accessible through this team (official + owner's purchased), de-duplicated
         $officialPlugins = Plugin::query()
             ->where('is_official', true)
             ->where('is_active', true)
@@ -99,16 +99,16 @@ class TeamController extends Controller
             ->where('type', PluginType::Paid)
             ->get();
 
-        // Plugins the team owner has purchased
         $ownerPlugins = $team->owner
             ->pluginLicenses()
             ->active()
             ->with('plugin')
             ->get()
             ->pluck('plugin')
-            ->filter()
-            ->unique('id');
+            ->filter();
 
-        return view('customer.team.show', compact('team', 'membership', 'officialPlugins', 'ownerPlugins'));
+        $plugins = $officialPlugins->merge($ownerPlugins)->unique('id')->sortBy('name')->values();
+
+        return view('customer.team.show', compact('team', 'membership', 'plugins'));
     }
 }

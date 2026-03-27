@@ -49,6 +49,34 @@
         </div>
     </flux:card>
 
+    {{-- Billing Summary --}}
+    @if($planPrice !== null)
+        <flux:card class="mb-6">
+            <flux:heading size="lg">Billing Summary</flux:heading>
+            <div class="mt-3 space-y-2 text-sm">
+                <div class="flex items-center justify-between">
+                    <span class="text-zinc-500 dark:text-zinc-400">Ultra subscription</span>
+                    <span>${{ number_format($planPrice, 2) }}/{{ $billingInterval }}</span>
+                </div>
+                @if($seatsCost > 0)
+                    <div class="flex items-center justify-between">
+                        <span class="text-zinc-500 dark:text-zinc-400">Extra seats ({{ $extraSeatsQty }})</span>
+                        <span>${{ number_format($seatsCost, 2) }}/{{ $billingInterval }}</span>
+                    </div>
+                @endif
+                <div class="flex items-center justify-between border-t border-zinc-200 pt-2 dark:border-zinc-700">
+                    <span class="font-medium">Estimated next bill</span>
+                    <span class="font-semibold">${{ number_format($nextBillTotal, 2) }}/{{ $billingInterval }}</span>
+                </div>
+                @if($renewalDate)
+                    <flux:text class="text-xs">
+                        Next renewal on {{ $renewalDate }}
+                    </flux:text>
+                @endif
+            </div>
+        </flux:card>
+    @endif
+
     {{-- Add Seats Modal --}}
     <flux:modal name="add-seats" class="max-w-md" x-init="{{ session('show_add_seats') ? '$flux.modal(\'add-seats\').show()' : '' }}">
         <div x-data="{
@@ -157,11 +185,12 @@
                                         @csrf
                                         <flux:button type="submit" variant="ghost" size="sm">Resend</flux:button>
                                     </form>
-                                    <form method="POST" action="{{ route('customer.team.users.remove', $invitation) }}" onsubmit="return confirm('Cancel this invitation?')">
-                                        @csrf
-                                        @method('DELETE')
-                                        <flux:button type="submit" variant="ghost" size="sm" class="text-red-600 hover:text-red-500 dark:text-red-400">Cancel</flux:button>
-                                    </form>
+                                    <flux:button
+                                        variant="ghost"
+                                        size="sm"
+                                        class="text-red-600 hover:text-red-500 dark:text-red-400"
+                                        x-on:click="$dispatch('confirm-cancel-invitation', { id: {{ $invitation->id }}, email: '{{ $invitation->email }}' })"
+                                    >Cancel</flux:button>
                                 </div>
                             </flux:table.cell>
                         </flux:table.row>
@@ -198,11 +227,12 @@
                         </flux:table.cell>
                         <flux:table.cell>
                             <div class="flex justify-end">
-                                <form method="POST" action="{{ route('customer.team.users.remove', $member) }}" onsubmit="return confirm('Are you sure you want to remove this member?')">
-                                    @csrf
-                                    @method('DELETE')
-                                    <flux:button type="submit" variant="ghost" size="sm" class="text-red-600 hover:text-red-500 dark:text-red-400">Remove</flux:button>
-                                </form>
+                                <flux:button
+                                    variant="ghost"
+                                    size="sm"
+                                    class="text-red-600 hover:text-red-500 dark:text-red-400"
+                                    x-on:click="$dispatch('confirm-remove-member', { id: {{ $member->id }}, name: '{{ $member->user?->display_name ?? $member->email }}' })"
+                                >Remove</flux:button>
                             </div>
                         </flux:table.cell>
                     </flux:table.row>
@@ -216,4 +246,40 @@
             description="Invite someone to get started."
         />
     @endif
+
+    {{-- Cancel Invitation Confirmation Modal --}}
+    <flux:modal name="confirm-cancel-invitation" class="max-w-sm" x-data="{ targetId: null, targetEmail: '' }" x-on:confirm-cancel-invitation.window="targetId = $event.detail.id; targetEmail = $event.detail.email; $flux.modal('confirm-cancel-invitation').show()">
+        <flux:heading size="lg">Cancel Invitation</flux:heading>
+        <flux:text class="mt-2">
+            Are you sure you want to cancel the invitation for <strong x-text="targetEmail"></strong>?
+        </flux:text>
+        <div class="mt-6 flex justify-end gap-3">
+            <flux:modal.close>
+                <flux:button variant="ghost">Keep</flux:button>
+            </flux:modal.close>
+            <form x-bind:action="'{{ route('customer.team.users.remove', ['teamUser' => '__ID__']) }}'.replace('__ID__', targetId)" method="POST">
+                @csrf
+                @method('DELETE')
+                <flux:button type="submit" variant="danger">Cancel Invitation</flux:button>
+            </form>
+        </div>
+    </flux:modal>
+
+    {{-- Remove Member Confirmation Modal --}}
+    <flux:modal name="confirm-remove-member" class="max-w-sm" x-data="{ targetId: null, targetName: '' }" x-on:confirm-remove-member.window="targetId = $event.detail.id; targetName = $event.detail.name; $flux.modal('confirm-remove-member').show()">
+        <flux:heading size="lg">Remove Team Member</flux:heading>
+        <flux:text class="mt-2">
+            Are you sure you want to remove <strong x-text="targetName"></strong> from your team?
+        </flux:text>
+        <div class="mt-6 flex justify-end gap-3">
+            <flux:modal.close>
+                <flux:button variant="ghost">Cancel</flux:button>
+            </flux:modal.close>
+            <form x-bind:action="'{{ route('customer.team.users.remove', ['teamUser' => '__ID__']) }}'.replace('__ID__', targetId)" method="POST">
+                @csrf
+                @method('DELETE')
+                <flux:button type="submit" variant="danger">Remove</flux:button>
+            </form>
+        </div>
+    </flux:modal>
 </div>

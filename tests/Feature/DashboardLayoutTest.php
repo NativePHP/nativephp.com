@@ -65,21 +65,21 @@ class DashboardLayoutTest extends TestCase
         $response->assertSee('Create Team');
     }
 
-    public function test_sidebar_shows_manage_for_ultra_subscriber_with_team(): void
+    public function test_sidebar_shows_team_name_for_ultra_subscriber_with_team(): void
     {
         $user = $this->createUltraUser();
-        Team::factory()->create(['user_id' => $user->id]);
+        $team = Team::factory()->create(['user_id' => $user->id, 'name' => 'My Ultra Team']);
 
         $response = $this->withoutVite()->actingAs($user)->get('/dashboard');
 
         $response->assertOk();
-        $response->assertSee('Manage');
+        $response->assertSee('My Ultra Team');
     }
 
-    public function test_sidebar_shows_team_item_for_ultra_team_member(): void
+    public function test_sidebar_shows_team_name_for_ultra_team_member(): void
     {
         $owner = $this->createUltraUser();
-        $team = Team::factory()->create(['user_id' => $owner->id]);
+        $team = Team::factory()->create(['user_id' => $owner->id, 'name' => 'Owner Team']);
 
         $member = User::factory()->create();
         TeamUser::factory()->active()->create([
@@ -91,7 +91,7 @@ class DashboardLayoutTest extends TestCase
         $response = $this->withoutVite()->actingAs($member)->get('/dashboard');
 
         $response->assertOk();
-        $response->assertSee('Create Team');
+        $response->assertSee('Owner Team');
     }
 
     public function test_sidebar_hides_team_item_for_non_ultra_user(): void

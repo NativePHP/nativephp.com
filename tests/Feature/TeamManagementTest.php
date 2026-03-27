@@ -810,7 +810,7 @@ class TeamManagementTest extends TestCase
 
         $response->assertOk();
         $response->assertSee('nativephp/official-test');
-        $response->assertSee('Included');
+        $response->assertSee('Accessible Plugins');
     }
 
     public function test_team_detail_page_shows_owner_purchased_plugins(): void
@@ -839,6 +839,6 @@ class TeamManagementTest extends TestCase
 
         $response->assertOk();
         $response->assertSee('acme/shared-plugin');
-        $response->assertSee('Shared Plugins');
+        $response->assertSee('Accessible Plugins');
     }
 }
