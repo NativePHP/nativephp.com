@@ -72,7 +72,7 @@ class ShowcaseResource extends Resource
                             ->live(),
 
                         Schemas\Components\Fieldset::make('Mobile Links')
-                            ->visible(fn (Forms\Get $get) => $get('has_mobile'))
+                            ->visible(fn (Schemas\Components\Utilities\Get $get) => $get('has_mobile'))
                             ->schema([
                                 Forms\Components\TextInput::make('app_store_url')
                                     ->label('App Store URL')
@@ -86,7 +86,7 @@ class ShowcaseResource extends Resource
                             ]),
 
                         Schemas\Components\Fieldset::make('Desktop Downloads')
-                            ->visible(fn (Forms\Get $get) => $get('has_desktop'))
+                            ->visible(fn (Schemas\Components\Utilities\Get $get) => $get('has_desktop'))
                             ->schema([
                                 Forms\Components\TextInput::make('windows_download_url')
                                     ->label('Windows Download URL')
