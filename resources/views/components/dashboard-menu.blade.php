@@ -48,10 +48,26 @@
         <a href="{{ route('customer.integrations') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700">
             Integrations
         </a>
-        @if(auth()->user()->hasActiveUltraSubscription() || auth()->user()->ownedTeam)
-            <a href="{{ route('customer.team.index') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700">
-                Team
-            </a>
+        @if(auth()->user()->hasActiveUltraSubscription() || auth()->user()->isUltraTeamMember())
+            @php
+                $ownedTeam = auth()->user()->ownedTeam;
+                $teamMemberships = auth()->user()->activeTeamMemberships();
+            @endphp
+            @if($ownedTeam)
+                <a href="{{ route('customer.team.index') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700">
+                    {{ $ownedTeam->name }}
+                </a>
+            @endif
+            @foreach($teamMemberships as $membership)
+                <a href="{{ route('customer.team.show', $membership->team) }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700">
+                    {{ $membership->team->name }}
+                </a>
+            @endforeach
+            @if(! $ownedTeam && $teamMemberships->isEmpty() && auth()->user()->hasActiveUltraSubscription())
+                <a href="{{ route('customer.team.index') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700">
+                    Create Team
+                </a>
+            @endif
         @endif
         <a href="{{ route('customer.billing-portal') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700">
             Manage Subscription

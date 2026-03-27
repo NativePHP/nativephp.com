@@ -5,6 +5,7 @@ namespace App\Livewire;
 use App\Enums\Subscription;
 use App\Enums\TeamUserStatus;
 use App\Models\Team;
+use Carbon\Carbon;
 use Flux;
 use Livewire\Component;
 
@@ -123,8 +124,46 @@ class TeamManager extends Component
         $activeMembers = $this->team->users->where('status', TeamUserStatus::Active);
         $pendingInvitations = $this->team->users->where('status', TeamUserStatus::Pending);
 
-        $extraSeatPriceYearly = config('subscriptions.plans.max.extra_seat_price_yearly', 4);
-        $extraSeatPriceMonthly = config('subscriptions.plans.max.extra_seat_price_monthly', 5);
+        $owner = $this->team->owner;
+        $subscription = $owner->subscription();
+        $planPriceId = $subscription?->stripe_price;
+
+        if ($subscription && ! $planPriceId) {
+            foreach ($subscription->items as $item) {
+                if (! Subscription::isExtraSeatPrice($item->stripe_price)) {
+                    $planPriceId = $item->stripe_price;
+                    break;
+                }
+            }
+        }
+
+        $isMonthly = $planPriceId === config('subscriptions.plans.max.stripe_price_id_monthly');
+        $extraSeatPrice = $isMonthly
+            ? config('subscriptions.plans.max.extra_seat_price_monthly', 5)
+            : config('subscriptions.plans.max.extra_seat_price_yearly', 4) * 12;
+        $extraSeatInterval = $isMonthly ? 'mo' : 'yr';
+
+        // Calculate pro-rata fraction for the current billing period
+        $proRataFraction = 1.0;
+        $renewalDate = null;
+
+        if ($subscription) {
+            try {
+                $stripeSubscription = $subscription->asStripeSubscription();
+                $periodStart = Carbon::createFromTimestamp($stripeSubscription->current_period_start);
+                $periodEnd = Carbon::createFromTimestamp($stripeSubscription->current_period_end);
+                $totalDays = $periodStart->diffInDays($periodEnd);
+                $remainingDays = now()->diffInDays($periodEnd, false);
+
+                if ($totalDays > 0 && $remainingDays > 0) {
+                    $proRataFraction = round($remainingDays / $totalDays, 4);
+                }
+
+                $renewalDate = $periodEnd->format('M j, Y');
+            } catch (\Exception) {
+                // Fall back to showing full price without pro-rata
+            }
+        }
 
         $removableSeats = min(
             $this->team->extra_seats,
@@ -134,8 +173,10 @@ class TeamManager extends Component
         return view('livewire.team-manager', [
             'activeMembers' => $activeMembers,
             'pendingInvitations' => $pendingInvitations,
-            'extraSeatPriceYearly' => $extraSeatPriceYearly,
-            'extraSeatPriceMonthly' => $extraSeatPriceMonthly,
+            'extraSeatPrice' => $extraSeatPrice,
+            'extraSeatInterval' => $extraSeatInterval,
+            'proRataFraction' => $proRataFraction,
+            'renewalDate' => $renewalDate,
             'removableSeats' => max(0, $removableSeats),
         ]);
     }

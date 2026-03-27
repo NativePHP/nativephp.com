@@ -10,6 +10,7 @@ use App\Jobs\SuspendTeamJob;
 use App\Jobs\UnsuspendTeamJob;
 use App\Models\License;
 use App\Models\Plugin;
+use App\Models\PluginLicense;
 use App\Models\Product;
 use App\Models\ProductLicense;
 use App\Models\Team;
@@ -181,7 +182,8 @@ class TeamManagementTest extends TestCase
         $response = $this->actingAs($owner)
             ->post(route('customer.team.invite'), ['email' => 'extra@example.com']);
 
-        $response->assertSessionHas('show_add_seats', true);
+        $response->assertSessionHas('show_add_seats', true)
+            ->assertSessionHas('error');
         Notification::assertNothingSent();
     }
 
@@ -407,7 +409,7 @@ class TeamManagementTest extends TestCase
         $this->assertFalse($member->hasPluginAccess($thirdPartyPlugin));
     }
 
-    public function test_team_member_gets_subscriber_pricing(): void
+    public function test_team_member_without_own_subscription_does_not_get_subscriber_pricing(): void
     {
         [$owner, $team] = $this->createTeamWithOwner();
 
@@ -420,7 +422,7 @@ class TeamManagementTest extends TestCase
 
         $tiers = $member->getEligiblePriceTiers();
 
-        $this->assertContains(PriceTier::Subscriber, $tiers);
+        $this->assertNotContains(PriceTier::Subscriber, $tiers);
     }
 
     public function test_non_team_member_does_not_get_subscriber_pricing(): void
@@ -722,5 +724,121 @@ class TeamManagementTest extends TestCase
 
         $response->assertOk();
         $response->assertSee($team->name);
+    }
+
+    // ========================================
+    // Team Detail Page Tests
+    // ========================================
+
+    public function test_team_member_can_view_team_detail_page(): void
+    {
+        [$owner, $team] = $this->createTeamWithOwner();
+
+        $member = User::factory()->create();
+        TeamUser::factory()->active()->create([
+            'team_id' => $team->id,
+            'user_id' => $member->id,
+            'email' => $member->email,
+        ]);
+
+        $response = $this->actingAs($member)
+            ->get(route('customer.team.show', $team));
+
+        $response->assertOk();
+        $response->assertSee($team->name);
+        $response->assertSee('Team Membership');
+    }
+
+    public function test_non_member_cannot_view_team_detail_page(): void
+    {
+        [$owner, $team] = $this->createTeamWithOwner();
+        $otherUser = User::factory()->create();
+
+        $response = $this->actingAs($otherUser)
+            ->get(route('customer.team.show', $team));
+
+        $response->assertForbidden();
+    }
+
+    public function test_team_owner_is_redirected_from_show_to_index(): void
+    {
+        [$owner, $team] = $this->createTeamWithOwner();
+
+        $response = $this->actingAs($owner)
+            ->get(route('customer.team.show', $team));
+
+        $response->assertRedirect(route('customer.team.index'));
+    }
+
+    public function test_removed_member_cannot_view_team_detail_page(): void
+    {
+        [$owner, $team] = $this->createTeamWithOwner();
+
+        $member = User::factory()->create();
+        TeamUser::factory()->create([
+            'team_id' => $team->id,
+            'user_id' => $member->id,
+            'email' => $member->email,
+            'status' => TeamUserStatus::Removed,
+        ]);
+
+        $response = $this->actingAs($member)
+            ->get(route('customer.team.show', $team));
+
+        $response->assertForbidden();
+    }
+
+    public function test_team_detail_page_shows_official_plugins(): void
+    {
+        [$owner, $team] = $this->createTeamWithOwner();
+
+        $member = User::factory()->create();
+        TeamUser::factory()->active()->create([
+            'team_id' => $team->id,
+            'user_id' => $member->id,
+            'email' => $member->email,
+        ]);
+
+        $plugin = Plugin::factory()->approved()->paid()->create([
+            'name' => 'nativephp/official-test',
+            'is_active' => true,
+            'is_official' => true,
+        ]);
+
+        $response = $this->actingAs($member)
+            ->get(route('customer.team.show', $team));
+
+        $response->assertOk();
+        $response->assertSee('nativephp/official-test');
+        $response->assertSee('Included');
+    }
+
+    public function test_team_detail_page_shows_owner_purchased_plugins(): void
+    {
+        [$owner, $team] = $this->createTeamWithOwner();
+
+        $member = User::factory()->create();
+        TeamUser::factory()->active()->create([
+            'team_id' => $team->id,
+            'user_id' => $member->id,
+            'email' => $member->email,
+        ]);
+
+        $plugin = Plugin::factory()->approved()->paid()->create([
+            'name' => 'acme/shared-plugin',
+            'is_active' => true,
+        ]);
+
+        PluginLicense::factory()->create([
+            'user_id' => $owner->id,
+            'plugin_id' => $plugin->id,
+        ]);
+
+        $response = $this->actingAs($member)
+            ->get(route('customer.team.show', $team));
+
+        $response->assertOk();
+        $response->assertSee('acme/shared-plugin');
+        $response->assertSee('Shared Plugins');
     }
 }

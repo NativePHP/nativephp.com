@@ -53,7 +53,9 @@ class TeamUserController extends Controller
         }
 
         if ($team->isOverIncludedLimit()) {
-            return back()->with('show_add_seats', true);
+            return back()
+                ->with('error', 'You have no available seats. Add extra seats to invite more members.')
+                ->with('show_add_seats', true);
         }
 
         $member = $team->users()->create([

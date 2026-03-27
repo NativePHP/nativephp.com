@@ -382,6 +382,7 @@ Route::middleware(['auth', EnsureFeaturesAreActive::using(ShowAuthButtons::class
     Route::post('team/invite', [TeamUserController::class, 'invite'])->name('team.invite');
     Route::delete('team/users/{teamUser}', [TeamUserController::class, 'remove'])->name('team.users.remove');
     Route::post('team/users/{teamUser}/resend', [TeamUserController::class, 'resend'])->name('team.users.resend');
+    Route::get('team/{team}', [TeamController::class, 'show'])->name('team.show');
 
     // Sub-license management routes
     Route::post('licenses/{licenseKey}/sub-licenses', [CustomerSubLicenseController::class, 'store'])->name('licenses.sub-licenses.store');

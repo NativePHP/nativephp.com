@@ -35,7 +35,6 @@ class TeamInvitation extends Notification implements ShouldQueue
             ->line("**{$ownerName}** ({$team->owner->email}) has invited you to join **{$team->name}** on NativePHP.")
             ->line('As a team member, you will receive:')
             ->line('- Free access to all first-party NativePHP plugins')
-            ->line('- Subscriber-tier pricing on third-party plugins')
             ->line('- Access to the Plugin Dev Kit GitHub repository')
             ->action('Accept Invitation', route('team.invitation.accept', $this->teamUser->invitation_token))
             ->line('If you did not expect this invitation, you can safely ignore this email.');

@@ -154,6 +154,19 @@ class User extends Authenticatable implements FilamentUser
             ->first();
     }
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Collection<int, TeamUser>
+     */
+    public function activeTeamMemberships(): \Illuminate\Database\Eloquent\Collection
+    {
+        return TeamUser::query()
+            ->where('user_id', $this->id)
+            ->where('status', TeamUserStatus::Active)
+            ->whereHas('team', fn ($query) => $query->where('is_suspended', false))
+            ->with('team')
+            ->get();
+    }
+
     public function hasProductAccessViaTeam(Product $product): bool
     {
         $membership = $this->activeTeamMembership();
@@ -291,7 +304,7 @@ class User extends Authenticatable implements FilamentUser
     {
         $tiers = [PriceTier::Regular];
 
-        if ($this->subscribed() || $this->isUltraTeamMember()) {
+        if ($this->subscribed()) {
             $tiers[] = PriceTier::Subscriber;
         }
 
@@ -387,6 +400,13 @@ class User extends Authenticatable implements FilamentUser
 
         // Ultra team members get access to all official (first-party) plugins
         if ($plugin->isOfficial() && $this->isUltraTeamMember()) {
+            return true;
+        }
+
+        // Team members get access to plugins the team owner has purchased
+        $teamOwner = $this->getTeamOwner();
+
+        if ($teamOwner && $teamOwner->pluginLicenses()->forPlugin($plugin)->active()->exists()) {
             return true;
         }
 

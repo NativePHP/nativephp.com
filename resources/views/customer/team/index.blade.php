@@ -57,7 +57,6 @@
                         <flux:heading size="sm">Your benefits include:</flux:heading>
                         <ul class="mt-2 list-inside list-disc space-y-1 text-sm text-zinc-500 dark:text-zinc-400">
                             <li>Free access to all first-party NativePHP plugins</li>
-                            <li>Subscriber-tier pricing on third-party plugins</li>
                             <li>Access to the Plugin Dev Kit GitHub repository</li>
                         </ul>
                     </div>

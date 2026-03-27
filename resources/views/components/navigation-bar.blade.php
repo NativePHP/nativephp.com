@@ -178,7 +178,10 @@
                     ])
                     aria-current="{{ request()->routeIs('pricing') ? 'page' : 'false' }}"
                 >
-                    Ultra
+                    <span class="inline-flex items-center gap-1.5">
+                        Ultra
+                        <span class="rounded-full bg-emerald-500 px-1.5 py-px text-[10px] font-bold leading-tight text-white">New</span>
+                    </span>
                 </a>
 
                 {{-- Decorative circle --}}

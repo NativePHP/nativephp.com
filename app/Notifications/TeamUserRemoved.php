@@ -32,7 +32,7 @@ class TeamUserRemoved extends Notification implements ShouldQueue
             ->subject("You have been removed from {$teamName}")
             ->greeting('Hello!')
             ->line("You have been removed from **{$teamName}** on NativePHP.")
-            ->line('Your team benefits, including free plugin access and subscriber-tier pricing, have been revoked.')
+            ->line('Your team benefits, including free plugin access, have been revoked.')
             ->action('View Plans', route('pricing'))
             ->line('If you believe this was a mistake, please contact the team owner.');
     }

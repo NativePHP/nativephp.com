@@ -112,11 +112,11 @@
             <x-faq-card question="What is NativePHP Ultra?">
                 <p>
                     NativePHP Ultra is a premium subscription that gives you
-                    access to all first-party plugins, discounts on
-                    third-party plugins, the Claude Code Plugin Dev Kit,
-                    discounts on NativePHP courses and apps, Teams
-                    support, and premium support with expedited
-                    turnaround times.
+                    access to all first-party plugins, the Claude Code
+                    Plugin Dev Kit, discounts on NativePHP courses and
+                    apps, Teams support, premium support through private channels with expedited
+                    turnaround times, and up to 90% revenue share on
+                    paid plugins you publish to the Marketplace.
                 </p>
             </x-faq-card>
 
@@ -169,16 +169,19 @@
             <x-faq-card question="Can I purchase additional team seats?">
                 <p>
                     Ultra includes 10 team seats. If you need more, extra
-                    seats can be purchased at $5/seat/month or $4/seat/year
-                    from your team settings page.
+                    seats can be purchased from your team settings page
+                    at $5/mo per seat on monthly plans or $4/mo per seat
+                    on annual plans. Extra seats are billed pro-rata to
+                    match your subscription cycle.
                 </p>
             </x-faq-card>
 
             <x-faq-card question="What does premium support include?">
                 <p>
-                    Premium support gives you expedited turnaround on
-                    support issues. When you need help, your requests are
-                    prioritized so you can get back to building faster.
+                    Premium support gives you access to private support channels
+                    with expedited turnaround on your issues. When you need
+                    help, your requests are prioritized so you can get back
+                    to building faster.
                 </p>
             </x-faq-card>
 
@@ -196,6 +199,13 @@
                     Yes, you can cancel at any time. You'll continue to
                     have access to Ultra benefits until the end of your
                     current billing period.
+                </p>
+                <p class="mt-2">
+                    After cancellation, you'll retain access to any
+                    plugins you've purchased through the Marketplace.
+                    However, free access to first-party plugins and
+                    team member benefits will end when the subscription
+                    expires.
                 </p>
             </x-faq-card>
 

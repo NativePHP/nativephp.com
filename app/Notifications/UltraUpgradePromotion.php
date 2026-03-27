@@ -31,6 +31,7 @@ class UltraUpgradePromotion extends Notification implements ShouldQueue
             ->line('- **Teams** - invite up to 10 collaborators to share your plugin access')
             ->line('- **Free official plugins** - every NativePHP-published plugin, included with your subscription')
             ->line('- **Plugin Dev Kit** - tools and resources to build and publish your own plugins')
+            ->line('- **90% Marketplace revenue** - keep up to 90% of earnings on paid plugins you publish')
             ->line('- **Priority support** - get help faster when you need it')
             ->line('- **Early access** - be first to try new features and plugins')
             ->line('- **Exclusive content** - tutorials, guides, and deep dives just for Ultra members')

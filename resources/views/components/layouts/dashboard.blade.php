@@ -111,7 +111,7 @@
                     Purchase History
                 </flux:sidebar.item>
 
-                <flux:sidebar.group expandable heading="Community" class="grid">
+                <flux:sidebar.group expandable :expanded="false" heading="Community" class="mt-4 grid">
                     <flux:sidebar.item href="{{ route('customer.showcase.index') }}" :current="request()->routeIs('customer.showcase.*')">
                         Showcase
                     </flux:sidebar.item>
@@ -121,15 +121,33 @@
                 </flux:sidebar.group>
 
                 @if(auth()->user()->hasActiveUltraSubscription() || auth()->user()->isUltraTeamMember())
-                    <flux:sidebar.group expandable heading="Team" class="grid">
-                        <flux:sidebar.item href="{{ route('customer.team.index') }}" :current="request()->routeIs('customer.team.*')">
-                            {{ auth()->user()->ownedTeam ? 'Manage' : 'Create Team' }}
-                        </flux:sidebar.item>
+                    @php
+                        $ownedTeam = auth()->user()->ownedTeam;
+                        $teamMemberships = auth()->user()->activeTeamMemberships();
+                    @endphp
+                    <flux:sidebar.group expandable :expanded="false" heading="Teams" class="mt-4 grid">
+                        @if($ownedTeam)
+                            <flux:sidebar.item href="{{ route('customer.team.index') }}" :current="request()->routeIs('customer.team.index')">
+                                {{ $ownedTeam->name }}
+                            </flux:sidebar.item>
+                        @endif
+
+                        @foreach($teamMemberships as $membership)
+                            <flux:sidebar.item href="{{ route('customer.team.show', $membership->team) }}" :current="request()->routeIs('customer.team.show') && request()->route('team')?->id === $membership->team->id">
+                                {{ $membership->team->name }}
+                            </flux:sidebar.item>
+                        @endforeach
+
+                        @if(! $ownedTeam && $teamMemberships->isEmpty() && auth()->user()->hasActiveUltraSubscription())
+                            <flux:sidebar.item href="{{ route('customer.team.index') }}" :current="request()->routeIs('customer.team.index')">
+                                Create Team
+                            </flux:sidebar.item>
+                        @endif
                     </flux:sidebar.group>
                 @endif
 
                 @feature(App\Features\ShowPlugins::class)
-                    <flux:sidebar.group expandable heading="Developer" class="grid">
+                    <flux:sidebar.group expandable :expanded="false" heading="Developer" class="mt-4 grid">
                         <flux:sidebar.item href="{{ route('customer.developer.onboarding') }}" :current="request()->routeIs('customer.developer.onboarding', 'customer.developer.dashboard')">
                             Hub
                         </flux:sidebar.item>

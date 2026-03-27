@@ -139,7 +139,10 @@
                             />
                         @endif
 
-                        <div>Ultra</div>
+                        <div class="inline-flex items-center gap-2">
+                            Ultra
+                            <span class="rounded-full bg-emerald-500 px-1.5 py-px text-[10px] font-bold leading-tight text-white">New</span>
+                        </div>
                     </a>
                 </div>
 

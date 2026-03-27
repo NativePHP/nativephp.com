@@ -2,6 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\PluginStatus;
+use App\Enums\PluginType;
+use App\Enums\TeamUserStatus;
+use App\Models\Plugin;
+use App\Models\Team;
+use App\Models\TeamUser;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -63,5 +69,46 @@ class TeamController extends Controller
         $team->update(['name' => $request->name]);
 
         return back()->with('success', 'Team name updated.');
+    }
+
+    public function show(Team $team): View|RedirectResponse
+    {
+        $user = Auth::user();
+
+        // Team owners should use the manage page
+        if ($user->ownedTeam && $user->ownedTeam->id === $team->id) {
+            return to_route('customer.team.index');
+        }
+
+        // Verify user is an active member of this team
+        $membership = TeamUser::query()
+            ->where('team_id', $team->id)
+            ->where('user_id', $user->id)
+            ->where('status', TeamUserStatus::Active)
+            ->first();
+
+        if (! $membership) {
+            abort(403);
+        }
+
+        // Official plugins (free for Ultra team members)
+        $officialPlugins = Plugin::query()
+            ->where('is_official', true)
+            ->where('is_active', true)
+            ->where('status', PluginStatus::Approved)
+            ->where('type', PluginType::Paid)
+            ->get();
+
+        // Plugins the team owner has purchased
+        $ownerPlugins = $team->owner
+            ->pluginLicenses()
+            ->active()
+            ->with('plugin')
+            ->get()
+            ->pluck('plugin')
+            ->filter()
+            ->unique('id');
+
+        return view('customer.team.show', compact('team', 'membership', 'officialPlugins', 'ownerPlugins'));
     }
 }

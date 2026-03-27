@@ -512,6 +512,209 @@ class UltraPluginAccessTest extends TestCase
         $response->assertDontSee('Team Plugins');
     }
 
+    // ---- Phase 5: Team suspension (cancelled/defaulted subscription) ----
+
+    public function test_team_member_has_access_to_owner_purchased_third_party_plugin(): void
+    {
+        $owner = User::factory()->create();
+        $this->createPaidMaxSubscription($owner);
+
+        $team = Team::factory()->create(['user_id' => $owner->id]);
+        $member = User::factory()->create();
+
+        TeamUser::create([
+            'team_id' => $team->id,
+            'user_id' => $member->id,
+            'email' => $member->email,
+            'status' => 'active',
+            'role' => 'member',
+            'accepted_at' => now(),
+        ]);
+
+        $plugin = $this->createThirdPartyPlugin();
+
+        PluginLicense::factory()->create([
+            'user_id' => $owner->id,
+            'plugin_id' => $plugin->id,
+            'expires_at' => null,
+        ]);
+
+        $this->assertTrue($member->hasPluginAccess($plugin));
+    }
+
+    public function test_team_member_loses_plugin_access_when_team_suspended(): void
+    {
+        $owner = User::factory()->create();
+        $this->createPaidMaxSubscription($owner);
+
+        $team = Team::factory()->create(['user_id' => $owner->id]);
+        $member = User::factory()->create();
+
+        TeamUser::create([
+            'team_id' => $team->id,
+            'user_id' => $member->id,
+            'email' => $member->email,
+            'status' => 'active',
+            'role' => 'member',
+            'accepted_at' => now(),
+        ]);
+
+        $officialPlugin = $this->createOfficialPlugin();
+        $thirdPartyPlugin = $this->createThirdPartyPlugin();
+
+        PluginLicense::factory()->create([
+            'user_id' => $owner->id,
+            'plugin_id' => $thirdPartyPlugin->id,
+            'expires_at' => null,
+        ]);
+
+        // Before suspension, member has access
+        $this->assertTrue($member->hasPluginAccess($officialPlugin));
+        $this->assertTrue($member->hasPluginAccess($thirdPartyPlugin));
+
+        // Suspend the team
+        $team->suspend();
+
+        // After suspension, member loses team-granted access
+        $this->assertFalse($member->hasPluginAccess($officialPlugin));
+        $this->assertFalse($member->hasPluginAccess($thirdPartyPlugin));
+    }
+
+    public function test_team_member_keeps_own_license_when_team_suspended(): void
+    {
+        $owner = User::factory()->create();
+        $this->createPaidMaxSubscription($owner);
+
+        $team = Team::factory()->create(['user_id' => $owner->id]);
+        $member = User::factory()->create();
+
+        TeamUser::create([
+            'team_id' => $team->id,
+            'user_id' => $member->id,
+            'email' => $member->email,
+            'status' => 'active',
+            'role' => 'member',
+            'accepted_at' => now(),
+        ]);
+
+        $plugin = $this->createThirdPartyPlugin();
+
+        // Member bought this plugin themselves
+        PluginLicense::factory()->create([
+            'user_id' => $member->id,
+            'plugin_id' => $plugin->id,
+            'expires_at' => null,
+        ]);
+
+        // Suspend the team
+        $team->suspend();
+
+        // Member keeps access via their own license
+        $this->assertTrue($member->hasPluginAccess($plugin));
+    }
+
+    public function test_satis_api_excludes_team_plugins_when_team_suspended(): void
+    {
+        $owner = User::factory()->create([
+            'plugin_license_key' => 'owner-key',
+        ]);
+        $this->createPaidMaxSubscription($owner);
+
+        $team = Team::factory()->create(['user_id' => $owner->id]);
+        $member = User::factory()->create([
+            'plugin_license_key' => 'member-key',
+        ]);
+
+        TeamUser::create([
+            'team_id' => $team->id,
+            'user_id' => $member->id,
+            'email' => $member->email,
+            'status' => 'active',
+            'role' => 'member',
+            'accepted_at' => now(),
+        ]);
+
+        $plugin = Plugin::factory()->create([
+            'name' => 'nativephp/team-plugin',
+            'type' => PluginType::Paid,
+            'status' => PluginStatus::Approved,
+            'is_active' => true,
+            'is_official' => true,
+        ]);
+
+        PluginLicense::factory()->create([
+            'user_id' => $owner->id,
+            'plugin_id' => $plugin->id,
+            'expires_at' => null,
+        ]);
+
+        // Suspend the team
+        $team->suspend();
+
+        $response = $this->withHeaders([
+            'X-API-Key' => config('services.bifrost.api_key'),
+            'Authorization' => 'Basic '.base64_encode("{$member->email}:member-key"),
+        ])->getJson('/api/plugins/access');
+
+        $response->assertStatus(200);
+
+        $pluginNames = array_column($response->json('plugins'), 'name');
+        $this->assertNotContains('nativephp/team-plugin', $pluginNames);
+    }
+
+    // ---- Phase 6: Team member pricing ----
+
+    public function test_team_member_without_own_subscription_sees_regular_price(): void
+    {
+        $owner = User::factory()->create();
+        $this->createPaidMaxSubscription($owner);
+
+        $team = Team::factory()->create(['user_id' => $owner->id]);
+        $member = User::factory()->create();
+
+        TeamUser::create([
+            'team_id' => $team->id,
+            'user_id' => $member->id,
+            'email' => $member->email,
+            'status' => 'active',
+            'role' => 'member',
+            'accepted_at' => now(),
+        ]);
+
+        $plugin = $this->createThirdPartyPlugin();
+
+        $bestPrice = $plugin->getBestPriceForUser($member);
+
+        $this->assertNotNull($bestPrice);
+        $this->assertEquals(4900, $bestPrice->amount);
+    }
+
+    public function test_team_member_with_own_subscription_sees_subscriber_price(): void
+    {
+        $owner = User::factory()->create();
+        $this->createPaidMaxSubscription($owner);
+
+        $team = Team::factory()->create(['user_id' => $owner->id]);
+        $member = User::factory()->create();
+        $this->createPaidMaxSubscription($member);
+
+        TeamUser::create([
+            'team_id' => $team->id,
+            'user_id' => $member->id,
+            'email' => $member->email,
+            'status' => 'active',
+            'role' => 'member',
+            'accepted_at' => now(),
+        ]);
+
+        $plugin = $this->createThirdPartyPlugin();
+
+        $bestPrice = $plugin->getBestPriceForUser($member);
+
+        $this->assertNotNull($bestPrice);
+        $this->assertEquals(2900, $bestPrice->amount);
+    }
+
     // ---- Comped Ultra subscriptions ----
 
     public function test_comped_ultra_user_has_active_ultra_subscription(): void
