@@ -58,11 +58,28 @@ class TeamUserController extends Controller
                 ->with('show_add_seats', true);
         }
 
-        $member = $team->users()->create([
-            'email' => $email,
-            'invitation_token' => bin2hex(random_bytes(32)),
-            'invited_at' => now(),
-        ]);
+        // Reuse existing removed record if re-inviting a previously removed member
+        $existingRemoved = $team->users()
+            ->where('email', $email)
+            ->where('status', TeamUserStatus::Removed)
+            ->first();
+
+        if ($existingRemoved) {
+            $existingRemoved->update([
+                'status' => TeamUserStatus::Pending,
+                'user_id' => null,
+                'invitation_token' => bin2hex(random_bytes(32)),
+                'invited_at' => now(),
+                'accepted_at' => null,
+            ]);
+            $member = $existingRemoved;
+        } else {
+            $member = $team->users()->create([
+                'email' => $email,
+                'invitation_token' => bin2hex(random_bytes(32)),
+                'invited_at' => now(),
+            ]);
+        }
 
         Notification::route('mail', $email)
             ->notify(new TeamInvitation($member));

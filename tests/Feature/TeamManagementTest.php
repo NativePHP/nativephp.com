@@ -156,6 +156,38 @@ class TeamManagementTest extends TestCase
         $response->assertSessionHas('error');
     }
 
+    public function test_can_reinvite_previously_removed_member(): void
+    {
+        Notification::fake();
+
+        [$owner, $team] = $this->createTeamWithOwner();
+
+        // Create a removed team user (previously invited then cancelled/removed)
+        $removed = TeamUser::factory()->create([
+            'team_id' => $team->id,
+            'email' => 'member@example.com',
+            'status' => TeamUserStatus::Removed,
+            'user_id' => null,
+        ]);
+
+        $response = $this->actingAs($owner)
+            ->post(route('customer.team.invite'), ['email' => 'member@example.com']);
+
+        $response->assertSessionHas('success');
+
+        $this->assertDatabaseHas('team_users', [
+            'id' => $removed->id,
+            'team_id' => $team->id,
+            'email' => 'member@example.com',
+            'status' => TeamUserStatus::Pending->value,
+        ]);
+
+        // Should reuse the existing record, not create a new one
+        $this->assertEquals(1, TeamUser::where('team_id', $team->id)->where('email', 'member@example.com')->count());
+
+        Notification::assertSentOnDemand(TeamInvitation::class);
+    }
+
     public function test_cannot_invite_when_team_suspended(): void
     {
         Notification::fake();
