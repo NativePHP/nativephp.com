@@ -185,4 +185,18 @@ class PluginFactory extends Factory
             'description' => null,
         ]);
     }
+
+    public function withNotes(?string $notes = null): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'notes' => $notes ?? fake()->sentence(),
+        ]);
+    }
+
+    public function withSupportChannel(?string $channel = null): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'support_channel' => $channel ?? fake()->safeEmail(),
+        ]);
+    }
 }
