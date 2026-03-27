@@ -112,7 +112,7 @@
                                 <span>Loading repositories...</span>
                             </div>
                         @elseif($reposLoaded)
-                            <flux:select wire:model="repository" label="Repository" placeholder="Select a repository...">
+                            <flux:select wire:model.live="repository" label="Repository" placeholder="Select a repository...">
                                 @foreach($repositories as $repo)
                                     <flux:select.option value="{{ $repo['full_name'] }}">
                                         {{ $repo['full_name'] }}{{ $repo['private'] ? ' (private)' : '' }}
@@ -152,6 +152,32 @@
                     </flux:card>
                 @endif
                 @endfeature
+
+                @if($repository)
+                    {{-- Support Channel --}}
+                    <flux:card>
+                        <flux:heading size="lg">Support Channel</flux:heading>
+                        <flux:text class="mt-1">
+                            How can users get support for your plugin? Provide an email address or a URL. If you enter a URL, ensure that it clearly details how a visitor goes about getting support for this plugin.
+                        </flux:text>
+
+                        <div class="mt-6">
+                            <flux:input wire:model="supportChannel" label="Support Channel" placeholder="support@example.com or https://..." />
+                        </div>
+                    </flux:card>
+
+                    {{-- Notes --}}
+                    <flux:card>
+                        <flux:heading size="lg">Notes</flux:heading>
+                        <flux:text class="mt-1">
+                            Any notes for the review team? Feel free to share links to videos of the plugin working. These won't be displayed on your plugin listing.
+                        </flux:text>
+
+                        <div class="mt-6">
+                            <flux:textarea wire:model="notes" label="Notes" placeholder="Optional notes for the review team..." rows="4" />
+                        </div>
+                    </flux:card>
+                @endif
 
                 {{-- Submit Button --}}
                 <div class="flex items-center justify-end gap-4">

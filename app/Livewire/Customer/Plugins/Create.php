@@ -22,6 +22,10 @@ class Create extends Component
 
     public string $repository = '';
 
+    public string $notes = '';
+
+    public string $supportChannel = '';
+
     /** @var array<int, array{id: int, full_name: string, private: bool}> */
     public array $repositories = [];
 
@@ -90,6 +94,8 @@ class Create extends Component
                 },
             ],
             'pluginType' => ['required', 'string', 'in:free,paid'],
+            'notes' => ['nullable', 'string', 'max:5000'],
+            'supportChannel' => ['nullable', 'string', 'max:255'],
         ], [
             'repository.required' => 'Please select a repository for your plugin.',
             'repository.regex' => 'Please enter a valid repository in the format vendor/repo-name.',
@@ -115,6 +121,8 @@ class Create extends Component
             'type' => $this->pluginType,
             'status' => PluginStatus::Pending,
             'developer_account_id' => $developerAccountId,
+            'notes' => $this->notes ?: null,
+            'support_channel' => $this->supportChannel ?: null,
         ]);
 
         $webhookSecret = $plugin->generateWebhookSecret();
