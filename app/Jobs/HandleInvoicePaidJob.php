@@ -548,7 +548,11 @@ class HandleInvoicePaidJob implements ShouldQueue
 
         // Create payout record for developer if applicable
         if ($plugin->developerAccount && $plugin->developerAccount->canReceivePayouts() && $amount > 0) {
-            $split = PluginPayout::calculateSplit($amount);
+            $platformFeePercent = ($user->hasMaxTierAccess() && ! $plugin->isOfficial())
+                ? 0
+                : PluginPayout::PLATFORM_FEE_PERCENT;
+
+            $split = PluginPayout::calculateSplit($amount, $platformFeePercent);
 
             PluginPayout::create([
                 'plugin_license_id' => $license->id,
@@ -586,7 +590,11 @@ class HandleInvoicePaidJob implements ShouldQueue
 
         // Create proportional payout for developer
         if ($plugin->developerAccount && $plugin->developerAccount->canReceivePayouts() && $allocatedAmount > 0) {
-            $split = PluginPayout::calculateSplit($allocatedAmount);
+            $platformFeePercent = ($user->hasMaxTierAccess() && ! $plugin->isOfficial())
+                ? 0
+                : PluginPayout::PLATFORM_FEE_PERCENT;
+
+            $split = PluginPayout::calculateSplit($allocatedAmount, $platformFeePercent);
 
             PluginPayout::create([
                 'plugin_license_id' => $license->id,
