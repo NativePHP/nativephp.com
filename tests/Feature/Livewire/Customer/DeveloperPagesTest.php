@@ -114,6 +114,8 @@ class DeveloperPagesTest extends TestCase
             ->test(Onboarding::class)
             ->assertSee('Frequently Asked Questions')
             ->assertSee('How does the revenue share work?')
+            ->assertSee('14-day refund period')
+            ->assertSee('plugin documentation')
             ->assertStatus(200);
     }
 
