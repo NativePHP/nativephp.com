@@ -166,10 +166,15 @@ class Plugin extends Model
     /**
      * Get the best (lowest) active price for a user based on their eligible tiers.
      * Returns null if no price exists for the user's eligible tiers.
+     * Third-party plugins never offer subscriber discounts — always regular price.
      */
     public function getBestPriceForUser(?User $user): ?PluginPrice
     {
-        $eligibleTiers = $user ? $user->getEligiblePriceTiers() : [PriceTier::Regular];
+        if (! $this->isOfficial()) {
+            $eligibleTiers = [PriceTier::Regular];
+        } else {
+            $eligibleTiers = $user ? $user->getEligiblePriceTiers() : [PriceTier::Regular];
+        }
 
         // Get the lowest active price for the user's eligible tiers
         return $this->prices()

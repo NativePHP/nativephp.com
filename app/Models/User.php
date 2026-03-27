@@ -4,6 +4,7 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use App\Enums\PriceTier;
+use App\Enums\Subscription;
 use Filament\Models\Contracts\FilamentUser;
 use Filament\Panel;
 use Illuminate\Database\Eloquent\Casts\Attribute;
@@ -122,6 +123,25 @@ class User extends Authenticatable implements FilamentUser
     public function hasMaxAccess(): bool
     {
         return $this->hasActiveMaxLicense() || $this->hasActiveMaxSubLicense();
+    }
+
+    public function hasMaxTierAccess(): bool
+    {
+        if ($this->hasMaxAccess()) {
+            return true;
+        }
+
+        $subscription = $this->subscription();
+
+        if ($subscription?->active()) {
+            try {
+                return Subscription::fromStripePriceId($subscription->stripe_price) === Subscription::Max;
+            } catch (\RuntimeException) {
+                return false;
+            }
+        }
+
+        return false;
     }
 
     /**
