@@ -204,14 +204,14 @@
                 <div>
                     <flux:heading>When do I get paid?</flux:heading>
                     <flux:text class="mt-1">
-                        Payouts are processed automatically through Stripe Connect. Funds are typically available within 2–7 business days after a sale.
+                        Payouts are processed daily through Stripe Connect. However, all purchases include a 14-day refund period. Your earnings from a sale will only be paid out once this 14-day period has passed and the customer hasn't requested a refund.
                     </flux:text>
                 </div>
 
                 <div>
                     <flux:heading>What do I need to get started?</flux:heading>
                     <flux:text class="mt-1">
-                        You'll need a Stripe account (or create one during onboarding), a GitHub repository for your plugin, and a nativephp.json configuration file.
+                        A new Stripe account will be created for you as part of the onboarding process. You'll also need a GitHub account with a private repository for your plugin. Check out the <a href="/docs/mobile/3/plugins/introduction" class="font-medium text-indigo-600 underline hover:text-indigo-500 dark:text-indigo-400" target="_blank">plugin documentation</a> to start building.
                     </flux:text>
                 </div>
             </div>

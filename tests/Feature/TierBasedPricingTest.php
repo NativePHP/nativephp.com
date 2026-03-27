@@ -184,6 +184,59 @@ class TierBasedPricingTest extends TestCase
     }
 
     // ========================================
+    // Max Tier Access Tests
+    // ========================================
+
+    #[Test]
+    public function user_with_max_subscription_has_max_tier_access(): void
+    {
+        $user = User::factory()->create();
+        $this->createSubscription($user, self::MAX_PRICE_ID);
+
+        $this->assertTrue($user->hasMaxTierAccess());
+    }
+
+    #[Test]
+    public function user_with_pro_subscription_does_not_have_max_tier_access(): void
+    {
+        $user = User::factory()->create();
+        $this->createSubscription($user, self::PRO_PRICE_ID);
+
+        $this->assertFalse($user->hasMaxTierAccess());
+    }
+
+    #[Test]
+    public function user_with_mini_subscription_does_not_have_max_tier_access(): void
+    {
+        $user = User::factory()->create();
+        $this->createSubscription($user, self::MINI_PRICE_ID);
+
+        $this->assertFalse($user->hasMaxTierAccess());
+    }
+
+    #[Test]
+    public function user_without_subscription_does_not_have_max_tier_access(): void
+    {
+        $user = User::factory()->create();
+
+        $this->assertFalse($user->hasMaxTierAccess());
+    }
+
+    #[Test]
+    public function user_with_max_anystack_license_has_max_tier_access(): void
+    {
+        $user = User::factory()->create();
+        License::factory()
+            ->for($user)
+            ->max()
+            ->active()
+            ->withoutSubscriptionItem()
+            ->create();
+
+        $this->assertTrue($user->hasMaxTierAccess());
+    }
+
+    // ========================================
     // Plugin Tier Pricing Tests
     // ========================================
 
@@ -219,12 +272,12 @@ class TierBasedPricingTest extends TestCase
     }
 
     #[Test]
-    public function subscriber_sees_subscriber_plugin_price(): void
+    public function subscriber_sees_subscriber_plugin_price_for_official_plugin(): void
     {
         $user = User::factory()->create();
         $this->createSubscription($user, self::PRO_PRICE_ID);
 
-        $plugin = Plugin::factory()->approved()->paid()->create(['is_active' => true]);
+        $plugin = Plugin::factory()->approved()->paid()->create(['is_active' => true, 'is_official' => true]);
         PluginPrice::factory()->regular()->amount(2999)->create(['plugin_id' => $plugin->id]);
         PluginPrice::factory()->subscriber()->amount(1999)->create(['plugin_id' => $plugin->id]);
         PluginPrice::factory()->eap()->amount(999)->create(['plugin_id' => $plugin->id]);
@@ -237,7 +290,7 @@ class TierBasedPricingTest extends TestCase
     }
 
     #[Test]
-    public function eap_customer_sees_eap_plugin_price(): void
+    public function eap_customer_sees_eap_plugin_price_for_official_plugin(): void
     {
         $user = User::factory()->create();
         License::factory()
@@ -248,7 +301,7 @@ class TierBasedPricingTest extends TestCase
             ->withoutSubscriptionItem()
             ->create();
 
-        $plugin = Plugin::factory()->approved()->paid()->create(['is_active' => true]);
+        $plugin = Plugin::factory()->approved()->paid()->create(['is_active' => true, 'is_official' => true]);
         PluginPrice::factory()->regular()->amount(2999)->create(['plugin_id' => $plugin->id]);
         PluginPrice::factory()->subscriber()->amount(1999)->create(['plugin_id' => $plugin->id]);
         PluginPrice::factory()->eap()->amount(999)->create(['plugin_id' => $plugin->id]);
@@ -261,7 +314,7 @@ class TierBasedPricingTest extends TestCase
     }
 
     #[Test]
-    public function user_qualifying_for_multiple_tiers_sees_lowest_plugin_price(): void
+    public function user_qualifying_for_multiple_tiers_sees_lowest_official_plugin_price(): void
     {
         $user = User::factory()->create();
         $this->createSubscription($user, self::PRO_PRICE_ID);
@@ -273,7 +326,7 @@ class TierBasedPricingTest extends TestCase
             ->withoutSubscriptionItem()
             ->create();
 
-        $plugin = Plugin::factory()->approved()->paid()->create(['is_active' => true]);
+        $plugin = Plugin::factory()->approved()->paid()->create(['is_active' => true, 'is_official' => true]);
         PluginPrice::factory()->regular()->amount(2999)->create(['plugin_id' => $plugin->id]);
         PluginPrice::factory()->subscriber()->amount(1999)->create(['plugin_id' => $plugin->id]);
         PluginPrice::factory()->eap()->amount(999)->create(['plugin_id' => $plugin->id]);
@@ -285,7 +338,7 @@ class TierBasedPricingTest extends TestCase
     }
 
     #[Test]
-    public function subscriber_sees_subscriber_price_when_it_is_lower_than_eap(): void
+    public function subscriber_sees_subscriber_price_when_it_is_lower_than_eap_for_official_plugin(): void
     {
         $user = User::factory()->create();
         $this->createSubscription($user, self::PRO_PRICE_ID);
@@ -297,7 +350,7 @@ class TierBasedPricingTest extends TestCase
             ->withoutSubscriptionItem()
             ->create();
 
-        $plugin = Plugin::factory()->approved()->paid()->create(['is_active' => true]);
+        $plugin = Plugin::factory()->approved()->paid()->create(['is_active' => true, 'is_official' => true]);
         PluginPrice::factory()->regular()->amount(2999)->create(['plugin_id' => $plugin->id]);
         PluginPrice::factory()->subscriber()->amount(500)->create(['plugin_id' => $plugin->id]);
         PluginPrice::factory()->eap()->amount(999)->create(['plugin_id' => $plugin->id]);
@@ -506,13 +559,13 @@ class TierBasedPricingTest extends TestCase
     }
 
     #[Test]
-    public function cart_adds_plugin_at_subscriber_price_for_pro_user(): void
+    public function cart_adds_official_plugin_at_subscriber_price_for_pro_user(): void
     {
         $user = User::factory()->create();
         $this->createSubscription($user, self::PRO_PRICE_ID);
         $cart = Cart::factory()->for($user)->create();
 
-        $plugin = Plugin::factory()->approved()->paid()->create(['is_active' => true]);
+        $plugin = Plugin::factory()->approved()->paid()->create(['is_active' => true, 'is_official' => true]);
         PluginPrice::factory()->regular()->amount(2999)->create(['plugin_id' => $plugin->id]);
         PluginPrice::factory()->subscriber()->amount(1999)->create(['plugin_id' => $plugin->id]);
 
@@ -524,7 +577,7 @@ class TierBasedPricingTest extends TestCase
     }
 
     #[Test]
-    public function cart_adds_plugin_at_eap_price_for_eap_customer(): void
+    public function cart_adds_official_plugin_at_eap_price_for_eap_customer(): void
     {
         $user = User::factory()->create();
         License::factory()
@@ -536,7 +589,7 @@ class TierBasedPricingTest extends TestCase
             ->create();
         $cart = Cart::factory()->for($user)->create();
 
-        $plugin = Plugin::factory()->approved()->paid()->create(['is_active' => true]);
+        $plugin = Plugin::factory()->approved()->paid()->create(['is_active' => true, 'is_official' => true]);
         PluginPrice::factory()->regular()->amount(2999)->create(['plugin_id' => $plugin->id]);
         PluginPrice::factory()->subscriber()->amount(1999)->create(['plugin_id' => $plugin->id]);
         PluginPrice::factory()->eap()->amount(999)->create(['plugin_id' => $plugin->id]);
@@ -618,12 +671,12 @@ class TierBasedPricingTest extends TestCase
     }
 
     #[Test]
-    public function cart_refresh_prices_updates_to_current_tier_price(): void
+    public function cart_refresh_prices_updates_to_current_tier_price_for_official_plugin(): void
     {
         $user = User::factory()->create();
         $cart = Cart::factory()->for($user)->create();
 
-        $plugin = Plugin::factory()->approved()->paid()->create(['is_active' => true]);
+        $plugin = Plugin::factory()->approved()->paid()->create(['is_active' => true, 'is_official' => true]);
         $regularPrice = PluginPrice::factory()->regular()->amount(2999)->create(['plugin_id' => $plugin->id]);
 
         $cartService = new CartService;
@@ -680,12 +733,12 @@ class TierBasedPricingTest extends TestCase
     // ========================================
 
     #[Test]
-    public function subscriber_who_cancels_subscription_sees_regular_price(): void
+    public function subscriber_who_cancels_subscription_sees_regular_price_for_official_plugin(): void
     {
         $user = User::factory()->create();
         $subscription = $this->createSubscription($user, self::PRO_PRICE_ID);
 
-        $plugin = Plugin::factory()->approved()->paid()->create(['is_active' => true]);
+        $plugin = Plugin::factory()->approved()->paid()->create(['is_active' => true, 'is_official' => true]);
         PluginPrice::factory()->regular()->amount(2999)->create(['plugin_id' => $plugin->id]);
         PluginPrice::factory()->subscriber()->amount(1999)->create(['plugin_id' => $plugin->id]);
 
@@ -698,7 +751,7 @@ class TierBasedPricingTest extends TestCase
     }
 
     #[Test]
-    public function user_with_only_eap_tier_price_available_sees_that_price(): void
+    public function user_with_only_eap_tier_price_available_sees_that_price_for_official_plugin(): void
     {
         $user = User::factory()->create();
         License::factory()
@@ -709,7 +762,7 @@ class TierBasedPricingTest extends TestCase
             ->withoutSubscriptionItem()
             ->create();
 
-        $plugin = Plugin::factory()->approved()->paid()->create(['is_active' => true]);
+        $plugin = Plugin::factory()->approved()->paid()->create(['is_active' => true, 'is_official' => true]);
         PluginPrice::factory()->eap()->amount(999)->create(['plugin_id' => $plugin->id]);
 
         $bestPrice = $plugin->getBestPriceForUser($user);
@@ -733,12 +786,12 @@ class TierBasedPricingTest extends TestCase
     }
 
     #[Test]
-    public function subscriber_can_access_plugin_with_only_subscriber_tier_price(): void
+    public function subscriber_can_access_official_plugin_with_only_subscriber_tier_price(): void
     {
         $user = User::factory()->create();
         $this->createSubscription($user, self::PRO_PRICE_ID);
 
-        $plugin = Plugin::factory()->approved()->paid()->create(['is_active' => true]);
+        $plugin = Plugin::factory()->approved()->paid()->create(['is_active' => true, 'is_official' => true]);
         PluginPrice::factory()->subscriber()->amount(1999)->create(['plugin_id' => $plugin->id]);
 
         $bestPrice = $plugin->getBestPriceForUser($user);
@@ -807,12 +860,12 @@ class TierBasedPricingTest extends TestCase
     }
 
     #[Test]
-    public function accessible_paid_plugin_returns_200(): void
+    public function accessible_paid_official_plugin_returns_200(): void
     {
         $user = User::factory()->create();
         $this->createSubscription($user, self::PRO_PRICE_ID);
 
-        $plugin = Plugin::factory()->approved()->paid()->create(['is_active' => true]);
+        $plugin = Plugin::factory()->approved()->paid()->create(['is_active' => true, 'is_official' => true]);
         PluginPrice::factory()->subscriber()->amount(1999)->create(['plugin_id' => $plugin->id]);
 
         $this->actingAs($user)
@@ -853,5 +906,85 @@ class TierBasedPricingTest extends TestCase
         $this->actingAs($user)
             ->get(route('bundles.show', $bundle))
             ->assertOk();
+    }
+
+    // ========================================
+    // Third-Party Plugin Pricing Tests
+    // ========================================
+
+    #[Test]
+    public function third_party_plugin_always_returns_regular_price_for_subscriber(): void
+    {
+        $user = User::factory()->create();
+        $this->createSubscription($user, self::PRO_PRICE_ID);
+
+        $plugin = Plugin::factory()->approved()->paid()->create(['is_active' => true, 'is_official' => false]);
+        PluginPrice::factory()->regular()->amount(2999)->create(['plugin_id' => $plugin->id]);
+        PluginPrice::factory()->subscriber()->amount(1999)->create(['plugin_id' => $plugin->id]);
+
+        $bestPrice = $plugin->getBestPriceForUser($user);
+
+        $this->assertNotNull($bestPrice);
+        $this->assertEquals(2999, $bestPrice->amount);
+        $this->assertEquals(PriceTier::Regular, $bestPrice->tier);
+    }
+
+    #[Test]
+    public function third_party_plugin_always_returns_regular_price_for_eap_customer(): void
+    {
+        $user = User::factory()->create();
+        License::factory()
+            ->for($user)
+            ->mini()
+            ->active()
+            ->eapEligible()
+            ->withoutSubscriptionItem()
+            ->create();
+
+        $plugin = Plugin::factory()->approved()->paid()->create(['is_active' => true, 'is_official' => false]);
+        PluginPrice::factory()->regular()->amount(2999)->create(['plugin_id' => $plugin->id]);
+        PluginPrice::factory()->eap()->amount(999)->create(['plugin_id' => $plugin->id]);
+
+        $bestPrice = $plugin->getBestPriceForUser($user);
+
+        $this->assertNotNull($bestPrice);
+        $this->assertEquals(2999, $bestPrice->amount);
+        $this->assertEquals(PriceTier::Regular, $bestPrice->tier);
+    }
+
+    #[Test]
+    public function third_party_plugin_always_returns_regular_price_for_max_subscriber(): void
+    {
+        $user = User::factory()->create();
+        $this->createSubscription($user, self::MAX_PRICE_ID);
+
+        $plugin = Plugin::factory()->approved()->paid()->create(['is_active' => true, 'is_official' => false]);
+        PluginPrice::factory()->regular()->amount(2999)->create(['plugin_id' => $plugin->id]);
+        PluginPrice::factory()->subscriber()->amount(1999)->create(['plugin_id' => $plugin->id]);
+        PluginPrice::factory()->eap()->amount(999)->create(['plugin_id' => $plugin->id]);
+
+        $bestPrice = $plugin->getBestPriceForUser($user);
+
+        $this->assertNotNull($bestPrice);
+        $this->assertEquals(2999, $bestPrice->amount);
+        $this->assertEquals(PriceTier::Regular, $bestPrice->tier);
+    }
+
+    #[Test]
+    public function cart_adds_third_party_plugin_at_regular_price_for_subscriber(): void
+    {
+        $user = User::factory()->create();
+        $this->createSubscription($user, self::PRO_PRICE_ID);
+        $cart = Cart::factory()->for($user)->create();
+
+        $plugin = Plugin::factory()->approved()->paid()->create(['is_active' => true, 'is_official' => false]);
+        PluginPrice::factory()->regular()->amount(2999)->create(['plugin_id' => $plugin->id]);
+        PluginPrice::factory()->subscriber()->amount(1999)->create(['plugin_id' => $plugin->id]);
+
+        $cartService = new CartService;
+        $item = $cartService->addPlugin($cart, $plugin);
+
+        $this->assertEquals(2999, $item->price_at_addition);
+        $this->assertEquals(PriceTier::Regular, $item->pluginPrice->tier);
     }
 }

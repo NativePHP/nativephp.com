@@ -83,14 +83,14 @@ class WallOfLoveSubmissionResource extends Resource
                         Forms\Components\Toggle::make('promoted')
                             ->label('Promoted to Homepage')
                             ->helperText('Promoted submissions appear in the feedback section on the homepage.')
-                            ->visible(fn (Forms\Get $get) => $get('is_approved'))
+                            ->visible(fn (Schemas\Components\Utilities\Get $get) => $get('is_approved'))
                             ->live(),
 
                         Forms\Components\Textarea::make('promoted_testimonial')
                             ->label('Promoted Testimonial (optional override)')
                             ->helperText('Leave empty to use the original testimonial, or enter a clipped version for the homepage.')
                             ->rows(4)
-                            ->visible(fn (Forms\Get $get) => $get('is_approved') && $get('promoted')),
+                            ->visible(fn (Schemas\Components\Utilities\Get $get) => $get('is_approved') && $get('promoted')),
                     ])
                     ->columns(1),
             ]);

@@ -17,7 +17,7 @@
                 @foreach($this->licenses as $license)
                     @php
                         $isLegacyLicense = $license->isLegacy();
-                        $daysUntilExpiry = $license->expires_at ? (int) round(abs(now()->diffInDays($license->expires_at))) : null;
+                        $daysUntilExpiry = $license->expires_at ? (int) now()->diffInDays($license->expires_at, false) : null;
                         $needsRenewal = $isLegacyLicense && $daysUntilExpiry !== null && !$license->expires_at->isPast();
 
                         $status = match(true) {

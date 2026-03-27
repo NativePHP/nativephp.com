@@ -66,9 +66,9 @@ class PluginPayout extends Model
     /**
      * @return array{platform_fee: int, developer_amount: int}
      */
-    public static function calculateSplit(int $grossAmount): array
+    public static function calculateSplit(int $grossAmount, int $platformFeePercent = self::PLATFORM_FEE_PERCENT): array
     {
-        $platformFee = (int) round($grossAmount * self::PLATFORM_FEE_PERCENT / 100);
+        $platformFee = (int) round($grossAmount * $platformFeePercent / 100);
         $developerAmount = $grossAmount - $platformFee;
 
         return [

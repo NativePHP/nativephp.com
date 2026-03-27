@@ -40,7 +40,7 @@ class ProductResource extends Resource
                             ->required()
                             ->maxLength(255)
                             ->live(onBlur: true)
-                            ->afterStateUpdated(function (string $state, Forms\Set $set): void {
+                            ->afterStateUpdated(function (string $state, Schemas\Components\Utilities\Set $set): void {
                                 $set('slug', Str::slug($state));
                             }),
 

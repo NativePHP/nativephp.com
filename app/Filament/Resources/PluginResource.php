@@ -154,6 +154,18 @@ class PluginResource extends Resource
                     ])
                     ->visible(fn (?Plugin $record) => $record?->review_checks !== null),
 
+                Schemas\Components\Section::make('Developer Submission Details')
+                    ->schema([
+                        Forms\Components\Placeholder::make('support_channel_display')
+                            ->label('Support Channel')
+                            ->content(fn (?Plugin $record) => $record?->support_channel ?? 'Not provided'),
+
+                        Forms\Components\Placeholder::make('notes_display')
+                            ->label('Notes')
+                            ->content(fn (?Plugin $record) => $record?->notes ?? 'Not provided'),
+                    ])
+                    ->visible(fn (?Plugin $record) => $record !== null),
+
                 Schemas\Components\Section::make('Submission Info')
                     ->schema([
                         Forms\Components\Select::make('user_id')

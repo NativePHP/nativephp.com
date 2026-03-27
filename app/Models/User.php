@@ -283,6 +283,25 @@ class User extends Authenticatable implements FilamentUser
         return ! $subscription->is_comped;
     }
 
+    public function hasMaxTierAccess(): bool
+    {
+        if ($this->hasMaxAccess()) {
+            return true;
+        }
+
+        $subscription = $this->subscription();
+
+        if ($subscription?->active()) {
+            try {
+                return Subscription::fromStripePriceId($subscription->stripe_price) === Subscription::Max;
+            } catch (\RuntimeException) {
+                return false;
+            }
+        }
+
+        return false;
+    }
+
     /**
      * Check if user was an Early Access Program customer.
      * EAP customers purchased before June 1, 2025.
