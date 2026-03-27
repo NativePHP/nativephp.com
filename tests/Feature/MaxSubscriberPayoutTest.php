@@ -25,6 +25,13 @@ class MaxSubscriberPayoutTest extends TestCase
 
     private const PRO_PRICE_ID = 'price_1RoZeVAyFo6rlwXqtnOViUCf';
 
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        config(['subscriptions.plans.max.stripe_price_id' => self::MAX_PRICE_ID]);
+    }
+
     private function createStripeInvoice(string $cartId, string $customerId): Invoice
     {
         $invoice = Invoice::constructFrom([

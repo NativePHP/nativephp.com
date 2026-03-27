@@ -32,18 +32,19 @@ class PluginSubmissionNotesTest extends TestCase
         ], $extraComposerData));
 
         Http::fake([
-            "{$base}/contents/README.md" => Http::response([
+            "{$base}/contents/README.md*" => Http::response([
                 'content' => base64_encode("# {$repoSlug}"),
                 'encoding' => 'base64',
             ]),
-            "{$base}/contents/composer.json" => Http::response([
+            "{$base}/contents/composer.json*" => Http::response([
                 'content' => base64_encode($composerJson),
                 'encoding' => 'base64',
             ]),
-            "{$base}/contents/nativephp.json" => Http::response([], 404),
+            "{$base}/contents/nativephp.json*" => Http::response([], 404),
             "{$base}/contents/LICENSE*" => Http::response([], 404),
             "{$base}/releases/latest" => Http::response([], 404),
             "{$base}/tags*" => Http::response([]),
+            "{$base}/hooks" => Http::response(['id' => 1]),
             "https://raw.githubusercontent.com/{$repoSlug}/*" => Http::response('', 404),
             $base => Http::response(['default_branch' => 'main']),
             "{$base}/git/trees/main*" => Http::response([
@@ -62,6 +63,7 @@ class PluginSubmissionNotesTest extends TestCase
     {
         $user = User::factory()->create([
             'github_id' => '12345',
+            'github_token' => encrypt('fake-token'),
         ]);
         DeveloperAccount::factory()->withAcceptedTerms()->create([
             'user_id' => $user->id,

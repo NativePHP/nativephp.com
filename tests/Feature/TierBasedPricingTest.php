@@ -35,8 +35,9 @@ class TierBasedPricingTest extends TestCase
 
         Feature::define(ShowPlugins::class, true);
 
-        // Set config for mini price ID used in tests
+        // Set config for price IDs used in tests
         config(['subscriptions.plans.mini.stripe_price_id' => self::MINI_PRICE_ID]);
+        config(['subscriptions.plans.max.stripe_price_id' => self::MAX_PRICE_ID]);
     }
 
     /**
@@ -184,56 +185,42 @@ class TierBasedPricingTest extends TestCase
     }
 
     // ========================================
-    // Max Tier Access Tests
+    // Ultra Subscription Access Tests
     // ========================================
 
     #[Test]
-    public function user_with_max_subscription_has_max_tier_access(): void
+    public function user_with_max_subscription_has_active_ultra_subscription(): void
     {
         $user = User::factory()->create();
         $this->createSubscription($user, self::MAX_PRICE_ID);
 
-        $this->assertTrue($user->hasMaxTierAccess());
+        $this->assertTrue($user->hasActiveUltraSubscription());
     }
 
     #[Test]
-    public function user_with_pro_subscription_does_not_have_max_tier_access(): void
+    public function user_with_pro_subscription_does_not_have_active_ultra_subscription(): void
     {
         $user = User::factory()->create();
         $this->createSubscription($user, self::PRO_PRICE_ID);
 
-        $this->assertFalse($user->hasMaxTierAccess());
+        $this->assertFalse($user->hasActiveUltraSubscription());
     }
 
     #[Test]
-    public function user_with_mini_subscription_does_not_have_max_tier_access(): void
+    public function user_with_mini_subscription_does_not_have_active_ultra_subscription(): void
     {
         $user = User::factory()->create();
         $this->createSubscription($user, self::MINI_PRICE_ID);
 
-        $this->assertFalse($user->hasMaxTierAccess());
+        $this->assertFalse($user->hasActiveUltraSubscription());
     }
 
     #[Test]
-    public function user_without_subscription_does_not_have_max_tier_access(): void
+    public function user_without_subscription_does_not_have_active_ultra_subscription(): void
     {
         $user = User::factory()->create();
 
-        $this->assertFalse($user->hasMaxTierAccess());
-    }
-
-    #[Test]
-    public function user_with_max_anystack_license_has_max_tier_access(): void
-    {
-        $user = User::factory()->create();
-        License::factory()
-            ->for($user)
-            ->max()
-            ->active()
-            ->withoutSubscriptionItem()
-            ->create();
-
-        $this->assertTrue($user->hasMaxTierAccess());
+        $this->assertFalse($user->hasActiveUltraSubscription());
     }
 
     // ========================================

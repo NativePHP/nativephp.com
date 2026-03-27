@@ -562,7 +562,7 @@ class HandleInvoicePaidJob implements ShouldQueue
 
         // Create payout record for developer if applicable
         if ($plugin->developerAccount && $plugin->developerAccount->canReceivePayouts() && $amount > 0) {
-            $platformFeePercent = ($user->hasMaxTierAccess() && ! $plugin->isOfficial())
+            $platformFeePercent = ($user->hasActiveUltraSubscription() && ! $plugin->isOfficial())
                 ? 0
                 : PluginPayout::PLATFORM_FEE_PERCENT;
 
@@ -604,7 +604,7 @@ class HandleInvoicePaidJob implements ShouldQueue
 
         // Create proportional payout for developer
         if ($plugin->developerAccount && $plugin->developerAccount->canReceivePayouts() && $allocatedAmount > 0) {
-            $platformFeePercent = ($user->hasMaxTierAccess() && ! $plugin->isOfficial())
+            $platformFeePercent = ($user->hasActiveUltraSubscription() && ! $plugin->isOfficial())
                 ? 0
                 : PluginPayout::PLATFORM_FEE_PERCENT;
 
