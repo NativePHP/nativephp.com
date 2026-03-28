@@ -76,10 +76,12 @@ class PluginSubmitted extends Notification implements ShouldQueue
         }
 
         $labels = [
+            'has_license_file' => 'Add a LICENSE or LICENSE.md file to your repository (required)',
+            'has_release_version' => 'Create a release version or tag on GitHub (required)',
+            'webhook_configured' => 'Configure the GitHub webhook for your repository (required)',
             'supports_ios' => 'Add iOS support (resources/ios/)',
             'supports_android' => 'Add Android support (resources/android/)',
             'supports_js' => 'Add JavaScript support (resources/js/)',
-            'has_support_email' => 'Add a support email to your README',
             'requires_mobile_sdk' => 'Require the nativephp/mobile SDK in composer.json',
             'has_ios_min_version' => 'Set iOS min_version in nativephp.json',
             'has_android_min_version' => 'Set Android min_version in nativephp.json',
@@ -88,6 +90,14 @@ class PluginSubmitted extends Notification implements ShouldQueue
         $failing = [];
 
         foreach ($labels as $key => $label) {
+            if ($key === 'webhook_configured') {
+                if (! $this->plugin->webhook_installed) {
+                    $failing[] = $label;
+                }
+
+                continue;
+            }
+
             if (empty($checks[$key])) {
                 $failing[] = $label;
             }

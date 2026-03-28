@@ -29,10 +29,13 @@ class EditPlugin extends EditRecord
                     ->icon('heroicon-o-check')
                     ->color('success')
                     ->visible(fn () => $this->record->isPending())
+                    ->disabled(fn () => ! $this->record->passesRequiredReviewChecks())
                     ->action(fn () => $this->record->approve(auth()->id()))
                     ->requiresConfirmation()
                     ->modalHeading('Approve Plugin')
-                    ->modalDescription(fn () => "Are you sure you want to approve '{$this->record->name}'?"),
+                    ->modalDescription(fn () => ! $this->record->passesRequiredReviewChecks()
+                        ? "Cannot approve '{$this->record->name}' — required checks are failing: ".implode(', ', $this->record->getFailingRequiredChecks())
+                        : "Are you sure you want to approve '{$this->record->name}'?"),
 
                 Actions\Action::make('reject')
                     ->icon('heroicon-o-x-mark')
@@ -192,11 +195,15 @@ class EditPlugin extends EditRecord
                             return;
                         }
 
+                        $webhookConfigured = $this->record->webhook_installed;
+
                         $lines = collect([
+                            ['License file *', $checks['has_license_file']],
+                            ['Release version *', $checks['has_release_version'] ? $checks['release_version'] : false],
+                            ['Webhook *', $webhookConfigured],
                             ['iOS support', $checks['supports_ios']],
                             ['Android support', $checks['supports_android']],
                             ['JS support', $checks['supports_js']],
-                            ['Support email', $checks['has_support_email'] ? $checks['support_email'] : false],
                             ['Requires nativephp/mobile', $checks['requires_mobile_sdk'] ? $checks['mobile_sdk_constraint'] : false],
                             ['iOS min_version', $checks['has_ios_min_version'] ? $checks['ios_min_version'] : false],
                             ['Android min_version', $checks['has_android_min_version'] ? $checks['android_min_version'] : false],
@@ -213,16 +220,17 @@ class EditPlugin extends EditRecord
                         })->implode('<br>');
 
                         $passed = collect($checks)->only([
+                            'has_license_file', 'has_release_version',
                             'supports_ios', 'supports_android', 'supports_js',
-                            'has_support_email', 'requires_mobile_sdk',
+                            'requires_mobile_sdk',
                             'has_ios_min_version', 'has_android_min_version',
-                        ])->filter()->count();
+                        ])->filter()->count() + ($webhookConfigured ? 1 : 0);
 
                         Notification::make()
-                            ->title("Review checks complete ({$passed}/7 passed)")
+                            ->title("Review checks complete ({$passed}/9 passed)")
                             ->body(new HtmlString($lines))
                             ->duration(15000)
-                            ->color($passed === 7 ? 'success' : 'warning')
+                            ->color($passed === 9 ? 'success' : 'warning')
                             ->send();
                     }),
 

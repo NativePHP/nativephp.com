@@ -290,6 +290,46 @@ class Plugin extends Model
     }
 
     /**
+     * Check if all required review checks have passed.
+     * A plugin cannot be approved until these checks pass.
+     */
+    public function passesRequiredReviewChecks(): bool
+    {
+        $checks = $this->review_checks;
+
+        if (! $checks) {
+            return false;
+        }
+
+        return ! empty($checks['has_license_file']) && ! empty($checks['has_release_version']) && $this->webhook_installed;
+    }
+
+    /**
+     * Get the list of failing required review checks.
+     *
+     * @return array<int, string>
+     */
+    public function getFailingRequiredChecks(): array
+    {
+        $checks = $this->review_checks;
+        $failing = [];
+
+        if (empty($checks['has_license_file'])) {
+            $failing[] = 'License file (LICENSE or LICENSE.md)';
+        }
+
+        if (empty($checks['has_release_version'])) {
+            $failing[] = 'Release version (GitHub release or tag)';
+        }
+
+        if (! $this->webhook_installed) {
+            $failing[] = 'Webhook configured';
+        }
+
+        return $failing;
+    }
+
+    /**
      * @param  Builder<Plugin>  $query
      * @return Builder<Plugin>
      */
