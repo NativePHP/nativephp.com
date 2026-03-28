@@ -8,6 +8,7 @@ use App\Features\ShowAuthButtons;
 use App\Jobs\RevokeTeamUserAccessJob;
 use App\Jobs\SuspendTeamJob;
 use App\Jobs\UnsuspendTeamJob;
+use App\Livewire\TeamManager;
 use App\Models\License;
 use App\Models\Plugin;
 use App\Models\PluginLicense;
@@ -25,6 +26,7 @@ use Illuminate\Support\Facades\Queue;
 use Laravel\Cashier\Events\WebhookReceived;
 use Laravel\Cashier\Subscription;
 use Laravel\Pennant\Feature;
+use Livewire\Livewire;
 use Tests\TestCase;
 
 class TeamManagementTest extends TestCase
@@ -202,14 +204,31 @@ class TeamManagementTest extends TestCase
         Notification::assertNothingSent();
     }
 
+    public function test_owner_cannot_invite_themselves(): void
+    {
+        Notification::fake();
+
+        [$owner, $team] = $this->createTeamWithOwner();
+
+        $response = $this->actingAs($owner)
+            ->post(route('customer.team.invite'), ['email' => $owner->email]);
+
+        $response->assertSessionHas('error', 'You cannot invite yourself to your own team.');
+        Notification::assertNothingSent();
+        $this->assertDatabaseMissing('team_users', [
+            'team_id' => $team->id,
+            'email' => $owner->email,
+        ]);
+    }
+
     public function test_cannot_invite_beyond_seat_limit(): void
     {
         Notification::fake();
 
         [$owner, $team] = $this->createTeamWithOwner();
 
-        // Create 10 active members to fill all seats
-        TeamUser::factory()->count(10)->active()->create(['team_id' => $team->id]);
+        // Create 9 active members to fill all seats (owner occupies 1 of 10 included seats)
+        TeamUser::factory()->count(9)->active()->create(['team_id' => $team->id]);
 
         $response = $this->actingAs($owner)
             ->post(route('customer.team.invite'), ['email' => 'extra@example.com']);
@@ -872,5 +891,78 @@ class TeamManagementTest extends TestCase
         $response->assertOk();
         $response->assertSee('acme/shared-plugin');
         $response->assertSee('Accessible Plugins');
+    }
+
+    // ========================================
+    // Seat Validation Tests
+    // ========================================
+
+    public function test_cannot_add_zero_seats(): void
+    {
+        [$owner, $team] = $this->createTeamWithOwner();
+
+        Livewire::actingAs($owner)
+            ->test(TeamManager::class, ['team' => $team])
+            ->call('addSeats', 0);
+
+        $this->assertEquals(0, $team->fresh()->extra_seats);
+    }
+
+    public function test_cannot_add_negative_seats(): void
+    {
+        [$owner, $team] = $this->createTeamWithOwner();
+
+        Livewire::actingAs($owner)
+            ->test(TeamManager::class, ['team' => $team])
+            ->call('addSeats', -1);
+
+        $this->assertEquals(0, $team->fresh()->extra_seats);
+    }
+
+    public function test_cannot_add_more_than_fifty_seats(): void
+    {
+        [$owner, $team] = $this->createTeamWithOwner();
+
+        Livewire::actingAs($owner)
+            ->test(TeamManager::class, ['team' => $team])
+            ->call('addSeats', 51);
+
+        $this->assertEquals(0, $team->fresh()->extra_seats);
+    }
+
+    public function test_cannot_remove_zero_seats(): void
+    {
+        [$owner, $team] = $this->createTeamWithOwner();
+        $team->update(['extra_seats' => 5]);
+
+        Livewire::actingAs($owner)
+            ->test(TeamManager::class, ['team' => $team])
+            ->call('removeSeats', 0);
+
+        $this->assertEquals(5, $team->fresh()->extra_seats);
+    }
+
+    public function test_cannot_remove_negative_seats(): void
+    {
+        [$owner, $team] = $this->createTeamWithOwner();
+        $team->update(['extra_seats' => 5]);
+
+        Livewire::actingAs($owner)
+            ->test(TeamManager::class, ['team' => $team])
+            ->call('removeSeats', -1);
+
+        $this->assertEquals(5, $team->fresh()->extra_seats);
+    }
+
+    public function test_cannot_remove_more_than_fifty_seats(): void
+    {
+        [$owner, $team] = $this->createTeamWithOwner();
+        $team->update(['extra_seats' => 60]);
+
+        Livewire::actingAs($owner)
+            ->test(TeamManager::class, ['team' => $team])
+            ->call('removeSeats', 51);
+
+        $this->assertEquals(60, $team->fresh()->extra_seats);
     }
 }

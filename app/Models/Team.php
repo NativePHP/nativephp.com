@@ -70,7 +70,7 @@ class Team extends Model
 
     public function occupiedSeatCount(): int
     {
-        return $this->activeUserCount() + $this->pendingInvitations()->count();
+        return 1 + $this->activeUserCount() + $this->pendingInvitations()->count();
     }
 
     public function availableSeats(): int
@@ -85,7 +85,7 @@ class Team extends Model
 
     public function extraSeatsCount(): int
     {
-        return max(0, $this->activeUserCount() - $this->includedSeats());
+        return max(0, 1 + $this->activeUserCount() - $this->includedSeats());
     }
 
     public function suspend(): bool

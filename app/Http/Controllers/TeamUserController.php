@@ -42,6 +42,11 @@ class TeamUserController extends Controller
 
         $email = $request->validated()['email'];
 
+        // Prevent owner from inviting themselves
+        if (strtolower($email) === strtolower($user->email)) {
+            return back()->with('error', 'You cannot invite yourself to your own team.');
+        }
+
         // Check for duplicate (active or pending)
         $existingMember = $team->users()
             ->where('email', $email)

@@ -20,6 +20,10 @@ class TeamManager extends Component
 
     public function addSeats(int $count = 1): void
     {
+        if ($count < 1 || $count > 50) {
+            return;
+        }
+
         $owner = $this->team->owner;
         $subscription = $owner->subscription();
 
@@ -64,6 +68,10 @@ class TeamManager extends Component
 
     public function removeSeats(int $count = 1): void
     {
+        if ($count < 1 || $count > 50) {
+            return;
+        }
+
         if ($this->team->extra_seats < $count) {
             return;
         }
