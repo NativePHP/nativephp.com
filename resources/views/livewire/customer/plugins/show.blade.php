@@ -171,10 +171,7 @@
                                 <x-dynamic-component :component="'heroicon-o-' . $plugin->icon_name" class="size-8" />
                             </div>
                         @endif
-                        <flux:button size="sm" variant="danger" wire:click="deleteIcon">
-                            <x-heroicon-o-trash class="size-4 mr-1" />
-                            Remove icon
-                        </flux:button>
+                        <flux:button size="sm" variant="danger" icon="trash" wire:click="deleteIcon">Remove icon</flux:button>
                     </div>
                 @endif
 

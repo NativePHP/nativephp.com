@@ -136,7 +136,7 @@ class UltraPluginAccessTest extends TestCase
         $this->assertEquals(0, $bestPrice->amount);
     }
 
-    public function test_ultra_user_gets_normal_subscriber_price_for_third_party_plugin(): void
+    public function test_ultra_user_gets_regular_price_for_third_party_plugin(): void
     {
         $user = User::factory()->create();
         $this->createPaidMaxSubscription($user);
@@ -145,7 +145,7 @@ class UltraPluginAccessTest extends TestCase
         $bestPrice = $plugin->getBestPriceForUser($user);
 
         $this->assertNotNull($bestPrice);
-        $this->assertEquals(2900, $bestPrice->amount);
+        $this->assertEquals(4900, $bestPrice->amount);
     }
 
     public function test_comped_ultra_user_does_not_get_free_official_plugin(): void
@@ -462,9 +462,9 @@ class UltraPluginAccessTest extends TestCase
             ]);
     }
 
-    // ---- Phase 4: Team Plugins on Purchased Plugins page ----
+    // ---- Phase 4: Team Plugins moved to dedicated team page ----
 
-    public function test_purchased_plugins_page_shows_team_plugins_for_team_member(): void
+    public function test_purchased_plugins_page_does_not_show_team_plugins_for_team_member(): void
     {
         $owner = User::factory()->create();
         $this->createPaidMaxSubscription($owner);
@@ -496,9 +496,7 @@ class UltraPluginAccessTest extends TestCase
         $response = $this->get(route('customer.purchased-plugins.index'));
 
         $response->assertStatus(200);
-        $response->assertSee('Team Plugins');
-        $response->assertSee($owner->display_name);
-        $response->assertSee('nativephp/shared-plugin');
+        $response->assertDontSee('Team Plugins');
     }
 
     public function test_purchased_plugins_page_does_not_show_team_plugins_for_non_member(): void
@@ -689,7 +687,7 @@ class UltraPluginAccessTest extends TestCase
         $this->assertEquals(4900, $bestPrice->amount);
     }
 
-    public function test_team_member_with_own_subscription_sees_subscriber_price(): void
+    public function test_team_member_with_own_subscription_sees_regular_price_for_third_party_plugin(): void
     {
         $owner = User::factory()->create();
         $this->createPaidMaxSubscription($owner);
@@ -712,7 +710,7 @@ class UltraPluginAccessTest extends TestCase
         $bestPrice = $plugin->getBestPriceForUser($member);
 
         $this->assertNotNull($bestPrice);
-        $this->assertEquals(2900, $bestPrice->amount);
+        $this->assertEquals(4900, $bestPrice->amount);
     }
 
     // ---- Comped Ultra subscriptions ----
