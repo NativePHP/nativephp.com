@@ -113,17 +113,41 @@
                 <flux:text class="mt-1">Automated checks run against your repository.</flux:text>
 
                 @php
-                    $checks = [
+                    $requiredChecks = [
+                        ['key' => 'has_license_file', 'label' => 'License file (LICENSE or LICENSE.md)'],
+                        ['key' => 'has_release_version', 'label' => 'Release version'],
+                    ];
+                    $optionalChecks = [
                         ['key' => 'supports_ios', 'label' => 'iOS support (resources/ios/)'],
                         ['key' => 'supports_android', 'label' => 'Android support (resources/android/)'],
                         ['key' => 'supports_js', 'label' => 'JavaScript support (resources/js/)'],
-                        ['key' => 'has_support_email', 'label' => 'Support email in README'],
                         ['key' => 'requires_mobile_sdk', 'label' => 'Requires nativephp/mobile SDK'],
                     ];
                 @endphp
 
-                <ul class="mt-4 space-y-3">
-                    @foreach ($checks as $check)
+                <flux:text class="mt-3 text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">Required for approval</flux:text>
+                <ul class="mt-2 space-y-3">
+                    @foreach ($requiredChecks as $check)
+                        <li class="flex items-center gap-2">
+                            @if ($plugin->review_checks[$check['key']] ?? false)
+                                <x-heroicon-s-check-circle class="size-5 shrink-0 text-green-500" />
+                                <span class="text-sm text-gray-700 dark:text-gray-300">
+                                    {{ $check['label'] }}
+                                    @if ($check['key'] === 'has_release_version' && ($plugin->review_checks['release_version'] ?? null))
+                                        <code class="ml-1 rounded bg-gray-100 px-1 text-xs dark:bg-gray-700">{{ $plugin->review_checks['release_version'] }}</code>
+                                    @endif
+                                </span>
+                            @else
+                                <x-heroicon-s-x-circle class="size-5 shrink-0 text-red-400 dark:text-red-500" />
+                                <span class="text-sm text-gray-700 dark:text-gray-300">{{ $check['label'] }}</span>
+                            @endif
+                        </li>
+                    @endforeach
+                </ul>
+
+                <flux:text class="mt-5 text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">Additional checks</flux:text>
+                <ul class="mt-2 space-y-3">
+                    @foreach ($optionalChecks as $check)
                         <li class="flex items-center gap-2">
                             @if ($plugin->review_checks[$check['key']] ?? false)
                                 <x-heroicon-s-check-circle class="size-5 shrink-0 text-green-500" />
@@ -134,12 +158,6 @@
                         </li>
                     @endforeach
                 </ul>
-
-                @if ($plugin->review_checks['support_email'] ?? null)
-                    <flux:text class="mt-3 text-xs">
-                        Support email: {{ $plugin->review_checks['support_email'] }}
-                    </flux:text>
-                @endif
 
                 @if ($plugin->review_checks['mobile_sdk_constraint'] ?? null)
                     <flux:text class="mt-1 text-xs">
@@ -154,6 +172,26 @@
                 @endif
             </flux:card>
         @endif
+
+        {{-- Support Channel --}}
+        <flux:card class="mb-6">
+            <flux:heading size="lg">Support Channel</flux:heading>
+            <flux:text class="mt-1">How can users get support for your plugin? Provide an email address or a URL.</flux:text>
+
+            <form wire:submit="updateSupportChannel" class="mt-4">
+                <flux:input
+                    wire:model="supportChannel"
+                    placeholder="support@example.com or https://..."
+                />
+                @error('supportChannel')
+                    <flux:text class="mt-2 text-sm text-red-600 dark:text-red-400">{{ $message }}</flux:text>
+                @enderror
+
+                <div class="mt-4 flex justify-end">
+                    <flux:button type="submit" variant="primary">Save Support Channel</flux:button>
+                </div>
+            </form>
+        </flux:card>
 
         {{-- Plugin Icon --}}
         <flux:card class="mb-6" x-data="{ mode: @entangle('iconMode') }">

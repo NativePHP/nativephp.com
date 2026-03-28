@@ -82,6 +82,7 @@ class PluginSubmissionNotesTest extends TestCase
             ->test(Create::class)
             ->set('repository', $repoSlug)
             ->set('pluginType', 'free')
+            ->set('supportChannel', 'help@example.com')
             ->set('notes', 'Please review this quickly, we have a launch deadline.')
             ->call('submitPlugin')
             ->assertRedirect();
@@ -104,6 +105,7 @@ class PluginSubmissionNotesTest extends TestCase
             ->test(Create::class)
             ->set('repository', $repoSlug)
             ->set('pluginType', 'free')
+            ->set('supportChannel', 'help@example.com')
             ->call('submitPlugin')
             ->assertRedirect();
 
@@ -158,7 +160,7 @@ class PluginSubmissionNotesTest extends TestCase
     }
 
     /** @test */
-    public function submitting_a_plugin_without_support_channel_stores_null(): void
+    public function submitting_a_plugin_without_support_channel_fails_validation(): void
     {
         Notification::fake();
         $user = $this->createUserWithGitHub();
@@ -170,12 +172,32 @@ class PluginSubmissionNotesTest extends TestCase
             ->set('repository', $repoSlug)
             ->set('pluginType', 'free')
             ->call('submitPlugin')
-            ->assertRedirect();
+            ->assertHasErrors(['supportChannel' => 'required']);
 
         $plugin = $user->plugins()->where('repository_url', "https://github.com/{$repoSlug}")->first();
 
-        $this->assertNotNull($plugin);
-        $this->assertNull($plugin->support_channel);
+        $this->assertNull($plugin);
+    }
+
+    /** @test */
+    public function submitting_a_plugin_with_invalid_support_channel_fails_validation(): void
+    {
+        Notification::fake();
+        $user = $this->createUserWithGitHub();
+        $repoSlug = 'acme/invalid-support-plugin';
+        $this->fakeGitHubForPlugin($repoSlug);
+
+        Livewire::actingAs($user)
+            ->test(Create::class)
+            ->set('repository', $repoSlug)
+            ->set('pluginType', 'free')
+            ->set('supportChannel', 'not-an-email-or-url')
+            ->call('submitPlugin')
+            ->assertHasErrors('supportChannel');
+
+        $plugin = $user->plugins()->where('repository_url', "https://github.com/{$repoSlug}")->first();
+
+        $this->assertNull($plugin);
     }
 
     /** @test */

@@ -18,6 +18,18 @@ class PluginReviewChecksIncomplete extends Notification implements ShouldQueue
      * @var array<string, array{label: string, passing_label: string, docs_url: string, docs_label: string}>
      */
     private const CHECK_DEFINITIONS = [
+        'has_license_file' => [
+            'label' => 'LICENSE or LICENSE.md file in your repository (required for approval)',
+            'passing_label' => 'License file',
+            'docs_url' => self::DOCS_BASE.'/best-practices',
+            'docs_label' => 'Best Practices guide',
+        ],
+        'has_release_version' => [
+            'label' => 'Release version or tag on GitHub (required for approval)',
+            'passing_label' => 'Release version',
+            'docs_url' => self::DOCS_BASE.'/best-practices',
+            'docs_label' => 'Best Practices guide',
+        ],
         'supports_ios' => [
             'label' => 'iOS native code in `resources/ios/Sources/`',
             'passing_label' => 'iOS native code',
@@ -35,12 +47,6 @@ class PluginReviewChecksIncomplete extends Notification implements ShouldQueue
             'passing_label' => 'JavaScript library',
             'docs_url' => self::DOCS_BASE.'/creating-plugins',
             'docs_label' => 'Creating Plugins guide',
-        ],
-        'has_support_email' => [
-            'label' => 'Support email in your README',
-            'passing_label' => 'Support email',
-            'docs_url' => self::DOCS_BASE.'/best-practices',
-            'docs_label' => 'Best Practices guide',
         ],
         'requires_mobile_sdk' => [
             'label' => '`nativephp/mobile` required in `composer.json`',
