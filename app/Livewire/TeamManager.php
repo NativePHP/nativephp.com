@@ -180,8 +180,8 @@ class TeamManager extends Component
                     $qty = $item->quantity ?? 1;
 
                     if (Subscription::isExtraSeatPrice($item->price->id)) {
-                        $seatsCost = $unitAmount * $qty;
                         $extraSeatsQty = $qty;
+                        $seatsCost = $extraSeatPrice * $qty;
                     } else {
                         $planPrice = $unitAmount;
                     }
