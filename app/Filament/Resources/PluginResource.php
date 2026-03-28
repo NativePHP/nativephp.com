@@ -101,6 +101,10 @@ class PluginResource extends Resource
                                 ? '✅ '.($record->review_checks['release_version'] ?? '')
                                 : '❌ Missing'),
 
+                        Forms\Components\Placeholder::make('review_webhook')
+                            ->label('Webhook Configured (required)')
+                            ->content(fn (?Plugin $record) => $record?->webhook_installed ? '✅ Configured' : '❌ Not configured'),
+
                         Forms\Components\Placeholder::make('review_ios')
                             ->label('iOS Support')
                             ->content(fn (?Plugin $record) => ($record?->review_checks['supports_ios'] ?? false) ? '✅ Found' : '❌ Missing'),

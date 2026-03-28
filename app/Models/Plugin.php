@@ -299,7 +299,7 @@ class Plugin extends Model
             return false;
         }
 
-        return ! empty($checks['has_license_file']) && ! empty($checks['has_release_version']);
+        return ! empty($checks['has_license_file']) && ! empty($checks['has_release_version']) && $this->webhook_installed;
     }
 
     /**
@@ -318,6 +318,10 @@ class Plugin extends Model
 
         if (empty($checks['has_release_version'])) {
             $failing[] = 'Release version (GitHub release or tag)';
+        }
+
+        if (! $this->webhook_installed) {
+            $failing[] = 'Webhook configured';
         }
 
         return $failing;

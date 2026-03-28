@@ -33,49 +33,6 @@
             </flux:callout>
         @endif
 
-        {{-- Webhook Status --}}
-        @if ($plugin->webhook_secret)
-            @if ($plugin->webhook_installed)
-                <flux:callout variant="success" icon="check-circle" class="mb-6">
-                    <flux:callout.heading>Webhook Configured</flux:callout.heading>
-                    <flux:callout.text>
-                        The GitHub webhook has been automatically configured for your repository. Your plugin data will sync automatically when you push changes or create releases.
-                    </flux:callout.text>
-                </flux:callout>
-            @else
-                <flux:callout variant="warning" icon="exclamation-triangle" class="mb-6">
-                    <flux:callout.heading>Manual Webhook Setup Required</flux:callout.heading>
-                    <flux:callout.text>
-                        We couldn't automatically install the webhook on your repository. Please set it up manually to enable automatic syncing.
-                    </flux:callout.text>
-                </flux:callout>
-
-                <flux:card class="mb-6">
-                    <div>
-                        <flux:heading>Webhook URL</flux:heading>
-                        <div class="mt-2 flex items-center gap-2">
-                            <code class="block flex-1 overflow-x-auto rounded-md bg-gray-100 px-3 py-2 font-mono text-sm dark:bg-gray-700">{{ $plugin->getWebhookUrl() }}</code>
-                            <flux:button size="sm" variant="ghost" x-on:click="navigator.clipboard.writeText('{{ $plugin->getWebhookUrl() }}')">
-                                <x-heroicon-o-clipboard class="size-4" />
-                            </flux:button>
-                        </div>
-                    </div>
-
-                    <div class="mt-4 rounded-md bg-gray-50 p-4 dark:bg-gray-700/50">
-                        <flux:heading>Setup Instructions</flux:heading>
-                        <ol class="mt-2 list-inside list-decimal space-y-1 text-sm text-gray-600 dark:text-gray-400">
-                            <li>Go to your repository's <strong>Settings &rarr; Webhooks</strong></li>
-                            <li>Click <strong>Add webhook</strong></li>
-                            <li>Paste the Webhook URL above into the <strong>Payload URL</strong> field</li>
-                            <li>Set <strong>Content type</strong> to <code class="rounded bg-gray-100 px-1 dark:bg-gray-600">application/json</code></li>
-                            <li>Under events, select <strong>Pushes</strong> and <strong>Releases</strong></li>
-                            <li>Click <strong>Add webhook</strong></li>
-                        </ol>
-                    </div>
-                </flux:card>
-            @endif
-        @endif
-
         {{-- Plugin Status --}}
         <flux:card class="mb-6">
             <div class="flex items-center justify-between">
@@ -116,6 +73,7 @@
                     $requiredChecks = [
                         ['key' => 'has_license_file', 'label' => 'License file (LICENSE or LICENSE.md)'],
                         ['key' => 'has_release_version', 'label' => 'Release version'],
+                        ['key' => 'webhook_configured', 'label' => 'Webhook configured'],
                     ];
                     $optionalChecks = [
                         ['key' => 'supports_ios', 'label' => 'iOS support (resources/ios/)'],
@@ -128,18 +86,50 @@
                 <flux:text class="mt-3 text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">Required for approval</flux:text>
                 <ul class="mt-2 space-y-3">
                     @foreach ($requiredChecks as $check)
-                        <li class="flex items-center gap-2">
-                            @if ($plugin->review_checks[$check['key']] ?? false)
-                                <x-heroicon-s-check-circle class="size-5 shrink-0 text-green-500" />
-                                <span class="text-sm text-gray-700 dark:text-gray-300">
-                                    {{ $check['label'] }}
-                                    @if ($check['key'] === 'has_release_version' && ($plugin->review_checks['release_version'] ?? null))
-                                        <code class="ml-1 rounded bg-gray-100 px-1 text-xs dark:bg-gray-700">{{ $plugin->review_checks['release_version'] }}</code>
-                                    @endif
-                                </span>
-                            @else
-                                <x-heroicon-s-x-circle class="size-5 shrink-0 text-red-400 dark:text-red-500" />
-                                <span class="text-sm text-gray-700 dark:text-gray-300">{{ $check['label'] }}</span>
+                        @php
+                            $isPassing = $check['key'] === 'webhook_configured'
+                                ? $plugin->webhook_installed
+                                : ($plugin->review_checks[$check['key']] ?? false);
+                        @endphp
+                        <li>
+                            <div class="flex items-center gap-2">
+                                @if ($isPassing)
+                                    <x-heroicon-s-check-circle class="size-5 shrink-0 text-green-500" />
+                                    <span class="text-sm text-gray-700 dark:text-gray-300">
+                                        {{ $check['label'] }}
+                                        @if ($check['key'] === 'has_release_version' && ($plugin->review_checks['release_version'] ?? null))
+                                            <code class="ml-1 rounded bg-gray-100 px-1 text-xs dark:bg-gray-700">{{ $plugin->review_checks['release_version'] }}</code>
+                                        @endif
+                                    </span>
+                                @else
+                                    <x-heroicon-s-x-circle class="size-5 shrink-0 text-red-400 dark:text-red-500" />
+                                    <span class="text-sm text-gray-700 dark:text-gray-300">{{ $check['label'] }}</span>
+                                @endif
+                            </div>
+
+                            @if ($check['key'] === 'webhook_configured' && ! $isPassing && $plugin->webhook_secret)
+                                <div class="ml-7 mt-2 rounded-md border border-amber-200 bg-amber-50 p-4 dark:border-amber-900/50 dark:bg-amber-900/20">
+                                    <p class="text-sm text-amber-800 dark:text-amber-200">
+                                        We couldn't automatically install the webhook. Please set it up manually:
+                                    </p>
+                                    <div class="mt-2">
+                                        <label class="text-xs font-medium text-amber-900 dark:text-amber-100">Webhook URL</label>
+                                        <div class="mt-1 flex items-center gap-2">
+                                            <code class="block flex-1 overflow-x-auto rounded-md bg-white px-3 py-2 font-mono text-xs dark:bg-gray-800">{{ $plugin->getWebhookUrl() }}</code>
+                                            <flux:button size="xs" variant="ghost" x-on:click="navigator.clipboard.writeText('{{ $plugin->getWebhookUrl() }}')">
+                                                <x-heroicon-o-clipboard class="size-3" />
+                                            </flux:button>
+                                        </div>
+                                    </div>
+                                    <ol class="mt-3 list-inside list-decimal space-y-1 text-xs text-amber-700 dark:text-amber-300">
+                                        <li>Go to your repository's <strong>Settings &rarr; Webhooks</strong></li>
+                                        <li>Click <strong>Add webhook</strong></li>
+                                        <li>Paste the URL above into the <strong>Payload URL</strong> field</li>
+                                        <li>Set <strong>Content type</strong> to <code class="rounded bg-amber-100 px-1 dark:bg-amber-800">application/json</code></li>
+                                        <li>Select events: <strong>Pushes</strong> and <strong>Releases</strong></li>
+                                        <li>Click <strong>Add webhook</strong></li>
+                                    </ol>
+                                </div>
                             @endif
                         </li>
                     @endforeach

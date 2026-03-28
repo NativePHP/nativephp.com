@@ -30,6 +30,12 @@ class PluginReviewChecksIncomplete extends Notification implements ShouldQueue
             'docs_url' => self::DOCS_BASE.'/best-practices',
             'docs_label' => 'Best Practices guide',
         ],
+        'webhook_configured' => [
+            'label' => 'GitHub webhook configured (required for approval)',
+            'passing_label' => 'Webhook configured',
+            'docs_url' => self::DOCS_BASE.'/best-practices',
+            'docs_label' => 'Best Practices guide',
+        ],
         'supports_ios' => [
             'label' => 'iOS native code in `resources/ios/Sources/`',
             'passing_label' => 'iOS native code',
@@ -132,7 +138,11 @@ class PluginReviewChecksIncomplete extends Notification implements ShouldQueue
         $passing = [];
 
         foreach (self::CHECK_DEFINITIONS as $key => $definition) {
-            if (! empty($checks[$key])) {
+            $isPassing = $key === 'webhook_configured'
+                ? $this->plugin->webhook_installed
+                : ! empty($checks[$key]);
+
+            if ($isPassing) {
                 $passing[] = $definition['passing_label'];
             }
         }
@@ -148,7 +158,11 @@ class PluginReviewChecksIncomplete extends Notification implements ShouldQueue
         $failing = [];
 
         foreach (self::CHECK_DEFINITIONS as $key => $definition) {
-            if (empty($checks[$key])) {
+            $isPassing = $key === 'webhook_configured'
+                ? $this->plugin->webhook_installed
+                : ! empty($checks[$key]);
+
+            if (! $isPassing) {
                 $failing[] = [
                     'label' => $definition['label'],
                     'docs_url' => $definition['docs_url'],

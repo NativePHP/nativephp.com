@@ -162,6 +162,7 @@ class CustomerPluginReviewChecksTest extends TestCase
             // Should mention failing required checks
             $this->assertStringContainsString('LICENSE', $rendered);
             $this->assertStringContainsString('release version', $rendered);
+            $this->assertStringContainsString('webhook', $rendered);
 
             // Should mention failing optional checks
             $this->assertStringContainsString('Add iOS support', $rendered);

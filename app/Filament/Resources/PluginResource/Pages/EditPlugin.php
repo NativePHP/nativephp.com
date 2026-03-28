@@ -195,9 +195,12 @@ class EditPlugin extends EditRecord
                             return;
                         }
 
+                        $webhookConfigured = $this->record->webhook_installed;
+
                         $lines = collect([
                             ['License file *', $checks['has_license_file']],
                             ['Release version *', $checks['has_release_version'] ? $checks['release_version'] : false],
+                            ['Webhook *', $webhookConfigured],
                             ['iOS support', $checks['supports_ios']],
                             ['Android support', $checks['supports_android']],
                             ['JS support', $checks['supports_js']],
@@ -221,13 +224,13 @@ class EditPlugin extends EditRecord
                             'supports_ios', 'supports_android', 'supports_js',
                             'requires_mobile_sdk',
                             'has_ios_min_version', 'has_android_min_version',
-                        ])->filter()->count();
+                        ])->filter()->count() + ($webhookConfigured ? 1 : 0);
 
                         Notification::make()
-                            ->title("Review checks complete ({$passed}/8 passed)")
+                            ->title("Review checks complete ({$passed}/9 passed)")
                             ->body(new HtmlString($lines))
                             ->duration(15000)
-                            ->color($passed === 8 ? 'success' : 'warning')
+                            ->color($passed === 9 ? 'success' : 'warning')
                             ->send();
                     }),
 

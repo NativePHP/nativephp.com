@@ -19,6 +19,7 @@ class PluginReviewChecksIncompleteTest extends TestCase
         $plugin = Plugin::factory()->create([
             'user_id' => $user->id,
             'name' => 'acme/test-plugin',
+            'webhook_installed' => true,
             'review_checks' => [
                 'has_license_file' => true,
                 'has_release_version' => true,
@@ -41,6 +42,7 @@ class PluginReviewChecksIncompleteTest extends TestCase
         // Passing checks shown
         $this->assertStringContainsString('License file', $rendered);
         $this->assertStringContainsString('Release version', $rendered);
+        $this->assertStringContainsString('Webhook configured', $rendered);
         $this->assertStringContainsString('iOS native code', $rendered);
         $this->assertStringContainsString('Android native code', $rendered);
         $this->assertStringContainsString('iOS min_version', $rendered);
@@ -60,6 +62,7 @@ class PluginReviewChecksIncompleteTest extends TestCase
         $plugin = Plugin::factory()->create([
             'user_id' => $user->id,
             'name' => 'acme/empty-plugin',
+            'webhook_installed' => false,
             'review_checks' => [
                 'has_license_file' => false,
                 'has_release_version' => false,
@@ -92,6 +95,7 @@ class PluginReviewChecksIncompleteTest extends TestCase
         $plugin = Plugin::factory()->create([
             'user_id' => $user->id,
             'name' => 'acme/cool-plugin',
+            'webhook_installed' => true,
             'review_checks' => [
                 'has_license_file' => true,
                 'has_release_version' => true,
