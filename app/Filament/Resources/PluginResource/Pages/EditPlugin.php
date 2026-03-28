@@ -164,7 +164,7 @@ class EditPlugin extends EditRecord
                     ->color('gray')
                     ->url(fn () => route('plugins.show', $this->record->routeParams()))
                     ->openUrlInNewTab()
-                    ->visible(fn () => $this->record->isApproved()),
+                    ->visible(fn () => $this->record->isApproved() || $this->record->isPending()),
 
                 Actions\Action::make('viewPackagist')
                     ->label('View on Packagist')
