@@ -31,7 +31,7 @@ return [
             'anystack_policy_id' => env('ANYSTACK_MAX_POLICY_ID'),
             'stripe_extra_seat_price_id' => env('STRIPE_EXTRA_SEAT_PRICE_ID'),
             'stripe_extra_seat_price_id_monthly' => env('STRIPE_EXTRA_SEAT_PRICE_ID_MONTHLY'),
-            'included_seats' => 10,
+            'included_seats' => 5,
             'extra_seat_price_yearly' => 4,
             'extra_seat_price_monthly' => 5,
         ],

@@ -227,8 +227,8 @@ class TeamManagementTest extends TestCase
 
         [$owner, $team] = $this->createTeamWithOwner();
 
-        // Create 9 active members to fill all seats (owner occupies 1 of 10 included seats)
-        TeamUser::factory()->count(9)->active()->create(['team_id' => $team->id]);
+        // Create 4 active members to fill all seats (owner occupies 1 of 5 included seats)
+        TeamUser::factory()->count(4)->active()->create(['team_id' => $team->id]);
 
         $response = $this->actingAs($owner)
             ->post(route('customer.team.invite'), ['email' => 'extra@example.com']);

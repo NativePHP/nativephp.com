@@ -134,7 +134,7 @@
             <div x-data="{ removeQty: 1 }">
                 <flux:heading size="lg">Remove Extra Seats</flux:heading>
                 <flux:text class="mt-2">
-                    You currently have {{ $team->extra_seats }} extra seat(s). Seats are removed immediately and you'll be credited for the unused time on your next bill.
+                    You have {{ $removableSeats }} unused extra {{ Str::plural('seat', $removableSeats) }} available for removal. Seats are removed immediately and you'll be credited for the unused time on your next bill.
                 </flux:text>
                 <div class="mt-4">
                     <flux:input type="number" label="Quantity" x-model.number="removeQty" min="1" max="{{ $removableSeats }}" class="w-24" />
