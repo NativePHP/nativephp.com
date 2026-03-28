@@ -5,11 +5,17 @@
             <flux:text>Stay up to date with your account activity.</flux:text>
         </div>
 
-        @if (auth()->user()->unreadNotifications->count() > 0)
-            <flux:button wire:click="markAllAsRead" variant="ghost" size="sm">
-                Mark all as read
+        <div class="flex items-center gap-2">
+            @if (auth()->user()->unreadNotifications->count() > 0)
+                <flux:button wire:click="markAllAsRead" variant="ghost" size="sm">
+                    Mark all as read
+                </flux:button>
+            @endif
+
+            <flux:button href="{{ route('customer.settings', ['tab' => 'notifications']) }}" variant="ghost" size="sm" icon="cog-6-tooth">
+                Settings
             </flux:button>
-        @endif
+        </div>
     </div>
 
     @forelse ($this->notifications as $notification)

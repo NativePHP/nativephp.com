@@ -21,7 +21,7 @@ class ProductGranted extends Notification implements ShouldQueue
      */
     public function via(object $notifiable): array
     {
-        return ['mail'];
+        return ['mail', 'database'];
     }
 
     public function toMail(object $notifiable): MailMessage
@@ -40,6 +40,8 @@ class ProductGranted extends Notification implements ShouldQueue
     public function toArray(object $notifiable): array
     {
         return [
+            'title' => "You've been granted access to {$this->product->name}!",
+            'body' => "You now have access to {$this->product->name}.",
             'product_id' => $this->product->id,
             'product_name' => $this->product->name,
         ];
