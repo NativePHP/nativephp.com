@@ -96,31 +96,37 @@
 
         <div class="mt-2 flex flex-col-reverse gap-8 lg:flex-row lg:items-start">
             {{-- Main content - README --}}
-            <article
-                x-init="
-                    () => {
-                        motion.inView($el, () => {
-                            gsap.fromTo(
-                                $el,
-                                { autoAlpha: 0, y: 5 },
-                                { autoAlpha: 1, y: 0, duration: 0.7, ease: 'power1.out' },
-                            )
-                        })
-                    }
-                "
-                class="prose min-w-0 max-w-none grow text-gray-600 dark:text-gray-400 dark:prose-headings:text-white"
-                aria-labelledby="plugin-title"
-            >
+            <div class="min-w-0 grow">
                 @if ($plugin->readme_html)
-                    {!! $plugin->readme_html !!}
+                    <x-plugin-toc />
+                @endif
+
+                <article
+                    x-init="
+                        () => {
+                            motion.inView($el, () => {
+                                gsap.fromTo(
+                                    $el,
+                                    { autoAlpha: 0, y: 5 },
+                                    { autoAlpha: 1, y: 0, duration: 0.7, ease: 'power1.out' },
+                                )
+                            })
+                        }
+                    "
+                    class="prose min-w-0 max-w-none grow text-gray-600 dark:text-gray-400 dark:prose-headings:text-white"
+                    aria-labelledby="plugin-title"
+                >
+                    @if ($plugin->readme_html)
+                        {!! $plugin->readme_html !!}
                 @else
                     <div class="rounded-xl border border-gray-200 bg-gray-50 p-8 text-center dark:border-gray-700 dark:bg-slate-800/50">
                         <p class="text-gray-500 dark:text-gray-400">
                             README not available yet.
                         </p>
                     </div>
-                @endif
-            </article>
+                    @endif
+                </article>
+            </div>
 
             {{-- Sidebar - Plugin details --}}
             <aside
@@ -137,11 +143,6 @@
                 "
                 class="w-full shrink-0 lg:sticky lg:top-24 lg:w-80"
             >
-                {{-- Table of Contents --}}
-                @if ($plugin->readme_html)
-                    <x-plugin-toc />
-                @endif
-
                 {{-- Purchase Box for Paid Plugins --}}
                 @if ($plugin->isPaid() && $bestPrice && $plugin->is_active)
                     <div class="mb-4 rounded-2xl border-2 border-indigo-500 bg-gradient-to-br from-indigo-50 to-purple-50 p-6 dark:border-indigo-400 dark:from-indigo-950/50 dark:to-purple-950/50">
@@ -342,6 +343,7 @@
                         </ul>
                     </div>
                 @endif
+
             </aside>
         </div>
     </section>

@@ -15,21 +15,21 @@
     }"
     x-show="headings.length > 0"
     x-cloak
-    class="mb-4 rounded-2xl p-6"
+    class="mb-6"
 >
-    <h2 class="flex items-center gap-1.5 text-sm opacity-60">
+    <h3 class="flex items-center gap-1.5 text-sm opacity-60">
         <x-icons.stacked-lines class="size-[18px]" />
         <div>On this page</div>
-    </h2>
+    </h3>
 
-    <nav class="mt-4 flex flex-col space-y-2 overflow-y-auto overflow-x-hidden border-l text-xs dark:border-l-white/15">
+    <div class="mt-4 flex flex-col space-y-2 overflow-y-auto overflow-x-hidden border-l text-xs dark:border-l-white/15">
         <template x-for="heading in headings" :key="heading.id">
             <a
                 :href="'#' + heading.id"
                 :class="heading.level === 2 ? 'pb-1 pl-3' : 'py-1 pl-6'"
-                class="text-gray-600 transition duration-300 ease-in-out will-change-transform hover:translate-x-0.5 hover:text-indigo-500 hover:opacity-100 dark:text-white/80 dark:hover:text-indigo-400"
+                class="transition duration-300 ease-in-out will-change-transform hover:translate-x-0.5 hover:text-violet-400 hover:opacity-100 dark:text-white/80"
                 x-text="heading.text"
             ></a>
         </template>
-    </nav>
+    </div>
 </div>
