@@ -3,6 +3,14 @@
         class="mx-auto mt-10 w-full max-w-7xl"
         aria-labelledby="plugin-title"
     >
+        @if ($isAdminPreview ?? false)
+            <div class="mb-6 rounded-xl border border-amber-300 bg-amber-50 p-4 text-center dark:border-amber-600 dark:bg-amber-950/50">
+                <p class="text-sm font-medium text-amber-800 dark:text-amber-200">
+                    Admin Preview &mdash; This plugin is not yet published. Status: {{ $plugin->status->label() }}
+                </p>
+            </div>
+        @endif
+
         <header class="relative">
             {{-- Blurred circle - Decorative --}}
             <div
@@ -129,6 +137,11 @@
                 "
                 class="w-full shrink-0 lg:sticky lg:top-24 lg:w-80"
             >
+                {{-- Table of Contents --}}
+                @if ($plugin->readme_html)
+                    <x-plugin-toc />
+                @endif
+
                 {{-- Purchase Box for Paid Plugins --}}
                 @if ($plugin->isPaid() && $bestPrice && $plugin->is_active)
                     <div class="mb-4 rounded-2xl border-2 border-indigo-500 bg-gradient-to-br from-indigo-50 to-purple-50 p-6 dark:border-indigo-400 dark:from-indigo-950/50 dark:to-purple-950/50">
