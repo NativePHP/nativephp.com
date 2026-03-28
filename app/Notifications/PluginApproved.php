@@ -23,7 +23,7 @@ class PluginApproved extends Notification implements ShouldQueue
      */
     public function via(object $notifiable): array
     {
-        return ['mail'];
+        return ['mail', 'database'];
     }
 
     /**
@@ -47,6 +47,8 @@ class PluginApproved extends Notification implements ShouldQueue
     public function toArray(object $notifiable): array
     {
         return [
+            'title' => 'Your Plugin Has Been Approved!',
+            'body' => "{$this->plugin->name} is now listed in the NativePHP Plugin Directory.",
             'plugin_id' => $this->plugin->id,
             'plugin_name' => $this->plugin->name,
         ];

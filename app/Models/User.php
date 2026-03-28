@@ -358,6 +358,7 @@ class User extends Authenticatable implements FilamentUser
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'receives_notification_emails' => 'boolean',
             'mobile_repo_access_granted_at' => 'datetime',
             'claude_plugins_repo_access_granted_at' => 'datetime',
             'discord_role_granted_at' => 'datetime',

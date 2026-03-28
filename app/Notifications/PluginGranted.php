@@ -21,7 +21,7 @@ class PluginGranted extends Notification implements ShouldQueue
      */
     public function via(object $notifiable): array
     {
-        return ['mail'];
+        return ['mail', 'database'];
     }
 
     public function toMail(object $notifiable): MailMessage
@@ -46,6 +46,8 @@ class PluginGranted extends Notification implements ShouldQueue
     public function toArray(object $notifiable): array
     {
         return [
+            'title' => "You've been granted access to {$this->plugin->name}!",
+            'body' => "You now have access to the {$this->plugin->name} plugin.",
             'plugin_id' => $this->plugin->id,
             'plugin_name' => $this->plugin->name,
         ];
