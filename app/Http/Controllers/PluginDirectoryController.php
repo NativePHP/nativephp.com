@@ -51,10 +51,12 @@ class PluginDirectoryController extends Controller
 
         $user = Auth::user();
 
-        abort_unless($plugin->isApproved() || $user?->isAdmin(), 404);
+        $isAdmin = $user?->isAdmin() ?? false;
 
-        // For paid plugins, check if user has an accessible price
-        if ($plugin->isPaid() && ! $plugin->hasAccessiblePriceFor($user)) {
+        abort_unless($plugin->isApproved() || $isAdmin, 404);
+
+        // For paid plugins, check if user has an accessible price (admins bypass)
+        if (! $isAdmin && $plugin->isPaid() && ! $plugin->hasAccessiblePriceFor($user)) {
             abort(404);
         }
 
