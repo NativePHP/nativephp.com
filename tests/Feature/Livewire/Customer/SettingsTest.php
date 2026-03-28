@@ -314,4 +314,54 @@ class SettingsTest extends TestCase
 
         $this->assertTrue($user->fresh()->receives_notification_emails);
     }
+
+    // --- New plugin notification preference ---
+
+    public function test_new_plugin_notification_toggle_is_shown(): void
+    {
+        $user = User::factory()->create();
+
+        Livewire::actingAs($user)
+            ->test(Settings::class)
+            ->set('tab', 'notifications')
+            ->assertSee('New plugin notifications')
+            ->assertSee('Get notified when new plugins are added to the directory.');
+    }
+
+    public function test_new_plugin_notification_toggle_defaults_to_enabled(): void
+    {
+        $user = User::factory()->create();
+
+        Livewire::actingAs($user)
+            ->test(Settings::class)
+            ->assertSet('receivesNewPluginNotifications', true);
+    }
+
+    public function test_user_can_disable_new_plugin_notifications(): void
+    {
+        $user = User::factory()->create(['receives_new_plugin_notifications' => true]);
+
+        Livewire::actingAs($user)
+            ->test(Settings::class)
+            ->set('tab', 'notifications')
+            ->assertSet('receivesNewPluginNotifications', true)
+            ->set('receivesNewPluginNotifications', false)
+            ->assertSet('receivesNewPluginNotifications', false);
+
+        $this->assertFalse($user->fresh()->receives_new_plugin_notifications);
+    }
+
+    public function test_user_can_enable_new_plugin_notifications(): void
+    {
+        $user = User::factory()->create(['receives_new_plugin_notifications' => false]);
+
+        Livewire::actingAs($user)
+            ->test(Settings::class)
+            ->set('tab', 'notifications')
+            ->assertSet('receivesNewPluginNotifications', false)
+            ->set('receivesNewPluginNotifications', true)
+            ->assertSet('receivesNewPluginNotifications', true);
+
+        $this->assertTrue($user->fresh()->receives_new_plugin_notifications);
+    }
 }

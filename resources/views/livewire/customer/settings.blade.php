@@ -119,11 +119,17 @@
     @endif
 
     @if ($tab === 'notifications')
-        <flux:card>
+        <flux:card class="space-y-6">
             <flux:switch
                 wire:model.live="receivesNotificationEmails"
                 label="Email notifications"
                 description="Receive email notifications about your account activity."
+            />
+
+            <flux:switch
+                wire:model.live="receivesNewPluginNotifications"
+                label="New plugin notifications"
+                description="Get notified when new plugins are added to the directory."
             />
         </flux:card>
     @endif

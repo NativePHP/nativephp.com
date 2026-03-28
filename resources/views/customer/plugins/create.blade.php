@@ -24,7 +24,7 @@
                         </nav>
                         <h1 class="mt-2 text-2xl font-bold text-gray-900 dark:text-white">Submit Your Plugin</h1>
                         <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">
-                            Add your plugin to the NativePHP Plugin Directory
+                            Add your plugin to the NativePHP Plugin Marketplace
                         </p>
                     </div>
                     <x-dashboard-menu />

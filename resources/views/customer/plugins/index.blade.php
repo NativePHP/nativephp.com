@@ -36,7 +36,7 @@
                         </div>
                         <h3 class="mt-4 text-lg font-semibold text-gray-900 dark:text-white">Submit Your Plugin</h3>
                         <p class="mt-2 text-sm text-gray-600 dark:text-gray-400">
-                            Built a plugin? Submit it to the NativePHP Plugin Directory and share it with the community.
+                            Built a plugin? Submit it to the NativePHP Plugin Marketplace and share it with the community.
                         </p>
                         <a href="{{ route('customer.plugins.create') }}" class="mt-4 inline-flex items-center rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:bg-indigo-500 dark:hover:bg-indigo-600">
                             Submit a Plugin
