@@ -6,12 +6,16 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Title;
+use Livewire\Attributes\Url;
 use Livewire\Component;
 
 #[Layout('components.layouts.dashboard')]
 #[Title('Settings')]
 class Settings extends Component
 {
+    #[Url]
+    public string $tab = 'account';
+
     public string $name = '';
 
     public string $currentPassword = '';
@@ -22,9 +26,25 @@ class Settings extends Component
 
     public string $deleteConfirmPassword = '';
 
+    public bool $receivesNotificationEmails = true;
+
+    public bool $receivesNewPluginNotifications = true;
+
     public function mount(): void
     {
         $this->name = auth()->user()->name ?? '';
+        $this->receivesNotificationEmails = auth()->user()->receives_notification_emails;
+        $this->receivesNewPluginNotifications = auth()->user()->receives_new_plugin_notifications;
+    }
+
+    public function updatedReceivesNotificationEmails(bool $value): void
+    {
+        auth()->user()->update(['receives_notification_emails' => $value]);
+    }
+
+    public function updatedReceivesNewPluginNotifications(bool $value): void
+    {
+        auth()->user()->update(['receives_new_plugin_notifications' => $value]);
     }
 
     public function updateName(): void

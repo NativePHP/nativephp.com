@@ -7,6 +7,7 @@ use App\Enums\PluginStatus;
 use App\Enums\PluginTier;
 use App\Enums\PluginType;
 use App\Enums\PriceTier;
+use App\Notifications\NewPluginAvailable;
 use App\Notifications\PluginApproved;
 use App\Notifications\PluginRejected;
 use App\Services\PluginSyncService;
@@ -20,6 +21,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Support\Facades\Notification;
 
 class Plugin extends Model
 {
@@ -537,6 +539,7 @@ class Plugin extends Model
     public function approve(int $approvedById): void
     {
         $previousStatus = $this->status;
+        $isFirstApproval = $this->approved_at === null;
 
         $this->update([
             'status' => PluginStatus::Approved,
@@ -554,6 +557,15 @@ class Plugin extends Model
         );
 
         $this->user->notify(new PluginApproved($this));
+
+        if ($isFirstApproval) {
+            $recipients = User::query()
+                ->where('receives_new_plugin_notifications', true)
+                ->where('id', '!=', $this->user_id)
+                ->get();
+
+            Notification::send($recipients, new NewPluginAvailable($this));
+        }
 
         resolve(PluginSyncService::class)->sync($this);
     }

@@ -23,7 +23,7 @@ class PluginRejected extends Notification implements ShouldQueue
      */
     public function via(object $notifiable): array
     {
-        return ['mail'];
+        return ['mail', 'database'];
     }
 
     /**
@@ -34,7 +34,7 @@ class PluginRejected extends Notification implements ShouldQueue
         return (new MailMessage)
             ->subject('Plugin Submission Update')
             ->greeting('Hello,')
-            ->line("Unfortunately, your plugin **{$this->plugin->name}** was not approved for the NativePHP Plugin Directory.")
+            ->line("Unfortunately, your plugin **{$this->plugin->name}** was not approved for the NativePHP Plugin Marketplace.")
             ->line('**Reason:**')
             ->line($this->plugin->rejection_reason)
             ->action('View Your Plugins', route('customer.plugins.index'))
@@ -49,6 +49,8 @@ class PluginRejected extends Notification implements ShouldQueue
     public function toArray(object $notifiable): array
     {
         return [
+            'title' => 'Plugin Submission Update',
+            'body' => "Your plugin {$this->plugin->name} was not approved for the NativePHP Plugin Marketplace.",
             'plugin_id' => $this->plugin->id,
             'plugin_name' => $this->plugin->name,
             'rejection_reason' => $this->plugin->rejection_reason,

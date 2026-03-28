@@ -147,6 +147,17 @@ class NotificationsTest extends TestCase
             ->assertSee('Mark all as read');
     }
 
+    // --- Settings link ---
+
+    public function test_notifications_page_shows_link_to_notification_settings(): void
+    {
+        $user = User::factory()->create();
+
+        Livewire::actingAs($user)
+            ->test(Notifications::class)
+            ->assertSee('Settings');
+    }
+
     // --- Bell icon in layout ---
 
     public function test_bell_icon_shows_in_dashboard_layout(): void
@@ -166,7 +177,7 @@ class NotificationsTest extends TestCase
     {
         return DatabaseNotification::create([
             'id' => Str::uuid()->toString(),
-            'type' => 'App\\Notifications\\TestNotification',
+            'type' => 'App\\Notifications\\PluginApproved',
             'notifiable_type' => User::class,
             'notifiable_id' => $user->id,
             'data' => $data,

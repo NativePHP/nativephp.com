@@ -25,6 +25,8 @@ class UserFactory extends Factory
             'email_verified_at' => now(),
             'password' => Hash::make('password'),
             'remember_token' => Str::random(10),
+            'receives_notification_emails' => true,
+            'receives_new_plugin_notifications' => true,
         ];
     }
 

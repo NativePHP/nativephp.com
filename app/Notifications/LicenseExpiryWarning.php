@@ -19,7 +19,7 @@ class LicenseExpiryWarning extends Notification implements ShouldQueue
 
     public function via($notifiable): array
     {
-        return ['mail'];
+        return ['mail', 'database'];
     }
 
     public function toMail($notifiable): MailMessage
@@ -41,6 +41,20 @@ class LicenseExpiryWarning extends Notification implements ShouldQueue
             ->action('Renew Your License', $renewalUrl)
             ->line('If you have any questions about your renewal, please don\'t hesitate to contact our support team.')
             ->salutation("Best regards,\nThe NativePHP Team");
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    public function toArray($notifiable): array
+    {
+        return [
+            'title' => $this->getSubject(),
+            'body' => $this->getMainMessage(),
+            'license_id' => $this->license->id,
+            'license_key' => $this->license->key,
+            'days_until_expiry' => $this->daysUntilExpiry,
+        ];
     }
 
     private function getSubject(): string

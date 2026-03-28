@@ -8,7 +8,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
-class PluginApproved extends Notification implements ShouldQueue
+class NewPluginAvailable extends Notification implements ShouldQueue
 {
     use Queueable;
 
@@ -17,38 +17,35 @@ class PluginApproved extends Notification implements ShouldQueue
     ) {}
 
     /**
-     * Get the notification's delivery channels.
-     *
      * @return array<int, string>
      */
     public function via(object $notifiable): array
     {
+        if (! $notifiable->receives_new_plugin_notifications) {
+            return [];
+        }
+
         return ['mail', 'database'];
     }
 
-    /**
-     * Get the mail representation of the notification.
-     */
     public function toMail(object $notifiable): MailMessage
     {
         return (new MailMessage)
-            ->subject('Your Plugin Has Been Approved!')
-            ->greeting('Great news!')
-            ->line("Your plugin **{$this->plugin->name}** has been approved and is now listed in the NativePHP Plugin Marketplace.")
-            ->action('View Plugin Marketplace', url('/plugins'))
-            ->line('Thank you for contributing to the NativePHP ecosystem!');
+            ->subject("New Plugin: {$this->plugin->name}")
+            ->greeting('A new plugin is available!')
+            ->line("**{$this->plugin->name}** has just been added to the NativePHP Plugin Marketplace.")
+            ->action('View Plugin', url('/plugins'))
+            ->line('You can manage your notification preferences in your account settings.');
     }
 
     /**
-     * Get the array representation of the notification.
-     *
      * @return array<string, mixed>
      */
     public function toArray(object $notifiable): array
     {
         return [
-            'title' => 'Your Plugin Has Been Approved!',
-            'body' => "{$this->plugin->name} is now listed in the NativePHP Plugin Marketplace.",
+            'title' => "New Plugin: {$this->plugin->name}",
+            'body' => "{$this->plugin->name} has just been added to the NativePHP Plugin Marketplace.",
             'plugin_id' => $this->plugin->id,
             'plugin_name' => $this->plugin->name,
         ];
