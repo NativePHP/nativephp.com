@@ -348,6 +348,7 @@ Route::middleware(['auth', EnsureFeaturesAreActive::using(ShowAuthButtons::class
 
     // Wall of Love submission
     Route::livewire('wall-of-love/create', Create::class)->name('wall-of-love.create');
+    Route::livewire('wall-of-love/{wallOfLoveSubmission}/edit', App\Livewire\Customer\WallOfLove\Edit::class)->name('wall-of-love.edit');
 
     // Showcase submissions
     Route::livewire('showcase', App\Livewire\Customer\Showcase\Index::class)->name('showcase.index');
