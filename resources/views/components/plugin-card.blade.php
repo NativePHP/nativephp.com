@@ -20,7 +20,11 @@
                 <x-vaadin-plug class="size-6" />
             </div>
         @endif
-        @if ($plugin->isPaid())
+        @if ($plugin->isPaid() && $plugin->isOfficial() && auth()->user()?->hasUltraAccess())
+            <span class="inline-flex items-center rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-medium text-green-800 dark:bg-green-900/30 dark:text-green-400">
+                Free with Ultra
+            </span>
+        @elseif ($plugin->isPaid())
             <span class="inline-flex items-center rounded-full bg-emerald-100 px-2.5 py-0.5 text-xs font-medium text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-400">
                 Paid
             </span>

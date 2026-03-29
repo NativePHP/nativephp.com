@@ -179,11 +179,23 @@ class Plugin extends Model
         }
 
         // Get the lowest active price for the user's eligible tiers
-        return $this->prices()
+        $bestPrice = $this->prices()
             ->active()
             ->forTiers($eligibleTiers)
             ->orderBy('amount', 'asc')
             ->first();
+
+        // Ultra subscribers get official plugins for free
+        if ($bestPrice && $user && $this->isOfficial() && $user->hasUltraAccess()) {
+            $freePrice = $bestPrice->replicate();
+            $freePrice->amount = 0;
+            $freePrice->id = $bestPrice->id;
+            $freePrice->exists = true;
+
+            return $freePrice;
+        }
+
+        return $bestPrice;
     }
 
     /**

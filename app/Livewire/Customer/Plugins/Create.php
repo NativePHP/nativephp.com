@@ -9,7 +9,9 @@ use App\Models\Plugin;
 use App\Notifications\PluginSubmitted;
 use App\Services\GitHubUserService;
 use App\Services\PluginSyncService;
+use Illuminate\Support\Facades\Cache;
 use Laravel\Pennant\Feature;
+use Livewire\Attributes\Computed;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Title;
 use Livewire\Component;
@@ -20,29 +22,61 @@ class Create extends Component
 {
     public string $pluginType = 'free';
 
+    public string $selectedOwner = '';
+
     public string $repository = '';
 
     public string $notes = '';
 
     public string $supportChannel = '';
 
-    /** @var array<int, array{id: int, full_name: string, private: bool}> */
+    /** @var array<int, array{id: int, full_name: string, name: string, owner: string, private: bool}> */
     public array $repositories = [];
 
     public bool $loadingRepos = false;
 
     public bool $reposLoaded = false;
 
+    #[Computed]
+    public function owners(): array
+    {
+        return collect($this->repositories)
+            ->pluck('owner')
+            ->unique()
+            ->sort(SORT_NATURAL | SORT_FLAG_CASE)
+            ->values()
+            ->toArray();
+    }
+
+    #[Computed]
+    public function ownerRepositories(): array
+    {
+        if ($this->selectedOwner === '') {
+            return [];
+        }
+
+        return collect($this->repositories)
+            ->where('owner', $this->selectedOwner)
+            ->sortBy('name', SORT_NATURAL | SORT_FLAG_CASE)
+            ->values()
+            ->toArray();
+    }
+
+    public function updatedSelectedOwner(): void
+    {
+        $this->repository = '';
+    }
+
     public function mount(): void
     {
         if (auth()->user()->github_id) {
-            $this->loadRepositories();
+            $this->loadingRepos = true;
         }
     }
 
     public function loadRepositories(): void
     {
-        if ($this->loadingRepos || $this->reposLoaded) {
+        if ($this->reposLoaded) {
             return;
         }
 
@@ -52,14 +86,23 @@ class Create extends Component
             $user = auth()->user();
 
             if ($user->hasGitHubToken()) {
-                $githubService = GitHubUserService::for($user);
-                $this->repositories = $githubService->getRepositories()
-                    ->map(fn ($repo) => [
-                        'id' => $repo['id'],
-                        'full_name' => $repo['full_name'],
-                        'private' => $repo['private'] ?? false,
-                    ])
-                    ->toArray();
+                $cacheKey = "github_repos_{$user->id}";
+
+                $repos = Cache::remember($cacheKey, now()->addMinutes(5), function () use ($user) {
+                    $githubService = GitHubUserService::for($user);
+
+                    return $githubService->getRepositories()
+                        ->map(fn ($repo) => [
+                            'id' => $repo['id'],
+                            'full_name' => $repo['full_name'],
+                            'name' => $repo['name'],
+                            'owner' => explode('/', $repo['full_name'])[0],
+                            'private' => $repo['private'] ?? false,
+                        ])
+                        ->all();
+                });
+
+                $this->repositories = collect($repos)->values()->all();
             }
 
             $this->reposLoaded = true;
@@ -117,14 +160,37 @@ class Create extends Component
             return;
         }
 
+        $repository = trim($this->repository, '/');
+        $repositoryUrl = 'https://github.com/'.$repository;
+        [$owner, $repo] = explode('/', $repository);
+
+        // Check composer.json and namespace availability before creating the plugin
+        $githubService = GitHubUserService::for($user);
+        $composerJson = $githubService->getComposerJson($owner, $repo);
+
+        if (! $composerJson || empty($composerJson['name'])) {
+            session()->flash('error', 'Could not find a valid composer.json in the repository. Please ensure your repository contains a composer.json with a valid package name.');
+
+            return;
+        }
+
+        $packageName = $composerJson['name'];
+        $namespace = explode('/', $packageName)[0] ?? null;
+
+        if ($namespace && ! Plugin::isNamespaceAvailableForUser($namespace, $user->id)) {
+            $errorMessage = Plugin::isReservedNamespace($namespace)
+                ? "The namespace '{$namespace}' is reserved and cannot be used for plugin submissions."
+                : "The namespace '{$namespace}' is already claimed by another user. You cannot submit plugins under this namespace.";
+
+            session()->flash('error', $errorMessage);
+
+            return;
+        }
+
         $developerAccountId = null;
         if ($this->pluginType === 'paid' && $user->developerAccount) {
             $developerAccountId = $user->developerAccount->id;
         }
-
-        $repository = trim($this->repository, '/');
-        $repositoryUrl = 'https://github.com/'.$repository;
-        [$owner, $repo] = explode('/', $repository);
 
         $plugin = $user->plugins()->create([
             'repository_url' => $repositoryUrl,
@@ -139,7 +205,6 @@ class Create extends Component
 
         $webhookInstalled = false;
         if ($user->hasGitHubToken()) {
-            $githubService = GitHubUserService::for($user);
             $webhookResult = $githubService->createWebhook(
                 $owner,
                 $repo,
@@ -159,19 +224,6 @@ class Create extends Component
             $plugin->delete();
 
             session()->flash('error', 'Could not find a valid composer.json in the repository. Please ensure your repository contains a composer.json with a valid package name.');
-
-            return;
-        }
-
-        $namespace = $plugin->getVendorNamespace();
-        if ($namespace && ! Plugin::isNamespaceAvailableForUser($namespace, $user->id)) {
-            $plugin->delete();
-
-            $errorMessage = Plugin::isReservedNamespace($namespace)
-                ? "The namespace '{$namespace}' is reserved and cannot be used for plugin submissions."
-                : "The namespace '{$namespace}' is already claimed by another user. You cannot submit plugins under this namespace.";
-
-            session()->flash('error', $errorMessage);
 
             return;
         }

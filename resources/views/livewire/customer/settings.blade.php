@@ -40,6 +40,14 @@
             </form>
         </flux:card>
 
+        {{-- Email Address --}}
+        <flux:card class="mb-6">
+            <flux:heading size="lg">Email Address</flux:heading>
+            <flux:text class="mb-4">The email address associated with your account.</flux:text>
+
+            <flux:input label="Email" :value="auth()->user()->email" readonly />
+        </flux:card>
+
         {{-- Change Password --}}
         <flux:card class="mb-6">
             <flux:heading size="lg">Password</flux:heading>

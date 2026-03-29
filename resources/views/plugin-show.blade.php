@@ -151,8 +151,16 @@
                 @if ($plugin->isPaid() && $bestPrice && $plugin->is_active)
                     <div class="mb-4 rounded-2xl border-2 border-indigo-500 bg-gradient-to-br from-indigo-50 to-purple-50 p-6 dark:border-indigo-400 dark:from-indigo-950/50 dark:to-purple-950/50">
                         <div class="text-center">
-                            <p class="text-sm font-medium text-gray-600 dark:text-gray-400">Price</p>
-                            @if ($hasDiscount && $regularPrice)
+                            @if ($bestPrice->amount === 0 && $plugin->isOfficial())
+                                <p class="text-sm font-medium text-green-600 dark:text-green-400">Included with Ultra</p>
+                                <p class="mt-1 text-4xl font-bold text-gray-900 dark:text-white">Free</p>
+                                @if ($regularPrice)
+                                    <p class="mt-1 text-sm text-gray-400 line-through dark:text-gray-500">
+                                        ${{ number_format($regularPrice->amount / 100) }}
+                                    </p>
+                                @endif
+                            @elseif ($hasDiscount && $regularPrice)
+                                <p class="text-sm font-medium text-gray-600 dark:text-gray-400">Price</p>
                                 <p class="mt-1 text-lg text-gray-400 line-through dark:text-gray-500">
                                     ${{ number_format($regularPrice->amount / 100) }}
                                 </p>
@@ -162,12 +170,14 @@
                                 <p class="mt-1 text-xs font-medium text-green-600 dark:text-green-400">
                                     {{ $bestPrice->tier->label() }} pricing applied
                                 </p>
+                                <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">One-time purchase</p>
                             @else
+                                <p class="text-sm font-medium text-gray-600 dark:text-gray-400">Price</p>
                                 <p class="mt-1 text-4xl font-bold text-gray-900 dark:text-white">
                                     ${{ number_format($bestPrice->amount / 100) }}
                                 </p>
+                                <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">One-time purchase</p>
                             @endif
-                            <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">One-time purchase</p>
                         </div>
                         <form action="{{ route('cart.add', $plugin->routeParams()) }}" method="POST" class="mt-4">
                             @csrf

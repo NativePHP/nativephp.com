@@ -23,6 +23,7 @@ class CustomerPluginReviewChecksTest extends TestCase
 
         $user = User::factory()->create([
             'github_id' => '12345',
+            'github_token' => encrypt('fake-token'),
         ]);
         DeveloperAccount::factory()->withAcceptedTerms()->create([
             'user_id' => $user->id,
@@ -45,7 +46,7 @@ class CustomerPluginReviewChecksTest extends TestCase
                 'content' => base64_encode('# Test Plugin'),
                 'encoding' => 'base64',
             ]),
-            "{$base}/contents/composer.json" => Http::response([
+            "{$base}/contents/composer.json*" => Http::response([
                 'content' => base64_encode($composerJson),
                 'encoding' => 'base64',
             ]),
@@ -54,6 +55,9 @@ class CustomerPluginReviewChecksTest extends TestCase
             "{$base}/releases/latest" => Http::response(['tag_name' => 'v1.0.0']),
             "{$base}/tags*" => Http::response([]),
             "https://raw.githubusercontent.com/{$repoSlug}/*" => Http::response('', 404),
+
+            // Webhook creation
+            "{$base}/hooks" => Http::response(['id' => 1], 201),
 
             // ReviewPluginRepository calls
             $base => Http::response(['default_branch' => 'main']),
@@ -106,6 +110,7 @@ class CustomerPluginReviewChecksTest extends TestCase
 
         $user = User::factory()->create([
             'github_id' => '12345',
+            'github_token' => encrypt('fake-token'),
         ]);
         DeveloperAccount::factory()->withAcceptedTerms()->create([
             'user_id' => $user->id,
@@ -124,7 +129,7 @@ class CustomerPluginReviewChecksTest extends TestCase
                 'content' => base64_encode('# Bare Plugin'),
                 'encoding' => 'base64',
             ]),
-            "{$base}/contents/composer.json" => Http::response([
+            "{$base}/contents/composer.json*" => Http::response([
                 'content' => base64_encode($composerJson),
                 'encoding' => 'base64',
             ]),
@@ -133,6 +138,9 @@ class CustomerPluginReviewChecksTest extends TestCase
             "{$base}/releases/latest" => Http::response([], 404),
             "{$base}/tags*" => Http::response([]),
             "https://raw.githubusercontent.com/{$repoSlug}/*" => Http::response('', 404),
+
+            // Webhook creation (fails)
+            "{$base}/hooks" => Http::response([], 422),
 
             $base => Http::response(['default_branch' => 'main']),
             "{$base}/git/trees/main*" => Http::response([

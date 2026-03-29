@@ -1,4 +1,4 @@
-<div>
+<div wire:init="loadRepositories">
     <div class="mb-6">
         <nav class="flex" aria-label="Breadcrumb">
             <ol class="flex items-center gap-2">
@@ -56,7 +56,7 @@
                 </x-slot>
             </flux:callout>
         @else
-            <form wire:submit="submitPlugin">
+            <form wire:submit="submitPlugin" class="space-y-8">
                 {{-- Plugin Type --}}
                 @feature(App\Features\AllowPaidPlugins::class)
                 <flux:card>
@@ -105,20 +105,26 @@
                         Choose the repository containing your plugin. We'll automatically set up a webhook to keep your plugin in sync.
                     </flux:text>
 
-                    <div class="mt-6">
+                    <div class="mt-6 space-y-4">
                         @if($loadingRepos)
                             <div class="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
                                 <flux:icon.loading class="size-5" />
                                 <span>Loading repositories...</span>
                             </div>
                         @elseif($reposLoaded)
-                            <flux:select wire:model.live="repository" label="Repository" placeholder="Select a repository...">
-                                @foreach($repositories as $repo)
-                                    <flux:select.option value="{{ $repo['full_name'] }}">
-                                        {{ $repo['full_name'] }}{{ $repo['private'] ? ' (private)' : '' }}
-                                    </flux:select.option>
+                            <flux:select variant="listbox" searchable wire:model.live="selectedOwner" label="Account" placeholder="Select an account...">
+                                @foreach($this->owners as $owner)
+                                    <flux:select.option value="{{ $owner }}">{{ $owner }}</flux:select.option>
                                 @endforeach
                             </flux:select>
+
+                            @if($selectedOwner)
+                                <flux:select wire:key="repo-search-{{ $selectedOwner }}" variant="combobox" wire:model.live="repository" label="Repository" placeholder="Search repositories...">
+                                    @foreach($this->ownerRepositories as $repo)
+                                        <flux:select.option value="{{ $repo['full_name'] }}">{{ $repo['name'] }}@if($repo['private']) (private)@endif</flux:select.option>
+                                    @endforeach
+                                </flux:select>
+                            @endif
                         @endif
                         @error('repository')
                             <flux:text class="mt-2 text-sm text-red-600 dark:text-red-400">{{ $message }}</flux:text>

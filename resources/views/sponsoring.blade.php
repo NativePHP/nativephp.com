@@ -112,6 +112,31 @@
                 releases, and discounts on future premium services.
             </p>
 
+            <h2>NativePHP Ultra</h2>
+
+            <p>
+                Another way to support NativePHP is by subscribing to
+                <a href="{{ route('pricing') }}">NativePHP Ultra</a>.
+                Ultra is our premium subscription plan that gives you access to exclusive benefits while
+                directly funding the continued development of NativePHP:
+            </p>
+
+            <ul>
+                <li><b>Teams</b> &mdash; up to 5 seats (you + 4 collaborators) to share your plugin access</li>
+                <li><b>Free official plugins</b> &mdash; every NativePHP-published plugin, included with your subscription</li>
+                <li><b>Plugin Dev Kit</b> &mdash; tools and resources to build and publish your own plugins</li>
+                <li><b>90% Marketplace revenue</b> &mdash; keep up to 90% of earnings on paid plugins you publish</li>
+                <li><b>Priority support</b> &mdash; get help faster when you need it</li>
+                <li><b>Early access</b> &mdash; be first to try new features and plugins</li>
+                <li><b>Exclusive discounts</b> &mdash; on future NativePHP products</li>
+                <li><b>Shape the roadmap</b> &mdash; your feedback directly influences what we build next</li>
+            </ul>
+
+            <p>
+                Ultra is available with annual or monthly billing.
+                <a href="{{ route('pricing') }}">See Ultra plans</a>.
+            </p>
+
             <h2>Corporate Partners</h2>
 
             <p>

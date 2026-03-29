@@ -1,6 +1,10 @@
 <div>
     <div class="mb-6">
-        <flux:heading size="xl">{{ $license->name ?: $license->policy_name }}</flux:heading>
+        <a href="{{ route('customer.licenses.list') }}" class="inline-flex items-center gap-2 text-sm text-gray-400 hover:text-gray-500 dark:text-gray-500 dark:hover:text-gray-400">
+            <x-heroicon-s-arrow-left class="size-4" />
+            <span class="font-medium">Licenses</span>
+        </a>
+        <flux:heading size="xl" class="mt-4">{{ $license->name ?: $license->policy_name }}</flux:heading>
         @if($license->name)
             <flux:text>{{ $license->policy_name }}</flux:text>
         @endif
@@ -24,71 +28,64 @@
 
         <flux:separator />
 
-        <dl class="divide-y divide-gray-200 dark:divide-gray-700">
-            {{-- License Key --}}
-            <div class="py-4 sm:grid sm:grid-cols-3 sm:gap-4">
-                <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">License Key</dt>
-                <dd class="mt-1 text-sm sm:col-span-2 sm:mt-0">
-                    <div class="flex items-center justify-between">
-                        <code class="rounded bg-gray-100 px-2 py-1 font-mono text-sm dark:bg-gray-700">{{ $license->key }}</code>
-                        <flux:button size="xs" variant="ghost" x-on:click="navigator.clipboard.writeText('{{ $license->key }}')">
-                            Copy
-                        </flux:button>
-                    </div>
-                </dd>
-            </div>
+        <flux:table>
+            <flux:table.rows>
+                {{-- License Key --}}
+                <flux:table.row>
+                    <flux:table.cell class="font-medium text-zinc-500 dark:text-zinc-400">License Key</flux:table.cell>
+                    <flux:table.cell>
+                        <x-customer.masked-key :key-value="$license->key" />
+                    </flux:table.cell>
+                </flux:table.row>
 
-            {{-- License Name --}}
-            <div class="py-4 sm:grid sm:grid-cols-3 sm:gap-4">
-                <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">License Name</dt>
-                <dd class="mt-1 text-sm sm:col-span-2 sm:mt-0">
-                    <div class="flex items-center justify-between">
-                        <span class="{{ $license->name ? '' : 'italic text-gray-500 dark:text-gray-400' }}">
-                            {{ $license->name ?: 'No name set' }}
-                        </span>
-                        <flux:button size="xs" variant="ghost" wire:click="$set('showEditNameModal', true)">
-                            Edit
-                        </flux:button>
-                    </div>
-                </dd>
-            </div>
+                {{-- License Name --}}
+                <flux:table.row>
+                    <flux:table.cell class="font-medium text-zinc-500 dark:text-zinc-400">License Name</flux:table.cell>
+                    <flux:table.cell>
+                        <div class="flex items-center justify-between">
+                            <span class="{{ $license->name ? '' : 'italic text-zinc-500 dark:text-zinc-400' }}">
+                                {{ $license->name ?: 'No name set' }}
+                            </span>
+                            <flux:button size="xs" variant="ghost" wire:click="$set('showEditNameModal', true)">
+                                Edit
+                            </flux:button>
+                        </div>
+                    </flux:table.cell>
+                </flux:table.row>
 
-            {{-- License Type --}}
-            <div class="py-4 sm:grid sm:grid-cols-3 sm:gap-4">
-                <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">License Type</dt>
-                <dd class="mt-1 text-sm sm:col-span-2 sm:mt-0">{{ $license->policy_name }}</dd>
-            </div>
+                {{-- License Type --}}
+                <flux:table.row>
+                    <flux:table.cell class="font-medium text-zinc-500 dark:text-zinc-400">License Type</flux:table.cell>
+                    <flux:table.cell>{{ $license->policy_name }}</flux:table.cell>
+                </flux:table.row>
 
-            {{-- Created --}}
-            <div class="py-4 sm:grid sm:grid-cols-3 sm:gap-4">
-                <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Created</dt>
-                <dd class="mt-1 text-sm sm:col-span-2 sm:mt-0">
-                    {{ $license->created_at->format('F j, Y \a\t g:i A') }}
-                    <span class="ml-1 text-gray-500 dark:text-gray-400">
-                        ({{ $license->created_at->diffForHumans() }})
-                    </span>
-                </dd>
-            </div>
+                {{-- Created --}}
+                <flux:table.row>
+                    <flux:table.cell class="font-medium text-zinc-500 dark:text-zinc-400">Created</flux:table.cell>
+                    <flux:table.cell>
+                        {{ $license->created_at->format('F j, Y \a\t g:i A') }}
+                        <flux:text class="inline text-xs">({{ $license->created_at->diffForHumans() }})</flux:text>
+                    </flux:table.cell>
+                </flux:table.row>
 
-            {{-- Expires --}}
-            <div class="py-4 sm:grid sm:grid-cols-3 sm:gap-4">
-                <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Expires</dt>
-                <dd class="mt-1 text-sm sm:col-span-2 sm:mt-0">
-                    @if($license->expires_at)
-                        {{ $license->expires_at->format('F j, Y \a\t g:i A') }}
-                        <span class="ml-1 text-gray-500 dark:text-gray-400">
+                {{-- Expires --}}
+                <flux:table.row>
+                    <flux:table.cell class="font-medium text-zinc-500 dark:text-zinc-400">Expires</flux:table.cell>
+                    <flux:table.cell>
+                        @if($license->expires_at)
+                            {{ $license->expires_at->format('F j, Y \a\t g:i A') }}
                             @if($license->expires_at->isPast())
-                                (Expired {{ $license->expires_at->diffForHumans() }})
+                                <flux:text class="inline text-xs">(Expired {{ $license->expires_at->diffForHumans() }})</flux:text>
                             @else
-                                ({{ $license->expires_at->diffForHumans() }})
+                                <flux:text class="inline text-xs">({{ $license->expires_at->diffForHumans() }})</flux:text>
                             @endif
-                        </span>
-                    @else
-                        Never
-                    @endif
-                </dd>
-            </div>
-        </dl>
+                        @else
+                            Never
+                        @endif
+                    </flux:table.cell>
+                </flux:table.row>
+            </flux:table.rows>
+        </flux:table>
     </flux:card>
 
     {{-- Sub-license Manager --}}
@@ -108,7 +105,7 @@
             <flux:callout.heading>Renewal Available with Early Access Pricing</flux:callout.heading>
             <flux:callout.text>
                 Your license expires in {{ $daysUntilExpiry }} day{{ $daysUntilExpiry === 1 ? '' : 's' }}.
-                Set up automatic renewal now to avoid interruption and lock in your Early Access Pricing!
+                Set up automatic renewal now to upgrade to Ultra with your Early Access Pricing!
             </flux:callout.text>
             <x-slot name="actions">
                 <flux:button variant="primary" href="{{ route('license.renewal', $license->key) }}">Set Up Renewal</flux:button>
@@ -148,8 +145,7 @@
                 <flux:text class="mt-1 text-xs">Give your license a descriptive name to help organize your licenses.</flux:text>
             </div>
 
-            <div class="mt-6 flex justify-end gap-3">
-                <flux:button variant="ghost" x-on:click="$flux.close()">Cancel</flux:button>
+            <div class="mt-6 flex justify-end">
                 <flux:button type="submit" variant="primary">Update Name</flux:button>
             </div>
         </form>

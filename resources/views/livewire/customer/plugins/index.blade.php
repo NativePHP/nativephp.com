@@ -48,48 +48,6 @@
         </flux:card>
     </div>
 
-    {{-- Stripe Connect Section --}}
-    @feature(App\Features\AllowPaidPlugins::class)
-    <div class="mt-8">
-        @if ($this->developerAccount && $this->developerAccount->hasCompletedOnboarding())
-            <flux:callout variant="success" icon="check-circle">
-                <flux:callout.heading>Stripe Connect Active</flux:callout.heading>
-                <flux:callout.text>
-                    Your developer account is set up and ready to receive payouts for paid plugin sales.
-                </flux:callout.text>
-                <x-slot name="actions">
-                    <flux:button variant="primary" href="{{ route('customer.developer.dashboard') }}">View Dashboard</flux:button>
-                </x-slot>
-            </flux:callout>
-        @elseif ($this->developerAccount)
-            <flux:callout variant="warning" icon="clock">
-                <flux:callout.heading>Complete Your Stripe Setup</flux:callout.heading>
-                <flux:callout.text>
-                    You've started the Stripe Connect setup but there are still some steps remaining. Complete the onboarding to start receiving payouts.
-                </flux:callout.text>
-                <x-slot name="actions">
-                    <flux:button variant="primary" href="{{ route('customer.developer.onboarding.refresh') }}">Continue Setup</flux:button>
-                </x-slot>
-            </flux:callout>
-        @else
-            <flux:card>
-                <div class="flex items-start gap-4">
-                    <div class="flex size-12 shrink-0 items-center justify-center rounded-lg bg-indigo-100 text-indigo-600 dark:bg-indigo-900/50 dark:text-indigo-400">
-                        <x-heroicon-o-credit-card class="size-6" />
-                    </div>
-                    <div class="flex-1">
-                        <flux:heading size="lg">Sell Paid Plugins</flux:heading>
-                        <flux:text class="mt-1">
-                            Want to sell premium plugins? Connect your Stripe account to receive payouts when customers purchase your paid plugins. You'll earn 70% of each sale.
-                        </flux:text>
-                    </div>
-                    <flux:button variant="primary" href="{{ route('customer.developer.onboarding') }}">Connect Stripe</flux:button>
-                </div>
-            </flux:card>
-        @endif
-    </div>
-    @endfeature
-
     {{-- Success/Error Messages --}}
     @if (session('success'))
         <flux:callout variant="success" icon="check-circle" class="mt-6">
