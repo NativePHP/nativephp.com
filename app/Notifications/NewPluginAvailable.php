@@ -34,7 +34,7 @@ class NewPluginAvailable extends Notification implements ShouldQueue
             ->subject("New Plugin: {$this->plugin->name}")
             ->greeting('A new plugin is available!')
             ->line("**{$this->plugin->name}** has just been added to the NativePHP Plugin Marketplace.")
-            ->action('View Plugin', url('/plugins'))
+            ->action('View Plugin', route('plugins.show', $this->plugin->routeParams()))
             ->line('You can manage your notification preferences in your account settings.');
     }
 
@@ -48,6 +48,8 @@ class NewPluginAvailable extends Notification implements ShouldQueue
             'body' => "{$this->plugin->name} has just been added to the NativePHP Plugin Marketplace.",
             'plugin_id' => $this->plugin->id,
             'plugin_name' => $this->plugin->name,
+            'action_url' => route('plugins.show', $this->plugin->routeParams()),
+            'action_label' => 'View Plugin',
         ];
     }
 }

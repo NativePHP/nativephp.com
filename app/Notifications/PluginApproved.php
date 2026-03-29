@@ -35,7 +35,7 @@ class PluginApproved extends Notification implements ShouldQueue
             ->subject('Your Plugin Has Been Approved!')
             ->greeting('Great news!')
             ->line("Your plugin **{$this->plugin->name}** has been approved and is now listed in the NativePHP Plugin Marketplace.")
-            ->action('View Plugin Marketplace', url('/plugins'))
+            ->action('View Plugin', route('plugins.show', $this->plugin->routeParams()))
             ->line('Thank you for contributing to the NativePHP ecosystem!');
     }
 
@@ -51,6 +51,8 @@ class PluginApproved extends Notification implements ShouldQueue
             'body' => "{$this->plugin->name} is now listed in the NativePHP Plugin Marketplace.",
             'plugin_id' => $this->plugin->id,
             'plugin_name' => $this->plugin->name,
+            'action_url' => route('plugins.show', $this->plugin->routeParams()),
+            'action_label' => 'View Plugin',
         ];
     }
 }

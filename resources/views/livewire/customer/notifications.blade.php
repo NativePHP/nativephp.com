@@ -1,5 +1,5 @@
 <div class="mx-auto max-w-2xl">
-    <div class="mb-6 flex items-center justify-between">
+    <div class="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
             <flux:heading size="xl">Notifications</flux:heading>
             <flux:text>Stay up to date with your account activity.</flux:text>
@@ -44,13 +44,19 @@
                         <flux:text class="mt-1">{{ $notification->data['body'] }}</flux:text>
                     @endif
 
-                    @if (is_null($notification->read_at))
-                        <div class="mt-2">
+                    <div class="mt-2 flex items-center gap-2">
+                        @if (! empty($notification->data['action_url']))
+                            <flux:button href="{{ $notification->data['action_url'] }}" variant="primary" size="xs">
+                                {{ $notification->data['action_label'] ?? 'View' }}
+                            </flux:button>
+                        @endif
+
+                        @if (is_null($notification->read_at))
                             <flux:button wire:click="markAsRead('{{ $notification->id }}')" variant="ghost" size="xs">
                                 Mark as read
                             </flux:button>
-                        </div>
-                    @endif
+                        @endif
+                    </div>
                 </div>
             </div>
         </flux:card>

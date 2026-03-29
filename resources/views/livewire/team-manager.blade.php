@@ -24,7 +24,7 @@
 
     {{-- Seat Management --}}
     <flux:card class="mb-6">
-        <div class="flex items-center justify-between">
+        <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div>
                 <flux:heading size="lg">Seats</flux:heading>
                 <flux:text class="mt-1">

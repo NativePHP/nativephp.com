@@ -89,6 +89,17 @@ class NewPluginAvailableTest extends TestCase
         $this->assertStringContainsString('acme/awesome-plugin', $mail->subject);
     }
 
+    public function test_mail_action_links_to_plugin_page(): void
+    {
+        $user = User::factory()->create();
+        $plugin = Plugin::factory()->for($user)->create(['name' => 'acme/awesome-plugin']);
+
+        $notification = new NewPluginAvailable($plugin);
+        $mail = $notification->toMail($user);
+
+        $this->assertEquals(route('plugins.show', ['vendor' => 'acme', 'package' => 'awesome-plugin']), $mail->actionUrl);
+    }
+
     public function test_database_notification_contains_plugin_data(): void
     {
         $user = User::factory()->create();
@@ -100,6 +111,8 @@ class NewPluginAvailableTest extends TestCase
         $this->assertEquals($plugin->id, $data['plugin_id']);
         $this->assertEquals('acme/awesome-plugin', $data['plugin_name']);
         $this->assertStringContainsString('acme/awesome-plugin', $data['title']);
+        $this->assertEquals(route('plugins.show', ['vendor' => 'acme', 'package' => 'awesome-plugin']), $data['action_url']);
+        $this->assertEquals('View Plugin', $data['action_label']);
     }
 
     public function test_new_users_receive_new_plugin_notifications_by_default(): void
