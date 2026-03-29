@@ -1,19 +1,22 @@
 <div
     x-init="
         () => {
+            const updatePopoverTop = () => {
+                const nav = $refs.menuButton.closest('nav');
+                if (nav && $refs.mobilePopover.matches(':popover-open')) {
+                    $refs.mobilePopover.style.top = (nav.getBoundingClientRect().bottom + 8) + 'px';
+                }
+            };
+
             // Sync Popover ➜ Alpine
             $refs.mobilePopover.addEventListener('toggle', (e) => {
                 showMobileMenu = $refs.mobilePopover.matches(':popover-open')
 
-                // Scroll past the banner when menu opens
                 if (e.newState === 'open') {
-                    const banner = document.querySelector('[data-site-banner]')
-                    if (banner) {
-                        const bannerBottom = banner.offsetTop + banner.offsetHeight
-                        if (window.scrollY < bannerBottom) {
-                            window.scrollTo({ top: bannerBottom, behavior: 'smooth' })
-                        }
-                    }
+                    updatePopoverTop()
+                    window.addEventListener('scroll', updatePopoverTop, { passive: true })
+                } else {
+                    window.removeEventListener('scroll', updatePopoverTop)
                 }
             })
 
@@ -27,10 +30,11 @@
             })
         }
     "
-    class="relative z-40 xl:hidden"
+    class="relative z-40"
 >
     <button
         type="button"
+        x-ref="menuButton"
         popovertarget="mobile-menu-popover"
         popovertargetaction="toggle"
         class="-m-1.5 grid size-9 place-items-center overflow-hidden focus:ring-0 focus:outline-none"
@@ -79,7 +83,8 @@
         role="dialog"
         aria-modal="true"
         aria-label="Site menu"
-        class="fixed top-20 right-3 bottom-3.5 left-3 w-auto origin-top -translate-y-2 scale-y-90 overflow-y-scroll overscroll-contain rounded-2xl bg-gray-200/50 opacity-0 ring-1 ring-gray-200/80 backdrop-blur-2xl transition transition-discrete duration-300 open:translate-y-0 open:scale-y-100 open:opacity-100 min-[500px]:right-3.5 min-[500px]:left-3.5 dark:bg-black/50 dark:text-white dark:ring-gray-700/70 starting:open:-translate-y-2 starting:open:scale-y-0 starting:open:opacity-0"
+        x-bind:style="width >= 1024 ? 'right:' + (window.innerWidth - $refs.menuButton.getBoundingClientRect().right - 6) + 'px' : ''"
+        class="fixed m-0 inset-[unset] inset-x-3 bottom-3.5 w-auto -translate-y-3 overflow-y-scroll overscroll-contain rounded-2xl bg-gray-200/50 opacity-0 ring-1 ring-gray-200/80 backdrop-blur-2xl transition-[opacity,transform] transition-discrete duration-300 open:translate-y-0 open:opacity-100 min-[500px]:inset-x-3.5 lg:bottom-auto lg:left-auto lg:w-md dark:bg-black/50 dark:text-white dark:ring-gray-700/70 starting:open:-translate-y-3 starting:open:opacity-0"
     >
         <div class="@container flex flex-col overflow-hidden px-6 pt-4 pb-6">
             <nav
@@ -93,6 +98,7 @@
                     $isPartnersActive = request()->routeIs('partners*');
                     $isServicesActive = request()->routeIs('build-my-app');
                     $isCourseActive = request()->routeIs('course');
+                    $isSupportActive = request()->routeIs('support.*');
                     $isSponsorActive = request()->routeIs('sponsoring*');
                     $isLoginActive = request()->routeIs('customer.login*');
                 @endphp
@@ -269,6 +275,32 @@
 
                         <div class="inline-flex items-center gap-2">
                             Learn
+                            <span class="rounded-full bg-emerald-500 px-1.5 py-px text-[10px] font-bold leading-tight text-white">New</span>
+                        </div>
+                    </a>
+                </div>
+
+                {{-- Support Link --}}
+                <div>
+                    <a
+                        href="{{ route('support.index') }}"
+                        @class([
+                            'flex items-center gap-2 py-3 transition duration-200',
+                            'font-medium' => $isSupportActive,
+                            'opacity-50 hover:translate-x-1 hover:opacity-100' => ! $isSupportActive,
+                        ])
+                        aria-current="{{ $isSupportActive ? 'page' : 'false' }}"
+                    >
+                        @if ($isSupportActive)
+                            <x-icons.right-arrow
+                                class="size-4 shrink-0"
+                                aria-hidden="true"
+                                focusable="false"
+                            />
+                        @endif
+
+                        <div class="inline-flex items-center gap-2">
+                            Support
                             <span class="rounded-full bg-emerald-500 px-1.5 py-px text-[10px] font-bold leading-tight text-white">New</span>
                         </div>
                     </a>

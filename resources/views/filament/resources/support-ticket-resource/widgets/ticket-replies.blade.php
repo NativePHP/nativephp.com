@@ -1,0 +1,76 @@
+<x-filament-widgets::widget>
+    <x-filament::section heading="Conversation">
+        {{-- Reply form at top --}}
+        <form wire:submit="sendReply" style="margin-bottom: 1.5rem;">
+            <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+                <textarea
+                    wire:model="newMessage"
+                    rows="3"
+                    placeholder="Type your reply..."
+                    style="display: block; width: 100%; border: 1px solid #d1d5db; border-radius: 0.5rem; padding: 0.5rem 0.75rem; font-size: 0.875rem; color: #111827; background: #ffffff; box-shadow: 0 1px 2px rgba(0,0,0,0.05);"
+                    onfocus="this.style.borderColor='#7c3aed'; this.style.boxShadow='0 0 0 1px #7c3aed'"
+                    onblur="this.style.borderColor='#d1d5db'; this.style.boxShadow='0 1px 2px rgba(0,0,0,0.05)'"
+                    x-on:keydown.meta.enter="$wire.sendReply()"
+                    x-on:keydown.ctrl.enter="$wire.sendReply()"
+                ></textarea>
+                @error('newMessage')
+                    <p style="font-size: 0.875rem; color: #dc2626;">{{ $message }}</p>
+                @enderror
+                <div style="display: flex; align-items: center; justify-content: space-between;">
+                    <label style="display: inline-flex; align-items: center; gap: 0.5rem; font-size: 0.875rem; color: #6b7280; cursor: pointer;">
+                        <input type="checkbox" wire:model="isNote" style="border-radius: 0.25rem;" />
+                        Internal note (not visible to user)
+                    </label>
+                    <div style="display: flex; align-items: center; gap: 0.75rem;">
+                        <span style="font-size: 0.75rem; color: #9ca3af;">&#8984;/Ctrl + Enter to send</span>
+                        <x-filament::button type="submit" wire:loading.attr="disabled" size="sm">
+                            <span wire:loading.remove wire:target="sendReply">Send Reply</span>
+                            <span wire:loading wire:target="sendReply">Sending...</span>
+                        </x-filament::button>
+                    </div>
+                </div>
+            </div>
+        </form>
+
+        {{-- Messages list (reverse chronological) --}}
+        <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+            @forelse ($record->replies()->with('user')->orderBy('created_at', 'desc')->get() as $reply)
+                @php
+                    $isAdmin = $reply->user?->isAdmin();
+                    $isNote = $reply->note;
+
+                    if ($isNote) {
+                        $bgColor = '#fefce8';
+                        $borderColor = '#facc15';
+                    } elseif ($isAdmin) {
+                        $bgColor = '#ede9fe';
+                        $borderColor = '#c4b5fd';
+                    } else {
+                        $bgColor = '#f3f4f6';
+                        $borderColor = '#d1d5db';
+                    }
+                @endphp
+                <div style="border-radius: 0.5rem; border: 1px solid {{ $borderColor }}; padding: 0.75rem; background-color: {{ $bgColor }};">
+                    <div style="display: flex; align-items: center; justify-content: space-between; gap: 0.5rem;">
+                        <div style="display: flex; align-items: center; gap: 0.5rem;">
+                            <span style="font-size: 0.875rem; font-weight: 600; color: #111827;">
+                                {{ $reply->user?->name ?? 'Unknown' }}
+                            </span>
+                            @if ($isNote)
+                                <x-filament::badge color="warning" size="sm">Note</x-filament::badge>
+                            @elseif ($isAdmin)
+                                <x-filament::badge color="primary" size="sm">Staff</x-filament::badge>
+                            @endif
+                        </div>
+                        <span style="font-size: 0.75rem; color: #6b7280;">
+                            {{ $reply->created_at->diffForHumans() }}
+                        </span>
+                    </div>
+                    <div class="fi-prose" style="margin-top: 0.25rem; font-size: 0.875rem; color: #374151;">{!! App\Support\CommonMark\CommonMark::convertToHtml($reply->message) !!}</div>
+                </div>
+            @empty
+                <p style="padding: 1rem 0; text-align: center; font-size: 0.875rem; color: #6b7280;">No replies yet.</p>
+            @endforelse
+        </div>
+    </x-filament::section>
+</x-filament-widgets::widget>

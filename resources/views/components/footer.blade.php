@@ -263,6 +263,17 @@
                     </li>
                     <li>
                         <a
+                            href="{{ route('support.index') }}"
+                            class="inline-block px-px py-1.5 transition duration-300 will-change-transform hover:translate-x-1 hover:text-gray-700 dark:hover:text-gray-300"
+                        >
+                            <span class="inline-flex items-center gap-1.5">
+                                Support
+                                <span class="rounded-full bg-emerald-500 px-1.5 py-px text-[10px] font-bold leading-tight text-white">New</span>
+                            </span>
+                        </a>
+                    </li>
+                    <li>
+                        <a
                             href="{{ route('wall-of-love') }}"
                             class="inline-block px-px py-1.5 transition duration-300 will-change-transform hover:translate-x-1 hover:text-gray-700 dark:hover:text-gray-300"
                         >

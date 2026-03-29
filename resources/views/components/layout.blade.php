@@ -102,13 +102,7 @@
                 return ! this.scrolled && this.width >= 1024
             },
         }"
-        x-resize="
-            width = $width
-            if (window.matchMedia('(min-width: 80rem)').matches) {
-                showMobileMenu = false
-                showDocsMenu = false
-            }
-        "
+        x-resize="width = $width"
         x-init="
             window.addEventListener('scroll', () => {
                 scrolled = window.scrollY > 1
