@@ -13,7 +13,7 @@ class TorchlightWithCopyExtension extends TorchlightExtension
             $torchlight = parent::defaultBlockRenderer();
 
             return <<<HTML
-                <div x-data="codeBlock" class="torchlight-with-copy relative md:rounded-md">
+                <div x-data="codeBlock" class="torchlight-with-copy relative">
                     <div class="flex space-x items-center absolute top-0 right-0">
                         <div x-show="showMessage" x-transition class="py-1 transition duration-300 text-indigo-400 font-bold">Copied!</div>
                         <button
