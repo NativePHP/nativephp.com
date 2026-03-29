@@ -15,12 +15,13 @@ use App\Http\Controllers\GitHubIntegrationController;
 use App\Http\Controllers\LicenseRenewalController;
 use App\Http\Controllers\OpenCollectiveWebhookController;
 use App\Http\Controllers\PluginDirectoryController;
-use App\Http\Controllers\PluginPurchaseController;
 use App\Http\Controllers\PluginWebhookController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ShowBlogController;
 use App\Http\Controllers\ShowcaseController;
 use App\Http\Controllers\ShowDocumentationController;
+use App\Http\Controllers\TeamController;
+use App\Http\Controllers\TeamUserController;
 use App\Livewire\ClaimDonationLicense;
 use App\Livewire\Customer\Dashboard;
 use App\Livewire\Customer\Developer\Onboarding;
@@ -82,7 +83,7 @@ Route::post('opencollective/contribution', [OpenCollectiveWebhookController::cla
 Route::get('opencollective/claim', ClaimDonationLicense::class)->name('opencollective.claim');
 
 Route::view('/', 'welcome')->name('welcome');
-Route::redirect('pricing', 'blog/nativephp-for-mobile-is-now-free')->name('pricing');
+Route::view('ultra', 'pricing')->name('pricing');
 Route::view('alt-pricing', 'alt-pricing')->name('alt-pricing')->middleware('signed');
 Route::get('course', function () {
     $user = auth()->user();
@@ -265,10 +266,8 @@ Route::get('docs/{page}', function (string $page) {
 
 Route::get('order/{checkoutSessionId}', OrderSuccess::class)->name('order.success');
 
-// License renewal routes
+// License renewal routes (public success page)
 Route::get('license/{license:key}/renewal/success', LicenseRenewalSuccess::class)->name('license.renewal.success');
-Route::get('license/{license}/renewal', [LicenseRenewalController::class, 'show'])->name('license.renewal');
-Route::post('license/{license}/renewal/checkout', [LicenseRenewalController::class, 'createCheckoutSession'])->name('license.renewal.checkout');
 
 // Customer authentication routes
 Route::middleware(['guest'])->group(function (): void {
@@ -320,12 +319,21 @@ Route::get('callback', function (Request $request) {
     return response('Goodbye');
 })->name('callback');
 
+// Team invitation acceptance (public route - no auth required)
+Route::get('team/invitation/{token}', [TeamUserController::class, 'accept'])->name('team.invitation.accept');
+
 // Dashboard route
 Route::middleware(['auth', EnsureFeaturesAreActive::using(ShowAuthButtons::class)])->group(function (): void {
     Route::livewire('dashboard', Dashboard::class)->name('dashboard');
 });
 
 // Customer license management routes
+Route::middleware(['auth', EnsureFeaturesAreActive::using(ShowAuthButtons::class)])->prefix('dashboard')->group(function (): void {
+    // License renewal routes (no customer. prefix to preserve route names)
+    Route::get('license/{license}/renewal', [LicenseRenewalController::class, 'show'])->name('license.renewal');
+    Route::post('license/{license}/renewal/checkout', [LicenseRenewalController::class, 'createCheckoutSession'])->name('license.renewal.checkout');
+});
+
 Route::middleware(['auth', EnsureFeaturesAreActive::using(ShowAuthButtons::class)])->prefix('dashboard')->name('customer.')->group(function (): void {
     // Settings page
     Route::livewire('settings', Settings::class)->name('settings');
@@ -357,6 +365,7 @@ Route::middleware(['auth', EnsureFeaturesAreActive::using(ShowAuthButtons::class
 
     // Wall of Love submission
     Route::livewire('wall-of-love/create', Create::class)->name('wall-of-love.create');
+    Route::livewire('wall-of-love/{wallOfLoveSubmission}/edit', App\Livewire\Customer\WallOfLove\Edit::class)->name('wall-of-love.edit');
 
     // Showcase submissions
     Route::livewire('showcase', App\Livewire\Customer\Showcase\Index::class)->name('showcase.index');
@@ -375,6 +384,15 @@ Route::middleware(['auth', EnsureFeaturesAreActive::using(ShowAuthButtons::class
         return $user->redirectToBillingPortal(route('dashboard'));
     })->name('billing-portal');
 
+    // Team management routes
+    Route::get('team', [TeamController::class, 'index'])->name('team.index');
+    Route::post('team', [TeamController::class, 'store'])->name('team.store');
+    Route::patch('team', [TeamController::class, 'update'])->name('team.update');
+    Route::post('team/invite', [TeamUserController::class, 'invite'])->name('team.invite');
+    Route::delete('team/users/{teamUser}', [TeamUserController::class, 'remove'])->name('team.users.remove');
+    Route::post('team/users/{teamUser}/resend', [TeamUserController::class, 'resend'])->name('team.users.resend');
+    Route::get('team/{team}', [TeamController::class, 'show'])->name('team.show');
+
     // Sub-license management routes
     Route::post('licenses/{licenseKey}/sub-licenses', [CustomerSubLicenseController::class, 'store'])->name('licenses.sub-licenses.store');
     Route::patch('licenses/{licenseKey}/sub-licenses/{subLicense}', [CustomerSubLicenseController::class, 'update'])->name('licenses.sub-licenses.update');
@@ -386,15 +404,6 @@ Route::middleware(['auth', EnsureFeaturesAreActive::using(ShowAuthButtons::class
 Route::get('.well-known/assetlinks.json', [ApplinksController::class, 'assetLinks']);
 
 Route::post('webhooks/plugins/{secret}', PluginWebhookController::class)->name('webhooks.plugins');
-
-// Plugin purchase routes
-Route::middleware(['auth', EnsureFeaturesAreActive::using(ShowAuthButtons::class), EnsureFeaturesAreActive::using(ShowPlugins::class)])->group(function (): void {
-    Route::get('plugins/{vendor}/{package}/purchase', [PluginPurchaseController::class, 'show'])->name('plugins.purchase.show');
-    Route::post('plugins/{vendor}/{package}/purchase', [PluginPurchaseController::class, 'checkout'])->name('plugins.purchase.checkout');
-    Route::get('plugins/{vendor}/{package}/purchase/success', [PluginPurchaseController::class, 'success'])->name('plugins.purchase.success');
-    Route::get('plugins/{vendor}/{package}/purchase/status/{sessionId}', [PluginPurchaseController::class, 'status'])->name('plugins.purchase.status');
-    Route::get('plugins/{vendor}/{package}/purchase/cancel', [PluginPurchaseController::class, 'cancel'])->name('plugins.purchase.cancel');
-});
 
 // Bundle routes (public)
 Route::middleware(EnsureFeaturesAreActive::using(ShowPlugins::class))->group(function (): void {

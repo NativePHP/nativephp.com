@@ -31,6 +31,8 @@ class Show extends Component
     #[Validate('nullable|image|max:1024')]
     public $logo = null;
 
+    public ?string $supportChannel = null;
+
     public function mount(string $vendor, string $package): void
     {
         $this->plugin = Plugin::findByVendorPackageOrFail($vendor, $package);
@@ -43,6 +45,7 @@ class Show extends Component
         $this->iconName = $this->plugin->icon_name ?? 'cube';
         $this->iconGradient = $this->plugin->icon_gradient;
         $this->iconMode = $this->plugin->hasLogo() ? 'upload' : 'gradient';
+        $this->supportChannel = $this->plugin->support_channel;
     }
 
     public function updateDescription(): void
@@ -120,6 +123,32 @@ class Show extends Component
         $this->iconMode = 'gradient';
 
         session()->flash('success', 'Plugin icon removed successfully!');
+    }
+
+    public function updateSupportChannel(): void
+    {
+        $this->validate([
+            'supportChannel' => [
+                'required',
+                'string',
+                'max:255',
+                function (string $attribute, mixed $value, \Closure $fail) {
+                    if (! filter_var($value, FILTER_VALIDATE_EMAIL) && ! filter_var($value, FILTER_VALIDATE_URL)) {
+                        $fail('The support channel must be a valid email address or URL.');
+                    }
+                },
+            ],
+        ], [
+            'supportChannel.required' => 'Please provide a support channel (email or URL) for your plugin.',
+        ]);
+
+        $this->plugin->update([
+            'support_channel' => $this->supportChannel,
+        ]);
+
+        $this->plugin->refresh();
+
+        session()->flash('success', 'Support channel updated successfully!');
     }
 
     public function resubmit(): void

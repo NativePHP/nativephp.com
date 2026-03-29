@@ -3,6 +3,7 @@
 namespace App\Livewire\Customer;
 
 use App\Enums\Subscription;
+use App\Models\Team;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Title;
@@ -48,6 +49,24 @@ class Dashboard extends Component
         }
 
         return ucfirst($subscription->type);
+    }
+
+    #[Computed]
+    public function hasUltraSubscription(): bool
+    {
+        return auth()->user()->hasActiveUltraSubscription();
+    }
+
+    #[Computed]
+    public function ownedTeam(): ?Team
+    {
+        return auth()->user()->ownedTeam;
+    }
+
+    #[Computed]
+    public function teamMemberCount(): int
+    {
+        return $this->ownedTeam?->activeUserCount() ?? 0;
     }
 
     #[Computed]

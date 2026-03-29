@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Features\ShowAuthButtons;
 use App\Jobs\CreateAnystackSubLicenseJob;
+use App\Jobs\UpdateAnystackContactAssociationJob;
 use App\Livewire\SubLicenseManager;
 use App\Models\License;
 use App\Models\SubLicense;
@@ -355,28 +356,64 @@ class CustomerSubLicenseManagementTest extends TestCase
         $response->assertSessionHasErrors(['name']);
     }
 
-    public function test_livewire_component_starts_polling_when_create_key_button_clicked(): void
+    public function test_livewire_create_sub_license_dispatches_job_and_starts_polling(): void
     {
+        Queue::fake();
+
         $user = User::factory()->create();
         $license = License::factory()->create([
             'user_id' => $user->id,
             'policy_name' => 'pro',
+            'is_suspended' => false,
+            'expires_at' => now()->addDays(30),
+            'anystack_id' => fake()->uuid(),
         ]);
 
         $this->actingAs($user);
 
         Livewire::test(SubLicenseManager::class, ['license' => $license])
             ->assertSet('isPolling', false)
-            ->call('startPolling')
-            ->assertSet('isPolling', true);
+            ->call('openCreateModal')
+            ->set('createName', 'Dev Team')
+            ->set('createAssignedEmail', 'dev@example.com')
+            ->call('createSubLicense')
+            ->assertSet('isPolling', true)
+            ->assertSet('createName', '')
+            ->assertSet('createAssignedEmail', '');
+
+        Queue::assertPushed(CreateAnystackSubLicenseJob::class);
     }
 
-    public function test_livewire_component_stops_polling_when_new_sublicense_appears(): void
+    public function test_livewire_create_sub_license_validates_email(): void
     {
         $user = User::factory()->create();
         $license = License::factory()->create([
             'user_id' => $user->id,
             'policy_name' => 'pro',
+            'is_suspended' => false,
+            'expires_at' => now()->addDays(30),
+        ]);
+
+        $this->actingAs($user);
+
+        Livewire::test(SubLicenseManager::class, ['license' => $license])
+            ->call('openCreateModal')
+            ->set('createAssignedEmail', 'not-an-email')
+            ->call('createSubLicense')
+            ->assertHasErrors(['createAssignedEmail']);
+    }
+
+    public function test_livewire_component_stops_polling_when_new_sublicense_appears(): void
+    {
+        Queue::fake();
+
+        $user = User::factory()->create();
+        $license = License::factory()->create([
+            'user_id' => $user->id,
+            'policy_name' => 'pro',
+            'is_suspended' => false,
+            'expires_at' => now()->addDays(30),
+            'anystack_id' => fake()->uuid(),
         ]);
 
         $this->actingAs($user);
@@ -384,10 +421,12 @@ class CustomerSubLicenseManagementTest extends TestCase
         $component = Livewire::test(SubLicenseManager::class, ['license' => $license])
             ->assertSet('isPolling', false)
             ->assertSet('initialSubLicenseCount', 0)
-            ->call('startPolling')
+            ->call('openCreateModal')
+            ->set('createName', 'Test')
+            ->call('createSubLicense')
             ->assertSet('isPolling', true);
 
-        // Create a new sublicense
+        // Create a new sublicense (simulating the async job completing)
         SubLicense::factory()->create([
             'parent_license_id' => $license->id,
         ]);
@@ -396,6 +435,61 @@ class CustomerSubLicenseManagementTest extends TestCase
         $component->call('$refresh')
             ->assertSet('isPolling', false)
             ->assertSet('initialSubLicenseCount', 1);
+    }
+
+    public function test_livewire_edit_sub_license_updates_name_and_email(): void
+    {
+        Queue::fake();
+
+        $user = User::factory()->create();
+        $license = License::factory()->create([
+            'user_id' => $user->id,
+            'policy_name' => 'pro',
+        ]);
+        $subLicense = SubLicense::factory()->create([
+            'parent_license_id' => $license->id,
+            'name' => 'Old Name',
+            'assigned_email' => null,
+        ]);
+
+        $this->actingAs($user);
+
+        Livewire::test(SubLicenseManager::class, ['license' => $license])
+            ->call('editSubLicense', $subLicense->id)
+            ->assertSet('editingSubLicenseId', $subLicense->id)
+            ->assertSet('editName', 'Old Name')
+            ->assertSet('editAssignedEmail', '')
+            ->set('editName', 'New Name')
+            ->set('editAssignedEmail', 'team@example.com')
+            ->call('updateSubLicense');
+
+        $this->assertDatabaseHas('sub_licenses', [
+            'id' => $subLicense->id,
+            'name' => 'New Name',
+            'assigned_email' => 'team@example.com',
+        ]);
+
+        Queue::assertPushed(UpdateAnystackContactAssociationJob::class);
+    }
+
+    public function test_livewire_edit_sub_license_validates_email(): void
+    {
+        $user = User::factory()->create();
+        $license = License::factory()->create([
+            'user_id' => $user->id,
+            'policy_name' => 'pro',
+        ]);
+        $subLicense = SubLicense::factory()->create([
+            'parent_license_id' => $license->id,
+        ]);
+
+        $this->actingAs($user);
+
+        Livewire::test(SubLicenseManager::class, ['license' => $license])
+            ->call('editSubLicense', $subLicense->id)
+            ->set('editAssignedEmail', 'not-an-email')
+            ->call('updateSubLicense')
+            ->assertHasErrors(['editAssignedEmail']);
     }
 
     public function test_livewire_component_displays_sublicenses(): void

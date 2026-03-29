@@ -85,7 +85,7 @@ class PluginDirectory extends Component
             })
             ->orderByDesc('featured')
             ->latest()
-            ->paginate(15);
+            ->paginate(12);
 
         $bundles = PluginBundle::query()
             ->active()

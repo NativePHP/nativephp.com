@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Cart;
 use App\Models\Plugin;
 use App\Models\PluginBundle;
+use App\Models\PluginLicense;
 use App\Models\Product;
 use App\Services\CartService;
 use Illuminate\Http\JsonResponse;
@@ -266,6 +268,11 @@ class CartController extends Controller
         // Refresh prices
         $this->cartService->refreshPrices($cart);
 
+        // If total is $0, skip Stripe entirely and create licenses directly
+        if ($cart->getSubtotal() === 0) {
+            return $this->processFreeCheckout($cart, $user);
+        }
+
         try {
             $session = $this->createMultiItemCheckoutSession($cart, $user);
 
@@ -287,6 +294,22 @@ class CartController extends Controller
 
     public function success(Request $request): View|RedirectResponse
     {
+        if ($request->query('free')) {
+            $user = Auth::user();
+
+            $cart = Cart::where('user_id', $user->id)
+                ->whereNotNull('completed_at')
+                ->latest('completed_at')
+                ->with('items.plugin', 'items.pluginBundle.plugins', 'items.product')
+                ->first();
+
+            return view('cart.success', [
+                'sessionId' => null,
+                'isFreeCheckout' => true,
+                'cart' => $cart,
+            ]);
+        }
+
         $sessionId = $request->query('session_id');
 
         // Validate session ID exists and looks like a real Stripe session ID
@@ -299,6 +322,51 @@ class CartController extends Controller
 
         return view('cart.success', [
             'sessionId' => $sessionId,
+            'isFreeCheckout' => false,
+            'cart' => null,
+        ]);
+    }
+
+    protected function processFreeCheckout(Cart $cart, $user): RedirectResponse
+    {
+        $cart->load('items.plugin', 'items.pluginBundle.plugins', 'items.product');
+
+        foreach ($cart->items as $item) {
+            if ($item->isBundle()) {
+                foreach ($item->pluginBundle->plugins as $plugin) {
+                    $this->createFreePluginLicense($user, $plugin);
+                }
+            } elseif (! $item->isProduct() && $item->plugin) {
+                $this->createFreePluginLicense($user, $item->plugin);
+            }
+        }
+
+        $cart->markAsCompleted();
+
+        $user->getPluginLicenseKey();
+
+        Log::info('Free checkout completed', [
+            'cart_id' => $cart->id,
+            'user_id' => $user->id,
+            'item_count' => $cart->items->count(),
+        ]);
+
+        return to_route('cart.success', ['free' => 1]);
+    }
+
+    protected function createFreePluginLicense($user, Plugin $plugin): void
+    {
+        if ($user->pluginLicenses()->forPlugin($plugin)->active()->exists()) {
+            return;
+        }
+
+        PluginLicense::create([
+            'user_id' => $user->id,
+            'plugin_id' => $plugin->id,
+            'price_paid' => 0,
+            'currency' => 'USD',
+            'is_grandfathered' => false,
+            'purchased_at' => now(),
         ]);
     }
 

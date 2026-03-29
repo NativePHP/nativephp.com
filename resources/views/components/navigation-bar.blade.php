@@ -170,6 +170,28 @@
 
                 {{-- Link --}}
                 <a
+                    href="{{ route('pricing') }}"
+                    @class([
+                        'transition duration-200',
+                        'font-medium' => request()->routeIs('pricing'),
+                        'opacity-60 hover:opacity-100' => ! request()->routeIs('pricing'),
+                    ])
+                    aria-current="{{ request()->routeIs('pricing') ? 'page' : 'false' }}"
+                >
+                    <span class="inline-flex items-center gap-1.5">
+                        Ultra
+                        <span class="rounded-full bg-emerald-500 px-1.5 py-px text-[10px] font-bold leading-tight text-white">New</span>
+                    </span>
+                </a>
+
+                {{-- Decorative circle --}}
+                <div
+                    class="size-[3px] rotate-45 rounded-xs bg-gray-400 transition duration-200 dark:opacity-60"
+                    aria-hidden="true"
+                ></div>
+
+                {{-- Link --}}
+                <a
                     href="{{ route('course') }}"
                     @class([
                         'transition duration-200',

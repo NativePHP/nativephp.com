@@ -232,9 +232,14 @@
                                                         by {{ $item->plugin->user->display_name }}
                                                     </p>
                                                 </div>
-                                                <p class="text-sm font-medium text-gray-900 dark:text-white">
-                                                    {{ $item->getFormattedPrice() }}
-                                                </p>
+                                                <div class="text-right">
+                                                    <p class="text-sm font-medium text-gray-900 dark:text-white">
+                                                        {{ $item->getFormattedPrice() }}
+                                                    </p>
+                                                    @if ($item->price_at_addition === 0 && $item->plugin->isOfficial())
+                                                        <span class="text-xs text-green-600 dark:text-green-400">Included with Ultra</span>
+                                                    @endif
+                                                </div>
                                             </div>
 
                                             <div class="mt-4 flex justify-end">

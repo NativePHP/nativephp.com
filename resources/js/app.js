@@ -114,20 +114,40 @@ Alpine.data('countdown', (iso) => ({
 Livewire.start()
 
 // Docsearch
-docsearch({
+const docsPathMatch = window.location.pathname.match(/^\/docs\/(desktop|mobile)\/(\d+)/)
+const docsearchOptions = {
     appId: 'ZNII9QZ8WI',
     apiKey: '9be495a1aaf367b47c873d30a8e7ccf5',
     indexName: 'nativephp',
     insights: true,
-    container: '#docsearch-desktop',
     debug: false,
-})
+    ...(docsPathMatch && {
+        transformItems(items) {
+            const prefix = `/docs/${docsPathMatch[1]}/${docsPathMatch[2]}/`
+            return items.filter((item) => {
+                try {
+                    return new URL(item.url).pathname.startsWith(prefix)
+                } catch {
+                    return item.url.includes(prefix)
+                }
+            })
+        },
+    }),
+}
 
 docsearch({
-    appId: 'ZNII9QZ8WI',
-    apiKey: '9be495a1aaf367b47c873d30a8e7ccf5',
-    indexName: 'nativephp',
-    insights: true,
-    container: '#docsearch-mobile',
-    debug: false,
+    ...docsearchOptions,
+    container: '#docsearch-desktop',
 })
+
+// Mirror the desktop DocSearch button into the mobile container so that
+// pressing Cmd+K only registers one handler (avoiding duplicate modals).
+const mobileContainer = document.getElementById('docsearch-mobile')
+if (mobileContainer) {
+    const desktopButton = document.querySelector('#docsearch-desktop .DocSearch-Button')
+    if (desktopButton) {
+        const mobileButton = desktopButton.cloneNode(true)
+        mobileContainer.appendChild(mobileButton)
+        mobileButton.addEventListener('click', () => desktopButton.click())
+    }
+}

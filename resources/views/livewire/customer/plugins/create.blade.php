@@ -1,4 +1,4 @@
-<div>
+<div wire:init="loadRepositories">
     <div class="mb-6">
         <nav class="flex" aria-label="Breadcrumb">
             <ol class="flex items-center gap-2">
@@ -16,7 +16,7 @@
             </ol>
         </nav>
         <flux:heading size="xl" class="mt-2">Submit Your Plugin</flux:heading>
-        <flux:text>Add your plugin to the NativePHP Plugin Directory</flux:text>
+        <flux:text>Add your plugin to the NativePHP Plugin Marketplace</flux:text>
     </div>
 
     <div class="mx-auto max-w-3xl space-y-8">
@@ -56,7 +56,7 @@
                 </x-slot>
             </flux:callout>
         @else
-            <form wire:submit="submitPlugin">
+            <form wire:submit="submitPlugin" class="space-y-8">
                 {{-- Plugin Type --}}
                 @feature(App\Features\AllowPaidPlugins::class)
                 <flux:card>
@@ -105,20 +105,26 @@
                         Choose the repository containing your plugin. We'll automatically set up a webhook to keep your plugin in sync.
                     </flux:text>
 
-                    <div class="mt-6">
+                    <div class="mt-6 space-y-4">
                         @if($loadingRepos)
                             <div class="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
                                 <flux:icon.loading class="size-5" />
                                 <span>Loading repositories...</span>
                             </div>
                         @elseif($reposLoaded)
-                            <flux:select wire:model="repository" label="Repository" placeholder="Select a repository...">
-                                @foreach($repositories as $repo)
-                                    <flux:select.option value="{{ $repo['full_name'] }}">
-                                        {{ $repo['full_name'] }}{{ $repo['private'] ? ' (private)' : '' }}
-                                    </flux:select.option>
+                            <flux:select variant="listbox" searchable wire:model.live="selectedOwner" label="Account" placeholder="Select an account...">
+                                @foreach($this->owners as $owner)
+                                    <flux:select.option value="{{ $owner }}">{{ $owner }}</flux:select.option>
                                 @endforeach
                             </flux:select>
+
+                            @if($selectedOwner)
+                                <flux:select wire:key="repo-search-{{ $selectedOwner }}" variant="combobox" wire:model.live="repository" label="Repository" placeholder="Search repositories...">
+                                    @foreach($this->ownerRepositories as $repo)
+                                        <flux:select.option value="{{ $repo['full_name'] }}">{{ $repo['name'] }}@if($repo['private']) (private)@endif</flux:select.option>
+                                    @endforeach
+                                </flux:select>
+                            @endif
                         @endif
                         @error('repository')
                             <flux:text class="mt-2 text-sm text-red-600 dark:text-red-400">{{ $message }}</flux:text>
@@ -152,6 +158,32 @@
                     </flux:card>
                 @endif
                 @endfeature
+
+                @if($repository)
+                    {{-- Support Channel --}}
+                    <flux:card>
+                        <flux:heading size="lg">Support Channel</flux:heading>
+                        <flux:text class="mt-1">
+                            How can users get support for your plugin? Provide an email address or a URL. If you enter a URL, ensure that it clearly details how a visitor goes about getting support for this plugin.
+                        </flux:text>
+
+                        <div class="mt-6">
+                            <flux:input wire:model="supportChannel" label="Support Channel" placeholder="support@example.com or https://..." />
+                        </div>
+                    </flux:card>
+
+                    {{-- Notes --}}
+                    <flux:card>
+                        <flux:heading size="lg">Notes</flux:heading>
+                        <flux:text class="mt-1">
+                            Any notes for the review team? Feel free to share links to videos of the plugin working. These won't be displayed on your plugin listing.
+                        </flux:text>
+
+                        <div class="mt-6">
+                            <flux:textarea wire:model="notes" label="Notes" placeholder="Optional notes for the review team..." rows="4" />
+                        </div>
+                    </flux:card>
+                @endif
 
                 {{-- Submit Button --}}
                 <div class="flex items-center justify-end gap-4">

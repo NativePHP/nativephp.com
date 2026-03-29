@@ -7,6 +7,7 @@ use App\Enums\PluginStatus;
 use App\Enums\PluginTier;
 use App\Enums\PluginType;
 use App\Enums\PriceTier;
+use App\Notifications\NewPluginAvailable;
 use App\Notifications\PluginApproved;
 use App\Notifications\PluginRejected;
 use App\Services\PluginSyncService;
@@ -20,6 +21,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Support\Facades\Notification;
 
 class Plugin extends Model
 {
@@ -166,17 +168,34 @@ class Plugin extends Model
     /**
      * Get the best (lowest) active price for a user based on their eligible tiers.
      * Returns null if no price exists for the user's eligible tiers.
+     * Third-party plugins never offer subscriber discounts — always regular price.
      */
     public function getBestPriceForUser(?User $user): ?PluginPrice
     {
-        $eligibleTiers = $user ? $user->getEligiblePriceTiers() : [PriceTier::Regular];
+        if (! $this->isOfficial()) {
+            $eligibleTiers = [PriceTier::Regular];
+        } else {
+            $eligibleTiers = $user ? $user->getEligiblePriceTiers() : [PriceTier::Regular];
+        }
 
         // Get the lowest active price for the user's eligible tiers
-        return $this->prices()
+        $bestPrice = $this->prices()
             ->active()
             ->forTiers($eligibleTiers)
             ->orderBy('amount', 'asc')
             ->first();
+
+        // Ultra subscribers get official plugins for free
+        if ($bestPrice && $user && $this->isOfficial() && $user->hasUltraAccess()) {
+            $freePrice = $bestPrice->replicate();
+            $freePrice->amount = 0;
+            $freePrice->id = $bestPrice->id;
+            $freePrice->exists = true;
+
+            return $freePrice;
+        }
+
+        return $bestPrice;
     }
 
     /**
@@ -280,6 +299,46 @@ class Plugin extends Model
     public function isSatisSynced(): bool
     {
         return $this->satis_synced_at !== null;
+    }
+
+    /**
+     * Check if all required review checks have passed.
+     * A plugin cannot be approved until these checks pass.
+     */
+    public function passesRequiredReviewChecks(): bool
+    {
+        $checks = $this->review_checks;
+
+        if (! $checks) {
+            return false;
+        }
+
+        return ! empty($checks['has_license_file']) && ! empty($checks['has_release_version']) && $this->webhook_installed;
+    }
+
+    /**
+     * Get the list of failing required review checks.
+     *
+     * @return array<int, string>
+     */
+    public function getFailingRequiredChecks(): array
+    {
+        $checks = $this->review_checks;
+        $failing = [];
+
+        if (empty($checks['has_license_file'])) {
+            $failing[] = 'License file (LICENSE or LICENSE.md)';
+        }
+
+        if (empty($checks['has_release_version'])) {
+            $failing[] = 'Release version (GitHub release or tag)';
+        }
+
+        if (! $this->webhook_installed) {
+            $failing[] = 'Webhook configured';
+        }
+
+        return $failing;
     }
 
     /**
@@ -492,6 +551,7 @@ class Plugin extends Model
     public function approve(int $approvedById): void
     {
         $previousStatus = $this->status;
+        $isFirstApproval = $this->approved_at === null;
 
         $this->update([
             'status' => PluginStatus::Approved,
@@ -509,6 +569,15 @@ class Plugin extends Model
         );
 
         $this->user->notify(new PluginApproved($this));
+
+        if ($isFirstApproval) {
+            $recipients = User::query()
+                ->where('receives_new_plugin_notifications', true)
+                ->where('id', '!=', $this->user_id)
+                ->get();
+
+            Notification::send($recipients, new NewPluginAvailable($this));
+        }
 
         resolve(PluginSyncService::class)->sync($this);
     }

@@ -9,19 +9,24 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
+use Laravel\Cashier\Cashier;
 use Livewire\Attributes\Locked;
 use Livewire\Attributes\On;
+use Livewire\Attributes\Url;
 use Livewire\Component;
 
 class MobilePricing extends Component
 {
-    #[Locked]
-    public bool $discounted = false;
+    #[Url]
+    public string $interval = 'month';
+
+    /** @var array{amount_due: string, raw_amount_due: int, credit: string, new_charge: string}|null */
+    public ?array $upgradePreview = null;
 
     #[Locked]
     public $user;
 
-    public function mount()
+    public function mount(): void
     {
         if (request()->has('email')) {
             $this->user = $this->findOrCreateUser(request()->query('email'));
@@ -53,16 +58,12 @@ class MobilePricing extends Component
         $user = $user?->exists ? $user : Auth::user();
 
         if (! $user) {
-            // TODO: return a flash message or notification to the user that there
-            //   was an error.
             Log::error('Failed to create checkout session. User does not exist and user is not authenticated.');
 
             return;
         }
 
         if (! ($subscription = Subscription::tryFrom($plan))) {
-            // TODO: return a flash message or notification to the user that there
-            //   was an error.
             Log::error('Failed to create checkout session. Invalid subscription plan name provided.');
 
             return;
@@ -71,7 +72,7 @@ class MobilePricing extends Component
         $user->createOrGetStripeCustomer();
 
         $checkout = $user
-            ->newSubscription('default', $subscription->stripePriceId(discounted: $this->discounted))
+            ->newSubscription('default', $subscription->stripePriceId(forceEap: $user->isEapCustomer(), interval: $this->interval))
             ->allowPromotionCodes()
             ->checkout([
                 'success_url' => $this->successUrl(),
@@ -89,6 +90,76 @@ class MobilePricing extends Component
             ]);
 
         return redirect($checkout->url);
+    }
+
+    public function previewUpgrade(): void
+    {
+        $user = Auth::user();
+
+        if (! $user) {
+            return;
+        }
+
+        $subscription = $user->subscription('default');
+
+        if (! $subscription || ! $subscription->active()) {
+            return;
+        }
+
+        $newPriceId = Subscription::Max->stripePriceId(forceEap: $user->isEapCustomer(), interval: $this->interval);
+
+        try {
+            $invoice = $subscription->previewInvoice($newPriceId);
+
+            $currency = $invoice->asStripeInvoice()->currency;
+            $credit = 0;
+            $newCharge = 0;
+
+            foreach ($invoice->invoiceLineItems() as $item) {
+                $amount = $item->asStripeInvoiceLineItem()->amount;
+
+                if ($amount < 0) {
+                    $credit += abs($amount);
+                } else {
+                    $newCharge += $amount;
+                }
+            }
+
+            $this->upgradePreview = [
+                'amount_due' => $invoice->amountDue(),
+                'raw_amount_due' => $invoice->rawAmountDue(),
+                'credit' => Cashier::formatAmount($credit, $currency),
+                'new_charge' => Cashier::formatAmount($newCharge, $currency),
+            ];
+        } catch (\Exception $e) {
+            Log::error('Failed to preview upgrade invoice', ['error' => $e->getMessage()]);
+            $this->upgradePreview = null;
+        }
+    }
+
+    public function upgradeSubscription(): mixed
+    {
+        $user = Auth::user();
+
+        if (! $user) {
+            Log::error('Failed to upgrade subscription. User is not authenticated.');
+
+            return null;
+        }
+
+        $subscription = $user->subscription('default');
+
+        if (! $subscription || ! $subscription->active()) {
+            Log::error('Failed to upgrade subscription. No active subscription found.');
+
+            return null;
+        }
+
+        $newPriceId = Subscription::Max->stripePriceId(forceEap: $user->isEapCustomer(), interval: $this->interval);
+
+        $subscription->skipTrial()->swapAndInvoice($newPriceId);
+
+        return redirect(route('customer.dashboard'))->with('success', 'Your subscription has been upgraded to Ultra!');
     }
 
     private function findOrCreateUser(string $email): User
@@ -118,6 +189,49 @@ class MobilePricing extends Component
 
     public function render()
     {
-        return view('livewire.mobile-pricing');
+        $hasExistingSubscription = false;
+        $currentPlanName = null;
+        $isAlreadyUltra = false;
+        $isEapCustomer = false;
+        $eapYearlyPrice = null;
+        $eapDiscountPercent = null;
+        $eapSavingsVsMonthly = null;
+        $regularYearlyPrice = config('subscriptions.plans.max.price_yearly');
+
+        if ($user = Auth::user()) {
+            $isEapCustomer = $user->isEapCustomer();
+
+            if ($isEapCustomer) {
+                $eapYearlyPrice = config('subscriptions.plans.max.eap_price_yearly');
+                $eapDiscountPercent = (int) round((1 - $eapYearlyPrice / $regularYearlyPrice) * 100);
+                $eapSavingsVsMonthly = (config('subscriptions.plans.max.price_monthly') * 12) - $eapYearlyPrice;
+            }
+
+            $subscription = $user->subscription('default');
+
+            if ($subscription && $subscription->active()) {
+                $hasExistingSubscription = true;
+                $isAlreadyUltra = $user->hasActiveUltraSubscription();
+
+                try {
+                    $currentPlanName = Subscription::fromStripePriceId(
+                        $subscription->items->first()?->stripe_price ?? $subscription->stripe_price
+                    )->name();
+                } catch (\Exception $e) {
+                    $currentPlanName = 'your current plan';
+                }
+            }
+        }
+
+        return view('livewire.mobile-pricing', [
+            'hasExistingSubscription' => $hasExistingSubscription,
+            'currentPlanName' => $currentPlanName,
+            'isAlreadyUltra' => $isAlreadyUltra,
+            'isEapCustomer' => $isEapCustomer,
+            'eapYearlyPrice' => $eapYearlyPrice,
+            'eapDiscountPercent' => $eapDiscountPercent,
+            'eapSavingsVsMonthly' => $eapSavingsVsMonthly,
+            'regularYearlyPrice' => $regularYearlyPrice,
+        ]);
     }
 }

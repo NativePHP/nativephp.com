@@ -13,7 +13,18 @@ class SubscriptionCancelled extends Notification implements ShouldQueue
 
     public function via($notifiable): array
     {
-        return ['mail'];
+        return ['mail', 'database'];
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    public function toArray($notifiable): array
+    {
+        return [
+            'title' => 'Subscription Cancelled',
+            'body' => 'Your NativePHP subscription has been cancelled.',
+        ];
     }
 
     public function toMail($notifiable): MailMessage

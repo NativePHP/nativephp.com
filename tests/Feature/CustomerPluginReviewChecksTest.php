@@ -23,6 +23,7 @@ class CustomerPluginReviewChecksTest extends TestCase
 
         $user = User::factory()->create([
             'github_id' => '12345',
+            'github_token' => encrypt('fake-token'),
         ]);
         DeveloperAccount::factory()->withAcceptedTerms()->create([
             'user_id' => $user->id,
@@ -42,23 +43,27 @@ class CustomerPluginReviewChecksTest extends TestCase
         Http::fake([
             // PluginSyncService calls
             "{$base}/contents/README.md" => Http::response([
-                'content' => base64_encode("# Test Plugin\n\nSupport: dev@testplugin.io"),
+                'content' => base64_encode('# Test Plugin'),
                 'encoding' => 'base64',
             ]),
-            "{$base}/contents/composer.json" => Http::response([
+            "{$base}/contents/composer.json*" => Http::response([
                 'content' => base64_encode($composerJson),
                 'encoding' => 'base64',
             ]),
             "{$base}/contents/nativephp.json" => Http::response([], 404),
             "{$base}/contents/LICENSE*" => Http::response([], 404),
-            "{$base}/releases/latest" => Http::response([], 404),
+            "{$base}/releases/latest" => Http::response(['tag_name' => 'v1.0.0']),
             "{$base}/tags*" => Http::response([]),
             "https://raw.githubusercontent.com/{$repoSlug}/*" => Http::response('', 404),
+
+            // Webhook creation
+            "{$base}/hooks" => Http::response(['id' => 1], 201),
 
             // ReviewPluginRepository calls
             $base => Http::response(['default_branch' => 'main']),
             "{$base}/git/trees/main*" => Http::response([
                 'tree' => [
+                    ['path' => 'LICENSE', 'type' => 'blob'],
                     ['path' => 'resources/ios/Plugin.swift', 'type' => 'blob'],
                     ['path' => 'resources/android/Plugin.kt', 'type' => 'blob'],
                     ['path' => 'resources/js/index.js', 'type' => 'blob'],
@@ -66,7 +71,7 @@ class CustomerPluginReviewChecksTest extends TestCase
                 ],
             ]),
             "{$base}/readme" => Http::response([
-                'content' => base64_encode("# Test Plugin\n\nSupport: dev@testplugin.io"),
+                'content' => base64_encode('# Test Plugin'),
                 'encoding' => 'base64',
             ]),
         ]);
@@ -75,6 +80,7 @@ class CustomerPluginReviewChecksTest extends TestCase
             ->test(Create::class)
             ->set('repository', $repoSlug)
             ->set('pluginType', 'free')
+            ->set('supportChannel', 'dev@testplugin.io')
             ->call('submitPlugin')
             ->assertRedirect();
 
@@ -82,11 +88,12 @@ class CustomerPluginReviewChecksTest extends TestCase
 
         $this->assertNotNull($plugin, 'Plugin should exist after submission');
         $this->assertNotNull($plugin->review_checks, 'review_checks should be populated');
+        $this->assertTrue($plugin->review_checks['has_license_file']);
+        $this->assertTrue($plugin->review_checks['has_release_version']);
+        $this->assertEquals('v1.0.0', $plugin->review_checks['release_version']);
         $this->assertTrue($plugin->review_checks['supports_ios']);
         $this->assertTrue($plugin->review_checks['supports_android']);
         $this->assertTrue($plugin->review_checks['supports_js']);
-        $this->assertTrue($plugin->review_checks['has_support_email']);
-        $this->assertEquals('dev@testplugin.io', $plugin->review_checks['support_email']);
         $this->assertTrue($plugin->review_checks['requires_mobile_sdk']);
         $this->assertEquals('^3.0.0', $plugin->review_checks['mobile_sdk_constraint']);
         $this->assertNotNull($plugin->reviewed_at);
@@ -103,6 +110,7 @@ class CustomerPluginReviewChecksTest extends TestCase
 
         $user = User::factory()->create([
             'github_id' => '12345',
+            'github_token' => encrypt('fake-token'),
         ]);
         DeveloperAccount::factory()->withAcceptedTerms()->create([
             'user_id' => $user->id,
@@ -121,7 +129,7 @@ class CustomerPluginReviewChecksTest extends TestCase
                 'content' => base64_encode('# Bare Plugin'),
                 'encoding' => 'base64',
             ]),
-            "{$base}/contents/composer.json" => Http::response([
+            "{$base}/contents/composer.json*" => Http::response([
                 'content' => base64_encode($composerJson),
                 'encoding' => 'base64',
             ]),
@@ -130,6 +138,9 @@ class CustomerPluginReviewChecksTest extends TestCase
             "{$base}/releases/latest" => Http::response([], 404),
             "{$base}/tags*" => Http::response([]),
             "https://raw.githubusercontent.com/{$repoSlug}/*" => Http::response('', 404),
+
+            // Webhook creation (fails)
+            "{$base}/hooks" => Http::response([], 422),
 
             $base => Http::response(['default_branch' => 'main']),
             "{$base}/git/trees/main*" => Http::response([
@@ -147,6 +158,7 @@ class CustomerPluginReviewChecksTest extends TestCase
             ->test(Create::class)
             ->set('repository', $repoSlug)
             ->set('pluginType', 'free')
+            ->set('supportChannel', 'support@bare-plugin.io')
             ->call('submitPlugin');
 
         $plugin = $user->plugins()->where('repository_url', "https://github.com/{$repoSlug}")->first();
@@ -155,11 +167,15 @@ class CustomerPluginReviewChecksTest extends TestCase
             $mail = $notification->toMail($plugin->user);
             $rendered = $mail->render()->toHtml();
 
-            // Should mention failing checks
+            // Should mention failing required checks
+            $this->assertStringContainsString('LICENSE', $rendered);
+            $this->assertStringContainsString('release version', $rendered);
+            $this->assertStringContainsString('webhook', $rendered);
+
+            // Should mention failing optional checks
             $this->assertStringContainsString('Add iOS support', $rendered);
             $this->assertStringContainsString('Add Android support', $rendered);
             $this->assertStringContainsString('Add JavaScript support', $rendered);
-            $this->assertStringContainsString('Add a support email', $rendered);
             $this->assertStringContainsString('nativephp/mobile SDK', $rendered);
 
             return true;

@@ -80,6 +80,7 @@ class DeveloperTermsTest extends TestCase
         $mockService = Mockery::mock(StripeConnectService::class);
         $mockService->shouldReceive('createConnectAccount')
             ->once()
+            ->with($user, 'US', 'USD')
             ->andReturnUsing(fn () => DeveloperAccount::factory()->pending()->create(['user_id' => $user->id]));
         $mockService->shouldReceive('createOnboardingLink')
             ->once()
@@ -90,6 +91,8 @@ class DeveloperTermsTest extends TestCase
         $response = $this->actingAs($user)
             ->post(route('customer.developer.onboarding.start'), [
                 'accepted_plugin_terms' => '1',
+                'country' => 'US',
+                'payout_currency' => 'USD',
             ]);
 
         $response->assertRedirect('https://connect.stripe.com/setup/test');
@@ -124,6 +127,8 @@ class DeveloperTermsTest extends TestCase
         $this->actingAs($user)
             ->post(route('customer.developer.onboarding.start'), [
                 'accepted_plugin_terms' => '1',
+                'country' => 'GB',
+                'payout_currency' => 'GBP',
             ]);
 
         $developerAccount->refresh();
@@ -131,6 +136,8 @@ class DeveloperTermsTest extends TestCase
             $originalTime->toDateTimeString(),
             $developerAccount->accepted_plugin_terms_at->toDateTimeString()
         );
+        $this->assertEquals('GB', $developerAccount->country);
+        $this->assertEquals('GBP', $developerAccount->payout_currency);
     }
 
     /** @test */
@@ -239,5 +246,122 @@ class DeveloperTermsTest extends TestCase
             ->test(Create::class)
             ->assertStatus(200)
             ->assertSee('GitHub Connection Required');
+    }
+
+    /** @test */
+    public function onboarding_start_requires_country(): void
+    {
+        $user = User::factory()->create();
+
+        $response = $this->actingAs($user)
+            ->post(route('customer.developer.onboarding.start'), [
+                'accepted_plugin_terms' => '1',
+                'payout_currency' => 'USD',
+            ]);
+
+        $response->assertSessionHasErrors('country');
+    }
+
+    /** @test */
+    public function onboarding_start_rejects_invalid_country_code(): void
+    {
+        $user = User::factory()->create();
+
+        $response = $this->actingAs($user)
+            ->post(route('customer.developer.onboarding.start'), [
+                'accepted_plugin_terms' => '1',
+                'country' => 'XX',
+                'payout_currency' => 'USD',
+            ]);
+
+        $response->assertSessionHasErrors('country');
+    }
+
+    /** @test */
+    public function onboarding_start_requires_payout_currency(): void
+    {
+        $user = User::factory()->create();
+
+        $response = $this->actingAs($user)
+            ->post(route('customer.developer.onboarding.start'), [
+                'accepted_plugin_terms' => '1',
+                'country' => 'US',
+            ]);
+
+        $response->assertSessionHasErrors('payout_currency');
+    }
+
+    /** @test */
+    public function onboarding_start_rejects_invalid_currency_for_country(): void
+    {
+        $user = User::factory()->create();
+
+        $response = $this->actingAs($user)
+            ->post(route('customer.developer.onboarding.start'), [
+                'accepted_plugin_terms' => '1',
+                'country' => 'US',
+                'payout_currency' => 'EUR',
+            ]);
+
+        $response->assertSessionHasErrors('payout_currency');
+    }
+
+    /** @test */
+    public function onboarding_start_stores_country_and_currency_on_developer_account(): void
+    {
+        $user = User::factory()->create();
+
+        $mockService = Mockery::mock(StripeConnectService::class);
+        $mockService->shouldReceive('createConnectAccount')
+            ->once()
+            ->with($user, 'FR', 'EUR')
+            ->andReturnUsing(fn () => DeveloperAccount::factory()->pending()->create([
+                'user_id' => $user->id,
+                'country' => 'FR',
+                'payout_currency' => 'EUR',
+            ]));
+        $mockService->shouldReceive('createOnboardingLink')
+            ->once()
+            ->andReturn('https://connect.stripe.com/setup/test');
+
+        $this->app->instance(StripeConnectService::class, $mockService);
+
+        $this->actingAs($user)
+            ->post(route('customer.developer.onboarding.start'), [
+                'accepted_plugin_terms' => '1',
+                'country' => 'FR',
+                'payout_currency' => 'EUR',
+            ]);
+
+        $developerAccount = $user->fresh()->developerAccount;
+        $this->assertEquals('FR', $developerAccount->country);
+        $this->assertEquals('EUR', $developerAccount->payout_currency);
+    }
+
+    /** @test */
+    public function onboarding_page_shows_country_and_currency_fields(): void
+    {
+        $user = User::factory()->create();
+
+        Livewire::actingAs($user)
+            ->test(Onboarding::class)
+            ->assertSee('Your Country')
+            ->assertSee('Select your country')
+            ->assertStatus(200);
+    }
+
+    /** @test */
+    public function onboarding_component_updates_currency_when_country_changes(): void
+    {
+        $user = User::factory()->create();
+
+        Livewire::actingAs($user)
+            ->test(Onboarding::class)
+            ->set('country', 'FR')
+            ->assertSet('payoutCurrency', 'EUR')
+            ->set('country', 'US')
+            ->assertSet('payoutCurrency', 'USD')
+            ->set('country', 'GB')
+            ->assertSet('payoutCurrency', 'GBP');
     }
 }

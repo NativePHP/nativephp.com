@@ -254,7 +254,23 @@ time or runtime.
 When you submit your plugin, we run automated checks against your repository. These must all pass before
 your plugin can be approved. You can also run `php artisan native:plugin:validate` locally to catch issues early.
 
-### Required Items
+### Required for Approval
+
+The following checks must pass before your plugin can be approved:
+
+**License file** — Your repository must include a `LICENSE`, `LICENSE.md`, or `LICENSE.txt` file at the root.
+
+**Release version** — Your repository must have at least one GitHub release or tag.
+
+**Webhook configured** — A GitHub webhook must be configured for your repository so that your plugin data
+syncs automatically when you push changes or create releases. We'll attempt to set this up automatically
+when you submit. If it can't be installed automatically, you'll see manual setup instructions on your plugin
+dashboard.
+
+**Support channel** — You must provide a support email address or URL when submitting your plugin so
+developers can reach you with questions or issues. You can update this anytime from your plugin dashboard.
+
+### Additional Checks
 
 **iOS native code** — Your plugin must include native Swift code in `resources/ios/Sources/`. See
 [Bridge Functions](/docs/mobile/3/plugins/bridge-functions) for the implementation pattern.
@@ -265,9 +281,6 @@ your plugin can be approved. You can also run `php artisan native:plugin:validat
 **JavaScript library** — Your plugin must include a JavaScript library in `resources/js/` that exports
 a function for every bridge function. This allows Inertia + Vue/React developers to call your native functions
 directly. See the [JavaScript Implementations](#javascript-implementations) section above.
-
-**Support email** — Your README must include a valid support email address so developers can reach you
-with questions or issues.
 
 **Require `nativephp/mobile`** — Your `composer.json` must require the `nativephp/mobile` SDK. This ensures
 your plugin is properly integrated with the NativePHP build pipeline:
@@ -306,12 +319,18 @@ your plugin is properly integrated with the NativePHP build pipeline:
 
 Before submitting your plugin to the [NativePHP Plugin Marketplace](https://nativephp.com/plugins), verify:
 
-**Automated checks (must pass):**
+**Required for approval:**
+
+- [ ] LICENSE, LICENSE.md, or LICENSE.txt file in your repository
+- [ ] At least one GitHub release or tag
+- [ ] GitHub webhook configured (automatic or manual)
+- [ ] Support channel provided (email or URL)
+
+**Automated checks:**
 
 - [ ] iOS native code in `resources/ios/Sources/`
 - [ ] Android native code in `resources/android/src/`
 - [ ] JavaScript library in `resources/js/`
-- [ ] Support email in your README
 - [ ] `nativephp/mobile` required in `composer.json`
 - [ ] iOS `min_version` set in `nativephp.json`
 - [ ] Android `min_version` set in `nativephp.json`

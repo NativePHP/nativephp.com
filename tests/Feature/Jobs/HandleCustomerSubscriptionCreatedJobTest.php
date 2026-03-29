@@ -20,7 +20,7 @@ class HandleCustomerSubscriptionCreatedJobTest extends TestCase
     use RefreshDatabase;
 
     /** @test */
-    public function it_dispatches_the_create_anystack_license_job_with_correct_data()
+    public function it_does_not_dispatch_create_anystack_license_job()
     {
         $this->createTestData('John Doe');
 
@@ -31,48 +31,7 @@ class HandleCustomerSubscriptionCreatedJobTest extends TestCase
         $job = new HandleCustomerSubscriptionCreatedJob($webhookCall);
         $job->handle();
 
-        Bus::assertDispatched(CreateAnystackLicenseJob::class, function (CreateAnystackLicenseJob $job) {
-            return $job->user instanceof User &&
-                   $job->user->email === 'test@example.com' &&
-                   $job->subscription === Subscription::Max &&
-                   $job->firstName === 'John' &&
-                   $job->lastName === 'Doe';
-        });
-    }
-
-    /**
-     * @dataProvider customerNameProvider
-     *
-     * @test
-     */
-    public function it_extracts_customer_name_parts_correctly($fullName, $expectedFirstName, $expectedLastName)
-    {
-        $this->createTestData($fullName);
-
-        $webhookCall = new WebhookHandled($this->getTestWebhookPayload());
-
-        Bus::fake();
-
-        $job = new HandleCustomerSubscriptionCreatedJob($webhookCall);
-        $job->handle();
-
-        Bus::assertDispatched(CreateAnystackLicenseJob::class, function ($job) use ($expectedFirstName, $expectedLastName) {
-            return $job->firstName === $expectedFirstName &&
-                   $job->lastName === $expectedLastName;
-        });
-    }
-
-    /**
-     * Data provider for customer name tests
-     */
-    public static function customerNameProvider()
-    {
-        return [
-            'Full name' => ['John Doe', 'John', 'Doe'],
-            'First name only' => ['Jane', 'Jane', null],
-            'Empty string' => ['', null, null],
-            'Null value' => [null, null, null],
-        ];
+        Bus::assertNotDispatched(CreateAnystackLicenseJob::class);
     }
 
     /** @test */

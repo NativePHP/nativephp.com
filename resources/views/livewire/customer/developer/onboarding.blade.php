@@ -24,6 +24,14 @@
     @endif
 
     <div class="mx-auto max-w-3xl space-y-8">
+        {{-- Status for existing account --}}
+        @if ($this->hasExistingAccount && $this->developerAccount)
+            <flux:callout variant="warning" icon="exclamation-triangle">
+                <flux:callout.heading>Onboarding Incomplete</flux:callout.heading>
+                <flux:callout.text>Your Stripe account requires additional information before you can receive payouts.</flux:callout.text>
+            </flux:callout>
+        @endif
+
         {{-- Hero Card --}}
         <flux:card>
             <div class="p-4 text-center">
@@ -38,11 +46,7 @@
                     @endif
                 </flux:heading>
                 <flux:text class="mt-2">
-                    @if ($this->hasExistingAccount)
-                        You've started the onboarding process. Complete the remaining steps to start receiving payouts.
-                    @else
-                        Connect your Stripe account to receive payments when users purchase your plugins.
-                    @endif
+                    Connect your Stripe account to receive payments when users purchase your plugins.
                 </flux:text>
             </div>
 
@@ -69,18 +73,51 @@
                 </ul>
             </div>
 
-            {{-- Status for existing account --}}
-            @if ($this->hasExistingAccount && $this->developerAccount)
-                <flux:callout variant="warning" icon="exclamation-triangle" class="mt-6">
-                    <flux:callout.heading>Onboarding Incomplete</flux:callout.heading>
-                    <flux:callout.text>Your Stripe account requires additional information before you can receive payouts.</flux:callout.text>
-                </flux:callout>
-            @endif
+            {{-- Country & Currency Selection --}}
+            <div class="mt-6 rounded-lg border border-gray-200 bg-gray-50 p-6 dark:border-gray-700 dark:bg-gray-700/50">
+                <flux:heading>Your Country</flux:heading>
+                <flux:text class="mt-2">
+                    Select the country where your bank account is located. This determines which currencies are available for payouts.
+                </flux:text>
+
+                <div class="mt-4 space-y-4">
+                    <div>
+                        <flux:select wire:model.live="country" variant="listbox" searchable label="Country" placeholder="Select your country...">
+                            @foreach ($this->countries as $code => $details)
+                                <flux:select.option value="{{ $code }}">
+                                    {{ $details['flag'] }} {{ $details['name'] }}
+                                </flux:select.option>
+                            @endforeach
+                        </flux:select>
+                        @error('country')
+                            <flux:text class="mt-2 text-red-600 dark:text-red-400">{{ $message }}</flux:text>
+                        @enderror
+                    </div>
+
+                    @if (count($this->availableCurrencies) > 0)
+                        <div>
+                            <flux:select wire:model="payoutCurrency" label="Payout Currency">
+                                @foreach ($this->availableCurrencies as $code => $name)
+                                    <flux:select.option value="{{ $code }}">
+                                        {{ $name }} ({{ $code }})
+                                    </flux:select.option>
+                                @endforeach
+                            </flux:select>
+                            @error('payout_currency')
+                                <flux:text class="mt-2 text-red-600 dark:text-red-400">{{ $message }}</flux:text>
+                            @enderror
+                        </div>
+                    @endif
+                </div>
+            </div>
 
             {{-- Developer Terms Agreement & CTA Button --}}
             <div class="mt-6">
                 <form action="{{ route('customer.developer.onboarding.start') }}" method="POST" x-data="{ termsAccepted: {{ ($this->developerAccount?->hasAcceptedCurrentTerms()) ? 'true' : 'false' }} }">
                     @csrf
+
+                    <input type="hidden" name="country" value="{{ $this->country }}" />
+                    <input type="hidden" name="payout_currency" value="{{ $this->payoutCurrency }}" />
 
                     @if ($this->developerAccount?->hasAcceptedCurrentTerms())
                         <input type="hidden" name="accepted_plugin_terms" value="1" />
@@ -137,7 +174,7 @@
                         </div>
                     @endif
 
-                    <flux:button type="submit" variant="primary" class="w-full" x-bind:disabled="!termsAccepted">
+                    <flux:button type="submit" variant="primary" class="w-full" x-bind:disabled="!termsAccepted || !$wire.country">
                         @if ($this->hasExistingAccount)
                             Continue Onboarding
                         @else
@@ -167,14 +204,14 @@
                 <div>
                     <flux:heading>When do I get paid?</flux:heading>
                     <flux:text class="mt-1">
-                        Payouts are processed automatically through Stripe Connect. Funds are typically available within 2–7 business days after a sale.
+                        Payouts are processed daily through Stripe Connect. However, all purchases include a 14-day refund period. Your earnings from a sale will only be paid out once this 14-day period has passed and the customer hasn't requested a refund.
                     </flux:text>
                 </div>
 
                 <div>
                     <flux:heading>What do I need to get started?</flux:heading>
                     <flux:text class="mt-1">
-                        You'll need a Stripe account (or create one during onboarding), a GitHub repository for your plugin, and a nativephp.json configuration file.
+                        A new Stripe account will be created for you as part of the onboarding process. You'll also need a GitHub account with a private repository for your plugin. Check out the <a href="/docs/mobile/3/plugins/introduction" class="font-medium text-indigo-600 underline hover:text-indigo-500 dark:text-indigo-400" target="_blank">plugin documentation</a> to start building.
                     </flux:text>
                 </div>
             </div>

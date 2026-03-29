@@ -1,6 +1,6 @@
 <x-layout :title="$plugin->name . ' - License'">
     <section
-        class="mx-auto mt-10 w-full max-w-7xl"
+        class="mx-auto mt-10 w-full max-w-3xl px-5 md:mt-14"
         aria-labelledby="license-title"
     >
         <header class="relative">

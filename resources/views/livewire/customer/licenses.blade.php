@@ -17,7 +17,7 @@
                 @foreach($this->licenses as $license)
                     @php
                         $isLegacyLicense = $license->isLegacy();
-                        $daysUntilExpiry = $license->expires_at ? $license->expires_at->diffInDays(now()) : null;
+                        $daysUntilExpiry = $license->expires_at ? (int) now()->diffInDays($license->expires_at, false) : null;
                         $needsRenewal = $isLegacyLicense && $daysUntilExpiry !== null && !$license->expires_at->isPast();
 
                         $status = match(true) {
@@ -40,7 +40,7 @@
                         </flux:table.cell>
 
                         <flux:table.cell>
-                            <code class="font-mono text-sm text-zinc-500 dark:text-zinc-400">{{ $license->key }}</code>
+                            <x-customer.masked-key :key-value="$license->key" />
                         </flux:table.cell>
 
                         <flux:table.cell>
@@ -58,7 +58,12 @@
                                     @endif
                                 </div>
                             @elseif($license->expires_at)
-                                {{ $license->expires_at->format('M j, Y') }}
+                                <div>
+                                    {{ $license->expires_at->format('M j, Y') }}
+                                    @if($license->expires_at->isPast())
+                                        <flux:text class="text-xs">Expired {{ $license->expires_at->diffForHumans() }}</flux:text>
+                                    @endif
+                                </div>
                             @else
                                 No expiration
                             @endif
@@ -99,7 +104,7 @@
                             </flux:table.cell>
 
                             <flux:table.cell>
-                                <code class="font-mono text-sm text-zinc-500 dark:text-zinc-400">{{ $subLicense->key }}</code>
+                                <x-customer.masked-key :key-value="$subLicense->key" />
                             </flux:table.cell>
 
                             <flux:table.cell>
@@ -108,7 +113,12 @@
 
                             <flux:table.cell>
                                 @if($subLicense->expires_at)
-                                    {{ $subLicense->expires_at->format('M j, Y') }}
+                                    <div>
+                                        {{ $subLicense->expires_at->format('M j, Y') }}
+                                        @if($subLicense->expires_at->isPast())
+                                            <flux:text class="text-xs">Expired {{ $subLicense->expires_at->diffForHumans() }}</flux:text>
+                                        @endif
+                                    </div>
                                 @else
                                     No expiration
                                 @endif

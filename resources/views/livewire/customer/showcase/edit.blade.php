@@ -1,4 +1,4 @@
-<div class="max-w-2xl">
+<div class="mx-auto max-w-2xl">
     <div class="mb-6 flex items-center justify-between">
         <div>
             <flux:heading size="xl">Edit Your Submission</flux:heading>

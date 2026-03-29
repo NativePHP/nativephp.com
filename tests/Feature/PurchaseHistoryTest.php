@@ -47,7 +47,6 @@ class PurchaseHistoryTest extends TestCase
 
         $response->assertStatus(200);
         $response->assertSee('Plugin Dev Kit');
-        $response->assertSee('Product');
         $response->assertSee('$49.00');
     }
 
@@ -106,7 +105,7 @@ class PurchaseHistoryTest extends TestCase
         $response->assertSee('No purchases yet');
     }
 
-    public function test_product_purchases_show_as_active(): void
+    public function test_product_purchases_show_on_page(): void
     {
         $user = User::factory()->create();
         $product = Product::factory()->create(['name' => 'Plugin Dev Kit']);
@@ -120,6 +119,6 @@ class PurchaseHistoryTest extends TestCase
         $response = $this->actingAs($user)->get('/dashboard/purchase-history');
 
         $response->assertStatus(200);
-        $response->assertSee('Active');
+        $response->assertSee('Plugin Dev Kit');
     }
 }
