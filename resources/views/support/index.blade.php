@@ -17,30 +17,33 @@
             </p>
         </div>
 
-        {{-- Priority Support (Max plan only) --}}
-        @auth
-            @if (auth()->user()->hasMaxAccess())
-                <div class="mb-10 overflow-hidden rounded-xl border border-violet-200 bg-gradient-to-br from-violet-50 to-violet-100/50 dark:border-violet-800/50 dark:from-violet-900/20 dark:to-violet-800/10">
-                    <div class="flex flex-col items-center gap-6 p-8 sm:flex-row sm:items-start">
-                        <div class="grid size-16 shrink-0 place-items-center rounded-full bg-violet-600 text-white">
-                            <svg class="size-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
-                            </svg>
-                        </div>
-                        <div class="flex-1 text-center sm:text-left">
-                            <h2 class="text-xl font-semibold text-gray-900 dark:text-white">Priority Support</h2>
-                            <p class="mt-1 text-gray-600 dark:text-gray-400">As a Max plan subscriber, you have access to priority support. Submit a ticket and our team will get back to you as quickly as possible.</p>
-                            <a href="{{ route('customer.support.tickets.create') }}" class="mt-4 inline-flex items-center rounded-md bg-violet-600 px-4 py-2 text-sm font-medium text-white shadow-sm transition duration-200 hover:bg-violet-700 dark:bg-violet-700 dark:hover:bg-violet-600">
-                                <svg class="mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                                </svg>
-                                Submit a Ticket
-                            </a>
-                        </div>
-                    </div>
+        {{-- Priority Support --}}
+        <div class="mb-10 overflow-hidden rounded-xl border border-violet-200 bg-gradient-to-br from-violet-50 to-violet-100/50 dark:border-violet-800/50 dark:from-violet-900/20 dark:to-violet-800/10">
+            <div class="flex flex-col items-center gap-6 p-8 sm:flex-row sm:items-start">
+                <div class="grid size-16 shrink-0 place-items-center rounded-full bg-violet-600 text-white">
+                    <svg class="size-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                    </svg>
                 </div>
-            @endif
-        @endauth
+                <div class="flex-1 text-center sm:text-left">
+                    <h2 class="text-xl font-semibold text-gray-900 dark:text-white">Priority Support</h2>
+                    @if (auth()->check() && auth()->user()->hasUltraAccess())
+                        <p class="mt-1 text-gray-600 dark:text-gray-400">As an Ultra subscriber, you have access to priority support. Submit a ticket and our team will get back to you as quickly as possible.</p>
+                        <a href="{{ route('customer.support.tickets.create') }}" class="mt-4 inline-flex items-center rounded-md bg-violet-600 px-4 py-2 text-sm font-medium text-white shadow-sm transition duration-200 hover:bg-violet-700 dark:bg-violet-700 dark:hover:bg-violet-600">
+                            <svg class="mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                            </svg>
+                            Submit a Ticket
+                        </a>
+                    @else
+                        <p class="mt-1 text-gray-600 dark:text-gray-400">Need direct help from the NativePHP team? Priority support with ticket-based assistance is available exclusively to Ultra subscribers.</p>
+                        <a href="{{ route('pricing') }}" class="mt-4 inline-flex items-center rounded-md bg-violet-600 px-4 py-2 text-sm font-medium text-white shadow-sm transition duration-200 hover:bg-violet-700 dark:bg-violet-700 dark:hover:bg-violet-600">
+                            Learn about Ultra
+                        </a>
+                    @endif
+                </div>
+            </div>
+        </div>
 
         {{-- Support Grid --}}
         <div class="grid w-full grid-cols-1 gap-8 md:grid-cols-3">

@@ -111,9 +111,11 @@
                     Purchase History
                 </flux:sidebar.item>
 
-                <flux:sidebar.item icon="chat-bubble-left-right" href="{{ route('customer.support.tickets') }}" :current="request()->routeIs('customer.support.*')">
-                    Support Tickets
-                </flux:sidebar.item>
+                @if(auth()->user()->hasUltraAccess())
+                    <flux:sidebar.item icon="chat-bubble-left-right" href="{{ route('customer.support.tickets') }}" :current="request()->routeIs('customer.support.*')">
+                        Support Tickets
+                    </flux:sidebar.item>
+                @endif
 
                 <flux:sidebar.group expandable :expanded="false" heading="Community" class="mt-4 grid">
                     <flux:sidebar.item href="{{ route('customer.showcase.index') }}" :current="request()->routeIs('customer.showcase.*')">

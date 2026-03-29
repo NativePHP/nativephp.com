@@ -6,6 +6,7 @@ use App\Filament\Resources\SupportTicketResource;
 use App\Filament\Resources\SupportTicketResource\Widgets\TicketRepliesWidget;
 use App\SupportTicket\Status;
 use Filament\Actions;
+use Filament\Forms\Components\Select;
 use Filament\Resources\Pages\ViewRecord;
 
 class ViewSupportTicket extends ViewRecord
@@ -19,7 +20,7 @@ class ViewSupportTicket extends ViewRecord
                 ->label('Update Status')
                 ->icon('heroicon-o-arrow-path')
                 ->form([
-                    \Filament\Forms\Components\Select::make('status')
+                    Select::make('status')
                         ->label('Status')
                         ->options(collect(Status::cases())->mapWithKeys(fn (Status $s) => [$s->value => ucwords(str_replace('_', ' ', $s->value))]))
                         ->required(),

@@ -16,6 +16,7 @@ use App\Notifications\SupportTicketUserReplied;
 use App\SupportTicket\Status;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Notification;
+use Laravel\Cashier\Subscription;
 use Livewire\Livewire;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
@@ -23,6 +24,26 @@ use Tests\TestCase;
 class SupportTicketTest extends TestCase
 {
     use RefreshDatabase;
+
+    private const MAX_PRICE_ID = 'price_test_max_yearly';
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        config(['subscriptions.plans.max.stripe_price_id' => self::MAX_PRICE_ID]);
+    }
+
+    private function createUltraUser(): User
+    {
+        $user = User::factory()->create();
+        License::factory()->max()->active()->create(['user_id' => $user->id]);
+        Subscription::factory()->for($user)->active()->create([
+            'stripe_price' => self::MAX_PRICE_ID,
+        ]);
+
+        return $user;
+    }
 
     #[Test]
     public function guests_cannot_access_create_ticket_page(): void
@@ -32,9 +53,19 @@ class SupportTicketTest extends TestCase
     }
 
     #[Test]
-    public function authenticated_users_can_access_create_ticket_page(): void
+    public function non_ultra_users_cannot_access_create_ticket_page(): void
     {
         $user = User::factory()->create();
+
+        $this->actingAs($user)
+            ->get(route('customer.support.tickets.create'))
+            ->assertForbidden();
+    }
+
+    #[Test]
+    public function ultra_users_can_access_create_ticket_page(): void
+    {
+        $user = $this->createUltraUser();
 
         $this->actingAs($user)
             ->get(route('customer.support.tickets.create'))
@@ -45,7 +76,7 @@ class SupportTicketTest extends TestCase
     #[Test]
     public function wizard_starts_at_step_1(): void
     {
-        $user = User::factory()->create();
+        $user = $this->createUltraUser();
 
         Livewire::actingAs($user)
             ->test(Create::class)
@@ -56,7 +87,7 @@ class SupportTicketTest extends TestCase
     #[Test]
     public function a_product_must_be_selected(): void
     {
-        $user = User::factory()->create();
+        $user = $this->createUltraUser();
 
         Livewire::actingAs($user)
             ->test(Create::class)
@@ -68,7 +99,7 @@ class SupportTicketTest extends TestCase
     #[Test]
     public function product_must_be_a_valid_value(): void
     {
-        $user = User::factory()->create();
+        $user = $this->createUltraUser();
 
         Livewire::actingAs($user)
             ->test(Create::class)
@@ -81,7 +112,7 @@ class SupportTicketTest extends TestCase
     #[Test]
     public function selecting_mobile_advances_to_step_2(): void
     {
-        $user = User::factory()->create();
+        $user = $this->createUltraUser();
 
         Livewire::actingAs($user)
             ->test(Create::class)
@@ -93,7 +124,7 @@ class SupportTicketTest extends TestCase
     #[Test]
     public function mobile_selection_shows_area_type_and_bug_fields_on_step_2(): void
     {
-        $user = User::factory()->create();
+        $user = $this->createUltraUser();
 
         Livewire::actingAs($user)
             ->test(Create::class)
@@ -108,7 +139,7 @@ class SupportTicketTest extends TestCase
     #[Test]
     public function desktop_selection_shows_bug_fields_but_not_area_on_step_2(): void
     {
-        $user = User::factory()->create();
+        $user = $this->createUltraUser();
 
         Livewire::actingAs($user)
             ->test(Create::class)
@@ -123,7 +154,7 @@ class SupportTicketTest extends TestCase
     #[Test]
     public function bifrost_selection_shows_issue_type_on_step_2(): void
     {
-        $user = User::factory()->create();
+        $user = $this->createUltraUser();
 
         Livewire::actingAs($user)
             ->test(Create::class)
@@ -138,7 +169,7 @@ class SupportTicketTest extends TestCase
     #[Test]
     public function nativephp_com_selection_shows_issue_type_on_step_2(): void
     {
-        $user = User::factory()->create();
+        $user = $this->createUltraUser();
 
         Livewire::actingAs($user)
             ->test(Create::class)
@@ -153,7 +184,7 @@ class SupportTicketTest extends TestCase
     #[Test]
     public function bug_report_fields_are_required_when_shown(): void
     {
-        $user = User::factory()->create();
+        $user = $this->createUltraUser();
 
         Livewire::actingAs($user)
             ->test(Create::class)
@@ -168,7 +199,7 @@ class SupportTicketTest extends TestCase
     #[Test]
     public function mobile_area_type_is_required_when_mobile_selected(): void
     {
-        $user = User::factory()->create();
+        $user = $this->createUltraUser();
 
         Livewire::actingAs($user)
             ->test(Create::class)
@@ -187,7 +218,7 @@ class SupportTicketTest extends TestCase
     #[Test]
     public function mobile_area_is_required_when_plugin_type_selected(): void
     {
-        $user = User::factory()->create();
+        $user = $this->createUltraUser();
 
         Livewire::actingAs($user)
             ->test(Create::class)
@@ -207,7 +238,7 @@ class SupportTicketTest extends TestCase
     #[Test]
     public function mobile_core_type_does_not_require_mobile_area(): void
     {
-        $user = User::factory()->create();
+        $user = $this->createUltraUser();
 
         Livewire::actingAs($user)
             ->test(Create::class)
@@ -227,7 +258,7 @@ class SupportTicketTest extends TestCase
     #[Test]
     public function issue_type_is_required_when_bifrost_selected(): void
     {
-        $user = User::factory()->create();
+        $user = $this->createUltraUser();
 
         Livewire::actingAs($user)
             ->test(Create::class)
@@ -244,7 +275,7 @@ class SupportTicketTest extends TestCase
     #[Test]
     public function issue_type_must_be_valid_value(): void
     {
-        $user = User::factory()->create();
+        $user = $this->createUltraUser();
 
         Livewire::actingAs($user)
             ->test(Create::class)
@@ -261,7 +292,7 @@ class SupportTicketTest extends TestCase
     #[Test]
     public function subject_is_required_on_step_2(): void
     {
-        $user = User::factory()->create();
+        $user = $this->createUltraUser();
 
         Livewire::actingAs($user)
             ->test(Create::class)
@@ -277,7 +308,7 @@ class SupportTicketTest extends TestCase
     #[Test]
     public function message_is_required_on_step_2(): void
     {
-        $user = User::factory()->create();
+        $user = $this->createUltraUser();
 
         Livewire::actingAs($user)
             ->test(Create::class)
@@ -293,7 +324,7 @@ class SupportTicketTest extends TestCase
     #[Test]
     public function subject_cannot_exceed_255_characters(): void
     {
-        $user = User::factory()->create();
+        $user = $this->createUltraUser();
 
         Livewire::actingAs($user)
             ->test(Create::class)
@@ -310,7 +341,7 @@ class SupportTicketTest extends TestCase
     #[Test]
     public function message_cannot_exceed_5000_characters(): void
     {
-        $user = User::factory()->create();
+        $user = $this->createUltraUser();
 
         Livewire::actingAs($user)
             ->test(Create::class)
@@ -327,7 +358,7 @@ class SupportTicketTest extends TestCase
     #[Test]
     public function full_desktop_submission_creates_ticket_with_bug_report_data(): void
     {
-        $user = User::factory()->create();
+        $user = $this->createUltraUser();
 
         Livewire::actingAs($user)
             ->test(Create::class)
@@ -359,7 +390,7 @@ class SupportTicketTest extends TestCase
     #[Test]
     public function bifrost_submission_stores_product_and_issue_type(): void
     {
-        $user = User::factory()->create();
+        $user = $this->createUltraUser();
 
         Livewire::actingAs($user)
             ->test(Create::class)
@@ -384,7 +415,7 @@ class SupportTicketTest extends TestCase
     #[Test]
     public function submission_redirects_to_show_page(): void
     {
-        $user = User::factory()->create();
+        $user = $this->createUltraUser();
 
         Livewire::actingAs($user)
             ->test(Create::class)
@@ -407,7 +438,7 @@ class SupportTicketTest extends TestCase
     #[Test]
     public function step_3_shows_full_summary_including_environment_and_reproduction_steps(): void
     {
-        $user = User::factory()->create();
+        $user = $this->createUltraUser();
 
         Livewire::actingAs($user)
             ->test(Create::class)
@@ -428,11 +459,9 @@ class SupportTicketTest extends TestCase
     }
 
     #[Test]
-    public function support_page_shows_priority_support_for_max_plan_users(): void
+    public function support_page_shows_priority_support_for_ultra_users(): void
     {
-        $user = User::factory()->create();
-
-        License::factory()->max()->active()->create(['user_id' => $user->id]);
+        $user = $this->createUltraUser();
 
         $this->actingAs($user)
             ->get(route('support.index'))
@@ -442,7 +471,7 @@ class SupportTicketTest extends TestCase
     }
 
     #[Test]
-    public function support_page_does_not_show_priority_support_for_non_max_users(): void
+    public function support_page_shows_ultra_upsell_for_non_ultra_users(): void
     {
         $user = User::factory()->create();
 
@@ -451,21 +480,25 @@ class SupportTicketTest extends TestCase
         $this->actingAs($user)
             ->get(route('support.index'))
             ->assertOk()
-            ->assertDontSee('Priority Support');
+            ->assertSee('Priority Support')
+            ->assertSee('Learn about Ultra')
+            ->assertDontSee('Submit a Ticket');
     }
 
     #[Test]
-    public function support_page_does_not_show_priority_support_for_guests(): void
+    public function support_page_shows_ultra_upsell_for_guests(): void
     {
         $this->get(route('support.index'))
             ->assertOk()
-            ->assertDontSee('Priority Support');
+            ->assertSee('Priority Support')
+            ->assertSee('Learn about Ultra')
+            ->assertDontSee('Submit a Ticket');
     }
 
     #[Test]
     public function changing_product_resets_all_step_2_fields(): void
     {
-        $user = User::factory()->create();
+        $user = $this->createUltraUser();
 
         Livewire::actingAs($user)
             ->test(Create::class)
@@ -493,7 +526,7 @@ class SupportTicketTest extends TestCase
     #[Test]
     public function ticket_index_shows_create_button_link(): void
     {
-        $user = User::factory()->create();
+        $user = $this->createUltraUser();
 
         Livewire::actingAs($user)
             ->test(Index::class)
@@ -503,7 +536,7 @@ class SupportTicketTest extends TestCase
     #[Test]
     public function back_button_returns_to_previous_step(): void
     {
-        $user = User::factory()->create();
+        $user = $this->createUltraUser();
 
         Livewire::actingAs($user)
             ->test(Create::class)
@@ -517,7 +550,7 @@ class SupportTicketTest extends TestCase
     #[Test]
     public function plugin_type_shows_official_plugins_in_select(): void
     {
-        $user = User::factory()->create();
+        $user = $this->createUltraUser();
 
         Plugin::factory()->create([
             'name' => 'nativephp/mobile-camera',
@@ -537,7 +570,7 @@ class SupportTicketTest extends TestCase
     #[Test]
     public function mobile_plugin_submission_stores_area_in_metadata(): void
     {
-        $user = User::factory()->create();
+        $user = $this->createUltraUser();
 
         Livewire::actingAs($user)
             ->test(Create::class)
@@ -567,7 +600,7 @@ class SupportTicketTest extends TestCase
     #[Test]
     public function mobile_core_submission_stores_area_type_without_area(): void
     {
-        $user = User::factory()->create();
+        $user = $this->createUltraUser();
 
         Livewire::actingAs($user)
             ->test(Create::class)
@@ -597,7 +630,7 @@ class SupportTicketTest extends TestCase
     {
         Notification::fake();
 
-        $user = User::factory()->create();
+        $user = $this->createUltraUser();
 
         Livewire::actingAs($user)
             ->test(Create::class)
@@ -621,9 +654,9 @@ class SupportTicketTest extends TestCase
     }
 
     #[Test]
-    public function authenticated_user_can_reply_to_their_open_ticket(): void
+    public function authenticated_ultra_user_can_reply_to_their_open_ticket(): void
     {
-        $user = User::factory()->create();
+        $user = $this->createUltraUser();
         $ticket = SupportTicket::factory()->create(['user_id' => $user->id]);
 
         Livewire::actingAs($user)
@@ -645,7 +678,7 @@ class SupportTicketTest extends TestCase
     {
         Notification::fake();
 
-        $user = User::factory()->create();
+        $user = $this->createUltraUser();
         $ticket = SupportTicket::factory()->create(['user_id' => $user->id]);
 
         Livewire::actingAs($user)
@@ -665,9 +698,9 @@ class SupportTicketTest extends TestCase
     }
 
     #[Test]
-    public function user_cannot_reply_to_a_closed_ticket(): void
+    public function ultra_user_cannot_reply_to_a_closed_ticket(): void
     {
-        $user = User::factory()->create();
+        $user = $this->createUltraUser();
         $ticket = SupportTicket::factory()->create([
             'user_id' => $user->id,
             'status' => Status::CLOSED,
@@ -681,10 +714,10 @@ class SupportTicketTest extends TestCase
     }
 
     #[Test]
-    public function user_cannot_reply_to_another_users_ticket(): void
+    public function ultra_user_cannot_view_another_users_ticket(): void
     {
-        $user = User::factory()->create();
-        $otherUser = User::factory()->create();
+        $user = $this->createUltraUser();
+        $otherUser = $this->createUltraUser();
         $ticket = SupportTicket::factory()->create(['user_id' => $otherUser->id]);
 
         Livewire::actingAs($user)
@@ -693,9 +726,20 @@ class SupportTicketTest extends TestCase
     }
 
     #[Test]
-    public function reply_message_is_required(): void
+    public function non_ultra_user_cannot_view_ticket(): void
     {
         $user = User::factory()->create();
+        $ticket = SupportTicket::factory()->create(['user_id' => $user->id]);
+
+        Livewire::actingAs($user)
+            ->test(Show::class, ['supportTicket' => $ticket])
+            ->assertForbidden();
+    }
+
+    #[Test]
+    public function reply_message_is_required(): void
+    {
+        $user = $this->createUltraUser();
         $ticket = SupportTicket::factory()->create(['user_id' => $user->id]);
 
         Livewire::actingAs($user)
@@ -708,7 +752,7 @@ class SupportTicketTest extends TestCase
     #[Test]
     public function ticket_show_page_displays_inline_reply_form_for_open_ticket(): void
     {
-        $user = User::factory()->create();
+        $user = $this->createUltraUser();
         $ticket = SupportTicket::factory()->create(['user_id' => $user->id]);
 
         Livewire::actingAs($user)
@@ -719,7 +763,7 @@ class SupportTicketTest extends TestCase
     #[Test]
     public function ticket_show_page_hides_reply_form_for_closed_ticket(): void
     {
-        $user = User::factory()->create();
+        $user = $this->createUltraUser();
         $ticket = SupportTicket::factory()->create([
             'user_id' => $user->id,
             'status' => Status::CLOSED,
@@ -733,7 +777,7 @@ class SupportTicketTest extends TestCase
     #[Test]
     public function ticket_show_page_hides_internal_notes_from_ticket_owner(): void
     {
-        $user = User::factory()->create();
+        $user = $this->createUltraUser();
         $admin = User::factory()->create();
         $ticket = SupportTicket::factory()->create(['user_id' => $user->id]);
 
@@ -829,7 +873,7 @@ class SupportTicketTest extends TestCase
     #[Test]
     public function ticket_show_page_displays_submission_details_section(): void
     {
-        $user = User::factory()->create();
+        $user = $this->createUltraUser();
         $ticket = SupportTicket::factory()->create([
             'user_id' => $user->id,
             'product' => 'mobile',
@@ -852,7 +896,7 @@ class SupportTicketTest extends TestCase
     #[Test]
     public function ticket_show_page_hides_original_message_for_desktop_tickets(): void
     {
-        $user = User::factory()->create();
+        $user = $this->createUltraUser();
         $ticket = SupportTicket::factory()->create([
             'user_id' => $user->id,
             'product' => 'desktop',
@@ -871,7 +915,7 @@ class SupportTicketTest extends TestCase
     #[Test]
     public function ticket_show_page_shows_original_message_for_non_bug_report_tickets(): void
     {
-        $user = User::factory()->create();
+        $user = $this->createUltraUser();
         $ticket = SupportTicket::factory()->create([
             'user_id' => $user->id,
             'product' => 'nativephp.com',
@@ -885,9 +929,9 @@ class SupportTicketTest extends TestCase
     }
 
     #[Test]
-    public function user_can_close_their_ticket(): void
+    public function ultra_user_can_close_their_ticket(): void
     {
-        $user = User::factory()->create();
+        $user = $this->createUltraUser();
         $ticket = SupportTicket::factory()->create(['user_id' => $user->id]);
 
         Livewire::actingAs($user)
@@ -906,9 +950,19 @@ class SupportTicketTest extends TestCase
     }
 
     #[Test]
-    public function authenticated_users_can_access_ticket_index(): void
+    public function non_ultra_users_cannot_access_ticket_index(): void
     {
         $user = User::factory()->create();
+
+        $this->actingAs($user)
+            ->get(route('customer.support.tickets'))
+            ->assertForbidden();
+    }
+
+    #[Test]
+    public function ultra_users_can_access_ticket_index(): void
+    {
+        $user = $this->createUltraUser();
 
         $this->actingAs($user)
             ->get(route('customer.support.tickets'))

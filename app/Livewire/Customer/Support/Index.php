@@ -17,6 +17,11 @@ class Index extends Component
 {
     use WithPagination;
 
+    public function boot(): void
+    {
+        abort_unless(auth()->user()->hasUltraAccess(), 403);
+    }
+
     #[Computed]
     public function supportTickets(): LengthAwarePaginator
     {

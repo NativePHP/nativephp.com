@@ -102,11 +102,14 @@
                         rows="3"
                         placeholder="Type your reply here..."
                         class="block w-full rounded-md border border-zinc-300 bg-white px-3 py-2 text-sm shadow-sm placeholder:text-zinc-400 focus:border-violet-500 focus:ring-violet-500 dark:border-zinc-600 dark:bg-zinc-900 dark:text-white dark:placeholder:text-zinc-500"
+                        @keydown.meta.enter="$wire.reply()"
+                        @keydown.ctrl.enter="$wire.reply()"
                     ></textarea>
                     @error('replyMessage')
                         <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
                     @enderror
-                    <div class="mt-3 flex justify-end">
+                    <div class="mt-3 flex items-center justify-end gap-3">
+                        <span class="text-xs text-zinc-400 dark:text-zinc-500">&#8984;/Ctrl + Enter to send</span>
                         <flux:button type="submit" variant="primary" icon="arrow-uturn-left">
                             Send Reply
                         </flux:button>
@@ -127,7 +130,7 @@
                                 <span class="text-sm text-zinc-500 dark:text-zinc-400">(Staff)</span>
                             @endif
                         </p>
-                        <p class="mt-1 text-zinc-800 dark:text-zinc-200">{{ $reply->message }}</p>
+                        <div class="prose prose-sm mt-1 max-w-none text-zinc-800 dark:prose-invert dark:text-zinc-200">{!! App\Support\CommonMark\CommonMark::convertToHtml($reply->message) !!}</div>
                     </div>
                 </div>
                 <div class="mt-1 {{ $reply->is_from_user ? 'text-right mr-10' : 'text-left ml-10' }}">

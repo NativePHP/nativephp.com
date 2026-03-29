@@ -17,6 +17,11 @@ use Livewire\Component;
 #[Title('Submit a Request')]
 class Create extends Component
 {
+    public function boot(): void
+    {
+        abort_unless(auth()->user()->hasUltraAccess(), 403);
+    }
+
     #[Locked]
     public int $currentStep = 1;
 

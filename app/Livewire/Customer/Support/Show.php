@@ -21,6 +21,7 @@ class Show extends Component
 
     public function mount(SupportTicket $supportTicket): void
     {
+        abort_unless(auth()->user()->hasUltraAccess(), 403);
         $this->authorize('view', $supportTicket);
 
         $supportTicket->load(['user', 'replies.user']);
