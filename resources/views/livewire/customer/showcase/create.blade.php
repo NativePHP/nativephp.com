@@ -1,4 +1,4 @@
-<div class="max-w-2xl">
+<div class="mx-auto max-w-2xl">
     <div class="mb-6">
         <flux:heading size="xl">Submit Your App to the Showcase</flux:heading>
         <flux:text class="mt-2">Share your NativePHP app with the community! Your submission will be reviewed by our team.</flux:text>

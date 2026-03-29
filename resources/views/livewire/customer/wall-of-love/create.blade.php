@@ -1,4 +1,4 @@
-<div class="max-w-2xl">
+<div class="mx-auto max-w-2xl">
     <div class="mb-6">
         <flux:heading size="xl">Join our Wall of Love!</flux:heading>
         <flux:text class="mt-2">As an early adopter, your story matters. Share your experience with NativePHP and inspire other developers in the community.</flux:text>

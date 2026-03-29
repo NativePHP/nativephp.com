@@ -79,9 +79,11 @@
     }
 }
 
-/* Compensate for custom scrollbar width when Flux locks scroll */
-html[data-flux-scroll-unlock] {
-    padding-right: 8px !important;
+/* Compensate for custom scrollbar width when Flux locks scroll (desktop only) */
+@media (pointer: fine) {
+    html[data-flux-scroll-unlock] {
+        padding-right: 8px !important;
+    }
 }
 
 /* Scrollbar width */
