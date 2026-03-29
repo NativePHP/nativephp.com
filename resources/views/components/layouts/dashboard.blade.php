@@ -115,6 +115,17 @@
                     <flux:sidebar.item href="{{ route('customer.showcase.index') }}" :current="request()->routeIs('customer.showcase.*')">
                         Showcase
                     </flux:sidebar.item>
+                    @if(auth()->user()->licenses()->where('created_at', '<', '2025-06-01')->exists())
+                        @php
+                            $wallOfLoveSubmission = auth()->user()->wallOfLoveSubmissions()->first();
+                            $wallOfLoveUrl = $wallOfLoveSubmission
+                                ? route('customer.wall-of-love.edit', $wallOfLoveSubmission)
+                                : route('customer.wall-of-love.create');
+                        @endphp
+                        <flux:sidebar.item href="{{ $wallOfLoveUrl }}" :current="request()->routeIs('customer.wall-of-love.*')">
+                            Wall of Love
+                        </flux:sidebar.item>
+                    @endif
                     <flux:sidebar.item href="https://discord.gg/nativephp" target="_blank">
                         Discord
                     </flux:sidebar.item>

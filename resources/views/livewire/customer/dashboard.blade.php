@@ -32,7 +32,6 @@
         @else
             <x-discounts-banner :inline="true" />
         @endfeature
-        <livewire:wall-of-love-banner :inline="true" />
     </div>
 
     {{-- Dashboard Cards --}}
