@@ -117,7 +117,7 @@
                                 })
                             }
                         "
-                        class="prose min-w-0 max-w-none grow text-gray-600 dark:text-gray-400 dark:prose-headings:text-white"
+                        class="prose min-w-0 max-w-none grow text-gray-600 prose-headings:scroll-mt-20 dark:text-gray-400 dark:prose-headings:text-white"
                         aria-labelledby="plugin-title"
                     >
                         @if ($plugin->readme_html)

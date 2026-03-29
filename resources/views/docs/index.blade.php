@@ -69,6 +69,7 @@
                             @foreach ($tableOfContents as $item)
                                 <a
                                     href="#{{ $item['anchor'] }}"
+                                    x-on:click.prevent="document.getElementById('{{ $item['anchor'] }}')?.scrollIntoView({ behavior: 'smooth', block: 'start' })"
                                     @class([
                                         'rounded-md px-2 py-1.5 text-xs transition hover:bg-zinc-100 dark:text-white/80 dark:hover:bg-zinc-700',
                                         'pl-2' => $item['level'] == 2,

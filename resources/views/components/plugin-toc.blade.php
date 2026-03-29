@@ -27,6 +27,7 @@
                 <template x-for="heading in headings" :key="heading.id">
                     <a
                         :href="'#' + heading.id"
+                        x-on:click.prevent="document.getElementById(heading.id)?.scrollIntoView({ behavior: 'smooth', block: 'start' })"
                         :class="heading.level === 2 ? 'pl-2' : 'pl-5'"
                         class="rounded-md px-2 py-1.5 text-xs transition hover:bg-zinc-100 dark:text-white/80 dark:hover:bg-zinc-700"
                         x-text="heading.text"
