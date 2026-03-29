@@ -8,7 +8,7 @@
             const elements = article.querySelectorAll('h2[id], h3[id]')
             this.headings = Array.from(elements).map(el => ({
                 id: el.id,
-                text: el.textContent.replace(/^#\s*/, '').trim(),
+                text: el.textContent.replace(/\s*#$/, '').trim(),
                 level: parseInt(el.tagName.substring(1)),
             }))
         },
