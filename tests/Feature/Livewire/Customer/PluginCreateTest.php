@@ -191,6 +191,7 @@ class PluginCreateTest extends TestCase
         Livewire::actingAs($user)->test(Create::class)
             ->set('repository', 'myvendor/second-plugin')
             ->set('pluginType', 'free')
+            ->set('supportChannel', 'support@myvendor.io')
             ->call('submitPlugin');
 
         $this->assertDatabaseHas('plugins', [

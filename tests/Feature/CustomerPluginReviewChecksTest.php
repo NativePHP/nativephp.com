@@ -139,8 +139,8 @@ class CustomerPluginReviewChecksTest extends TestCase
             "{$base}/tags*" => Http::response([]),
             "https://raw.githubusercontent.com/{$repoSlug}/*" => Http::response('', 404),
 
-            // Webhook creation
-            "{$base}/hooks" => Http::response(['id' => 1], 201),
+            // Webhook creation (fails)
+            "{$base}/hooks" => Http::response([], 422),
 
             $base => Http::response(['default_branch' => 'main']),
             "{$base}/git/trees/main*" => Http::response([
