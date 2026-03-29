@@ -66,7 +66,7 @@ class MobilePricing extends Component
         $user->createOrGetStripeCustomer();
 
         $checkout = $user
-            ->newSubscription('default', $subscription->stripePriceId(interval: $this->interval))
+            ->newSubscription('default', $subscription->stripePriceId(forceEap: $user->isEapCustomer(), interval: $this->interval))
             ->allowPromotionCodes()
             ->checkout([
                 'success_url' => $this->successUrl(),
@@ -104,7 +104,7 @@ class MobilePricing extends Component
             return null;
         }
 
-        $newPriceId = Subscription::Max->stripePriceId(interval: $this->interval);
+        $newPriceId = Subscription::Max->stripePriceId(forceEap: $user->isEapCustomer(), interval: $this->interval);
 
         $subscription->skipTrial()->swapAndInvoice($newPriceId);
 
@@ -141,8 +141,21 @@ class MobilePricing extends Component
         $hasExistingSubscription = false;
         $currentPlanName = null;
         $isAlreadyUltra = false;
+        $isEapCustomer = false;
+        $eapYearlyPrice = null;
+        $eapDiscountPercent = null;
+        $eapSavingsVsMonthly = null;
+        $regularYearlyPrice = config('subscriptions.plans.max.price_yearly');
 
         if ($user = Auth::user()) {
+            $isEapCustomer = $user->isEapCustomer();
+
+            if ($isEapCustomer) {
+                $eapYearlyPrice = config('subscriptions.plans.max.eap_price_yearly');
+                $eapDiscountPercent = (int) round((1 - $eapYearlyPrice / $regularYearlyPrice) * 100);
+                $eapSavingsVsMonthly = (config('subscriptions.plans.max.price_monthly') * 12) - $eapYearlyPrice;
+            }
+
             $subscription = $user->subscription('default');
 
             if ($subscription && $subscription->active()) {
@@ -163,6 +176,11 @@ class MobilePricing extends Component
             'hasExistingSubscription' => $hasExistingSubscription,
             'currentPlanName' => $currentPlanName,
             'isAlreadyUltra' => $isAlreadyUltra,
+            'isEapCustomer' => $isEapCustomer,
+            'eapYearlyPrice' => $eapYearlyPrice,
+            'eapDiscountPercent' => $eapDiscountPercent,
+            'eapSavingsVsMonthly' => $eapSavingsVsMonthly,
+            'regularYearlyPrice' => $regularYearlyPrice,
         ]);
     }
 }

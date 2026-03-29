@@ -34,6 +34,9 @@ return [
             'included_seats' => 5,
             'extra_seat_price_yearly' => 4,
             'extra_seat_price_monthly' => 5,
+            'price_monthly' => 35,
+            'price_yearly' => 350,
+            'eap_price_yearly' => 250,
         ],
         'forever' => [
             'name' => 'Forever',

@@ -86,7 +86,11 @@
             >
                 Annual
                 <span class="absolute -right-2 -top-2.5 rounded-full bg-emerald-100 px-1.5 py-0.5 text-[10px] font-semibold text-emerald-700 dark:bg-emerald-900/50 dark:text-emerald-300">
-                    Save 16%
+                    @if($isEapCustomer)
+                        EAP offer
+                    @else
+                        Save 16%
+                    @endif
                 </span>
             </button>
         </div>
@@ -124,19 +128,40 @@
             </h3>
 
             {{-- Price --}}
-            <div
-                class="flex items-start gap-1.5 pt-5"
-                :aria-label="interval === 'month'
-                    ? 'Price: $35 per month'
-                    : 'Price: $350 per year'"
-            >
-                <div class="text-5xl font-semibold">
-                    $<span x-text="interval === 'month' ? '35' : '350'"></span>
+            @if($isEapCustomer)
+                <div class="flex items-start gap-1.5 pt-5">
+                    <div class="text-5xl font-semibold">
+                        $<span x-text="interval === 'month' ? '35' : '{{ $eapYearlyPrice }}'"></span>
+                    </div>
+                    <div class="self-end pb-1.5 text-zinc-500">
+                        <span x-text="interval === 'month' ? 'per month' : 'per year'"></span>
+                    </div>
                 </div>
-                <div class="self-end pb-1.5 text-zinc-500">
-                    <span x-text="interval === 'month' ? 'per month' : 'per year'"></span>
+                <div
+                    x-show="interval === 'year'"
+                    x-transition
+                    class="flex items-center gap-2 pt-1"
+                >
+                    <span class="text-lg text-zinc-400 line-through">${{ $regularYearlyPrice }}/yr</span>
+                    <span class="rounded-full bg-emerald-100 px-2 py-0.5 text-xs font-semibold text-emerald-700 dark:bg-emerald-900/50 dark:text-emerald-300">
+                        {{ $eapDiscountPercent }}% off
+                    </span>
                 </div>
-            </div>
+            @else
+                <div
+                    class="flex items-start gap-1.5 pt-5"
+                    :aria-label="interval === 'month'
+                        ? 'Price: $35 per month'
+                        : 'Price: $350 per year'"
+                >
+                    <div class="text-5xl font-semibold">
+                        $<span x-text="interval === 'month' ? '35' : '350'"></span>
+                    </div>
+                    <div class="self-end pb-1.5 text-zinc-500">
+                        <span x-text="interval === 'month' ? 'per month' : 'per year'"></span>
+                    </div>
+                </div>
+            @endif
 
             {{-- Savings note --}}
             <div
@@ -144,7 +169,11 @@
                 x-transition
                 class="pt-1 text-sm text-emerald-600 dark:text-emerald-400"
             >
-                Save $70/year vs monthly
+                @if($isEapCustomer)
+                    Save ${{ $eapSavingsVsMonthly }}/year (compared to monthly pricing) with your Early Access discount
+                @else
+                    Save $70/year vs monthly
+                @endif
             </div>
 
             {{-- CTA Button --}}
@@ -312,16 +341,31 @@
                                 <div class="flex items-baseline justify-between">
                                     <span class="text-sm text-gray-600 dark:text-gray-400">Ultra</span>
                                     <span class="text-lg font-semibold text-gray-900 dark:text-white">
-                                        $<span x-text="interval === 'month' ? '35' : '350'"></span><span class="text-sm font-normal text-gray-500">/<span x-text="interval === 'month' ? 'mo' : 'yr'"></span></span>
+                                        @if($isEapCustomer)
+                                            $<span x-text="interval === 'month' ? '35' : '{{ $eapYearlyPrice }}'"></span><span class="text-sm font-normal text-gray-500">/<span x-text="interval === 'month' ? 'mo' : 'yr'"></span></span>
+                                        @else
+                                            $<span x-text="interval === 'month' ? '35' : '350'"></span><span class="text-sm font-normal text-gray-500">/<span x-text="interval === 'month' ? 'mo' : 'yr'"></span></span>
+                                        @endif
                                     </span>
                                 </div>
-                                <div
-                                    x-show="interval === 'year'"
-                                    x-transition
-                                    class="mt-1 text-xs text-emerald-600 dark:text-emerald-400"
-                                >
-                                    Save $70/year vs monthly
-                                </div>
+                                @if($isEapCustomer)
+                                    <div
+                                        x-show="interval === 'year'"
+                                        x-transition
+                                        class="mt-1 flex items-center gap-2 text-xs"
+                                    >
+                                        <span class="text-zinc-400 line-through">${{ $regularYearlyPrice }}/yr</span>
+                                        <span class="font-semibold text-emerald-600 dark:text-emerald-400">EAP discount applied</span>
+                                    </div>
+                                @else
+                                    <div
+                                        x-show="interval === 'year'"
+                                        x-transition
+                                        class="mt-1 text-xs text-emerald-600 dark:text-emerald-400"
+                                    >
+                                        Save $70/year vs monthly
+                                    </div>
+                                @endif
                             </div>
 
                             {{-- Actions --}}

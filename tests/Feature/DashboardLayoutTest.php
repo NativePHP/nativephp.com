@@ -143,4 +143,29 @@ class DashboardLayoutTest extends TestCase
             ->assertDontSee('No team yet')
             ->assertDontSee('Create a team');
     }
+
+    // ========================================
+    // Ultra Upsell Banner Tests
+    // ========================================
+
+    public function test_dashboard_shows_ultra_banner_for_non_ultra_user(): void
+    {
+        $user = User::factory()->create();
+
+        Livewire::actingAs($user)
+            ->test(Dashboard::class)
+            ->assertOk()
+            ->assertSee('Upgrade to NativePHP Ultra')
+            ->assertSee('Learn more');
+    }
+
+    public function test_dashboard_hides_ultra_banner_for_ultra_subscriber(): void
+    {
+        $user = $this->createUltraUser();
+
+        Livewire::actingAs($user)
+            ->test(Dashboard::class)
+            ->assertOk()
+            ->assertDontSee('Upgrade to NativePHP Ultra');
+    }
 }

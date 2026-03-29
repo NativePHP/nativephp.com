@@ -1,6 +1,10 @@
 <div>
     <div class="mb-6">
-        <flux:heading size="xl">{{ $license->name ?: $license->policy_name }}</flux:heading>
+        <a href="{{ route('customer.licenses.list') }}" class="inline-flex items-center gap-2 text-sm text-gray-400 hover:text-gray-500 dark:text-gray-500 dark:hover:text-gray-400">
+            <x-heroicon-s-arrow-left class="size-4" />
+            <span class="font-medium">Licenses</span>
+        </a>
+        <flux:heading size="xl" class="mt-4">{{ $license->name ?: $license->policy_name }}</flux:heading>
         @if($license->name)
             <flux:text>{{ $license->policy_name }}</flux:text>
         @endif

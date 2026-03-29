@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Livewire\MobilePricing;
+use App\Models\License;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Auth;
@@ -187,5 +188,91 @@ class MobilePricingTest extends TestCase
         Livewire::test(MobilePricing::class)
             ->assertDontSeeHtml('wire:click="upgradeSubscription"')
             ->assertDontSee('Confirm upgrade');
+    }
+
+    #[Test]
+    public function eap_customer_sees_eap_offer_badge_on_annual_toggle()
+    {
+        $user = User::factory()->create();
+        License::factory()->eapEligible()->withoutSubscriptionItem()->for($user)->create();
+        Auth::login($user);
+
+        Livewire::test(MobilePricing::class)
+            ->assertSee('EAP offer')
+            ->assertDontSee('Save 16%');
+    }
+
+    #[Test]
+    public function non_eap_customer_sees_save_badge_on_annual_toggle()
+    {
+        $user = User::factory()->create();
+        Auth::login($user);
+
+        Livewire::test(MobilePricing::class)
+            ->assertSee('Save 16%')
+            ->assertDontSee('EAP offer');
+    }
+
+    #[Test]
+    public function guest_sees_save_badge_on_annual_toggle()
+    {
+        Auth::logout();
+
+        Livewire::test(MobilePricing::class)
+            ->assertSee('Save 16%')
+            ->assertDontSee('EAP offer');
+    }
+
+    #[Test]
+    public function eap_customer_sees_strikethrough_and_discounted_price()
+    {
+        $user = User::factory()->create();
+        License::factory()->eapEligible()->withoutSubscriptionItem()->for($user)->create();
+        Auth::login($user);
+
+        $eapPrice = config('subscriptions.plans.max.eap_price_yearly');
+        $regularPrice = config('subscriptions.plans.max.price_yearly');
+        $discount = (int) round((1 - $eapPrice / $regularPrice) * 100);
+
+        Livewire::test(MobilePricing::class)
+            ->assertSee('$'.$regularPrice.'/yr')
+            ->assertSee($discount.'% off')
+            ->assertSee('Early Access discount');
+    }
+
+    #[Test]
+    public function non_eap_customer_does_not_see_eap_pricing()
+    {
+        $user = User::factory()->create();
+        License::factory()->afterEap()->withoutSubscriptionItem()->for($user)->create();
+        Auth::login($user);
+
+        Livewire::test(MobilePricing::class)
+            ->assertDontSee('Early Access discount')
+            ->assertDontSee('EAP offer')
+            ->assertSee('Save 16%');
+    }
+
+    #[Test]
+    public function eap_upgrade_modal_shows_discounted_price()
+    {
+        $user = User::factory()->create(['stripe_id' => 'cus_'.uniqid()]);
+        License::factory()->eapEligible()->withoutSubscriptionItem()->for($user)->create();
+        Auth::login($user);
+
+        $subscription = Cashier::$subscriptionModel::factory()
+            ->for($user)
+            ->active()
+            ->create(['stripe_price' => self::PRO_PRICE_ID]);
+
+        Cashier::$subscriptionItemModel::factory()
+            ->for($subscription, 'subscription')
+            ->create(['stripe_price' => self::PRO_PRICE_ID]);
+
+        $regularPrice = config('subscriptions.plans.max.price_yearly');
+
+        Livewire::test(MobilePricing::class)
+            ->assertSee('$'.$regularPrice.'/yr')
+            ->assertSee('EAP discount applied');
     }
 }
