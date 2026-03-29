@@ -6,11 +6,15 @@
             if (! article) return
 
             const elements = article.querySelectorAll('h2[id], h3[id]')
-            this.headings = Array.from(elements).map(el => ({
-                id: el.id,
-                text: el.textContent.replace(/\s*#$/, '').trim(),
-                level: parseInt(el.tagName.substring(1)),
-            }))
+            this.headings = Array.from(elements).map(el => {
+                const clone = el.cloneNode(true)
+                clone.querySelectorAll('.heading-anchor').forEach(a => a.remove())
+                return {
+                    id: el.id,
+                    text: clone.textContent.trim(),
+                    level: parseInt(el.tagName.substring(1)),
+                }
+            })
         },
     }"
     x-show="headings.length > 0"
