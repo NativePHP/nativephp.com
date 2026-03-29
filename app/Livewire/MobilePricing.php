@@ -9,13 +9,19 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
+use Laravel\Cashier\Cashier;
 use Livewire\Attributes\Locked;
 use Livewire\Attributes\On;
+use Livewire\Attributes\Url;
 use Livewire\Component;
 
 class MobilePricing extends Component
 {
+    #[Url]
     public string $interval = 'month';
+
+    /** @var array{amount_due: string, raw_amount_due: int, credit: string, new_charge: string}|null */
+    public ?array $upgradePreview = null;
 
     #[Locked]
     public $user;
@@ -84,6 +90,51 @@ class MobilePricing extends Component
             ]);
 
         return redirect($checkout->url);
+    }
+
+    public function previewUpgrade(): void
+    {
+        $user = Auth::user();
+
+        if (! $user) {
+            return;
+        }
+
+        $subscription = $user->subscription('default');
+
+        if (! $subscription || ! $subscription->active()) {
+            return;
+        }
+
+        $newPriceId = Subscription::Max->stripePriceId(forceEap: $user->isEapCustomer(), interval: $this->interval);
+
+        try {
+            $invoice = $subscription->previewInvoice($newPriceId);
+
+            $currency = $invoice->asStripeInvoice()->currency;
+            $credit = 0;
+            $newCharge = 0;
+
+            foreach ($invoice->invoiceLineItems() as $item) {
+                $amount = $item->asStripeInvoiceLineItem()->amount;
+
+                if ($amount < 0) {
+                    $credit += abs($amount);
+                } else {
+                    $newCharge += $amount;
+                }
+            }
+
+            $this->upgradePreview = [
+                'amount_due' => $invoice->amountDue(),
+                'raw_amount_due' => $invoice->rawAmountDue(),
+                'credit' => Cashier::formatAmount($credit, $currency),
+                'new_charge' => Cashier::formatAmount($newCharge, $currency),
+            ];
+        } catch (\Exception $e) {
+            Log::error('Failed to preview upgrade invoice', ['error' => $e->getMessage()]);
+            $this->upgradePreview = null;
+        }
     }
 
     public function upgradeSubscription(): mixed

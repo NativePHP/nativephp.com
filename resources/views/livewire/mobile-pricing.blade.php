@@ -5,6 +5,7 @@
 >
     <header class="relative z-10 grid place-items-center text-center">
         <h2
+            wire:ignore
             id="pricing-heading"
             x-init="
                 () => {
@@ -29,6 +30,7 @@
         </h2>
 
         <p
+            wire:ignore
             x-init="
                 () => {
                     motion.inView($el, (element) => {
@@ -84,7 +86,7 @@
                 role="radio"
                 :aria-checked="interval === 'year'"
             >
-                Annual
+                Yearly
                 <span class="absolute -right-2 -top-2.5 rounded-full bg-emerald-100 px-1.5 py-0.5 text-[10px] font-semibold text-emerald-700 dark:bg-emerald-900/50 dark:text-emerald-300">
                     @if($isEapCustomer)
                         EAP offer
@@ -97,6 +99,7 @@
 
         {{-- Ultra Plan Card --}}
         <div
+            wire:ignore.self
             x-init="
                 () => {
                     motion.inView($el, (element) => {
@@ -186,6 +189,7 @@
                     <button
                         type="button"
                         @click="showUpgradeModal = true"
+                        wire:click="previewUpgrade"
                         class="my-5 block w-full rounded-2xl bg-zinc-800 py-4 text-center text-sm font-medium text-white transition duration-200 ease-in-out hover:bg-zinc-700 dark:bg-white dark:text-black dark:hover:bg-zinc-200"
                         aria-label="Upgrade to Ultra plan"
                     >
@@ -269,7 +273,7 @@
                     >
                         <x-icons.checkmark class="size-5 shrink-0" />
                     </div>
-                    <div class="font-medium">Teams support &mdash; invite and manage members</div>
+                    <div class="font-medium">Teams &mdash; invite your whole team to share your Ultra benefits</div>
                 </div>
                 <div class="flex items-center gap-2">
                     <div
@@ -302,7 +306,6 @@
                             <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Upgrade to Ultra</h3>
                             <p class="mt-2 text-sm text-gray-600 dark:text-gray-400">
                                 You're upgrading from <strong>{{ $currentPlanName }}</strong> to <strong>Ultra</strong>.
-                                You'll be charged the prorated difference immediately and your new billing cycle will begin.
                             </p>
 
                             {{-- Interval Toggle --}}
@@ -311,7 +314,7 @@
                                 <div class="mt-2 inline-flex items-center gap-1 rounded-full bg-gray-100 p-1 dark:bg-zinc-800" role="radiogroup" aria-label="Upgrade billing interval">
                                     <button
                                         type="button"
-                                        @click="interval = 'month'"
+                                        @click="interval = 'month'; $wire.previewUpgrade()"
                                         :class="interval === 'month'
                                             ? 'bg-white text-black shadow-sm dark:bg-zinc-600 dark:text-white'
                                             : 'text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300'"
@@ -323,7 +326,7 @@
                                     </button>
                                     <button
                                         type="button"
-                                        @click="interval = 'year'"
+                                        @click="interval = 'year'; $wire.previewUpgrade()"
                                         :class="interval === 'year'
                                             ? 'bg-white text-black shadow-sm dark:bg-zinc-600 dark:text-white'
                                             : 'text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300'"
@@ -331,42 +334,56 @@
                                         role="radio"
                                         :aria-checked="interval === 'year'"
                                     >
-                                        Annual
+                                        Yearly
                                     </button>
                                 </div>
                             </div>
 
-                            {{-- Price Preview --}}
-                            <div class="mt-4 rounded-lg bg-gray-50 p-3 dark:bg-zinc-800">
-                                <div class="flex items-baseline justify-between">
-                                    <span class="text-sm text-gray-600 dark:text-gray-400">Ultra</span>
-                                    <span class="text-lg font-semibold text-gray-900 dark:text-white">
-                                        @if($isEapCustomer)
-                                            $<span x-text="interval === 'month' ? '35' : '{{ $eapYearlyPrice }}'"></span><span class="text-sm font-normal text-gray-500">/<span x-text="interval === 'month' ? 'mo' : 'yr'"></span></span>
-                                        @else
-                                            $<span x-text="interval === 'month' ? '35' : '350'"></span><span class="text-sm font-normal text-gray-500">/<span x-text="interval === 'month' ? 'mo' : 'yr'"></span></span>
-                                        @endif
-                                    </span>
+                            {{-- Proration Preview --}}
+                            <div class="mt-4 rounded-lg bg-gray-50 p-4 dark:bg-zinc-800">
+                                {{-- Loading State --}}
+                                <div wire:loading wire:target="previewUpgrade" class="space-y-2">
+                                    <div class="h-4 w-3/4 animate-pulse rounded bg-gray-200 dark:bg-zinc-700"></div>
+                                    <div class="h-4 w-1/2 animate-pulse rounded bg-gray-200 dark:bg-zinc-700"></div>
+                                    <div class="mt-3 h-6 w-2/3 animate-pulse rounded bg-gray-200 dark:bg-zinc-700"></div>
                                 </div>
-                                @if($isEapCustomer)
-                                    <div
-                                        x-show="interval === 'year'"
-                                        x-transition
-                                        class="mt-1 flex items-center gap-2 text-xs"
-                                    >
-                                        <span class="text-zinc-400 line-through">${{ $regularYearlyPrice }}/yr</span>
-                                        <span class="font-semibold text-emerald-600 dark:text-emerald-400">EAP discount applied</span>
-                                    </div>
-                                @else
-                                    <div
-                                        x-show="interval === 'year'"
-                                        x-transition
-                                        class="mt-1 text-xs text-emerald-600 dark:text-emerald-400"
-                                    >
-                                        Save $70/year vs monthly
-                                    </div>
-                                @endif
+
+                                {{-- Preview Data --}}
+                                <div wire:loading.remove wire:target="previewUpgrade">
+                                    @if($upgradePreview)
+                                        <div class="space-y-2 text-sm">
+                                            <div class="flex items-baseline justify-between">
+                                                <span class="text-gray-600 dark:text-gray-400">New plan (Ultra)</span>
+                                                <span class="font-medium text-gray-900 dark:text-white">{{ $upgradePreview['new_charge'] }}</span>
+                                            </div>
+                                            <div class="flex items-baseline justify-between">
+                                                <span class="text-gray-600 dark:text-gray-400">Credit for unused {{ $currentPlanName }} time</span>
+                                                <span class="font-medium text-emerald-600 dark:text-emerald-400">-{{ $upgradePreview['credit'] }}</span>
+                                            </div>
+                                            <div class="border-t border-gray-200 pt-2 dark:border-zinc-700">
+                                                <div class="flex items-baseline justify-between">
+                                                    <span class="font-medium text-gray-900 dark:text-white">Due today</span>
+                                                    <span class="text-lg font-semibold text-gray-900 dark:text-white">{{ $upgradePreview['amount_due'] }}</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    @else
+                                        <p class="text-sm text-gray-500 dark:text-gray-400">
+                                            Unable to load pricing preview. You can still proceed with the upgrade.
+                                        </p>
+                                    @endif
+                                </div>
                             </div>
+
+                            @if($isEapCustomer)
+                                <div
+                                    x-show="interval === 'year'"
+                                    x-transition
+                                    class="mt-2 flex items-center gap-2 text-xs"
+                                >
+                                    <span class="font-semibold text-emerald-600 dark:text-emerald-400">EAP discount applied</span>
+                                </div>
+                            @endif
 
                             {{-- Actions --}}
                             <div class="mt-6 flex gap-3">
@@ -381,6 +398,7 @@
                                     type="button"
                                     wire:click="upgradeSubscription"
                                     wire:loading.attr="disabled"
+                                    wire:target="upgradeSubscription, previewUpgrade"
                                     class="flex-1 rounded-xl bg-zinc-800 px-4 py-2.5 text-sm font-medium text-white transition hover:bg-zinc-700 disabled:opacity-50 dark:bg-white dark:text-black dark:hover:bg-zinc-200"
                                 >
                                     <span wire:loading.remove wire:target="upgradeSubscription">Confirm upgrade</span>

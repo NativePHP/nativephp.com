@@ -3,7 +3,9 @@
 namespace Tests\Feature;
 
 use App\Features\ShowAuthButtons;
+use App\Features\ShowPlugins;
 use App\Livewire\Customer\Dashboard;
+use App\Models\License;
 use App\Models\Team;
 use App\Models\TeamUser;
 use App\Models\User;
@@ -167,5 +169,24 @@ class DashboardLayoutTest extends TestCase
             ->test(Dashboard::class)
             ->assertOk()
             ->assertDontSee('Upgrade to NativePHP Ultra');
+    }
+
+    // ========================================
+    // Free Plugins Offer Banner Tests
+    // ========================================
+
+    public function test_dashboard_hides_free_plugins_banner_for_ultra_subscriber(): void
+    {
+        Feature::define(ShowPlugins::class, true);
+
+        $user = $this->createUltraUser();
+        License::factory()->withoutSubscriptionItem()->for($user)->create([
+            'created_at' => '2025-12-01',
+        ]);
+
+        Livewire::actingAs($user)
+            ->test(Dashboard::class)
+            ->assertOk()
+            ->assertDontSee('Claim Your Free Plugins!');
     }
 }

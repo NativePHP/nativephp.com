@@ -52,7 +52,7 @@
     {{-- Banners --}}
     <div class="mb-6 grid grid-cols-1 gap-6 lg:grid-cols-2">
         @feature(App\Features\ShowPlugins::class)
-            @if(auth()->user()->shouldSeeFreePluginsOffer())
+            @if(auth()->user()->shouldSeeFreePluginsOffer() && !$this->hasUltraSubscription)
                 <x-free-plugins-offer-banner :inline="true" />
             @endif
         @else

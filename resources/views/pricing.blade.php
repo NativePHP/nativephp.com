@@ -5,8 +5,8 @@
         aria-labelledby="hero-heading"
     >
         <header class="relative z-10 grid place-items-center text-center">
-            <h1
-                id="hero-heading"
+            {{-- Icon --}}
+            <div
                 x-init="
                     () => {
                         motion.inView($el, (element) => {
@@ -24,12 +24,15 @@
                         })
                     }
                 "
-                class="text-3xl font-extrabold sm:text-4xl"
             >
-                NativePHP Ultra
-            </h1>
+                <div class="mx-auto grid size-20 place-items-center rounded-2xl bg-gradient-to-br from-amber-400 to-orange-500 text-white shadow-lg">
+                    <x-heroicon-s-bolt class="size-10" />
+                </div>
+            </div>
 
-            <h2
+            {{-- Title --}}
+            <h1
+                id="hero-heading"
                 x-init="
                     () => {
                         motion.inView($el, (element) => {
@@ -37,7 +40,7 @@
                                 $el,
                                 {
                                     opacity: [0, 1],
-                                    y: [10, 0],
+                                    x: [-10, 0],
                                 },
                                 {
                                     duration: 0.7,
@@ -47,11 +50,38 @@
                         })
                     }
                 "
-                class="mx-auto max-w-xl pt-4 text-base/relaxed text-gray-600 sm:text-lg/relaxed dark:text-gray-400"
+                class="mt-6 text-4xl md:text-5xl lg:text-6xl"
+            >
+                NativePHP
+                <span class="whitespace-nowrap"><span class="-mx-1.5 text-[#99ceb2] dark:text-indigo-500">{</span>
+                <span class="font-bold">Ultra</span>
+                <span class="-mx-1.5 text-[#99ceb2] dark:text-indigo-500">}</span></span>
+            </h1>
+
+            {{-- Subtitle --}}
+            <p
+                x-init="
+                    () => {
+                        motion.inView($el, (element) => {
+                            motion.animate(
+                                $el,
+                                {
+                                    opacity: [0, 1],
+                                    x: [10, 0],
+                                },
+                                {
+                                    duration: 0.7,
+                                    ease: motion.easeOut,
+                                },
+                            )
+                        })
+                    }
+                "
+                class="mx-auto mt-6 max-w-3xl text-lg text-gray-600 dark:text-zinc-400"
             >
                 Premium plugins, tools, and support to supercharge your
                 NativePHP development.
-            </h2>
+            </p>
         </header>
     </section>
 

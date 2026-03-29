@@ -254,7 +254,7 @@ class MobilePricingTest extends TestCase
     }
 
     #[Test]
-    public function eap_upgrade_modal_shows_discounted_price()
+    public function eap_upgrade_modal_shows_eap_discount_applied()
     {
         $user = User::factory()->create(['stripe_id' => 'cus_'.uniqid()]);
         License::factory()->eapEligible()->withoutSubscriptionItem()->for($user)->create();
@@ -269,10 +269,86 @@ class MobilePricingTest extends TestCase
             ->for($subscription, 'subscription')
             ->create(['stripe_price' => self::PRO_PRICE_ID]);
 
-        $regularPrice = config('subscriptions.plans.max.price_yearly');
+        Livewire::test(MobilePricing::class)
+            ->assertSee('EAP discount applied');
+    }
+
+    #[Test]
+    public function upgrade_button_triggers_preview_for_existing_subscriber()
+    {
+        $user = User::factory()->create(['stripe_id' => 'cus_'.uniqid()]);
+        Auth::login($user);
+
+        $subscription = Cashier::$subscriptionModel::factory()
+            ->for($user)
+            ->active()
+            ->create(['stripe_price' => self::PRO_PRICE_ID]);
+
+        Cashier::$subscriptionItemModel::factory()
+            ->for($subscription, 'subscription')
+            ->create(['stripe_price' => self::PRO_PRICE_ID]);
 
         Livewire::test(MobilePricing::class)
-            ->assertSee('$'.$regularPrice.'/yr')
-            ->assertSee('EAP discount applied');
+            ->assertSeeHtml('wire:click="previewUpgrade"');
+    }
+
+    #[Test]
+    public function upgrade_modal_shows_proration_breakdown_when_preview_loaded()
+    {
+        $user = User::factory()->create(['stripe_id' => 'cus_'.uniqid()]);
+        Auth::login($user);
+
+        $subscription = Cashier::$subscriptionModel::factory()
+            ->for($user)
+            ->active()
+            ->create(['stripe_price' => self::PRO_PRICE_ID]);
+
+        Cashier::$subscriptionItemModel::factory()
+            ->for($subscription, 'subscription')
+            ->create(['stripe_price' => self::PRO_PRICE_ID]);
+
+        Livewire::test(MobilePricing::class)
+            ->set('upgradePreview', [
+                'amount_due' => '$28.50',
+                'raw_amount_due' => 2850,
+                'credit' => '$6.50',
+                'new_charge' => '$35.00',
+            ])
+            ->assertSee('Due today')
+            ->assertSee('$28.50')
+            ->assertSee('$6.50')
+            ->assertSee('$35.00')
+            ->assertSee('Credit for unused');
+    }
+
+    #[Test]
+    public function upgrade_modal_shows_fallback_when_preview_is_null()
+    {
+        $user = User::factory()->create(['stripe_id' => 'cus_'.uniqid()]);
+        Auth::login($user);
+
+        $subscription = Cashier::$subscriptionModel::factory()
+            ->for($user)
+            ->active()
+            ->create(['stripe_price' => self::PRO_PRICE_ID]);
+
+        Cashier::$subscriptionItemModel::factory()
+            ->for($subscription, 'subscription')
+            ->create(['stripe_price' => self::PRO_PRICE_ID]);
+
+        Livewire::test(MobilePricing::class)
+            ->set('upgradePreview', null)
+            ->assertSee('Unable to load pricing preview')
+            ->assertSee('Confirm upgrade');
+    }
+
+    #[Test]
+    public function non_subscriber_does_not_see_preview_upgrade_button()
+    {
+        $user = User::factory()->create();
+        Auth::login($user);
+
+        Livewire::test(MobilePricing::class)
+            ->assertDontSeeHtml('wire:click="previewUpgrade"');
     }
 }
