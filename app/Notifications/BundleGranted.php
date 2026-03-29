@@ -27,7 +27,7 @@ class BundleGranted extends Notification implements ShouldQueue
      */
     public function via(object $notifiable): array
     {
-        return ['mail'];
+        return ['mail', 'database'];
     }
 
     public function toMail(object $notifiable): MailMessage
@@ -53,6 +53,8 @@ class BundleGranted extends Notification implements ShouldQueue
     public function toArray(object $notifiable): array
     {
         return [
+            'title' => "You've been granted the {$this->bundle->name} bundle!",
+            'body' => "You now have access to {$this->grantedPlugins->count()} plugins in the {$this->bundle->name} bundle.",
             'bundle_id' => $this->bundle->id,
             'bundle_name' => $this->bundle->name,
             'granted_plugin_ids' => $this->grantedPlugins->pluck('id')->toArray(),

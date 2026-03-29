@@ -16,17 +16,13 @@ class ReviewPluginRepositoryTest extends TestCase
     /**
      * @return array<string, PromiseInterface>
      */
-    protected function fakeGitHub(string $repoSlug, array $tree = [], string $readme = '# Plugin', array $composerRequire = [], ?array $nativephpJson = null, string $defaultBranch = 'main'): array
+    protected function fakeGitHub(string $repoSlug, array $tree = [], array $composerRequire = [], ?array $nativephpJson = null, string $defaultBranch = 'main', ?string $latestRelease = null): array
     {
         $base = "https://api.github.com/repos/{$repoSlug}";
 
         $fakes = [
             $base => Http::response(['default_branch' => $defaultBranch]),
             "{$base}/git/trees/{$defaultBranch}*" => Http::response(['tree' => $tree]),
-            "{$base}/readme" => Http::response([
-                'content' => base64_encode($readme),
-                'encoding' => 'base64',
-            ]),
             "{$base}/contents/composer.json" => Http::response([
                 'content' => base64_encode(json_encode(['require' => $composerRequire])),
                 'encoding' => 'base64',
@@ -40,6 +36,13 @@ class ReviewPluginRepositoryTest extends TestCase
             ]);
         } else {
             $fakes["{$base}/contents/nativephp.json"] = Http::response([], 404);
+        }
+
+        if ($latestRelease !== null) {
+            $fakes["{$base}/releases/latest"] = Http::response(['tag_name' => $latestRelease]);
+        } else {
+            $fakes["{$base}/releases/latest"] = Http::response([], 404);
+            $fakes["{$base}/tags*"] = Http::response([]);
         }
 
         return $fakes;
@@ -100,51 +103,6 @@ class ReviewPluginRepositoryTest extends TestCase
 
         $this->assertFalse($checks['supports_ios']);
         $this->assertFalse($checks['supports_android']);
-    }
-
-    /** @test */
-    public function it_extracts_email_from_readme(): void
-    {
-        $plugin = Plugin::factory()->create([
-            'repository_url' => 'https://github.com/acme/email-plugin',
-        ]);
-
-        Http::fake($this->fakeGitHub('acme/email-plugin', readme: "# Plugin\n\nFor support contact help@acmeplugins.com"));
-
-        $checks = (new ReviewPluginRepository($plugin))->handle();
-
-        $this->assertTrue($checks['has_support_email']);
-        $this->assertEquals('help@acmeplugins.com', $checks['support_email']);
-    }
-
-    /** @test */
-    public function it_reports_missing_email_when_readme_has_none(): void
-    {
-        $plugin = Plugin::factory()->create([
-            'repository_url' => 'https://github.com/acme/no-email-plugin',
-        ]);
-
-        Http::fake($this->fakeGitHub('acme/no-email-plugin', readme: '# Plugin with no email'));
-
-        $checks = (new ReviewPluginRepository($plugin))->handle();
-
-        $this->assertFalse($checks['has_support_email']);
-        $this->assertNull($checks['support_email']);
-    }
-
-    /** @test */
-    public function it_skips_placeholder_emails_from_example_domains(): void
-    {
-        $plugin = Plugin::factory()->create([
-            'repository_url' => 'https://github.com/acme/placeholder-plugin',
-        ]);
-
-        Http::fake($this->fakeGitHub('acme/placeholder-plugin', readme: "# Plugin\n\nEmail: john@example.com\nReal support: support@realdomain.io"));
-
-        $checks = (new ReviewPluginRepository($plugin))->handle();
-
-        $this->assertTrue($checks['has_support_email']);
-        $this->assertEquals('support@realdomain.io', $checks['support_email']);
     }
 
     /** @test */
@@ -245,7 +203,6 @@ class ReviewPluginRepositoryTest extends TestCase
 
         Http::fake($this->fakeGitHub('acme/store-plugin',
             tree: [['path' => 'resources/ios/Bridge.swift', 'type' => 'blob']],
-            readme: 'Support: dev@storeplugin.io',
             composerRequire: ['nativephp/mobile' => '^3.0.0'],
         ));
 
@@ -260,8 +217,6 @@ class ReviewPluginRepositoryTest extends TestCase
         $this->assertIsArray($plugin->review_checks);
         $this->assertTrue($plugin->review_checks['supports_ios']);
         $this->assertFalse($plugin->review_checks['supports_android']);
-        $this->assertTrue($plugin->review_checks['has_support_email']);
-        $this->assertEquals('dev@storeplugin.io', $plugin->review_checks['support_email']);
         $this->assertTrue($plugin->review_checks['requires_mobile_sdk']);
     }
 
@@ -300,5 +255,126 @@ class ReviewPluginRepositoryTest extends TestCase
 
         Http::assertSent(fn ($request) => str_contains($request->url(), '/git/trees/master'));
         Http::assertNotSent(fn ($request) => str_contains($request->url(), '/git/trees/main'));
+    }
+
+    /** @test */
+    public function it_detects_license_file_in_repo(): void
+    {
+        $plugin = Plugin::factory()->create([
+            'repository_url' => 'https://github.com/acme/licensed-plugin',
+        ]);
+
+        Http::fake($this->fakeGitHub('acme/licensed-plugin', tree: [
+            ['path' => 'LICENSE', 'type' => 'blob'],
+            ['path' => 'src/ServiceProvider.php', 'type' => 'blob'],
+        ]));
+
+        $checks = (new ReviewPluginRepository($plugin))->handle();
+
+        $this->assertTrue($checks['has_license_file']);
+    }
+
+    /** @test */
+    public function it_detects_license_md_file_in_repo(): void
+    {
+        $plugin = Plugin::factory()->create([
+            'repository_url' => 'https://github.com/acme/licensed-md-plugin',
+        ]);
+
+        Http::fake($this->fakeGitHub('acme/licensed-md-plugin', tree: [
+            ['path' => 'LICENSE.md', 'type' => 'blob'],
+            ['path' => 'src/ServiceProvider.php', 'type' => 'blob'],
+        ]));
+
+        $checks = (new ReviewPluginRepository($plugin))->handle();
+
+        $this->assertTrue($checks['has_license_file']);
+    }
+
+    /** @test */
+    public function it_reports_missing_license_file(): void
+    {
+        $plugin = Plugin::factory()->create([
+            'repository_url' => 'https://github.com/acme/unlicensed-plugin',
+        ]);
+
+        Http::fake($this->fakeGitHub('acme/unlicensed-plugin', tree: [
+            ['path' => 'src/ServiceProvider.php', 'type' => 'blob'],
+        ]));
+
+        $checks = (new ReviewPluginRepository($plugin))->handle();
+
+        $this->assertFalse($checks['has_license_file']);
+    }
+
+    /** @test */
+    public function it_does_not_count_license_directory_as_license_file(): void
+    {
+        $plugin = Plugin::factory()->create([
+            'repository_url' => 'https://github.com/acme/license-dir-plugin',
+        ]);
+
+        Http::fake($this->fakeGitHub('acme/license-dir-plugin', tree: [
+            ['path' => 'LICENSE', 'type' => 'tree'],
+        ]));
+
+        $checks = (new ReviewPluginRepository($plugin))->handle();
+
+        $this->assertFalse($checks['has_license_file']);
+    }
+
+    /** @test */
+    public function it_detects_release_version_from_github_release(): void
+    {
+        $plugin = Plugin::factory()->create([
+            'repository_url' => 'https://github.com/acme/released-plugin',
+        ]);
+
+        Http::fake($this->fakeGitHub('acme/released-plugin', latestRelease: 'v1.0.0'));
+
+        $checks = (new ReviewPluginRepository($plugin))->handle();
+
+        $this->assertTrue($checks['has_release_version']);
+        $this->assertEquals('v1.0.0', $checks['release_version']);
+    }
+
+    /** @test */
+    public function it_falls_back_to_tags_when_no_release_exists(): void
+    {
+        $plugin = Plugin::factory()->create([
+            'repository_url' => 'https://github.com/acme/tagged-plugin',
+        ]);
+
+        $base = 'https://api.github.com/repos/acme/tagged-plugin';
+
+        Http::fake(array_merge(
+            $this->fakeGitHub('acme/tagged-plugin'),
+            [
+                "{$base}/releases/latest" => Http::response([], 404),
+                "{$base}/tags*" => Http::response([
+                    ['name' => 'v0.5.0'],
+                ]),
+            ]
+        ));
+
+        $checks = (new ReviewPluginRepository($plugin))->handle();
+
+        $this->assertTrue($checks['has_release_version']);
+        $this->assertEquals('v0.5.0', $checks['release_version']);
+    }
+
+    /** @test */
+    public function it_reports_missing_release_version(): void
+    {
+        $plugin = Plugin::factory()->create([
+            'repository_url' => 'https://github.com/acme/unreleased-plugin',
+        ]);
+
+        Http::fake($this->fakeGitHub('acme/unreleased-plugin'));
+
+        $checks = (new ReviewPluginRepository($plugin))->handle();
+
+        $this->assertFalse($checks['has_release_version']);
+        $this->assertNull($checks['release_version']);
     }
 }

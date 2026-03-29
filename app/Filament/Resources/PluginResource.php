@@ -91,6 +91,20 @@ class PluginResource extends Resource
                             ->label('Last Reviewed')
                             ->content(fn (?Plugin $record) => $record?->reviewed_at?->diffForHumans() ?? 'Never'),
 
+                        Forms\Components\Placeholder::make('review_license')
+                            ->label('License File (required)')
+                            ->content(fn (?Plugin $record) => ($record?->review_checks['has_license_file'] ?? false) ? '✅ Found' : '❌ Missing'),
+
+                        Forms\Components\Placeholder::make('review_release')
+                            ->label('Release Version (required)')
+                            ->content(fn (?Plugin $record) => ($record?->review_checks['has_release_version'] ?? false)
+                                ? '✅ '.($record->review_checks['release_version'] ?? '')
+                                : '❌ Missing'),
+
+                        Forms\Components\Placeholder::make('review_webhook')
+                            ->label('Webhook Configured (required)')
+                            ->content(fn (?Plugin $record) => $record?->webhook_installed ? '✅ Configured' : '❌ Not configured'),
+
                         Forms\Components\Placeholder::make('review_ios')
                             ->label('iOS Support')
                             ->content(fn (?Plugin $record) => ($record?->review_checks['supports_ios'] ?? false) ? '✅ Found' : '❌ Missing'),
@@ -102,12 +116,6 @@ class PluginResource extends Resource
                         Forms\Components\Placeholder::make('review_js')
                             ->label('JS Support')
                             ->content(fn (?Plugin $record) => ($record?->review_checks['supports_js'] ?? false) ? '✅ Found' : '❌ Missing'),
-
-                        Forms\Components\Placeholder::make('review_email')
-                            ->label('Support Email')
-                            ->content(fn (?Plugin $record) => ($record?->review_checks['has_support_email'] ?? false)
-                                ? '✅ '.($record->review_checks['support_email'] ?? '')
-                                : '❌ Missing'),
 
                         Forms\Components\Placeholder::make('review_sdk')
                             ->label('Requires nativephp/mobile')
@@ -368,10 +376,11 @@ class PluginResource extends Resource
                             }
 
                             $lines = collect([
+                                ['License file *', $checks['has_license_file']],
+                                ['Release version *', $checks['has_release_version'] ? $checks['release_version'] : false],
                                 ['iOS support', $checks['supports_ios']],
                                 ['Android support', $checks['supports_android']],
                                 ['JS support', $checks['supports_js']],
-                                ['Support email', $checks['has_support_email'] ? $checks['support_email'] : false],
                                 ['Requires nativephp/mobile', $checks['requires_mobile_sdk'] ? $checks['mobile_sdk_constraint'] : false],
                                 ['iOS min_version', $checks['has_ios_min_version'] ? $checks['ios_min_version'] : false],
                                 ['Android min_version', $checks['has_android_min_version'] ? $checks['android_min_version'] : false],
@@ -388,16 +397,17 @@ class PluginResource extends Resource
                             })->implode('<br>');
 
                             $passed = collect($checks)->only([
+                                'has_license_file', 'has_release_version',
                                 'supports_ios', 'supports_android', 'supports_js',
-                                'has_support_email', 'requires_mobile_sdk',
+                                'requires_mobile_sdk',
                                 'has_ios_min_version', 'has_android_min_version',
                             ])->filter()->count();
 
                             Notification::make()
-                                ->title("Review checks complete ({$passed}/7 passed)")
+                                ->title("Review checks complete ({$passed}/8 passed)")
                                 ->body(new HtmlString($lines))
                                 ->duration(15000)
-                                ->color($passed === 7 ? 'success' : 'warning')
+                                ->color($passed === 8 ? 'success' : 'warning')
                                 ->send();
                         }),
                 ])

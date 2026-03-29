@@ -16,7 +16,7 @@
             </ol>
         </nav>
         <flux:heading size="xl" class="mt-2">Submit Your Plugin</flux:heading>
-        <flux:text>Add your plugin to the NativePHP Plugin Directory</flux:text>
+        <flux:text>Add your plugin to the NativePHP Plugin Marketplace</flux:text>
     </div>
 
     <div class="mx-auto max-w-3xl space-y-8">

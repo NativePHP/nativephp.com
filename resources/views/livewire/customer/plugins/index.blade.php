@@ -15,7 +15,7 @@
                 </div>
                 <flux:heading size="lg" class="mt-4">Submit Your Plugin</flux:heading>
                 <flux:text class="mt-2">
-                    Built a plugin? Submit it to the NativePHP Plugin Directory and share it with the community.
+                    Built a plugin? Submit it to the NativePHP Plugin Marketplace and share it with the community.
                 </flux:text>
                 <flux:button variant="primary" href="{{ route('customer.plugins.create') }}" class="mt-4">
                     Submit a Plugin

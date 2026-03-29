@@ -79,9 +79,9 @@
     }
 }
 
-/* Prevents scrollbars from appearing when a popover is open */
-html:has(#mobile-menu-popover:popover-open) {
-    overflow: hidden;
+/* Compensate for custom scrollbar width when Flux locks scroll */
+html[data-flux-scroll-unlock] {
+    padding-right: 8px !important;
 }
 
 /* Scrollbar width */
@@ -207,6 +207,18 @@ nav.docs-navigation li:has(.third-tier .exact-active) > .subsection-header {
 }
 
 /* Prose */
+.prose h1,
+.prose h2,
+.prose h3 {
+    & .heading-anchor {
+        @apply inline-block opacity-0 translate-x-[-4px] transition-all duration-200 ease-out;
+    }
+
+    &:hover .heading-anchor {
+        @apply opacity-100 translate-x-0;
+    }
+}
+
 .prose h1 {
     @apply text-2xl;
 }

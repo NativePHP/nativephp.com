@@ -138,10 +138,20 @@ class Create extends Component
             ],
             'pluginType' => ['required', 'string', 'in:free,paid'],
             'notes' => ['nullable', 'string', 'max:5000'],
-            'supportChannel' => ['nullable', 'string', 'max:255'],
+            'supportChannel' => [
+                'required',
+                'string',
+                'max:255',
+                function (string $attribute, mixed $value, \Closure $fail) {
+                    if (! filter_var($value, FILTER_VALIDATE_EMAIL) && ! filter_var($value, FILTER_VALIDATE_URL)) {
+                        $fail('The support channel must be a valid email address or URL.');
+                    }
+                },
+            ],
         ], [
             'repository.required' => 'Please select a repository for your plugin.',
             'repository.regex' => 'Please enter a valid repository in the format vendor/repo-name.',
+            'supportChannel.required' => 'Please provide a support channel (email or URL) for your plugin.',
         ]);
 
         if ($this->pluginType === 'paid' && ! Feature::active(AllowPaidPlugins::class)) {

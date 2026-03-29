@@ -49,12 +49,14 @@ class PluginDirectoryController extends Controller
     {
         $plugin = Plugin::findByVendorPackageOrFail($vendor, $package);
 
-        abort_unless($plugin->isApproved(), 404);
-
         $user = Auth::user();
 
-        // For paid plugins, check if user has an accessible price
-        if ($plugin->isPaid() && ! $plugin->hasAccessiblePriceFor($user)) {
+        $isAdmin = $user?->isAdmin() ?? false;
+
+        abort_unless($plugin->isApproved() || $isAdmin, 404);
+
+        // For paid plugins, check if user has an accessible price (admins bypass)
+        if (! $isAdmin && $plugin->isPaid() && ! $plugin->hasAccessiblePriceFor($user)) {
             abort(404);
         }
 
@@ -72,6 +74,7 @@ class PluginDirectoryController extends Controller
             'bestPrice' => $bestPrice,
             'regularPrice' => $regularPrice,
             'hasDiscount' => $bestPrice && $regularPrice && $bestPrice->id !== $regularPrice->id,
+            'isAdminPreview' => ! $plugin->isApproved(),
         ]);
     }
 

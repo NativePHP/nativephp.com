@@ -25,7 +25,7 @@ class LicenseKeyGenerated extends Notification implements ShouldQueue
      */
     public function via(object $notifiable): array
     {
-        return ['mail'];
+        return ['mail', 'database'];
     }
 
     public function toMail(object $notifiable): MailMessage
@@ -58,6 +58,8 @@ class LicenseKeyGenerated extends Notification implements ShouldQueue
     public function toArray(object $notifiable): array
     {
         return [
+            'title' => 'Your NativePHP License Key',
+            'body' => 'Your license key has been generated and is ready to use.',
             'license_key' => $this->licenseKey,
             'firstName' => $this->firstName,
         ];

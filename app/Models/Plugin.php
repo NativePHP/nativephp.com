@@ -7,6 +7,7 @@ use App\Enums\PluginStatus;
 use App\Enums\PluginTier;
 use App\Enums\PluginType;
 use App\Enums\PriceTier;
+use App\Notifications\NewPluginAvailable;
 use App\Notifications\PluginApproved;
 use App\Notifications\PluginRejected;
 use App\Services\PluginSyncService;
@@ -20,6 +21,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Support\Facades\Notification;
 
 class Plugin extends Model
 {
@@ -300,6 +302,46 @@ class Plugin extends Model
     }
 
     /**
+     * Check if all required review checks have passed.
+     * A plugin cannot be approved until these checks pass.
+     */
+    public function passesRequiredReviewChecks(): bool
+    {
+        $checks = $this->review_checks;
+
+        if (! $checks) {
+            return false;
+        }
+
+        return ! empty($checks['has_license_file']) && ! empty($checks['has_release_version']) && $this->webhook_installed;
+    }
+
+    /**
+     * Get the list of failing required review checks.
+     *
+     * @return array<int, string>
+     */
+    public function getFailingRequiredChecks(): array
+    {
+        $checks = $this->review_checks;
+        $failing = [];
+
+        if (empty($checks['has_license_file'])) {
+            $failing[] = 'License file (LICENSE or LICENSE.md)';
+        }
+
+        if (empty($checks['has_release_version'])) {
+            $failing[] = 'Release version (GitHub release or tag)';
+        }
+
+        if (! $this->webhook_installed) {
+            $failing[] = 'Webhook configured';
+        }
+
+        return $failing;
+    }
+
+    /**
      * @param  Builder<Plugin>  $query
      * @return Builder<Plugin>
      */
@@ -509,6 +551,7 @@ class Plugin extends Model
     public function approve(int $approvedById): void
     {
         $previousStatus = $this->status;
+        $isFirstApproval = $this->approved_at === null;
 
         $this->update([
             'status' => PluginStatus::Approved,
@@ -526,6 +569,15 @@ class Plugin extends Model
         );
 
         $this->user->notify(new PluginApproved($this));
+
+        if ($isFirstApproval) {
+            $recipients = User::query()
+                ->where('receives_new_plugin_notifications', true)
+                ->where('id', '!=', $this->user_id)
+                ->get();
+
+            Notification::send($recipients, new NewPluginAvailable($this));
+        }
 
         resolve(PluginSyncService::class)->sync($this);
     }
