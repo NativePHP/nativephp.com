@@ -1,4 +1,10 @@
 <form wire:submit="submit" class="space-y-6">
+    @if(session()->has('success'))
+        <flux:callout variant="success" icon="check-circle">
+            <flux:callout.text>{{ session('success') }}</flux:callout.text>
+        </flux:callout>
+    @endif
+
     @if(! $isEditing)
         {{-- Name Field --}}
         <flux:field>

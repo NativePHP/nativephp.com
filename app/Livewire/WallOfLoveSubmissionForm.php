@@ -77,7 +77,14 @@ class WallOfLoveSubmissionForm extends Component
 
             $this->submission->update($data);
 
-            return to_route('dashboard')->with('success', 'Your listing has been updated.');
+            if ($this->photo) {
+                $this->existingPhoto = $data['photo_path'];
+                $this->reset('photo');
+            }
+
+            session()->flash('success', 'Your listing has been updated.');
+
+            return null;
         }
 
         $photoPath = null;
