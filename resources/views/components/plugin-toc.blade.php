@@ -15,21 +15,25 @@
     }"
     x-show="headings.length > 0"
     x-cloak
-    class="mb-6"
 >
-    <h3 class="flex items-center gap-1.5 text-sm opacity-60">
-        <x-icons.stacked-lines class="size-[18px]" />
-        <div>On this page</div>
-    </h3>
+    <flux:dropdown position="bottom" align="end">
+        <flux:button variant="filled" size="sm" class="!rounded-full">
+            <x-icons.stacked-lines class="size-4" />
+            On this page
+        </flux:button>
 
-    <div class="mt-4 flex flex-col space-y-2 overflow-y-auto overflow-x-hidden border-l text-xs dark:border-l-white/15">
-        <template x-for="heading in headings" :key="heading.id">
-            <a
-                :href="'#' + heading.id"
-                :class="heading.level === 2 ? 'pb-1 pl-3' : 'py-1 pl-6'"
-                class="transition duration-300 ease-in-out will-change-transform hover:translate-x-0.5 hover:text-violet-400 hover:opacity-100 dark:text-white/80"
-                x-text="heading.text"
-            ></a>
-        </template>
-    </div>
+        <flux:popover class="w-64">
+            <nav class="flex max-h-80 flex-col gap-0.5 overflow-y-auto">
+                <template x-for="heading in headings" :key="heading.id">
+                    <a
+                        :href="'#' + heading.id"
+                        x-on:click.prevent="document.getElementById(heading.id)?.scrollIntoView({ behavior: 'smooth', block: 'start' })"
+                        :class="heading.level === 2 ? 'pl-2' : 'pl-5'"
+                        class="rounded-md px-2 py-1.5 text-xs transition hover:bg-zinc-100 dark:text-white/80 dark:hover:bg-zinc-700"
+                        x-text="heading.text"
+                    ></a>
+                </template>
+            </nav>
+        </flux:popover>
+    </flux:dropdown>
 </div>
