@@ -79,9 +79,16 @@
     }
 }
 
-/* Prevents scrollbars from appearing when a popover is open */
+/* Compensate for custom scrollbar width when overflow is hidden */
+/* Browser UA sets overflow:hidden on html:has(:modal); Flux JS sets it for menus */
+/* Neither adds padding-right to prevent layout shift with custom 8px scrollbar */
+html:has(dialog:modal) {
+    padding-right: 8px !important;
+}
+
 html:has(#mobile-menu-popover:popover-open) {
     overflow: hidden;
+    padding-right: 8px;
 }
 
 /* Scrollbar width */

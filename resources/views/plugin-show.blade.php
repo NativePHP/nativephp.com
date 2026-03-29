@@ -95,38 +95,42 @@
         <x-divider />
 
         <div class="mt-2 flex flex-col-reverse gap-8 lg:flex-row lg:items-start">
-            {{-- Main content - README --}}
-            <div class="min-w-0 grow">
-                @if ($plugin->readme_html)
-                    <x-plugin-toc />
-                @endif
-
-                <article
-                    x-init="
-                        () => {
-                            motion.inView($el, () => {
-                                gsap.fromTo(
-                                    $el,
-                                    { autoAlpha: 0, y: 5 },
-                                    { autoAlpha: 1, y: 0, duration: 0.7, ease: 'power1.out' },
-                                )
-                            })
-                        }
-                    "
-                    class="prose min-w-0 max-w-none grow text-gray-600 dark:text-gray-400 dark:prose-headings:text-white"
-                    aria-labelledby="plugin-title"
-                >
+                {{-- Main content - README --}}
+                <div class="min-w-0 grow">
                     @if ($plugin->readme_html)
-                        {!! $plugin->readme_html !!}
-                @else
-                    <div class="rounded-xl border border-gray-200 bg-gray-50 p-8 text-center dark:border-gray-700 dark:bg-slate-800/50">
-                        <p class="text-gray-500 dark:text-gray-400">
-                            README not available yet.
-                        </p>
-                    </div>
+                        <div class="sticky top-20 z-10 mb-4 flex justify-end">
+                            <div class="rounded-full bg-white shadow-sm dark:bg-zinc-800">
+                                <x-plugin-toc />
+                            </div>
+                        </div>
                     @endif
-                </article>
-            </div>
+
+                    <article
+                        x-init="
+                            () => {
+                                motion.inView($el, () => {
+                                    gsap.fromTo(
+                                        $el,
+                                        { autoAlpha: 0, y: 5 },
+                                        { autoAlpha: 1, y: 0, duration: 0.7, ease: 'power1.out' },
+                                    )
+                                })
+                            }
+                        "
+                        class="prose min-w-0 max-w-none grow text-gray-600 dark:text-gray-400 dark:prose-headings:text-white"
+                        aria-labelledby="plugin-title"
+                    >
+                        @if ($plugin->readme_html)
+                            {!! $plugin->readme_html !!}
+                        @else
+                            <div class="rounded-xl border border-gray-200 bg-gray-50 p-8 text-center dark:border-gray-700 dark:bg-slate-800/50">
+                                <p class="text-gray-500 dark:text-gray-400">
+                                    README not available yet.
+                                </p>
+                            </div>
+                        @endif
+                    </article>
+                </div>
 
             {{-- Sidebar - Plugin details --}}
             <aside
