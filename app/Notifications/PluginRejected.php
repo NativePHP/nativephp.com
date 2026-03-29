@@ -37,7 +37,7 @@ class PluginRejected extends Notification implements ShouldQueue
             ->line("Unfortunately, your plugin **{$this->plugin->name}** was not approved for the NativePHP Plugin Marketplace.")
             ->line('**Reason:**')
             ->line($this->plugin->rejection_reason)
-            ->action('View Your Plugins', route('customer.plugins.index'))
+            ->action('View Plugin', route('customer.plugins.show', $this->plugin->routeParams()))
             ->line('If you have questions about this decision, please reach out to us.');
     }
 
@@ -54,6 +54,8 @@ class PluginRejected extends Notification implements ShouldQueue
             'plugin_id' => $this->plugin->id,
             'plugin_name' => $this->plugin->name,
             'rejection_reason' => $this->plugin->rejection_reason,
+            'action_url' => route('customer.plugins.show', $this->plugin->routeParams()),
+            'action_label' => 'View Plugin',
         ];
     }
 }

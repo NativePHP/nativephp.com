@@ -1,5 +1,5 @@
 <div class="mx-auto max-w-2xl">
-    <div class="mb-6 flex items-center justify-between">
+    <div class="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
             <flux:heading size="xl">Notifications</flux:heading>
             <flux:text>Stay up to date with your account activity.</flux:text>
