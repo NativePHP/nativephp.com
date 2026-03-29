@@ -200,7 +200,10 @@
                     ])
                     aria-current="{{ request()->routeIs('support.*') ? 'page' : 'false' }}"
                 >
-                    Support
+                    <span class="inline-flex items-center gap-1.5">
+                        Support
+                        <span class="rounded-full bg-emerald-500 px-1.5 py-px text-[10px] font-bold leading-tight text-white">New</span>
+                    </span>
                 </a>
 
                 {{-- Login/Logout --}}

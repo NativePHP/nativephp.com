@@ -11,9 +11,9 @@
 
         {{-- Additional Support Information --}}
         <div class="my-10 rounded-xl bg-gradient-to-br from-[#FFF0DC] to-[#E8EEFF] p-8 dark:from-blue-900/10 dark:to-[#4c407f]/25">
-            <h2 class="mb-4 text-2xl font-medium">Need more help?</h2>
+            <h2 class="mb-4 text-2xl font-medium">Read the docs</h2>
             <p class="text-lg text-gray-700 dark:text-gray-300">
-                Check out our <a href="/docs" class="font-medium text-violet-600 hover:text-violet-700 dark:text-violet-400 dark:hover:text-violet-300">documentation</a> for comprehensive guides and tutorials to help you get the most out of NativePHP.
+                Before reaching out for help, take a look through our <a href="/docs" class="font-medium text-violet-600 hover:text-violet-700 dark:text-violet-400 dark:hover:text-violet-300">documentation</a>. It's concise by design &mdash; you can read the whole thing in under an hour &mdash; and most questions are answered there.
             </p>
         </div>
 
