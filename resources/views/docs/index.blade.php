@@ -1,3 +1,8 @@
+@push('head')
+    <meta name="docsearch:platform" content="{{ $platform }}" />
+    <meta name="docsearch:version" content="{{ $version }}" />
+@endpush
+
 <x-docs-layout>
     <x-slot name="sidebarLeft">
         {!! $navigation !!}
