@@ -39,7 +39,6 @@ class HandleCustomerSubscriptionCreatedJob implements ShouldQueue
             return;
         }
 
-        $subscriptionPlan = \App\Enums\Subscription::fromStripeSubscription($stripeSubscription);
         $cashierSubscriptionItemId = SubscriptionItem::query()
             ->where('stripe_id', $stripeSubscription->items->first()->id)
             ->first()
@@ -82,18 +81,7 @@ class HandleCustomerSubscriptionCreatedJob implements ShouldQueue
             }
         }
 
-        // Normal flow - create a new license
-        $nameParts = explode(' ', $user->name ?? '', 2);
-        $firstName = $nameParts[0] ?: null;
-        $lastName = $nameParts[1] ?? null;
-
-        dispatch(new CreateAnystackLicenseJob(
-            $user,
-            $subscriptionPlan,
-            $cashierSubscriptionItemId,
-            $firstName,
-            $lastName,
-        ));
+        // License creation via Anystack has been disabled for now.
     }
 
     protected function constructStripeSubscription(): ?Subscription
