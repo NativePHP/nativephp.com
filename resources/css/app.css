@@ -305,6 +305,49 @@ nav.docs-navigation li:has(.third-tier .exact-active) > .subsection-header {
 }
 
 /*
+ The wrapper handles the visual container (border radius,
+ overflow clipping) so code blocks don't break out of their
+ rounded corners on mobile. The pre inside handles scrolling.
+*/
+.torchlight-with-copy {
+    @apply my-4 overflow-hidden rounded-md;
+}
+
+.prose .torchlight-with-copy pre {
+    @apply my-0;
+}
+
+/*
+ Transparent scrollbar that fades in on hover.
+*/
+.torchlight-with-copy pre {
+    scrollbar-width: thin;
+    scrollbar-color: transparent transparent;
+}
+
+.torchlight-with-copy pre:hover {
+    scrollbar-color: rgb(255 255 255 / 0.3) transparent;
+}
+
+.torchlight-with-copy pre::-webkit-scrollbar {
+    height: 6px;
+}
+
+.torchlight-with-copy pre::-webkit-scrollbar-track,
+.torchlight-with-copy pre::-webkit-scrollbar-corner {
+    background: transparent;
+}
+
+.torchlight-with-copy pre::-webkit-scrollbar-thumb {
+    background: transparent;
+    border-radius: 3px;
+}
+
+.torchlight-with-copy pre:hover::-webkit-scrollbar-thumb {
+    background: rgb(255 255 255 / 0.2);
+}
+
+/*
  Prose dark mode
 */
 .dark .prose strong {
