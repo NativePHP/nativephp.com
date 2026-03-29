@@ -4,8 +4,10 @@ namespace App\Http\Controllers\Account;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\LoginRequest;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
+use Illuminate\Validation\ValidationException;
 
 class AuthController extends Controller
 {
@@ -27,9 +29,9 @@ class AuthController extends Controller
      *
      * @TODO Implement additional brute-force protection with custom blocked IPs model.
      *
-     * @return \Illuminate\Http\RedirectResponse
+     * @return RedirectResponse
      *
-     * @throws \Illuminate\Validation\ValidationException
+     * @throws ValidationException
      */
     public function processLogin(LoginRequest $request)
     {
