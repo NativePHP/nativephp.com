@@ -26,7 +26,7 @@ class MaxToUltraAnnouncement extends Notification implements ShouldQueue
             ->greeting($greeting)
             ->line('We have some exciting news: **your Max plan has been upgraded to NativePHP Ultra** - at no extra cost.')
             ->line('Here\'s what you now get as an Ultra subscriber:')
-            ->line('- **Teams** - invite up to 10 collaborators to share your plugin access')
+            ->line('- **Teams** - up to 5 seats (you + 4 collaborators) to share your plugin access')
             ->line('- **Free official plugins** - every NativePHP-published plugin, included with your subscription')
             ->line('- **Plugin Dev Kit** - tools and resources to build and publish your own plugins')
             ->line('- **90% Marketplace revenue** - keep up to 90% of earnings on paid plugins you publish')

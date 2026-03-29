@@ -222,7 +222,7 @@
                     >
                         <x-icons.checkmark class="size-5 shrink-0" />
                     </div>
-                    <div class="font-medium">Discounts on NativePHP courses and apps</div>
+                    <div class="font-medium">Exclusive discounts on future NativePHP products</div>
                 </div>
                 <div class="flex items-center gap-2">
                     <div
@@ -249,7 +249,7 @@
                     >
                         <x-icons.checkmark class="size-5 shrink-0" />
                     </div>
-                    <div class="font-medium">10 seats included <span x-text="interval === 'month' ? '($5/mo per extra seat)' : '($4/mo per extra seat)'"></span></div>
+                    <div class="font-medium">5 seats included <span x-text="interval === 'month' ? '($5/mo per extra seat)' : '($4/mo per extra seat)'"></span></div>
                 </div>
             </div>
         </div>

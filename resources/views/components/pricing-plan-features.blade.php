@@ -56,7 +56,7 @@
             />
             <div class="text-zinc-500">
                 Teams support &mdash;
-                <span class="font-medium text-black dark:text-white">10 seats</span>
+                <span class="font-medium text-black dark:text-white">5 seats</span>
                 included
                 <span class="text-xs">(extra: $5/seat/mo or $4/seat/yr)</span>
             </div>

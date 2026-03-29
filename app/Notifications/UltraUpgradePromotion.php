@@ -28,7 +28,7 @@ class UltraUpgradePromotion extends Notification implements ShouldQueue
             ->greeting($greeting)
             ->line("You're currently on the **{$this->currentPlanName}** plan - and we'd love to show you what you're missing.")
             ->line('**NativePHP Ultra** gives you everything you need to build and ship faster:')
-            ->line('- **Teams** - invite up to 10 collaborators to share your plugin access')
+            ->line('- **Teams** - up to 5 seats (you + 4 collaborators) to share your plugin access')
             ->line('- **Free official plugins** - every NativePHP-published plugin, included with your subscription')
             ->line('- **Plugin Dev Kit** - tools and resources to build and publish your own plugins')
             ->line('- **90% Marketplace revenue** - keep up to 90% of earnings on paid plugins you publish')

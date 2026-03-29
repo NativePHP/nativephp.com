@@ -101,7 +101,7 @@
                     color="gray"
                     :href="route('customer.team.index')"
                     link-text="Create a team"
-                    description="Invite up to 10 members to share Ultra benefits"
+                    description="Invite up to 4 members to share Ultra benefits (5 seats total)"
                 />
             @endif
         @endif
