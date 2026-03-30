@@ -7,6 +7,7 @@ use App\Enums\PriceTier;
 use App\Enums\Subscription;
 use App\Enums\TeamUserStatus;
 use Filament\Models\Contracts\FilamentUser;
+use Filament\Models\Contracts\HasName;
 use Filament\Panel;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -18,7 +19,7 @@ use Illuminate\Support\Collection;
 use Laravel\Cashier\Billable;
 use Laravel\Sanctum\HasApiTokens;
 
-class User extends Authenticatable implements FilamentUser
+class User extends Authenticatable implements FilamentUser, HasName
 {
     use Billable, HasApiTokens, HasFactory, Notifiable;
 
@@ -29,6 +30,11 @@ class User extends Authenticatable implements FilamentUser
         'remember_token',
         'github_token',
     ];
+
+    public function getFilamentName(): string
+    {
+        return $this->attributes['display_name'] ?? $this->name ?? $this->email;
+    }
 
     public function canAccessPanel(Panel $panel): bool
     {
