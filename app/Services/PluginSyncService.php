@@ -89,6 +89,10 @@ class PluginSyncService
             $updateData['android_version'] = $this->extractAndroidVersion($nativephpData);
         }
 
+        if ($composerData) {
+            $updateData['mobile_min_version'] = $composerData['require']['nativephp/mobile'] ?? null;
+        }
+
         if ($readme) {
             $updateData['readme_html'] = CommonMark::convertToHtml($readme);
         }

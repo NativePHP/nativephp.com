@@ -242,6 +242,11 @@ class PluginResource extends Resource
                     })
                     ->sortable(),
 
+                Tables\Columns\TextColumn::make('mobile_min_version')
+                    ->label('Mobile SDK')
+                    ->placeholder('-')
+                    ->toggleable(isToggledHiddenByDefault: true),
+
                 Tables\Columns\ToggleColumn::make('featured')
                     ->sortable(),
 

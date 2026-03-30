@@ -246,6 +246,14 @@
                             </dd>
                         </div>
 
+                        {{-- NativePHP Mobile --}}
+                        <div class="col-span-2 rounded-xl bg-gray-50 p-3 dark:bg-slate-700/30">
+                            <dt class="text-xs font-medium text-gray-500 dark:text-gray-400">NativePHP Mobile</dt>
+                            <dd class="mt-1 text-sm font-medium text-gray-900 dark:text-white">
+                                {{ $plugin->mobile_min_version ?? '—' }}
+                            </dd>
+                        </div>
+
                         {{-- iOS Version --}}
                         <div class="rounded-xl bg-gray-50 p-3 dark:bg-slate-700/30">
                             <dt class="text-xs font-medium text-gray-500 dark:text-gray-400">iOS</dt>
