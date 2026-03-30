@@ -35,7 +35,7 @@
                         Upgrade to NativePHP Ultra
                     </h3>
                     <p class="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
-                        Get all first-party plugins for free, premium support, team management, and more.
+                        Access all first-party plugins at no extra cost, premium support, team management, and more.
                     </p>
                     <div class="mt-4">
                         <a href="{{ route('pricing') }}" class="inline-flex items-center rounded-md border border-transparent bg-black px-4 py-2 text-sm font-medium text-white transition hover:bg-zinc-800 focus:outline-none focus:ring-2 focus:ring-zinc-500 focus:ring-offset-2 dark:bg-white dark:text-black dark:hover:bg-zinc-200">

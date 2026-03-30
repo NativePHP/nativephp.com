@@ -121,6 +121,9 @@
         </div>
 
         <x-footer />
+
+        <x-impersonate::banner/>
+
         @livewireScriptConfig
         @fluxScripts
         @vite('resources/js/app.js')

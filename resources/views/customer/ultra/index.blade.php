@@ -149,7 +149,7 @@
                                                     </div>
                                                 @endif
                                             </div>
-                                            <div>
+                                            <div class="min-w-0">
                                                 <a href="{{ route('plugins.show', $plugin->routeParams()) }}" class="font-medium text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300">
                                                     {{ $plugin->name }}
                                                 </a>
