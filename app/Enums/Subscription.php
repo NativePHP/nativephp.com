@@ -83,6 +83,12 @@ enum Subscription: string
 
     public function stripePriceId(bool $forceEap = false, bool $discounted = false, string $interval = 'year'): string
     {
+        // Monthly billing uses the regular monthly price (no EAP/discounted monthly prices exist)
+        if ($interval === 'month') {
+            return config("subscriptions.plans.{$this->value}.stripe_price_id_monthly")
+                ?? config("subscriptions.plans.{$this->value}.stripe_price_id");
+        }
+
         // EAP ends June 1st at midnight UTC
         if (now()->isBefore('2025-06-01 00:00:00') || $forceEap) {
             return config("subscriptions.plans.{$this->value}.stripe_price_id_eap");
@@ -90,10 +96,6 @@ enum Subscription: string
 
         if ($discounted) {
             return config("subscriptions.plans.{$this->value}.stripe_price_id_discounted");
-        }
-
-        if ($interval === 'month') {
-            return config("subscriptions.plans.{$this->value}.stripe_price_id_monthly");
         }
 
         return config("subscriptions.plans.{$this->value}.stripe_price_id");

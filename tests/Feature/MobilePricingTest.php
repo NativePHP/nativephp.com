@@ -311,14 +311,81 @@ class MobilePricingTest extends TestCase
             ->set('upgradePreview', [
                 'amount_due' => '$28.50',
                 'raw_amount_due' => 2850,
-                'credit' => '$6.50',
                 'new_charge' => '$35.00',
+                'is_prorated' => false,
+                'credit' => '$6.50',
+                'remaining_credit' => null,
             ])
             ->assertSee('Due today')
             ->assertSee('$28.50')
             ->assertSee('$6.50')
             ->assertSee('$35.00')
-            ->assertSee('Credit for unused');
+            ->assertSee('Credit for unused')
+            ->assertDontSee('pro-rated')
+            ->assertDontSee('credited to your next invoice');
+    }
+
+    #[Test]
+    public function upgrade_modal_shows_prorated_label_when_charge_is_prorated()
+    {
+        $user = User::factory()->create(['stripe_id' => 'cus_'.uniqid()]);
+        Auth::login($user);
+
+        $subscription = Cashier::$subscriptionModel::factory()
+            ->for($user)
+            ->active()
+            ->create(['stripe_price' => self::PRO_PRICE_ID]);
+
+        Cashier::$subscriptionItemModel::factory()
+            ->for($subscription, 'subscription')
+            ->create(['stripe_price' => self::PRO_PRICE_ID]);
+
+        Livewire::test(MobilePricing::class)
+            ->set('upgradePreview', [
+                'amount_due' => '$200.00',
+                'raw_amount_due' => 20000,
+                'new_charge' => '$250.00',
+                'is_prorated' => true,
+                'credit' => '$50.00',
+                'remaining_credit' => null,
+            ])
+            ->assertSee('New plan (Ultra)')
+            ->assertSee('pro-rated')
+            ->assertSee('$250.00')
+            ->assertSee('Credit for unused')
+            ->assertSee('$50.00')
+            ->assertSee('$200.00')
+            ->assertDontSee('credited to your next invoice');
+    }
+
+    #[Test]
+    public function upgrade_modal_shows_remaining_credit_note_when_credit_exceeds_charge()
+    {
+        $user = User::factory()->create(['stripe_id' => 'cus_'.uniqid()]);
+        Auth::login($user);
+
+        $subscription = Cashier::$subscriptionModel::factory()
+            ->for($user)
+            ->active()
+            ->create(['stripe_price' => self::PRO_PRICE_ID]);
+
+        Cashier::$subscriptionItemModel::factory()
+            ->for($subscription, 'subscription')
+            ->create(['stripe_price' => self::PRO_PRICE_ID]);
+
+        Livewire::test(MobilePricing::class)
+            ->set('upgradePreview', [
+                'amount_due' => '$0.00',
+                'raw_amount_due' => 0,
+                'new_charge' => '$35.00',
+                'is_prorated' => false,
+                'credit' => '$50.00',
+                'remaining_credit' => '$15.00',
+            ])
+            ->assertSee('$0.00')
+            ->assertSee('$35.00')
+            ->assertSee('$50.00')
+            ->assertSee('$15.00 will be credited to your next invoice');
     }
 
     #[Test]
