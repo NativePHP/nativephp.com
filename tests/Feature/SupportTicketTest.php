@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Filament\Resources\SupportTicketResource\Pages\ViewSupportTicket;
 use App\Filament\Resources\SupportTicketResource\Widgets\TicketRepliesWidget;
 use App\Livewire\Customer\Support\Create;
 use App\Livewire\Customer\Support\Index;
@@ -1136,6 +1137,37 @@ class SupportTicketTest extends TestCase
         Livewire::actingAs($admin)
             ->test(TicketRepliesWidget::class, ['record' => $ticket])
             ->call('togglePin', $reply->id);
+    }
+
+    #[Test]
+    public function admin_view_page_shows_user_email_when_name_is_null(): void
+    {
+        $admin = User::factory()->create(['email' => 'admin@test.com']);
+        config(['filament.users' => ['admin@test.com']]);
+
+        $namelessUser = User::factory()->create(['name' => null]);
+        $ticket = SupportTicket::factory()->create(['user_id' => $namelessUser->id]);
+
+        Livewire::actingAs($admin)
+            ->test(ViewSupportTicket::class, ['record' => $ticket->getRouteKey()])
+            ->assertOk()
+            ->assertSee($namelessUser->email);
+    }
+
+    #[Test]
+    public function admin_view_page_shows_name_and_email_when_user_has_name(): void
+    {
+        $admin = User::factory()->create(['email' => 'admin@test.com']);
+        config(['filament.users' => ['admin@test.com']]);
+
+        $namedUser = User::factory()->create(['name' => 'Jane Doe']);
+        $ticket = SupportTicket::factory()->create(['user_id' => $namedUser->id]);
+
+        Livewire::actingAs($admin)
+            ->test(ViewSupportTicket::class, ['record' => $ticket->getRouteKey()])
+            ->assertOk()
+            ->assertSee('Jane Doe')
+            ->assertSee($namedUser->email);
     }
 
     #[Test]
