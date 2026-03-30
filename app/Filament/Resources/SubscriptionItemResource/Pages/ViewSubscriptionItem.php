@@ -15,6 +15,7 @@ use Filament\Forms\Components\TextInput;
 use Filament\Infolists\Components;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\ViewRecord;
+use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Laravel\Cashier\SubscriptionItem;
 
@@ -79,7 +80,7 @@ class ViewSubscriptionItem extends ViewRecord
     {
         return $schema
             ->schema([
-                Components\Section::make('Subscription Item Details')
+                Section::make('Subscription Item Details')
                     ->schema([
                         Components\TextEntry::make('subscription.id')
                             ->label('Subscription ID')
