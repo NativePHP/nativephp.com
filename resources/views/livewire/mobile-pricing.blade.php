@@ -228,7 +228,7 @@
                     >
                         <x-icons.checkmark class="size-5 shrink-0" />
                     </div>
-                    <div class="font-medium">All first-party plugins for free</div>
+                    <div class="font-medium">All first-party plugins at no extra cost</div>
                 </div>
                 <div class="flex items-center gap-2">
                     <div
