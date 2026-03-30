@@ -32,6 +32,12 @@ class Dashboard extends Component
     }
 
     #[Computed]
+    public function isCompedSubscription(): bool
+    {
+        return auth()->user()->hasCompedSubscription();
+    }
+
+    #[Computed]
     public function subscriptionName(): ?string
     {
         $subscription = $this->activeSubscription;

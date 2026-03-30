@@ -69,6 +69,11 @@ class MobilePricing extends Component
             return;
         }
 
+        // Cancel any comped subscription before creating a new paid one
+        if ($user->hasCompedSubscription()) {
+            $user->subscription('default')->cancelNow();
+        }
+
         $user->createOrGetStripeCustomer();
 
         $checkout = $user
@@ -209,7 +214,7 @@ class MobilePricing extends Component
 
             $subscription = $user->subscription('default');
 
-            if ($subscription && $subscription->active()) {
+            if ($subscription && $subscription->active() && ! $user->hasCompedSubscription()) {
                 $hasExistingSubscription = true;
                 $isAlreadyUltra = $user->hasActiveUltraSubscription();
 
