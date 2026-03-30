@@ -84,7 +84,7 @@
         aria-modal="true"
         aria-label="Site menu"
         x-bind:style="width >= 1024 ? 'right:' + (window.innerWidth - $refs.menuButton.getBoundingClientRect().right - 6) + 'px' : ''"
-        class="fixed m-0 inset-[unset] inset-x-3 bottom-3.5 w-auto -translate-y-3 overflow-y-scroll overscroll-contain rounded-2xl bg-gray-200/50 opacity-0 ring-1 ring-gray-200/80 backdrop-blur-2xl transition-[opacity,transform] transition-discrete duration-300 open:translate-y-0 open:opacity-100 min-[500px]:inset-x-3.5 lg:bottom-auto lg:left-auto lg:w-md dark:bg-black/50 dark:text-white dark:ring-gray-700/70 starting:open:-translate-y-3 starting:open:opacity-0"
+        class="fixed m-0 inset-[unset] inset-x-3 bottom-3.5 w-auto -translate-y-3 overflow-y-scroll overscroll-contain rounded-2xl bg-gray-200/50 opacity-0 shadow-2xl ring-1 ring-gray-200/80 backdrop-blur-2xl transition-[opacity,transform] transition-discrete duration-300 open:translate-y-0 open:opacity-100 min-[500px]:inset-x-3.5 lg:bottom-auto lg:left-auto lg:w-md dark:bg-black/50 dark:text-white dark:shadow-black/40 dark:ring-gray-700/70 starting:open:-translate-y-3 starting:open:opacity-0"
     >
         <div class="@container flex flex-col overflow-hidden px-6 pt-4 pb-6">
             <nav
@@ -110,7 +110,7 @@
                         @class([
                             'flex items-center gap-2 py-3 transition duration-200',
                             'font-medium' => $isHomeActive,
-                            'opacity-50 hover:translate-x-1 hover:opacity-100' => ! $isHomeActive,
+                            'opacity-70 hover:translate-x-1 hover:opacity-100 dark:opacity-50' => ! $isHomeActive,
                         ])
                         aria-current="{{ $isHomeActive ? 'page' : 'false' }}"
                     >
@@ -133,7 +133,7 @@
                         @class([
                             'flex items-center gap-2 py-3 transition duration-200',
                             'font-medium' => $isUltraActive,
-                            'opacity-50 hover:translate-x-1 hover:opacity-100' => ! $isUltraActive,
+                            'opacity-70 hover:translate-x-1 hover:opacity-100 dark:opacity-50' => ! $isUltraActive,
                         ])
                         aria-current="{{ $isUltraActive ? 'page' : 'false' }}"
                     >
@@ -159,7 +159,7 @@
                         @class([
                             'flex items-center gap-2 py-3 transition duration-200',
                             'font-medium' => $isBlogActive,
-                            'opacity-50 hover:translate-x-1 hover:opacity-100' => ! $isBlogActive,
+                            'opacity-70 hover:translate-x-1 hover:opacity-100 dark:opacity-50' => ! $isBlogActive,
                         ])
                         aria-current="{{ $isBlogActive ? 'page' : 'false' }}"
                     >
@@ -179,7 +179,7 @@
                 {{-- <div>
                     <a
                         href="https://shop.nativephp.com/"
-                        class="flex items-center gap-2 py-3 opacity-50 transition duration-200 hover:translate-x-1 hover:opacity-100"
+                        class="flex items-center gap-2 py-3 opacity-70 transition duration-200 hover:translate-x-1 hover:opacity-100 dark:opacity-50"
                         aria-label="NativePHP Swag"
                     >
                         <div>Swag</div>
@@ -192,7 +192,7 @@
                         @class([
                             'flex items-center gap-2 py-3 transition duration-200',
                             'font-medium' => $isPartnersActive,
-                            'opacity-50 hover:translate-x-1 hover:opacity-100' => ! $isPartnersActive,
+                            'opacity-70 hover:translate-x-1 hover:opacity-100 dark:opacity-50' => ! $isPartnersActive,
                         ])
                         aria-current="{{ $isPartnersActive ? 'page' : 'false' }}"
                     >
@@ -215,7 +215,7 @@
                         @class([
                             'flex items-center gap-2 py-3 transition duration-200',
                             'font-medium' => $isSponsorActive,
-                            'opacity-50 hover:translate-x-1 hover:opacity-100' => ! $isSponsorActive,
+                            'opacity-70 hover:translate-x-1 hover:opacity-100 dark:opacity-50' => ! $isSponsorActive,
                         ])
                         aria-current="{{ $isSponsorActive ? 'page' : 'false' }}"
                     >
@@ -238,7 +238,7 @@
                         @class([
                             'flex items-center gap-2 py-3 transition duration-200',
                             'font-medium' => $isServicesActive,
-                            'opacity-50 hover:translate-x-1 hover:opacity-100' => ! $isServicesActive,
+                            'opacity-70 hover:translate-x-1 hover:opacity-100 dark:opacity-50' => ! $isServicesActive,
                         ])
                         aria-current="{{ $isServicesActive ? 'page' : 'false' }}"
                     >
@@ -261,7 +261,7 @@
                         @class([
                             'flex items-center gap-2 py-3 transition duration-200',
                             'font-medium' => $isCourseActive,
-                            'opacity-50 hover:translate-x-1 hover:opacity-100' => ! $isCourseActive,
+                            'opacity-70 hover:translate-x-1 hover:opacity-100 dark:opacity-50' => ! $isCourseActive,
                         ])
                         aria-current="{{ $isCourseActive ? 'page' : 'false' }}"
                     >
@@ -287,7 +287,7 @@
                         @class([
                             'flex items-center gap-2 py-3 transition duration-200',
                             'font-medium' => $isSupportActive,
-                            'opacity-50 hover:translate-x-1 hover:opacity-100' => ! $isSupportActive,
+                            'opacity-70 hover:translate-x-1 hover:opacity-100 dark:opacity-50' => ! $isSupportActive,
                         ])
                         aria-current="{{ $isSupportActive ? 'page' : 'false' }}"
                     >
@@ -312,7 +312,7 @@
                         @auth
                             <a
                                 href="{{ route('dashboard') }}"
-                                class="flex w-full items-center justify-between py-3 opacity-50 transition duration-200 hover:translate-x-1 hover:opacity-100"
+                                class="flex w-full items-center justify-between py-3 opacity-70 transition duration-200 hover:translate-x-1 hover:opacity-100 dark:opacity-50"
                                 title="Logged in as {{ auth()->user()->email }}"
                             >
                                 <div class="flex flex-col items-start">
@@ -326,7 +326,7 @@
                                 @class([
                                     'flex items-center gap-2 py-3 transition duration-200',
                                     'font-medium' => $isLoginActive,
-                                    'opacity-50 hover:translate-x-1 hover:opacity-100' => ! $isLoginActive,
+                                    'opacity-70 hover:translate-x-1 hover:opacity-100 dark:opacity-50' => ! $isLoginActive,
                                 ])
                                 aria-current="{{ $isLoginActive ? 'page' : 'false' }}"
                             >
@@ -342,6 +342,19 @@
                             </a>
                         @endauth
                     </div>
+                    @auth
+                        <div>
+                            <form method="POST" action="{{ route('customer.logout') }}">
+                                @csrf
+                                <button
+                                    type="submit"
+                                    class="flex items-center gap-2 py-3 opacity-70 transition duration-200 hover:translate-x-1 hover:opacity-100 dark:opacity-50"
+                                >
+                                    <div>Log out</div>
+                                </button>
+                            </form>
+                        </div>
+                    @endauth
                 @endfeature
 
                 {{-- Cart --}}
@@ -350,7 +363,7 @@
                         <div>
                             <a
                                 href="{{ route('cart.show') }}"
-                                class="flex items-center gap-2 py-3 opacity-50 transition duration-200 hover:translate-x-1 hover:opacity-100"
+                                class="flex items-center gap-2 py-3 opacity-70 transition duration-200 hover:translate-x-1 hover:opacity-100 dark:opacity-50"
                             >
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 0 0-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 0 0-16.536-1.84M7.5 14.25 5.106 5.272M6 20.25a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Zm12.75 0a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z" />

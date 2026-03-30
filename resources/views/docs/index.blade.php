@@ -23,7 +23,12 @@
             ]" />
         @endif
 
-        <x-docs.toc-and-sponsors :tableOfContents="$tableOfContents" />
+        <x-docs.toc-and-sponsors :tableOfContents="$tableOfContents">
+            {{-- Ad rotation --}}
+            <x-blog.ad-rotation
+                :ads="$platform === 'desktop' ? ['mobile', 'ultra'] : ['devkit', 'ultra']"
+            />
+        </x-docs.toc-and-sponsors>
     </x-slot>
 
     <x-docs.old-version-notice
@@ -147,4 +152,10 @@
             Edit this page on GitHub
         </x-docs.link-subtle>
     </div>
+
+    {{-- Mobile ad rotation --}}
+    <x-blog.ad-rotation
+        class="mx-auto mt-5 max-w-52 xl:hidden"
+        :ads="$platform === 'desktop' ? ['mobile', 'ultra'] : ['devkit', 'ultra']"
+    />
 </x-docs-layout>
