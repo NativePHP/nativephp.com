@@ -134,7 +134,7 @@
             @if($isEapCustomer)
                 <div class="flex items-start gap-1.5 pt-5">
                     <div class="text-5xl font-semibold">
-                        $<span x-text="interval === 'month' ? '35' : '{{ $eapYearlyPrice }}'"></span>
+                        $<span x-text="interval === 'month' ? '{{ config('subscriptions.plans.max.price_monthly') }}' : '{{ $eapYearlyPrice }}'"></span>
                     </div>
                     <div class="self-end pb-1.5 text-zinc-500">
                         <span x-text="interval === 'month' ? 'per month' : 'per year'"></span>
@@ -154,11 +154,11 @@
                 <div
                     class="flex items-start gap-1.5 pt-5"
                     :aria-label="interval === 'month'
-                        ? 'Price: $35 per month'
-                        : 'Price: $350 per year'"
+                        ? 'Price: ${{ config('subscriptions.plans.max.price_monthly') }} per month'
+                        : 'Price: ${{ config('subscriptions.plans.max.price_yearly') }} per year'"
                 >
                     <div class="text-5xl font-semibold">
-                        $<span x-text="interval === 'month' ? '35' : '350'"></span>
+                        $<span x-text="interval === 'month' ? '{{ config('subscriptions.plans.max.price_monthly') }}' : '{{ config('subscriptions.plans.max.price_yearly') }}'"></span>
                     </div>
                     <div class="self-end pb-1.5 text-zinc-500">
                         <span x-text="interval === 'month' ? 'per month' : 'per year'"></span>
@@ -282,7 +282,7 @@
                     >
                         <x-icons.checkmark class="size-5 shrink-0" />
                     </div>
-                    <div class="font-medium">5 seats included <span x-text="interval === 'month' ? '($5/mo per extra seat)' : '($4/mo per extra seat)'"></span></div>
+                    <div class="font-medium">{{ config('subscriptions.plans.max.included_seats') }} seats included <span x-text="interval === 'month' ? '(${{ config('subscriptions.plans.max.extra_seat_price_monthly') }}/mo per extra seat)' : '(${{ config('subscriptions.plans.max.extra_seat_price_yearly') }}/mo per extra seat)'"></span></div>
                 </div>
             </div>
         </div>

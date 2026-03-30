@@ -122,7 +122,7 @@
             </p>
 
             <ul>
-                <li><b>Teams</b> &mdash; up to 5 seats (you + 4 collaborators) to share your plugin access</li>
+                <li><b>Teams</b> &mdash; up to {{ config('subscriptions.plans.max.included_seats') }} seats (you + {{ config('subscriptions.plans.max.included_seats') - 1 }} collaborators) to share your plugin access</li>
                 <li><b>Free official plugins</b> &mdash; every NativePHP-published plugin, included with your subscription</li>
                 <li><b>Plugin Dev Kit</b> &mdash; tools and resources to build and publish your own plugins</li>
                 <li><b>90% Marketplace revenue</b> &mdash; keep up to 90% of earnings on paid plugins you publish</li>

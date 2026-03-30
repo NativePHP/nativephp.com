@@ -236,7 +236,7 @@
                                                     <p class="text-sm font-medium text-gray-900 dark:text-white">
                                                         {{ $item->getFormattedPrice() }}
                                                     </p>
-                                                    @if ($item->price_at_addition === 0 && $item->plugin->isOfficial())
+                                                    @if ($item->plugin->isOfficial() && auth()->user()?->hasUltraAccess())
                                                         <span class="text-xs text-green-600 dark:text-green-400">Included with Ultra</span>
                                                     @endif
                                                 </div>

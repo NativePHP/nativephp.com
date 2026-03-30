@@ -22,6 +22,7 @@ use App\Http\Controllers\ShowcaseController;
 use App\Http\Controllers\ShowDocumentationController;
 use App\Http\Controllers\TeamController;
 use App\Http\Controllers\TeamUserController;
+use App\Http\Controllers\UltraController;
 use App\Livewire\ClaimDonationLicense;
 use App\Livewire\Customer\Dashboard;
 use App\Livewire\Customer\Developer\Onboarding;
@@ -383,6 +384,9 @@ Route::middleware(['auth', EnsureFeaturesAreActive::using(ShowAuthButtons::class
 
         return $user->redirectToBillingPortal(route('dashboard'));
     })->name('billing-portal');
+
+    // Ultra benefits page
+    Route::get('ultra', [UltraController::class, 'index'])->name('ultra.index');
 
     // Team management routes
     Route::get('team', [TeamController::class, 'index'])->name('team.index');

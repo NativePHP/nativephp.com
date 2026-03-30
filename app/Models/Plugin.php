@@ -185,16 +185,6 @@ class Plugin extends Model
             ->orderBy('amount', 'asc')
             ->first();
 
-        // Ultra subscribers get official plugins for free
-        if ($bestPrice && $user && $this->isOfficial() && $user->hasUltraAccess()) {
-            $freePrice = $bestPrice->replicate();
-            $freePrice->amount = 0;
-            $freePrice->id = $bestPrice->id;
-            $freePrice->exists = true;
-
-            return $freePrice;
-        }
-
         return $bestPrice;
     }
 

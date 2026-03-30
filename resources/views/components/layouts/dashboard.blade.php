@@ -111,6 +111,12 @@
                     Purchase History
                 </flux:sidebar.item>
 
+                @if(auth()->user()->hasActiveUltraSubscription())
+                    <flux:sidebar.item icon="bolt" href="{{ route('customer.ultra.index') }}" :current="request()->routeIs('customer.ultra.*')">
+                        Ultra
+                    </flux:sidebar.item>
+                @endif
+
                 @if(auth()->user()->hasUltraAccess())
                     <flux:sidebar.item icon="chat-bubble-left-right" href="{{ route('customer.support.tickets') }}" :current="request()->routeIs('customer.support.*')">
                         Support Tickets
@@ -214,7 +220,7 @@
         </flux:sidebar>
 
         {{-- Mobile header with sidebar toggle --}}
-        <flux:header class="lg:hidden">
+        <flux:header class="lg:hidden sticky top-0 z-50 bg-white dark:bg-zinc-900 border-b border-zinc-200 dark:border-zinc-700">
             <flux:sidebar.toggle class="lg:hidden" icon="bars-2" inset="left" />
 
             <flux:spacer />
