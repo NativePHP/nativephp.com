@@ -20,7 +20,7 @@ class MobilePricing extends Component
     #[Url]
     public string $interval = 'month';
 
-    /** @var array{amount_due: string, raw_amount_due: int, credit: string, new_charge: string}|null */
+    /** @var array{amount_due: string, raw_amount_due: int, new_charge: string, is_prorated: bool, credit: string|null, remaining_credit: string|null}|null */
     public ?array $upgradePreview = null;
 
     #[Locked]
@@ -112,24 +112,33 @@ class MobilePricing extends Component
             $invoice = $subscription->previewInvoice($newPriceId);
 
             $currency = $invoice->asStripeInvoice()->currency;
-            $credit = 0;
-            $newCharge = 0;
+            $newPlanCharge = 0;
+            $prorationCredit = 0;
+            $prorationCharge = 0;
 
             foreach ($invoice->invoiceLineItems() as $item) {
-                $amount = $item->asStripeInvoiceLineItem()->amount;
+                $raw = $item->asStripeInvoiceLineItem();
 
-                if ($amount < 0) {
-                    $credit += abs($amount);
+                if (! $raw->proration) {
+                    $newPlanCharge += $raw->amount;
+                } elseif ($raw->amount < 0) {
+                    $prorationCredit += abs($raw->amount);
                 } else {
-                    $newCharge += $amount;
+                    $prorationCharge += $raw->amount;
                 }
             }
 
+            $displayedCharge = $prorationCharge ?: $newPlanCharge;
+            $amountDue = max(0, $displayedCharge - $prorationCredit);
+            $remainingCredit = max(0, $prorationCredit - $displayedCharge);
+
             $this->upgradePreview = [
-                'amount_due' => $invoice->amountDue(),
-                'raw_amount_due' => $invoice->rawAmountDue(),
-                'credit' => Cashier::formatAmount($credit, $currency),
-                'new_charge' => Cashier::formatAmount($newCharge, $currency),
+                'amount_due' => Cashier::formatAmount($amountDue, $currency),
+                'raw_amount_due' => $amountDue,
+                'new_charge' => Cashier::formatAmount($displayedCharge, $currency),
+                'is_prorated' => $prorationCharge > 0,
+                'credit' => $prorationCredit > 0 ? Cashier::formatAmount($prorationCredit, $currency) : null,
+                'remaining_credit' => $remainingCredit > 0 ? Cashier::formatAmount($remainingCredit, $currency) : null,
             ];
         } catch (\Exception $e) {
             Log::error('Failed to preview upgrade invoice', ['error' => $e->getMessage()]);
@@ -159,7 +168,7 @@ class MobilePricing extends Component
 
         $subscription->skipTrial()->swapAndInvoice($newPriceId);
 
-        return redirect(route('customer.dashboard'))->with('success', 'Your subscription has been upgraded to Ultra!');
+        return redirect(route('dashboard'))->with('success', 'Your subscription has been upgraded to Ultra!');
     }
 
     private function findOrCreateUser(string $email): User
