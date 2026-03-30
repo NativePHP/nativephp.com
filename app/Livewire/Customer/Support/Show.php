@@ -7,6 +7,7 @@ use App\Notifications\SupportTicketUserReplied;
 use App\SupportTicket\Status;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Notification;
+use Illuminate\Support\Facades\RateLimiter;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Title;
 use Livewire\Component;
@@ -33,9 +34,21 @@ class Show extends Component
     {
         $this->authorize('reply', $this->supportTicket);
 
+        $key = 'support-reply:'.auth()->id();
+
+        if (RateLimiter::tooManyAttempts($key, 10)) {
+            $seconds = RateLimiter::availableIn($key);
+
+            $this->addError('replyMessage', "You're sending messages too quickly. Please wait {$seconds} seconds.");
+
+            return;
+        }
+
         $this->validate([
             'replyMessage' => ['required', 'string', 'max:5000'],
         ]);
+
+        RateLimiter::hit($key, 60);
 
         $reply = $this->supportTicket->replies()->create([
             'user_id' => auth()->id(),
@@ -48,8 +61,6 @@ class Show extends Component
 
         $this->replyMessage = '';
         $this->supportTicket->load(['user', 'replies.user']);
-
-        session()->flash('success', 'Your reply has been sent.');
     }
 
     public function closeTicket(): void
@@ -60,7 +71,30 @@ class Show extends Component
             'status' => Status::CLOSED,
         ]);
 
-        session()->flash('success', __('account.support_ticket.close_ticket.success'));
+        $this->supportTicket->replies()->create([
+            'user_id' => null,
+            'message' => auth()->user()->name.' closed this ticket.',
+            'note' => false,
+        ]);
+
+        $this->supportTicket->load(['user', 'replies.user']);
+    }
+
+    public function reopenTicket(): void
+    {
+        $this->authorize('reopenTicket', $this->supportTicket);
+
+        $this->supportTicket->update([
+            'status' => Status::OPEN,
+        ]);
+
+        $this->supportTicket->replies()->create([
+            'user_id' => null,
+            'message' => auth()->user()->name.' reopened this ticket.',
+            'note' => false,
+        ]);
+
+        $this->supportTicket->load(['user', 'replies.user']);
     }
 
     public function render(): View

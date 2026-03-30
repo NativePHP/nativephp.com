@@ -24,7 +24,33 @@
         }
     </style>
     <x-filament::section heading="Conversation">
-        {{-- Reply form at top --}}
+        {{-- Pinned Note --}}
+        @php
+            $pinnedNote = $record->replies()->with('user')->where('note', true)->where('pinned', true)->first();
+        @endphp
+        @if ($pinnedNote)
+            <div style="border-radius: 0.5rem; border: 2px solid #f59e0b; padding: 0.75rem; background-color: #fffbeb; margin-bottom: 1rem;">
+                <div style="display: flex; align-items: center; justify-content: space-between; gap: 0.5rem;">
+                    <div style="display: flex; align-items: center; gap: 0.5rem;">
+                        <x-filament::badge color="warning" size="sm">Pinned Note</x-filament::badge>
+                        <span style="font-size: 0.875rem; font-weight: 600; color: #111827;">
+                            {{ $pinnedNote->user?->name ?? 'System' }}
+                        </span>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 0.5rem;">
+                        <span style="font-size: 0.75rem; color: #6b7280;">
+                            {{ $pinnedNote->created_at->diffForHumans() }}
+                        </span>
+                        <x-filament::button size="xs" color="gray" wire:click="togglePin({{ $pinnedNote->id }})">
+                            Unpin
+                        </x-filament::button>
+                    </div>
+                </div>
+                <div class="fi-prose ticket-reply-message" style="margin-top: 0.25rem; font-size: 0.875rem; color: #374151;">{!! App\Support\CommonMark\CommonMark::convertToHtml($pinnedNote->message) !!}</div>
+            </div>
+        @endif
+
+        {{-- Reply form --}}
         <form wire:submit="sendReply" style="margin-bottom: 1.5rem;">
             <div style="display: flex; flex-direction: column; gap: 0.75rem;">
                 <textarea
@@ -76,18 +102,32 @@
                 <div style="border-radius: 0.5rem; border: 1px solid {{ $borderColor }}; padding: 0.75rem; background-color: {{ $bgColor }};">
                     <div style="display: flex; align-items: center; justify-content: space-between; gap: 0.5rem;">
                         <div style="display: flex; align-items: center; gap: 0.5rem;">
-                            <span style="font-size: 0.875rem; font-weight: 600; color: #111827;">
-                                {{ $reply->user?->name ?? 'Unknown' }}
-                            </span>
-                            @if ($isNote)
-                                <x-filament::badge color="warning" size="sm">Note</x-filament::badge>
-                            @elseif ($isAdmin)
-                                <x-filament::badge color="primary" size="sm">Staff</x-filament::badge>
+                            @if ($reply->user_id === null)
+                                <x-filament::badge color="gray" size="sm">System</x-filament::badge>
+                            @else
+                                <span style="font-size: 0.875rem; font-weight: 600; color: #111827;">
+                                    {{ $reply->user->name }}
+                                </span>
+                                @if ($isNote)
+                                    <x-filament::badge color="warning" size="sm">Note</x-filament::badge>
+                                    @if ($reply->pinned)
+                                        <x-filament::badge color="success" size="sm">Pinned</x-filament::badge>
+                                    @endif
+                                @elseif ($isAdmin)
+                                    <x-filament::badge color="primary" size="sm">Staff</x-filament::badge>
+                                @endif
                             @endif
                         </div>
-                        <span style="font-size: 0.75rem; color: #6b7280;">
-                            {{ $reply->created_at->diffForHumans() }}
-                        </span>
+                        <div style="display: flex; align-items: center; gap: 0.5rem;">
+                            <span style="font-size: 0.75rem; color: #6b7280;">
+                                {{ $reply->created_at->diffForHumans() }}
+                            </span>
+                            @if ($isNote)
+                                <x-filament::button size="xs" color="gray" wire:click="togglePin({{ $reply->id }})">
+                                    {{ $reply->pinned ? 'Unpin' : 'Pin' }}
+                                </x-filament::button>
+                            @endif
+                        </div>
                     </div>
                     <div class="fi-prose ticket-reply-message" style="margin-top: 0.25rem; font-size: 0.875rem; color: #374151;">{!! App\Support\CommonMark\CommonMark::convertToHtml($reply->message) !!}</div>
                 </div>

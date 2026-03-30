@@ -20,11 +20,13 @@ class Reply extends Model
         'message',
         'attachments',
         'note',
+        'pinned',
     ];
 
     protected $casts = [
         'attachments' => 'array',
         'note' => 'boolean',
+        'pinned' => 'boolean',
     ];
 
     public function isFromAdmin(): Attribute

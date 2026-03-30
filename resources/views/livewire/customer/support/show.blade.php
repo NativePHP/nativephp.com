@@ -12,7 +12,11 @@
                     <flux:text>Created {{ $supportTicket->created_at->format('d M Y, H:i') }}</flux:text>
                 </div>
             </div>
-            @if($supportTicket->status !== \App\SupportTicket\Status::CLOSED)
+            @if($supportTicket->status === \App\SupportTicket\Status::CLOSED)
+                <flux:button wire:click="reopenTicket" wire:confirm="Are you sure you want to reopen this ticket?" icon="arrow-path" variant="ghost">
+                    Reopen Ticket
+                </flux:button>
+            @else
                 <flux:button wire:click="closeTicket" wire:confirm="Are you sure you want to close this ticket?" icon="x-mark" variant="ghost">
                     Close Ticket
                 </flux:button>
@@ -71,7 +75,7 @@
     </flux:accordion>
 
     {{-- Messages --}}
-    <flux:card>
+    <div>
         <flux:heading size="lg" class="mb-4">Messages</flux:heading>
 
         {{-- Reply Form --}}
@@ -97,24 +101,33 @@
         @endif
 
         @foreach($supportTicket->replies->where('note', false) as $reply)
-            <div class="flex flex-col w-full mb-6" wire:key="reply-{{ $reply->id }}">
-                <div class="relative w-full">
-                    <div class="{{ $reply->is_from_user ? 'bg-blue-100 dark:bg-blue-900/30 border-blue-300 dark:border-blue-700 mr-10' : 'bg-zinc-100 dark:bg-zinc-800 border-zinc-300 dark:border-zinc-600 ml-10' }} p-4 rounded-lg border">
-                        <p class="font-medium text-zinc-900 dark:text-zinc-100">
-                            {{ $reply->user->name }}
-                            @if($reply->is_from_user)
-                                <span class="text-sm text-zinc-500 dark:text-zinc-400">(You)</span>
-                            @elseif($reply->is_from_admin)
-                                <span class="text-sm text-zinc-500 dark:text-zinc-400">(Staff)</span>
-                            @endif
-                        </p>
-                        <div class="prose prose-sm mt-1 max-w-none text-zinc-800 dark:prose-invert dark:text-zinc-200">{!! App\Support\CommonMark\CommonMark::convertToHtml($reply->message) !!}</div>
+            @if($reply->user_id === null)
+                {{-- System message --}}
+                <div class="mb-6 flex items-center gap-3" wire:key="reply-{{ $reply->id }}">
+                    <div class="h-px grow bg-zinc-200 dark:bg-zinc-700"></div>
+                    <span class="shrink-0 text-xs text-zinc-400 dark:text-zinc-500">{{ $reply->message }} &middot; {{ $reply->created_at->format('d M Y, H:i') }}</span>
+                    <div class="h-px grow bg-zinc-200 dark:bg-zinc-700"></div>
+                </div>
+            @else
+                <div class="flex flex-col w-full mb-6" wire:key="reply-{{ $reply->id }}">
+                    <div class="relative w-full">
+                        <div class="{{ $reply->is_from_user ? 'bg-blue-100 dark:bg-blue-900/30 border-blue-300 dark:border-blue-700 mr-10' : 'bg-zinc-100 dark:bg-zinc-800 border-zinc-300 dark:border-zinc-600 ml-10' }} p-4 rounded-lg border">
+                            <p class="font-medium text-zinc-900 dark:text-zinc-100">
+                                {{ $reply->user->name }}
+                                @if($reply->is_from_user)
+                                    <span class="text-sm text-zinc-500 dark:text-zinc-400">(You)</span>
+                                @elseif($reply->is_from_admin)
+                                    <span class="text-sm text-zinc-500 dark:text-zinc-400">(Staff)</span>
+                                @endif
+                            </p>
+                            <div class="prose prose-sm mt-1 max-w-none text-zinc-800 dark:prose-invert dark:text-zinc-200">{!! App\Support\CommonMark\CommonMark::convertToHtml($reply->message) !!}</div>
+                        </div>
+                    </div>
+                    <div class="mt-1 {{ $reply->is_from_user ? 'text-right mr-10' : 'text-left ml-10' }}">
+                        <span class="text-xs text-zinc-500 dark:text-zinc-400">{{ $reply->created_at->format('d M Y, H:i') }}</span>
                     </div>
                 </div>
-                <div class="mt-1 {{ $reply->is_from_user ? 'text-right mr-10' : 'text-left ml-10' }}">
-                    <span class="text-xs text-zinc-500 dark:text-zinc-400">{{ $reply->created_at->format('d M Y, H:i') }}</span>
-                </div>
-            </div>
+            @endif
         @endforeach
-    </flux:card>
+    </div>
 </div>

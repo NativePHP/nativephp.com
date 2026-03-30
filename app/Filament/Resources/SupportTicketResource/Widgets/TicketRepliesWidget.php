@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\SupportTicketResource\Widgets;
 
+use App\Models\SupportTicket\Reply;
 use App\Notifications\SupportTicketReplied;
 use Filament\Widgets\Widget;
 use Illuminate\Database\Eloquent\Model;
@@ -41,5 +42,23 @@ class TicketRepliesWidget extends Widget
 
         $this->newMessage = '';
         $this->isNote = false;
+    }
+
+    public function togglePin(int $replyId): void
+    {
+        $reply = Reply::where('support_ticket_id', $this->record->id)
+            ->where('id', $replyId)
+            ->where('note', true)
+            ->firstOrFail();
+
+        if ($reply->pinned) {
+            $reply->update(['pinned' => false]);
+        } else {
+            Reply::where('support_ticket_id', $this->record->id)
+                ->where('pinned', true)
+                ->update(['pinned' => false]);
+
+            $reply->update(['pinned' => true]);
+        }
     }
 }

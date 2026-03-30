@@ -19,7 +19,6 @@
                 <flux:table.column>Ticket ID</flux:table.column>
                 <flux:table.column>Subject</flux:table.column>
                 <flux:table.column>Status</flux:table.column>
-                <flux:table.column></flux:table.column>
             </flux:table.columns>
 
             <flux:table.rows>
@@ -35,10 +34,6 @@
 
                         <flux:table.cell>
                             <x-customer.status-badge :status="$ticket->status->translated()" />
-                        </flux:table.cell>
-
-                        <flux:table.cell>
-                            <flux:button size="sm" href="{{ route('customer.support.tickets.show', $ticket) }}">View</flux:button>
                         </flux:table.cell>
                     </flux:table.row>
                 @endforeach
