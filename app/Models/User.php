@@ -215,6 +215,27 @@ class User extends Authenticatable implements FilamentUser, HasName
         return $this->hasActiveMaxLicense() || $this->hasActiveMaxSubLicense();
     }
 
+    /**
+     * Check if the user's subscription is a comped (free) subscription.
+     * Covers both legacy comped (is_comped flag) and comped Ultra price.
+     */
+    public function hasCompedSubscription(): bool
+    {
+        $subscription = $this->subscription();
+
+        if (! $subscription || ! $subscription->active()) {
+            return false;
+        }
+
+        if ($subscription->is_comped) {
+            return true;
+        }
+
+        $compedPriceId = config('subscriptions.plans.max.stripe_price_id_comped');
+
+        return $compedPriceId && $this->subscribedToPrice($compedPriceId);
+    }
+
     public function hasActiveUltraSubscription(): bool
     {
         $subscription = $this->subscription();

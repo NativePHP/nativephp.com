@@ -137,7 +137,7 @@ class MobilePricingTest extends TestCase
     }
 
     #[Test]
-    public function comped_max_subscriber_sees_upgrade_button()
+    public function comped_max_subscriber_sees_checkout_button()
     {
         $user = User::factory()->create(['stripe_id' => 'cus_'.uniqid()]);
         Auth::login($user);
@@ -155,7 +155,37 @@ class MobilePricingTest extends TestCase
             ->create(['stripe_price' => self::MAX_PRICE_ID]);
 
         Livewire::test(MobilePricing::class)
-            ->assertSee('Upgrade to Ultra')
+            ->assertSeeHtml('wire:click="createCheckoutSession(\'max\')"')
+            ->assertDontSee('Upgrade to Ultra')
+            ->assertDontSee('on Ultra', escape: false);
+    }
+
+    #[Test]
+    public function comped_ultra_price_subscriber_sees_checkout_button()
+    {
+        $compedPriceId = 'price_test_comped_ultra';
+
+        config([
+            'subscriptions.plans.max.stripe_price_id_comped' => $compedPriceId,
+        ]);
+
+        $user = User::factory()->create(['stripe_id' => 'cus_'.uniqid()]);
+        Auth::login($user);
+
+        $subscription = Cashier::$subscriptionModel::factory()
+            ->for($user)
+            ->active()
+            ->create([
+                'stripe_price' => $compedPriceId,
+            ]);
+
+        Cashier::$subscriptionItemModel::factory()
+            ->for($subscription, 'subscription')
+            ->create(['stripe_price' => $compedPriceId]);
+
+        Livewire::test(MobilePricing::class)
+            ->assertSeeHtml('wire:click="createCheckoutSession(\'max\')"')
+            ->assertDontSee('Upgrade to Ultra')
             ->assertDontSee('on Ultra', escape: false);
     }
 
