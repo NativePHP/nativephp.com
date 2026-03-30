@@ -151,15 +151,7 @@
                 @if ($plugin->isPaid() && $bestPrice && $plugin->is_active)
                     <div class="mb-4 rounded-2xl border-2 border-indigo-500 bg-gradient-to-br from-indigo-50 to-purple-50 p-6 dark:border-indigo-400 dark:from-indigo-950/50 dark:to-purple-950/50">
                         <div class="text-center">
-                            @if ($bestPrice->amount === 0 && $plugin->isOfficial())
-                                <p class="text-sm font-medium text-green-600 dark:text-green-400">Included with Ultra</p>
-                                <p class="mt-1 text-4xl font-bold text-gray-900 dark:text-white">Free</p>
-                                @if ($regularPrice)
-                                    <p class="mt-1 text-sm text-gray-400 line-through dark:text-gray-500">
-                                        ${{ number_format($regularPrice->amount / 100) }}
-                                    </p>
-                                @endif
-                            @elseif ($hasDiscount && $regularPrice)
+                            @if ($hasDiscount && $regularPrice)
                                 <p class="text-sm font-medium text-gray-600 dark:text-gray-400">Price</p>
                                 <p class="mt-1 text-lg text-gray-400 line-through dark:text-gray-500">
                                     ${{ number_format($regularPrice->amount / 100) }}
@@ -355,6 +347,34 @@
                                 </li>
                             @endforeach
                         </ul>
+                    </div>
+                @endif
+
+                {{-- Included with Ultra --}}
+                @if ($plugin->isPaid() && $plugin->isOfficial())
+                    <div class="mt-4 rounded-2xl border border-zinc-300 bg-gradient-to-br from-zinc-100 to-zinc-200 p-6 dark:border-zinc-600 dark:from-zinc-800 dark:to-zinc-900">
+                        <div class="flex items-start gap-3">
+                            <div class="shrink-0 text-zinc-700 dark:text-zinc-300">
+                                <x-heroicon-s-bolt class="size-6" />
+                            </div>
+                            <div>
+                                <p class="font-medium text-zinc-900 dark:text-zinc-100">Included with Ultra</p>
+                                <p class="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
+                                    You don't need to purchase any first-party NativePHP plugins with Ultra &mdash; they're all included for you and your team from just ${{ config('subscriptions.plans.max.price_monthly') }}/month.
+                                </p>
+                                @auth
+                                    <p class="mt-2 text-xs text-zinc-500 dark:text-zinc-500">
+                                        You can still purchase this plugin to keep access even if you cancel your subscription.
+                                    </p>
+                                @endauth
+                                <a
+                                    href="{{ route('pricing') }}"
+                                    class="mt-4 inline-flex items-center rounded-md bg-black px-4 py-2 text-sm font-medium text-white transition hover:bg-zinc-800 dark:bg-white dark:text-black dark:hover:bg-zinc-200"
+                                >
+                                    Learn more
+                                </a>
+                            </div>
+                        </div>
                     </div>
                 @endif
 

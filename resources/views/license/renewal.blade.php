@@ -20,7 +20,7 @@
                     <flux:badge color="green" class="mb-3">Recommended</flux:badge>
                     <flux:heading size="lg">Yearly</flux:heading>
                     <div class="mt-2 mb-1">
-                        <span class="text-3xl font-bold text-zinc-900 dark:text-white">$250</span>
+                        <span class="text-3xl font-bold text-zinc-900 dark:text-white">${{ config('subscriptions.plans.max.eap_price_yearly') }}</span>
                         <flux:text class="inline">/year</flux:text>
                     </div>
                     <flux:text class="mb-4 text-xs">Early Access Price</flux:text>
@@ -41,7 +41,7 @@
                     <div class="mb-3 h-5"></div>
                     <flux:heading size="lg">Monthly</flux:heading>
                     <div class="mt-2 mb-1">
-                        <span class="text-3xl font-bold text-zinc-900 dark:text-white">$35</span>
+                        <span class="text-3xl font-bold text-zinc-900 dark:text-white">${{ config('subscriptions.plans.max.price_monthly') }}</span>
                         <flux:text class="inline">/month</flux:text>
                     </div>
                     <flux:text class="mb-4 text-xs">Billed monthly</flux:text>

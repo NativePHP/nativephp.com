@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class SupportTicket extends Model
@@ -52,6 +53,14 @@ class SupportTicket extends Model
     {
         return $this->hasMany(Reply::class)
             ->orderBy('created_at', 'desc');
+    }
+
+    public function pinnedNote(): HasOne
+    {
+        return $this->hasOne(Reply::class)
+            ->where('note', true)
+            ->where('pinned', true)
+            ->latestOfMany();
     }
 
     public function user(): BelongsTo

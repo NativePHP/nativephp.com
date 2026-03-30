@@ -27,7 +27,7 @@
                                             </div>
                                             <div class="text-left">
                                                 <span class="font-mono text-sm font-medium text-gray-900 dark:text-white">{{ $item->plugin->name }}</span>
-                                                @if ($item->price_at_addition === 0 && $item->plugin->isOfficial())
+                                                @if ($item->plugin->isOfficial() && auth()->user()?->hasUltraAccess())
                                                     <p class="text-xs text-green-600 dark:text-green-400">Included with Ultra</p>
                                                 @endif
                                             </div>

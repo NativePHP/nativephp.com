@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Filament\Resources\SupportTicketResource\Widgets\TicketRepliesWidget;
 use App\Livewire\Customer\Support\Create;
 use App\Livewire\Customer\Support\Index;
 use App\Livewire\Customer\Support\Show;
@@ -14,6 +15,7 @@ use App\Notifications\SupportTicketReplied;
 use App\Notifications\SupportTicketSubmitted;
 use App\Notifications\SupportTicketUserReplied;
 use App\SupportTicket\Status;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Notification;
 use Laravel\Cashier\Subscription;
@@ -737,6 +739,30 @@ class SupportTicketTest extends TestCase
     }
 
     #[Test]
+    public function reply_is_rate_limited_to_10_per_minute(): void
+    {
+        $user = $this->createUltraUser();
+        $ticket = SupportTicket::factory()->create(['user_id' => $user->id]);
+
+        $component = Livewire::actingAs($user)
+            ->test(Show::class, ['supportTicket' => $ticket]);
+
+        for ($i = 1; $i <= 10; $i++) {
+            $component
+                ->set('replyMessage', "Reply {$i}")
+                ->call('reply')
+                ->assertHasNoErrors();
+        }
+
+        $component
+            ->set('replyMessage', 'One too many')
+            ->call('reply')
+            ->assertHasErrors('replyMessage');
+
+        $this->assertDatabaseCount('replies', 10);
+    }
+
+    #[Test]
     public function reply_message_is_required(): void
     {
         $user = $this->createUltraUser();
@@ -940,6 +966,176 @@ class SupportTicketTest extends TestCase
             ->assertHasNoErrors();
 
         $this->assertEquals(Status::CLOSED, $ticket->fresh()->status);
+    }
+
+    #[Test]
+    public function closing_ticket_creates_system_message(): void
+    {
+        $user = $this->createUltraUser();
+        $ticket = SupportTicket::factory()->create(['user_id' => $user->id]);
+
+        Livewire::actingAs($user)
+            ->test(Show::class, ['supportTicket' => $ticket])
+            ->call('closeTicket')
+            ->assertSee($user->name.' closed this ticket.');
+
+        $this->assertDatabaseHas('replies', [
+            'support_ticket_id' => $ticket->id,
+            'user_id' => null,
+            'message' => $user->name.' closed this ticket.',
+        ]);
+    }
+
+    #[Test]
+    public function reopening_ticket_creates_system_message(): void
+    {
+        $user = $this->createUltraUser();
+        $ticket = SupportTicket::factory()->create([
+            'user_id' => $user->id,
+            'status' => Status::CLOSED,
+        ]);
+
+        Livewire::actingAs($user)
+            ->test(Show::class, ['supportTicket' => $ticket])
+            ->call('reopenTicket')
+            ->assertSee($user->name.' reopened this ticket.');
+
+        $this->assertDatabaseHas('replies', [
+            'support_ticket_id' => $ticket->id,
+            'user_id' => null,
+            'message' => $user->name.' reopened this ticket.',
+        ]);
+    }
+
+    #[Test]
+    public function ultra_user_can_reopen_their_closed_ticket(): void
+    {
+        $user = $this->createUltraUser();
+        $ticket = SupportTicket::factory()->create([
+            'user_id' => $user->id,
+            'status' => Status::CLOSED,
+        ]);
+
+        Livewire::actingAs($user)
+            ->test(Show::class, ['supportTicket' => $ticket])
+            ->call('reopenTicket')
+            ->assertHasNoErrors();
+
+        $this->assertEquals(Status::OPEN, $ticket->fresh()->status);
+    }
+
+    #[Test]
+    public function ultra_user_cannot_reopen_an_already_open_ticket(): void
+    {
+        $user = $this->createUltraUser();
+        $ticket = SupportTicket::factory()->create(['user_id' => $user->id]);
+
+        Livewire::actingAs($user)
+            ->test(Show::class, ['supportTicket' => $ticket])
+            ->call('reopenTicket')
+            ->assertForbidden();
+    }
+
+    #[Test]
+    public function ultra_user_cannot_reopen_another_users_ticket(): void
+    {
+        $user = $this->createUltraUser();
+        $otherUser = $this->createUltraUser();
+        $ticket = SupportTicket::factory()->create([
+            'user_id' => $otherUser->id,
+            'status' => Status::CLOSED,
+        ]);
+
+        Livewire::actingAs($user)
+            ->test(Show::class, ['supportTicket' => $ticket])
+            ->assertNotFound();
+    }
+
+    #[Test]
+    public function admin_can_pin_an_internal_note(): void
+    {
+        $admin = User::factory()->create(['is_admin' => true]);
+        $ticket = SupportTicket::factory()->create();
+        $note = Reply::factory()->create([
+            'support_ticket_id' => $ticket->id,
+            'user_id' => $admin->id,
+            'message' => 'Important context',
+            'note' => true,
+            'pinned' => false,
+        ]);
+
+        Livewire::actingAs($admin)
+            ->test(TicketRepliesWidget::class, ['record' => $ticket])
+            ->call('togglePin', $note->id);
+
+        $this->assertTrue($note->fresh()->pinned);
+    }
+
+    #[Test]
+    public function admin_can_unpin_a_pinned_note(): void
+    {
+        $admin = User::factory()->create(['is_admin' => true]);
+        $ticket = SupportTicket::factory()->create();
+        $note = Reply::factory()->create([
+            'support_ticket_id' => $ticket->id,
+            'user_id' => $admin->id,
+            'message' => 'Pinned context',
+            'note' => true,
+            'pinned' => true,
+        ]);
+
+        Livewire::actingAs($admin)
+            ->test(TicketRepliesWidget::class, ['record' => $ticket])
+            ->call('togglePin', $note->id);
+
+        $this->assertFalse($note->fresh()->pinned);
+    }
+
+    #[Test]
+    public function pinning_a_note_unpins_the_previously_pinned_note(): void
+    {
+        $admin = User::factory()->create(['is_admin' => true]);
+        $ticket = SupportTicket::factory()->create();
+        $firstNote = Reply::factory()->create([
+            'support_ticket_id' => $ticket->id,
+            'user_id' => $admin->id,
+            'message' => 'First note',
+            'note' => true,
+            'pinned' => true,
+        ]);
+        $secondNote = Reply::factory()->create([
+            'support_ticket_id' => $ticket->id,
+            'user_id' => $admin->id,
+            'message' => 'Second note',
+            'note' => true,
+            'pinned' => false,
+        ]);
+
+        Livewire::actingAs($admin)
+            ->test(TicketRepliesWidget::class, ['record' => $ticket])
+            ->call('togglePin', $secondNote->id);
+
+        $this->assertFalse($firstNote->fresh()->pinned);
+        $this->assertTrue($secondNote->fresh()->pinned);
+    }
+
+    #[Test]
+    public function only_internal_notes_can_be_pinned(): void
+    {
+        $admin = User::factory()->create(['is_admin' => true]);
+        $ticket = SupportTicket::factory()->create();
+        $reply = Reply::factory()->create([
+            'support_ticket_id' => $ticket->id,
+            'user_id' => $admin->id,
+            'message' => 'Regular reply',
+            'note' => false,
+        ]);
+
+        $this->expectException(ModelNotFoundException::class);
+
+        Livewire::actingAs($admin)
+            ->test(TicketRepliesWidget::class, ['record' => $ticket])
+            ->call('togglePin', $reply->id);
     }
 
     #[Test]

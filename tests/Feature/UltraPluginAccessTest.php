@@ -122,9 +122,9 @@ class UltraPluginAccessTest extends TestCase
         return $plugin;
     }
 
-    // ---- Phase 1: Free official plugins for Ultra ----
+    // ---- Phase 1: Official plugin pricing for Ultra ----
 
-    public function test_ultra_user_gets_zero_price_for_official_plugin(): void
+    public function test_ultra_user_gets_subscriber_price_for_official_plugin(): void
     {
         $user = User::factory()->create();
         $this->createPaidMaxSubscription($user);
@@ -133,7 +133,7 @@ class UltraPluginAccessTest extends TestCase
         $bestPrice = $plugin->getBestPriceForUser($user);
 
         $this->assertNotNull($bestPrice);
-        $this->assertEquals(0, $bestPrice->amount);
+        $this->assertEquals(1999, $bestPrice->amount);
     }
 
     public function test_ultra_user_gets_regular_price_for_third_party_plugin(): void
@@ -181,9 +181,9 @@ class UltraPluginAccessTest extends TestCase
         $this->assertEquals(2999, $bestPrice->amount);
     }
 
-    // ---- Phase 2: $0 cart checkout ----
+    // ---- Phase 2: Cart captures real price for Ultra users ----
 
-    public function test_zero_cart_skips_stripe_and_creates_licenses(): void
+    public function test_ultra_user_cart_captures_real_price_for_official_plugin(): void
     {
         $user = User::factory()->create();
         $this->createPaidMaxSubscription($user);
@@ -195,56 +195,9 @@ class UltraPluginAccessTest extends TestCase
         $cart = $cartService->getCart($user);
         $cartService->addPlugin($cart, $plugin);
 
-        // Verify the price was captured as $0
+        // Verify the price was captured at the subscriber rate, not $0
         $cartItem = $cart->items()->first();
-        $this->assertEquals(0, $cartItem->price_at_addition);
-
-        // Checkout should skip Stripe and redirect to free success
-        $response = $this->post(route('cart.checkout'));
-        $response->assertRedirect(route('cart.success', ['free' => 1]));
-
-        // License should have been created
-        $this->assertTrue(
-            $user->pluginLicenses()->forPlugin($plugin)->active()->exists()
-        );
-
-        // Cart should be completed
-        $this->assertNotNull($cart->fresh()->completed_at);
-    }
-
-    public function test_free_checkout_does_not_create_duplicate_licenses(): void
-    {
-        $user = User::factory()->create();
-        $this->createPaidMaxSubscription($user);
-        $plugin = $this->createOfficialPlugin();
-
-        // Pre-existing license
-        PluginLicense::factory()->create([
-            'user_id' => $user->id,
-            'plugin_id' => $plugin->id,
-            'expires_at' => null,
-        ]);
-
-        $this->actingAs($user);
-
-        $cartService = resolve(CartService::class);
-        $cart = $cartService->getCart($user);
-        $cartService->addPlugin($cart, $plugin);
-
-        $this->post(route('cart.checkout'));
-
-        // Should still only have 1 license
-        $this->assertEquals(1, $user->pluginLicenses()->forPlugin($plugin)->count());
-    }
-
-    public function test_free_checkout_success_page_renders(): void
-    {
-        $user = User::factory()->create();
-        $this->actingAs($user);
-
-        $response = $this->get(route('cart.success', ['free' => 1]));
-        $response->assertStatus(200);
-        $response->assertSee('Plugins Added!');
+        $this->assertEquals(1999, $cartItem->price_at_addition);
     }
 
     // ---- Phase 3: Team plugin access ----
@@ -731,7 +684,7 @@ class UltraPluginAccessTest extends TestCase
         $this->assertTrue($user->hasUltraAccess());
     }
 
-    public function test_comped_ultra_user_gets_free_official_plugin(): void
+    public function test_comped_ultra_user_gets_subscriber_price_for_official_plugin(): void
     {
         $user = User::factory()->create();
         $this->createCompedUltraSubscription($user);
@@ -740,7 +693,7 @@ class UltraPluginAccessTest extends TestCase
         $bestPrice = $plugin->getBestPriceForUser($user);
 
         $this->assertNotNull($bestPrice);
-        $this->assertEquals(0, $bestPrice->amount);
+        $this->assertEquals(1999, $bestPrice->amount);
     }
 
     public function test_legacy_comped_max_does_not_have_active_ultra_subscription(): void

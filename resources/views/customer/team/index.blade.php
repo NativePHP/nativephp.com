@@ -65,7 +65,7 @@
                 {{-- User has Ultra but no team --}}
                 <flux:card>
                     <flux:heading size="lg">Create a Team</flux:heading>
-                    <flux:text class="mb-4">As an Ultra subscriber, you can create a team and invite up to 4 members who will share your benefits (5 seats total, including you).</flux:text>
+                    <flux:text class="mb-4">As an Ultra subscriber, you can create a team and invite up to {{ config('subscriptions.plans.max.included_seats') - 1 }} members who will share your benefits ({{ config('subscriptions.plans.max.included_seats') }} seats total, including you).</flux:text>
 
                     <form method="POST" action="{{ route('customer.team.store') }}">
                         @csrf
@@ -84,7 +84,7 @@
                 {{-- User doesn't have Ultra --}}
                 <flux:card>
                     <flux:heading size="lg">Teams</flux:heading>
-                    <flux:text class="mb-4">Teams are available to Ultra subscribers. Upgrade to Ultra to create a team and share benefits with up to 4 members (5 seats total).</flux:text>
+                    <flux:text class="mb-4">Teams are available to Ultra subscribers. Upgrade to Ultra to create a team and share benefits with up to {{ config('subscriptions.plans.max.included_seats') - 1 }} members ({{ config('subscriptions.plans.max.included_seats') }} seats total).</flux:text>
 
                     <flux:button variant="primary" :href="route('pricing')">View Plans</flux:button>
                 </flux:card>

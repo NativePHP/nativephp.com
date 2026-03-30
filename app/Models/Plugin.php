@@ -64,6 +64,13 @@ class Plugin extends Model
 
     protected static function booted(): void
     {
+        static::saving(function (Plugin $plugin): void {
+            if ($plugin->isDirty('name') && $plugin->name && ! $plugin->isDirty('is_official')) {
+                $vendor = explode('/', $plugin->name)[0] ?? null;
+                $plugin->is_official = $vendor === 'nativephp';
+            }
+        });
+
         static::created(function (Plugin $plugin): void {
             $plugin->recordActivity(
                 PluginActivityType::Submitted,
@@ -184,16 +191,6 @@ class Plugin extends Model
             ->forTiers($eligibleTiers)
             ->orderBy('amount', 'asc')
             ->first();
-
-        // Ultra subscribers get official plugins for free
-        if ($bestPrice && $user && $this->isOfficial() && $user->hasUltraAccess()) {
-            $freePrice = $bestPrice->replicate();
-            $freePrice->amount = 0;
-            $freePrice->id = $bestPrice->id;
-            $freePrice->exists = true;
-
-            return $freePrice;
-        }
 
         return $bestPrice;
     }

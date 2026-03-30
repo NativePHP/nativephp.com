@@ -198,9 +198,9 @@
 
             <x-faq-card question="Can I purchase additional team seats?">
                 <p>
-                    Ultra includes 10 team seats. If you need more, extra
+                    Ultra includes {{ config('subscriptions.plans.max.included_seats') }} team seats. If you need more, extra
                     seats can be purchased from your team settings page
-                    at $5/mo per seat on monthly plans or $4/mo per seat
+                    at ${{ config('subscriptions.plans.max.extra_seat_price_monthly') }}/mo per seat on monthly plans or ${{ config('subscriptions.plans.max.extra_seat_price_yearly') }}/mo per seat
                     on annual plans. Extra seats are billed pro-rata to
                     match your subscription cycle.
                 </p>

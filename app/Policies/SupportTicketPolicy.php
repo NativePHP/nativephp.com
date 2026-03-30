@@ -20,6 +20,12 @@ class SupportTicketPolicy
         return $supportTicket->user_id === $user->id;
     }
 
+    public function reopenTicket(User $user, SupportTicket $supportTicket): bool
+    {
+        return $supportTicket->user_id === $user->id
+            && $supportTicket->status === Status::CLOSED;
+    }
+
     /**
      * Determine whether the user can view any models.
      */

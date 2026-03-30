@@ -4,8 +4,10 @@
 <div
     class="mt-3 max-w-52 border-t border-t-black/20 pt-5 dark:border-t-white/15"
 >
+    {{ $slot }}
+
     {{-- Sponsors --}}
-    <div class="space-y-3">
+    <div class="mt-4 space-y-3">
         <x-sponsors.lists.docs.featured-sponsors />
     </div>
 

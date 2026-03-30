@@ -56,9 +56,9 @@
             />
             <div class="text-zinc-500">
                 Teams support &mdash;
-                <span class="font-medium text-black dark:text-white">5 seats</span>
+                <span class="font-medium text-black dark:text-white">{{ config('subscriptions.plans.max.included_seats') }} seats</span>
                 included
-                <span class="text-xs">(extra: $5/seat/mo or $4/seat/yr)</span>
+                <span class="text-xs">(extra: ${{ config('subscriptions.plans.max.extra_seat_price_monthly') }}/seat/mo or ${{ config('subscriptions.plans.max.extra_seat_price_yearly') }}/seat/yr)</span>
             </div>
         </div>
     @endif
