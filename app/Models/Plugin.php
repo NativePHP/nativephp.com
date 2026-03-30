@@ -64,6 +64,13 @@ class Plugin extends Model
 
     protected static function booted(): void
     {
+        static::saving(function (Plugin $plugin): void {
+            if ($plugin->isDirty('name') && $plugin->name) {
+                $vendor = explode('/', $plugin->name)[0] ?? null;
+                $plugin->is_official = $vendor === 'nativephp';
+            }
+        });
+
         static::created(function (Plugin $plugin): void {
             $plugin->recordActivity(
                 PluginActivityType::Submitted,

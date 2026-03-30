@@ -15,6 +15,7 @@ use App\Notifications\SupportTicketReplied;
 use App\Notifications\SupportTicketSubmitted;
 use App\Notifications\SupportTicketUserReplied;
 use App\SupportTicket\Status;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Notification;
 use Laravel\Cashier\Subscription;
@@ -1130,7 +1131,7 @@ class SupportTicketTest extends TestCase
             'note' => false,
         ]);
 
-        $this->expectException(\Illuminate\Database\Eloquent\ModelNotFoundException::class);
+        $this->expectException(ModelNotFoundException::class);
 
         Livewire::actingAs($admin)
             ->test(TicketRepliesWidget::class, ['record' => $ticket])
