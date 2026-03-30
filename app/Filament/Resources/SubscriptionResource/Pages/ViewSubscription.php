@@ -8,6 +8,7 @@ use App\Filament\Resources\UserResource;
 use Filament\Actions;
 use Filament\Infolists\Components;
 use Filament\Resources\Pages\ViewRecord;
+use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 
 class ViewSubscription extends ViewRecord
@@ -30,7 +31,7 @@ class ViewSubscription extends ViewRecord
     {
         return $schema
             ->schema([
-                Components\Section::make('Subscription Details')
+                Section::make('Subscription Details')
                     ->schema([
                         Components\TextEntry::make('user.email')
                             ->label('User')
