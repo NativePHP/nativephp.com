@@ -51,9 +51,9 @@ class SupportTicketResource extends Resource
                         Infolists\Components\TextEntry::make('issue_type')
                             ->label('Issue Type')
                             ->placeholder('N/A'),
-                        Infolists\Components\TextEntry::make('user.name')
+                        Infolists\Components\TextEntry::make('user.email')
                             ->label('User')
-                            ->formatStateUsing(fn (SupportTicket $record): string => ($record->user->name ?? '').' ('.$record->user->email.')')
+                            ->formatStateUsing(fn (SupportTicket $record): string => trim(($record->user->name ?? '').' ('.$record->user->email.')'))
                             ->url(fn (SupportTicket $record): string => UserResource::getUrl('edit', ['record' => $record->user_id])),
                         Infolists\Components\TextEntry::make('created_at')
                             ->label('Created')
@@ -97,9 +97,9 @@ class SupportTicketResource extends Resource
                     ->sortable()
                     ->limit(50),
 
-                Tables\Columns\TextColumn::make('user.name')
+                Tables\Columns\TextColumn::make('user.email')
                     ->label('User')
-                    ->formatStateUsing(fn (SupportTicket $record): string => ($record->user->name ?? '').' ('.$record->user->email.')')
+                    ->formatStateUsing(fn (SupportTicket $record): string => trim(($record->user->name ?? '').' ('.$record->user->email.')'))
                     ->searchable(query: fn ($query, string $search) => $query->whereHas('user', fn ($q) => $q->where('name', 'like', "%{$search}%")->orWhere('email', 'like', "%{$search}%")))
                     ->sortable(),
 
