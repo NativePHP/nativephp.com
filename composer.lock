@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "0cc77dd249810289ccbf001bbaec7aa5",
+    "content-hash": "8997aa561e2f9fd8f796a63500a97e5b",
     "packages": [
         {
             "name": "artesaos/seotools",
@@ -7957,6 +7957,52 @@
                 }
             ],
             "time": "2025-11-24T16:17:28+00:00"
+        },
+        {
+            "name": "stechstudio/filament-impersonate",
+            "version": "v5.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/stechstudio/filament-impersonate.git",
+                "reference": "c5d5b8b5150fad02db18c4479eafb9dc2f537ffc"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/stechstudio/filament-impersonate/zipball/c5d5b8b5150fad02db18c4479eafb9dc2f537ffc",
+                "reference": "c5d5b8b5150fad02db18c4479eafb9dc2f537ffc",
+                "shasum": ""
+            },
+            "require": {
+                "filament/filament": "^4.0|^5.0"
+            },
+            "require-dev": {
+                "orchestra/testbench": "^10.0",
+                "pestphp/pest": "^3.0",
+                "pestphp/pest-plugin-laravel": "^3.0"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "STS\\FilamentImpersonate\\FilamentImpersonateServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "STS\\FilamentImpersonate\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "description": "A Filament package to impersonate your users.",
+            "support": {
+                "issues": "https://github.com/stechstudio/filament-impersonate/issues",
+                "source": "https://github.com/stechstudio/filament-impersonate/tree/v5.1.0"
+            },
+            "time": "2026-02-22T15:57:37+00:00"
         },
         {
             "name": "stripe/stripe-php",

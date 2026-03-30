@@ -12,6 +12,7 @@ use Filament\Schemas;
 use Filament\Schemas\Schema;
 use Filament\Tables;
 use Filament\Tables\Table;
+use STS\FilamentImpersonate\Actions\Impersonate;
 
 class UserResource extends Resource
 {
@@ -89,6 +90,7 @@ class UserResource extends Resource
                 //
             ])
             ->actions([
+                Impersonate::make(),
                 Actions\ActionGroup::make([
                     Actions\EditAction::make(),
                     Actions\Action::make('view_on_stripe')

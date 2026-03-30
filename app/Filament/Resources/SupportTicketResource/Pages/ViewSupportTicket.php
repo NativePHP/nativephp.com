@@ -8,6 +8,7 @@ use App\SupportTicket\Status;
 use Filament\Actions;
 use Filament\Forms\Components\Select;
 use Filament\Resources\Pages\ViewRecord;
+use STS\FilamentImpersonate\Actions\Impersonate;
 
 class ViewSupportTicket extends ViewRecord
 {
@@ -16,6 +17,8 @@ class ViewSupportTicket extends ViewRecord
     protected function getHeaderActions(): array
     {
         return [
+            Impersonate::make()->impersonateRecord(fn () => $this->getRecord()->user),
+
             Actions\Action::make('updateStatus')
                 ->label('Update Status')
                 ->icon('heroicon-o-arrow-path')

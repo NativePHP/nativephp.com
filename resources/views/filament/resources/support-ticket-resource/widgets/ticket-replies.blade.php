@@ -1,4 +1,28 @@
 <x-filament-widgets::widget>
+    <style>
+        .ticket-reply-message code {
+            background-color: #1f2937;
+            color: #e5e7eb;
+            padding: 0.125rem 0.375rem;
+            border-radius: 0.25rem;
+            font-size: 0.8125rem;
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+        }
+        .ticket-reply-message pre {
+            background-color: #1f2937;
+            color: #e5e7eb;
+            padding: 0.75rem 1rem;
+            border-radius: 0.5rem;
+            overflow-x: auto;
+            margin: 0.5rem 0;
+        }
+        .ticket-reply-message pre code {
+            background-color: transparent;
+            padding: 0;
+            border-radius: 0;
+            font-size: 0.8125rem;
+        }
+    </style>
     <x-filament::section heading="Conversation">
         {{-- Reply form at top --}}
         <form wire:submit="sendReply" style="margin-bottom: 1.5rem;">
@@ -22,7 +46,6 @@
                         Internal note (not visible to user)
                     </label>
                     <div style="display: flex; align-items: center; gap: 0.75rem;">
-                        <span style="font-size: 0.75rem; color: #9ca3af;">&#8984;/Ctrl + Enter to send</span>
                         <x-filament::button type="submit" wire:loading.attr="disabled" size="sm">
                             <span wire:loading.remove wire:target="sendReply">Send Reply</span>
                             <span wire:loading wire:target="sendReply">Sending...</span>
@@ -66,7 +89,7 @@
                             {{ $reply->created_at->diffForHumans() }}
                         </span>
                     </div>
-                    <div class="fi-prose" style="margin-top: 0.25rem; font-size: 0.875rem; color: #374151;">{!! App\Support\CommonMark\CommonMark::convertToHtml($reply->message) !!}</div>
+                    <div class="fi-prose ticket-reply-message" style="margin-top: 0.25rem; font-size: 0.875rem; color: #374151;">{!! App\Support\CommonMark\CommonMark::convertToHtml($reply->message) !!}</div>
                 </div>
             @empty
                 <p style="padding: 1rem 0; text-align: center; font-size: 0.875rem; color: #6b7280;">No replies yet.</p>
