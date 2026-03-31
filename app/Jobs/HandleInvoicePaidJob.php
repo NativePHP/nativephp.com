@@ -4,7 +4,6 @@ namespace App\Jobs;
 
 use App\Enums\PayoutStatus;
 use App\Enums\Subscription;
-use App\Exceptions\InvalidStateException;
 use App\Models\Cart;
 use App\Models\CartItem;
 use App\Models\License;
@@ -25,7 +24,6 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Sleep;
 use Laravel\Cashier\Cashier;
 use Laravel\Cashier\SubscriptionItem;
 use Stripe\Invoice;
@@ -83,8 +81,6 @@ class HandleInvoicePaidJob implements ShouldQueue
             return;
         }
 
-        // Normal flow - create a new license
-        $this->createLicense();
         $this->updateSubscriptionCompedStatus();
     }
 
@@ -105,8 +101,6 @@ class HandleInvoicePaidJob implements ShouldQueue
                 'user_id' => $user->id,
                 'subscription_id' => $subscription->id,
             ]);
-            // Fallback to creating a new license
-            $this->createLicense();
 
             return;
         }
@@ -140,38 +134,6 @@ class HandleInvoicePaidJob implements ShouldQueue
         ]);
     }
 
-    private function createLicense(): void
-    {
-        // Add some delay to allow all the Stripe events to come in
-        Sleep::sleep(10);
-
-        // Assert the invoice line item is for a price_id that relates to a license plan.
-        $plan = Subscription::fromStripePriceId($this->findPlanLineItem()->price->id);
-
-        // Assert the invoice line item relates to a subscription and has a subscription item id.
-        if (blank($subscriptionItemId = $this->findPlanLineItem()->subscription_item)) {
-            throw new UnexpectedValueException('Failed to retrieve the Stripe subscription item id from invoice lines.');
-        }
-
-        // Assert we have a subscription item record for this subscription item id.
-        $subscriptionItemModel = SubscriptionItem::query()->where('stripe_id', $subscriptionItemId)->firstOrFail();
-
-        // Assert we don't already have an existing license for this subscription item.
-        if ($license = License::query()->whereBelongsTo($subscriptionItemModel)->first()) {
-            throw new InvalidStateException("A license [{$license->id}] already exists for subscription item [{$subscriptionItemModel->id}].");
-        }
-
-        $user = $this->billable();
-
-        dispatch(new CreateAnystackLicenseJob(
-            $user,
-            $plan,
-            $subscriptionItemModel->id,
-            $user->first_name,
-            $user->last_name,
-        ));
-    }
-
     private function handleSubscriptionRenewal(): void
     {
         // Get the subscription item ID from the invoice line
@@ -186,9 +148,6 @@ class HandleInvoicePaidJob implements ShouldQueue
         $license = License::query()->whereBelongsTo($subscriptionItemModel)->first();
 
         if (! $license) {
-            // No existing license found - this might be a new subscription, handle as create
-            $this->createLicense();
-
             return;
         }
 

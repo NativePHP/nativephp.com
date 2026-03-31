@@ -28,7 +28,7 @@
         <flux:heading>About Integrations</flux:heading>
         <div class="mt-4 prose dark:prose-invert prose-sm max-w-none">
             <ul class="list-disc list-inside space-y-2">
-                <li><strong>GitHub:</strong> Max license holders can access the private <code>nativephp/mobile</code> repository. Plugin Dev Kit license holders can access <code>nativephp/claude-code</code>.</li>
+                <li><strong>GitHub:</strong> Max license holders can access the private <code>nativephp/mobile</code> repository. Plugin Dev Kit license holders and Ultra subscribers can access <code>nativephp/claude-code</code>.</li>
                 <li><strong>Discord:</strong> Max license holders receive a special "Max" role in the NativePHP Discord server.</li>
             </ul>
             <p class="mt-4">
@@ -42,10 +42,13 @@
         <livewire:claude-plugins-access-banner :inline="true" />
     </div>
 
-    @if(auth()->user()->hasMaxAccess())
-        <div class="space-y-6">
+    <div class="space-y-6">
+        @if(auth()->user()->hasMobileRepoAccess())
             <livewire:git-hub-access-banner :inline="true" />
+        @endif
+
+        @if(auth()->user()->hasMaxAccess())
             <livewire:discord-access-banner :inline="true" />
-        </div>
-    @endif
+        @endif
+    </div>
 </div>

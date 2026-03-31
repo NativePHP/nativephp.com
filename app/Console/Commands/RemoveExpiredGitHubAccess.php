@@ -24,8 +24,8 @@ class RemoveExpiredGitHubAccess extends Command
             ->get();
 
         foreach ($users as $user) {
-            // Check if user still has Max access (direct or sub-license)
-            if (! $user->hasMaxAccess()) {
+            // Check if user still qualifies for mobile repo access
+            if (! $user->hasMobileRepoAccess()) {
                 // Remove from repository
                 $success = $github->removeFromMobileRepo($user->github_username);
 

@@ -216,6 +216,26 @@ class User extends Authenticatable implements FilamentUser, HasName
     }
 
     /**
+     * Check if the user should have access to the nativephp/mobile repository.
+     * Max license holders always have access. Ultra subscribers only qualify
+     * if their subscription was created before February 1, 2026.
+     */
+    public function hasMobileRepoAccess(): bool
+    {
+        if ($this->hasActiveMaxLicense() || $this->hasActiveMaxSubLicense()) {
+            return true;
+        }
+
+        $subscription = $this->subscription();
+
+        if (! $subscription || ! $subscription->active()) {
+            return false;
+        }
+
+        return $subscription->created_at->lt('2026-02-01 00:00:00');
+    }
+
+    /**
      * Check if the user's subscription is a comped (free) subscription.
      * Covers both legacy comped (is_comped flag) and comped Ultra price.
      */

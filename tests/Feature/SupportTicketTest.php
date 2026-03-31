@@ -657,6 +657,31 @@ class SupportTicketTest extends TestCase
     }
 
     #[Test]
+    public function support_ticket_email_includes_customer_details_with_obfuscated_email(): void
+    {
+        $user = User::factory()->create([
+            'name' => 'Jane Smith',
+            'email' => 'jane@example.com',
+        ]);
+
+        $ticket = SupportTicket::factory()->create([
+            'user_id' => $user->id,
+            'subject' => 'Test ticket',
+            'product' => 'bifrost',
+            'issue_type' => 'bug',
+            'message' => 'Test message',
+        ]);
+
+        $notification = new SupportTicketSubmitted($ticket);
+        $mailMessage = $notification->toMail($user);
+        $rendered = $mailMessage->render()->toHtml();
+
+        $this->assertStringContainsString('Jane Smith', $rendered);
+        $this->assertStringContainsString('ja**@ex*****.com', $rendered);
+        $this->assertStringNotContainsString('jane@example.com', $rendered);
+    }
+
+    #[Test]
     public function authenticated_ultra_user_can_reply_to_their_open_ticket(): void
     {
         $user = $this->createUltraUser();
@@ -878,6 +903,27 @@ class SupportTicketTest extends TestCase
     }
 
     #[Test]
+    public function ticket_owner_does_not_receive_notification_for_own_reply(): void
+    {
+        Notification::fake();
+
+        $admin = User::factory()->create(['is_admin' => true]);
+        $ticket = SupportTicket::factory()->create(['user_id' => $admin->id]);
+
+        Livewire::actingAs($admin)
+            ->test(TicketRepliesWidget::class, ['record' => $ticket])
+            ->set('newMessage', 'Replying to my own ticket.')
+            ->call('sendReply');
+
+        $this->assertDatabaseHas('replies', [
+            'support_ticket_id' => $ticket->id,
+            'message' => 'Replying to my own ticket.',
+        ]);
+
+        Notification::assertNotSentTo($admin, SupportTicketReplied::class);
+    }
+
+    #[Test]
     public function support_ticket_replied_notification_contains_correct_mail_content(): void
     {
         $user = User::factory()->create(['name' => 'Jane Doe']);
@@ -892,9 +938,14 @@ class SupportTicketTest extends TestCase
 
         $notification = new SupportTicketReplied($ticket, $reply);
         $mail = $notification->toMail($user);
+        $rendered = $mail->render()->toHtml();
 
-        $this->assertStringContainsString('Login issue', $mail->subject);
+        $this->assertStringContainsString($ticket->mask, $mail->subject);
+        $this->assertStringNotContainsString('Login issue', $mail->subject);
         $this->assertStringContainsString('Hi Jane', $mail->greeting);
+        $this->assertStringContainsString('log in to your dashboard', $rendered);
+        $this->assertStringContainsString('do not reply to this email', $rendered);
+        $this->assertStringNotContainsString('We have fixed the login issue', $rendered);
     }
 
     #[Test]

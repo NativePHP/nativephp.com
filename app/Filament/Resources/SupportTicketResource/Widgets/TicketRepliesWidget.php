@@ -36,7 +36,7 @@ class TicketRepliesWidget extends Widget
             'note' => $this->isNote,
         ]);
 
-        if (! $this->isNote) {
+        if (! $this->isNote && $this->record->user_id !== auth()->id()) {
             $this->record->user->notify(new SupportTicketReplied($this->record, $reply));
         }
 
