@@ -42,10 +42,13 @@
         <livewire:claude-plugins-access-banner :inline="true" />
     </div>
 
-    @if(auth()->user()->hasMaxAccess())
-        <div class="space-y-6">
+    <div class="space-y-6">
+        @if(auth()->user()->hasMobileRepoAccess())
             <livewire:git-hub-access-banner :inline="true" />
+        @endif
+
+        @if(auth()->user()->hasMaxAccess())
             <livewire:discord-access-banner :inline="true" />
-        </div>
-    @endif
+        @endif
+    </div>
 </div>
