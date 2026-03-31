@@ -647,6 +647,7 @@ class HandleInvoicePaidJob implements ShouldQueue
 
             $subscription->update([
                 'is_comped' => $invoiceTotal <= 0,
+                'price_paid' => max(0, $invoiceTotal),
             ]);
         }
     }

@@ -92,6 +92,17 @@ class SubscriptionResource extends Resource
                     })
                     ->searchable()
                     ->sortable(),
+                Tables\Columns\TextColumn::make('billing_interval')
+                    ->label('Interval')
+                    ->state(fn (Subscription $record): string => $record->stripe_price === config('subscriptions.plans.max.stripe_price_id_monthly')
+                        ? 'Monthly'
+                        : 'Annual'
+                    )
+                    ->badge(),
+                Tables\Columns\TextColumn::make('price_paid')
+                    ->label('Price Paid')
+                    ->money('usd', divideBy: 100)
+                    ->sortable(),
                 // Tables\Columns\TextColumn::make('trial_ends_at')
                 //     ->dateTime()
                 //     ->sortable(),

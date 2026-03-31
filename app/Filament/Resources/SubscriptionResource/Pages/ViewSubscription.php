@@ -64,6 +64,16 @@ class ViewSubscription extends ViewRecord
                                 }
                             }),
                         Components\TextEntry::make('quantity'),
+                        Components\TextEntry::make('billing_interval')
+                            ->label('Billing Interval')
+                            ->state(fn ($record): string => $record->stripe_price === config('subscriptions.plans.max.stripe_price_id_monthly')
+                                ? 'Monthly'
+                                : 'Annual'
+                            )
+                            ->badge(),
+                        Components\TextEntry::make('price_paid')
+                            ->label('Price Paid')
+                            ->money('usd', divideBy: 100),
                         Components\TextEntry::make('trial_ends_at')
                             ->dateTime(),
                         Components\TextEntry::make('ends_at')

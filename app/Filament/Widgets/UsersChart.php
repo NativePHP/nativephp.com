@@ -3,11 +3,12 @@
 namespace App\Filament\Widgets;
 
 use App\Models\User;
+use Carbon\Carbon;
 use Filament\Widgets\ChartWidget;
 
 class UsersChart extends ChartWidget
 {
-    protected ?string $heading = 'New Users';
+    protected ?string $heading = 'User Growth';
 
     protected static ?int $sort = 2;
 
@@ -15,8 +16,7 @@ class UsersChart extends ChartWidget
 
     protected string $color = 'primary';
 
-    // Default filter value
-    public ?string $filter = 'month';
+    public ?string $filter = 'this_year';
 
     protected function getData(): array
     {
@@ -47,10 +47,11 @@ class UsersChart extends ChartWidget
     protected function getFilters(): ?array
     {
         return [
-            'today' => 'Today',
-            'week' => 'Last 7 days',
-            'month' => 'Last 30 days',
-            'year' => 'This year',
+            'this_month' => 'This month',
+            'last_month' => 'Last month',
+            'this_year' => 'This year',
+            'last_year' => 'Last year',
+            'all_time' => 'All time',
         ];
     }
 
@@ -59,86 +60,52 @@ class UsersChart extends ChartWidget
         $filter = $this->filter;
 
         $startDate = match ($filter) {
-            'today' => today(),
-            'week' => now()->subDays(7)->startOfDay(),
-            'month' => now()->subDays(30)->startOfDay(),
-            'year' => now()->startOfYear(),
-            default => now()->subDays(30)->startOfDay(),
+            'this_month' => now()->startOfMonth(),
+            'last_month' => now()->subMonth()->startOfMonth(),
+            'this_year' => now()->startOfYear(),
+            'last_year' => now()->subYear()->startOfYear(),
+            'all_time' => User::query()->min('created_at')
+                ? Carbon::parse(User::query()->min('created_at'))->startOfMonth()
+                : now()->startOfYear(),
+            default => now()->startOfYear(),
         };
 
         $endDate = match ($filter) {
-            'today' => now()->endOfDay(),
-            'year' => now()->endOfYear(),
+            'last_month' => now()->subMonth()->endOfMonth(),
+            'last_year' => now()->subYear()->endOfYear(),
             default => now(),
         };
 
-        // Determine the appropriate grouping based on the filter
-        $groupByFormat = match ($filter) {
-            'today' => '%H:00', // Group by hour for today
-            'week' => '%Y-%m-%d', // Group by day for week
-            'month' => '%Y-%m-%d', // Group by day for month
-            'year' => '%Y-%m', // Group by month for year
-            default => '%Y-%m-%d',
-        };
-
-        $dateFormat = match ($filter) {
-            'today' => 'H:i',
-            'week', 'month' => 'M d',
-            'year' => 'M Y',
-            default => 'M d',
-        };
+        $groupByDaily = in_array($filter, ['this_month', 'last_month']);
 
         $users = User::whereBetween('created_at', [$startDate, $endDate])
-            ->selectRaw("DATE_FORMAT(created_at, '{$groupByFormat}') as date, COUNT(*) as count")
-            ->groupBy('date')
-            ->orderBy('date')
-            ->get()
-            ->keyBy('date');
+            ->pluck('created_at')
+            ->groupBy(fn (Carbon $date) => $groupByDaily ? $date->format('Y-m-d') : $date->format('Y-m'))
+            ->map(fn ($group) => $group->count());
 
-        // Generate all periods between start and end date
         $periods = [];
         $labels = [];
-        $counts = [];
 
-        if ($filter === 'today') {
-            // For today, generate hourly periods
-            for ($hour = 0; $hour < 24; $hour++) {
-                $date = sprintf('%02d:00', $hour);
-                $periods[$date] = 0;
-                $labels[] = $date;
-            }
-        } elseif ($filter === 'week' || $filter === 'month') {
-            // For week and month, generate daily periods
-            $currentDate = clone $startDate;
+        $currentDate = $startDate->copy();
+        if ($groupByDaily) {
             while ($currentDate <= $endDate) {
-                $date = $currentDate->format('Y-m-d');
-                $periods[$date] = 0;
-                $labels[] = $currentDate->format($dateFormat);
+                $key = $currentDate->format('Y-m-d');
+                $periods[$key] = $users->get($key, 0);
+                $labels[] = $currentDate->format('M d');
                 $currentDate->addDay();
             }
-        } elseif ($filter === 'year') {
-            // For year, generate monthly periods
-            $currentDate = clone $startDate;
+        } else {
             while ($currentDate <= $endDate) {
-                $date = $currentDate->format('Y-m');
-                $periods[$date] = 0;
-                $labels[] = $currentDate->format($dateFormat);
+                $key = $currentDate->format('Y-m');
+                $periods[$key] = $users->get($key, 0);
+                $labels[] = $currentDate->format('M Y');
                 $currentDate->addMonth();
             }
         }
 
-        // Fill in the actual counts
-        foreach ($users as $date => $userData) {
-            if (isset($periods[$date])) {
-                $periods[$date] = $userData->count;
-            }
-        }
-
-        $counts = array_values($periods);
-
         return [
             'labels' => $labels,
-            'counts' => $counts,
+            'counts' => array_values($periods),
         ];
     }
 
