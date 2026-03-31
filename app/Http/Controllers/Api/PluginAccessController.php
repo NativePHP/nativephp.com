@@ -152,8 +152,8 @@ class PluginAccessController extends Controller
             }
         }
 
-        // Team members get access to official plugins and owner's purchased plugins
-        if ($user->isUltraTeamMember()) {
+        // Ultra subscribers and team members get access to official plugins
+        if ($user->hasUltraAccess() || $user->isUltraTeamMember()) {
             $officialPlugins = Plugin::query()
                 ->where('type', PluginType::Paid)
                 ->where('is_official', true)
