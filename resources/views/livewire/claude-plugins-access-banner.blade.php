@@ -2,7 +2,7 @@
 @php
     $user = auth()->user();
     $pluginDevKit = \App\Models\Product::where('slug', 'plugin-dev-kit')->first();
-    $hasLicense = $pluginDevKit && $user->hasProductLicense($pluginDevKit);
+    $hasLicense = ($pluginDevKit && $user->hasProductLicense($pluginDevKit)) || $user->hasActiveUltraSubscription();
 @endphp
 
 @if($hasLicense)
