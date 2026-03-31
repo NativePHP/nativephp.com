@@ -138,7 +138,7 @@ class GitHubIntegrationController extends Controller
             return back()->with('error', 'Please connect your GitHub account first.');
         }
 
-        if (! $user->hasMaxAccess()) {
+        if (! $user->hasMobileRepoAccess()) {
             return back()->with('error', 'You need an active Max license to access the mobile repository.');
         }
 
