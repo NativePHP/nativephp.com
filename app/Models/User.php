@@ -445,8 +445,8 @@ class User extends Authenticatable implements FilamentUser, HasName
             return true;
         }
 
-        // Ultra team members get access to all official (first-party) plugins
-        if ($plugin->isOfficial() && $this->isUltraTeamMember()) {
+        // Ultra subscribers and team members get access to all official (first-party) plugins
+        if ($plugin->isOfficial() && ($this->hasUltraAccess() || $this->isUltraTeamMember())) {
             return true;
         }
 

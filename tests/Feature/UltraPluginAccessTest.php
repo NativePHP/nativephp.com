@@ -666,6 +666,99 @@ class UltraPluginAccessTest extends TestCase
         $this->assertEquals(4900, $bestPrice->amount);
     }
 
+    // ---- Ultra subscribers without a team ----
+
+    public function test_ultra_subscriber_without_team_has_access_to_official_plugin(): void
+    {
+        $user = User::factory()->create();
+        $this->createPaidMaxSubscription($user);
+        $plugin = $this->createOfficialPlugin();
+
+        // User has Ultra subscription but no team created
+        $this->assertNull($user->ownedTeam);
+        $this->assertTrue($user->hasPluginAccess($plugin));
+    }
+
+    public function test_ultra_subscriber_without_team_does_not_have_access_to_third_party_plugin(): void
+    {
+        $user = User::factory()->create();
+        $this->createPaidMaxSubscription($user);
+        $plugin = $this->createThirdPartyPlugin();
+
+        $this->assertFalse($user->hasPluginAccess($plugin));
+    }
+
+    public function test_comped_ultra_subscriber_without_team_has_access_to_official_plugin(): void
+    {
+        $user = User::factory()->create();
+        $this->createCompedUltraSubscription($user);
+        $plugin = $this->createOfficialPlugin();
+
+        $this->assertNull($user->ownedTeam);
+        $this->assertTrue($user->hasPluginAccess($plugin));
+    }
+
+    public function test_legacy_comped_max_without_team_does_not_have_access_to_official_plugin(): void
+    {
+        $user = User::factory()->create();
+        $this->createCompedMaxSubscription($user);
+        $plugin = $this->createOfficialPlugin();
+
+        $this->assertFalse($user->hasPluginAccess($plugin));
+    }
+
+    public function test_satis_api_includes_official_plugins_for_ultra_subscriber_without_team(): void
+    {
+        $user = User::factory()->create([
+            'plugin_license_key' => 'ultra-no-team-key',
+        ]);
+        $this->createPaidMaxSubscription($user);
+
+        $plugin = Plugin::factory()->create([
+            'name' => 'nativephp/secure-storage',
+            'type' => PluginType::Paid,
+            'status' => PluginStatus::Approved,
+            'is_active' => true,
+            'is_official' => true,
+        ]);
+
+        $response = $this->withHeaders([
+            'X-API-Key' => config('services.bifrost.api_key'),
+            'Authorization' => 'Basic '.base64_encode("{$user->email}:ultra-no-team-key"),
+        ])->getJson('/api/plugins/access');
+
+        $response->assertStatus(200);
+
+        $pluginNames = array_column($response->json('plugins'), 'name');
+        $this->assertContains('nativephp/secure-storage', $pluginNames);
+    }
+
+    public function test_satis_check_access_returns_true_for_ultra_subscriber_without_team(): void
+    {
+        $user = User::factory()->create([
+            'plugin_license_key' => 'ultra-no-team-key',
+        ]);
+        $this->createPaidMaxSubscription($user);
+
+        Plugin::factory()->create([
+            'name' => 'nativephp/secure-storage',
+            'type' => PluginType::Paid,
+            'status' => PluginStatus::Approved,
+            'is_active' => true,
+            'is_official' => true,
+        ]);
+
+        $response = $this->withHeaders([
+            'X-API-Key' => config('services.bifrost.api_key'),
+            'Authorization' => 'Basic '.base64_encode("{$user->email}:ultra-no-team-key"),
+        ])->getJson('/api/plugins/access/nativephp/secure-storage');
+
+        $response->assertStatus(200)
+            ->assertJson([
+                'has_access' => true,
+            ]);
+    }
+
     // ---- Comped Ultra subscriptions ----
 
     public function test_comped_ultra_user_has_active_ultra_subscription(): void
