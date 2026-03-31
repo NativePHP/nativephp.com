@@ -5,6 +5,7 @@ namespace App\Listeners;
 use App\Jobs\CreateUserFromStripeCustomer;
 use App\Jobs\HandleInvoicePaidJob;
 use App\Jobs\RemoveDiscordMaxRoleJob;
+use App\Jobs\RevokeTeamUserAccessJob;
 use App\Jobs\SuspendTeamJob;
 use App\Jobs\UnsuspendTeamJob;
 use App\Models\User;
@@ -77,6 +78,7 @@ class StripeWebhookReceivedListener
         $this->removeDiscordRoleIfNoMaxLicense($user);
 
         dispatch(new SuspendTeamJob($user->id));
+        dispatch(new RevokeTeamUserAccessJob($user->id));
     }
 
     private function handleSubscriptionUpdated(WebhookReceived $event): void
@@ -101,6 +103,7 @@ class StripeWebhookReceivedListener
         if (in_array($status, ['canceled', 'unpaid', 'past_due', 'incomplete_expired'])) {
             $this->removeDiscordRoleIfNoMaxLicense($user);
             dispatch(new SuspendTeamJob($user->id));
+            dispatch(new RevokeTeamUserAccessJob($user->id));
         }
 
         // Detect reactivation: status changed to active from a non-active state

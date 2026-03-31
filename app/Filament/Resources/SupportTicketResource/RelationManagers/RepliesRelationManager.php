@@ -73,7 +73,10 @@ class RepliesRelationManager extends RelationManager
                         }
 
                         $ticket = $this->getOwnerRecord();
-                        $ticket->user->notify(new SupportTicketReplied($ticket, $record));
+
+                        if ($ticket->user_id !== auth()->id()) {
+                            $ticket->user->notify(new SupportTicketReplied($ticket, $record));
+                        }
                     }),
             ])
             ->actions([

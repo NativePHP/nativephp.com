@@ -28,7 +28,7 @@
         <flux:heading>About Integrations</flux:heading>
         <div class="mt-4 prose dark:prose-invert prose-sm max-w-none">
             <ul class="list-disc list-inside space-y-2">
-                <li><strong>GitHub:</strong> Max license holders can access the private <code>nativephp/mobile</code> repository. Plugin Dev Kit license holders can access <code>nativephp/claude-code</code>.</li>
+                <li><strong>GitHub:</strong> Max license holders can access the private <code>nativephp/mobile</code> repository. Plugin Dev Kit license holders and Ultra subscribers can access <code>nativephp/claude-code</code>.</li>
                 <li><strong>Discord:</strong> Max license holders receive a special "Max" role in the NativePHP Discord server.</li>
             </ul>
             <p class="mt-4">
