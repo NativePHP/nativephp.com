@@ -454,9 +454,9 @@
                 role="presentation"
             ></div>
 
-{{--            <div class="mt-4 flex justify-center">--}}
-{{--                <x-bifrost-button />--}}
-{{--            </div>--}}
+            <div class="flex md:hidden mt-4  justify-center">
+                <x-bifrost-button />
+            </div>
 
             <nav
                 class="mx-auto mt-4 flex"
