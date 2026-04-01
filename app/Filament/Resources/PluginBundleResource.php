@@ -187,6 +187,7 @@ class PluginBundleResource extends Resource
                                         ->mapWithKeys(fn (User $user) => [$user->id => "{$user->name} ({$user->email})"])
                                         ->toArray();
                                 })
+                                ->getOptionLabelUsing(fn ($value): ?string => User::find($value)?->name)
                                 ->required(),
                         ])
                         ->action(function (PluginBundle $record, array $data): void {
