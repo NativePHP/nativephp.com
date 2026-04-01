@@ -71,20 +71,12 @@
         {{-- Right side --}}
         <div class="flex items-center gap-2.5">
             {{-- Theme toggle (visible on large screens) --}}
-            <div class="hidden lg:block">
-                <x-navbar.theme-toggle />
-            </div>
+{{--            <div class="hidden lg:block">--}}
+{{--                <x-navbar.theme-toggle />--}}
+{{--            </div>--}}
 
             {{-- Doc search (visible on large screens) --}}
-            <div
-                class="hidden -mr-0.5 transition-all duration-200 ease-in-out will-change-transform lg:block"
-            >
-                <div
-                    id="docsearch-desktop"
-                    x-on:click="if (window.innerWidth < 640) window.scrollTo({ top: 0, behavior: 'instant' })"
-                    aria-label="Search documentation"
-                ></div>
-            </div>
+
 
             {{-- Bifrost button (visible on large screens) --}}
             <div class="hidden lg:block">

@@ -384,13 +384,22 @@
                 {{-- Doc search --}}
                 <div class="contrast-150 dark:contrast-100">
                     <div
-                        id="docsearch-mobile"
-                        x-on:click="
-                            window.scrollTo({ top: 0, behavior: 'instant' })
-                            showMobileMenu = false
-                        "
-                        aria-label="Search documentation"
-                    ></div>
+                        class=" -mr-0.5 transition-all duration-200 ease-in-out will-change-transform lg:block"
+                    >
+                        <div
+                            id="docsearch-desktop"
+                            x-on:click="if (window.innerWidth < 640) window.scrollTo({ top: 0, behavior: 'instant' })"
+                            aria-label="Search documentation"
+                        ></div>
+                    </div>
+{{--                    <div--}}
+{{--                        id="docsearch-mobile"--}}
+{{--                        x-on:click="--}}
+{{--                            window.scrollTo({ top: 0, behavior: 'instant' })--}}
+{{--                            showMobileMenu = false--}}
+{{--                        "--}}
+{{--                        aria-label="Search documentation"--}}
+{{--                    ></div>--}}
                 </div>
 
                 <div
@@ -445,9 +454,9 @@
                 role="presentation"
             ></div>
 
-            <div class="mt-4 flex justify-center">
-                <x-bifrost-button />
-            </div>
+{{--            <div class="mt-4 flex justify-center">--}}
+{{--                <x-bifrost-button />--}}
+{{--            </div>--}}
 
             <nav
                 class="mx-auto mt-4 flex"

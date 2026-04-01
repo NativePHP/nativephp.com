@@ -45,15 +45,15 @@
 
             {{-- Star 1 --}}
             <x-icons.star
-                class="absolute top-6 right-3 z-10 w-4 -rotate-7 text-white dark:w-3 dark:text-slate-300"
+                class="absolute top-6 right-3 z-10 w-4 -rotate-7 text-white dark:w-3 dark:text-slate-300 animate-ping"
             />
             {{-- Star 2 --}}
             <x-icons.star
-                class="absolute top-3 right-14 z-10 w-3 rotate-5 text-white dark:w-2 dark:text-slate-300"
+                class="absolute top-3 right-14 z-10 w-3 rotate-5 text-white dark:w-2 dark:text-slate-300 animate-spin "
             />
             {{-- Star 3 --}}
             <x-icons.star
-                class="absolute top-2.5 right-7.5 z-10 w-2.5 text-white dark:w-2 dark:text-slate-300"
+                class="absolute top-2.5 right-7.5 z-10 w-2.5 text-white dark:w-2 dark:text-slate-300 animate-pulse"
             />
             {{-- White blur --}}
             <div class="absolute top-5 -right-10 -z-5">
@@ -107,13 +107,13 @@
 
             {{-- Decorative stars --}}
             <x-icons.star
-                class="absolute top-4 right-3 z-10 w-3 -rotate-7 text-purple-300"
+                class="absolute top-4 right-3 z-10 w-3 -rotate-7 text-purple-300 animate-spin "
             />
             <x-icons.star
-                class="absolute top-8 left-4 z-10 w-2 rotate-12 text-indigo-300"
+                class="absolute top-8 left-4 z-10 w-2 rotate-12 text-indigo-300 animate-pulse "
             />
             <x-icons.star
-                class="absolute bottom-12 right-6 z-10 w-2.5 text-purple-200"
+                class="absolute bottom-12 right-6 z-10 w-2.5 text-purple-200 animate-ping "
             />
         </a>
     @endif
@@ -149,13 +149,13 @@
 
             {{-- Decorative stars --}}
             <x-icons.star
-                class="absolute top-4 right-3 z-10 w-3 -rotate-7 text-amber-200"
+                class="absolute top-4 right-3 z-10 w-3 -rotate-7 text-amber-200 animate-ping "
             />
             <x-icons.star
-                class="absolute top-8 left-4 z-10 w-2 rotate-12 text-orange-200"
+                class="absolute top-8 left-4 z-10 w-2 rotate-12 text-orange-200 animate-spin "
             />
             <x-icons.star
-                class="absolute bottom-12 right-6 z-10 w-2.5 text-amber-100"
+                class="absolute bottom-12 right-6 z-10 w-2.5 text-amber-100 animate-pulse "
             />
         </a>
     @endif
