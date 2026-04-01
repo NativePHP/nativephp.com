@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Services\DocsVersionService;
 use App\Support\CommonMark\CommonMark;
+use Artesaos\SEOTools\Facades\SEOMeta;
 use Artesaos\SEOTools\Facades\SEOTools;
 use Illuminate\Contracts\View\Factory as ViewFactory;
 use Illuminate\Http\RedirectResponse;
@@ -48,6 +50,13 @@ class ShowDocumentationController extends Controller
         }
         $title = $pageProperties['title'].' - NativePHP '.$platform.' v'.$version;
         $description = Arr::exists($pageProperties, 'description') ? $pageProperties['description'] : 'NativePHP documentation for '.$platform.' v'.$version;
+
+        $canonicalUrl = app(DocsVersionService::class)->determineCanonicalUrl(
+            platform: $platform,
+            page: $page,
+        );
+
+        SEOMeta::setCanonical($canonicalUrl);
 
         SEOTools::setTitle($title);
         SEOTools::setDescription($description);
