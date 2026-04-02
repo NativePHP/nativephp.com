@@ -61,7 +61,7 @@ class HandleInvoicePaidJob implements ShouldQueue
             'invoice_id' => $this->invoice->id,
         ]);
 
-        $this->updateSubscriptionCompedStatus();
+        $this->updateSubscriptionPricePaid();
     }
 
     private function handleSubscriptionCreated(): void
@@ -76,12 +76,12 @@ class HandleInvoicePaidJob implements ShouldQueue
 
         if ($isRenewal && $licenseKey && $licenseId) {
             $this->handleLegacyLicenseRenewal($subscription, $licenseKey, $licenseId);
-            $this->updateSubscriptionCompedStatus();
+            $this->updateSubscriptionPricePaid();
 
             return;
         }
 
-        $this->updateSubscriptionCompedStatus();
+        $this->updateSubscriptionPricePaid();
     }
 
     private function handleLegacyLicenseRenewal($subscription, string $licenseKey, string $licenseId): void
@@ -169,7 +169,7 @@ class HandleInvoicePaidJob implements ShouldQueue
             'invoice_id' => $this->invoice->id,
         ]);
 
-        $this->updateSubscriptionCompedStatus();
+        $this->updateSubscriptionPricePaid();
     }
 
     private function handleManualInvoice(): void
@@ -591,9 +591,9 @@ class HandleInvoicePaidJob implements ShouldQueue
     }
 
     /**
-     * Mark the local Cashier subscription as comped if the invoice total is zero.
+     * Update the price paid on the local Cashier subscription from the invoice total.
      */
-    private function updateSubscriptionCompedStatus(): void
+    private function updateSubscriptionPricePaid(): void
     {
         if (! $this->invoice->subscription) {
             return;
@@ -605,7 +605,6 @@ class HandleInvoicePaidJob implements ShouldQueue
             $invoiceTotal = $this->invoice->total ?? 0;
 
             $subscription->update([
-                'is_comped' => $invoiceTotal <= 0,
                 'price_paid' => max(0, $invoiceTotal),
             ]);
         }

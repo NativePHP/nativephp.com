@@ -54,6 +54,26 @@ class DashboardLayoutTest extends TestCase
     }
 
     // ========================================
+    // Subscription Card Tests
+    // ========================================
+
+    public function test_dashboard_shows_no_active_subscription_when_subscription_is_canceled(): void
+    {
+        $user = User::factory()->create();
+        Subscription::factory()->for($user)->create([
+            'stripe_price' => self::MAX_PRICE_ID,
+            'stripe_status' => 'canceled',
+            'ends_at' => now()->subDay(),
+        ]);
+
+        Livewire::actingAs($user)
+            ->test(Dashboard::class)
+            ->assertOk()
+            ->assertSee('No active subscription')
+            ->assertDontSee('badge="Active"');
+    }
+
+    // ========================================
     // Sidebar Team Item Tests
     // ========================================
 

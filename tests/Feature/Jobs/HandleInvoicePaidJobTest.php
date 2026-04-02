@@ -66,6 +66,56 @@ class HandleInvoicePaidJobTest extends TestCase
         Bus::assertNotDispatched(CreateAnystackLicenseJob::class);
     }
 
+    #[Test]
+    public function it_does_not_auto_set_is_comped_when_invoice_total_is_zero(): void
+    {
+        Bus::fake();
+
+        $user = User::factory()->create([
+            'stripe_id' => 'cus_test123',
+        ]);
+
+        $priceId = 'price_test_mini';
+        config(['subscriptions.plans.mini.stripe_price_id' => $priceId]);
+
+        $subscription = \Laravel\Cashier\Subscription::factory()
+            ->for($user, 'user')
+            ->create([
+                'stripe_id' => 'sub_test123',
+                'stripe_status' => 'active',
+                'stripe_price' => $priceId,
+                'quantity' => 1,
+                'is_comped' => false,
+            ]);
+
+        SubscriptionItem::factory()
+            ->for($subscription, 'subscription')
+            ->create([
+                'stripe_id' => 'si_test123',
+                'stripe_price' => $priceId,
+                'quantity' => 1,
+            ]);
+
+        $this->mockStripeSubscriptionRetrieve('sub_test123');
+
+        $invoice = $this->createStripeInvoice(
+            customerId: 'cus_test123',
+            subscriptionId: 'sub_test123',
+            billingReason: Invoice::BILLING_REASON_SUBSCRIPTION_CREATE,
+            priceId: $priceId,
+            subscriptionItemId: 'si_test123',
+            total: 0,
+        );
+
+        $job = new HandleInvoicePaidJob($invoice);
+        $job->handle();
+
+        $subscription->refresh();
+
+        $this->assertFalse((bool) $subscription->is_comped);
+        $this->assertEquals(0, $subscription->price_paid);
+    }
+
     public static function subscriptionPlanProvider(): array
     {
         return [
@@ -81,6 +131,7 @@ class HandleInvoicePaidJobTest extends TestCase
         string $billingReason,
         string $priceId,
         string $subscriptionItemId,
+        int $total = 25000,
     ): Invoice {
         return Invoice::constructFrom([
             'id' => 'in_test_'.uniqid(),
@@ -88,7 +139,7 @@ class HandleInvoicePaidJobTest extends TestCase
             'customer' => $customerId,
             'subscription' => $subscriptionId,
             'billing_reason' => $billingReason,
-            'total' => 25000,
+            'total' => $total,
             'currency' => 'usd',
             'payment_intent' => 'pi_test_'.uniqid(),
             'metadata' => [],

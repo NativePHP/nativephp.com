@@ -82,7 +82,7 @@
         />
 
         {{-- Subscription Card --}}
-        @if($this->activeSubscription)
+        @if($this->activeSubscription?->active())
             <x-dashboard-card
                 title="Subscription"
                 :value="$this->subscriptionName"
