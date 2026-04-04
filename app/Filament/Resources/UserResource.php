@@ -23,8 +23,12 @@ class UserResource extends Resource
     public static function form(Schema $schema): Schema
     {
         return $schema
+            ->inlineLabel()
+            ->columns(1)
             ->schema([
                 Schemas\Components\Section::make('User Information')
+                    ->inlineLabel()
+                    ->columns(1)
                     ->schema([
                         Forms\Components\TextInput::make('name')
                             ->maxLength(255),
@@ -38,8 +42,10 @@ class UserResource extends Resource
                             ->dehydrated(fn ($state) => filled($state))
                             ->required(fn (string $context): bool => $context === 'create')
                             ->maxLength(255),
-                    ])->columns(2),
+                    ]),
                 Schemas\Components\Section::make('Billing Information')
+                    ->inlineLabel()
+                    ->columns(1)
                     ->schema([
                         Forms\Components\TextInput::make('stripe_id')
                             ->maxLength(255)
@@ -55,7 +61,7 @@ class UserResource extends Resource
                         Forms\Components\TextInput::make('anystack_contact_id')
                             ->maxLength(255)
                             ->disabled(),
-                    ])->columns(2),
+                    ]),
             ]);
     }
 

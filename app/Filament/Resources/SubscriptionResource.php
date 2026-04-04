@@ -28,8 +28,12 @@ class SubscriptionResource extends Resource
     public static function form(Schema $schema): Schema
     {
         return $schema
+            ->inlineLabel()
+            ->columns(1)
             ->schema([
                 Schemas\Components\Section::make('Subscription Details')
+                    ->inlineLabel()
+                    ->columns(1)
                     ->schema([
                         Forms\Components\Select::make('user_id')
                             ->relationship('user', 'email')
@@ -49,7 +53,7 @@ class SubscriptionResource extends Resource
                             ->disabled(),
                         Forms\Components\DateTimePicker::make('ends_at')
                             ->disabled(),
-                    ])->columns(2),
+                    ]),
             ]);
     }
 

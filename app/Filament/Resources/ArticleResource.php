@@ -33,6 +33,8 @@ class ArticleResource extends Resource
     public static function form(Schema $schema): Schema
     {
         return $schema
+            ->inlineLabel()
+            ->columns(1)
             ->schema([
                 TextInput::make('title')
                     ->required()

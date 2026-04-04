@@ -31,9 +31,12 @@ class SupportTicketResource extends Resource
     public static function infolist(Schema $schema): Schema
     {
         return $schema
-            ->columns(2)
+            ->inlineLabel()
+            ->columns(1)
             ->schema([
                 Section::make('Ticket Details')
+                    ->inlineLabel()
+                    ->columns(1)
                     ->schema([
                         Infolists\Components\TextEntry::make('mask')
                             ->label('Ticket ID'),
@@ -62,24 +65,21 @@ class SupportTicketResource extends Resource
                             ->label('Updated')
                             ->dateTime(),
                     ])
-                    ->columns(2)
                     ->collapsible()
-                    ->persistCollapsed()
-                    ->columnSpan(1),
+                    ->persistCollapsed(),
 
                 Section::make('Context')
+                    ->inlineLabel()
+                    ->columns(1)
                     ->schema([
                         Infolists\Components\TextEntry::make('subject')
-                            ->label('Subject')
-                            ->columnSpanFull(),
+                            ->label('Subject'),
                         Infolists\Components\TextEntry::make('message')
                             ->label('Message')
-                            ->markdown()
-                            ->columnSpanFull(),
+                            ->markdown(),
                     ])
                     ->collapsible()
-                    ->persistCollapsed()
-                    ->columnSpan(1),
+                    ->persistCollapsed(),
             ]);
     }
 

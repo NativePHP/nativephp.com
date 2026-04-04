@@ -22,8 +22,12 @@ class LicenseResource extends Resource
     public static function form(Schema $schema): Schema
     {
         return $schema
+            ->inlineLabel()
+            ->columns(1)
             ->schema([
                 Schemas\Components\Section::make('License Information')
+                    ->inlineLabel()
+                    ->columns(1)
                     ->schema([
                         Forms\Components\TextInput::make('id')
                             ->disabled(),
@@ -49,8 +53,7 @@ class LicenseResource extends Resource
                         Forms\Components\Toggle::make('is_suspended')
                             ->label('Suspended')
                             ->disabled(),
-                    ])
-                    ->columns(2),
+                    ]),
             ]);
     }
 

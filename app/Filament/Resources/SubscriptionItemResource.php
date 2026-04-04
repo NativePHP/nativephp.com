@@ -25,8 +25,12 @@ class SubscriptionItemResource extends Resource
     public static function form(Schema $schema): Schema
     {
         return $schema
+            ->inlineLabel()
+            ->columns(1)
             ->schema([
                 Schemas\Components\Section::make('Subscription Item Details')
+                    ->inlineLabel()
+                    ->columns(1)
                     ->schema([
                         Forms\Components\Select::make('subscription_id')
                             ->relationship('subscription', 'id')
@@ -40,7 +44,7 @@ class SubscriptionItemResource extends Resource
                             ->disabled(),
                         Forms\Components\TextInput::make('quantity')
                             ->disabled(),
-                    ])->columns(2),
+                    ]),
             ]);
     }
 

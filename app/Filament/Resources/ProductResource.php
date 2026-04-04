@@ -33,8 +33,12 @@ class ProductResource extends Resource
     public static function form(Schema $schema): Schema
     {
         return $schema
+            ->inlineLabel()
+            ->columns(1)
             ->schema([
                 Schemas\Components\Section::make('Product Details')
+                    ->inlineLabel()
+                    ->columns(1)
                     ->schema([
                         Forms\Components\TextInput::make('name')
                             ->required()
@@ -52,8 +56,7 @@ class ProductResource extends Resource
 
                         Forms\Components\Textarea::make('description')
                             ->rows(3)
-                            ->maxLength(1000)
-                            ->columnSpanFull(),
+                            ->maxLength(1000),
 
                         Forms\Components\FileUpload::make('logo_path')
                             ->label('Product Logo')
@@ -64,10 +67,11 @@ class ProductResource extends Resource
                             ->imageCropAspectRatio('1:1')
                             ->imageResizeTargetWidth('256')
                             ->imageResizeTargetHeight('256'),
-                    ])
-                    ->columns(2),
+                    ]),
 
                 Schemas\Components\Section::make('GitHub Integration')
+                    ->inlineLabel()
+                    ->columns(1)
                     ->schema([
                         Forms\Components\TextInput::make('github_repo')
                             ->label('GitHub Repository Name')
@@ -77,6 +81,8 @@ class ProductResource extends Resource
                     ]),
 
                 Schemas\Components\Section::make('Publishing')
+                    ->inlineLabel()
+                    ->columns(1)
                     ->schema([
                         Forms\Components\Toggle::make('is_active')
                             ->label('Active')
@@ -89,8 +95,7 @@ class ProductResource extends Resource
                         Forms\Components\DateTimePicker::make('published_at')
                             ->label('Publish Date')
                             ->helperText('Leave empty to keep as draft. Set future date to schedule.'),
-                    ])
-                    ->columns(3),
+                    ]),
             ]);
     }
 

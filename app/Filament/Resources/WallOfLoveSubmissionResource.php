@@ -26,8 +26,12 @@ class WallOfLoveSubmissionResource extends Resource
     public static function form(Schema $schema): Schema
     {
         return $schema
+            ->inlineLabel()
+            ->columns(1)
             ->schema([
                 Schemas\Components\Section::make('Submission Details')
+                    ->inlineLabel()
+                    ->columns(1)
                     ->schema([
                         Forms\Components\TextInput::make('name')
                             ->required()
@@ -53,6 +57,8 @@ class WallOfLoveSubmissionResource extends Resource
                     ]),
 
                 Schemas\Components\Section::make('Status & Promotion')
+                    ->inlineLabel()
+                    ->columns(1)
                     ->schema([
                         Forms\Components\Toggle::make('is_approved')
                             ->label('Approved')
@@ -91,8 +97,7 @@ class WallOfLoveSubmissionResource extends Resource
                             ->helperText('Leave empty to use the original testimonial, or enter a clipped version for the homepage.')
                             ->rows(4)
                             ->visible(fn (Schemas\Components\Utilities\Get $get) => $get('is_approved') && $get('promoted')),
-                    ])
-                    ->columns(1),
+                    ]),
             ]);
     }
 

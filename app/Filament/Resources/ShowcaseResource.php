@@ -26,8 +26,12 @@ class ShowcaseResource extends Resource
     public static function form(Schema $schema): Schema
     {
         return $schema
+            ->inlineLabel()
+            ->columns(1)
             ->schema([
                 Schemas\Components\Section::make('App Details')
+                    ->inlineLabel()
+                    ->columns(1)
                     ->schema([
                         Forms\Components\Select::make('user_id')
                             ->label('Submitted By')
@@ -62,6 +66,8 @@ class ShowcaseResource extends Resource
                     ]),
 
                 Schemas\Components\Section::make('Platform Availability')
+                    ->inlineLabel()
+                    ->columns(1)
                     ->schema([
                         Forms\Components\Toggle::make('has_mobile')
                             ->label('Mobile App')
@@ -106,6 +112,8 @@ class ShowcaseResource extends Resource
                     ]),
 
                 Schemas\Components\Section::make('Certification')
+                    ->inlineLabel()
+                    ->columns(1)
                     ->schema([
                         Forms\Components\Toggle::make('certified_nativephp')
                             ->label('Certified as built with NativePHP')

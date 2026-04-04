@@ -35,8 +35,12 @@ class PluginBundleResource extends Resource
     public static function form(Schema $schema): Schema
     {
         return $schema
+            ->inlineLabel()
+            ->columns(1)
             ->schema([
                 Schemas\Components\Section::make('Bundle Details')
+                    ->inlineLabel()
+                    ->columns(1)
                     ->schema([
                         Forms\Components\TextInput::make('name')
                             ->required()
@@ -54,8 +58,7 @@ class PluginBundleResource extends Resource
 
                         Forms\Components\Textarea::make('description')
                             ->rows(3)
-                            ->maxLength(1000)
-                            ->columnSpanFull(),
+                            ->maxLength(1000),
 
                         Forms\Components\FileUpload::make('logo_path')
                             ->label('Bundle Logo')
@@ -66,10 +69,11 @@ class PluginBundleResource extends Resource
                             ->imageCropAspectRatio('1:1')
                             ->imageResizeTargetWidth('256')
                             ->imageResizeTargetHeight('256'),
-                    ])
-                    ->columns(2),
+                    ]),
 
                 Schemas\Components\Section::make('Included Plugins')
+                    ->inlineLabel()
+                    ->columns(1)
                     ->schema([
                         Forms\Components\Select::make('plugins')
                             ->relationship(
@@ -91,6 +95,8 @@ class PluginBundleResource extends Resource
                     ]),
 
                 Schemas\Components\Section::make('Publishing')
+                    ->inlineLabel()
+                    ->columns(1)
                     ->schema([
                         Forms\Components\Toggle::make('is_active')
                             ->label('Active')
@@ -103,8 +109,7 @@ class PluginBundleResource extends Resource
                         Forms\Components\DateTimePicker::make('published_at')
                             ->label('Publish Date')
                             ->helperText('Leave empty to keep as draft. Set future date to schedule.'),
-                    ])
-                    ->columns(3),
+                    ]),
             ]);
     }
 

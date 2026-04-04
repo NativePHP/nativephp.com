@@ -7,6 +7,7 @@ use App\Models\OpenCollectiveDonation;
 use Filament\Actions;
 use Filament\Infolists;
 use Filament\Resources\Resource;
+use Filament\Schemas;
 use Filament\Schemas\Schema;
 use Filament\Tables;
 use Filament\Tables\Table;
@@ -37,8 +38,12 @@ class OpenCollectiveDonationResource extends Resource
     public static function infolist(Schema $schema): Schema
     {
         return $schema
+            ->inlineLabel()
+            ->columns(1)
             ->schema([
-                Infolists\Components\Section::make('Donation Details')
+                Schemas\Components\Section::make('Donation Details')
+                    ->inlineLabel()
+                    ->columns(1)
                     ->schema([
                         Infolists\Components\TextEntry::make('order_id')
                             ->label('Order ID')
@@ -53,8 +58,10 @@ class OpenCollectiveDonationResource extends Resource
                         Infolists\Components\TextEntry::make('created_at')
                             ->label('Received')
                             ->dateTime(),
-                    ])->columns(2),
-                Infolists\Components\Section::make('Contributor')
+                    ]),
+                Schemas\Components\Section::make('Contributor')
+                    ->inlineLabel()
+                    ->columns(1)
                     ->schema([
                         Infolists\Components\TextEntry::make('from_collective_name')
                             ->label('Name'),
@@ -64,8 +71,10 @@ class OpenCollectiveDonationResource extends Resource
                             ->openUrlInNewTab(),
                         Infolists\Components\TextEntry::make('from_collective_id')
                             ->label('Collective ID'),
-                    ])->columns(3),
-                Infolists\Components\Section::make('Claim Status')
+                    ]),
+                Schemas\Components\Section::make('Claim Status')
+                    ->inlineLabel()
+                    ->columns(1)
                     ->schema([
                         Infolists\Components\IconEntry::make('claimed_at')
                             ->label('Claimed')
@@ -82,7 +91,7 @@ class OpenCollectiveDonationResource extends Resource
                             ->label('Claimed By')
                             ->placeholder('Not claimed')
                             ->url(fn ($record) => $record->user_id ? UserResource::getUrl('edit', ['record' => $record->user_id]) : null),
-                    ])->columns(3),
+                    ]),
             ]);
     }
 

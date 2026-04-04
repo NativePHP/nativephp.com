@@ -7,6 +7,7 @@ use App\Models\Lead;
 use Filament\Actions;
 use Filament\Infolists;
 use Filament\Resources\Resource;
+use Filament\Schemas;
 use Filament\Schemas\Schema;
 use Filament\Tables;
 use Filament\Tables\Table;
@@ -29,8 +30,12 @@ class LeadResource extends Resource
     public static function infolist(Schema $schema): Schema
     {
         return $schema
+            ->inlineLabel()
+            ->columns(1)
             ->schema([
-                Infolists\Components\Section::make('Contact Information')
+                Schemas\Components\Section::make('Contact Information')
+                    ->inlineLabel()
+                    ->columns(1)
                     ->schema([
                         Infolists\Components\TextEntry::make('name')
                             ->label('Name'),
@@ -39,19 +44,21 @@ class LeadResource extends Resource
                             ->copyable(),
                         Infolists\Components\TextEntry::make('company')
                             ->label('Company'),
-                    ])
-                    ->columns(3),
+                    ]),
 
-                Infolists\Components\Section::make('Project Details')
+                Schemas\Components\Section::make('Project Details')
+                    ->inlineLabel()
+                    ->columns(1)
                     ->schema([
                         Infolists\Components\TextEntry::make('budget_label')
                             ->label('Budget'),
                         Infolists\Components\TextEntry::make('description')
-                            ->label('App Description')
-                            ->columnSpanFull(),
+                            ->label('App Description'),
                     ]),
 
-                Infolists\Components\Section::make('Metadata')
+                Schemas\Components\Section::make('Metadata')
+                    ->inlineLabel()
+                    ->columns(1)
                     ->schema([
                         Infolists\Components\TextEntry::make('ip_address')
                             ->label('IP Address'),
@@ -59,7 +66,6 @@ class LeadResource extends Resource
                             ->label('Submitted')
                             ->dateTime(),
                     ])
-                    ->columns(2)
                     ->collapsed(),
             ]);
     }

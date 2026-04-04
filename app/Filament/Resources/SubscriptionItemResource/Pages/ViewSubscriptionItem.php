@@ -79,8 +79,12 @@ class ViewSubscriptionItem extends ViewRecord
     public function infolist(Schema $schema): Schema
     {
         return $schema
+            ->inlineLabel()
+            ->columns(1)
             ->schema([
                 Section::make('Subscription Item Details')
+                    ->inlineLabel()
+                    ->columns(1)
                     ->schema([
                         Components\TextEntry::make('subscription.id')
                             ->label('Subscription ID')
@@ -109,7 +113,7 @@ class ViewSubscriptionItem extends ViewRecord
                             ->dateTime(),
                         Components\TextEntry::make('updated_at')
                             ->dateTime(),
-                    ])->columns(2),
+                    ]),
             ]);
     }
 }
