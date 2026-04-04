@@ -77,6 +77,10 @@ class PluginResource extends Resource
                         Forms\Components\Select::make('status')
                             ->options(PluginStatus::class),
 
+                        Forms\Components\Toggle::make('is_official')
+                            ->label('Official (First-Party)')
+                            ->helperText('Official plugins are free for Ultra subscribers'),
+
                         Forms\Components\Textarea::make('description')
                             ->label('Description'),
 
@@ -198,7 +202,7 @@ class PluginResource extends Resource
                         Forms\Components\DateTimePicker::make('approved_at')
 
                             ->visible(fn (?Plugin $record) => $record?->approved_at !== null),
-                    ])
+                    ]),
             ]);
     }
 
@@ -252,6 +256,10 @@ class PluginResource extends Resource
                     ->placeholder('-')
                     ->toggleable(isToggledHiddenByDefault: true),
 
+                Tables\Columns\ToggleColumn::make('is_official')
+                    ->label('Official')
+                    ->sortable(),
+
                 Tables\Columns\ToggleColumn::make('featured')
                     ->sortable(),
 
@@ -284,6 +292,8 @@ class PluginResource extends Resource
                     ->options(PluginStatus::class),
                 Tables\Filters\SelectFilter::make('type')
                     ->options(PluginType::class),
+                Tables\Filters\TernaryFilter::make('is_official')
+                    ->label('Official'),
                 Tables\Filters\TernaryFilter::make('featured'),
                 Tables\Filters\TernaryFilter::make('is_active')
                     ->label('Active'),
