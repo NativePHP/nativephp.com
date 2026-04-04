@@ -42,8 +42,12 @@ class PluginResource extends Resource
     public static function form(Schema $schema): Schema
     {
         return $schema
+            ->inlineLabel()
+            ->columns(1)
             ->schema([
                 Schemas\Components\Section::make('Plugin Details')
+                    ->inlineLabel()
+                    ->columns(1)
                     ->schema([
                         Forms\Components\Placeholder::make('logo_preview')
                             ->label('Logo')
@@ -74,18 +78,17 @@ class PluginResource extends Resource
                             ->options(PluginStatus::class),
 
                         Forms\Components\Textarea::make('description')
-                            ->label('Description')
-
-                            ->columnSpanFull(),
+                            ->label('Description'),
 
                         Forms\Components\Textarea::make('rejection_reason')
                             ->label('Rejection Reason')
 
                             ->visible(fn (?Plugin $record) => $record?->isRejected()),
-                    ])
-                    ->columns(2),
+                    ]),
 
                 Schemas\Components\Section::make('Review Checks')
+                    ->inlineLabel()
+                    ->columns(1)
                     ->schema([
                         Forms\Components\Placeholder::make('reviewed_at_display')
                             ->label('Last Reviewed')
@@ -135,7 +138,6 @@ class PluginResource extends Resource
                                 ? '✅ '.($record->review_checks['android_min_version'] ?? '')
                                 : '❌ Missing'),
                     ])
-                    ->columns(4)
                     ->headerActions([
                         Action::make('emailReviewChecks')
                             ->label('Email Developer')
@@ -163,6 +165,8 @@ class PluginResource extends Resource
                     ->visible(fn (?Plugin $record) => $record?->review_checks !== null),
 
                 Schemas\Components\Section::make('Developer Submission Details')
+                    ->inlineLabel()
+                    ->columns(1)
                     ->schema([
                         Forms\Components\Placeholder::make('support_channel_display')
                             ->label('Support Channel')
@@ -175,6 +179,8 @@ class PluginResource extends Resource
                     ->visible(fn (?Plugin $record) => $record !== null),
 
                 Schemas\Components\Section::make('Submission Info')
+                    ->inlineLabel()
+                    ->columns(1)
                     ->schema([
                         Forms\Components\Select::make('user_id')
                             ->relationship('user', 'email')
@@ -193,7 +199,6 @@ class PluginResource extends Resource
 
                             ->visible(fn (?Plugin $record) => $record?->approved_at !== null),
                     ])
-                    ->columns(2),
             ]);
     }
 
