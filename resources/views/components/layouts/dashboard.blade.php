@@ -97,9 +97,11 @@
                     Dashboard
                 </flux:sidebar.item>
 
-                <flux:sidebar.item icon="key" href="{{ route('customer.licenses.list') }}" :current="request()->routeIs('customer.licenses.*')">
-                    Licenses
-                </flux:sidebar.item>
+                @if(auth()->user()->licenses()->exists())
+                    <flux:sidebar.item icon="key" href="{{ route('customer.licenses.list') }}" :current="request()->routeIs('customer.licenses.*')">
+                        Licenses
+                    </flux:sidebar.item>
+                @endif
 
                 @feature(App\Features\ShowPlugins::class)
                     <flux:sidebar.item icon="shopping-bag" href="{{ route('customer.purchased-plugins.index') }}" :current="request()->routeIs('customer.purchased-plugins.*')">
