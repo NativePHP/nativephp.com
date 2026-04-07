@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Customer\Licenses;
 
+use App\Actions\Licenses\RotateLicenseKey;
 use App\Models\License;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Title;
@@ -41,6 +42,21 @@ class Show extends Component
         $this->showEditNameModal = false;
 
         session()->flash('success', 'License name updated successfully!');
+    }
+
+    public function rotateLicenseKey(RotateLicenseKey $action): void
+    {
+        if ($this->license->is_suspended || ($this->license->expires_at && $this->license->expires_at->isPast())) {
+            session()->flash('error', 'Cannot rotate a suspended or expired license key.');
+
+            return;
+        }
+
+        $action->handle($this->license);
+
+        session()->flash('success', 'Your license key has been rotated. Please update any applications using the old key.');
+
+        $this->redirectRoute('customer.licenses.show', $this->license->key);
     }
 
     public function render()

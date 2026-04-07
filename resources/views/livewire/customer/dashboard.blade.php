@@ -61,14 +61,16 @@
     {{-- Dashboard Cards --}}
     <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
         {{-- Licenses Card --}}
-        <x-dashboard-card
-            title="Licenses"
-            :count="$this->licenseCount"
-            icon="key"
-            color="blue"
-            :href="route('customer.licenses.list')"
-            link-text="View licenses"
-        />
+        @if($this->licenseCount > 0)
+            <x-dashboard-card
+                title="Licenses"
+                :count="$this->licenseCount"
+                icon="key"
+                color="blue"
+                :href="route('customer.licenses.list')"
+                link-text="View licenses"
+            />
+        @endif
 
         {{-- EAP Status Card --}}
         <x-dashboard-card

@@ -16,6 +16,12 @@
         </flux:callout>
     @endif
 
+    @if(session('error'))
+        <flux:callout variant="danger" icon="exclamation-circle" class="mb-6">
+            <flux:callout.text>{{ session('error') }}</flux:callout.text>
+        </flux:callout>
+    @endif
+
     {{-- License Information Card --}}
     <flux:card class="mb-6">
         <div class="flex items-center justify-between mb-4">
@@ -34,7 +40,14 @@
                 <flux:table.row>
                     <flux:table.cell class="font-medium text-zinc-500 dark:text-zinc-400">License Key</flux:table.cell>
                     <flux:table.cell>
-                        <x-customer.masked-key :key-value="$license->key" />
+                        <div class="flex items-center justify-between">
+                            <x-customer.masked-key :key-value="$license->key" />
+                            @if(! $license->is_suspended && ! ($license->expires_at && $license->expires_at->isPast()))
+                                <flux:modal.trigger name="rotate-license-key">
+                                    <flux:button size="sm" icon="arrow-path" tooltip="Rotate key" />
+                                </flux:modal.trigger>
+                            @endif
+                        </div>
                     </flux:table.cell>
                 </flux:table.row>
 
@@ -149,5 +162,36 @@
                 <flux:button type="submit" variant="primary">Update Name</flux:button>
             </div>
         </form>
+    </flux:modal>
+
+    {{-- Rotate License Key Confirmation Modal --}}
+    <flux:modal name="rotate-license-key" class="md:w-96">
+        <div class="space-y-6">
+            <div>
+                <flux:heading size="lg">Rotate License Key</flux:heading>
+                <flux:text class="mt-2">
+                    Are you sure you want to rotate this license key? This action cannot be undone.
+                </flux:text>
+            </div>
+
+            <flux:callout variant="warning" icon="exclamation-triangle">
+                <flux:callout.heading>After rotating your key, you will need to:</flux:callout.heading>
+                <flux:callout.text>
+                    <ul class="mt-1 list-disc pl-5 text-sm">
+                        <li>Update the license key in all your NativePHP applications</li>
+                        <li>Update any CI/CD pipelines or deployment scripts</li>
+                        <li>Notify any team members using this key</li>
+                    </ul>
+                </flux:callout.text>
+            </flux:callout>
+
+            <div class="flex gap-2">
+                <flux:spacer />
+                <flux:modal.close>
+                    <flux:button variant="ghost">Cancel</flux:button>
+                </flux:modal.close>
+                <flux:button variant="danger" wire:click="rotateLicenseKey">Rotate Key</flux:button>
+            </div>
+        </div>
     </flux:modal>
 </div>
