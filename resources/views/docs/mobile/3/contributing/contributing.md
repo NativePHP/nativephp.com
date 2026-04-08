@@ -12,8 +12,8 @@ We welcome contributions to NativePHP for Mobile! Whether it's bug fixes, new fe
 1. **Fork the repository** on GitHub.
 2. **Clone your fork** locally:
    ```bash
-   git clone git@github.com:your-username/mobile.git
-   cd mobile
+   git clone git@github.com:your-username/mobile-air.git
+   cd mobile-air
    ```
 3. **Create a new branch** for your feature or fix:
    ```bash
@@ -37,7 +37,7 @@ We welcome contributions to NativePHP for Mobile! Whether it's bug fixes, new fe
 
 ### Reporting Bugs
 
-If you discover a bug, please [open an issue](https://github.com/NativePHP/mobile/issues) on GitHub. Include as much detail as possible:
+If you discover a bug, please [open an issue](https://github.com/NativePHP/mobile-air/issues) on GitHub. Include as much detail as possible:
 
 - A clear, descriptive title.
 - Steps to reproduce the issue.
@@ -46,7 +46,7 @@ If you discover a bug, please [open an issue](https://github.com/NativePHP/mobil
 
 ### Security Vulnerabilities
 
-If you discover a security vulnerability, please **do not** open a public issue. Instead, please send an email to [security@nativephp.com](mailto:security@nativephp.com). All security vulnerabilities will be promptly addressed.
+If you discover a security vulnerability, please **do not** open a public issue. Instead, please send an email to [support@nativephp.com](mailto:support@nativephp.com). All security vulnerabilities will be promptly addressed.
 
 ## Code of Conduct
 
@@ -78,6 +78,6 @@ Examples of unacceptable behavior:
 
 ### Enforcement
 
-Instances of abusive, harassing, or otherwise unacceptable behavior may be reported to the project team at [conduct@nativephp.com](mailto:conduct@nativephp.com). All complaints will be reviewed and investigated promptly and fairly.
+Instances of abusive, harassing, or otherwise unacceptable behavior may be reported to the project team at [support@nativephp.com](mailto:support@nativephp.com). All complaints will be reviewed and investigated promptly and fairly.
 
 Project maintainers who do not follow or enforce the Code of Conduct in good faith may face temporary or permanent repercussions as determined by other members of the project's leadership.
