@@ -64,6 +64,16 @@ class PluginPayout extends Model
     }
 
     /**
+     * @param  Builder<PluginPayout>  $query
+     * @return Builder<PluginPayout>
+     */
+    #[Scope]
+    protected function cancelled(Builder $query): Builder
+    {
+        return $query->where('status', PayoutStatus::Cancelled);
+    }
+
+    /**
      * @return array{platform_fee: int, developer_amount: int}
      */
     public static function calculateSplit(int $grossAmount, int $platformFeePercent = self::PLATFORM_FEE_PERCENT): array
@@ -106,6 +116,18 @@ class PluginPayout extends Model
         $this->update([
             'status' => PayoutStatus::Failed,
         ]);
+    }
+
+    public function markAsCancelled(): void
+    {
+        $this->update([
+            'status' => PayoutStatus::Cancelled,
+        ]);
+    }
+
+    public function isCancelled(): bool
+    {
+        return $this->status === PayoutStatus::Cancelled;
     }
 
     protected function casts(): array

@@ -51,4 +51,13 @@ class PluginLicenseFactory extends Factory
             'is_grandfathered' => true,
         ]);
     }
+
+    public function refunded(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'refunded_at' => now(),
+            'stripe_refund_id' => 're_'.$this->faker->uuid(),
+            'refunded_by' => User::factory(),
+        ]);
+    }
 }
