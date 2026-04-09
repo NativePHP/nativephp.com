@@ -75,7 +75,9 @@ class PluginResource extends Resource
                             ->suffixIconColor('gray'),
 
                         Forms\Components\Select::make('status')
-                            ->options(PluginStatus::class),
+                            ->options(PluginStatus::class)
+                            ->disabled()
+                            ->helperText('Use the Approve/Reject actions to change status'),
 
                         Forms\Components\Toggle::make('is_official')
                             ->label('Official (First-Party)')
