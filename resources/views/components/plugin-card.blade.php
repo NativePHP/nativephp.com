@@ -36,9 +36,10 @@
     </div>
 
     <div class="mt-4 flex-1">
-        <h3 class="font-mono text-sm font-semibold text-gray-900 dark:text-white">
-            {{ $plugin->name }}
+        <h3 class="text-sm font-semibold text-gray-900 dark:text-white">
+            {{ $plugin->display_name ?? $plugin->name }}
         </h3>
+        <p class="mt-0.5 font-mono text-xs text-gray-500 dark:text-gray-400">{{ $plugin->name }}</p>
         @if ($plugin->description)
             <p class="mt-2 line-clamp-3 text-sm text-gray-600 dark:text-gray-400">
                 {{ $plugin->description }}

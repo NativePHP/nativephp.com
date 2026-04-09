@@ -223,11 +223,12 @@
                                         <div class="flex flex-1 flex-col">
                                             <div class="flex justify-between">
                                                 <div>
-                                                    <h3 class="font-mono text-sm font-medium text-gray-900 dark:text-white">
+                                                    <h3 class="text-sm font-medium text-gray-900 dark:text-white">
                                                         <a href="{{ route('plugins.show', $item->plugin->routeParams()) }}" class="hover:text-indigo-600 dark:hover:text-indigo-400">
-                                                            {{ $item->plugin->name }}
+                                                            {{ $item->plugin->display_name ?? $item->plugin->name }}
                                                         </a>
                                                     </h3>
+                                                    <p class="mt-0.5 font-mono text-xs text-gray-500 dark:text-gray-400">{{ $item->plugin->name }}</p>
                                                     <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
                                                         by {{ $item->plugin->user->display_name }}
                                                     </p>

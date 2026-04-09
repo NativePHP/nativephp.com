@@ -136,7 +136,7 @@ class PluginCreateTest extends TestCase
     // Namespace Validation Tests
     // ========================================
 
-    public function test_submission_blocked_when_namespace_claimed_by_another_user(): void
+    public function test_creation_blocked_when_namespace_claimed_by_another_user(): void
     {
         $existingUser = User::factory()->create();
         Plugin::factory()->for($existingUser)->create(['name' => 'acme/existing-plugin']);
@@ -148,7 +148,7 @@ class PluginCreateTest extends TestCase
         Livewire::actingAs($user)->test(Create::class)
             ->set('repository', 'acme/new-plugin')
             ->set('pluginType', 'free')
-            ->call('submitPlugin')
+            ->call('createPlugin')
             ->assertNoRedirect();
 
         $this->assertDatabaseMissing('plugins', [
@@ -156,7 +156,7 @@ class PluginCreateTest extends TestCase
         ]);
     }
 
-    public function test_submission_blocked_for_reserved_namespace(): void
+    public function test_creation_blocked_for_reserved_namespace(): void
     {
         $user = $this->createGitHubUser();
 
@@ -165,7 +165,7 @@ class PluginCreateTest extends TestCase
         Livewire::actingAs($user)->test(Create::class)
             ->set('repository', 'nativephp/my-plugin')
             ->set('pluginType', 'free')
-            ->call('submitPlugin')
+            ->call('createPlugin')
             ->assertNoRedirect();
 
         $this->assertDatabaseMissing('plugins', [
@@ -173,7 +173,7 @@ class PluginCreateTest extends TestCase
         ]);
     }
 
-    public function test_submission_allowed_for_own_namespace(): void
+    public function test_creation_allowed_for_own_namespace(): void
     {
         $user = $this->createGitHubUser();
         Plugin::factory()->for($user)->create(['name' => 'myvendor/first-plugin']);
@@ -184,23 +184,22 @@ class PluginCreateTest extends TestCase
             'api.github.com/repos/myvendor/second-plugin/contents/composer.json*' => Http::response([
                 'content' => $composerJson,
             ]),
-            'api.github.com/repos/myvendor/second-plugin/hooks' => Http::response(['id' => 1]),
             'api.github.com/*' => Http::response([], 404),
         ]);
 
         Livewire::actingAs($user)->test(Create::class)
             ->set('repository', 'myvendor/second-plugin')
             ->set('pluginType', 'free')
-            ->set('supportChannel', 'support@myvendor.io')
-            ->call('submitPlugin');
+            ->call('createPlugin');
 
         $this->assertDatabaseHas('plugins', [
             'repository_url' => 'https://github.com/myvendor/second-plugin',
             'user_id' => $user->id,
+            'status' => 'draft',
         ]);
     }
 
-    public function test_submission_blocked_when_composer_json_missing(): void
+    public function test_creation_blocked_when_composer_json_missing(): void
     {
         $user = $this->createGitHubUser();
 
@@ -211,11 +210,39 @@ class PluginCreateTest extends TestCase
         Livewire::actingAs($user)->test(Create::class)
             ->set('repository', 'testuser/no-composer')
             ->set('pluginType', 'free')
-            ->call('submitPlugin')
+            ->call('createPlugin')
             ->assertNoRedirect();
 
         $this->assertDatabaseMissing('plugins', [
             'repository_url' => 'https://github.com/testuser/no-composer',
         ]);
+    }
+
+    public function test_plugin_created_as_draft(): void
+    {
+        $user = $this->createGitHubUser();
+
+        $composerJson = base64_encode(json_encode(['name' => 'testuser/draft-plugin']));
+
+        Http::fake([
+            'api.github.com/repos/testuser/draft-plugin/contents/composer.json*' => Http::response([
+                'content' => $composerJson,
+            ]),
+            'api.github.com/*' => Http::response([], 404),
+        ]);
+
+        Livewire::actingAs($user)->test(Create::class)
+            ->set('repository', 'testuser/draft-plugin')
+            ->set('pluginType', 'free')
+            ->call('createPlugin');
+
+        $this->assertDatabaseHas('plugins', [
+            'repository_url' => 'https://github.com/testuser/draft-plugin',
+            'status' => 'draft',
+        ]);
+
+        // No webhook should be installed for drafts
+        $plugin = Plugin::where('repository_url', 'https://github.com/testuser/draft-plugin')->first();
+        $this->assertNull($plugin->webhook_secret);
     }
 }

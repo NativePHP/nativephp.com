@@ -68,7 +68,8 @@
                     <a href="{{ route('customer.plugins.show', $plugin->routeParams()) }}" class="block py-4 first:pt-0 last:pb-0 hover:bg-gray-50 dark:hover:bg-gray-700/50 -mx-2 px-2 rounded-lg" wire:key="plugin-{{ $plugin->id }}">
                         <div class="flex items-center justify-between">
                             <div class="min-w-0 flex-1">
-                                <p class="truncate font-medium text-gray-900 dark:text-white">{{ $plugin->name }}</p>
+                                <p class="truncate font-medium text-gray-900 dark:text-white">{{ $plugin->display_name ?? $plugin->name }}</p>
+                                <p class="truncate font-mono text-xs text-gray-500 dark:text-gray-400">{{ $plugin->name }}</p>
                             </div>
                             <div class="ml-4 text-right">
                                 <flux:text class="font-medium">{{ $plugin->licenses_count }} sales</flux:text>

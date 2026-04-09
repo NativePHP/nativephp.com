@@ -245,6 +245,7 @@ class PluginResource extends Resource
                 Tables\Columns\TextColumn::make('status')
                     ->badge()
                     ->color(fn (PluginStatus $state): string => match ($state) {
+                        PluginStatus::Draft => 'gray',
                         PluginStatus::Pending => 'warning',
                         PluginStatus::Approved => 'success',
                         PluginStatus::Rejected => 'danger',

@@ -6,19 +6,19 @@
 
     {{-- Action Cards --}}
     <div class="grid gap-6 md:grid-cols-3">
-        {{-- Submit Plugin Card --}}
+        {{-- Create Plugin Card --}}
         <flux:card class="relative overflow-hidden border-2 border-indigo-500 dark:border-indigo-400">
             <div class="absolute -right-4 -top-4 size-24 rounded-full bg-indigo-500/10 dark:bg-indigo-400/10"></div>
             <div class="relative">
                 <div class="flex size-12 items-center justify-center rounded-lg bg-indigo-500 text-white dark:bg-indigo-600">
                     <x-heroicon-o-plus class="size-6" />
                 </div>
-                <flux:heading size="lg" class="mt-4">Submit Your Plugin</flux:heading>
+                <flux:heading size="lg" class="mt-4">Create Your Plugin</flux:heading>
                 <flux:text class="mt-2">
-                    Built a plugin? Submit it to the NativePHP Plugin Marketplace and share it with the community.
+                    Built a plugin? Add it to the NativePHP Plugin Marketplace and share it with the community.
                 </flux:text>
                 <flux:button variant="primary" href="{{ route('customer.plugins.create') }}" class="mt-4">
-                    Submit a Plugin
+                    Create a Plugin
                 </flux:button>
             </div>
         </flux:card>
@@ -61,12 +61,13 @@
         </flux:callout>
     @endif
 
-    {{-- Submitted Plugins List --}}
+    {{-- Plugins List --}}
     <div class="mt-8">
-        <flux:heading size="lg">Your Submitted Plugins</flux:heading>
-        <flux:text class="mt-1">Track the status of your plugin submissions.</flux:text>
+        <flux:heading size="lg">Your Plugins</flux:heading>
+        <flux:text class="mt-1">Track the status of your plugins.</flux:text>
 
         <flux:radio.group wire:model.live="status" variant="segmented" class="mt-4">
+            <flux:radio value="draft" label="Draft ({{ $this->pluginCounts['draft'] }})" />
             <flux:radio value="pending" label="Pending ({{ $this->pluginCounts['pending'] }})" />
             <flux:radio value="rejected" label="Rejected ({{ $this->pluginCounts['rejected'] }})" />
             <flux:radio value="approved" label="Approved ({{ $this->pluginCounts['approved'] }})" />
@@ -86,7 +87,9 @@
                             <flux:table.cell>
                                 <div class="flex items-center gap-3">
                                     <div class="shrink-0">
-                                        @if ($plugin->isPending())
+                                        @if ($plugin->isDraft())
+                                            <div class="size-3 rounded-full bg-gray-400"></div>
+                                        @elseif ($plugin->isPending())
                                             <div class="size-3 animate-pulse rounded-full bg-yellow-400"></div>
                                         @elseif ($plugin->isApproved())
                                             <div class="size-3 rounded-full bg-green-400"></div>
@@ -95,21 +98,30 @@
                                         @endif
                                     </div>
                                     <div>
-                                        <span class="font-mono text-sm font-medium">{{ $plugin->name }}</span>
+                                        <span class="text-sm font-medium">{{ $plugin->display_name ?? $plugin->name }}</span>
+                                        @if ($plugin->display_name)
+                                            <flux:text class="font-mono text-xs">{{ $plugin->name }}</flux:text>
+                                        @endif
                                         <flux:text class="text-xs">
-                                            {{ $plugin->type->label() }} plugin &bull; Submitted {{ $plugin->created_at->diffForHumans() }}
+                                            {{ $plugin->type->label() }} plugin &bull; Created {{ $plugin->created_at->diffForHumans() }}
                                         </flux:text>
                                     </div>
                                 </div>
                             </flux:table.cell>
 
                             <flux:table.cell>
-                                <x-customer.status-badge :status="$plugin->isPending() ? 'Pending Review' : ($plugin->isApproved() ? 'Approved' : 'Rejected')" />
+                                <x-customer.status-badge :status="$plugin->status->label()" />
                             </flux:table.cell>
 
                             <flux:table.cell class="text-right">
                                 <flux:button size="xs" variant="ghost" href="{{ route('customer.plugins.show', $plugin->routeParams()) }}">
-                                    Edit
+                                    @if ($plugin->isDraft())
+                                        Edit
+                                    @elseif ($plugin->isApproved())
+                                        Manage
+                                    @else
+                                        View
+                                    @endif
                                 </flux:button>
                             </flux:table.cell>
                         </flux:table.row>

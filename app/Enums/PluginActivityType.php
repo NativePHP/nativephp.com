@@ -9,6 +9,8 @@ enum PluginActivityType: string
     case Approved = 'approved';
     case Rejected = 'rejected';
     case DescriptionUpdated = 'description_updated';
+    case Withdrawn = 'withdrawn';
+    case ReturnedToDraft = 'returned_to_draft';
 
     public function label(): string
     {
@@ -18,6 +20,8 @@ enum PluginActivityType: string
             self::Approved => 'Approved',
             self::Rejected => 'Rejected',
             self::DescriptionUpdated => 'Description Updated',
+            self::Withdrawn => 'Withdrawn',
+            self::ReturnedToDraft => 'Returned to Draft',
         };
     }
 
@@ -29,6 +33,8 @@ enum PluginActivityType: string
             self::Approved => 'success',
             self::Rejected => 'danger',
             self::DescriptionUpdated => 'gray',
+            self::Withdrawn => 'warning',
+            self::ReturnedToDraft => 'warning',
         };
     }
 
@@ -40,6 +46,8 @@ enum PluginActivityType: string
             self::Approved => 'heroicon-o-check-circle',
             self::Rejected => 'heroicon-o-x-circle',
             self::DescriptionUpdated => 'heroicon-o-pencil-square',
+            self::Withdrawn => 'heroicon-o-arrow-uturn-left',
+            self::ReturnedToDraft => 'heroicon-o-arrow-uturn-left',
         };
     }
 }

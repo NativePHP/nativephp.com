@@ -230,7 +230,7 @@ class DeveloperTermsTest extends TestCase
         Livewire::actingAs($user)
             ->test(Create::class)
             ->assertStatus(200)
-            ->assertSee('Submit Your Plugin')
+            ->assertSee('Create Your Plugin')
             ->assertSee('Select Repository');
     }
 

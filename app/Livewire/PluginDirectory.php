@@ -74,6 +74,7 @@ class PluginDirectory extends Component
 
         $plugins = Plugin::query()
             ->approved()
+            ->where('is_active', true)
             ->when($this->search, function ($query): void {
                 $query->where(function ($q): void {
                     $q->where('name', 'like', "%{$this->search}%")

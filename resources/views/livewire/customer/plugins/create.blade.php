@@ -11,11 +11,11 @@
                     <x-heroicon-s-chevron-right class="size-4 text-gray-400" />
                 </li>
                 <li>
-                    <span class="text-sm font-medium text-gray-900 dark:text-white">Submit Plugin</span>
+                    <span class="text-sm font-medium text-gray-900 dark:text-white">Create Plugin</span>
                 </li>
             </ol>
         </nav>
-        <flux:heading size="xl" class="mt-2">Submit Your Plugin</flux:heading>
+        <flux:heading size="xl" class="mt-2">Create Your Plugin</flux:heading>
         <flux:text>Add your plugin to the NativePHP Plugin Marketplace</flux:text>
     </div>
 
@@ -27,26 +27,12 @@
             </flux:callout>
         @endif
 
-        {{-- Validation Errors --}}
-        @if ($errors->any())
-            <flux:callout variant="danger" icon="x-circle">
-                <flux:callout.heading>Please fix the following errors:</flux:callout.heading>
-                <flux:callout.text>
-                    <ul class="list-disc space-y-1 pl-5">
-                        @foreach ($errors->all() as $error)
-                            <li>{{ $error }}</li>
-                        @endforeach
-                    </ul>
-                </flux:callout.text>
-            </flux:callout>
-        @endif
-
         {{-- GitHub Connection Required --}}
         @if (!auth()->user()->github_id)
             <flux:callout variant="warning" icon="exclamation-triangle">
                 <flux:callout.heading>GitHub Connection Required</flux:callout.heading>
                 <flux:callout.text>
-                    To submit a plugin, you need to connect your GitHub account so we can access your repository and automatically set up webhooks.
+                    To create a plugin, you need to connect your GitHub account so we can access your repository.
                 </flux:callout.text>
                 <x-slot name="actions">
                     <flux:button variant="filled" href="{{ route('github.redirect', ['return' => route('customer.plugins.create')]) }}">
@@ -56,7 +42,7 @@
                 </x-slot>
             </flux:callout>
         @else
-            <form wire:submit="submitPlugin" class="space-y-8">
+            <form wire:submit="createPlugin" class="space-y-8">
                 {{-- Plugin Type --}}
                 @feature(App\Features\AllowPaidPlugins::class)
                 <flux:card>
@@ -69,7 +55,7 @@
                             <input type="radio" wire:model="pluginType" value="free" class="sr-only" />
                             <span class="flex flex-1 flex-col">
                                 <span class="text-sm font-medium text-gray-900 dark:text-white">Free Plugin</span>
-                                <span class="mt-1 text-sm text-gray-500 dark:text-gray-400">Open source, hosted on Packagist/GitHub</span>
+                                <span class="mt-1 text-sm text-gray-500 dark:text-gray-400">Open source, hosted on Packagist</span>
                             </span>
                         </label>
 
@@ -102,7 +88,7 @@
 
                     <flux:heading size="lg">Select Repository</flux:heading>
                     <flux:text class="mt-1">
-                        Choose the repository containing your plugin. We'll automatically set up a webhook to keep your plugin in sync.
+                        Choose the repository containing your plugin.
                     </flux:text>
 
                     <div class="mt-6 space-y-4">
@@ -126,9 +112,6 @@
                                 </flux:select>
                             @endif
                         @endif
-                        @error('repository')
-                            <flux:text class="mt-2 text-sm text-red-600 dark:text-red-400">{{ $message }}</flux:text>
-                        @enderror
                     </div>
                 </flux:card>
 
@@ -159,36 +142,10 @@
                 @endif
                 @endfeature
 
-                @if($repository)
-                    {{-- Support Channel --}}
-                    <flux:card>
-                        <flux:heading size="lg">Support Channel</flux:heading>
-                        <flux:text class="mt-1">
-                            How can users get support for your plugin? Provide an email address or a URL. If you enter a URL, ensure that it clearly details how a visitor goes about getting support for this plugin.
-                        </flux:text>
-
-                        <div class="mt-6">
-                            <flux:input wire:model="supportChannel" label="Support Channel" placeholder="support@example.com or https://..." />
-                        </div>
-                    </flux:card>
-
-                    {{-- Notes --}}
-                    <flux:card>
-                        <flux:heading size="lg">Notes</flux:heading>
-                        <flux:text class="mt-1">
-                            Any notes for the review team? Feel free to share links to videos of the plugin working. These won't be displayed on your plugin listing.
-                        </flux:text>
-
-                        <div class="mt-6">
-                            <flux:textarea wire:model="notes" label="Notes" placeholder="Optional notes for the review team..." rows="4" />
-                        </div>
-                    </flux:card>
-                @endif
-
                 {{-- Submit Button --}}
                 <div class="flex items-center justify-end gap-4">
                     <flux:button variant="ghost" href="{{ route('customer.plugins.index') }}">Cancel</flux:button>
-                    <flux:button type="submit" variant="primary">Submit Plugin</flux:button>
+                    <flux:button type="submit" variant="primary">Create Plugin</flux:button>
                 </div>
             </form>
         @endif

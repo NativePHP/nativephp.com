@@ -4,9 +4,7 @@ namespace App\Livewire\Customer\Plugins;
 
 use App\Enums\PluginStatus;
 use App\Features\AllowPaidPlugins;
-use App\Jobs\ReviewPluginRepository;
 use App\Models\Plugin;
-use App\Notifications\PluginSubmitted;
 use App\Services\GitHubUserService;
 use App\Services\PluginSyncService;
 use Illuminate\Support\Facades\Cache;
@@ -17,7 +15,7 @@ use Livewire\Attributes\Title;
 use Livewire\Component;
 
 #[Layout('components.layouts.dashboard')]
-#[Title('Submit Your Plugin')]
+#[Title('Create Your Plugin')]
 class Create extends Component
 {
     public string $pluginType = 'free';
@@ -25,10 +23,6 @@ class Create extends Component
     public string $selectedOwner = '';
 
     public string $repository = '';
-
-    public string $notes = '';
-
-    public string $supportChannel = '';
 
     /** @var array<int, array{id: int, full_name: string, name: string, owner: string, private: bool}> */
     public array $repositories = [];
@@ -113,12 +107,12 @@ class Create extends Component
         $this->loadingRepos = false;
     }
 
-    public function submitPlugin(PluginSyncService $syncService): void
+    public function createPlugin(PluginSyncService $syncService): void
     {
         $user = auth()->user();
 
         if (! $user->github_id) {
-            $this->addError('repository', 'You must connect your GitHub account to submit a plugin.');
+            $this->addError('repository', 'You must connect your GitHub account to create a plugin.');
 
             return;
         }
@@ -132,26 +126,14 @@ class Create extends Component
                 function ($attribute, $value, $fail): void {
                     $url = 'https://github.com/'.trim($value, '/');
                     if (Plugin::where('repository_url', $url)->exists()) {
-                        $fail('This repository has already been submitted.');
+                        $fail('A plugin for this repository already exists.');
                     }
                 },
             ],
             'pluginType' => ['required', 'string', 'in:free,paid'],
-            'notes' => ['nullable', 'string', 'max:5000'],
-            'supportChannel' => [
-                'required',
-                'string',
-                'max:255',
-                function (string $attribute, mixed $value, \Closure $fail) {
-                    if (! filter_var($value, FILTER_VALIDATE_EMAIL) && ! filter_var($value, FILTER_VALIDATE_URL)) {
-                        $fail('The support channel must be a valid email address or URL.');
-                    }
-                },
-            ],
         ], [
             'repository.required' => 'Please select a repository for your plugin.',
             'repository.regex' => 'Please enter a valid repository in the format vendor/repo-name.',
-            'supportChannel.required' => 'Please provide a support channel (email or URL) for your plugin.',
         ]);
 
         if ($this->pluginType === 'paid' && ! Feature::active(AllowPaidPlugins::class)) {
@@ -195,30 +177,11 @@ class Create extends Component
         $plugin = $user->plugins()->create([
             'repository_url' => $repositoryUrl,
             'type' => $this->pluginType,
-            'status' => PluginStatus::Pending,
+            'status' => PluginStatus::Draft,
             'developer_account_id' => $developerAccountId,
-            'notes' => $this->notes ?: null,
-            'support_channel' => $this->supportChannel ?: null,
         ]);
 
-        $webhookSecret = $plugin->generateWebhookSecret();
-
-        $webhookInstalled = false;
-        if ($user->hasGitHubToken()) {
-            $webhookResult = $githubService->createWebhook(
-                $owner,
-                $repo,
-                $plugin->getWebhookUrl(),
-                $webhookSecret
-            );
-            $webhookInstalled = $webhookResult['success'];
-        }
-
-        $plugin->update(['webhook_installed' => $webhookInstalled]);
-
         $syncService->sync($plugin);
-
-        (new ReviewPluginRepository($plugin))->handle();
 
         if (! $plugin->name) {
             $plugin->delete();
@@ -228,13 +191,6 @@ class Create extends Component
             return;
         }
 
-        $user->notify(new PluginSubmitted($plugin));
-
-        $successMessage = 'Your plugin has been submitted for review!';
-        if (! $webhookInstalled) {
-            $successMessage .= ' Please set up the webhook manually to enable automatic syncing.';
-        }
-
         [$vendor, $package] = explode('/', $plugin->name);
 
         $this->redirect(
@@ -242,7 +198,7 @@ class Create extends Component
             navigate: true
         );
 
-        session()->flash('success', $successMessage);
+        session()->flash('success', 'Your plugin has been created as a draft. You can edit it and submit for review when ready.');
     }
 
     public function render()
