@@ -18,18 +18,46 @@ step that happens at runtime. You end up with pure, fast and flexible native com
 
 ## Available Components
 
-Our first set of components are focused on navigation, framing your application with beautiful, platform-dependent UI
-components. These familiar navigational elements will help your users feel immediately at home in your app and elevate
-your app to feeling built for their chosen platform, just like a true native app.
+EDGE provides a full suite of native UI components for building your app, from layout containers and typography to
+interactive forms and navigation chrome.
 
-And all that without compromising your ability to build using tools and techniques you're already the most comfortable
-with.
+### Layout
 
-For now, we have 3 main native components that you can configure:
+- **[Layout & Styling](layout)** - Shared sizing, spacing, flex, style, and event attributes available on all elements
+- **[Column](column)** - Vertical flex container
+- **[Row](row)** - Horizontal flex container
+- **[Scroll View](scroll-view)** - Scrollable container with virtualization
+- **[Stack](stack)** - Overlay container (ZStack) for layering elements
+- **[Spacer](spacer)** - Flexible space element
+- **[Pressable](pressable)** - Touch-sensitive container wrapper
+
+### Content
+
+- **[Text](text)** - Text display with font sizing, weight, color, and alignment
+- **[Button](button)** - Tappable button with label, colors, and disabled state
+- **[Image](image)** - Image display with fit modes and tinting
+- **[Icon](icon)** - Platform-native icons (SF Symbols on iOS, Material Icons on Android)
+- **[Divider](divider)** - Horizontal line separator
+- **[Activity Indicator](activity-indicator)** - Loading spinner
+
+### Forms
+
+- **[Text Input](text-input)** - Text input field with labels, validation, and keyboard types
+- **[Toggle](toggle)** - On/off switch control
+
+### Navigation
 
 - **[Bottom Navigation](bottom-nav)** - The always-accessible bottom navigation bar
 - **[Top Bar](top-bar)** - A title bar with action buttons
 - **[Side Navigation](side-nav)** - A slide-out navigation drawer
+
+### Shapes
+
+- **[Shapes](shapes)** - Rect, circle, and line elements for drawing
+
+### Overlays
+
+- **[Bottom Sheet](bottom-sheet)** - Modal bottom sheet for contextual actions and forms
 
 ## How It Works
 
