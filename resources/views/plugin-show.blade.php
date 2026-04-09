@@ -165,7 +165,7 @@
                                 @auth
                                     Manage your credentials on your <a href="{{ route('customer.purchased-plugins.index') }}" class="font-medium underline hover:no-underline">Purchased Plugins</a> dashboard.
                                 @else
-                                    <a href="{{ route('login') }}" class="font-medium underline hover:no-underline">Log in</a> to see your credentials, or find them on your <a href="{{ route('customer.purchased-plugins.index') }}" class="font-medium underline hover:no-underline">Purchased Plugins</a> dashboard.
+                                    <a href="{{ route('customer.login') }}" class="font-medium underline hover:no-underline">Log in</a> to see your credentials, or find them on your <a href="{{ route('customer.purchased-plugins.index') }}" class="font-medium underline hover:no-underline">Purchased Plugins</a> dashboard.
                                 @endauth
                                 <a href="{{ url('docs/mobile/3/plugins/using-plugins') }}" class="font-medium underline hover:no-underline">Learn more &rarr;</a>
                             </p>
