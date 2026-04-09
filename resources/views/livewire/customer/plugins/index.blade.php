@@ -77,7 +77,6 @@
             <flux:table class="mt-4">
                 <flux:table.columns>
                     <flux:table.column>Plugin</flux:table.column>
-                    <flux:table.column>Status</flux:table.column>
                     <flux:table.column></flux:table.column>
                 </flux:table.columns>
 
@@ -91,8 +90,10 @@
                                             <div class="size-3 rounded-full bg-gray-400"></div>
                                         @elseif ($plugin->isPending())
                                             <div class="size-3 animate-pulse rounded-full bg-yellow-400"></div>
-                                        @elseif ($plugin->isApproved())
+                                        @elseif ($plugin->isApproved() && $plugin->is_active)
                                             <div class="size-3 rounded-full bg-green-400"></div>
+                                        @elseif ($plugin->isApproved() && ! $plugin->is_active)
+                                            <div class="size-3 rounded-full bg-gray-400"></div>
                                         @else
                                             <div class="size-3 rounded-full bg-red-400"></div>
                                         @endif
@@ -107,10 +108,6 @@
                                         </flux:text>
                                     </div>
                                 </div>
-                            </flux:table.cell>
-
-                            <flux:table.cell>
-                                <x-customer.status-badge :status="$plugin->status->label()" />
                             </flux:table.cell>
 
                             <flux:table.cell class="text-right">

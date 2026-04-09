@@ -369,7 +369,7 @@ class PluginStatusTransitionsTest extends TestCase
         $this->assertEquals(PluginStatus::Pending, $plugin->status);
     }
 
-    public function test_submit_paid_plugin_requires_tier(): void
+    public function test_save_paid_plugin_requires_tier(): void
     {
         Feature::define(AllowPaidPlugins::class, true);
 
@@ -378,16 +378,13 @@ class PluginStatusTransitionsTest extends TestCase
 
         $this->mountShowComponent($user, $plugin)
             ->set('description', 'A test plugin')
+            ->set('supportChannel', 'support@example.com')
             ->set('pluginType', 'paid')
-            ->call('save');
+            ->call('save')
+            ->assertHasErrors(['tier']);
 
         $plugin->refresh();
-
-        $this->mountShowComponent($user, $plugin)
-            ->call('submitForReview');
-
-        $plugin->refresh();
-        $this->assertEquals(PluginStatus::Draft, $plugin->status);
+        $this->assertNull($plugin->tier);
     }
 
     public function test_submit_paid_plugin_with_tier_saves_type_and_tier(): void

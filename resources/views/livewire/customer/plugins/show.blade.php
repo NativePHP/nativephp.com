@@ -78,21 +78,6 @@
             </flux:card>
         @endif
 
-        {{-- Plugin Status (hidden for Pending/Rejected — details card covers this) --}}
-        @if ($plugin->isDraft() || $plugin->isApproved())
-            <a href="{{ $plugin->repository_url }}" target="_blank" rel="noopener noreferrer" class="block">
-                <flux:card class="mb-6 transition hover:bg-gray-50 dark:hover:bg-gray-700/50">
-                    <div class="flex items-center justify-between">
-                        <div class="flex items-center gap-3">
-                            <x-icons.github class="size-5 text-gray-400 dark:text-gray-500" />
-                            <span class="font-mono text-sm font-medium text-gray-900 dark:text-white">{{ $plugin->name }}</span>
-                        </div>
-                        <x-heroicon-o-arrow-top-right-on-square class="size-4 text-gray-400 dark:text-gray-500" />
-                    </div>
-                </flux:card>
-            </a>
-        @endif
-
         {{-- Review Checks (show for Pending, Rejected, Approved — not Draft) --}}
         @if (! $plugin->isDraft() && $plugin->review_checks)
             <flux:card class="mb-6">
@@ -202,6 +187,19 @@
                 </flux:tabs>
 
                 <flux:tab.panel name="details">
+                    {{-- GitHub Repo --}}
+                    <a href="{{ $plugin->repository_url }}" target="_blank" rel="noopener noreferrer" class="block">
+                        <flux:card class="mb-6 transition hover:bg-gray-50 dark:hover:bg-gray-700/50">
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center gap-3">
+                                    <x-icons.github class="size-5 text-gray-400 dark:text-gray-500" />
+                                    <span class="font-mono text-sm font-medium text-gray-900 dark:text-white">{{ $plugin->name }}</span>
+                                </div>
+                                <x-heroicon-o-arrow-top-right-on-square class="size-4 text-gray-400 dark:text-gray-500" />
+                            </div>
+                        </flux:card>
+                    </a>
+
                     <form wire:submit="save" class="space-y-6">
                         {{-- Plugin Type --}}
                         @feature(App\Features\AllowPaidPlugins::class)
@@ -232,7 +230,7 @@
 
                         {{-- Pricing Tier (only when paid) --}}
                         @if ($pluginType === 'paid')
-                            <flux:card>
+                            <flux:card :class="$errors->has('tier') ? '!border-red-500 dark:!border-red-400' : ''">
                                 <flux:heading size="lg">Pricing Tier</flux:heading>
                                 <flux:text class="mt-1">Choose a pricing tier for your plugin.</flux:text>
 
@@ -253,6 +251,10 @@
                                         </label>
                                     @endforeach
                                 </div>
+
+                                @error('tier')
+                                    <flux:text class="mt-4 text-sm text-red-600 dark:text-red-400">{{ $message }}</flux:text>
+                                @enderror
 
                                 <flux:text class="mt-4 text-xs text-gray-500 dark:text-gray-400">
                                     Actual sale price may vary due to discounts and offers. You keep 70% of the sale price. If a NativePHP Ultra subscriber purchases your plugin, you receive 100% of the sale price. Additional payment processing fees may apply.
@@ -410,6 +412,73 @@
 
                 <flux:tab.panel name="submit">
                     <div class="space-y-6">
+                        {{-- Plugin Summary --}}
+                        <flux:card>
+                            <div class="flex items-start justify-between">
+                                <div class="flex items-start gap-4">
+                                    @if ($plugin->hasLogo())
+                                        <img src="{{ $plugin->getLogoUrl() }}" alt="{{ $plugin->name }} logo" class="size-16 shrink-0 rounded-lg object-cover shadow-sm" />
+                                    @elseif ($plugin->hasGradientIcon())
+                                        <div class="grid size-16 shrink-0 place-items-center rounded-lg bg-gradient-to-br {{ $plugin->getGradientClasses() }} text-white shadow-sm">
+                                            <x-dynamic-component :component="'heroicon-o-' . $plugin->icon_name" class="size-8" />
+                                        </div>
+                                    @else
+                                        <div class="grid size-16 shrink-0 place-items-center rounded-lg bg-gradient-to-br from-indigo-500 to-purple-600 text-white shadow-sm">
+                                            <x-vaadin-plug class="size-8" />
+                                        </div>
+                                    @endif
+                                    <div>
+                                        <flux:heading size="lg">{{ $plugin->display_name ?? $plugin->name }}</flux:heading>
+                                        @if ($plugin->display_name)
+                                            <flux:text class="font-mono text-xs">{{ $plugin->name }}</flux:text>
+                                        @endif
+                                        @if ($plugin->description)
+                                            <flux:text class="mt-2">{{ $plugin->description }}</flux:text>
+                                        @else
+                                            <flux:text class="mt-2 text-gray-400 dark:text-gray-500">No description provided</flux:text>
+                                        @endif
+                                    </div>
+                                </div>
+                                @if ($plugin->isPaid() && $plugin->tier)
+                                    @php
+                                        $regularPrice = $plugin->tier->getPrices()[\App\Enums\PriceTier::Regular->value] / 100;
+                                    @endphp
+                                    <span class="inline-flex shrink-0 items-center text-center rounded-full bg-emerald-100 px-2.5 py-0.5 text-xs font-medium text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-400">
+                                        {{ $plugin->tier->label() }}&nbsp;&mdash;&nbsp;${{ number_format($regularPrice) }}
+                                    </span>
+                                @elseif ($plugin->isPaid())
+                                    <span class="inline-flex shrink-0 items-center text-center rounded-full bg-emerald-100 px-2.5 py-0.5 text-xs font-medium text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-400">
+                                        Paid
+                                    </span>
+                                @else
+                                    <span class="inline-flex shrink-0 items-center text-center rounded-full bg-gray-100 px-2.5 py-0.5 text-xs font-medium text-gray-800 dark:bg-gray-700 dark:text-gray-300">
+                                        Free
+                                    </span>
+                                @endif
+                            </div>
+
+                            <flux:separator class="my-4" />
+
+                            <div class="space-y-3">
+                                <div>
+                                    <flux:heading size="sm">Support Channel</flux:heading>
+                                    @if ($plugin->support_channel)
+                                        <flux:text class="mt-1">{{ $plugin->support_channel }}</flux:text>
+                                    @else
+                                        <flux:text class="mt-1 text-gray-400 dark:text-gray-500">No support channel set</flux:text>
+                                    @endif
+                                </div>
+
+                                <div>
+                                    <flux:heading size="sm">Repository</flux:heading>
+                                    <a href="{{ $plugin->repository_url }}" target="_blank" rel="noopener noreferrer" class="mt-1 inline-flex items-center gap-1 text-sm text-indigo-600 hover:text-indigo-500 dark:text-indigo-400 dark:hover:text-indigo-300">
+                                        {{ $plugin->repository_url }}
+                                        <x-heroicon-o-arrow-top-right-on-square class="size-3.5" />
+                                    </a>
+                                </div>
+                            </div>
+                        </flux:card>
+
                         {{-- Notes --}}
                         <flux:card>
                             <flux:heading size="lg">Notes</flux:heading>
@@ -433,6 +502,19 @@
             </flux:tab.group>
         @elseif ($plugin->isApproved())
             {{-- Editable fields for Approved plugins (no tabs) --}}
+
+            {{-- GitHub Repo --}}
+            <a href="{{ $plugin->repository_url }}" target="_blank" rel="noopener noreferrer" class="block">
+                <flux:card class="mb-6 transition hover:bg-gray-50 dark:hover:bg-gray-700/50">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <x-icons.github class="size-5 text-gray-400 dark:text-gray-500" />
+                            <span class="font-mono text-sm font-medium text-gray-900 dark:text-white">{{ $plugin->name }}</span>
+                        </div>
+                        <x-heroicon-o-arrow-top-right-on-square class="size-4 text-gray-400 dark:text-gray-500" />
+                    </div>
+                </flux:card>
+            </a>
 
             {{-- Read-only Type & Tier --}}
             <flux:card class="mb-6">

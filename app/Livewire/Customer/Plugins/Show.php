@@ -170,9 +170,16 @@ class Show extends Component
 
         if ($this->plugin->isDraft()) {
             $rules['notes'] = ['nullable', 'string', 'max:5000'];
+            $rules['pluginType'] = ['required', 'string', 'in:free,paid'];
+
+            if ($this->pluginType === 'paid') {
+                $rules['tier'] = ['required', 'string', 'in:bronze,silver,gold'];
+            }
         }
 
-        $this->validate($rules);
+        $this->validate($rules, [
+            'tier.required' => 'Please select a pricing tier for your paid plugin.',
+        ]);
 
         $data = [
             'display_name' => $this->displayName ?: null,
