@@ -71,12 +71,12 @@ and stop workers, should you need to.
 use Native\DTOs\QueueConfig;
 use Native\Desktop\Facades\QueueWorker;
 
-$queueConfig = new QueueConfig(alias: 'manual', queuesToConsume: ['default'], memoryLimit: 1024, timeout: 600);
+$queueConfig = new QueueConfig(alias: 'manual', queuesToConsume: ['default'], memoryLimit: 1024, timeout: 600, sleep: 5);
 
 QueueWorker::up($queueConfig);
 
 // Alternatively, if you already have the worker config in your config/nativephp.php file, you may simply use its alias:
-QueueWorker::up(alias: 'manual');
+QueueWorker::up(config: 'manual');
 
 // Later...
 QueueWorker::down(alias: 'manual');

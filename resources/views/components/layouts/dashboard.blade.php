@@ -125,7 +125,7 @@
                     </flux:sidebar.item>
                 @endif
 
-                <flux:sidebar.group expandable :expanded="false" heading="Community" class="mt-4 grid">
+                <flux:sidebar.group expandable :expanded="false" heading="Community" class="mt-4 grid" x-data="sidebarGroup('community')">
                     <flux:sidebar.item href="{{ route('customer.showcase.index') }}" :current="request()->routeIs('customer.showcase.*')">
                         Showcase
                     </flux:sidebar.item>
@@ -150,7 +150,7 @@
                         $ownedTeam = auth()->user()->ownedTeam;
                         $teamMemberships = auth()->user()->activeTeamMemberships();
                     @endphp
-                    <flux:sidebar.group expandable :expanded="false" heading="Teams" class="mt-4 grid">
+                    <flux:sidebar.group expandable :expanded="false" heading="Teams" class="mt-4 grid" x-data="sidebarGroup('teams')">
                         @if($ownedTeam)
                             <flux:sidebar.item href="{{ route('customer.team.index') }}" :current="request()->routeIs('customer.team.index')">
                                 {{ $ownedTeam->name }}
@@ -172,7 +172,7 @@
                 @endif
 
                 @feature(App\Features\ShowPlugins::class)
-                    <flux:sidebar.group expandable :expanded="false" heading="Developer" class="mt-4 grid">
+                    <flux:sidebar.group expandable :expanded="false" heading="Developer" class="mt-4 grid" x-data="sidebarGroup('developer')">
                         <flux:sidebar.item href="{{ route('customer.developer.onboarding') }}" :current="request()->routeIs('customer.developer.onboarding', 'customer.developer.dashboard')">
                             Hub
                         </flux:sidebar.item>

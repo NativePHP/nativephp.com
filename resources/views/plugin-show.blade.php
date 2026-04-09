@@ -113,6 +113,73 @@
                         </div>
                     @endif
 
+                    @if ($plugin->isPaid())
+                        <aside class="mb-6 rounded-2xl border border-indigo-200 bg-indigo-50 p-5 dark:border-indigo-800 dark:bg-indigo-950/30">
+                            <h3 class="text-sm font-semibold text-indigo-900 dark:text-indigo-200">Installing this plugin</h3>
+                            <p class="mt-1 text-sm text-indigo-800 dark:text-indigo-300">
+                                Premium plugins require Composer to be configured with the NativePHP plugin repository and your credentials.
+                            </p>
+                            <div class="mt-3 space-y-2">
+                                <div class="flex items-center gap-2 rounded-lg bg-zinc-900 dark:bg-zinc-800">
+                                    <div class="min-w-0 flex-1 overflow-x-auto p-3">
+                                        <code class="block whitespace-pre font-mono text-xs text-zinc-100">composer config repositories.nativephp-plugins composer https://plugins.nativephp.com</code>
+                                    </div>
+                                    <button
+                                        type="button"
+                                        x-data="{ copied: false }"
+                                        x-on:click="navigator.clipboard.writeText('composer config repositories.nativephp-plugins composer https://plugins.nativephp.com').then(() => { copied = true; setTimeout(() => copied = false, 2000) })"
+                                        class="shrink-0 self-stretch px-3 text-zinc-400 hover:text-zinc-200"
+                                        title="Copy command"
+                                    >
+                                        <x-heroicon-o-clipboard x-show="!copied" class="size-4" />
+                                        <x-heroicon-o-check-circle x-show="copied" x-cloak class="size-4 text-green-400" />
+                                    </button>
+                                </div>
+                                @auth
+                                    <div class="flex items-center gap-2 rounded-lg bg-zinc-900 dark:bg-zinc-800">
+                                        <div class="min-w-0 flex-1 overflow-x-auto p-3">
+                                            <code class="block whitespace-pre font-mono text-xs text-zinc-100">composer config http-basic.plugins.nativephp.com {{ auth()->user()->email }} {{ auth()->user()->getPluginLicenseKey() }}</code>
+                                        </div>
+                                        <button
+                                            type="button"
+                                            x-data="{ copied: false }"
+                                            x-on:click="navigator.clipboard.writeText('composer config http-basic.plugins.nativephp.com {{ auth()->user()->email }} {{ auth()->user()->getPluginLicenseKey() }}').then(() => { copied = true; setTimeout(() => copied = false, 2000) })"
+                                            class="shrink-0 self-stretch px-3 text-zinc-400 hover:text-zinc-200"
+                                            title="Copy command"
+                                        >
+                                            <x-heroicon-o-clipboard x-show="!copied" class="size-4" />
+                                            <x-heroicon-o-check-circle x-show="copied" x-cloak class="size-4 text-green-400" />
+                                        </button>
+                                    </div>
+                                @else
+                                    <div class="flex items-center gap-2 rounded-lg bg-zinc-900 dark:bg-zinc-800">
+                                        <div class="min-w-0 flex-1 overflow-x-auto p-3">
+                                            <code class="block whitespace-pre font-mono text-xs text-zinc-100">composer config http-basic.plugins.nativephp.com <span class="text-zinc-400">your-email@example.com</span> <span class="text-zinc-400">your-license-key</span></code>
+                                        </div>
+                                        <button
+                                            type="button"
+                                            x-data="{ copied: false }"
+                                            x-on:click="navigator.clipboard.writeText('composer config http-basic.plugins.nativephp.com your-email@example.com your-license-key').then(() => { copied = true; setTimeout(() => copied = false, 2000) })"
+                                            class="shrink-0 self-stretch px-3 text-zinc-400 hover:text-zinc-200"
+                                            title="Copy command"
+                                        >
+                                            <x-heroicon-o-clipboard x-show="!copied" class="size-4" />
+                                            <x-heroicon-o-check-circle x-show="copied" x-cloak class="size-4 text-green-400" />
+                                        </button>
+                                    </div>
+                                @endauth
+                            </div>
+                            <p class="mt-3 text-xs text-indigo-700 dark:text-indigo-400">
+                                @auth
+                                    Manage your credentials on your <a href="{{ route('customer.purchased-plugins.index') }}" class="font-medium underline hover:no-underline">Purchased Plugins</a> dashboard.
+                                @else
+                                    <a href="{{ route('customer.login') }}" class="font-medium underline hover:no-underline">Log in</a> to see your credentials, or find them on your <a href="{{ route('customer.purchased-plugins.index') }}" class="font-medium underline hover:no-underline">Purchased Plugins</a> dashboard.
+                                @endauth
+                                <a href="{{ url('docs/mobile/3/plugins/using-plugins') }}" class="font-medium underline hover:no-underline">Learn more &rarr;</a>
+                            </p>
+                        </aside>
+                    @endif
+
                     <article
                         x-init="
                             () => {
