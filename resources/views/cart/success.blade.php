@@ -27,7 +27,9 @@
                                             </div>
                                             <div class="text-left">
                                                 <span class="text-sm font-medium text-gray-900 dark:text-white">{{ $item->plugin->display_name ?? $item->plugin->name }}</span>
-                                                <p class="font-mono text-xs text-gray-500 dark:text-gray-400">{{ $item->plugin->name }}</p>
+                                                @if ($item->plugin->display_name)
+                                                    <p class="font-mono text-xs text-gray-500 dark:text-gray-400">{{ $item->plugin->name }}</p>
+                                                @endif
                                                 @if ($item->plugin->isOfficial() && auth()->user()?->hasUltraAccess())
                                                     <p class="text-xs text-green-600 dark:text-green-400">Included with Ultra</p>
                                                 @endif
@@ -47,7 +49,9 @@
                                                     <x-vaadin-plug class="size-5" />
                                                 </div>
                                                 <span class="text-sm font-medium text-gray-900 dark:text-white">{{ $plugin->display_name ?? $plugin->name }}</span>
-                                                <p class="font-mono text-xs text-gray-500 dark:text-gray-400">{{ $plugin->name }}</p>
+                                                @if ($plugin->display_name)
+                                                    <p class="font-mono text-xs text-gray-500 dark:text-gray-400">{{ $plugin->name }}</p>
+                                                @endif
                                             </div>
                                         </div>
                                     @endforeach
@@ -213,7 +217,9 @@
                                                 </div>
                                                 <div class="text-left">
                                                     <span class="text-sm font-medium text-gray-900 dark:text-white" x-text="license.plugin_display_name || license.plugin_name"></span>
-                                                    <p class="font-mono text-xs text-gray-500 dark:text-gray-400" x-text="license.plugin_name"></p>
+                                                    <template x-if="license.plugin_display_name">
+                                                        <p class="font-mono text-xs text-gray-500 dark:text-gray-400" x-text="license.plugin_name"></p>
+                                                    </template>
                                                 </div>
                                             </div>
                                             <a :href="'/plugins/' + license.plugin_name" class="text-sm font-medium text-indigo-600 hover:text-indigo-700 dark:text-indigo-400 dark:hover:text-indigo-300">

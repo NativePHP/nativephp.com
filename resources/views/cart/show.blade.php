@@ -228,7 +228,9 @@
                                                             {{ $item->plugin->display_name ?? $item->plugin->name }}
                                                         </a>
                                                     </h3>
-                                                    <p class="mt-0.5 font-mono text-xs text-gray-500 dark:text-gray-400">{{ $item->plugin->name }}</p>
+                                                    @if ($item->plugin->display_name)
+                                                        <p class="mt-0.5 font-mono text-xs text-gray-500 dark:text-gray-400">{{ $item->plugin->name }}</p>
+                                                    @endif
                                                     <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
                                                         by {{ $item->plugin->user->display_name }}
                                                     </p>

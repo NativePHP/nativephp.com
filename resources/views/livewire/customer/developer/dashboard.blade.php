@@ -69,7 +69,9 @@
                         <div class="flex items-center justify-between">
                             <div class="min-w-0 flex-1">
                                 <p class="truncate font-medium text-gray-900 dark:text-white">{{ $plugin->display_name ?? $plugin->name }}</p>
-                                <p class="truncate font-mono text-xs text-gray-500 dark:text-gray-400">{{ $plugin->name }}</p>
+                                @if ($plugin->display_name)
+                                    <p class="truncate font-mono text-xs text-gray-500 dark:text-gray-400">{{ $plugin->name }}</p>
+                                @endif
                             </div>
                             <div class="ml-4 text-right">
                                 <flux:text class="font-medium">{{ $plugin->licenses_count }} sales</flux:text>

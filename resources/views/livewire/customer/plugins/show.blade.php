@@ -433,6 +433,30 @@
             </flux:tab.group>
         @elseif ($plugin->isApproved())
             {{-- Editable fields for Approved plugins (no tabs) --}}
+
+            {{-- Read-only Type & Tier --}}
+            <flux:card class="mb-6">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <flux:heading size="lg">Type</flux:heading>
+                        <flux:text class="mt-1">
+                            @if ($plugin->isPaid() && $plugin->tier)
+                                @php
+                                    $prices = $plugin->tier->getPrices();
+                                    $subscriberPrice = $prices[\App\Enums\PriceTier::Subscriber->value] / 100;
+                                    $regularPrice = $prices[\App\Enums\PriceTier::Regular->value] / 100;
+                                @endphp
+                                Paid &mdash; {{ $plugin->tier->label() }} (${{ number_format($subscriberPrice) }} – ${{ number_format($regularPrice) }})
+                            @elseif ($plugin->isPaid())
+                                Paid
+                            @else
+                                Free
+                            @endif
+                        </flux:text>
+                    </div>
+                </div>
+            </flux:card>
+
             <form wire:submit="save" class="space-y-6">
                 {{-- Display Name --}}
                 <flux:card>
@@ -446,22 +470,6 @@
                             maxlength="250"
                         />
                         <flux:text class="mt-2 text-xs">Maximum 250 characters</flux:text>
-                    </div>
-                </flux:card>
-
-                {{-- Support Channel --}}
-                <flux:card>
-                    <flux:heading size="lg">Support</flux:heading>
-                    <flux:text class="mt-1">How can users get support for your plugin? Provide an email address or a URL.</flux:text>
-
-                    <div class="mt-4">
-                        <flux:input
-                            wire:model="supportChannel"
-                            placeholder="support@example.com or https://..."
-                        />
-                        @error('supportChannel')
-                            <flux:text class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</flux:text>
-                        @enderror
                     </div>
                 </flux:card>
 
@@ -571,6 +579,22 @@
                                 Or choose a gradient icon instead
                             </button>
                         </div>
+                    </div>
+                </flux:card>
+
+                {{-- Support Channel --}}
+                <flux:card>
+                    <flux:heading size="lg">Support</flux:heading>
+                    <flux:text class="mt-1">How can users get support for your plugin? Provide an email address or a URL.</flux:text>
+
+                    <div class="mt-4">
+                        <flux:input
+                            wire:model="supportChannel"
+                            placeholder="support@example.com or https://..."
+                        />
+                        @error('supportChannel')
+                            <flux:text class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</flux:text>
+                        @enderror
                     </div>
                 </flux:card>
 
