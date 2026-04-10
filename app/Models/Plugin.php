@@ -71,16 +71,6 @@ class Plugin extends Model
             }
         });
 
-        static::created(function (Plugin $plugin): void {
-            $plugin->recordActivity(
-                PluginActivityType::Submitted,
-                null,
-                PluginStatus::Pending,
-                null,
-                $plugin->user_id
-            );
-        });
-
         static::updated(function (Plugin $plugin): void {
             // When tier is set or changed, create/update prices automatically
             if ($plugin->wasChanged('tier') && $plugin->tier !== null) {
@@ -266,6 +256,11 @@ class Plugin extends Model
     public function isApproved(): bool
     {
         return $this->status === PluginStatus::Approved;
+    }
+
+    public function isDraft(): bool
+    {
+        return $this->status === PluginStatus::Draft;
     }
 
     public function isRejected(): bool
@@ -616,6 +611,74 @@ class Plugin extends Model
             PluginActivityType::Resubmitted,
             $previousStatus,
             PluginStatus::Pending,
+            null,
+            $this->user_id
+        );
+    }
+
+    /**
+     * Submit a draft plugin for review (Draft → Pending).
+     * Logs Resubmitted if previously rejected, otherwise Submitted.
+     */
+    public function submit(): void
+    {
+        $previousStatus = $this->status;
+
+        $wasRejected = $this->activities()
+            ->where('type', PluginActivityType::Rejected)
+            ->exists();
+
+        $this->update([
+            'status' => PluginStatus::Pending,
+            'rejection_reason' => null,
+            'approved_at' => null,
+            'approved_by' => null,
+        ]);
+
+        $this->recordActivity(
+            $wasRejected ? PluginActivityType::Resubmitted : PluginActivityType::Submitted,
+            $previousStatus,
+            PluginStatus::Pending,
+            null,
+            $this->user_id
+        );
+    }
+
+    /**
+     * Withdraw a pending plugin back to draft (Pending → Draft).
+     */
+    public function withdraw(): void
+    {
+        $previousStatus = $this->status;
+
+        $this->update([
+            'status' => PluginStatus::Draft,
+        ]);
+
+        $this->recordActivity(
+            PluginActivityType::Withdrawn,
+            $previousStatus,
+            PluginStatus::Draft,
+            null,
+            $this->user_id
+        );
+    }
+
+    /**
+     * Return a rejected plugin to draft for editing (Rejected → Draft).
+     */
+    public function returnToDraft(): void
+    {
+        $previousStatus = $this->status;
+
+        $this->update([
+            'status' => PluginStatus::Draft,
+        ]);
+
+        $this->recordActivity(
+            PluginActivityType::ReturnedToDraft,
+            $previousStatus,
+            PluginStatus::Draft,
             null,
             $this->user_id
         );

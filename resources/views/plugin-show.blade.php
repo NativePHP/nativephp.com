@@ -1,4 +1,4 @@
-<x-layout title="{{ $plugin->name }} - Plugin">
+<x-layout title="{{ $plugin->display_name ?? $plugin->name }} - Plugin">
     <section
         class="mx-auto mt-10 w-full max-w-7xl"
         aria-labelledby="plugin-title"
@@ -6,7 +6,12 @@
         @if ($isAdminPreview ?? false)
             <div class="mb-6 rounded-xl border border-amber-300 bg-amber-50 p-4 text-center dark:border-amber-600 dark:bg-amber-950/50">
                 <p class="text-sm font-medium text-amber-800 dark:text-amber-200">
-                    Admin Preview &mdash; This plugin is not yet published. Status: {{ $plugin->status->label() }}
+                    Preview &mdash; This plugin is not publicly visible.
+                    @if ($plugin->isApproved() && ! $plugin->is_active)
+                        It has been de-listed.
+                    @else
+                        Status: {{ $plugin->status->label() }}
+                    @endif
                 </p>
             </div>
         @endif
@@ -78,10 +83,13 @@
                 <div>
                     <h1
                         id="plugin-title"
-                        class="font-mono text-2xl font-bold sm:text-3xl"
+                        class="text-2xl font-bold sm:text-3xl"
                     >
-                        {{ $plugin->name }}
+                        {{ $plugin->display_name ?? $plugin->name }}
                     </h1>
+                    @if ($plugin->display_name)
+                        <p class="mt-1 font-mono text-sm text-gray-500 dark:text-gray-400">{{ $plugin->name }}</p>
+                    @endif
                     @if ($plugin->description)
                         <p class="mt-1 text-gray-600 dark:text-gray-400">
                             {{ $plugin->description }}
@@ -336,6 +344,35 @@
                                 {{ $plugin->android_version ?? '—' }}
                             </dd>
                         </div>
+
+                        {{-- Support --}}
+                        @if ($plugin->support_channel)
+                            <div class="col-span-2 rounded-xl bg-gray-50 p-3 dark:bg-slate-700/30">
+                                <dt class="text-xs font-medium text-gray-500 dark:text-gray-400">Support</dt>
+                                <dd class="mt-1">
+                                    @if (filter_var($plugin->support_channel, FILTER_VALIDATE_URL))
+                                        <a
+                                            href="{{ $plugin->support_channel }}"
+                                            target="_blank"
+                                            class="inline-flex items-center gap-1 text-sm font-medium text-indigo-600 hover:text-indigo-700 dark:text-indigo-400 dark:hover:text-indigo-300"
+                                        >
+                                            {{ $plugin->support_channel }}
+                                            <x-heroicon-o-arrow-top-right-on-square class="size-3" />
+                                        </a>
+                                    @elseif (filter_var($plugin->support_channel, FILTER_VALIDATE_EMAIL))
+                                        <a
+                                            href="mailto:{{ $plugin->support_channel }}"
+                                            class="inline-flex items-center gap-1 text-sm font-medium text-indigo-600 hover:text-indigo-700 dark:text-indigo-400 dark:hover:text-indigo-300"
+                                        >
+                                            {{ $plugin->support_channel }}
+                                            <x-heroicon-o-envelope class="size-3" />
+                                        </a>
+                                    @else
+                                        <span class="text-sm font-medium text-gray-900 dark:text-white">{{ $plugin->support_channel }}</span>
+                                    @endif
+                                </dd>
+                            </div>
+                        @endif
 
                     </dl>
 

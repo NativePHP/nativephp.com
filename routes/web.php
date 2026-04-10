@@ -454,7 +454,7 @@ Route::middleware(['auth', EnsureFeaturesAreActive::using(ShowAuthButtons::class
     // Plugin management (keeps customer.plugins.* route names)
     Route::name('customer.')->group(function (): void {
         Route::livewire('plugins', App\Livewire\Customer\Plugins\Index::class)->name('plugins.index');
-        Route::livewire('plugins/submit', App\Livewire\Customer\Plugins\Create::class)->name('plugins.create');
+        Route::livewire('plugins/create', App\Livewire\Customer\Plugins\Create::class)->name('plugins.create');
         Route::livewire('plugins/{vendor}/{package}', App\Livewire\Customer\Plugins\Show::class)->name('plugins.show');
     });
 });

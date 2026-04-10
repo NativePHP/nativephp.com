@@ -121,6 +121,17 @@ class PluginFactory extends Factory
         ];
     }
 
+    public function draft(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'status' => PluginStatus::Draft,
+            'approved_at' => null,
+            'approved_by' => null,
+            'rejection_reason' => null,
+            'webhook_secret' => null,
+        ]);
+    }
+
     public function pending(): static
     {
         return $this->state(fn (array $attributes) => [

@@ -4,8 +4,24 @@
             <x-heroicon-s-arrow-left class="size-4" />
             <span class="font-medium">Plugins</span>
         </a>
-        <flux:heading size="xl" class="mt-4">Edit Plugin</flux:heading>
-        <flux:text class="font-mono">{{ $plugin->name }}</flux:text>
+        <flux:heading size="xl" class="mt-4">
+            @if ($plugin->isDraft())
+                Edit Draft Plugin
+            @elseif ($plugin->isPending())
+                Plugin Under Review
+            @elseif ($plugin->isRejected())
+                Plugin Rejected
+            @elseif ($plugin->isApproved())
+                Manage Plugin
+            @endif
+        </flux:heading>
+        <div class="mt-1 flex items-center gap-3">
+            <flux:text class="font-mono">{{ $plugin->display_name ?? $plugin->name }}</flux:text>
+            <a href="{{ route('plugins.show', $plugin->routeParams()) }}" target="_blank" class="inline-flex items-center gap-1 text-sm font-medium text-indigo-600 hover:text-indigo-500 dark:text-indigo-400 dark:hover:text-indigo-300">
+                Preview Listing
+                <x-heroicon-o-arrow-top-right-on-square class="size-3.5" />
+            </a>
+        </div>
     </div>
 
     <div class="mx-auto max-w-3xl">
@@ -22,49 +38,48 @@
             </flux:callout>
         @endif
 
-        {{-- Rejection Reason --}}
-        @if ($plugin->isRejected() && $plugin->rejection_reason)
+        {{-- Status-specific banners --}}
+        @if ($plugin->isDraft())
+            <flux:callout variant="info" icon="information-circle" class="mb-6">
+                <flux:callout.heading>Draft Plugin</flux:callout.heading>
+                <flux:callout.text>This plugin is a draft. Edit the details below, then submit for review when ready.</flux:callout.text>
+            </flux:callout>
+        @elseif ($plugin->isPending())
+            <flux:callout variant="warning" icon="clock" class="mb-6">
+                <flux:callout.heading>Under Review</flux:callout.heading>
+                <flux:callout.text>Your plugin is currently being reviewed. You can withdraw it to make changes.</flux:callout.text>
+                <x-slot name="actions">
+                    <flux:button variant="ghost" wire:click="withdrawFromReview" wire:confirm="Are you sure you want to withdraw this plugin from review? It will return to draft status.">Withdraw from Review</flux:button>
+                </x-slot>
+            </flux:callout>
+        @elseif ($plugin->isRejected() && $plugin->rejection_reason)
             <flux:callout variant="danger" icon="x-circle" class="mb-6">
                 <flux:callout.heading>Rejection Reason</flux:callout.heading>
                 <flux:callout.text>{{ $plugin->rejection_reason }}</flux:callout.text>
                 <x-slot name="actions">
-                    <flux:button variant="danger" wire:click="resubmit">Resubmit for Review</flux:button>
+                    <flux:button variant="danger" wire:click="returnToDraft">Return to Draft</flux:button>
                 </x-slot>
             </flux:callout>
-        @endif
-
-        {{-- Plugin Status --}}
-        <flux:card class="mb-6">
-            <div class="flex items-center justify-between">
-                <div class="flex items-center gap-3">
-                    @if ($plugin->hasLogo())
-                        <img src="{{ $plugin->getLogoUrl() }}" alt="{{ $plugin->name }} logo" class="size-10 rounded-lg object-cover" />
-                    @elseif ($plugin->hasGradientIcon())
-                        <div class="grid size-10 place-items-center rounded-lg bg-gradient-to-br {{ $plugin->getGradientClasses() }} text-white">
-                            <x-dynamic-component :component="'heroicon-o-' . $plugin->icon_name" class="size-5" />
-                        </div>
-                    @else
-                        <div class="grid size-10 place-items-center rounded-lg bg-gradient-to-br from-indigo-500 to-purple-600 text-white">
-                            <x-vaadin-plug class="size-5" />
-                        </div>
-                    @endif
+        @elseif ($plugin->isApproved())
+            <flux:card class="mb-6">
+                <div class="flex items-center justify-between">
                     <div>
-                        <span class="font-mono text-sm font-medium text-gray-900 dark:text-white">{{ $plugin->name }}</span>
-                        <flux:text class="text-xs">
-                            {{ $plugin->type->label() }} plugin
-                            @if ($plugin->latest_version)
-                                <span class="text-gray-400 dark:text-gray-500">&bull;</span>
-                                v{{ $plugin->latest_version }}
+                        <flux:heading size="lg">Listing Status</flux:heading>
+                        <flux:text class="mt-1">
+                            @if ($plugin->is_active)
+                                Your plugin is publicly listed in the directory.
+                            @else
+                                Your plugin is de-listed and hidden from the directory.
                             @endif
                         </flux:text>
                     </div>
+                    <flux:switch wire:click="toggleListing" :checked="$plugin->is_active" />
                 </div>
-                <x-customer.status-badge :status="$plugin->isPending() ? 'Pending Review' : ($plugin->isApproved() ? 'Approved' : 'Rejected')" />
-            </div>
-        </flux:card>
+            </flux:card>
+        @endif
 
-        {{-- Review Checks --}}
-        @if ($plugin->review_checks)
+        {{-- Review Checks (show for Pending, Rejected, Approved — not Draft) --}}
+        @if (! $plugin->isDraft() && $plugin->review_checks)
             <flux:card class="mb-6">
                 <flux:heading size="lg">Review Checks</flux:heading>
                 <flux:text class="mt-1">Automated checks run against your repository.</flux:text>
@@ -163,140 +178,585 @@
             </flux:card>
         @endif
 
-        {{-- Support Channel --}}
-        <flux:card class="mb-6">
-            <flux:heading size="lg">Support Channel</flux:heading>
-            <flux:text class="mt-1">How can users get support for your plugin? Provide an email address or a URL.</flux:text>
+        {{-- Editable fields for Draft plugins (with tabs) --}}
+        @if ($plugin->isDraft())
+            <flux:tab.group>
+                <flux:tabs wire:model="activeTab">
+                    <flux:tab name="details">Details</flux:tab>
+                    <flux:tab name="submit">Submit for Review</flux:tab>
+                </flux:tabs>
 
-            <form wire:submit="updateSupportChannel" class="mt-4">
-                <flux:input
-                    wire:model="supportChannel"
-                    placeholder="support@example.com or https://..."
-                />
-                @error('supportChannel')
-                    <flux:text class="mt-2 text-sm text-red-600 dark:text-red-400">{{ $message }}</flux:text>
-                @enderror
-
-                <div class="mt-4 flex justify-end">
-                    <flux:button type="submit" variant="primary">Save Support Channel</flux:button>
-                </div>
-            </form>
-        </flux:card>
-
-        {{-- Plugin Icon --}}
-        <flux:card class="mb-6" x-data="{ mode: @entangle('iconMode') }">
-            <flux:heading size="lg">Plugin Icon</flux:heading>
-            <flux:text class="mt-1">Choose a gradient and icon, or upload your own logo.</flux:text>
-
-            <div class="mt-4">
-                {{-- Current Icon Preview --}}
-                @if ($plugin->hasCustomIcon())
-                    <div class="mb-4 flex items-center gap-4">
-                        @if ($plugin->hasLogo())
-                            <img src="{{ $plugin->getLogoUrl() }}" alt="{{ $plugin->name }} logo" class="size-16 rounded-lg object-cover shadow-sm" />
-                        @elseif ($plugin->hasGradientIcon())
-                            <div class="grid size-16 place-items-center rounded-lg bg-gradient-to-br {{ $plugin->getGradientClasses() }} text-white shadow-sm">
-                                <x-dynamic-component :component="'heroicon-o-' . $plugin->icon_name" class="size-8" />
+                <flux:tab.panel name="details">
+                    {{-- GitHub Repo --}}
+                    <a href="{{ $plugin->repository_url }}" target="_blank" rel="noopener noreferrer" class="block">
+                        <flux:card class="mb-6 transition hover:bg-gray-50 dark:hover:bg-gray-700/50">
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center gap-3">
+                                    <x-icons.github class="size-5 text-gray-400 dark:text-gray-500" />
+                                    <span class="font-mono text-sm font-medium text-gray-900 dark:text-white">{{ $plugin->name }}</span>
+                                </div>
+                                <x-heroicon-o-arrow-top-right-on-square class="size-4 text-gray-400 dark:text-gray-500" />
                             </div>
-                        @endif
-                        <flux:button size="sm" variant="danger" icon="trash" wire:click="deleteIcon">Remove icon</flux:button>
-                    </div>
-                @endif
+                        </flux:card>
+                    </a>
 
-                {{-- Gradient Icon Picker --}}
-                <div x-show="mode === 'gradient'" x-cloak>
-                    <form wire:submit="updateIcon">
-                        <div class="space-y-4">
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Choose a gradient</label>
-                                <div class="mt-2 grid grid-cols-4 gap-3 sm:grid-cols-8">
-                                    @foreach (\App\Models\Plugin::gradientPresets() as $key => $classes)
-                                        <label class="relative cursor-pointer">
-                                            <input
-                                                type="radio"
-                                                wire:model="iconGradient"
-                                                value="{{ $key }}"
-                                                class="peer sr-only"
-                                            />
-                                            <div class="size-12 rounded-lg bg-gradient-to-br {{ $classes }} ring-2 ring-transparent ring-offset-2 transition-all peer-checked:ring-indigo-500 peer-focus:ring-indigo-500 hover:scale-105 dark:ring-offset-gray-800"></div>
+                    <form wire:submit="save" class="space-y-6">
+                        {{-- Plugin Type --}}
+                        @feature(App\Features\AllowPaidPlugins::class)
+                        <flux:card>
+                            <flux:heading size="lg">Type</flux:heading>
+                            <flux:text class="mt-1">Is your plugin free or paid?</flux:text>
+
+                            <div class="mt-6 space-y-4">
+                                <label class="relative flex cursor-pointer rounded-lg border p-4 transition focus:outline-none"
+                                    :class="$wire.pluginType === 'free' ? 'border-indigo-500 bg-indigo-50 dark:border-indigo-400 dark:bg-indigo-950/30' : 'border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/50'">
+                                    <input type="radio" wire:model.live="pluginType" value="free" class="sr-only" />
+                                    <span class="flex flex-1 flex-col">
+                                        <span class="text-sm font-medium text-gray-900 dark:text-white">Free Plugin</span>
+                                        <span class="mt-1 text-sm text-gray-500 dark:text-gray-400">Open source, hosted on Packagist</span>
+                                    </span>
+                                </label>
+
+                                <label class="relative flex cursor-pointer rounded-lg border p-4 transition focus:outline-none"
+                                    :class="$wire.pluginType === 'paid' ? 'border-indigo-500 bg-indigo-50 dark:border-indigo-400 dark:bg-indigo-950/30' : 'border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/50'">
+                                    <input type="radio" wire:model.live="pluginType" value="paid" class="sr-only" />
+                                    <span class="flex flex-1 flex-col">
+                                        <span class="text-sm font-medium text-gray-900 dark:text-white">Paid Plugin</span>
+                                        <span class="mt-1 text-sm text-gray-500 dark:text-gray-400">Commercial plugin, hosted on plugins.nativephp.com</span>
+                                    </span>
+                                </label>
+                            </div>
+                        </flux:card>
+
+                        {{-- Pricing Tier (only when paid) --}}
+                        @if ($pluginType === 'paid')
+                            <flux:card :class="$errors->has('tier') ? '!border-red-500 dark:!border-red-400' : ''">
+                                <flux:heading size="lg">Pricing Tier</flux:heading>
+                                <flux:text class="mt-1">Choose a pricing tier for your plugin.</flux:text>
+
+                                <div class="mt-6 space-y-4">
+                                    @foreach (\App\Enums\PluginTier::cases() as $pluginTier)
+                                        @php
+                                            $prices = $pluginTier->getPrices();
+                                            $subscriberPrice = $prices[\App\Enums\PriceTier::Subscriber->value] / 100;
+                                            $regularPrice = $prices[\App\Enums\PriceTier::Regular->value] / 100;
+                                        @endphp
+                                        <label class="relative flex cursor-pointer rounded-lg border p-4 transition focus:outline-none"
+                                            :class="$wire.tier === '{{ $pluginTier->value }}' ? 'border-indigo-500 bg-indigo-50 dark:border-indigo-400 dark:bg-indigo-950/30' : 'border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/50'">
+                                            <input type="radio" wire:model.live="tier" value="{{ $pluginTier->value }}" class="sr-only" />
+                                            <span class="flex flex-1 items-center justify-between">
+                                                <span class="text-sm font-medium text-gray-900 dark:text-white">{{ $pluginTier->label() }}</span>
+                                                <span class="text-lg font-semibold text-gray-900 dark:text-white">${{ number_format($subscriberPrice) }} – ${{ number_format($regularPrice) }}</span>
+                                            </span>
                                         </label>
                                     @endforeach
                                 </div>
-                                @error('iconGradient')
-                                    <flux:text class="mt-2 text-sm text-red-600 dark:text-red-400">{{ $message }}</flux:text>
+
+                                @error('tier')
+                                    <flux:text class="mt-4 text-sm text-red-600 dark:text-red-400">{{ $message }}</flux:text>
+                                @enderror
+
+                                <flux:text class="mt-4 text-xs text-gray-500 dark:text-gray-400">
+                                    Actual sale price may vary due to discounts and offers. You keep 70% of the sale price. If a NativePHP Ultra subscriber purchases your plugin, you receive 100% of the sale price. Additional payment processing fees may apply.
+                                </flux:text>
+                            </flux:card>
+                        @endif
+                        @endfeature
+
+                        {{-- Display Name --}}
+                        <flux:card>
+                            <flux:heading size="lg">Name <span class="text-sm font-normal text-gray-400 dark:text-gray-500">(optional)</span></flux:heading>
+                            <flux:text class="mt-1">A display name for your plugin. If not set, your Composer package name will be used.</flux:text>
+
+                            <div class="mt-4">
+                                <flux:input
+                                    wire:model="displayName"
+                                    placeholder="{{ $plugin->name }}"
+                                    maxlength="250"
+                                />
+                                <flux:text class="mt-2 text-xs">Maximum 250 characters</flux:text>
+                            </div>
+                        </flux:card>
+
+                        {{-- Description --}}
+                        <flux:card>
+                            <flux:heading size="lg">Description</flux:heading>
+                            <flux:text class="mt-1">Describe what your plugin does. This will be displayed in the plugin directory.</flux:text>
+
+                            <div class="mt-4">
+                                <flux:textarea
+                                    wire:model="description"
+                                    rows="5"
+                                    placeholder="Describe what your plugin does, its key features, and how developers can use it..."
+                                />
+                                @error('description')
+                                    <flux:text class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</flux:text>
+                                @enderror
+                                <flux:text class="mt-2 text-xs">Maximum 1000 characters</flux:text>
+                            </div>
+                        </flux:card>
+
+                        {{-- Icon --}}
+                        <flux:card x-data="{ mode: @entangle('iconMode') }">
+                            <flux:heading size="lg">Icon</flux:heading>
+                            <flux:text class="mt-1">Choose a gradient and icon, or upload your own logo.</flux:text>
+
+                            <div class="mt-4">
+                                {{-- Current Icon Preview --}}
+                                @if ($plugin->hasCustomIcon())
+                                    <div class="mb-4 flex items-center gap-4">
+                                        @if ($plugin->hasLogo())
+                                            <img src="{{ $plugin->getLogoUrl() }}" alt="{{ $plugin->name }} logo" class="size-16 rounded-lg object-cover shadow-sm" />
+                                        @elseif ($plugin->hasGradientIcon())
+                                            <div class="grid size-16 place-items-center rounded-lg bg-gradient-to-br {{ $plugin->getGradientClasses() }} text-white shadow-sm">
+                                                <x-dynamic-component :component="'heroicon-o-' . $plugin->icon_name" class="size-8" />
+                                            </div>
+                                        @endif
+                                        <flux:button size="sm" variant="danger" icon="trash" wire:click="deleteIcon" type="button">Remove icon</flux:button>
+                                    </div>
+                                @endif
+
+                                {{-- Gradient Icon Picker --}}
+                                <div x-show="mode === 'gradient'" x-cloak>
+                                    <div class="space-y-4">
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Choose a gradient</label>
+                                            <div class="mt-2 grid grid-cols-4 gap-3 sm:grid-cols-8">
+                                                @foreach (\App\Models\Plugin::gradientPresets() as $key => $classes)
+                                                    <label class="relative cursor-pointer">
+                                                        <input
+                                                            type="radio"
+                                                            wire:model="iconGradient"
+                                                            value="{{ $key }}"
+                                                            class="peer sr-only"
+                                                        />
+                                                        <div class="size-12 rounded-lg bg-gradient-to-br {{ $classes }} ring-2 ring-transparent ring-offset-2 transition-all peer-checked:ring-indigo-500 peer-focus:ring-indigo-500 hover:scale-105 dark:ring-offset-gray-800"></div>
+                                                    </label>
+                                                @endforeach
+                                            </div>
+                                            @error('iconGradient')
+                                                <flux:text class="mt-2 text-sm text-red-600 dark:text-red-400">{{ $message }}</flux:text>
+                                            @enderror
+                                        </div>
+
+                                        <flux:input
+                                            wire:model="iconName"
+                                            label="Heroicon name"
+                                            placeholder="cube"
+                                            description="Enter a Heroicon outline name, e.g., cube, sparkles, bolt."
+                                        />
+                                        @error('iconName')
+                                            <flux:text class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</flux:text>
+                                        @enderror
+
+                                        <flux:button wire:click="updateIcon" variant="filled" type="button">Save Icon</flux:button>
+                                    </div>
+
+                                    <flux:separator class="my-4" />
+                                    <button type="button" @click="mode = 'upload'" class="text-sm font-medium text-indigo-600 hover:text-indigo-500 dark:text-indigo-400">
+                                        Or upload your own logo instead
+                                    </button>
+                                </div>
+
+                                {{-- Custom Logo Upload --}}
+                                <div x-show="mode === 'upload'" x-cloak>
+                                    <div class="space-y-4">
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Upload a logo</label>
+                                            <div class="mt-2 flex items-center gap-4">
+                                                <input
+                                                    type="file"
+                                                    wire:model="logo"
+                                                    accept="image/png,image/jpeg,image/jpg,image/svg+xml,image/webp"
+                                                    class="block text-sm text-gray-500 file:mr-4 file:rounded-md file:border-0 file:bg-indigo-50 file:px-4 file:py-2 file:text-sm file:font-medium file:text-indigo-700 hover:file:bg-indigo-100 dark:text-gray-400 dark:file:bg-indigo-900/50 dark:file:text-indigo-300 dark:hover:file:bg-indigo-900/70"
+                                                />
+                                                <flux:button wire:click="uploadLogo" variant="filled" type="button">Upload</flux:button>
+                                            </div>
+                                            @error('logo')
+                                                <flux:text class="mt-2 text-sm text-red-600 dark:text-red-400">{{ $message }}</flux:text>
+                                            @enderror
+                                            <flux:text class="mt-2 text-xs">PNG, JPG, SVG, or WebP. Max 1MB. Recommended: 256x256 pixels, square.</flux:text>
+                                        </div>
+                                    </div>
+
+                                    <flux:separator class="my-4" />
+                                    <button type="button" @click="mode = 'gradient'" class="text-sm font-medium text-indigo-600 hover:text-indigo-500 dark:text-indigo-400">
+                                        Or choose a gradient icon instead
+                                    </button>
+                                </div>
+                            </div>
+                        </flux:card>
+
+                        {{-- Support Channel --}}
+                        <flux:card>
+                            <flux:heading size="lg">Support</flux:heading>
+                            <flux:text class="mt-1">How can users get support for your plugin? Provide an email address or a URL.</flux:text>
+
+                            <div class="mt-4">
+                                <flux:input
+                                    wire:model="supportChannel"
+                                    placeholder="support@example.com or https://..."
+                                />
+                                @error('supportChannel')
+                                    <flux:text class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</flux:text>
                                 @enderror
                             </div>
+                        </flux:card>
 
-                            <flux:input
-                                wire:model="iconName"
-                                label="Heroicon name"
-                                placeholder="cube"
-                                description="Enter a Heroicon outline name, e.g., cube, sparkles, bolt."
-                            />
-                            @error('iconName')
-                                <flux:text class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</flux:text>
-                            @enderror
-
-                            <flux:button type="submit" variant="primary">Save Icon</flux:button>
+                        {{-- Save Button --}}
+                        <div class="flex items-center justify-end">
+                            <flux:button type="submit" variant="primary">Save Changes</flux:button>
                         </div>
                     </form>
+                </flux:tab.panel>
 
-                    <flux:separator class="my-4" />
-                    <button type="button" @click="mode = 'upload'" class="text-sm font-medium text-indigo-600 hover:text-indigo-500 dark:text-indigo-400">
-                        Or upload your own logo instead
-                    </button>
-                </div>
-
-                {{-- Custom Logo Upload --}}
-                <div x-show="mode === 'upload'" x-cloak>
-                    <form wire:submit="uploadLogo" class="space-y-4">
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Upload a logo</label>
-                            <div class="mt-2 flex items-center gap-4">
-                                <input
-                                    type="file"
-                                    wire:model="logo"
-                                    accept="image/png,image/jpeg,image/jpg,image/svg+xml,image/webp"
-                                    class="block text-sm text-gray-500 file:mr-4 file:rounded-md file:border-0 file:bg-indigo-50 file:px-4 file:py-2 file:text-sm file:font-medium file:text-indigo-700 hover:file:bg-indigo-100 dark:text-gray-400 dark:file:bg-indigo-900/50 dark:file:text-indigo-300 dark:hover:file:bg-indigo-900/70"
-                                />
-                                <flux:button type="submit" variant="primary">Upload</flux:button>
+                <flux:tab.panel name="submit">
+                    <div class="space-y-6">
+                        {{-- Plugin Summary --}}
+                        <flux:card>
+                            <div class="flex items-start justify-between">
+                                <div class="flex items-start gap-4">
+                                    @if ($plugin->hasLogo())
+                                        <img src="{{ $plugin->getLogoUrl() }}" alt="{{ $plugin->name }} logo" class="size-16 shrink-0 rounded-lg object-cover shadow-sm" />
+                                    @elseif ($plugin->hasGradientIcon())
+                                        <div class="grid size-16 shrink-0 place-items-center rounded-lg bg-gradient-to-br {{ $plugin->getGradientClasses() }} text-white shadow-sm">
+                                            <x-dynamic-component :component="'heroicon-o-' . $plugin->icon_name" class="size-8" />
+                                        </div>
+                                    @else
+                                        <div class="grid size-16 shrink-0 place-items-center rounded-lg bg-gradient-to-br from-indigo-500 to-purple-600 text-white shadow-sm">
+                                            <x-vaadin-plug class="size-8" />
+                                        </div>
+                                    @endif
+                                    <div>
+                                        <flux:heading size="lg">{{ $plugin->display_name ?? $plugin->name }}</flux:heading>
+                                        @if ($plugin->display_name)
+                                            <flux:text class="font-mono text-xs">{{ $plugin->name }}</flux:text>
+                                        @endif
+                                        @if ($plugin->description)
+                                            <flux:text class="mt-2">{{ $plugin->description }}</flux:text>
+                                        @else
+                                            <flux:text class="mt-2 text-gray-400 dark:text-gray-500">No description provided</flux:text>
+                                        @endif
+                                    </div>
+                                </div>
+                                @if ($plugin->isPaid() && $plugin->tier)
+                                    @php
+                                        $regularPrice = $plugin->tier->getPrices()[\App\Enums\PriceTier::Regular->value] / 100;
+                                    @endphp
+                                    <span class="inline-flex shrink-0 items-center text-center rounded-full bg-emerald-100 px-2.5 py-0.5 text-xs font-medium text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-400">
+                                        {{ $plugin->tier->label() }}&nbsp;&mdash;&nbsp;${{ number_format($regularPrice) }}
+                                    </span>
+                                @elseif ($plugin->isPaid())
+                                    <span class="inline-flex shrink-0 items-center text-center rounded-full bg-emerald-100 px-2.5 py-0.5 text-xs font-medium text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-400">
+                                        Paid
+                                    </span>
+                                @else
+                                    <span class="inline-flex shrink-0 items-center text-center rounded-full bg-gray-100 px-2.5 py-0.5 text-xs font-medium text-gray-800 dark:bg-gray-700 dark:text-gray-300">
+                                        Free
+                                    </span>
+                                @endif
                             </div>
-                            @error('logo')
-                                <flux:text class="mt-2 text-sm text-red-600 dark:text-red-400">{{ $message }}</flux:text>
-                            @enderror
-                            <flux:text class="mt-2 text-xs">PNG, JPG, SVG, or WebP. Max 1MB. Recommended: 256x256 pixels, square.</flux:text>
+
+                            <flux:separator class="my-4" />
+
+                            <div class="space-y-3">
+                                <div>
+                                    <flux:heading size="sm">Support Channel</flux:heading>
+                                    @if ($plugin->support_channel)
+                                        <flux:text class="mt-1">{{ $plugin->support_channel }}</flux:text>
+                                    @else
+                                        <flux:text class="mt-1 text-gray-400 dark:text-gray-500">No support channel set</flux:text>
+                                    @endif
+                                </div>
+
+                                <div>
+                                    <flux:heading size="sm">Repository</flux:heading>
+                                    <a href="{{ $plugin->repository_url }}" target="_blank" rel="noopener noreferrer" class="mt-1 inline-flex items-center gap-1 text-sm text-indigo-600 hover:text-indigo-500 dark:text-indigo-400 dark:hover:text-indigo-300">
+                                        {{ $plugin->repository_url }}
+                                        <x-heroicon-o-arrow-top-right-on-square class="size-3.5" />
+                                    </a>
+                                </div>
+                            </div>
+                        </flux:card>
+
+                        {{-- Notes --}}
+                        <flux:card>
+                            <flux:heading size="lg">Notes</flux:heading>
+                            <flux:text class="mt-1">Any notes for the review team? These won't be displayed on your plugin listing.</flux:text>
+
+                            <div class="mt-4">
+                                <flux:textarea
+                                    wire:model="notes"
+                                    rows="4"
+                                    placeholder="Optional notes for the review team..."
+                                />
+                            </div>
+                        </flux:card>
+
+                        {{-- Submit Button --}}
+                        <div class="flex items-center justify-end">
+                            <flux:button variant="primary" wire:click="submitForReview">Submit for Review</flux:button>
                         </div>
-                    </form>
+                    </div>
+                </flux:tab.panel>
+            </flux:tab.group>
+        @elseif ($plugin->isApproved())
+            {{-- Editable fields for Approved plugins (no tabs) --}}
 
-                    <flux:separator class="my-4" />
-                    <button type="button" @click="mode = 'gradient'" class="text-sm font-medium text-indigo-600 hover:text-indigo-500 dark:text-indigo-400">
-                        Or choose a gradient icon instead
-                    </button>
+            {{-- GitHub Repo --}}
+            <a href="{{ $plugin->repository_url }}" target="_blank" rel="noopener noreferrer" class="block">
+                <flux:card class="mb-6 transition hover:bg-gray-50 dark:hover:bg-gray-700/50">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <x-icons.github class="size-5 text-gray-400 dark:text-gray-500" />
+                            <span class="font-mono text-sm font-medium text-gray-900 dark:text-white">{{ $plugin->name }}</span>
+                        </div>
+                        <x-heroicon-o-arrow-top-right-on-square class="size-4 text-gray-400 dark:text-gray-500" />
+                    </div>
+                </flux:card>
+            </a>
+
+            {{-- Read-only Type & Tier --}}
+            <flux:card class="mb-6">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <flux:heading size="lg">Type</flux:heading>
+                        <flux:text class="mt-1">
+                            @if ($plugin->isPaid() && $plugin->tier)
+                                @php
+                                    $prices = $plugin->tier->getPrices();
+                                    $subscriberPrice = $prices[\App\Enums\PriceTier::Subscriber->value] / 100;
+                                    $regularPrice = $prices[\App\Enums\PriceTier::Regular->value] / 100;
+                                @endphp
+                                Paid &mdash; {{ $plugin->tier->label() }} (${{ number_format($subscriberPrice) }} – ${{ number_format($regularPrice) }})
+                            @elseif ($plugin->isPaid())
+                                Paid
+                            @else
+                                Free
+                            @endif
+                        </flux:text>
+                    </div>
                 </div>
-            </div>
-        </flux:card>
+            </flux:card>
 
-        {{-- Description Form --}}
-        <flux:card class="mb-6">
-            <flux:heading size="lg">Plugin Description</flux:heading>
-            <flux:text class="mt-1">Describe what your plugin does. This will be displayed in the plugin directory.</flux:text>
+            <form wire:submit="save" class="space-y-6">
+                {{-- Display Name --}}
+                <flux:card>
+                    <flux:heading size="lg">Name <span class="text-sm font-normal text-gray-400 dark:text-gray-500">(optional)</span></flux:heading>
+                    <flux:text class="mt-1">A display name for your plugin. If not set, your Composer package name will be used.</flux:text>
 
-            <form wire:submit="updateDescription" class="mt-4">
-                <flux:textarea
-                    wire:model="description"
-                    rows="5"
-                    placeholder="Describe what your plugin does, its key features, and how developers can use it..."
-                />
-                @error('description')
-                    <flux:text class="mt-2 text-sm text-red-600 dark:text-red-400">{{ $message }}</flux:text>
-                @enderror
-                <flux:text class="mt-2 text-xs">Maximum 1000 characters</flux:text>
+                    <div class="mt-4">
+                        <flux:input
+                            wire:model="displayName"
+                            placeholder="{{ $plugin->name }}"
+                            maxlength="250"
+                        />
+                        <flux:text class="mt-2 text-xs">Maximum 250 characters</flux:text>
+                    </div>
+                </flux:card>
 
-                <div class="mt-4 flex justify-end">
-                    <flux:button type="submit" variant="primary">Save Description</flux:button>
+                {{-- Description --}}
+                <flux:card>
+                    <flux:heading size="lg">Description</flux:heading>
+                    <flux:text class="mt-1">Describe what your plugin does. This will be displayed in the plugin directory.</flux:text>
+
+                    <div class="mt-4">
+                        <flux:textarea
+                            wire:model="description"
+                            rows="5"
+                            placeholder="Describe what your plugin does, its key features, and how developers can use it..."
+                        />
+                        @error('description')
+                            <flux:text class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</flux:text>
+                        @enderror
+                        <flux:text class="mt-2 text-xs">Maximum 1000 characters</flux:text>
+                    </div>
+                </flux:card>
+
+                {{-- Icon --}}
+                <flux:card x-data="{ mode: @entangle('iconMode') }">
+                    <flux:heading size="lg">Icon</flux:heading>
+                    <flux:text class="mt-1">Choose a gradient and icon, or upload your own logo.</flux:text>
+
+                    <div class="mt-4">
+                        {{-- Current Icon Preview --}}
+                        @if ($plugin->hasCustomIcon())
+                            <div class="mb-4 flex items-center gap-4">
+                                @if ($plugin->hasLogo())
+                                    <img src="{{ $plugin->getLogoUrl() }}" alt="{{ $plugin->name }} logo" class="size-16 rounded-lg object-cover shadow-sm" />
+                                @elseif ($plugin->hasGradientIcon())
+                                    <div class="grid size-16 place-items-center rounded-lg bg-gradient-to-br {{ $plugin->getGradientClasses() }} text-white shadow-sm">
+                                        <x-dynamic-component :component="'heroicon-o-' . $plugin->icon_name" class="size-8" />
+                                    </div>
+                                @endif
+                                <flux:button size="sm" variant="danger" icon="trash" wire:click="deleteIcon" type="button">Remove icon</flux:button>
+                            </div>
+                        @endif
+
+                        {{-- Gradient Icon Picker --}}
+                        <div x-show="mode === 'gradient'" x-cloak>
+                            <div class="space-y-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Choose a gradient</label>
+                                    <div class="mt-2 grid grid-cols-4 gap-3 sm:grid-cols-8">
+                                        @foreach (\App\Models\Plugin::gradientPresets() as $key => $classes)
+                                            <label class="relative cursor-pointer">
+                                                <input
+                                                    type="radio"
+                                                    wire:model="iconGradient"
+                                                    value="{{ $key }}"
+                                                    class="peer sr-only"
+                                                />
+                                                <div class="size-12 rounded-lg bg-gradient-to-br {{ $classes }} ring-2 ring-transparent ring-offset-2 transition-all peer-checked:ring-indigo-500 peer-focus:ring-indigo-500 hover:scale-105 dark:ring-offset-gray-800"></div>
+                                            </label>
+                                        @endforeach
+                                    </div>
+                                    @error('iconGradient')
+                                        <flux:text class="mt-2 text-sm text-red-600 dark:text-red-400">{{ $message }}</flux:text>
+                                    @enderror
+                                </div>
+
+                                <flux:input
+                                    wire:model="iconName"
+                                    label="Heroicon name"
+                                    placeholder="cube"
+                                    description="Enter a Heroicon outline name, e.g., cube, sparkles, bolt."
+                                />
+                                @error('iconName')
+                                    <flux:text class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</flux:text>
+                                @enderror
+
+                                <flux:button wire:click="updateIcon" variant="filled" type="button">Save Icon</flux:button>
+                            </div>
+
+                            <flux:separator class="my-4" />
+                            <button type="button" @click="mode = 'upload'" class="text-sm font-medium text-indigo-600 hover:text-indigo-500 dark:text-indigo-400">
+                                Or upload your own logo instead
+                            </button>
+                        </div>
+
+                        {{-- Custom Logo Upload --}}
+                        <div x-show="mode === 'upload'" x-cloak>
+                            <div class="space-y-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Upload a logo</label>
+                                    <div class="mt-2 flex items-center gap-4">
+                                        <input
+                                            type="file"
+                                            wire:model="logo"
+                                            accept="image/png,image/jpeg,image/jpg,image/svg+xml,image/webp"
+                                            class="block text-sm text-gray-500 file:mr-4 file:rounded-md file:border-0 file:bg-indigo-50 file:px-4 file:py-2 file:text-sm file:font-medium file:text-indigo-700 hover:file:bg-indigo-100 dark:text-gray-400 dark:file:bg-indigo-900/50 dark:file:text-indigo-300 dark:hover:file:bg-indigo-900/70"
+                                        />
+                                        <flux:button wire:click="uploadLogo" variant="filled" type="button">Upload</flux:button>
+                                    </div>
+                                    @error('logo')
+                                        <flux:text class="mt-2 text-sm text-red-600 dark:text-red-400">{{ $message }}</flux:text>
+                                    @enderror
+                                    <flux:text class="mt-2 text-xs">PNG, JPG, SVG, or WebP. Max 1MB. Recommended: 256x256 pixels, square.</flux:text>
+                                </div>
+                            </div>
+
+                            <flux:separator class="my-4" />
+                            <button type="button" @click="mode = 'gradient'" class="text-sm font-medium text-indigo-600 hover:text-indigo-500 dark:text-indigo-400">
+                                Or choose a gradient icon instead
+                            </button>
+                        </div>
+                    </div>
+                </flux:card>
+
+                {{-- Support Channel --}}
+                <flux:card>
+                    <flux:heading size="lg">Support</flux:heading>
+                    <flux:text class="mt-1">How can users get support for your plugin? Provide an email address or a URL.</flux:text>
+
+                    <div class="mt-4">
+                        <flux:input
+                            wire:model="supportChannel"
+                            placeholder="support@example.com or https://..."
+                        />
+                        @error('supportChannel')
+                            <flux:text class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</flux:text>
+                        @enderror
+                    </div>
+                </flux:card>
+
+                {{-- Save Button --}}
+                <div class="flex items-center justify-end">
+                    <flux:button type="submit" variant="primary">Save Changes</flux:button>
                 </div>
             </form>
-        </flux:card>
+        @else
+            {{-- Read-only display for Pending/Rejected --}}
+            <flux:card class="mb-6">
+                <div class="flex items-start justify-between">
+                    <div class="flex items-start gap-4">
+                        @if ($plugin->hasLogo())
+                            <img src="{{ $plugin->getLogoUrl() }}" alt="{{ $plugin->name }} logo" class="size-16 shrink-0 rounded-lg object-cover shadow-sm" />
+                        @elseif ($plugin->hasGradientIcon())
+                            <div class="grid size-16 shrink-0 place-items-center rounded-lg bg-gradient-to-br {{ $plugin->getGradientClasses() }} text-white shadow-sm">
+                                <x-dynamic-component :component="'heroicon-o-' . $plugin->icon_name" class="size-8" />
+                            </div>
+                        @else
+                            <div class="grid size-16 shrink-0 place-items-center rounded-lg bg-gradient-to-br from-indigo-500 to-purple-600 text-white shadow-sm">
+                                <x-vaadin-plug class="size-8" />
+                            </div>
+                        @endif
+                        <div>
+                            <flux:heading size="lg">{{ $plugin->display_name ?? $plugin->name }}</flux:heading>
+                            @if ($plugin->description)
+                                <flux:text class="mt-2">{{ $plugin->description }}</flux:text>
+                            @else
+                                <flux:text class="mt-2 text-gray-400 dark:text-gray-500">No description provided</flux:text>
+                            @endif
+                        </div>
+                    </div>
+                    @if ($plugin->isPaid() && $plugin->tier)
+                        @php
+                            $regularPrice = $plugin->tier->getPrices()[\App\Enums\PriceTier::Regular->value] / 100;
+                        @endphp
+                        <span class="inline-flex shrink-0 items-center text-center rounded-full bg-emerald-100 px-2.5 py-0.5 text-xs font-medium text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-400">
+                            {{ $plugin->tier->label() }}&nbsp;&mdash;&nbsp;${{ number_format($regularPrice) }}
+                        </span>
+                    @elseif ($plugin->isPaid())
+                        <span class="inline-flex shrink-0 items-center text-center rounded-full bg-emerald-100 px-2.5 py-0.5 text-xs font-medium text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-400">
+                            Paid
+                        </span>
+                    @else
+                        <span class="inline-flex shrink-0 items-center text-center rounded-full bg-gray-100 px-2.5 py-0.5 text-xs font-medium text-gray-800 dark:bg-gray-700 dark:text-gray-300">
+                            Free
+                        </span>
+                    @endif
+                </div>
+
+                <flux:separator class="my-4" />
+
+                <div class="space-y-3">
+                    <div>
+                        <flux:heading size="sm">Support Channel</flux:heading>
+                        @if ($plugin->support_channel)
+                            <flux:text class="mt-1">{{ $plugin->support_channel }}</flux:text>
+                        @else
+                            <flux:text class="mt-1 text-gray-400 dark:text-gray-500">No support channel set</flux:text>
+                        @endif
+                    </div>
+
+                    <div>
+                        <flux:heading size="sm">Repository</flux:heading>
+                        <a href="{{ $plugin->repository_url }}" target="_blank" rel="noopener noreferrer" class="mt-1 inline-flex items-center gap-1 text-sm text-indigo-600 hover:text-indigo-500 dark:text-indigo-400 dark:hover:text-indigo-300">
+                            {{ $plugin->repository_url }}
+                            <x-heroicon-o-arrow-top-right-on-square class="size-3.5" />
+                        </a>
+                    </div>
+                </div>
+            </flux:card>
+
+            @if ($plugin->notes)
+                <flux:card class="mb-6">
+                    <flux:heading size="lg">Submission Notes</flux:heading>
+                    <flux:text class="mt-2">{{ $plugin->notes }}</flux:text>
+                </flux:card>
+            @endif
+        @endif
 
     </div>
 </div>
