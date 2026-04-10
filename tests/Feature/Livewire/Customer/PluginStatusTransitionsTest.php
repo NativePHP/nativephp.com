@@ -8,6 +8,7 @@ use App\Enums\PluginTier;
 use App\Enums\PluginType;
 use App\Features\AllowPaidPlugins;
 use App\Livewire\Customer\Plugins\Show;
+use App\Models\DeveloperAccount;
 use App\Models\Plugin;
 use App\Models\User;
 use App\Notifications\PluginSubmitted;
@@ -374,6 +375,7 @@ class PluginStatusTransitionsTest extends TestCase
         Feature::define(AllowPaidPlugins::class, true);
 
         $user = $this->createGitHubUser();
+        DeveloperAccount::factory()->for($user)->create();
         $plugin = $this->createDraftPlugin($user);
 
         $this->mountShowComponent($user, $plugin)
@@ -393,6 +395,7 @@ class PluginStatusTransitionsTest extends TestCase
         Feature::define(AllowPaidPlugins::class, true);
 
         $user = $this->createGitHubUser();
+        DeveloperAccount::factory()->for($user)->create();
         $plugin = $this->createDraftPlugin($user);
         $this->fakeGitHubForSubmission($plugin);
 
