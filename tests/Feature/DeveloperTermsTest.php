@@ -13,6 +13,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Laravel\Pennant\Feature;
 use Livewire\Livewire;
 use Mockery;
+use Stripe\Exception\InvalidRequestException;
 use Tests\TestCase;
 
 class DeveloperTermsTest extends TestCase
@@ -289,6 +290,58 @@ class DeveloperTermsTest extends TestCase
             ]);
 
         $response->assertSessionHasErrors('payout_currency');
+    }
+
+    /** @test */
+    public function onboarding_start_rejects_india_as_unsupported_country(): void
+    {
+        $user = User::factory()->create();
+
+        $response = $this->actingAs($user)
+            ->post(route('customer.developer.onboarding.start'), [
+                'accepted_plugin_terms' => '1',
+                'country' => 'IN',
+                'payout_currency' => 'INR',
+            ]);
+
+        $response->assertSessionHasErrors('country');
+    }
+
+    /** @test */
+    public function onboarding_start_rejects_taiwan_as_unsupported_country(): void
+    {
+        $user = User::factory()->create();
+
+        $response = $this->actingAs($user)
+            ->post(route('customer.developer.onboarding.start'), [
+                'accepted_plugin_terms' => '1',
+                'country' => 'TW',
+                'payout_currency' => 'TWD',
+            ]);
+
+        $response->assertSessionHasErrors('country');
+    }
+
+    /** @test */
+    public function onboarding_start_handles_stripe_error_gracefully(): void
+    {
+        $user = User::factory()->create();
+
+        $mockService = Mockery::mock(StripeConnectService::class);
+        $mockService->shouldReceive('createConnectAccount')
+            ->once()
+            ->andThrow(new InvalidRequestException('Connected accounts in XX cannot be created by platforms in US.'));
+
+        $this->app->instance(StripeConnectService::class, $mockService);
+
+        $response = $this->actingAs($user)
+            ->post(route('customer.developer.onboarding.start'), [
+                'accepted_plugin_terms' => '1',
+                'country' => 'US',
+                'payout_currency' => 'USD',
+            ]);
+
+        $response->assertSessionHasErrors('country');
     }
 
     /** @test */
