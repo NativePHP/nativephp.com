@@ -32,6 +32,12 @@ class Create extends Component
     public bool $reposLoaded = false;
 
     #[Computed]
+    public function hasCompletedDeveloperOnboarding(): bool
+    {
+        return auth()->user()->developerAccount?->hasCompletedOnboarding() ?? false;
+    }
+
+    #[Computed]
     public function owners(): array
     {
         return collect($this->repositories)
@@ -138,6 +144,12 @@ class Create extends Component
 
         if ($this->pluginType === 'paid' && ! Feature::active(AllowPaidPlugins::class)) {
             session()->flash('error', 'Paid plugin submissions are not currently available.');
+
+            return;
+        }
+
+        if ($this->pluginType === 'paid' && ! $this->hasCompletedDeveloperOnboarding) {
+            session()->flash('error', 'You must complete developer onboarding before creating a paid plugin.');
 
             return;
         }

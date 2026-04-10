@@ -59,14 +59,19 @@
                             </span>
                         </label>
 
-                        <label class="relative flex cursor-pointer rounded-lg border p-4 transition focus:outline-none"
-                            :class="$wire.pluginType === 'paid' ? 'border-indigo-500 bg-indigo-50 dark:border-indigo-400 dark:bg-indigo-950/30' : 'border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/50'">
-                            <input type="radio" wire:model="pluginType" value="paid" class="sr-only" />
+                        <label class="relative flex rounded-lg border p-4 transition focus:outline-none {{ $this->hasCompletedDeveloperOnboarding ? 'cursor-pointer' : 'cursor-not-allowed opacity-60' }}"
+                            :class="$wire.pluginType === 'paid' ? 'border-indigo-500 bg-indigo-50 dark:border-indigo-400 dark:bg-indigo-950/30' : 'border-gray-200 dark:border-gray-700 {{ $this->hasCompletedDeveloperOnboarding ? 'hover:bg-gray-50 dark:hover:bg-gray-700/50' : '' }}'">
+                            <input type="radio" wire:model="pluginType" value="paid" class="sr-only" {{ $this->hasCompletedDeveloperOnboarding ? '' : 'disabled' }} />
                             <span class="flex flex-1 flex-col">
                                 <span class="text-sm font-medium text-gray-900 dark:text-white">Paid Plugin</span>
                                 <span class="mt-1 text-sm text-gray-500 dark:text-gray-400">Commercial plugin, hosted on plugins.nativephp.com</span>
                             </span>
                         </label>
+                        @if (! $this->hasCompletedDeveloperOnboarding)
+                            <flux:text class="text-sm text-gray-500 dark:text-gray-400">
+                                To create paid plugins, you need to <a href="{{ route('customer.developer.onboarding') }}" class="font-medium text-indigo-600 hover:text-indigo-500 dark:text-indigo-400" wire:navigate>complete developer onboarding</a>.
+                            </flux:text>
+                        @endif
                     </div>
 
                     @error('pluginType')

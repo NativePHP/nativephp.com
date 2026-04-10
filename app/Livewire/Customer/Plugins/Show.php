@@ -9,6 +9,7 @@ use App\Models\Plugin;
 use App\Notifications\PluginSubmitted;
 use App\Services\GitHubUserService;
 use Illuminate\Support\Facades\Storage;
+use Livewire\Attributes\Computed;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Title;
 use Livewire\Attributes\Validate;
@@ -47,6 +48,12 @@ class Show extends Component
     public string $pluginType = 'free';
 
     public ?string $tier = null;
+
+    #[Computed]
+    public function hasCompletedDeveloperOnboarding(): bool
+    {
+        return auth()->user()->developerAccount?->hasCompletedOnboarding() ?? false;
+    }
 
     public function mount(string $vendor, string $package): void
     {
@@ -180,6 +187,12 @@ class Show extends Component
         $this->validate($rules, [
             'tier.required' => 'Please select a pricing tier for your paid plugin.',
         ]);
+
+        if ($this->plugin->isDraft() && $this->pluginType === 'paid' && ! $this->hasCompletedDeveloperOnboarding) {
+            session()->flash('error', 'You must complete developer onboarding before setting a plugin as paid.');
+
+            return;
+        }
 
         $data = [
             'display_name' => $this->displayName ?: null,
