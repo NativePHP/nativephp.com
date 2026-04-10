@@ -421,6 +421,7 @@ class CartController extends Controller
                 'id' => $license->id,
                 'plugin_id' => $license->plugin->id,
                 'plugin_name' => $license->plugin->name,
+                'plugin_display_name' => $license->plugin->display_name,
                 'plugin_slug' => $license->plugin->slug,
             ]),
             'products' => $productLicenses->map(fn ($license) => [

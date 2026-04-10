@@ -115,6 +115,22 @@ class NewPluginAvailableTest extends TestCase
         $this->assertEquals('View Plugin', $data['action_label']);
     }
 
+    public function test_mail_contains_notification_preferences_link(): void
+    {
+        $user = User::factory()->create();
+        $plugin = Plugin::factory()->for($user)->create();
+
+        $notification = new NewPluginAvailable($plugin);
+        $mail = $notification->toMail($user);
+
+        $expectedUrl = route('customer.settings', ['tab' => 'notifications']);
+        $found = collect($mail->introLines)->concat($mail->outroLines)->contains(function ($line) use ($expectedUrl) {
+            return str_contains($line, $expectedUrl);
+        });
+
+        $this->assertTrue($found, 'Mail should contain a link to the notification preferences page.');
+    }
+
     public function test_new_users_receive_new_plugin_notifications_by_default(): void
     {
         $user = User::factory()->create();

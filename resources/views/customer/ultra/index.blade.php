@@ -151,8 +151,11 @@
                                             </div>
                                             <div class="min-w-0">
                                                 <a href="{{ route('plugins.show', $plugin->routeParams()) }}" class="font-medium text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300">
-                                                    {{ $plugin->name }}
+                                                    {{ $plugin->display_name ?? $plugin->name }}
                                                 </a>
+                                                @if ($plugin->display_name)
+                                                    <flux:text class="font-mono text-xs">{{ $plugin->name }}</flux:text>
+                                                @endif
                                                 @if($plugin->description)
                                                     <flux:text class="text-xs line-clamp-1">{{ $plugin->description }}</flux:text>
                                                 @endif

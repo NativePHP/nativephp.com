@@ -75,7 +75,9 @@ class PluginResource extends Resource
                             ->suffixIconColor('gray'),
 
                         Forms\Components\Select::make('status')
-                            ->options(PluginStatus::class),
+                            ->options(PluginStatus::class)
+                            ->disabled()
+                            ->helperText('Use the Approve/Reject actions to change status'),
 
                         Forms\Components\Toggle::make('is_official')
                             ->label('Official (First-Party)')
@@ -245,6 +247,7 @@ class PluginResource extends Resource
                 Tables\Columns\TextColumn::make('status')
                     ->badge()
                     ->color(fn (PluginStatus $state): string => match ($state) {
+                        PluginStatus::Draft => 'gray',
                         PluginStatus::Pending => 'warning',
                         PluginStatus::Approved => 'success',
                         PluginStatus::Rejected => 'danger',

@@ -1,4 +1,4 @@
-<x-layout title="{{ $plugin->name }} - Plugin">
+<x-layout title="{{ $plugin->display_name ?? $plugin->name }} - Plugin">
     <section
         class="mx-auto mt-10 w-full max-w-7xl"
         aria-labelledby="plugin-title"
@@ -6,7 +6,12 @@
         @if ($isAdminPreview ?? false)
             <div class="mb-6 rounded-xl border border-amber-300 bg-amber-50 p-4 text-center dark:border-amber-600 dark:bg-amber-950/50">
                 <p class="text-sm font-medium text-amber-800 dark:text-amber-200">
-                    Admin Preview &mdash; This plugin is not yet published. Status: {{ $plugin->status->label() }}
+                    Preview &mdash; This plugin is not publicly visible.
+                    @if ($plugin->isApproved() && ! $plugin->is_active)
+                        It has been de-listed.
+                    @else
+                        Status: {{ $plugin->status->label() }}
+                    @endif
                 </p>
             </div>
         @endif
@@ -78,10 +83,13 @@
                 <div>
                     <h1
                         id="plugin-title"
-                        class="font-mono text-2xl font-bold sm:text-3xl"
+                        class="text-2xl font-bold sm:text-3xl"
                     >
-                        {{ $plugin->name }}
+                        {{ $plugin->display_name ?? $plugin->name }}
                     </h1>
+                    @if ($plugin->display_name)
+                        <p class="mt-1 font-mono text-sm text-gray-500 dark:text-gray-400">{{ $plugin->name }}</p>
+                    @endif
                     @if ($plugin->description)
                         <p class="mt-1 text-gray-600 dark:text-gray-400">
                             {{ $plugin->description }}
@@ -103,6 +111,73 @@
                                 <x-plugin-toc />
                             </div>
                         </div>
+                    @endif
+
+                    @if ($plugin->isPaid())
+                        <aside class="mb-6 rounded-2xl border border-indigo-200 bg-indigo-50 p-5 dark:border-indigo-800 dark:bg-indigo-950/30">
+                            <h3 class="text-sm font-semibold text-indigo-900 dark:text-indigo-200">Installing this plugin</h3>
+                            <p class="mt-1 text-sm text-indigo-800 dark:text-indigo-300">
+                                Premium plugins require Composer to be configured with the NativePHP plugin repository and your credentials.
+                            </p>
+                            <div class="mt-3 space-y-2">
+                                <div class="flex items-center gap-2 rounded-lg bg-zinc-900 dark:bg-zinc-800">
+                                    <div class="min-w-0 flex-1 overflow-x-auto p-3">
+                                        <code class="block whitespace-pre font-mono text-xs text-zinc-100">composer config repositories.nativephp-plugins composer https://plugins.nativephp.com</code>
+                                    </div>
+                                    <button
+                                        type="button"
+                                        x-data="{ copied: false }"
+                                        x-on:click="navigator.clipboard.writeText('composer config repositories.nativephp-plugins composer https://plugins.nativephp.com').then(() => { copied = true; setTimeout(() => copied = false, 2000) })"
+                                        class="shrink-0 self-stretch px-3 text-zinc-400 hover:text-zinc-200"
+                                        title="Copy command"
+                                    >
+                                        <x-heroicon-o-clipboard x-show="!copied" class="size-4" />
+                                        <x-heroicon-o-check-circle x-show="copied" x-cloak class="size-4 text-green-400" />
+                                    </button>
+                                </div>
+                                @auth
+                                    <div class="flex items-center gap-2 rounded-lg bg-zinc-900 dark:bg-zinc-800">
+                                        <div class="min-w-0 flex-1 overflow-x-auto p-3">
+                                            <code class="block whitespace-pre font-mono text-xs text-zinc-100">composer config http-basic.plugins.nativephp.com {{ auth()->user()->email }} {{ auth()->user()->getPluginLicenseKey() }}</code>
+                                        </div>
+                                        <button
+                                            type="button"
+                                            x-data="{ copied: false }"
+                                            x-on:click="navigator.clipboard.writeText('composer config http-basic.plugins.nativephp.com {{ auth()->user()->email }} {{ auth()->user()->getPluginLicenseKey() }}').then(() => { copied = true; setTimeout(() => copied = false, 2000) })"
+                                            class="shrink-0 self-stretch px-3 text-zinc-400 hover:text-zinc-200"
+                                            title="Copy command"
+                                        >
+                                            <x-heroicon-o-clipboard x-show="!copied" class="size-4" />
+                                            <x-heroicon-o-check-circle x-show="copied" x-cloak class="size-4 text-green-400" />
+                                        </button>
+                                    </div>
+                                @else
+                                    <div class="flex items-center gap-2 rounded-lg bg-zinc-900 dark:bg-zinc-800">
+                                        <div class="min-w-0 flex-1 overflow-x-auto p-3">
+                                            <code class="block whitespace-pre font-mono text-xs text-zinc-100">composer config http-basic.plugins.nativephp.com <span class="text-zinc-400">your-email@example.com</span> <span class="text-zinc-400">your-license-key</span></code>
+                                        </div>
+                                        <button
+                                            type="button"
+                                            x-data="{ copied: false }"
+                                            x-on:click="navigator.clipboard.writeText('composer config http-basic.plugins.nativephp.com your-email@example.com your-license-key').then(() => { copied = true; setTimeout(() => copied = false, 2000) })"
+                                            class="shrink-0 self-stretch px-3 text-zinc-400 hover:text-zinc-200"
+                                            title="Copy command"
+                                        >
+                                            <x-heroicon-o-clipboard x-show="!copied" class="size-4" />
+                                            <x-heroicon-o-check-circle x-show="copied" x-cloak class="size-4 text-green-400" />
+                                        </button>
+                                    </div>
+                                @endauth
+                            </div>
+                            <p class="mt-3 text-xs text-indigo-700 dark:text-indigo-400">
+                                @auth
+                                    Manage your credentials on your <a href="{{ route('customer.purchased-plugins.index') }}" class="font-medium underline hover:no-underline">Purchased Plugins</a> dashboard.
+                                @else
+                                    <a href="{{ route('customer.login') }}" class="font-medium underline hover:no-underline">Log in</a> to see your credentials, or find them on your <a href="{{ route('customer.purchased-plugins.index') }}" class="font-medium underline hover:no-underline">Purchased Plugins</a> dashboard.
+                                @endauth
+                                <a href="{{ url('docs/mobile/3/plugins/using-plugins') }}" class="font-medium underline hover:no-underline">Learn more &rarr;</a>
+                            </p>
+                        </aside>
                     @endif
 
                     <article
@@ -269,6 +344,35 @@
                                 {{ $plugin->android_version ?? '—' }}
                             </dd>
                         </div>
+
+                        {{-- Support --}}
+                        @if ($plugin->support_channel)
+                            <div class="col-span-2 rounded-xl bg-gray-50 p-3 dark:bg-slate-700/30">
+                                <dt class="text-xs font-medium text-gray-500 dark:text-gray-400">Support</dt>
+                                <dd class="mt-1">
+                                    @if (filter_var($plugin->support_channel, FILTER_VALIDATE_URL))
+                                        <a
+                                            href="{{ $plugin->support_channel }}"
+                                            target="_blank"
+                                            class="inline-flex items-center gap-1 text-sm font-medium text-indigo-600 hover:text-indigo-700 dark:text-indigo-400 dark:hover:text-indigo-300"
+                                        >
+                                            {{ $plugin->support_channel }}
+                                            <x-heroicon-o-arrow-top-right-on-square class="size-3" />
+                                        </a>
+                                    @elseif (filter_var($plugin->support_channel, FILTER_VALIDATE_EMAIL))
+                                        <a
+                                            href="mailto:{{ $plugin->support_channel }}"
+                                            class="inline-flex items-center gap-1 text-sm font-medium text-indigo-600 hover:text-indigo-700 dark:text-indigo-400 dark:hover:text-indigo-300"
+                                        >
+                                            {{ $plugin->support_channel }}
+                                            <x-heroicon-o-envelope class="size-3" />
+                                        </a>
+                                    @else
+                                        <span class="text-sm font-medium text-gray-900 dark:text-white">{{ $plugin->support_channel }}</span>
+                                    @endif
+                                </dd>
+                            </div>
+                        @endif
 
                     </dl>
 

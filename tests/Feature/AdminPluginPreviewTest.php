@@ -59,7 +59,7 @@ class AdminPluginPreviewTest extends TestCase
 
         $this->actingAs($admin)
             ->get(route('plugins.show', $plugin->routeParams()))
-            ->assertSee('Admin Preview')
+            ->assertSee('Preview')
             ->assertSee('Pending Review');
     }
 
@@ -68,7 +68,7 @@ class AdminPluginPreviewTest extends TestCase
         $plugin = Plugin::factory()->approved()->create();
 
         $this->get(route('plugins.show', $plugin->routeParams()))
-            ->assertDontSee('Admin Preview');
+            ->assertDontSee('This plugin is not publicly visible');
     }
 
     public function test_admin_can_view_approved_plugin_without_preview_banner(): void
@@ -81,6 +81,6 @@ class AdminPluginPreviewTest extends TestCase
         $this->actingAs($admin)
             ->get(route('plugins.show', $plugin->routeParams()))
             ->assertStatus(200)
-            ->assertDontSee('Admin Preview');
+            ->assertDontSee('This plugin is not publicly visible');
     }
 }

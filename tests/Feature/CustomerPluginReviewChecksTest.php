@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Livewire\Customer\Plugins\Create;
+use App\Livewire\Customer\Plugins\Show;
 use App\Models\DeveloperAccount;
 use App\Models\User;
 use App\Notifications\PluginSubmitted;
@@ -16,23 +17,11 @@ class CustomerPluginReviewChecksTest extends TestCase
 {
     use RefreshDatabase;
 
-    /** @test */
-    public function submitting_a_plugin_runs_review_checks(): void
+    private function fakeGitHubForCreateAndSubmit(string $repoSlug): void
     {
-        Notification::fake();
-
-        $user = User::factory()->create([
-            'github_id' => '12345',
-            'github_token' => encrypt('fake-token'),
-        ]);
-        DeveloperAccount::factory()->withAcceptedTerms()->create([
-            'user_id' => $user->id,
-        ]);
-
-        $repoSlug = 'acme/test-plugin';
         $base = "https://api.github.com/repos/{$repoSlug}";
         $composerJson = json_encode([
-            'name' => 'acme/test-plugin',
+            'name' => $repoSlug,
             'description' => 'A test plugin',
             'require' => [
                 'php' => '^8.1',
@@ -75,18 +64,51 @@ class CustomerPluginReviewChecksTest extends TestCase
                 'encoding' => 'base64',
             ]),
         ]);
+    }
 
+    /** @test */
+    public function submitting_a_plugin_for_review_runs_review_checks(): void
+    {
+        Notification::fake();
+
+        $user = User::factory()->create([
+            'github_id' => '12345',
+            'github_token' => encrypt('fake-token'),
+        ]);
+        DeveloperAccount::factory()->withAcceptedTerms()->create([
+            'user_id' => $user->id,
+        ]);
+
+        $repoSlug = 'acme/test-plugin';
+        $this->fakeGitHubForCreateAndSubmit($repoSlug);
+
+        // Step 1: Create the draft
         Livewire::actingAs($user)
             ->test(Create::class)
             ->set('repository', $repoSlug)
             ->set('pluginType', 'free')
-            ->set('supportChannel', 'dev@testplugin.io')
-            ->call('submitPlugin')
+            ->call('createPlugin')
             ->assertRedirect();
 
         $plugin = $user->plugins()->where('repository_url', "https://github.com/{$repoSlug}")->first();
+        $this->assertNotNull($plugin, 'Plugin should exist after creation');
+        $this->assertEquals('draft', $plugin->status->value);
 
-        $this->assertNotNull($plugin, 'Plugin should exist after submission');
+        // Set support channel (required before submission)
+        $plugin->update(['support_channel' => 'dev@testplugin.io']);
+
+        // Re-fake HTTP for the submission step
+        $this->fakeGitHubForCreateAndSubmit($repoSlug);
+
+        // Step 2: Submit for review from the Show page
+        [$vendor, $package] = explode('/', $plugin->name);
+        Livewire::actingAs($user)
+            ->test(Show::class, ['vendor' => $vendor, 'package' => $package])
+            ->call('submitForReview');
+
+        $plugin->refresh();
+
+        $this->assertEquals('pending', $plugin->status->value);
         $this->assertNotNull($plugin->review_checks, 'review_checks should be populated');
         $this->assertTrue($plugin->review_checks['has_license_file']);
         $this->assertTrue($plugin->review_checks['has_release_version']);
@@ -138,10 +160,7 @@ class CustomerPluginReviewChecksTest extends TestCase
             "{$base}/releases/latest" => Http::response([], 404),
             "{$base}/tags*" => Http::response([]),
             "https://raw.githubusercontent.com/{$repoSlug}/*" => Http::response('', 404),
-
-            // Webhook creation (fails)
             "{$base}/hooks" => Http::response([], 422),
-
             $base => Http::response(['default_branch' => 'main']),
             "{$base}/git/trees/main*" => Http::response([
                 'tree' => [
@@ -154,14 +173,53 @@ class CustomerPluginReviewChecksTest extends TestCase
             ]),
         ]);
 
+        // Step 1: Create the draft
         Livewire::actingAs($user)
             ->test(Create::class)
             ->set('repository', $repoSlug)
             ->set('pluginType', 'free')
-            ->set('supportChannel', 'support@bare-plugin.io')
-            ->call('submitPlugin');
+            ->call('createPlugin');
 
         $plugin = $user->plugins()->where('repository_url', "https://github.com/{$repoSlug}")->first();
+
+        // Set support channel (required before submission)
+        $plugin->update(['support_channel' => 'support@bare-plugin.io']);
+
+        // Re-fake HTTP for submission
+        Http::fake([
+            "{$base}/contents/composer.json*" => Http::response([
+                'content' => base64_encode($composerJson),
+                'encoding' => 'base64',
+            ]),
+            "{$base}/contents/README.md" => Http::response([
+                'content' => base64_encode('# Bare Plugin'),
+                'encoding' => 'base64',
+            ]),
+            "{$base}/contents/nativephp.json" => Http::response([], 404),
+            "{$base}/contents/LICENSE*" => Http::response([], 404),
+            "{$base}/releases/latest" => Http::response([], 404),
+            "{$base}/tags*" => Http::response([]),
+            "{$base}/hooks" => Http::response([], 422),
+            $base => Http::response(['default_branch' => 'main']),
+            "{$base}/git/trees/main*" => Http::response([
+                'tree' => [
+                    ['path' => 'src/ServiceProvider.php', 'type' => 'blob'],
+                ],
+            ]),
+            "{$base}/readme" => Http::response([
+                'content' => base64_encode('# Bare Plugin'),
+                'encoding' => 'base64',
+            ]),
+            "https://raw.githubusercontent.com/{$repoSlug}/*" => Http::response('', 404),
+        ]);
+
+        // Step 2: Submit for review
+        [$vendor, $package] = explode('/', $plugin->name);
+        Livewire::actingAs($user)
+            ->test(Show::class, ['vendor' => $vendor, 'package' => $package])
+            ->call('submitForReview');
+
+        $plugin->refresh();
 
         Notification::assertSentTo($user, PluginSubmitted::class, function (PluginSubmitted $notification) use ($plugin) {
             $mail = $notification->toMail($plugin->user);

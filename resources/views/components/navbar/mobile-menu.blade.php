@@ -126,8 +126,8 @@
                     </a>
                 </div>
 
-                {{-- Ultra Link --}}
-                <div>
+                {{-- Ultra Link (mobile only, shown in navbar on desktop) --}}
+                <div class="lg:hidden">
                     <a
                         href="{{ route('pricing') }}"
                         @class([
@@ -254,8 +254,8 @@
                     </a>
                 </div>
 
-                {{-- Course Link --}}
-                <div>
+                {{-- Course Link (mobile only, shown in navbar on desktop) --}}
+                <div class="lg:hidden">
                     <a
                         href="{{ route('course') }}"
                         @class([

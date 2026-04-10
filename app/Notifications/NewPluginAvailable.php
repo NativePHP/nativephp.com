@@ -35,7 +35,7 @@ class NewPluginAvailable extends Notification implements ShouldQueue
             ->greeting('A new plugin is available!')
             ->line("**{$this->plugin->name}** has just been added to the NativePHP Plugin Marketplace.")
             ->action('View Plugin', route('plugins.show', $this->plugin->routeParams()))
-            ->line('You can manage your notification preferences in your account settings.');
+            ->line('[Manage your notification preferences]('.route('customer.settings', ['tab' => 'notifications']).').');
     }
 
     /**

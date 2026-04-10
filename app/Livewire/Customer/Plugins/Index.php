@@ -16,7 +16,7 @@ use Livewire\Component;
 class Index extends Component
 {
     #[Url]
-    public string $status = 'pending';
+    public string $status = 'draft';
 
     #[Computed]
     public function plugins(): Collection
@@ -37,6 +37,7 @@ class Index extends Component
             ->toArray();
 
         return [
+            PluginStatus::Draft->value => $counts[PluginStatus::Draft->value] ?? 0,
             PluginStatus::Approved->value => $counts[PluginStatus::Approved->value] ?? 0,
             PluginStatus::Pending->value => $counts[PluginStatus::Pending->value] ?? 0,
             PluginStatus::Rejected->value => $counts[PluginStatus::Rejected->value] ?? 0,

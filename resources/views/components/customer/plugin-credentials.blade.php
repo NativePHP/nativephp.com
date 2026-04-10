@@ -25,11 +25,13 @@
                 </div>
                 <button
                     type="button"
-                    x-data x-on:click="navigator.clipboard.writeText('composer config repositories.nativephp-plugins composer https://plugins.nativephp.com')"
+                    x-data="{ copied: false }"
+                    x-on:click="navigator.clipboard.writeText('composer config repositories.nativephp-plugins composer https://plugins.nativephp.com').then(() => { copied = true; setTimeout(() => copied = false, 2000) })"
                     class="shrink-0 self-stretch bg-zinc-900 px-3 text-zinc-400 hover:bg-zinc-800 hover:text-zinc-200"
                     title="Copy command"
                 >
-                    <flux:icon name="clipboard" variant="outline" class="size-4" />
+                    <flux:icon x-show="!copied" name="clipboard" variant="outline" class="size-4" />
+                    <flux:icon x-show="copied" x-cloak name="check-circle" variant="outline" class="size-4 text-green-400" />
                 </button>
             </div>
             <flux:text class="text-xs">2. Configure your credentials:</flux:text>
@@ -39,11 +41,13 @@
                 </div>
                 <button
                     type="button"
-                    x-data x-on:click="navigator.clipboard.writeText('composer config http-basic.plugins.nativephp.com {{ auth()->user()->email }} {{ $pluginLicenseKey }}')"
+                    x-data="{ copied: false }"
+                    x-on:click="navigator.clipboard.writeText('composer config http-basic.plugins.nativephp.com {{ auth()->user()->email }} {{ $pluginLicenseKey }}').then(() => { copied = true; setTimeout(() => copied = false, 2000) })"
                     class="shrink-0 self-stretch bg-zinc-900 px-3 text-zinc-400 hover:bg-zinc-800 hover:text-zinc-200"
                     title="Copy command"
                 >
-                    <flux:icon name="clipboard" variant="outline" class="size-4" />
+                    <flux:icon x-show="!copied" name="clipboard" variant="outline" class="size-4" />
+                    <flux:icon x-show="copied" x-cloak name="check-circle" variant="outline" class="size-4 text-green-400" />
                 </button>
             </div>
         </div>

@@ -26,7 +26,7 @@
         <x-docs.toc-and-sponsors :tableOfContents="$tableOfContents">
             {{-- Ad rotation --}}
             <x-blog.ad-rotation
-                :ads="$platform === 'desktop' ? ['mobile', 'ultra'] : ['devkit', 'ultra']"
+                :ads="$platform === 'desktop' ? ['mobile', 'ultra', 'vibes', 'masterclass'] : ['devkit', 'ultra', 'vibes', 'masterclass']"
             />
         </x-docs.toc-and-sponsors>
     </x-slot>
@@ -156,6 +156,6 @@
     {{-- Mobile ad rotation --}}
     <x-blog.ad-rotation
         class="mx-auto mt-5 max-w-52 xl:hidden"
-        :ads="$platform === 'desktop' ? ['mobile', 'ultra'] : ['devkit', 'ultra']"
+        :ads="$platform === 'desktop' ? ['mobile', 'ultra', 'vibes', 'masterclass'] : ['devkit', 'ultra', 'vibes', 'masterclass']"
     />
 </x-docs-layout>
