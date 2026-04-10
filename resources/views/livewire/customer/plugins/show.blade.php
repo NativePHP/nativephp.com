@@ -242,16 +242,14 @@
                                 <div class="mt-6 space-y-4">
                                     @foreach (\App\Enums\PluginTier::cases() as $pluginTier)
                                         @php
-                                            $prices = $pluginTier->getPrices();
-                                            $subscriberPrice = $prices[\App\Enums\PriceTier::Subscriber->value] / 100;
-                                            $regularPrice = $prices[\App\Enums\PriceTier::Regular->value] / 100;
+                                            $regularPrice = $pluginTier->getPrices()[\App\Enums\PriceTier::Regular->value] / 100;
                                         @endphp
                                         <label class="relative flex cursor-pointer rounded-lg border p-4 transition focus:outline-none"
                                             :class="$wire.tier === '{{ $pluginTier->value }}' ? 'border-indigo-500 bg-indigo-50 dark:border-indigo-400 dark:bg-indigo-950/30' : 'border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/50'">
                                             <input type="radio" wire:model.live="tier" value="{{ $pluginTier->value }}" class="sr-only" />
                                             <span class="flex flex-1 items-center justify-between">
                                                 <span class="text-sm font-medium text-gray-900 dark:text-white">{{ $pluginTier->label() }}</span>
-                                                <span class="text-lg font-semibold text-gray-900 dark:text-white">${{ number_format($subscriberPrice) }} – ${{ number_format($regularPrice) }}</span>
+                                                <span class="text-lg font-semibold text-gray-900 dark:text-white">${{ number_format($regularPrice) }}</span>
                                             </span>
                                         </label>
                                     @endforeach
@@ -445,11 +443,8 @@
                                     </div>
                                 </div>
                                 @if ($plugin->isPaid() && $plugin->tier)
-                                    @php
-                                        $regularPrice = $plugin->tier->getPrices()[\App\Enums\PriceTier::Regular->value] / 100;
-                                    @endphp
                                     <span class="inline-flex shrink-0 items-center text-center rounded-full bg-emerald-100 px-2.5 py-0.5 text-xs font-medium text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-400">
-                                        {{ $plugin->tier->label() }}&nbsp;&mdash;&nbsp;${{ number_format($regularPrice) }}
+                                        {{ $plugin->tier->label() }}
                                     </span>
                                 @elseif ($plugin->isPaid())
                                     <span class="inline-flex shrink-0 items-center text-center rounded-full bg-emerald-100 px-2.5 py-0.5 text-xs font-medium text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-400">
@@ -528,12 +523,7 @@
                         <flux:heading size="lg">Type</flux:heading>
                         <flux:text class="mt-1">
                             @if ($plugin->isPaid() && $plugin->tier)
-                                @php
-                                    $prices = $plugin->tier->getPrices();
-                                    $subscriberPrice = $prices[\App\Enums\PriceTier::Subscriber->value] / 100;
-                                    $regularPrice = $prices[\App\Enums\PriceTier::Regular->value] / 100;
-                                @endphp
-                                Paid &mdash; {{ $plugin->tier->label() }} (${{ number_format($subscriberPrice) }} – ${{ number_format($regularPrice) }})
+                                Paid &mdash; {{ $plugin->tier->label() }}
                             @elseif ($plugin->isPaid())
                                 Paid
                             @else
@@ -716,11 +706,8 @@
                         </div>
                     </div>
                     @if ($plugin->isPaid() && $plugin->tier)
-                        @php
-                            $regularPrice = $plugin->tier->getPrices()[\App\Enums\PriceTier::Regular->value] / 100;
-                        @endphp
                         <span class="inline-flex shrink-0 items-center text-center rounded-full bg-emerald-100 px-2.5 py-0.5 text-xs font-medium text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-400">
-                            {{ $plugin->tier->label() }}&nbsp;&mdash;&nbsp;${{ number_format($regularPrice) }}
+                            {{ $plugin->tier->label() }}
                         </span>
                     @elseif ($plugin->isPaid())
                         <span class="inline-flex shrink-0 items-center text-center rounded-full bg-emerald-100 px-2.5 py-0.5 text-xs font-medium text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-400">
