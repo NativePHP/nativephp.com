@@ -52,7 +52,7 @@ class PluginResource extends Resource
                         Forms\Components\Placeholder::make('logo_preview')
                             ->label('Logo')
                             ->content(fn (?Plugin $record) => $record?->hasLogo()
-                                ? new HtmlString('<img src="'.e($record->getLogoUrl()).'" alt="Logo" class="w-16 h-16 rounded-lg object-cover" />')
+                                ? new HtmlString('<img src="'.e($record->getLogoUrl()).'" alt="Logo" style="max-width: 256px; max-height: 256px; border-radius: 0.5rem; object-fit: cover;" />')
                                 : 'No logo')
                             ->visible(fn (?Plugin $record) => $record !== null),
 
