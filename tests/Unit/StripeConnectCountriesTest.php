@@ -12,7 +12,7 @@ class StripeConnectCountriesTest extends TestCase
     {
         $countries = StripeConnectCountries::all();
 
-        $this->assertCount(108, $countries);
+        $this->assertCount(103, $countries);
         $this->assertArrayHasKey('US', $countries);
         $this->assertArrayHasKey('GB', $countries);
         $this->assertArrayHasKey('DE', $countries);
@@ -98,7 +98,7 @@ class StripeConnectCountriesTest extends TestCase
 
         $this->assertContains('US', $codes);
         $this->assertContains('GB', $codes);
-        $this->assertCount(108, $codes);
+        $this->assertCount(103, $codes);
     }
 
     /** @test */
@@ -126,6 +126,41 @@ class StripeConnectCountriesTest extends TestCase
             $name = StripeConnectCountries::currencyName($code);
             $this->assertNotEquals($code, $name, "Currency {$code} is missing a name in CURRENCY_NAMES");
         }
+    }
+
+    /** @test */
+    public function india_is_not_in_supported_countries(): void
+    {
+        $this->assertFalse(StripeConnectCountries::isSupported('IN'));
+        $this->assertArrayNotHasKey('IN', StripeConnectCountries::all());
+    }
+
+    /** @test */
+    public function taiwan_is_not_in_supported_countries(): void
+    {
+        $this->assertFalse(StripeConnectCountries::isSupported('TW'));
+        $this->assertArrayNotHasKey('TW', StripeConnectCountries::all());
+    }
+
+    /** @test */
+    public function south_korea_is_not_in_supported_countries(): void
+    {
+        $this->assertFalse(StripeConnectCountries::isSupported('KR'));
+        $this->assertArrayNotHasKey('KR', StripeConnectCountries::all());
+    }
+
+    /** @test */
+    public function nigeria_is_not_in_supported_countries(): void
+    {
+        $this->assertFalse(StripeConnectCountries::isSupported('NG'));
+        $this->assertArrayNotHasKey('NG', StripeConnectCountries::all());
+    }
+
+    /** @test */
+    public function namibia_is_not_in_supported_countries(): void
+    {
+        $this->assertFalse(StripeConnectCountries::isSupported('NA'));
+        $this->assertArrayNotHasKey('NA', StripeConnectCountries::all());
     }
 
     /** @test */
