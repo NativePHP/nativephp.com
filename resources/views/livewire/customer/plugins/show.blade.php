@@ -132,7 +132,7 @@
 
                             @if ($check['key'] === 'webhook_configured')
                                 @if (! $isPassing)
-                                    <div class="ml-7 mt-2 rounded-md border border-amber-200 bg-amber-50 p-4 dark:border-amber-900/50 dark:bg-amber-900/20">
+                                    <div wire:key="webhook-status-failing" class="ml-7 mt-2 rounded-md border border-amber-200 bg-amber-50 p-4 dark:border-amber-900/50 dark:bg-amber-900/20">
                                         <p class="text-sm text-amber-800 dark:text-amber-200">
                                             We couldn't automatically install the webhook. Please set it up manually:
                                         </p>
@@ -166,9 +166,9 @@
                                         </div>
                                     </div>
                                 @elseif ($plugin->webhook_secret)
-                                    <div class="ml-7 mt-1" x-data="{ open: false }">
-                                        <button type="button" @click="open = !open" class="inline-flex items-center gap-1 text-xs text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300">
-                                            <x-heroicon-o-chevron-right class="size-3 transition-transform" ::class="open && 'rotate-90'" />
+                                    <div wire:key="webhook-status-passing" class="ml-7 mt-1" x-data="{ open: false }">
+                                        <button type="button" x-on:click="open = !open" class="inline-flex items-center gap-1 text-xs text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300">
+                                            <x-heroicon-o-chevron-right class="size-3 transition-transform" x-bind:class="open && 'rotate-90'" />
                                             View setup instructions
                                         </button>
                                         <div x-show="open" x-cloak class="mt-2 rounded-md border border-gray-200 bg-gray-50 p-4 dark:border-gray-700 dark:bg-gray-800/50">
