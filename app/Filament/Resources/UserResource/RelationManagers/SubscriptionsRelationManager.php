@@ -3,17 +3,17 @@
 namespace App\Filament\Resources\UserResource\RelationManagers;
 
 use App\Filament\Resources\SubscriptionResource;
-use Filament\Forms\Form;
 use Filament\Resources\RelationManagers\RelationManager;
+use Filament\Schemas\Schema;
 use Filament\Tables\Table;
 
 class SubscriptionsRelationManager extends RelationManager
 {
     protected static string $relationship = 'subscriptions';
 
-    public function form(Form $form): Form
+    public function form(Schema $schema): Schema
     {
-        return SubscriptionResource::form($form);
+        return SubscriptionResource::form($schema);
     }
 
     public function table(Table $table): Table

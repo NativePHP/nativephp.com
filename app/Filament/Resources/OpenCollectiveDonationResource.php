@@ -4,9 +4,11 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\OpenCollectiveDonationResource\Pages;
 use App\Models\OpenCollectiveDonation;
+use Filament\Actions;
 use Filament\Infolists;
-use Filament\Infolists\Infolist;
 use Filament\Resources\Resource;
+use Filament\Schemas;
+use Filament\Schemas\Schema;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
@@ -16,9 +18,9 @@ class OpenCollectiveDonationResource extends Resource
 {
     protected static ?string $model = OpenCollectiveDonation::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-heart';
+    protected static \BackedEnum|string|null $navigationIcon = 'heroicon-o-heart';
 
-    protected static ?string $navigationGroup = 'Billing';
+    protected static \UnitEnum|string|null $navigationGroup = 'Billing';
 
     protected static ?string $navigationLabel = 'OpenCollective Donations';
 
@@ -33,11 +35,15 @@ class OpenCollectiveDonationResource extends Resource
         return false;
     }
 
-    public static function infolist(Infolist $infolist): Infolist
+    public static function infolist(Schema $schema): Schema
     {
-        return $infolist
+        return $schema
+            ->inlineLabel()
+            ->columns(1)
             ->schema([
-                Infolists\Components\Section::make('Donation Details')
+                Schemas\Components\Section::make('Donation Details')
+                    ->inlineLabel()
+                    ->columns(1)
                     ->schema([
                         Infolists\Components\TextEntry::make('order_id')
                             ->label('Order ID')
@@ -52,8 +58,10 @@ class OpenCollectiveDonationResource extends Resource
                         Infolists\Components\TextEntry::make('created_at')
                             ->label('Received')
                             ->dateTime(),
-                    ])->columns(2),
-                Infolists\Components\Section::make('Contributor')
+                    ]),
+                Schemas\Components\Section::make('Contributor')
+                    ->inlineLabel()
+                    ->columns(1)
                     ->schema([
                         Infolists\Components\TextEntry::make('from_collective_name')
                             ->label('Name'),
@@ -63,8 +71,10 @@ class OpenCollectiveDonationResource extends Resource
                             ->openUrlInNewTab(),
                         Infolists\Components\TextEntry::make('from_collective_id')
                             ->label('Collective ID'),
-                    ])->columns(3),
-                Infolists\Components\Section::make('Claim Status')
+                    ]),
+                Schemas\Components\Section::make('Claim Status')
+                    ->inlineLabel()
+                    ->columns(1)
                     ->schema([
                         Infolists\Components\IconEntry::make('claimed_at')
                             ->label('Claimed')
@@ -81,7 +91,7 @@ class OpenCollectiveDonationResource extends Resource
                             ->label('Claimed By')
                             ->placeholder('Not claimed')
                             ->url(fn ($record) => $record->user_id ? UserResource::getUrl('edit', ['record' => $record->user_id]) : null),
-                    ])->columns(3),
+                    ]),
             ]);
     }
 
@@ -135,7 +145,7 @@ class OpenCollectiveDonationResource extends Resource
                     ->query(fn (Builder $query): Builder => $query->whereNotNull('interval')),
             ])
             ->actions([
-                Tables\Actions\ViewAction::make(),
+                Actions\ViewAction::make(),
             ]);
     }
 

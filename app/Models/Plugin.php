@@ -6,17 +6,22 @@ use App\Enums\PluginActivityType;
 use App\Enums\PluginStatus;
 use App\Enums\PluginTier;
 use App\Enums\PluginType;
+use App\Enums\PriceTier;
+use App\Notifications\NewPluginAvailable;
 use App\Notifications\PluginApproved;
 use App\Notifications\PluginRejected;
 use App\Services\PluginSyncService;
 use App\Services\SatisService;
+use Illuminate\Database\Eloquent\Attributes\Scope;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Support\Facades\Notification;
 
 class Plugin extends Model
 {
@@ -33,7 +38,7 @@ class Plugin extends Model
     /**
      * Find a plugin by its vendor and package name, or fail.
      *
-     * @throws \Illuminate\Database\Eloquent\ModelNotFoundException
+     * @throws ModelNotFoundException
      */
     public static function findByVendorPackageOrFail(string $vendor, string $package): self
     {
@@ -59,14 +64,11 @@ class Plugin extends Model
 
     protected static function booted(): void
     {
-        static::created(function (Plugin $plugin): void {
-            $plugin->recordActivity(
-                PluginActivityType::Submitted,
-                null,
-                PluginStatus::Pending,
-                null,
-                $plugin->user_id
-            );
+        static::saving(function (Plugin $plugin): void {
+            if ($plugin->isDirty('name') && $plugin->name && ! $plugin->isDirty('is_official')) {
+                $vendor = explode('/', $plugin->name)[0] ?? null;
+                $plugin->is_official = $vendor === 'nativephp';
+            }
         });
 
         static::updated(function (Plugin $plugin): void {
@@ -163,17 +165,24 @@ class Plugin extends Model
     /**
      * Get the best (lowest) active price for a user based on their eligible tiers.
      * Returns null if no price exists for the user's eligible tiers.
+     * Third-party plugins never offer subscriber discounts — always regular price.
      */
     public function getBestPriceForUser(?User $user): ?PluginPrice
     {
-        $eligibleTiers = $user ? $user->getEligiblePriceTiers() : [\App\Enums\PriceTier::Regular];
+        if (! $this->isOfficial()) {
+            $eligibleTiers = [PriceTier::Regular];
+        } else {
+            $eligibleTiers = $user ? $user->getEligiblePriceTiers() : [PriceTier::Regular];
+        }
 
         // Get the lowest active price for the user's eligible tiers
-        return $this->prices()
+        $bestPrice = $this->prices()
             ->active()
             ->forTiers($eligibleTiers)
             ->orderBy('amount', 'asc')
             ->first();
+
+        return $bestPrice;
     }
 
     /**
@@ -191,7 +200,7 @@ class Plugin extends Model
     {
         return $this->prices()
             ->active()
-            ->forTier(\App\Enums\PriceTier::Regular)
+            ->forTier(PriceTier::Regular)
             ->first() ?? $this->activePrice;
     }
 
@@ -249,6 +258,11 @@ class Plugin extends Model
         return $this->status === PluginStatus::Approved;
     }
 
+    public function isDraft(): bool
+    {
+        return $this->status === PluginStatus::Draft;
+    }
+
     public function isRejected(): bool
     {
         return $this->status === PluginStatus::Rejected;
@@ -280,10 +294,50 @@ class Plugin extends Model
     }
 
     /**
+     * Check if all required review checks have passed.
+     * A plugin cannot be approved until these checks pass.
+     */
+    public function passesRequiredReviewChecks(): bool
+    {
+        $checks = $this->review_checks;
+
+        if (! $checks) {
+            return false;
+        }
+
+        return ! empty($checks['has_license_file']) && ! empty($checks['has_release_version']) && $this->webhook_installed;
+    }
+
+    /**
+     * Get the list of failing required review checks.
+     *
+     * @return array<int, string>
+     */
+    public function getFailingRequiredChecks(): array
+    {
+        $checks = $this->review_checks;
+        $failing = [];
+
+        if (empty($checks['has_license_file'])) {
+            $failing[] = 'License file (LICENSE or LICENSE.md)';
+        }
+
+        if (empty($checks['has_release_version'])) {
+            $failing[] = 'Release version (GitHub release or tag)';
+        }
+
+        if (! $this->webhook_installed) {
+            $failing[] = 'Webhook configured';
+        }
+
+        return $failing;
+    }
+
+    /**
      * @param  Builder<Plugin>  $query
      * @return Builder<Plugin>
      */
-    #[\Illuminate\Database\Eloquent\Attributes\Scope]
+    #[Scope]
     protected function approved(Builder $query): Builder
     {
         return $query->where('status', PluginStatus::Approved)
@@ -294,7 +348,7 @@ class Plugin extends Model
      * @param  Builder<Plugin>  $query
      * @return Builder<Plugin>
      */
-    #[\Illuminate\Database\Eloquent\Attributes\Scope]
+    #[Scope]
     protected function active(Builder $query): Builder
     {
         return $query->where('is_active', true);
@@ -304,7 +358,7 @@ class Plugin extends Model
      * @param  Builder<Plugin>  $query
      * @return Builder<Plugin>
      */
-    #[\Illuminate\Database\Eloquent\Attributes\Scope]
+    #[Scope]
     protected function featured(Builder $query): Builder
     {
         return $query->where('featured', true);
@@ -489,6 +543,7 @@ class Plugin extends Model
     public function approve(int $approvedById): void
     {
         $previousStatus = $this->status;
+        $isFirstApproval = $this->approved_at === null;
 
         $this->update([
             'status' => PluginStatus::Approved,
@@ -506,6 +561,15 @@ class Plugin extends Model
         );
 
         $this->user->notify(new PluginApproved($this));
+
+        if ($isFirstApproval) {
+            $recipients = User::query()
+                ->where('receives_new_plugin_notifications', true)
+                ->where('id', '!=', $this->user_id)
+                ->get();
+
+            Notification::send($recipients, new NewPluginAvailable($this));
+        }
 
         resolve(PluginSyncService::class)->sync($this);
     }
@@ -547,6 +611,74 @@ class Plugin extends Model
             PluginActivityType::Resubmitted,
             $previousStatus,
             PluginStatus::Pending,
+            null,
+            $this->user_id
+        );
+    }
+
+    /**
+     * Submit a draft plugin for review (Draft → Pending).
+     * Logs Resubmitted if previously rejected, otherwise Submitted.
+     */
+    public function submit(): void
+    {
+        $previousStatus = $this->status;
+
+        $wasRejected = $this->activities()
+            ->where('type', PluginActivityType::Rejected)
+            ->exists();
+
+        $this->update([
+            'status' => PluginStatus::Pending,
+            'rejection_reason' => null,
+            'approved_at' => null,
+            'approved_by' => null,
+        ]);
+
+        $this->recordActivity(
+            $wasRejected ? PluginActivityType::Resubmitted : PluginActivityType::Submitted,
+            $previousStatus,
+            PluginStatus::Pending,
+            null,
+            $this->user_id
+        );
+    }
+
+    /**
+     * Withdraw a pending plugin back to draft (Pending → Draft).
+     */
+    public function withdraw(): void
+    {
+        $previousStatus = $this->status;
+
+        $this->update([
+            'status' => PluginStatus::Draft,
+        ]);
+
+        $this->recordActivity(
+            PluginActivityType::Withdrawn,
+            $previousStatus,
+            PluginStatus::Draft,
+            null,
+            $this->user_id
+        );
+    }
+
+    /**
+     * Return a rejected plugin to draft for editing (Rejected → Draft).
+     */
+    public function returnToDraft(): void
+    {
+        $previousStatus = $this->status;
+
+        $this->update([
+            'status' => PluginStatus::Draft,
+        ]);
+
+        $this->recordActivity(
+            PluginActivityType::ReturnedToDraft,
+            $previousStatus,
+            PluginStatus::Draft,
             null,
             $this->user_id
         );

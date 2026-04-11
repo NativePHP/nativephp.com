@@ -18,7 +18,20 @@ class LegacyLicenseThankYou extends Notification implements ShouldQueue
 
     public function via($notifiable): array
     {
-        return ['mail'];
+        return ['mail', 'database'];
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    public function toArray($notifiable): array
+    {
+        return [
+            'title' => 'Thank You for Making NativePHP Mobile Free',
+            'body' => 'NativePHP for Mobile is now free for everyone — thanks to early supporters like you.',
+            'license_id' => $this->license->id,
+            'license_key' => $this->license->key,
+        ];
     }
 
     public function toMail($notifiable): MailMessage

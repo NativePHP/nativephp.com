@@ -6,12 +6,14 @@ use App\Enums\GitHubAuthType;
 use App\Models\GitHubInstallation;
 use App\Models\Product;
 use App\Models\User;
+use App\Services\GitHubAppService;
 use App\Services\GitHubUserService;
 use App\Support\GitHubOAuth;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Laravel\Socialite\Facades\Socialite;
@@ -176,10 +178,10 @@ class GitHubIntegrationController extends Controller
         if (! $existing) {
             // Fetch installation details from GitHub
             try {
-                $appService = app(\App\Services\GitHubAppService::class);
+                $appService = app(GitHubAppService::class);
                 $jwt = $appService->generateJwt();
 
-                $response = \Illuminate\Support\Facades\Http::withHeaders([
+                $response = Http::withHeaders([
                     'Authorization' => "Bearer {$jwt}",
                     'Accept' => 'application/vnd.github+json',
                 ])->get("https://api.github.com/app/installations/{$installationId}");
@@ -230,7 +232,7 @@ class GitHubIntegrationController extends Controller
             return back()->with('error', 'Please connect your GitHub account first.');
         }
 
-        if (! $user->hasMaxAccess()) {
+        if (! $user->hasMobileRepoAccess()) {
             return back()->with('error', 'You need an active Max license to access the mobile repository.');
         }
 
@@ -256,11 +258,11 @@ class GitHubIntegrationController extends Controller
             return back()->with('error', 'Please connect your GitHub account first.');
         }
 
-        // Check if user has a Plugin Dev Kit license
+        // Check if user has a Plugin Dev Kit license or is an Ultra team member
         $pluginDevKit = Product::where('slug', 'plugin-dev-kit')->first();
 
-        if (! $pluginDevKit || ! $user->hasProductLicense($pluginDevKit)) {
-            return back()->with('error', 'You need a Plugin Dev Kit license to access the claude-code repository.');
+        if (! $user->hasActiveUltraSubscription() && ! $user->isUltraTeamMember() && (! $pluginDevKit || ! $user->hasProductLicense($pluginDevKit))) {
+            return back()->with('error', 'You need a Plugin Dev Kit license, Ultra subscription, or Ultra team membership to access the claude-code repository.');
         }
 
         $github = GitHubOAuth::make();

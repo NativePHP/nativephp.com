@@ -5,6 +5,7 @@ namespace Tests\Feature\Actions\Licenses;
 use App\Actions\Licenses\SuspendLicense;
 use App\Models\License;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Http\Client\RequestException;
 use Illuminate\Support\Facades\Http;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
@@ -57,7 +58,7 @@ class SuspendLicenseTest extends TestCase
             'is_suspended' => false,
         ]);
 
-        $this->expectException(\Illuminate\Http\Client\RequestException::class);
+        $this->expectException(RequestException::class);
 
         $action = resolve(SuspendLicense::class);
         $result = $action->handle($license);

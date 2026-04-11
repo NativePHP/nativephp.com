@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use App\Models\License;
 use App\Notifications\LegacyLicenseThankYou;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Date;
 
 class SendLegacyLicenseThankYou extends Command
 {
@@ -25,7 +26,7 @@ class SendLegacyLicenseThankYou extends Command
         // that have a user and haven't been converted to a subscription
         $legacyLicenses = License::query()
             ->whereNull('subscription_item_id')
-            ->where('created_at', '<', \Illuminate\Support\Facades\Date::create(2025, 5, 8))
+            ->where('created_at', '<', Date::create(2025, 5, 8))
             ->whereHas('user')
             ->with('user')
             ->get();

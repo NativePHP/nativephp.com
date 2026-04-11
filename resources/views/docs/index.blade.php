@@ -1,3 +1,8 @@
+@push('head')
+    <meta name="docsearch:platform" content="{{ $platform }}" />
+    <meta name="docsearch:version" content="{{ $version }}" />
+@endpush
+
 <x-docs-layout>
     <x-slot name="sidebarLeft">
         {!! $navigation !!}
@@ -18,7 +23,12 @@
             ]" />
         @endif
 
-        <x-docs.toc-and-sponsors :tableOfContents="$tableOfContents" />
+        <x-docs.toc-and-sponsors :tableOfContents="$tableOfContents">
+            {{-- Ad rotation --}}
+            <x-blog.ad-rotation
+                :ads="$platform === 'desktop' ? ['mobile', 'ultra', 'vibes', 'masterclass'] : ['devkit', 'ultra', 'vibes', 'masterclass']"
+            />
+        </x-docs.toc-and-sponsors>
     </x-slot>
 
     <x-docs.old-version-notice
@@ -53,37 +63,41 @@
         {{-- Copy as Markdown Button --}}
         <x-docs.copy-markdown-button />
 
-        <div>
-            <h3 class="inline-flex items-center gap-1.5 text-sm opacity-50">
-                {{-- Icon --}}
-                <x-icons.stacked-lines class="size-[18px]" />
-                {{-- Label --}}
-                <div>On this page</div>
-            </h3>
-            @if (count($tableOfContents) > 0)
-                <div
-                    class="mt-2 flex flex-col space-y-2 border-l text-xs dark:border-l-white/15"
-                >
-                    @foreach ($tableOfContents as $item)
-                        <a
-                            href="#{{ $item['anchor'] }}"
-                            @class([
-                                'transition duration-300 ease-in-out will-change-transform hover:translate-x-0.5 hover:text-violet-400 hover:opacity-100 dark:text-white/80',
-                                'pb-1 pl-3' => $item['level'] == 2,
-                                'py-1 pl-6' => $item['level'] == 3,
-                            ])
-                        >
-                            {{ $item['title'] }}
-                        </a>
-                    @endforeach
-                </div>
-            @endif
-        </div>
-
     </div>
 
+    @if (count($tableOfContents) > 0)
+        <div class="sticky top-20 z-10 mt-8 mb-4 flex justify-end">
+            <div class="rounded-full bg-white shadow-sm dark:bg-zinc-800">
+                <flux:dropdown position="bottom" align="end">
+                    <flux:button variant="filled" size="sm" class="!rounded-full">
+                        <x-icons.stacked-lines class="size-4" />
+                        On this page
+                    </flux:button>
+
+                    <flux:popover class="w-64">
+                        <nav class="flex max-h-80 flex-col gap-0.5 overflow-y-auto">
+                            @foreach ($tableOfContents as $item)
+                                <a
+                                    href="#{{ $item['anchor'] }}"
+                                    x-on:click.prevent="document.getElementById('{{ $item['anchor'] }}')?.scrollIntoView({ behavior: 'smooth', block: 'start' })"
+                                    @class([
+                                        'rounded-md px-2 py-1.5 text-xs transition hover:bg-zinc-100 dark:text-white/80 dark:hover:bg-zinc-700',
+                                        'pl-2' => $item['level'] == 2,
+                                        'pl-5' => $item['level'] == 3,
+                                    ])
+                                >
+                                    {{ $item['title'] }}
+                                </a>
+                            @endforeach
+                        </nav>
+                    </flux:popover>
+                </flux:dropdown>
+            </div>
+        </div>
+    @endif
+
     <div
-        class="prose dark:prose-invert prose-headings:scroll-mt-20 prose-headings:text-gray-800 sm:prose-headings:scroll-mt-32 dark:prose-headings:text-gray-50 mt-8 max-w-none"
+        class="prose dark:prose-invert prose-headings:scroll-mt-20 prose-headings:text-gray-800 sm:prose-headings:scroll-mt-32 dark:prose-headings:text-gray-50 max-w-none"
     >
         {!! $content !!}
     </div>
@@ -138,4 +152,10 @@
             Edit this page on GitHub
         </x-docs.link-subtle>
     </div>
+
+    {{-- Mobile ad rotation --}}
+    <x-blog.ad-rotation
+        class="mx-auto mt-5 max-w-52 xl:hidden"
+        :ads="$platform === 'desktop' ? ['mobile', 'ultra', 'vibes', 'masterclass'] : ['devkit', 'ultra', 'vibes', 'masterclass']"
+    />
 </x-docs-layout>

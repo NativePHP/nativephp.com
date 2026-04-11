@@ -5,6 +5,9 @@ namespace App\Http\Controllers;
 use App\Actions\SubLicenses\DeleteSubLicense;
 use App\Actions\SubLicenses\SuspendSubLicense;
 use App\Http\Requests\CreateSubLicenseRequest;
+use App\Jobs\CreateAnystackSubLicenseJob;
+use App\Jobs\RevokeMaxAccessJob;
+use App\Jobs\UpdateAnystackContactAssociationJob;
 use App\Models\License;
 use App\Models\SubLicense;
 use App\Notifications\SubLicenseAssignment;
@@ -33,7 +36,7 @@ class CustomerSubLicenseController extends Controller
         }
 
         // Dispatch job to create sub-license in Anystack and then locally
-        dispatch(new \App\Jobs\CreateAnystackSubLicenseJob($license, $request->name, $request->assigned_email));
+        dispatch(new CreateAnystackSubLicenseJob($license, $request->name, $request->assigned_email));
 
         return to_route('customer.licenses.show', $licenseKey)
             ->with('success', 'Sub-license is being created. You will receive an email notification when it\'s ready.');
@@ -63,12 +66,12 @@ class CustomerSubLicenseController extends Controller
 
         // If the email was changed and there's a new email, update the contact association
         if ($oldEmail !== $request->assigned_email && $request->assigned_email) {
-            dispatch(new \App\Jobs\UpdateAnystackContactAssociationJob($subLicense, $request->assigned_email));
+            dispatch(new UpdateAnystackContactAssociationJob($subLicense, $request->assigned_email));
         }
 
         // If the email was changed and this is a Max license, revoke access for the old email
         if ($oldEmail && $oldEmail !== $request->assigned_email && $license->policy_name === 'max') {
-            dispatch(new \App\Jobs\RevokeMaxAccessJob($oldEmail));
+            dispatch(new RevokeMaxAccessJob($oldEmail));
         }
 
         return to_route('customer.licenses.show', $licenseKey)
@@ -91,7 +94,7 @@ class CustomerSubLicenseController extends Controller
 
         // If this was a Max license and had an assigned email, revoke access
         if ($assignedEmail && $license->policy_name === 'max') {
-            dispatch(new \App\Jobs\RevokeMaxAccessJob($assignedEmail));
+            dispatch(new RevokeMaxAccessJob($assignedEmail));
         }
 
         return to_route('customer.licenses.show', $licenseKey)
@@ -114,7 +117,7 @@ class CustomerSubLicenseController extends Controller
 
         // If this was a Max license and had an assigned email, revoke access
         if ($assignedEmail && $license->policy_name === 'max') {
-            dispatch(new \App\Jobs\RevokeMaxAccessJob($assignedEmail));
+            dispatch(new RevokeMaxAccessJob($assignedEmail));
         }
 
         return to_route('customer.licenses.show', $licenseKey)

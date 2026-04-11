@@ -15,6 +15,7 @@ class PluginDirectoryController extends Controller
 
         $featuredPlugins = Plugin::query()
             ->approved()
+            ->where('is_active', true)
             ->featured()
             ->latest()
             ->take(16)
@@ -24,6 +25,7 @@ class PluginDirectoryController extends Controller
 
         $latestPlugins = Plugin::query()
             ->approved()
+            ->where('is_active', true)
             ->where('featured', false)
             ->latest()
             ->take(16)
@@ -49,12 +51,15 @@ class PluginDirectoryController extends Controller
     {
         $plugin = Plugin::findByVendorPackageOrFail($vendor, $package);
 
-        abort_unless($plugin->isApproved(), 404);
-
         $user = Auth::user();
 
-        // For paid plugins, check if user has an accessible price
-        if ($plugin->isPaid() && ! $plugin->hasAccessiblePriceFor($user)) {
+        $isAdmin = $user?->isAdmin() ?? false;
+        $isOwner = $user && $plugin->user_id === $user->id;
+
+        abort_unless(($plugin->isApproved() && $plugin->is_active) || $isAdmin || $isOwner, 404);
+
+        // For paid plugins, check if user has an accessible price (admins and owners bypass)
+        if (! $isAdmin && ! $isOwner && $plugin->isPaid() && ! $plugin->hasAccessiblePriceFor($user)) {
             abort(404);
         }
 
@@ -72,6 +77,7 @@ class PluginDirectoryController extends Controller
             'bestPrice' => $bestPrice,
             'regularPrice' => $regularPrice,
             'hasDiscount' => $bestPrice && $regularPrice && $bestPrice->id !== $regularPrice->id,
+            'isAdminPreview' => (! $plugin->isApproved() || ! $plugin->is_active) && ($isAdmin || $isOwner),
         ]);
     }
 

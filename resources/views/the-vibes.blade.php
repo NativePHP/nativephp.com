@@ -1,5 +1,31 @@
 <x-layout title="The Vibes - Laracon Day 3">
-    <div class="mx-auto max-w-5xl">
+    <div
+        class="mx-auto max-w-5xl"
+        x-data="{
+            deadline: new Date('2026-04-01T00:00:00-04:00').getTime(),
+            days: 0,
+            hours: 0,
+            minutes: 0,
+            seconds: 0,
+            expired: false,
+            init() {
+                this.tick();
+                setInterval(() => this.tick(), 1000);
+            },
+            tick() {
+                const now = Date.now();
+                const diff = this.deadline - now;
+                if (diff <= 0) {
+                    this.expired = true;
+                    return;
+                }
+                this.days = Math.floor(diff / (1000 * 60 * 60 * 24));
+                this.hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                this.minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+                this.seconds = Math.floor((diff % (1000 * 60)) / 1000);
+            },
+        }"
+    >
         {{-- Hero Section --}}
         <section class="mt-12">
             <div class="grid place-items-center text-center">
@@ -105,7 +131,7 @@
                         href="https://luma.com/szs6n4ym"
                         class="flex items-center justify-center gap-2.5 rounded-xl bg-zinc-800 px-8 py-4 text-white transition duration-200 hover:bg-zinc-900 dark:bg-violet-500/80 dark:drop-shadow-xl dark:drop-shadow-transparent dark:hover:bg-violet-500 dark:hover:drop-shadow-violet-500/30"
                     >
-                        Grab Your Spot &mdash; $89
+                        Grab Your Spot &mdash; <span x-text="expired ? '$129' : '$89'">$89</span>
                     </a>
                     <span class="text-sm text-gray-500 dark:text-gray-500">Only 100 spots available</span>
                 </div>
@@ -113,33 +139,7 @@
         </section>
 
         {{-- Early Bird Countdown --}}
-        <section
-            class="mt-10"
-            x-data="{
-                deadline: new Date('2026-04-01T00:00:00').getTime(),
-                days: 0,
-                hours: 0,
-                minutes: 0,
-                seconds: 0,
-                expired: false,
-                init() {
-                    this.tick();
-                    setInterval(() => this.tick(), 1000);
-                },
-                tick() {
-                    const now = Date.now();
-                    const diff = this.deadline - now;
-                    if (diff <= 0) {
-                        this.expired = true;
-                        return;
-                    }
-                    this.days = Math.floor(diff / (1000 * 60 * 60 * 24));
-                    this.hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-                    this.minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-                    this.seconds = Math.floor((diff % (1000 * 60)) / 1000);
-                },
-            }"
-        >
+        <section class="mt-10">
             <div
                 x-show="!expired"
                 x-init="
@@ -739,10 +739,10 @@
                         <h3 class="text-xl font-medium">Ticket Price</h3>
                     </div>
                     <div class="mt-4 flex items-baseline gap-2">
-                        <p class="text-lg font-semibold">$89 per person</p>
-                        <span class="text-sm text-gray-500 line-through dark:text-gray-500">$129</span>
+                        <p class="text-lg font-semibold" x-text="expired ? '$129 per person' : '$89 per person'">$89 per person</p>
+                        <span x-show="!expired" class="text-sm text-gray-500 line-through dark:text-gray-500">$129</span>
                     </div>
-                    <p class="mt-1 text-gray-600 dark:text-gray-400">
+                    <p class="mt-1 text-gray-600 dark:text-gray-400" x-text="expired ? 'Includes catering, drinks, and full event access.' : 'Early bird pricing until April 1st. Includes catering, drinks, and full event access.'">
                         Early bird pricing until April 1st. Includes catering, drinks, and full event access.
                     </p>
                 </div>
@@ -961,9 +961,9 @@
                         href="https://luma.com/szs6n4ym"
                         class="flex items-center justify-center gap-2.5 rounded-xl bg-zinc-800 px-8 py-4 text-white transition duration-200 hover:bg-zinc-900 dark:bg-violet-500/80 dark:drop-shadow-xl dark:drop-shadow-transparent dark:hover:bg-violet-500 dark:hover:drop-shadow-violet-500/30"
                     >
-                        Get Your Ticket &mdash; $89
+                        Get Your Ticket &mdash; <span x-text="expired ? '$129' : '$89'">$89</span>
                     </a>
-                    <span class="text-sm text-gray-500 dark:text-gray-500">
+                    <span x-show="!expired" class="text-sm text-gray-500 dark:text-gray-500">
                         Early bird $89 &middot; $129 after April 1st &middot; 100 spots
                     </span>
                 </div>

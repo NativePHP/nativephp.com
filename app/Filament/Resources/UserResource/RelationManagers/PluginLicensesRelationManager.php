@@ -3,9 +3,10 @@
 namespace App\Filament\Resources\UserResource\RelationManagers;
 
 use App\Enums\PluginType;
+use Filament\Actions;
 use Filament\Forms;
-use Filament\Forms\Form;
 use Filament\Resources\RelationManagers\RelationManager;
+use Filament\Schemas\Schema;
 use Filament\Tables;
 use Filament\Tables\Table;
 
@@ -15,9 +16,9 @@ class PluginLicensesRelationManager extends RelationManager
 
     protected static ?string $title = 'Plugins';
 
-    public function form(Form $form): Form
+    public function form(Schema $schema): Schema
     {
-        return $form
+        return $schema
             ->schema([
                 Forms\Components\Select::make('plugin_id')
                     ->relationship('plugin', 'name')
@@ -70,7 +71,7 @@ class PluginLicensesRelationManager extends RelationManager
                     ->label('Comped'),
             ])
             ->headerActions([
-                Tables\Actions\CreateAction::make()
+                Actions\CreateAction::make()
                     ->mutateFormDataUsing(function (array $data): array {
                         $data['price_paid'] = 0;
                         $data['currency'] = 'USD';
@@ -79,7 +80,7 @@ class PluginLicensesRelationManager extends RelationManager
                     }),
             ])
             ->actions([
-                Tables\Actions\DeleteAction::make(),
+                Actions\DeleteAction::make(),
             ]);
     }
 }

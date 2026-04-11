@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Enums\PluginType;
 use App\Models\Plugin;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 
@@ -32,7 +33,7 @@ class SatisService
     /**
      * Trigger a satis build for specific plugins.
      *
-     * @param  array<int, Plugin>|\Illuminate\Support\Collection  $plugins
+     * @param  array<int, Plugin>|Collection  $plugins
      */
     public function build($plugins, ?string $githubToken = null): array
     {

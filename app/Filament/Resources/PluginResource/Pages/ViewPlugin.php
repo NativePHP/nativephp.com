@@ -20,7 +20,7 @@ class ViewPlugin extends ViewRecord
                 ->color('gray')
                 ->url(fn () => route('plugins.show', $this->record->routeParams()))
                 ->openUrlInNewTab()
-                ->visible(fn () => $this->record->isApproved()),
+                ->visible(fn () => $this->record->isApproved() || $this->record->isPending()),
 
             Actions\Action::make('approve')
                 ->icon('heroicon-o-check')

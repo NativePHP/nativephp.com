@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use Rector\Config\RectorConfig;
 use Rector\ValueObject\PhpVersion;
+use RectorLaravel\Rector\MethodCall\ContainerBindConcreteWithClosureOnlyRector;
 use RectorLaravel\Set\LaravelLevelSetList;
 use RectorLaravel\Set\LaravelSetList;
 
@@ -19,7 +20,7 @@ return RectorConfig::configure()
     ])
     ->withSkip([
         __DIR__.'/vendor',
-        \RectorLaravel\Rector\MethodCall\ContainerBindConcreteWithClosureOnlyRector::class,
+        ContainerBindConcreteWithClosureOnlyRector::class,
     ])
     ->withSets([
         LaravelLevelSetList::UP_TO_LARAVEL_120,

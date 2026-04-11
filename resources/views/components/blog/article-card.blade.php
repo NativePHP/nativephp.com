@@ -14,13 +14,29 @@
     >
         {{-- Header --}}
         <div class="flex items-start justify-between gap-10">
-            {{-- Title --}}
-            <h3
-                id="article-title-{{ Str::slug($title) }}"
-                class="line-clamp-4 max-w-xs text-xl leading-relaxed font-semibold"
-            >
-                {{ $title }}
-            </h3>
+            <div>
+                {{-- Title --}}
+                <h3
+                    id="article-title-{{ Str::slug($title) }}"
+                    class="line-clamp-4 text-xl leading-relaxed font-semibold text-pretty"
+                >
+                    {{ $title }}
+                </h3>
+                {{-- Date --}}
+                @if ($date)
+                    @php
+                        $dateObject = \Carbon\Carbon::parse($date);
+                        $formattedDate = $dateObject->format('F j, Y');
+                    @endphp
+
+                    <time
+                        datetime="{{ $date }}"
+                        class="shrink-0 text-xs opacity-50"
+                    >
+                        {{ $formattedDate }}
+                    </time>
+                @endif
+            </div>
 
             {{-- Arrow --}}
             <x-icons.right-arrow
@@ -30,23 +46,8 @@
         </div>
 
         <div class="flex items-end justify-between gap-10 pt-5">
-            {{-- Date --}}
-            @if ($date)
-                @php
-                    $dateObject = \Carbon\Carbon::parse($date);
-                    $formattedDate = $dateObject->format('F j, Y');
-                @endphp
-
-                <time
-                    datetime="{{ $date }}"
-                    class="shrink-0 text-sm opacity-50"
-                >
-                    {{ $formattedDate }}
-                </time>
-            @endif
-
             {{-- Content --}}
-            <p class="line-clamp-3 max-w-72 text-xs leading-relaxed opacity-80">
+            <p class="line-clamp-3 text-sm leading-relaxed  opacity-50">
                 {{ $slot }}
             </p>
         </div>

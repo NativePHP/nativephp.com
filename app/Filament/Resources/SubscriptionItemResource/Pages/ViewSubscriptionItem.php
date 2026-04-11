@@ -13,9 +13,10 @@ use App\Services\Anystack\Anystack;
 use Filament\Actions;
 use Filament\Forms\Components\TextInput;
 use Filament\Infolists\Components;
-use Filament\Infolists\Infolist;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\ViewRecord;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Schema;
 use Laravel\Cashier\SubscriptionItem;
 
 /**
@@ -75,11 +76,15 @@ class ViewSubscriptionItem extends ViewRecord
         ];
     }
 
-    public function infolist(Infolist $infolist): Infolist
+    public function infolist(Schema $schema): Schema
     {
-        return $infolist
+        return $schema
+            ->inlineLabel()
+            ->columns(1)
             ->schema([
-                Components\Section::make('Subscription Item Details')
+                Section::make('Subscription Item Details')
+                    ->inlineLabel()
+                    ->columns(1)
                     ->schema([
                         Components\TextEntry::make('subscription.id')
                             ->label('Subscription ID')
@@ -108,7 +113,7 @@ class ViewSubscriptionItem extends ViewRecord
                             ->dateTime(),
                         Components\TextEntry::make('updated_at')
                             ->dateTime(),
-                    ])->columns(2),
+                    ]),
             ]);
     }
 }

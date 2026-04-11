@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\PayoutStatus;
+use Illuminate\Database\Eloquent\Attributes\Scope;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -36,7 +37,7 @@ class PluginPayout extends Model
      * @param  Builder<PluginPayout>  $query
      * @return Builder<PluginPayout>
      */
-    #[\Illuminate\Database\Eloquent\Attributes\Scope]
+    #[Scope]
     protected function pending(Builder $query): Builder
     {
         return $query->where('status', PayoutStatus::Pending);
@@ -46,7 +47,7 @@ class PluginPayout extends Model
      * @param  Builder<PluginPayout>  $query
      * @return Builder<PluginPayout>
      */
-    #[\Illuminate\Database\Eloquent\Attributes\Scope]
+    #[Scope]
     protected function transferred(Builder $query): Builder
     {
         return $query->where('status', PayoutStatus::Transferred);
@@ -56,7 +57,7 @@ class PluginPayout extends Model
      * @param  Builder<PluginPayout>  $query
      * @return Builder<PluginPayout>
      */
-    #[\Illuminate\Database\Eloquent\Attributes\Scope]
+    #[Scope]
     protected function failed(Builder $query): Builder
     {
         return $query->where('status', PayoutStatus::Failed);
@@ -65,9 +66,9 @@ class PluginPayout extends Model
     /**
      * @return array{platform_fee: int, developer_amount: int}
      */
-    public static function calculateSplit(int $grossAmount): array
+    public static function calculateSplit(int $grossAmount, int $platformFeePercent = self::PLATFORM_FEE_PERCENT): array
     {
-        $platformFee = (int) round($grossAmount * self::PLATFORM_FEE_PERCENT / 100);
+        $platformFee = (int) round($grossAmount * $platformFeePercent / 100);
         $developerAmount = $grossAmount - $platformFee;
 
         return [

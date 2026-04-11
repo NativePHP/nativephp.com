@@ -48,6 +48,20 @@
             developer seats (keys)
         </div>
     </div>
+    @if($features['teams'] ?? false)
+        <div class="flex items-center gap-2">
+            <x-icons.user-single
+                class="size-5 shrink-0"
+                aria-hidden="true"
+            />
+            <div class="text-zinc-500">
+                Teams support &mdash;
+                <span class="font-medium text-black dark:text-white">{{ config('subscriptions.plans.max.included_seats') }} seats</span>
+                included
+                <span class="text-xs">(extra: ${{ config('subscriptions.plans.max.extra_seat_price_monthly') }}/seat/mo or ${{ config('subscriptions.plans.max.extra_seat_price_yearly') }}/seat/yr)</span>
+            </div>
+        </div>
+    @endif
 </div>
 
 {{-- Divider - Decorative --}}

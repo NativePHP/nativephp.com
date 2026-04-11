@@ -14,6 +14,33 @@ composer require vendor/nativephp-plugin-name
 The plugin's PHP service provider will be auto-discovered by Laravel, but the native code won't be included in builds
 until you explicitly register it.
 
+### Installing Premium Plugins
+
+Premium plugins from the [NativePHP Plugin Marketplace](/plugins) are served via a private Composer repository.
+You'll need to configure Composer before you can install them.
+
+**1. Add the NativePHP plugins repository:**
+
+```shell
+composer config repositories.nativephp-plugins composer https://plugins.nativephp.com
+```
+
+**2. Configure your credentials:**
+
+```shell
+composer config http-basic.plugins.nativephp.com your-email@example.com your-license-key
+```
+
+You can find your credentials on your [Purchased Plugins](/dashboard/purchased-plugins) dashboard.
+
+**3. Install the plugin:**
+
+Once configured, install premium plugins just like any other:
+
+```shell
+composer require vendor/nativephp-premium-plugin
+```
+
 ## Register the Plugin
 
 For security, plugins must be explicitly registered before their native code is compiled into your app. This prevents

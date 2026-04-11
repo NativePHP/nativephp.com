@@ -2,34 +2,26 @@
 
 namespace Tests\Feature;
 
+use App\Livewire\Customer\Plugins\Create;
+use App\Livewire\Customer\Plugins\Show;
 use App\Models\DeveloperAccount;
 use App\Models\User;
 use App\Notifications\PluginSubmitted;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Notification;
+use Livewire\Livewire;
 use Tests\TestCase;
 
 class CustomerPluginReviewChecksTest extends TestCase
 {
     use RefreshDatabase;
 
-    /** @test */
-    public function submitting_a_plugin_runs_review_checks(): void
+    private function fakeGitHubForCreateAndSubmit(string $repoSlug): void
     {
-        Notification::fake();
-
-        $user = User::factory()->create([
-            'github_id' => '12345',
-        ]);
-        DeveloperAccount::factory()->onboarded()->withAcceptedTerms()->create([
-            'user_id' => $user->id,
-        ]);
-
-        $repoSlug = 'acme/test-plugin';
         $base = "https://api.github.com/repos/{$repoSlug}";
         $composerJson = json_encode([
-            'name' => 'acme/test-plugin',
+            'name' => $repoSlug,
             'description' => 'A test plugin',
             'require' => [
                 'php' => '^8.1',
@@ -40,23 +32,27 @@ class CustomerPluginReviewChecksTest extends TestCase
         Http::fake([
             // PluginSyncService calls
             "{$base}/contents/README.md" => Http::response([
-                'content' => base64_encode("# Test Plugin\n\nSupport: dev@testplugin.io"),
+                'content' => base64_encode('# Test Plugin'),
                 'encoding' => 'base64',
             ]),
-            "{$base}/contents/composer.json" => Http::response([
+            "{$base}/contents/composer.json*" => Http::response([
                 'content' => base64_encode($composerJson),
                 'encoding' => 'base64',
             ]),
             "{$base}/contents/nativephp.json" => Http::response([], 404),
             "{$base}/contents/LICENSE*" => Http::response([], 404),
-            "{$base}/releases/latest" => Http::response([], 404),
+            "{$base}/releases/latest" => Http::response(['tag_name' => 'v1.0.0']),
             "{$base}/tags*" => Http::response([]),
             "https://raw.githubusercontent.com/{$repoSlug}/*" => Http::response('', 404),
+
+            // Webhook creation
+            "{$base}/hooks" => Http::response(['id' => 1], 201),
 
             // ReviewPluginRepository calls
             $base => Http::response(['default_branch' => 'main']),
             "{$base}/git/trees/main*" => Http::response([
                 'tree' => [
+                    ['path' => 'LICENSE', 'type' => 'blob'],
                     ['path' => 'resources/ios/Plugin.swift', 'type' => 'blob'],
                     ['path' => 'resources/android/Plugin.kt', 'type' => 'blob'],
                     ['path' => 'resources/js/index.js', 'type' => 'blob'],
@@ -64,28 +60,62 @@ class CustomerPluginReviewChecksTest extends TestCase
                 ],
             ]),
             "{$base}/readme" => Http::response([
-                'content' => base64_encode("# Test Plugin\n\nSupport: dev@testplugin.io"),
+                'content' => base64_encode('# Test Plugin'),
                 'encoding' => 'base64',
             ]),
         ]);
+    }
 
-        $response = $this->actingAs($user)
-            ->post(route('customer.plugins.store'), [
-                'repository' => $repoSlug,
-                'type' => 'free',
-            ]);
+    /** @test */
+    public function submitting_a_plugin_for_review_runs_review_checks(): void
+    {
+        Notification::fake();
 
-        $response->assertRedirect();
+        $user = User::factory()->create([
+            'github_id' => '12345',
+            'github_token' => encrypt('fake-token'),
+        ]);
+        DeveloperAccount::factory()->withAcceptedTerms()->create([
+            'user_id' => $user->id,
+        ]);
+
+        $repoSlug = 'acme/test-plugin';
+        $this->fakeGitHubForCreateAndSubmit($repoSlug);
+
+        // Step 1: Create the draft
+        Livewire::actingAs($user)
+            ->test(Create::class)
+            ->set('repository', $repoSlug)
+            ->set('pluginType', 'free')
+            ->call('createPlugin')
+            ->assertRedirect();
 
         $plugin = $user->plugins()->where('repository_url', "https://github.com/{$repoSlug}")->first();
+        $this->assertNotNull($plugin, 'Plugin should exist after creation');
+        $this->assertEquals('draft', $plugin->status->value);
 
-        $this->assertNotNull($plugin, 'Plugin should exist after submission');
+        // Set support channel (required before submission)
+        $plugin->update(['support_channel' => 'dev@testplugin.io']);
+
+        // Re-fake HTTP for the submission step
+        $this->fakeGitHubForCreateAndSubmit($repoSlug);
+
+        // Step 2: Submit for review from the Show page
+        [$vendor, $package] = explode('/', $plugin->name);
+        Livewire::actingAs($user)
+            ->test(Show::class, ['vendor' => $vendor, 'package' => $package])
+            ->call('submitForReview');
+
+        $plugin->refresh();
+
+        $this->assertEquals('pending', $plugin->status->value);
         $this->assertNotNull($plugin->review_checks, 'review_checks should be populated');
+        $this->assertTrue($plugin->review_checks['has_license_file']);
+        $this->assertTrue($plugin->review_checks['has_release_version']);
+        $this->assertEquals('v1.0.0', $plugin->review_checks['release_version']);
         $this->assertTrue($plugin->review_checks['supports_ios']);
         $this->assertTrue($plugin->review_checks['supports_android']);
         $this->assertTrue($plugin->review_checks['supports_js']);
-        $this->assertTrue($plugin->review_checks['has_support_email']);
-        $this->assertEquals('dev@testplugin.io', $plugin->review_checks['support_email']);
         $this->assertTrue($plugin->review_checks['requires_mobile_sdk']);
         $this->assertEquals('^3.0.0', $plugin->review_checks['mobile_sdk_constraint']);
         $this->assertNotNull($plugin->reviewed_at);
@@ -102,8 +132,9 @@ class CustomerPluginReviewChecksTest extends TestCase
 
         $user = User::factory()->create([
             'github_id' => '12345',
+            'github_token' => encrypt('fake-token'),
         ]);
-        DeveloperAccount::factory()->onboarded()->withAcceptedTerms()->create([
+        DeveloperAccount::factory()->withAcceptedTerms()->create([
             'user_id' => $user->id,
         ]);
 
@@ -120,7 +151,7 @@ class CustomerPluginReviewChecksTest extends TestCase
                 'content' => base64_encode('# Bare Plugin'),
                 'encoding' => 'base64',
             ]),
-            "{$base}/contents/composer.json" => Http::response([
+            "{$base}/contents/composer.json*" => Http::response([
                 'content' => base64_encode($composerJson),
                 'encoding' => 'base64',
             ]),
@@ -129,7 +160,7 @@ class CustomerPluginReviewChecksTest extends TestCase
             "{$base}/releases/latest" => Http::response([], 404),
             "{$base}/tags*" => Http::response([]),
             "https://raw.githubusercontent.com/{$repoSlug}/*" => Http::response('', 404),
-
+            "{$base}/hooks" => Http::response([], 422),
             $base => Http::response(['default_branch' => 'main']),
             "{$base}/git/trees/main*" => Http::response([
                 'tree' => [
@@ -142,23 +173,67 @@ class CustomerPluginReviewChecksTest extends TestCase
             ]),
         ]);
 
-        $this->actingAs($user)
-            ->post(route('customer.plugins.store'), [
-                'repository' => $repoSlug,
-                'type' => 'free',
-            ]);
+        // Step 1: Create the draft
+        Livewire::actingAs($user)
+            ->test(Create::class)
+            ->set('repository', $repoSlug)
+            ->set('pluginType', 'free')
+            ->call('createPlugin');
 
         $plugin = $user->plugins()->where('repository_url', "https://github.com/{$repoSlug}")->first();
+
+        // Set support channel (required before submission)
+        $plugin->update(['support_channel' => 'support@bare-plugin.io']);
+
+        // Re-fake HTTP for submission
+        Http::fake([
+            "{$base}/contents/composer.json*" => Http::response([
+                'content' => base64_encode($composerJson),
+                'encoding' => 'base64',
+            ]),
+            "{$base}/contents/README.md" => Http::response([
+                'content' => base64_encode('# Bare Plugin'),
+                'encoding' => 'base64',
+            ]),
+            "{$base}/contents/nativephp.json" => Http::response([], 404),
+            "{$base}/contents/LICENSE*" => Http::response([], 404),
+            "{$base}/releases/latest" => Http::response([], 404),
+            "{$base}/tags*" => Http::response([]),
+            "{$base}/hooks" => Http::response([], 422),
+            $base => Http::response(['default_branch' => 'main']),
+            "{$base}/git/trees/main*" => Http::response([
+                'tree' => [
+                    ['path' => 'src/ServiceProvider.php', 'type' => 'blob'],
+                ],
+            ]),
+            "{$base}/readme" => Http::response([
+                'content' => base64_encode('# Bare Plugin'),
+                'encoding' => 'base64',
+            ]),
+            "https://raw.githubusercontent.com/{$repoSlug}/*" => Http::response('', 404),
+        ]);
+
+        // Step 2: Submit for review
+        [$vendor, $package] = explode('/', $plugin->name);
+        Livewire::actingAs($user)
+            ->test(Show::class, ['vendor' => $vendor, 'package' => $package])
+            ->call('submitForReview');
+
+        $plugin->refresh();
 
         Notification::assertSentTo($user, PluginSubmitted::class, function (PluginSubmitted $notification) use ($plugin) {
             $mail = $notification->toMail($plugin->user);
             $rendered = $mail->render()->toHtml();
 
-            // Should mention failing checks
+            // Should mention failing required checks
+            $this->assertStringContainsString('LICENSE', $rendered);
+            $this->assertStringContainsString('release version', $rendered);
+            $this->assertStringContainsString('webhook', $rendered);
+
+            // Should mention failing optional checks
             $this->assertStringContainsString('Add iOS support', $rendered);
             $this->assertStringContainsString('Add Android support', $rendered);
             $this->assertStringContainsString('Add JavaScript support', $rendered);
-            $this->assertStringContainsString('Add a support email', $rendered);
             $this->assertStringContainsString('nativephp/mobile SDK', $rendered);
 
             return true;

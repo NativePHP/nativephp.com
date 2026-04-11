@@ -19,12 +19,14 @@ class PluginReviewChecksIncompleteTest extends TestCase
         $plugin = Plugin::factory()->create([
             'user_id' => $user->id,
             'name' => 'acme/test-plugin',
+            'webhook_installed' => true,
             'review_checks' => [
+                'has_license_file' => true,
+                'has_release_version' => true,
+                'release_version' => 'v1.0.0',
                 'supports_ios' => true,
                 'supports_android' => true,
                 'supports_js' => false,
-                'has_support_email' => true,
-                'support_email' => 'dev@acme.io',
                 'requires_mobile_sdk' => false,
                 'mobile_sdk_constraint' => null,
                 'has_ios_min_version' => true,
@@ -38,9 +40,11 @@ class PluginReviewChecksIncompleteTest extends TestCase
         $rendered = $notification->toMail($user)->render()->toHtml();
 
         // Passing checks shown
+        $this->assertStringContainsString('License file', $rendered);
+        $this->assertStringContainsString('Release version', $rendered);
+        $this->assertStringContainsString('Webhook configured', $rendered);
         $this->assertStringContainsString('iOS native code', $rendered);
         $this->assertStringContainsString('Android native code', $rendered);
-        $this->assertStringContainsString('Support email', $rendered);
         $this->assertStringContainsString('iOS min_version', $rendered);
 
         // Failing checks shown with doc links
@@ -58,12 +62,14 @@ class PluginReviewChecksIncompleteTest extends TestCase
         $plugin = Plugin::factory()->create([
             'user_id' => $user->id,
             'name' => 'acme/empty-plugin',
+            'webhook_installed' => false,
             'review_checks' => [
+                'has_license_file' => false,
+                'has_release_version' => false,
+                'release_version' => null,
                 'supports_ios' => false,
                 'supports_android' => false,
                 'supports_js' => false,
-                'has_support_email' => false,
-                'support_email' => null,
                 'requires_mobile_sdk' => false,
                 'mobile_sdk_constraint' => null,
                 'has_ios_min_version' => false,
@@ -89,12 +95,14 @@ class PluginReviewChecksIncompleteTest extends TestCase
         $plugin = Plugin::factory()->create([
             'user_id' => $user->id,
             'name' => 'acme/cool-plugin',
+            'webhook_installed' => true,
             'review_checks' => [
+                'has_license_file' => true,
+                'has_release_version' => true,
+                'release_version' => 'v2.0.0',
                 'supports_ios' => true,
                 'supports_android' => true,
                 'supports_js' => true,
-                'has_support_email' => true,
-                'support_email' => 'dev@acme.io',
                 'requires_mobile_sdk' => true,
                 'mobile_sdk_constraint' => '^3.0',
                 'has_ios_min_version' => true,

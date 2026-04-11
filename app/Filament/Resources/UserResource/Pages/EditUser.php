@@ -2,11 +2,18 @@
 
 namespace App\Filament\Resources\UserResource\Pages;
 
+use App\Enums\Subscription;
 use App\Filament\Resources\UserResource;
+use App\Jobs\CreateAnystackLicenseJob;
 use App\Models\User;
 use Filament\Actions;
+use Filament\Forms\Components\Placeholder;
+use Filament\Forms\Components\Radio;
+use Filament\Forms\Components\Select;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
+use Illuminate\Support\Facades\Password;
+use STS\FilamentImpersonate\Actions\Impersonate;
 
 class EditUser extends EditRecord
 {
@@ -15,6 +22,8 @@ class EditUser extends EditRecord
     protected function getHeaderActions(): array
     {
         return [
+            Impersonate::make()->record($this->getRecord()),
+
             Actions\ActionGroup::make([
                 Actions\Action::make('createStripeCustomer')
                     ->label('Create Stripe Customer')
@@ -34,22 +43,114 @@ class EditUser extends EditRecord
                     })
                     ->visible(fn (User $record) => empty($record->stripe_id)),
 
+                Actions\Action::make('compUltraSubscription')
+                    ->label('Comp Ultra Subscription')
+                    ->color('warning')
+                    ->icon('heroicon-o-sparkles')
+                    ->modalHeading('Comp Ultra Subscription')
+                    ->modalSubmitActionLabel('Comp Ultra')
+                    ->form(function (User $record): array {
+                        $existingSubscription = $record->subscription('default');
+                        $hasActiveSubscription = $existingSubscription && $existingSubscription->active();
+
+                        $fields = [];
+
+                        if ($hasActiveSubscription) {
+                            $currentPlan = 'their current plan';
+
+                            try {
+                                $currentPlan = Subscription::fromStripePriceId(
+                                    $existingSubscription->items->first()?->stripe_price ?? $existingSubscription->stripe_price
+                                )->name();
+                            } catch (\Exception) {
+                            }
+
+                            $fields[] = Placeholder::make('info')
+                                ->label('')
+                                ->content("This user has an active {$currentPlan} subscription. Choose when to switch them to the comped Ultra plan.");
+
+                            $fields[] = Radio::make('timing')
+                                ->label('When to switch')
+                                ->options([
+                                    'now' => 'Immediately — swap now and credit remaining value (swapAndInvoice)',
+                                    'renewal' => 'At renewal — keep current plan until period ends, then switch (swap)',
+                                ])
+                                ->default('now')
+                                ->required();
+                        } else {
+                            $fields[] = Placeholder::make('info')
+                                ->label('')
+                                ->content("This will create a free Ultra subscription for {$record->email}. A Stripe customer will be created if one doesn't exist.");
+                        }
+
+                        return $fields;
+                    })
+                    ->action(function (array $data, User $record): void {
+                        $compedPriceId = config('subscriptions.plans.max.stripe_price_id_comped');
+
+                        if (! $compedPriceId) {
+                            Notification::make()
+                                ->danger()
+                                ->title('STRIPE_ULTRA_COMP_PRICE_ID is not configured.')
+                                ->send();
+
+                            return;
+                        }
+
+                        $record->createOrGetStripeCustomer();
+
+                        $existingSubscription = $record->subscription('default');
+
+                        if ($existingSubscription && $existingSubscription->active()) {
+                            $timing = $data['timing'] ?? 'now';
+
+                            if ($timing === 'now') {
+                                $existingSubscription->skipTrial()->swapAndInvoice($compedPriceId);
+                                $message = 'Subscription swapped to comped Ultra immediately. Remaining value has been credited.';
+                            } else {
+                                $existingSubscription->skipTrial()->swap($compedPriceId);
+                                $message = 'Subscription will switch to comped Ultra at the end of the current billing period.';
+                            }
+
+                            Notification::make()
+                                ->success()
+                                ->title('Comped Ultra subscription applied.')
+                                ->body($message)
+                                ->send();
+                        } else {
+                            $record->newSubscription('default', $compedPriceId)->create();
+
+                            Notification::make()
+                                ->success()
+                                ->title('Comped Ultra subscription created.')
+                                ->body("Ultra subscription created for {$record->email}.")
+                                ->send();
+                        }
+                    })
+                    ->visible(function (User $record): bool {
+                        if (! config('subscriptions.plans.max.stripe_price_id_comped')) {
+                            return false;
+                        }
+
+                        return ! $record->hasActiveUltraSubscription();
+                    }),
+
                 Actions\Action::make('createAnystackLicense')
                     ->label('Create Anystack License')
                     ->color('gray')
                     ->icon('heroicon-o-key')
                     ->form([
-                        \Filament\Forms\Components\Select::make('subscription')
+                        Select::make('subscription')
                             ->label('Subscription Plan')
-                            ->options(collect(\App\Enums\Subscription::cases())->mapWithKeys(function ($case) {
+                            ->options(collect(Subscription::cases())->mapWithKeys(function ($case) {
                                 return [$case->value => $case->name()];
                             }))
                             ->required(),
                     ])
                     ->action(function (array $data, User $record): void {
-                        $subscription = \App\Enums\Subscription::from($data['subscription']);
+                        $subscription = Subscription::from($data['subscription']);
 
-                        dispatch(new \App\Jobs\CreateAnystackLicenseJob($record, $subscription, null, $record->first_name, $record->last_name));
+                        dispatch(new CreateAnystackLicenseJob($record, $subscription, null, $record->first_name, $record->last_name));
                     }),
 
                 Actions\Action::make('sendPasswordReset')
@@ -58,7 +159,7 @@ class EditUser extends EditRecord
                     ->icon('heroicon-o-envelope')
                     ->requiresConfirmation()
                     ->action(function (User $record): void {
-                        \Illuminate\Support\Facades\Password::sendResetLink(
+                        Password::sendResetLink(
                             ['email' => $record->email]
                         );
                     }),

@@ -121,6 +121,17 @@ class PluginFactory extends Factory
         ];
     }
 
+    public function draft(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'status' => PluginStatus::Draft,
+            'approved_at' => null,
+            'approved_by' => null,
+            'rejection_reason' => null,
+            'webhook_secret' => null,
+        ]);
+    }
+
     public function pending(): static
     {
         return $this->state(fn (array $attributes) => [
@@ -183,6 +194,20 @@ class PluginFactory extends Factory
     {
         return $this->state(fn (array $attributes) => [
             'description' => null,
+        ]);
+    }
+
+    public function withNotes(?string $notes = null): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'notes' => $notes ?? fake()->sentence(),
+        ]);
+    }
+
+    public function withSupportChannel(?string $channel = null): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'support_channel' => $channel ?? fake()->safeEmail(),
         ]);
     }
 }

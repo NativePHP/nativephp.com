@@ -24,12 +24,12 @@ class HeadingRenderer implements NodeRendererInterface
 
         if ($node->getLevel() === 1 || $node->getLevel() === 2 || $node->getLevel() === 3) {
             $element->setContents(
+                $element->getContents().
                 new HtmlElement(
                     'a',
-                    ['href' => "#{$id}", 'class' => 'mr-2 no-underline font-medium', 'style' => 'border-bottom: 0 !important;'],
-                    new HtmlElement('span', ['class' => ' text-gray-600 dark:text-gray-400 hover:text-[#00aaa6]'], '#'),
-                ).
-                $element->getContents()
+                    ['href' => "#{$id}", 'class' => 'heading-anchor ml-2 no-underline font-medium', 'style' => 'border-bottom: 0 !important;'],
+                    new HtmlElement('span', ['class' => 'text-gray-600 dark:text-gray-400 hover:text-[#00aaa6]'], '#'),
+                )
             );
         }
 

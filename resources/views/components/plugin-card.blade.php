@@ -20,7 +20,11 @@
                 <x-vaadin-plug class="size-6" />
             </div>
         @endif
-        @if ($plugin->isPaid())
+        @if ($plugin->isPaid() && $plugin->isOfficial() && auth()->user()?->hasUltraAccess())
+            <span class="inline-flex items-center rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-medium text-green-800 dark:bg-green-900/30 dark:text-green-400">
+                Included with Ultra
+            </span>
+        @elseif ($plugin->isPaid())
             <span class="inline-flex items-center rounded-full bg-emerald-100 px-2.5 py-0.5 text-xs font-medium text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-400">
                 Paid
             </span>
@@ -32,9 +36,12 @@
     </div>
 
     <div class="mt-4 flex-1">
-        <h3 class="font-mono text-sm font-semibold text-gray-900 dark:text-white">
-            {{ $plugin->name }}
+        <h3 class="text-sm font-semibold text-gray-900 dark:text-white">
+            {{ $plugin->display_name ?? $plugin->name }}
         </h3>
+        @if ($plugin->display_name)
+            <p class="mt-0.5 font-mono text-xs text-gray-500 dark:text-gray-400">{{ $plugin->name }}</p>
+        @endif
         @if ($plugin->description)
             <p class="mt-2 line-clamp-3 text-sm text-gray-600 dark:text-gray-400">
                 {{ $plugin->description }}

@@ -598,7 +598,7 @@
                         </div>
                         <div>
                             <h3 class="text-xl font-medium">
-                                Sell Your Plugins (Soon!)
+                                Sell Your Plugins
                             </h3>
                             <p class="mt-1 text-gray-600 dark:text-gray-400">
                                 Sell your plugins through our marketplace and earn money from your native development skills.
@@ -607,13 +607,20 @@
                     </div>
                 </div>
 
-                <div class="mt-10">
+                <div class="mt-10 flex flex-wrap gap-4">
                     <a
                         href="/docs/mobile/plugins"
-                        class="inline-flex items-center gap-2.5 rounded-xl bg-zinc-800 px-6 py-4 text-white transition duration-200 hover:bg-zinc-900 dark:bg-indigo-700/80 dark:hover:bg-indigo-900"
+                        class="inline-flex items-center gap-2.5 rounded-xl bg-gray-200 px-6 py-4 text-gray-800 transition duration-200 hover:bg-gray-300/80 dark:bg-slate-700/30 dark:text-white dark:hover:bg-slate-700/40"
                     >
                         <x-icons.docs class="size-5" />
                         Learn to Build Plugins
+                    </a>
+                    <a
+                        href="https://nativephp.com/dashboard/developer/onboarding"
+                        class="inline-flex items-center gap-2.5 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 px-6 py-4 font-semibold text-white shadow-md transition duration-200 hover:from-purple-700 hover:to-indigo-700 hover:shadow-lg"
+                    >
+                        <x-heroicon-s-rocket-launch class="size-5" />
+                        Create Your Developer Account
                     </a>
                 </div>
             </div>

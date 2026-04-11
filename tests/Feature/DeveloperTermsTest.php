@@ -4,12 +4,16 @@ namespace Tests\Feature;
 
 use App\Features\ShowAuthButtons;
 use App\Features\ShowPlugins;
+use App\Livewire\Customer\Developer\Onboarding;
+use App\Livewire\Customer\Plugins\Create;
 use App\Models\DeveloperAccount;
 use App\Models\User;
 use App\Services\StripeConnectService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Laravel\Pennant\Feature;
+use Livewire\Livewire;
 use Mockery;
+use Stripe\Exception\InvalidRequestException;
 use Tests\TestCase;
 
 class DeveloperTermsTest extends TestCase
@@ -77,7 +81,8 @@ class DeveloperTermsTest extends TestCase
         $mockService = Mockery::mock(StripeConnectService::class);
         $mockService->shouldReceive('createConnectAccount')
             ->once()
-            ->andReturnUsing(fn () => DeveloperAccount::factory()->create(['user_id' => $user->id]));
+            ->with($user, 'US', 'USD')
+            ->andReturnUsing(fn () => DeveloperAccount::factory()->pending()->create(['user_id' => $user->id]));
         $mockService->shouldReceive('createOnboardingLink')
             ->once()
             ->andReturn('https://connect.stripe.com/setup/test');
@@ -87,6 +92,8 @@ class DeveloperTermsTest extends TestCase
         $response = $this->actingAs($user)
             ->post(route('customer.developer.onboarding.start'), [
                 'accepted_plugin_terms' => '1',
+                'country' => 'US',
+                'payout_currency' => 'USD',
             ]);
 
         $response->assertRedirect('https://connect.stripe.com/setup/test');
@@ -105,7 +112,7 @@ class DeveloperTermsTest extends TestCase
         $user = User::factory()->create();
         $originalTime = now()->subDays(30);
 
-        $developerAccount = DeveloperAccount::factory()->create([
+        $developerAccount = DeveloperAccount::factory()->pending()->create([
             'user_id' => $user->id,
             'accepted_plugin_terms_at' => $originalTime,
             'plugin_terms_version' => DeveloperAccount::CURRENT_PLUGIN_TERMS_VERSION,
@@ -121,6 +128,8 @@ class DeveloperTermsTest extends TestCase
         $this->actingAs($user)
             ->post(route('customer.developer.onboarding.start'), [
                 'accepted_plugin_terms' => '1',
+                'country' => 'GB',
+                'payout_currency' => 'GBP',
             ]);
 
         $developerAccount->refresh();
@@ -128,6 +137,8 @@ class DeveloperTermsTest extends TestCase
             $originalTime->toDateTimeString(),
             $developerAccount->accepted_plugin_terms_at->toDateTimeString()
         );
+        $this->assertEquals('GB', $developerAccount->country);
+        $this->assertEquals('GBP', $developerAccount->payout_currency);
     }
 
     /** @test */
@@ -182,104 +193,228 @@ class DeveloperTermsTest extends TestCase
     }
 
     /** @test */
-    public function onboarding_page_shows_terms_checkbox_for_new_developer(): void
+    public function onboarding_page_renders_for_new_developer(): void
     {
         $user = User::factory()->create();
 
-        $response = $this->actingAs($user)
-            ->get(route('customer.developer.onboarding'));
-
-        $response->assertStatus(200);
-        $response->assertSee('Plugin Developer Terms and Conditions');
-        $response->assertSee('accepted_plugin_terms');
+        Livewire::actingAs($user)
+            ->test(Onboarding::class)
+            ->assertStatus(200)
+            ->assertSee('Become a Plugin Developer')
+            ->assertSee('Start Selling Plugins');
     }
 
     /** @test */
-    public function onboarding_page_shows_accepted_message_for_existing_developer(): void
+    public function onboarding_page_redirects_when_fully_onboarded(): void
     {
         $user = User::factory()->create();
         DeveloperAccount::factory()->withAcceptedTerms()->create([
             'user_id' => $user->id,
         ]);
 
-        $response = $this->actingAs($user)
-            ->get(route('customer.developer.onboarding'));
-
-        $response->assertStatus(200);
-        $response->assertSee('You accepted the');
+        Livewire::actingAs($user)
+            ->test(Onboarding::class)
+            ->assertRedirect(route('customer.developer.dashboard'));
     }
 
     /** @test */
-    public function submitting_plugin_without_terms_redirects_to_onboarding(): void
+    public function plugin_create_page_renders_for_github_connected_user(): void
     {
         $user = User::factory()->create([
             'github_id' => '12345',
             'github_username' => 'testdev',
         ]);
+        DeveloperAccount::factory()->withAcceptedTerms()->create([
+            'user_id' => $user->id,
+        ]);
+
+        Livewire::actingAs($user)
+            ->test(Create::class)
+            ->assertStatus(200)
+            ->assertSee('Create Your Plugin')
+            ->assertSee('Select Repository');
+    }
+
+    /** @test */
+    public function plugin_create_page_shows_github_required_for_non_connected_user(): void
+    {
+        $user = User::factory()->create([
+            'github_id' => null,
+            'github_username' => null,
+        ]);
+
+        Livewire::actingAs($user)
+            ->test(Create::class)
+            ->assertStatus(200)
+            ->assertSee('GitHub Connection Required');
+    }
+
+    /** @test */
+    public function onboarding_start_requires_country(): void
+    {
+        $user = User::factory()->create();
 
         $response = $this->actingAs($user)
-            ->post(route('customer.plugins.store'), [
-                'type' => 'free',
-                'repository' => 'testdev/my-plugin',
+            ->post(route('customer.developer.onboarding.start'), [
+                'accepted_plugin_terms' => '1',
+                'payout_currency' => 'USD',
             ]);
 
-        $response->assertRedirect(route('customer.developer.onboarding'));
-        $response->assertSessionHas('message');
+        $response->assertSessionHasErrors('country');
     }
 
     /** @test */
-    public function plugin_create_page_shows_onboarding_warning_without_terms(): void
+    public function onboarding_start_rejects_invalid_country_code(): void
     {
-        $user = User::factory()->create([
-            'github_id' => '12345',
-            'github_username' => 'testdev',
-        ]);
+        $user = User::factory()->create();
 
         $response = $this->actingAs($user)
-            ->get(route('customer.plugins.create'));
+            ->post(route('customer.developer.onboarding.start'), [
+                'accepted_plugin_terms' => '1',
+                'country' => 'XX',
+                'payout_currency' => 'USD',
+            ]);
 
-        $response->assertStatus(200);
-        $response->assertSee('Developer Onboarding Required');
-        $response->assertSee('Complete Developer Onboarding');
-        $response->assertDontSee('Select Repository');
+        $response->assertSessionHasErrors('country');
     }
 
     /** @test */
-    public function plugin_create_page_does_not_show_warning_when_terms_accepted(): void
+    public function onboarding_start_requires_payout_currency(): void
     {
-        $user = User::factory()->create([
-            'github_id' => '12345',
-            'github_username' => 'testdev',
-        ]);
-        DeveloperAccount::factory()->onboarded()->withAcceptedTerms()->create([
-            'user_id' => $user->id,
-        ]);
+        $user = User::factory()->create();
 
         $response = $this->actingAs($user)
-            ->get(route('customer.plugins.create'));
+            ->post(route('customer.developer.onboarding.start'), [
+                'accepted_plugin_terms' => '1',
+                'country' => 'US',
+            ]);
 
-        $response->assertStatus(200);
-        $response->assertDontSee('Developer Onboarding Required');
-        $response->assertDontSee('have been updated');
+        $response->assertSessionHasErrors('payout_currency');
     }
 
     /** @test */
-    public function plugin_create_page_shows_updated_terms_banner_for_outdated_version(): void
+    public function onboarding_start_rejects_india_as_unsupported_country(): void
     {
-        $user = User::factory()->create([
-            'github_id' => '12345',
-            'github_username' => 'testdev',
-        ]);
-        DeveloperAccount::factory()->onboarded()->withAcceptedTerms('0.9')->create([
-            'user_id' => $user->id,
-        ]);
+        $user = User::factory()->create();
 
         $response = $this->actingAs($user)
-            ->get(route('customer.plugins.create'));
+            ->post(route('customer.developer.onboarding.start'), [
+                'accepted_plugin_terms' => '1',
+                'country' => 'IN',
+                'payout_currency' => 'INR',
+            ]);
 
-        $response->assertStatus(200);
-        $response->assertDontSee('Developer Onboarding Required');
-        $response->assertSee('have been updated');
-        $response->assertSee('Review &amp; Accept', false);
+        $response->assertSessionHasErrors('country');
+    }
+
+    /** @test */
+    public function onboarding_start_rejects_taiwan_as_unsupported_country(): void
+    {
+        $user = User::factory()->create();
+
+        $response = $this->actingAs($user)
+            ->post(route('customer.developer.onboarding.start'), [
+                'accepted_plugin_terms' => '1',
+                'country' => 'TW',
+                'payout_currency' => 'TWD',
+            ]);
+
+        $response->assertSessionHasErrors('country');
+    }
+
+    /** @test */
+    public function onboarding_start_handles_stripe_error_gracefully(): void
+    {
+        $user = User::factory()->create();
+
+        $mockService = Mockery::mock(StripeConnectService::class);
+        $mockService->shouldReceive('createConnectAccount')
+            ->once()
+            ->andThrow(new InvalidRequestException('Connected accounts in XX cannot be created by platforms in US.'));
+
+        $this->app->instance(StripeConnectService::class, $mockService);
+
+        $response = $this->actingAs($user)
+            ->post(route('customer.developer.onboarding.start'), [
+                'accepted_plugin_terms' => '1',
+                'country' => 'US',
+                'payout_currency' => 'USD',
+            ]);
+
+        $response->assertSessionHasErrors('country');
+    }
+
+    /** @test */
+    public function onboarding_start_rejects_invalid_currency_for_country(): void
+    {
+        $user = User::factory()->create();
+
+        $response = $this->actingAs($user)
+            ->post(route('customer.developer.onboarding.start'), [
+                'accepted_plugin_terms' => '1',
+                'country' => 'US',
+                'payout_currency' => 'EUR',
+            ]);
+
+        $response->assertSessionHasErrors('payout_currency');
+    }
+
+    /** @test */
+    public function onboarding_start_stores_country_and_currency_on_developer_account(): void
+    {
+        $user = User::factory()->create();
+
+        $mockService = Mockery::mock(StripeConnectService::class);
+        $mockService->shouldReceive('createConnectAccount')
+            ->once()
+            ->with($user, 'FR', 'EUR')
+            ->andReturnUsing(fn () => DeveloperAccount::factory()->pending()->create([
+                'user_id' => $user->id,
+                'country' => 'FR',
+                'payout_currency' => 'EUR',
+            ]));
+        $mockService->shouldReceive('createOnboardingLink')
+            ->once()
+            ->andReturn('https://connect.stripe.com/setup/test');
+
+        $this->app->instance(StripeConnectService::class, $mockService);
+
+        $this->actingAs($user)
+            ->post(route('customer.developer.onboarding.start'), [
+                'accepted_plugin_terms' => '1',
+                'country' => 'FR',
+                'payout_currency' => 'EUR',
+            ]);
+
+        $developerAccount = $user->fresh()->developerAccount;
+        $this->assertEquals('FR', $developerAccount->country);
+        $this->assertEquals('EUR', $developerAccount->payout_currency);
+    }
+
+    /** @test */
+    public function onboarding_page_shows_country_and_currency_fields(): void
+    {
+        $user = User::factory()->create();
+
+        Livewire::actingAs($user)
+            ->test(Onboarding::class)
+            ->assertSee('Your Country')
+            ->assertSee('Select your country')
+            ->assertStatus(200);
+    }
+
+    /** @test */
+    public function onboarding_component_updates_currency_when_country_changes(): void
+    {
+        $user = User::factory()->create();
+
+        Livewire::actingAs($user)
+            ->test(Onboarding::class)
+            ->set('country', 'FR')
+            ->assertSet('payoutCurrency', 'EUR')
+            ->set('country', 'US')
+            ->assertSet('payoutCurrency', 'USD')
+            ->set('country', 'GB')
+            ->assertSet('payoutCurrency', 'GBP');
     }
 }

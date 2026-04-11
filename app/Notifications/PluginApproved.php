@@ -23,7 +23,7 @@ class PluginApproved extends Notification implements ShouldQueue
      */
     public function via(object $notifiable): array
     {
-        return ['mail'];
+        return ['mail', 'database'];
     }
 
     /**
@@ -34,8 +34,8 @@ class PluginApproved extends Notification implements ShouldQueue
         return (new MailMessage)
             ->subject('Your Plugin Has Been Approved!')
             ->greeting('Great news!')
-            ->line("Your plugin **{$this->plugin->name}** has been approved and is now listed in the NativePHP Plugin Directory.")
-            ->action('View Plugin Directory', url('/plugins'))
+            ->line("Your plugin **{$this->plugin->name}** has been approved and is now listed in the NativePHP Plugin Marketplace.")
+            ->action('View Plugin', route('plugins.show', $this->plugin->routeParams()))
             ->line('Thank you for contributing to the NativePHP ecosystem!');
     }
 
@@ -47,8 +47,12 @@ class PluginApproved extends Notification implements ShouldQueue
     public function toArray(object $notifiable): array
     {
         return [
+            'title' => 'Your Plugin Has Been Approved!',
+            'body' => "{$this->plugin->name} is now listed in the NativePHP Plugin Marketplace.",
             'plugin_id' => $this->plugin->id,
             'plugin_name' => $this->plugin->name,
+            'action_url' => route('plugins.show', $this->plugin->routeParams()),
+            'action_label' => 'View Plugin',
         ];
     }
 }

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Enums\PluginType;
 use App\Http\Controllers\Controller;
 use App\Models\Plugin;
 use App\Models\User;
@@ -105,7 +106,7 @@ class PluginAccessController extends Controller
         // Admins have access to ALL paid plugins (including pending) for review
         if ($user->isAdmin()) {
             $allPaidPlugins = Plugin::query()
-                ->where('type', \App\Enums\PluginType::Paid)
+                ->where('type', PluginType::Paid)
                 ->whereNotNull('name')
                 ->get(['name', 'status']);
 
@@ -122,7 +123,7 @@ class PluginAccessController extends Controller
         // Paid plugins the user has submitted
         $submittedPlugins = Plugin::query()
             ->where('user_id', $user->id)
-            ->where('type', \App\Enums\PluginType::Paid)
+            ->where('type', PluginType::Paid)
             ->get(['name']);
 
         foreach ($submittedPlugins as $plugin) {
@@ -148,6 +149,45 @@ class PluginAccessController extends Controller
                     'name' => $plugin->name,
                     'access' => 'purchased',
                 ];
+            }
+        }
+
+        // Ultra subscribers and team members get access to official plugins
+        if ($user->hasUltraAccess() || $user->isUltraTeamMember()) {
+            $officialPlugins = Plugin::query()
+                ->where('type', PluginType::Paid)
+                ->where('is_official', true)
+                ->whereNotNull('name')
+                ->get(['name']);
+
+            foreach ($officialPlugins as $plugin) {
+                if (! collect($plugins)->contains('name', $plugin->name)) {
+                    $plugins[] = [
+                        'name' => $plugin->name,
+                        'access' => 'team',
+                    ];
+                }
+            }
+        }
+
+        $teamOwner = $user->getTeamOwner();
+
+        if ($teamOwner) {
+            $teamPlugins = $teamOwner->pluginLicenses()
+                ->active()
+                ->with('plugin:id,name')
+                ->get()
+                ->pluck('plugin')
+                ->filter()
+                ->unique('id');
+
+            foreach ($teamPlugins as $plugin) {
+                if (! collect($plugins)->contains('name', $plugin->name)) {
+                    $plugins[] = [
+                        'name' => $plugin->name,
+                        'access' => 'team',
+                    ];
+                }
             }
         }
 

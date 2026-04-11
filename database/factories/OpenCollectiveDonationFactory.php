@@ -2,10 +2,12 @@
 
 namespace Database\Factories;
 
+use App\Models\OpenCollectiveDonation;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\OpenCollectiveDonation>
+ * @extends Factory<OpenCollectiveDonation>
  */
 class OpenCollectiveDonationFactory extends Factory
 {
@@ -33,7 +35,7 @@ class OpenCollectiveDonationFactory extends Factory
     public function claimed(): static
     {
         return $this->state(fn (array $attributes) => [
-            'user_id' => \App\Models\User::factory(),
+            'user_id' => User::factory(),
             'claimed_at' => now(),
         ]);
     }

@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Services\DocsVersionService;
 use App\Support\CommonMark\CommonMark;
+use Artesaos\SEOTools\Facades\SEOMeta;
 use Artesaos\SEOTools\Facades\SEOTools;
 use Illuminate\Contracts\View\Factory as ViewFactory;
 use Illuminate\Http\RedirectResponse;
@@ -48,6 +50,13 @@ class ShowDocumentationController extends Controller
         }
         $title = $pageProperties['title'].' - NativePHP '.$platform.' v'.$version;
         $description = Arr::exists($pageProperties, 'description') ? $pageProperties['description'] : 'NativePHP documentation for '.$platform.' v'.$version;
+
+        $canonicalUrl = app(DocsVersionService::class)->determineCanonicalUrl(
+            platform: $platform,
+            page: $page,
+        );
+
+        SEOMeta::setCanonical($canonicalUrl);
 
         SEOTools::setTitle($title);
         SEOTools::setDescription($description);
@@ -104,7 +113,7 @@ class ShowDocumentationController extends Controller
         $pageProperties['content'] = CommonMark::convertToHtml($document->body(), [
             'user' => auth()->user(),
         ]);
-        $pageProperties['tableOfContents'] = $this->extractTableOfContents($document->body());
+        $pageProperties['tableOfContents'] = $this->extractTableOfContents($pageProperties['content']);
 
         $navigation = $this->getNavigation($platform, $version);
         $pageProperties['navigation'] = Menu::build($navigation, function (Menu $menu, $nav): void {
@@ -386,21 +395,18 @@ class ShowDocumentationController extends Controller
         return $pages;
     }
 
-    protected function extractTableOfContents(string $document): array
+    protected function extractTableOfContents(string $html): array
     {
-        // Remove code blocks which might contain headers.
-        $document = preg_replace('/```[a-z]*\s(.*?)```/s', '', $document);
+        if (! preg_match_all('/<(h[23])\s+id="([^"]+)"[^>]*>(.*?)<\/\1>/si', $html, $matches, PREG_SET_ORDER)) {
+            return [];
+        }
 
-        return collect(explode(PHP_EOL, $document))
-            ->reject(function (string $line) {
-                // Only search for level 2 and 3 headings.
-                return ! Str::startsWith($line, '## ') && ! Str::startsWith($line, '### ');
-            })
-            ->map(function (string $line) {
+        return collect($matches)
+            ->map(function (array $match) {
                 return [
-                    'level' => strlen(trim(Str::before($line, '# '))) + 1,
-                    'title' => $title = htmlspecialchars_decode(trim(Str::after($line, '# '))),
-                    'anchor' => Str::slug(Str::replace('`', 'code', $title)),
+                    'level' => (int) $match[1][1],
+                    'title' => html_entity_decode(trim(strip_tags(preg_replace('/<a\b[^>]*>.*?<\/a>/i', '', $match[3]))), ENT_QUOTES | ENT_HTML5),
+                    'anchor' => $match[2],
                 ];
             })
             ->values()

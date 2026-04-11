@@ -2,10 +2,13 @@
 
 namespace Database\Factories;
 
+use App\Models\Plugin;
+use App\Models\PluginLicense;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\PluginLicense>
+ * @extends Factory<PluginLicense>
  */
 class PluginLicenseFactory extends Factory
 {
@@ -17,8 +20,8 @@ class PluginLicenseFactory extends Factory
     public function definition(): array
     {
         return [
-            'user_id' => \App\Models\User::factory(),
-            'plugin_id' => \App\Models\Plugin::factory(),
+            'user_id' => User::factory(),
+            'plugin_id' => Plugin::factory(),
             'stripe_payment_intent_id' => 'pi_'.$this->faker->uuid(),
             'price_paid' => $this->faker->numberBetween(1000, 10000),
             'currency' => 'USD',

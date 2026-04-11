@@ -12,7 +12,7 @@ enum PriceTier: string
     {
         return match ($this) {
             self::Regular => 'Regular',
-            self::Subscriber => 'Pro/Max Subscriber',
+            self::Subscriber => 'Subscriber',
             self::Eap => 'Early Access',
         };
     }
@@ -21,7 +21,7 @@ enum PriceTier: string
     {
         return match ($this) {
             self::Regular => 'Standard pricing for all customers',
-            self::Subscriber => 'Discounted pricing for Pro and Max license holders',
+            self::Subscriber => 'Discounted pricing for subscribers',
             self::Eap => 'Special pricing for Early Access Program customers',
         };
     }

@@ -13,7 +13,7 @@
         "blade-ui-kit/blade-heroicons": "^2.3",
         "codeat3/blade-vaadin-icons": "^1.6",
         "embed/embed": "^4.4",
-        "filament/filament": "^3.2",
+        "filament/filament": "^5.0",
         "guzzlehttp/guzzle": "^7.2",
         "laravel/ai": "^0.1.5",
         "laravel/cashier": "^15.6",
@@ -26,11 +26,15 @@
         "laravel/tinker": "^2.8",
         "league/commonmark": "^2.4",
         "league/flysystem-aws-s3-v3": "^3.30",
-        "livewire/livewire": "^3.6.4",
+        "livewire/blaze": "^1.0",
+        "livewire/flux": "^2.13",
+        "livewire/flux-pro": "^2.13",
+        "livewire/livewire": "^4.0",
         "sentry/sentry-laravel": "^4.13",
         "simonhamp/the-og": "^0.7.0",
         "spatie/laravel-menu": "^4.1",
         "spatie/yaml-front-matter": "^2.0",
+        "stechstudio/filament-impersonate": "^5.1",
         "symfony/http-client": "^7.2",
         "symfony/mailgun-mailer": "^7.1",
         "torchlight/torchlight-commonmark": "^0.6.0"
@@ -98,5 +102,10 @@
         }
     },
     "minimum-stability": "stable",
-    "prefer-stable": true
+    "prefer-stable": true,
+    "repositories": [{
+        "name": "flux-pro",
+        "type": "composer",
+        "url": "https://composer.fluxui.dev"
+    }]
 }

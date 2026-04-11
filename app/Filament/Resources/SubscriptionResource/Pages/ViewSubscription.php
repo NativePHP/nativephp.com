@@ -7,8 +7,9 @@ use App\Filament\Resources\SubscriptionResource;
 use App\Filament\Resources\UserResource;
 use Filament\Actions;
 use Filament\Infolists\Components;
-use Filament\Infolists\Infolist;
 use Filament\Resources\Pages\ViewRecord;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Schema;
 
 class ViewSubscription extends ViewRecord
 {
@@ -26,11 +27,15 @@ class ViewSubscription extends ViewRecord
         ];
     }
 
-    public function infolist(Infolist $infolist): Infolist
+    public function infolist(Schema $schema): Schema
     {
-        return $infolist
+        return $schema
+            ->inlineLabel()
+            ->columns(1)
             ->schema([
-                Components\Section::make('Subscription Details')
+                Section::make('Subscription Details')
+                    ->inlineLabel()
+                    ->columns(1)
                     ->schema([
                         Components\TextEntry::make('user.email')
                             ->label('User')
@@ -63,6 +68,16 @@ class ViewSubscription extends ViewRecord
                                 }
                             }),
                         Components\TextEntry::make('quantity'),
+                        Components\TextEntry::make('billing_interval')
+                            ->label('Billing Interval')
+                            ->state(fn ($record): string => $record->stripe_price === config('subscriptions.plans.max.stripe_price_id_monthly')
+                                ? 'Monthly'
+                                : 'Annual'
+                            )
+                            ->badge(),
+                        Components\TextEntry::make('price_paid')
+                            ->label('Price Paid')
+                            ->money('usd', divideBy: 100),
                         Components\TextEntry::make('trial_ends_at')
                             ->dateTime(),
                         Components\TextEntry::make('ends_at')
@@ -71,7 +86,7 @@ class ViewSubscription extends ViewRecord
                             ->dateTime(),
                         Components\TextEntry::make('updated_at')
                             ->dateTime(),
-                    ])->columns(2),
+                    ]),
             ]);
     }
 }

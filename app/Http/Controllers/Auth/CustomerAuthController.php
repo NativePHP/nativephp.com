@@ -2,15 +2,19 @@
 
 namespace App\Http\Controllers\Auth;
 
+use App\Enums\TeamUserStatus;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\LoginRequest;
 use App\Models\Plugin;
+use App\Models\TeamUser;
 use App\Models\User;
 use App\Services\CartService;
+use Illuminate\Auth\Passwords\PasswordBroker;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Password;
 use Illuminate\View\View;
 
 class CustomerAuthController extends Controller
@@ -46,6 +50,9 @@ class CustomerAuthController extends Controller
         // Transfer guest cart to user
         $this->cartService->transferGuestCartToUser($user);
 
+        // Check for pending team invitation
+        $this->acceptPendingTeamInvitation($user);
+
         // Check for pending add-to-cart action
         $pendingPluginId = session()->pull('pending_add_to_cart');
         if ($pendingPluginId) {
@@ -76,6 +83,9 @@ class CustomerAuthController extends Controller
 
         // Transfer guest cart to user
         $this->cartService->transferGuestCartToUser($user);
+
+        // Check for pending team invitation
+        $this->acceptPendingTeamInvitation($user);
 
         // Check for pending add-to-cart action
         $pendingPluginId = session()->pull('pending_add_to_cart');
@@ -118,11 +128,11 @@ class CustomerAuthController extends Controller
             'email' => ['required', 'email:rfc,dns'],
         ]);
 
-        $status = \Illuminate\Support\Facades\Password::sendResetLink(
+        $status = Password::sendResetLink(
             $request->only('email')
         );
 
-        return $status === \Illuminate\Auth\Passwords\PasswordBroker::RESET_LINK_SENT
+        return $status === PasswordBroker::RESET_LINK_SENT
             ? back()->with(['status' => __($status)])
             : back()->withErrors(['email' => __($status)]);
     }
@@ -140,7 +150,7 @@ class CustomerAuthController extends Controller
             'password' => ['required', 'min:8', 'confirmed'],
         ]);
 
-        $status = \Illuminate\Support\Facades\Password::reset(
+        $status = Password::reset(
             $request->only('email', 'password', 'password_confirmation', 'token'),
             function ($user, $password): void {
                 $user->forceFill([
@@ -151,8 +161,27 @@ class CustomerAuthController extends Controller
             }
         );
 
-        return $status === \Illuminate\Auth\Passwords\PasswordBroker::PASSWORD_RESET
+        return $status === PasswordBroker::PASSWORD_RESET
             ? to_route('customer.login')->with('status', __($status))
             : back()->withErrors(['email' => [__($status)]]);
+    }
+
+    private function acceptPendingTeamInvitation(User $user): void
+    {
+        $token = session()->pull('pending_team_invitation_token');
+
+        if (! $token) {
+            return;
+        }
+
+        $teamUser = TeamUser::where('invitation_token', $token)
+            ->where('email', $user->email)
+            ->where('status', TeamUserStatus::Pending)
+            ->first();
+
+        if ($teamUser) {
+            $teamUser->accept($user);
+            session()->flash('success', "You've joined {$teamUser->team->name}!");
+        }
     }
 }

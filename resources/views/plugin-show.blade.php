@@ -1,8 +1,21 @@
-<x-layout title="{{ $plugin->name }} - Plugin">
+<x-layout title="{{ $plugin->display_name ?? $plugin->name }} - Plugin">
     <section
         class="mx-auto mt-10 w-full max-w-7xl"
         aria-labelledby="plugin-title"
     >
+        @if ($isAdminPreview ?? false)
+            <div class="mb-6 rounded-xl border border-amber-300 bg-amber-50 p-4 text-center dark:border-amber-600 dark:bg-amber-950/50">
+                <p class="text-sm font-medium text-amber-800 dark:text-amber-200">
+                    Preview &mdash; This plugin is not publicly visible.
+                    @if ($plugin->isApproved() && ! $plugin->is_active)
+                        It has been de-listed.
+                    @else
+                        Status: {{ $plugin->status->label() }}
+                    @endif
+                </p>
+            </div>
+        @endif
+
         <header class="relative">
             {{-- Blurred circle - Decorative --}}
             <div
@@ -70,10 +83,13 @@
                 <div>
                     <h1
                         id="plugin-title"
-                        class="font-mono text-2xl font-bold sm:text-3xl"
+                        class="text-2xl font-bold sm:text-3xl"
                     >
-                        {{ $plugin->name }}
+                        {{ $plugin->display_name ?? $plugin->name }}
                     </h1>
+                    @if ($plugin->display_name)
+                        <p class="mt-1 font-mono text-sm text-gray-500 dark:text-gray-400">{{ $plugin->name }}</p>
+                    @endif
                     @if ($plugin->description)
                         <p class="mt-1 text-gray-600 dark:text-gray-400">
                             {{ $plugin->description }}
@@ -87,32 +103,109 @@
         <x-divider />
 
         <div class="mt-2 flex flex-col-reverse gap-8 lg:flex-row lg:items-start">
-            {{-- Main content - README --}}
-            <article
-                x-init="
-                    () => {
-                        motion.inView($el, () => {
-                            gsap.fromTo(
-                                $el,
-                                { autoAlpha: 0, y: 5 },
-                                { autoAlpha: 1, y: 0, duration: 0.7, ease: 'power1.out' },
-                            )
-                        })
-                    }
-                "
-                class="prose min-w-0 max-w-none grow text-gray-600 dark:text-gray-400 dark:prose-headings:text-white"
-                aria-labelledby="plugin-title"
-            >
-                @if ($plugin->readme_html)
-                    {!! $plugin->readme_html !!}
-                @else
-                    <div class="rounded-xl border border-gray-200 bg-gray-50 p-8 text-center dark:border-gray-700 dark:bg-slate-800/50">
-                        <p class="text-gray-500 dark:text-gray-400">
-                            README not available yet.
-                        </p>
-                    </div>
-                @endif
-            </article>
+                {{-- Main content - README --}}
+                <div class="min-w-0 grow">
+                    @if ($plugin->readme_html)
+                        <div class="sticky top-20 z-10 mb-4 flex justify-end">
+                            <div class="rounded-full bg-white shadow-sm dark:bg-zinc-800">
+                                <x-plugin-toc />
+                            </div>
+                        </div>
+                    @endif
+
+                    @if ($plugin->isPaid())
+                        <aside class="mb-6 rounded-2xl border border-indigo-200 bg-indigo-50 p-5 dark:border-indigo-800 dark:bg-indigo-950/30">
+                            <h3 class="text-sm font-semibold text-indigo-900 dark:text-indigo-200">Installing this plugin</h3>
+                            <p class="mt-1 text-sm text-indigo-800 dark:text-indigo-300">
+                                Premium plugins require Composer to be configured with the NativePHP plugin repository and your credentials.
+                            </p>
+                            <div class="mt-3 space-y-2">
+                                <div class="flex items-center gap-2 rounded-lg bg-zinc-900 dark:bg-zinc-800">
+                                    <div class="min-w-0 flex-1 overflow-x-auto p-3">
+                                        <code class="block whitespace-pre font-mono text-xs text-zinc-100">composer config repositories.nativephp-plugins composer https://plugins.nativephp.com</code>
+                                    </div>
+                                    <button
+                                        type="button"
+                                        x-data="{ copied: false }"
+                                        x-on:click="navigator.clipboard.writeText('composer config repositories.nativephp-plugins composer https://plugins.nativephp.com').then(() => { copied = true; setTimeout(() => copied = false, 2000) })"
+                                        class="shrink-0 self-stretch px-3 text-zinc-400 hover:text-zinc-200"
+                                        title="Copy command"
+                                    >
+                                        <x-heroicon-o-clipboard x-show="!copied" class="size-4" />
+                                        <x-heroicon-o-check-circle x-show="copied" x-cloak class="size-4 text-green-400" />
+                                    </button>
+                                </div>
+                                @auth
+                                    <div class="flex items-center gap-2 rounded-lg bg-zinc-900 dark:bg-zinc-800">
+                                        <div class="min-w-0 flex-1 overflow-x-auto p-3">
+                                            <code class="block whitespace-pre font-mono text-xs text-zinc-100">composer config http-basic.plugins.nativephp.com {{ auth()->user()->email }} {{ auth()->user()->getPluginLicenseKey() }}</code>
+                                        </div>
+                                        <button
+                                            type="button"
+                                            x-data="{ copied: false }"
+                                            x-on:click="navigator.clipboard.writeText('composer config http-basic.plugins.nativephp.com {{ auth()->user()->email }} {{ auth()->user()->getPluginLicenseKey() }}').then(() => { copied = true; setTimeout(() => copied = false, 2000) })"
+                                            class="shrink-0 self-stretch px-3 text-zinc-400 hover:text-zinc-200"
+                                            title="Copy command"
+                                        >
+                                            <x-heroicon-o-clipboard x-show="!copied" class="size-4" />
+                                            <x-heroicon-o-check-circle x-show="copied" x-cloak class="size-4 text-green-400" />
+                                        </button>
+                                    </div>
+                                @else
+                                    <div class="flex items-center gap-2 rounded-lg bg-zinc-900 dark:bg-zinc-800">
+                                        <div class="min-w-0 flex-1 overflow-x-auto p-3">
+                                            <code class="block whitespace-pre font-mono text-xs text-zinc-100">composer config http-basic.plugins.nativephp.com <span class="text-zinc-400">your-email@example.com</span> <span class="text-zinc-400">your-license-key</span></code>
+                                        </div>
+                                        <button
+                                            type="button"
+                                            x-data="{ copied: false }"
+                                            x-on:click="navigator.clipboard.writeText('composer config http-basic.plugins.nativephp.com your-email@example.com your-license-key').then(() => { copied = true; setTimeout(() => copied = false, 2000) })"
+                                            class="shrink-0 self-stretch px-3 text-zinc-400 hover:text-zinc-200"
+                                            title="Copy command"
+                                        >
+                                            <x-heroicon-o-clipboard x-show="!copied" class="size-4" />
+                                            <x-heroicon-o-check-circle x-show="copied" x-cloak class="size-4 text-green-400" />
+                                        </button>
+                                    </div>
+                                @endauth
+                            </div>
+                            <p class="mt-3 text-xs text-indigo-700 dark:text-indigo-400">
+                                @auth
+                                    Manage your credentials on your <a href="{{ route('customer.purchased-plugins.index') }}" class="font-medium underline hover:no-underline">Purchased Plugins</a> dashboard.
+                                @else
+                                    <a href="{{ route('customer.login') }}" class="font-medium underline hover:no-underline">Log in</a> to see your credentials, or find them on your <a href="{{ route('customer.purchased-plugins.index') }}" class="font-medium underline hover:no-underline">Purchased Plugins</a> dashboard.
+                                @endauth
+                                <a href="{{ url('docs/mobile/3/plugins/using-plugins') }}" class="font-medium underline hover:no-underline">Learn more &rarr;</a>
+                            </p>
+                        </aside>
+                    @endif
+
+                    <article
+                        x-init="
+                            () => {
+                                motion.inView($el, () => {
+                                    gsap.fromTo(
+                                        $el,
+                                        { autoAlpha: 0, y: 5 },
+                                        { autoAlpha: 1, y: 0, duration: 0.7, ease: 'power1.out' },
+                                    )
+                                })
+                            }
+                        "
+                        class="prose min-w-0 max-w-none grow text-gray-600 prose-headings:scroll-mt-20 dark:text-gray-400 dark:prose-headings:text-white"
+                        aria-labelledby="plugin-title"
+                    >
+                        @if ($plugin->readme_html)
+                            {!! $plugin->readme_html !!}
+                        @else
+                            <div class="rounded-xl border border-gray-200 bg-gray-50 p-8 text-center dark:border-gray-700 dark:bg-slate-800/50">
+                                <p class="text-gray-500 dark:text-gray-400">
+                                    README not available yet.
+                                </p>
+                            </div>
+                        @endif
+                    </article>
+                </div>
 
             {{-- Sidebar - Plugin details --}}
             <aside
@@ -133,8 +226,8 @@
                 @if ($plugin->isPaid() && $bestPrice && $plugin->is_active)
                     <div class="mb-4 rounded-2xl border-2 border-indigo-500 bg-gradient-to-br from-indigo-50 to-purple-50 p-6 dark:border-indigo-400 dark:from-indigo-950/50 dark:to-purple-950/50">
                         <div class="text-center">
-                            <p class="text-sm font-medium text-gray-600 dark:text-gray-400">Price</p>
                             @if ($hasDiscount && $regularPrice)
+                                <p class="text-sm font-medium text-gray-600 dark:text-gray-400">Price</p>
                                 <p class="mt-1 text-lg text-gray-400 line-through dark:text-gray-500">
                                     ${{ number_format($regularPrice->amount / 100) }}
                                 </p>
@@ -144,12 +237,14 @@
                                 <p class="mt-1 text-xs font-medium text-green-600 dark:text-green-400">
                                     {{ $bestPrice->tier->label() }} pricing applied
                                 </p>
+                                <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">One-time purchase</p>
                             @else
+                                <p class="text-sm font-medium text-gray-600 dark:text-gray-400">Price</p>
                                 <p class="mt-1 text-4xl font-bold text-gray-900 dark:text-white">
                                     ${{ number_format($bestPrice->amount / 100) }}
                                 </p>
+                                <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">One-time purchase</p>
                             @endif
-                            <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">One-time purchase</p>
                         </div>
                         <form action="{{ route('cart.add', $plugin->routeParams()) }}" method="POST" class="mt-4">
                             @csrf
@@ -226,6 +321,14 @@
                             </dd>
                         </div>
 
+                        {{-- NativePHP Mobile --}}
+                        <div class="col-span-2 rounded-xl bg-gray-50 p-3 dark:bg-slate-700/30">
+                            <dt class="text-xs font-medium text-gray-500 dark:text-gray-400">NativePHP Mobile</dt>
+                            <dd class="mt-1 text-sm font-medium text-gray-900 dark:text-white">
+                                {{ $plugin->mobile_min_version ?? '—' }}
+                            </dd>
+                        </div>
+
                         {{-- iOS Version --}}
                         <div class="rounded-xl bg-gray-50 p-3 dark:bg-slate-700/30">
                             <dt class="text-xs font-medium text-gray-500 dark:text-gray-400">iOS</dt>
@@ -241,6 +344,35 @@
                                 {{ $plugin->android_version ?? '—' }}
                             </dd>
                         </div>
+
+                        {{-- Support --}}
+                        @if ($plugin->support_channel)
+                            <div class="col-span-2 rounded-xl bg-gray-50 p-3 dark:bg-slate-700/30">
+                                <dt class="text-xs font-medium text-gray-500 dark:text-gray-400">Support</dt>
+                                <dd class="mt-1">
+                                    @if (filter_var($plugin->support_channel, FILTER_VALIDATE_URL))
+                                        <a
+                                            href="{{ $plugin->support_channel }}"
+                                            target="_blank"
+                                            class="inline-flex items-center gap-1 text-sm font-medium text-indigo-600 hover:text-indigo-700 dark:text-indigo-400 dark:hover:text-indigo-300"
+                                        >
+                                            {{ $plugin->support_channel }}
+                                            <x-heroicon-o-arrow-top-right-on-square class="size-3" />
+                                        </a>
+                                    @elseif (filter_var($plugin->support_channel, FILTER_VALIDATE_EMAIL))
+                                        <a
+                                            href="mailto:{{ $plugin->support_channel }}"
+                                            class="inline-flex items-center gap-1 text-sm font-medium text-indigo-600 hover:text-indigo-700 dark:text-indigo-400 dark:hover:text-indigo-300"
+                                        >
+                                            {{ $plugin->support_channel }}
+                                            <x-heroicon-o-envelope class="size-3" />
+                                        </a>
+                                    @else
+                                        <span class="text-sm font-medium text-gray-900 dark:text-white">{{ $plugin->support_channel }}</span>
+                                    @endif
+                                </dd>
+                            </div>
+                        @endif
 
                     </dl>
 
@@ -329,6 +461,35 @@
                         </ul>
                     </div>
                 @endif
+
+                {{-- Included with Ultra --}}
+                @if ($plugin->isPaid() && $plugin->isOfficial())
+                    <div class="mt-4 rounded-2xl border border-zinc-300 bg-gradient-to-br from-zinc-100 to-zinc-200 p-6 dark:border-zinc-600 dark:from-zinc-800 dark:to-zinc-900">
+                        <div class="flex items-start gap-3">
+                            <div class="shrink-0 text-zinc-700 dark:text-zinc-300">
+                                <x-heroicon-s-bolt class="size-6" />
+                            </div>
+                            <div>
+                                <p class="font-medium text-zinc-900 dark:text-zinc-100">Included with Ultra</p>
+                                <p class="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
+                                    You don't need to purchase any first-party NativePHP plugins with Ultra &mdash; they're all included for you and your team from just ${{ config('subscriptions.plans.max.price_monthly') }}/month.
+                                </p>
+                                @auth
+                                    <p class="mt-2 text-xs text-zinc-500 dark:text-zinc-500">
+                                        You can still purchase this plugin to keep access even if you cancel your subscription.
+                                    </p>
+                                @endauth
+                                <a
+                                    href="{{ route('pricing') }}"
+                                    class="mt-4 inline-flex items-center rounded-md bg-black px-4 py-2 text-sm font-medium text-white transition hover:bg-zinc-800 dark:bg-white dark:text-black dark:hover:bg-zinc-200"
+                                >
+                                    Learn more
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                @endif
+
             </aside>
         </div>
     </section>

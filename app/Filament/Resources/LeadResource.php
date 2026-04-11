@@ -4,9 +4,11 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\LeadResource\Pages;
 use App\Models\Lead;
+use Filament\Actions;
 use Filament\Infolists;
-use Filament\Infolists\Infolist;
 use Filament\Resources\Resource;
+use Filament\Schemas;
+use Filament\Schemas\Schema;
 use Filament\Tables;
 use Filament\Tables\Table;
 
@@ -14,7 +16,7 @@ class LeadResource extends Resource
 {
     protected static ?string $model = Lead::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-banknotes';
+    protected static \BackedEnum|string|null $navigationIcon = 'heroicon-o-banknotes';
 
     protected static ?string $navigationLabel = 'Leads';
 
@@ -25,11 +27,15 @@ class LeadResource extends Resource
         return false;
     }
 
-    public static function infolist(Infolist $infolist): Infolist
+    public static function infolist(Schema $schema): Schema
     {
-        return $infolist
+        return $schema
+            ->inlineLabel()
+            ->columns(1)
             ->schema([
-                Infolists\Components\Section::make('Contact Information')
+                Schemas\Components\Section::make('Contact Information')
+                    ->inlineLabel()
+                    ->columns(1)
                     ->schema([
                         Infolists\Components\TextEntry::make('name')
                             ->label('Name'),
@@ -38,19 +44,21 @@ class LeadResource extends Resource
                             ->copyable(),
                         Infolists\Components\TextEntry::make('company')
                             ->label('Company'),
-                    ])
-                    ->columns(3),
+                    ]),
 
-                Infolists\Components\Section::make('Project Details')
+                Schemas\Components\Section::make('Project Details')
+                    ->inlineLabel()
+                    ->columns(1)
                     ->schema([
                         Infolists\Components\TextEntry::make('budget_label')
                             ->label('Budget'),
                         Infolists\Components\TextEntry::make('description')
-                            ->label('App Description')
-                            ->columnSpanFull(),
+                            ->label('App Description'),
                     ]),
 
-                Infolists\Components\Section::make('Metadata')
+                Schemas\Components\Section::make('Metadata')
+                    ->inlineLabel()
+                    ->columns(1)
                     ->schema([
                         Infolists\Components\TextEntry::make('ip_address')
                             ->label('IP Address'),
@@ -58,7 +66,6 @@ class LeadResource extends Resource
                             ->label('Submitted')
                             ->dateTime(),
                     ])
-                    ->columns(2)
                     ->collapsed(),
             ]);
     }
@@ -95,11 +102,11 @@ class LeadResource extends Resource
                     ->options(Lead::BUDGETS),
             ])
             ->actions([
-                Tables\Actions\ViewAction::make(),
+                Actions\ViewAction::make(),
             ])
             ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+                Actions\BulkActionGroup::make([
+                    Actions\DeleteBulkAction::make(),
                 ]),
             ])
             ->defaultSort('created_at', 'desc');

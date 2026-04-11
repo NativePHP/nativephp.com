@@ -2,7 +2,10 @@
 
 namespace App\Models;
 
+use App\Enums\PriceTier;
+use Illuminate\Database\Eloquent\Attributes\Scope;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -62,7 +65,7 @@ class PluginBundle extends Model
      */
     public function getBestPriceForUser(?User $user): ?BundlePrice
     {
-        $eligibleTiers = $user ? $user->getEligiblePriceTiers() : [\App\Enums\PriceTier::Regular];
+        $eligibleTiers = $user ? $user->getEligiblePriceTiers() : [PriceTier::Regular];
 
         // Get the lowest active price for the user's eligible tiers
         return $this->prices()
@@ -87,7 +90,7 @@ class PluginBundle extends Model
     {
         return $this->prices()
             ->active()
-            ->forTier(\App\Enums\PriceTier::Regular)
+            ->forTier(PriceTier::Regular)
             ->first() ?? $this->activePrice;
     }
 
@@ -95,7 +98,7 @@ class PluginBundle extends Model
      * @param  Builder<PluginBundle>  $query
      * @return Builder<PluginBundle>
      */
-    #[\Illuminate\Database\Eloquent\Attributes\Scope]
+    #[Scope]
     protected function active(Builder $query): Builder
     {
         return $query->where('is_active', true)
@@ -107,7 +110,7 @@ class PluginBundle extends Model
      * @param  Builder<PluginBundle>  $query
      * @return Builder<PluginBundle>
      */
-    #[\Illuminate\Database\Eloquent\Attributes\Scope]
+    #[Scope]
     protected function featured(Builder $query): Builder
     {
         return $query->where('is_featured', true);
@@ -138,9 +141,9 @@ class PluginBundle extends Model
      * Calculate the total retail value of all plugins in the bundle.
      * Uses regular tier prices for comparison purposes.
      */
-    protected function retailValue(): \Illuminate\Database\Eloquent\Casts\Attribute
+    protected function retailValue(): Attribute
     {
-        return \Illuminate\Database\Eloquent\Casts\Attribute::make(get: function () {
+        return Attribute::make(get: function () {
             return $this->plugins
                 ->filter(fn (Plugin $plugin) => $plugin->getRegularPrice())
                 ->sum(fn (Plugin $plugin) => $plugin->getRegularPrice()->amount);
@@ -150,9 +153,9 @@ class PluginBundle extends Model
     /**
      * Get formatted retail value.
      */
-    protected function formattedRetailValue(): \Illuminate\Database\Eloquent\Casts\Attribute
+    protected function formattedRetailValue(): Attribute
     {
-        return \Illuminate\Database\Eloquent\Casts\Attribute::make(get: function () {
+        return Attribute::make(get: function () {
             return '$'.number_format($this->retail_value / 100, 2);
         });
     }
@@ -172,9 +175,9 @@ class PluginBundle extends Model
     /**
      * Get formatted bundle price (uses regular tier price or legacy price column).
      */
-    protected function formattedPrice(): \Illuminate\Database\Eloquent\Casts\Attribute
+    protected function formattedPrice(): Attribute
     {
-        return \Illuminate\Database\Eloquent\Casts\Attribute::make(get: function () {
+        return Attribute::make(get: function () {
             $price = $this->getRegularPrice();
             $amount = $price ? $price->amount : $this->price;
 
@@ -210,9 +213,9 @@ class PluginBundle extends Model
     /**
      * Calculate the discount percentage (uses regular price for backwards compatibility).
      */
-    protected function discountPercent(): \Illuminate\Database\Eloquent\Casts\Attribute
+    protected function discountPercent(): Attribute
     {
-        return \Illuminate\Database\Eloquent\Casts\Attribute::make(get: function () {
+        return Attribute::make(get: function () {
             $price = $this->getRegularPrice();
             $amount = $price ? $price->amount : $this->price;
 
@@ -242,9 +245,9 @@ class PluginBundle extends Model
     /**
      * Get the savings amount in cents (uses regular price for backwards compatibility).
      */
-    protected function savings(): \Illuminate\Database\Eloquent\Casts\Attribute
+    protected function savings(): Attribute
     {
-        return \Illuminate\Database\Eloquent\Casts\Attribute::make(get: function () {
+        return Attribute::make(get: function () {
             $price = $this->getRegularPrice();
             $amount = $price ? $price->amount : $this->price;
 
@@ -271,9 +274,9 @@ class PluginBundle extends Model
     /**
      * Get formatted savings (uses regular price for backwards compatibility).
      */
-    protected function formattedSavings(): \Illuminate\Database\Eloquent\Casts\Attribute
+    protected function formattedSavings(): Attribute
     {
-        return \Illuminate\Database\Eloquent\Casts\Attribute::make(get: function () {
+        return Attribute::make(get: function () {
             return '$'.number_format($this->savings / 100, 2);
         });
     }

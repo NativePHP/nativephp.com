@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use App\Models\User;
 use Illuminate\Console\Command;
+use Illuminate\Support\Sleep;
 use Stripe\Customer;
 use Stripe\Exception\ApiErrorException;
 
@@ -82,7 +83,7 @@ class MatchUsersWithStripeCustomers extends Command
             $progressBar->advance();
 
             // Add a small delay to avoid rate limiting
-            \Illuminate\Support\Sleep::usleep(100000); // 0.1 seconds
+            Sleep::usleep(100000); // 0.1 seconds
         }
 
         $progressBar->finish();

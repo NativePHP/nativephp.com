@@ -23,7 +23,7 @@ class BundlePluginAdded extends Notification implements ShouldQueue
      */
     public function via(object $notifiable): array
     {
-        return ['mail'];
+        return ['mail', 'database'];
     }
 
     public function toMail(object $notifiable): MailMessage
@@ -48,6 +48,8 @@ class BundlePluginAdded extends Notification implements ShouldQueue
     public function toArray(object $notifiable): array
     {
         return [
+            'title' => "New plugin added to your {$this->bundle->name} bundle!",
+            'body' => "{$this->plugin->name} has been added to your bundle — it's yours for free.",
             'plugin_id' => $this->plugin->id,
             'plugin_name' => $this->plugin->name,
             'bundle_id' => $this->bundle->id,

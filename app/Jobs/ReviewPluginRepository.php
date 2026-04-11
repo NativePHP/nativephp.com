@@ -48,16 +48,16 @@ class ReviewPluginRepository implements ShouldQueue
         }
 
         $tree = $this->fetchRepoTree($owner, $repoName, $defaultBranch, $token);
-        $readme = $this->fetchReadme($owner, $repoName, $token);
         $composerJson = $this->fetchComposerJson($owner, $repoName, $token);
         $nativephpJson = $this->fetchNativephpJson($owner, $repoName, $token);
 
         $checks = [
+            'has_license_file' => $this->checkHasLicenseFile($tree),
+            'has_release_version' => false,
+            'release_version' => null,
             'supports_ios' => $this->checkDirectoryHasFiles($tree, 'resources/ios/'),
             'supports_android' => $this->checkDirectoryHasFiles($tree, 'resources/android/'),
             'supports_js' => $this->checkDirectoryHasFiles($tree, 'resources/js/'),
-            'has_support_email' => false,
-            'support_email' => null,
             'requires_mobile_sdk' => false,
             'mobile_sdk_constraint' => null,
             'has_ios_min_version' => false,
@@ -66,10 +66,10 @@ class ReviewPluginRepository implements ShouldQueue
             'android_min_version' => null,
         ];
 
-        if ($readme) {
-            $email = $this->extractEmail($readme);
-            $checks['has_support_email'] = $email !== null;
-            $checks['support_email'] = $email;
+        $latestTag = $this->fetchLatestTag($owner, $repoName, $token);
+        if ($latestTag) {
+            $checks['has_release_version'] = true;
+            $checks['release_version'] = $latestTag;
         }
 
         if ($composerJson) {
@@ -151,30 +151,6 @@ class ReviewPluginRepository implements ShouldQueue
         return $response->json('tree', []);
     }
 
-    protected function fetchReadme(string $owner, string $repo, ?string $token): ?string
-    {
-        $request = Http::timeout(30);
-
-        if ($token) {
-            $request = $request->withToken($token);
-        }
-
-        $response = $request->get("https://api.github.com/repos/{$owner}/{$repo}/readme");
-
-        if ($response->failed()) {
-            return null;
-        }
-
-        $content = $response->json('content');
-        $encoding = $response->json('encoding');
-
-        if ($encoding === 'base64' && $content) {
-            return base64_decode($content);
-        }
-
-        return null;
-    }
-
     protected function fetchComposerJson(string $owner, string $repo, ?string $token): ?array
     {
         $request = Http::timeout(30);
@@ -241,18 +217,48 @@ class ReviewPluginRepository implements ShouldQueue
         return false;
     }
 
-    protected function extractEmail(string $content): ?string
+    protected function checkHasLicenseFile(array $tree): bool
     {
-        $excludedDomains = ['example.com', 'example.org', 'example.net', 'test.com', 'localhost'];
+        $licenseNames = ['LICENSE', 'LICENSE.md', 'LICENSE.txt', 'license', 'license.md', 'license.txt'];
 
-        if (preg_match_all('/[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}/', $content, $matches)) {
-            foreach ($matches[0] as $email) {
-                $domain = strtolower(substr($email, strpos($email, '@') + 1));
+        foreach ($tree as $item) {
+            $path = $item['path'] ?? '';
+            $type = $item['type'] ?? '';
 
-                if (! in_array($domain, $excludedDomains, true)) {
-                    return $email;
-                }
+            if ($type === 'blob' && in_array($path, $licenseNames, true)) {
+                return true;
             }
+        }
+
+        return false;
+    }
+
+    protected function fetchLatestTag(string $owner, string $repo, ?string $token): ?string
+    {
+        $request = Http::timeout(10);
+
+        if ($token) {
+            $request = $request->withToken($token);
+        }
+
+        $response = $request->get("https://api.github.com/repos/{$owner}/{$repo}/releases/latest");
+
+        if ($response->successful()) {
+            return $response->json('tag_name');
+        }
+
+        $tagsResponse = Http::timeout(10);
+
+        if ($token) {
+            $tagsResponse = $tagsResponse->withToken($token);
+        }
+
+        $tagsResponse = $tagsResponse->get("https://api.github.com/repos/{$owner}/{$repo}/tags", [
+            'per_page' => 1,
+        ]);
+
+        if ($tagsResponse->successful() && count($tagsResponse->json()) > 0) {
+            return $tagsResponse->json()[0]['name'];
         }
 
         return null;

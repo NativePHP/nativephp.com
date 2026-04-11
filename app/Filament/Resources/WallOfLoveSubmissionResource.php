@@ -4,9 +4,11 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\WallOfLoveSubmissionResource\Pages;
 use App\Models\WallOfLoveSubmission;
+use Filament\Actions;
 use Filament\Forms;
-use Filament\Forms\Form;
 use Filament\Resources\Resource;
+use Filament\Schemas;
+use Filament\Schemas\Schema;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
@@ -15,17 +17,21 @@ class WallOfLoveSubmissionResource extends Resource
 {
     protected static ?string $model = WallOfLoveSubmission::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-heart';
+    protected static \BackedEnum|string|null $navigationIcon = 'heroicon-o-heart';
 
     protected static ?string $navigationLabel = 'Wall of Love';
 
     protected static ?string $pluralModelLabel = 'Wall of Love Submissions';
 
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return $form
+        return $schema
+            ->inlineLabel()
+            ->columns(1)
             ->schema([
-                Forms\Components\Section::make('Submission Details')
+                Schemas\Components\Section::make('Submission Details')
+                    ->inlineLabel()
+                    ->columns(1)
                     ->schema([
                         Forms\Components\TextInput::make('name')
                             ->required()
@@ -50,7 +56,9 @@ class WallOfLoveSubmissionResource extends Resource
                             ->rows(4),
                     ]),
 
-                Forms\Components\Section::make('Status & Promotion')
+                Schemas\Components\Section::make('Status & Promotion')
+                    ->inlineLabel()
+                    ->columns(1)
                     ->schema([
                         Forms\Components\Toggle::make('is_approved')
                             ->label('Approved')
@@ -81,16 +89,15 @@ class WallOfLoveSubmissionResource extends Resource
                         Forms\Components\Toggle::make('promoted')
                             ->label('Promoted to Homepage')
                             ->helperText('Promoted submissions appear in the feedback section on the homepage.')
-                            ->visible(fn (Forms\Get $get) => $get('is_approved'))
+                            ->visible(fn (Schemas\Components\Utilities\Get $get) => $get('is_approved'))
                             ->live(),
 
                         Forms\Components\Textarea::make('promoted_testimonial')
                             ->label('Promoted Testimonial (optional override)')
                             ->helperText('Leave empty to use the original testimonial, or enter a clipped version for the homepage.')
                             ->rows(4)
-                            ->visible(fn (Forms\Get $get) => $get('is_approved') && $get('promoted')),
-                    ])
-                    ->columns(1),
+                            ->visible(fn (Schemas\Components\Utilities\Get $get) => $get('is_approved') && $get('promoted')),
+                    ]),
             ]);
     }
 
@@ -163,7 +170,7 @@ class WallOfLoveSubmissionResource extends Resource
                     ->falseLabel('Not Promoted'),
             ])
             ->actions([
-                Tables\Actions\Action::make('approve')
+                Actions\Action::make('approve')
                     ->icon('heroicon-o-check')
                     ->color('success')
                     ->visible(fn (WallOfLoveSubmission $record) => $record->isPending())
@@ -175,7 +182,7 @@ class WallOfLoveSubmissionResource extends Resource
                     ->modalHeading('Approve Submission')
                     ->modalDescription('Are you sure you want to approve this submission for the Wall of Love?'),
 
-                Tables\Actions\Action::make('unapprove')
+                Actions\Action::make('unapprove')
                     ->icon('heroicon-o-x-mark')
                     ->color('warning')
                     ->visible(fn (WallOfLoveSubmission $record) => $record->isApproved())
@@ -187,7 +194,7 @@ class WallOfLoveSubmissionResource extends Resource
                     ->modalHeading('Unapprove Submission')
                     ->modalDescription('Are you sure you want to unapprove this submission?'),
 
-                Tables\Actions\Action::make('promote')
+                Actions\Action::make('promote')
                     ->icon('heroicon-o-star')
                     ->color('warning')
                     ->visible(fn (WallOfLoveSubmission $record) => $record->isApproved() && ! $record->isPromoted())
@@ -205,7 +212,7 @@ class WallOfLoveSubmissionResource extends Resource
                     ->modalHeading('Promote to Homepage')
                     ->modalDescription('This will display this testimonial in the feedback section on the homepage.'),
 
-                Tables\Actions\Action::make('unpromote')
+                Actions\Action::make('unpromote')
                     ->icon('heroicon-o-x-mark')
                     ->color('gray')
                     ->visible(fn (WallOfLoveSubmission $record) => $record->isPromoted())
@@ -214,12 +221,12 @@ class WallOfLoveSubmissionResource extends Resource
                     ->modalHeading('Remove from Homepage')
                     ->modalDescription('This will remove this testimonial from the homepage feedback section.'),
 
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make(),
+                Actions\EditAction::make(),
+                Actions\DeleteAction::make(),
             ])
             ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\BulkAction::make('approve')
+                Actions\BulkActionGroup::make([
+                    Actions\BulkAction::make('approve')
                         ->icon('heroicon-o-check')
                         ->color('success')
                         ->action(function ($records): void {
@@ -232,7 +239,7 @@ class WallOfLoveSubmissionResource extends Resource
                         ->modalHeading('Approve Selected Submissions')
                         ->modalDescription('Are you sure you want to approve all selected submissions?'),
 
-                    Tables\Actions\DeleteBulkAction::make(),
+                    Actions\DeleteBulkAction::make(),
                 ]),
             ])
             ->defaultSort('created_at', 'desc');

@@ -1,5 +1,5 @@
 <div>
-@if(auth()->user()->hasMaxAccess())
+@if(auth()->user()->hasMobileRepoAccess())
     <div @class(['max-w-7xl mx-auto px-4 sm:px-6 lg:px-8' => !$inline])>
         <div class="bg-gradient-to-r from-gray-50 to-slate-100 dark:from-gray-800 dark:to-slate-900 border border-gray-300 dark:border-gray-600 rounded-lg p-6 h-full">
             <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">

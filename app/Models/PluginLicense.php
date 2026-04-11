@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Attributes\Scope;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -55,7 +56,7 @@ class PluginLicense extends Model
      * @param  Builder<PluginLicense>  $query
      * @return Builder<PluginLicense>
      */
-    #[\Illuminate\Database\Eloquent\Attributes\Scope]
+    #[Scope]
     protected function active(Builder $query): Builder
     {
         return $query->where(function ($q): void {
@@ -68,7 +69,7 @@ class PluginLicense extends Model
      * @param  Builder<PluginLicense>  $query
      * @return Builder<PluginLicense>
      */
-    #[\Illuminate\Database\Eloquent\Attributes\Scope]
+    #[Scope]
     protected function forUser(Builder $query, User $user): Builder
     {
         return $query->where('user_id', $user->id);
@@ -78,7 +79,7 @@ class PluginLicense extends Model
      * @param  Builder<PluginLicense>  $query
      * @return Builder<PluginLicense>
      */
-    #[\Illuminate\Database\Eloquent\Attributes\Scope]
+    #[Scope]
     protected function forPlugin(Builder $query, Plugin $plugin): Builder
     {
         return $query->where('plugin_id', $plugin->id);

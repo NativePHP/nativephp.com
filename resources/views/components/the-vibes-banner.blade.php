@@ -51,7 +51,7 @@
             <div
                 class="vibes-gradient-text bg-clip-text tracking-tight text-pretty text-transparent sm:text-center"
             >
-                <b>The Vibes</b> &mdash; the unofficial Laracon US Day 3 event. Early Bird tickets available until March 31!
+                <b>July 30, 2026</b> &mdash; The unofficial Laracon US Day 3. Get your ticket to <b>The Vibes</b>
             </div>
         </div>
     </div>

@@ -2,7 +2,9 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Attributes\Scope;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -46,7 +48,7 @@ class SubLicense extends Model
         return $this->belongsTo(License::class, 'parent_license_id');
     }
 
-    #[\Illuminate\Database\Eloquent\Attributes\Scope]
+    #[Scope]
     protected function whereActive(Builder $builder): Builder
     {
         return $builder->where(fn ($where) => $where
@@ -58,13 +60,13 @@ class SubLicense extends Model
         );
     }
 
-    #[\Illuminate\Database\Eloquent\Attributes\Scope]
+    #[Scope]
     protected function whereSuspended(Builder $builder): Builder
     {
         return $builder->where('is_suspended', true);
     }
 
-    #[\Illuminate\Database\Eloquent\Attributes\Scope]
+    #[Scope]
     protected function whereExpired(Builder $builder): Builder
     {
         return $builder->where('is_suspended', false)
@@ -85,9 +87,9 @@ class SubLicense extends Model
                $this->expires_at->isPast();
     }
 
-    protected function status(): \Illuminate\Database\Eloquent\Casts\Attribute
+    protected function status(): Attribute
     {
-        return \Illuminate\Database\Eloquent\Casts\Attribute::make(get: function () {
+        return Attribute::make(get: function () {
             if ($this->is_suspended) {
                 return 'Suspended';
             }

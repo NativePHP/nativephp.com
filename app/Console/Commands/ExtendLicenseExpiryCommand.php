@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Jobs\UpdateAnystackLicenseExpiryJob;
 use App\Models\License;
 use Illuminate\Console\Command;
 
@@ -37,7 +38,7 @@ class ExtendLicenseExpiryCommand extends Command
         }
 
         // Dispatch the job to update the license expiry
-        dispatch(new \App\Jobs\UpdateAnystackLicenseExpiryJob($license));
+        dispatch(new UpdateAnystackLicenseExpiryJob($license));
 
         $this->info("License expiry updated to {$license->expires_at->format('Y-m-d')}");
 

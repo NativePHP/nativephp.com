@@ -9,6 +9,7 @@ use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Facades\Http;
+use Laravel\Cashier\SubscriptionItem;
 use PHPUnit\Framework\Attributes\Test;
 use Stripe\Customer;
 use Stripe\StripeClient;
@@ -181,7 +182,7 @@ class StripePurchaseHandlingTest extends TestCase
     }
 
     #[Test]
-    public function a_license_is_created_when_a_stripe_invoice_is_paid()
+    public function a_license_is_not_created_when_a_stripe_invoice_is_paid()
     {
         Bus::fake([CreateAnystackLicenseJob::class]);
 
@@ -199,7 +200,7 @@ class StripePurchaseHandlingTest extends TestCase
                 'stripe_price' => Subscription::Max->stripePriceId(),
                 'quantity' => 1,
             ]);
-        \Laravel\Cashier\SubscriptionItem::factory()
+        SubscriptionItem::factory()
             ->for($user->subscriptions->first(), 'subscription')
             ->create([
                 'stripe_id' => 'si_test',
@@ -244,13 +245,7 @@ class StripePurchaseHandlingTest extends TestCase
 
         $this->postJson('/stripe/webhook', $payload);
 
-        Bus::assertDispatched(CreateAnystackLicenseJob::class, function (CreateAnystackLicenseJob $job) {
-            return $job->user->email === 'john@example.com' &&
-                   $job->subscription === Subscription::Max &&
-                   $job->subscriptionItemId === $job->user->subscriptions->first()->items()->first()->id &&
-                   $job->firstName === 'John' &&
-                   $job->lastName === 'Doe';
-        });
+        Bus::assertNotDispatched(CreateAnystackLicenseJob::class);
     }
 
     protected function mockStripeClient(?User $user = null): void

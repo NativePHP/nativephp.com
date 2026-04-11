@@ -34,7 +34,7 @@ class CreateAnystackSubLicenseJob implements ShouldQueue
 
         // If an email was assigned, update the contact association in Anystack
         if ($this->assignedEmail) {
-            dispatch(new \App\Jobs\UpdateAnystackContactAssociationJob($subLicense, $this->assignedEmail));
+            dispatch(new UpdateAnystackContactAssociationJob($subLicense, $this->assignedEmail));
         }
     }
 

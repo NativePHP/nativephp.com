@@ -6,6 +6,7 @@ use App\Http\Requests\McpSearchRequest;
 use App\Services\DocsSearchService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Sleep;
 use Illuminate\Support\Str;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
@@ -51,7 +52,7 @@ class McpController extends Controller
                 echo ": keepalive\n\n";
                 ob_flush();
                 flush();
-                \Illuminate\Support\Sleep::sleep(30);
+                Sleep::sleep(30);
             }
         }, 200, [
             'Content-Type' => 'text/event-stream',

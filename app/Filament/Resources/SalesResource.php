@@ -5,8 +5,8 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\SalesResource\Pages;
 use App\Filament\Resources\SalesResource\Widgets\SalesStats;
 use App\Models\Sale;
-use Filament\Forms\Form;
 use Filament\Resources\Resource;
+use Filament\Schemas\Schema;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
@@ -15,11 +15,11 @@ class SalesResource extends Resource
 {
     protected static ?string $model = Sale::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-banknotes';
+    protected static \BackedEnum|string|null $navigationIcon = 'heroicon-o-banknotes';
 
     protected static ?string $navigationLabel = 'Sales';
 
-    protected static ?string $navigationGroup = 'Products';
+    protected static \UnitEnum|string|null $navigationGroup = 'Products';
 
     protected static ?int $navigationSort = 3;
 
@@ -29,9 +29,9 @@ class SalesResource extends Resource
 
     protected static ?string $slug = 'sales';
 
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return $form->schema([]);
+        return $schema->schema([]);
     }
 
     public static function table(Table $table): Table

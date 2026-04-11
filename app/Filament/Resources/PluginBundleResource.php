@@ -10,10 +10,12 @@ use App\Models\PluginBundle;
 use App\Models\PluginLicense;
 use App\Models\User;
 use App\Notifications\BundleGranted;
+use Filament\Actions;
 use Filament\Forms;
-use Filament\Forms\Form;
 use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
+use Filament\Schemas;
+use Filament\Schemas\Schema;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Support\Str;
@@ -22,25 +24,29 @@ class PluginBundleResource extends Resource
 {
     protected static ?string $model = PluginBundle::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-squares-plus';
+    protected static \BackedEnum|string|null $navigationIcon = 'heroicon-o-squares-plus';
 
     protected static ?string $navigationLabel = 'Bundles';
 
-    protected static ?string $navigationGroup = 'Products';
+    protected static \UnitEnum|string|null $navigationGroup = 'Products';
 
     protected static ?int $navigationSort = 2;
 
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return $form
+        return $schema
+            ->inlineLabel()
+            ->columns(1)
             ->schema([
-                Forms\Components\Section::make('Bundle Details')
+                Schemas\Components\Section::make('Bundle Details')
+                    ->inlineLabel()
+                    ->columns(1)
                     ->schema([
                         Forms\Components\TextInput::make('name')
                             ->required()
                             ->maxLength(255)
                             ->live(onBlur: true)
-                            ->afterStateUpdated(function (string $state, Forms\Set $set): void {
+                            ->afterStateUpdated(function (string $state, Schemas\Components\Utilities\Set $set): void {
                                 $set('slug', Str::slug($state));
                             }),
 
@@ -52,8 +58,7 @@ class PluginBundleResource extends Resource
 
                         Forms\Components\Textarea::make('description')
                             ->rows(3)
-                            ->maxLength(1000)
-                            ->columnSpanFull(),
+                            ->maxLength(1000),
 
                         Forms\Components\FileUpload::make('logo_path')
                             ->label('Bundle Logo')
@@ -64,10 +69,11 @@ class PluginBundleResource extends Resource
                             ->imageCropAspectRatio('1:1')
                             ->imageResizeTargetWidth('256')
                             ->imageResizeTargetHeight('256'),
-                    ])
-                    ->columns(2),
+                    ]),
 
-                Forms\Components\Section::make('Included Plugins')
+                Schemas\Components\Section::make('Included Plugins')
+                    ->inlineLabel()
+                    ->columns(1)
                     ->schema([
                         Forms\Components\Select::make('plugins')
                             ->relationship(
@@ -88,7 +94,9 @@ class PluginBundleResource extends Resource
                             ->optionsLimit(50),
                     ]),
 
-                Forms\Components\Section::make('Publishing')
+                Schemas\Components\Section::make('Publishing')
+                    ->inlineLabel()
+                    ->columns(1)
                     ->schema([
                         Forms\Components\Toggle::make('is_active')
                             ->label('Active')
@@ -101,8 +109,7 @@ class PluginBundleResource extends Resource
                         Forms\Components\DateTimePicker::make('published_at')
                             ->label('Publish Date')
                             ->helperText('Leave empty to keep as draft. Set future date to schedule.'),
-                    ])
-                    ->columns(3),
+                    ]),
             ]);
     }
 
@@ -157,10 +164,10 @@ class PluginBundleResource extends Resource
                 Tables\Filters\TernaryFilter::make('is_featured'),
             ])
             ->actions([
-                Tables\Actions\ViewAction::make(),
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\ActionGroup::make([
-                    Tables\Actions\Action::make('viewListing')
+                Actions\ViewAction::make(),
+                Actions\EditAction::make(),
+                Actions\ActionGroup::make([
+                    Actions\Action::make('viewListing')
                         ->label('View Listing Page')
                         ->icon('heroicon-o-eye')
                         ->color('gray')
@@ -168,7 +175,7 @@ class PluginBundleResource extends Resource
                         ->openUrlInNewTab()
                         ->visible(fn (PluginBundle $record) => $record->is_active && $record->published_at?->isPast()),
 
-                    Tables\Actions\Action::make('grantToUser')
+                    Actions\Action::make('grantToUser')
                         ->label('Grant to User')
                         ->icon('heroicon-o-gift')
                         ->color('success')
@@ -185,6 +192,7 @@ class PluginBundleResource extends Resource
                                         ->mapWithKeys(fn (User $user) => [$user->id => "{$user->name} ({$user->email})"])
                                         ->toArray();
                                 })
+                                ->getOptionLabelUsing(fn ($value): ?string => User::find($value)?->name)
                                 ->required(),
                         ])
                         ->action(function (PluginBundle $record, array $data): void {
@@ -234,8 +242,8 @@ class PluginBundleResource extends Resource
                     ->icon('heroicon-m-ellipsis-vertical'),
             ])
             ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+                Actions\BulkActionGroup::make([
+                    Actions\DeleteBulkAction::make(),
                 ]),
             ])
             ->defaultSort('created_at', 'desc');

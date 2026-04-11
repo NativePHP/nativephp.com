@@ -3,10 +3,13 @@
 namespace Tests\Feature;
 
 use App\Features\ShowAuthButtons;
+use App\Livewire\Customer\Licenses\Show;
 use App\Models\License;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Http;
 use Laravel\Pennant\Feature;
+use Livewire\Livewire;
 use Tests\TestCase;
 
 class CustomerLicenseManagementTest extends TestCase
@@ -25,7 +28,7 @@ class CustomerLicenseManagementTest extends TestCase
     {
         $user = User::factory()->create();
 
-        $response = $this->actingAs($user)->get('/customer/licenses');
+        $response = $this->actingAs($user)->get('/dashboard/licenses');
 
         $response->assertStatus(200);
         $response->assertSee('Your Licenses');
@@ -36,7 +39,7 @@ class CustomerLicenseManagementTest extends TestCase
     {
         $user = User::factory()->create();
 
-        $response = $this->actingAs($user)->get('/customer/licenses');
+        $response = $this->actingAs($user)->get('/dashboard/licenses');
 
         $response->assertStatus(200);
         $response->assertSee('No licenses found');
@@ -57,7 +60,7 @@ class CustomerLicenseManagementTest extends TestCase
             'key' => 'test-key-2',
         ]);
 
-        $response = $this->actingAs($user)->get('/customer/licenses');
+        $response = $this->actingAs($user)->get('/dashboard/licenses');
 
         $response->assertStatus(200);
         $response->assertSee('Standard License');
@@ -80,7 +83,7 @@ class CustomerLicenseManagementTest extends TestCase
             'policy_name' => 'User 2 License',
         ]);
 
-        $response = $this->actingAs($user1)->get('/customer/licenses');
+        $response = $this->actingAs($user1)->get('/dashboard/licenses');
 
         $response->assertStatus(200);
         $response->assertSee('User 1 License');
@@ -97,7 +100,7 @@ class CustomerLicenseManagementTest extends TestCase
             'expires_at' => now()->addDays(30),
         ]);
 
-        $response = $this->actingAs($user)->get('/customer/licenses/'.$license->key);
+        $response = $this->actingAs($user)->get('/dashboard/licenses/'.$license->key);
 
         $response->assertStatus(200);
         $response->assertSee('pro');
@@ -116,7 +119,7 @@ class CustomerLicenseManagementTest extends TestCase
             'key' => 'other-user-license',
         ]);
 
-        $response = $this->actingAs($user1)->get('/customer/licenses/'.$license->key);
+        $response = $this->actingAs($user1)->get('/dashboard/licenses/'.$license->key);
 
         $response->assertStatus(404);
     }
@@ -145,7 +148,7 @@ class CustomerLicenseManagementTest extends TestCase
             'is_suspended' => true,
         ]);
 
-        $response = $this->actingAs($user)->get('/customer/licenses');
+        $response = $this->actingAs($user)->get('/dashboard/licenses');
 
         $response->assertStatus(200);
         $response->assertSee('Active');
@@ -163,11 +166,11 @@ class CustomerLicenseManagementTest extends TestCase
         ]);
 
         $response = $this->actingAs($user)
-            ->patch('/customer/licenses/'.$license->key, [
+            ->patch('/dashboard/licenses/'.$license->key, [
                 'name' => 'My Production License',
             ]);
 
-        $response->assertRedirect('/customer/licenses/'.$license->key);
+        $response->assertRedirect('/dashboard/licenses/'.$license->key);
         $response->assertSessionHas('success', 'License name updated successfully!');
 
         $this->assertDatabaseHas('licenses', [
@@ -186,11 +189,11 @@ class CustomerLicenseManagementTest extends TestCase
         ]);
 
         $response = $this->actingAs($user)
-            ->patch('/customer/licenses/'.$license->key, [
+            ->patch('/dashboard/licenses/'.$license->key, [
                 'name' => '',
             ]);
 
-        $response->assertRedirect('/customer/licenses/'.$license->key);
+        $response->assertRedirect('/dashboard/licenses/'.$license->key);
         $response->assertSessionHas('success', 'License name updated successfully!');
 
         $this->assertDatabaseHas('licenses', [
@@ -208,7 +211,7 @@ class CustomerLicenseManagementTest extends TestCase
         ]);
 
         $response = $this->actingAs($user)
-            ->patch('/customer/licenses/'.$license->key, [
+            ->patch('/dashboard/licenses/'.$license->key, [
                 'name' => str_repeat('a', 256), // Too long
             ]);
 
@@ -226,7 +229,7 @@ class CustomerLicenseManagementTest extends TestCase
         ]);
 
         $response = $this->actingAs($user1)
-            ->patch('/customer/licenses/'.$license->key, [
+            ->patch('/dashboard/licenses/'.$license->key, [
                 'name' => 'Hacked Name',
             ]);
 
@@ -249,7 +252,7 @@ class CustomerLicenseManagementTest extends TestCase
             'name' => null,
         ]);
 
-        $response = $this->actingAs($user)->get('/customer/licenses');
+        $response = $this->actingAs($user)->get('/dashboard/licenses');
 
         $response->assertStatus(200);
         // Named license should show custom name prominently
@@ -268,7 +271,7 @@ class CustomerLicenseManagementTest extends TestCase
             'name' => 'My Custom License',
         ]);
 
-        $response = $this->actingAs($user)->get('/customer/licenses/'.$license->key);
+        $response = $this->actingAs($user)->get('/dashboard/licenses/'.$license->key);
 
         $response->assertStatus(200);
         $response->assertSee('My Custom License');
@@ -284,7 +287,7 @@ class CustomerLicenseManagementTest extends TestCase
             'name' => null,
         ]);
 
-        $response = $this->actingAs($user)->get('/customer/licenses/'.$license->key);
+        $response = $this->actingAs($user)->get('/dashboard/licenses/'.$license->key);
 
         $response->assertStatus(200);
         $response->assertSee('No name set');
@@ -298,6 +301,112 @@ class CustomerLicenseManagementTest extends TestCase
         $response = $this->actingAs($user)->get('/dashboard');
 
         $response->assertStatus(200);
-        $response->assertSee('Licenses');
+        $response->assertSee('View licenses');
+    }
+
+    public function test_dashboard_hides_licenses_card_when_user_has_no_licenses(): void
+    {
+        $user = User::factory()->create();
+
+        $response = $this->actingAs($user)->get('/dashboard');
+
+        $response->assertStatus(200);
+        $response->assertDontSee('View licenses');
+    }
+
+    public function test_customer_can_rotate_license_key(): void
+    {
+        Http::fake([
+            'https://api.anystack.sh/v1/products/*/licenses' => Http::response([
+                'data' => [
+                    'id' => 'new-anystack-id',
+                    'key' => 'new-rotated-key',
+                    'expires_at' => now()->addYear()->toIso8601String(),
+                    'created_at' => now()->toIso8601String(),
+                    'updated_at' => now()->toIso8601String(),
+                ],
+            ], 201),
+            'https://api.anystack.sh/v1/products/*/licenses/*' => Http::response([
+                'data' => ['suspended' => true],
+            ], 200),
+        ]);
+
+        $user = User::factory()->create(['anystack_contact_id' => 'contact-123']);
+        $license = License::factory()->active()->create([
+            'user_id' => $user->id,
+            'policy_name' => 'mini',
+            'key' => 'old-key-to-rotate',
+            'anystack_id' => 'old-anystack-id',
+        ]);
+
+        Livewire::actingAs($user)
+            ->test(Show::class, ['licenseKey' => 'old-key-to-rotate'])
+            ->call('rotateLicenseKey')
+            ->assertRedirect(route('customer.licenses.show', 'new-rotated-key'));
+
+        $license->refresh();
+        $this->assertEquals('new-rotated-key', $license->key);
+        $this->assertEquals('new-anystack-id', $license->anystack_id);
+        $this->assertFalse($license->is_suspended);
+    }
+
+    public function test_customer_cannot_rotate_suspended_license_key(): void
+    {
+        $user = User::factory()->create();
+        $license = License::factory()->suspended()->create([
+            'user_id' => $user->id,
+            'key' => 'suspended-license-key',
+        ]);
+
+        Livewire::actingAs($user)
+            ->test(Show::class, ['licenseKey' => 'suspended-license-key'])
+            ->call('rotateLicenseKey')
+            ->assertNoRedirect();
+
+        Http::assertNothingSent();
+    }
+
+    public function test_customer_cannot_rotate_expired_license_key(): void
+    {
+        $user = User::factory()->create();
+        $license = License::factory()->expired()->create([
+            'user_id' => $user->id,
+            'key' => 'expired-license-key',
+        ]);
+
+        Livewire::actingAs($user)
+            ->test(Show::class, ['licenseKey' => 'expired-license-key'])
+            ->call('rotateLicenseKey')
+            ->assertNoRedirect();
+
+        Http::assertNothingSent();
+    }
+
+    public function test_active_license_shows_rotate_button(): void
+    {
+        $user = User::factory()->create();
+        $license = License::factory()->active()->create([
+            'user_id' => $user->id,
+            'key' => 'active-license-key',
+        ]);
+
+        $response = $this->actingAs($user)->get('/dashboard/licenses/active-license-key');
+
+        $response->assertStatus(200);
+        $response->assertSee('Rotate key');
+    }
+
+    public function test_suspended_license_does_not_show_rotate_button(): void
+    {
+        $user = User::factory()->create();
+        $license = License::factory()->suspended()->create([
+            'user_id' => $user->id,
+            'key' => 'suspended-license-key',
+        ]);
+
+        $response = $this->actingAs($user)->get('/dashboard/licenses/suspended-license-key');
+
+        $response->assertStatus(200);
+        $response->assertDontSee('Rotate key');
     }
 }

@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Collection;
 
 class Cart extends Model
 {
@@ -95,9 +96,9 @@ class Cart extends Model
     /**
      * Find all bundles that contain at least one plugin from the cart.
      *
-     * @return \Illuminate\Support\Collection<int, PluginBundle>
+     * @return Collection<int, PluginBundle>
      */
-    public function getAvailableBundleUpgrades(): \Illuminate\Support\Collection
+    public function getAvailableBundleUpgrades(): Collection
     {
         // Get plugin IDs that are in the cart as individual items (not part of a bundle)
         $cartPluginIds = $this->items()

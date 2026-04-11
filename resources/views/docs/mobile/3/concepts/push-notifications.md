@@ -88,6 +88,13 @@ user's device.
 
 <aside>
 
+Push notifications do not work in the iOS Simulator. This is an Apple limitation. You must use a physical iOS device
+to test push notifications.
+
+</aside>
+
+<aside>
+
 The server-side implementation is out of scope for this documentation.
 
 </aside>

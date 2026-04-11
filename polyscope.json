@@ -2,7 +2,10 @@
   "scripts": {
     "setup": [
       "herd link",
-      "herd secure"
+      "herd secure",
+      "composer install",
+      "npm i",
+      "npm run build"
     ],
     "archive": [
       "herd unsecure",
@@ -10,6 +13,6 @@
     ]
   },
   "preview": {
-    "url": "http://{{folder}}.test"
+    "url": "https://{{folder}}.test"
   }
 }

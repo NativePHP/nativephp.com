@@ -102,13 +102,7 @@
                 return ! this.scrolled && this.width >= 1024
             },
         }"
-        x-resize="
-            width = $width
-            if (window.matchMedia('(min-width: 80rem)').matches) {
-                showMobileMenu = false
-                showDocsMenu = false
-            }
-        "
+        x-resize="width = $width"
         x-init="
             window.addEventListener('scroll', () => {
                 scrolled = window.scrollY > 1
@@ -127,7 +121,11 @@
         </div>
 
         <x-footer />
+
+        <x-impersonate::banner/>
+
         @livewireScriptConfig
+        @fluxScripts
         @vite('resources/js/app.js')
         @vite('resources/css/docsearch.css')
     </body>

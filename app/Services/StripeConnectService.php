@@ -12,21 +12,24 @@ use App\Models\PluginPrice;
 use App\Models\User;
 use Illuminate\Support\Facades\Log;
 use Laravel\Cashier\Cashier;
+use Stripe\Account;
 
 /**
  * Service for managing Stripe Connect accounts and processing developer payouts.
  */
 class StripeConnectService
 {
-    public function createConnectAccount(User $user): DeveloperAccount
+    public function createConnectAccount(User $user, string $country, string $payoutCurrency): DeveloperAccount
     {
         $account = Cashier::stripe()->accounts->create([
             'type' => 'express',
+            'country' => $country,
             'email' => $user->email,
             'metadata' => [
                 'user_id' => $user->id,
             ],
             'capabilities' => [
+                'card_payments' => ['requested' => true],
                 'transfers' => ['requested' => true],
             ],
         ]);
@@ -37,6 +40,8 @@ class StripeConnectService
             'stripe_connect_status' => StripeConnectStatus::Pending,
             'payouts_enabled' => false,
             'charges_enabled' => false,
+            'country' => $country,
+            'payout_currency' => $payoutCurrency,
         ]);
     }
 
@@ -108,7 +113,7 @@ class StripeConnectService
         try {
             $transferParams = [
                 'amount' => $payout->developer_amount,
-                'currency' => 'usd',
+                'currency' => strtolower($developerAccount->payout_currency ?? 'usd'),
                 'destination' => $developerAccount->stripe_connect_account_id,
                 'metadata' => [
                     'payout_id' => $payout->id,
@@ -168,7 +173,7 @@ class StripeConnectService
         }
     }
 
-    protected function determineStatus(\Stripe\Account $account): StripeConnectStatus
+    protected function determineStatus(Account $account): StripeConnectStatus
     {
         if ($account->payouts_enabled && $account->charges_enabled) {
             return StripeConnectStatus::Active;

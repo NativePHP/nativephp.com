@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Models\Plugin;
 use App\Services\SatisService;
 use Illuminate\Console\Command;
 
@@ -30,7 +31,7 @@ class SatisBuild extends Command
         $pluginName = $this->option('plugin');
 
         if ($pluginName) {
-            $plugin = \App\Models\Plugin::where('name', $pluginName)->first();
+            $plugin = Plugin::where('name', $pluginName)->first();
 
             if (! $plugin) {
                 $this->error("Plugin '{$pluginName}' not found.");

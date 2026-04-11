@@ -2,6 +2,7 @@
 
 namespace App\Notifications;
 
+use App\Models\PluginPayout;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
@@ -13,7 +14,7 @@ class PluginSaleCompleted extends Notification implements ShouldQueue
     use Queueable;
 
     /**
-     * @param  Collection<int, \App\Models\PluginPayout>  $payouts
+     * @param  Collection<int, PluginPayout>  $payouts
      */
     public function __construct(
         public Collection $payouts
@@ -26,7 +27,7 @@ class PluginSaleCompleted extends Notification implements ShouldQueue
      */
     public function via(object $notifiable): array
     {
-        return ['mail'];
+        return ['mail', 'database'];
     }
 
     /**
@@ -50,7 +51,7 @@ class PluginSaleCompleted extends Notification implements ShouldQueue
         $formattedTotal = number_format($totalPayout / 100, 2);
 
         $message->line("**Total payout: \${$formattedTotal}**")
-            ->action('View Developer Dashboard', url('/customer/developer/dashboard'))
+            ->action('View Developer Dashboard', route('customer.developer.dashboard'))
             ->line('Thank you for contributing to the NativePHP ecosystem!');
 
         return $message;
@@ -63,9 +64,14 @@ class PluginSaleCompleted extends Notification implements ShouldQueue
      */
     public function toArray(object $notifiable): array
     {
+        $totalPayout = $this->payouts->sum('developer_amount');
+        $formattedTotal = number_format($totalPayout / 100, 2);
+
         return [
+            'title' => "You've made a sale!",
+            'body' => "A sale has been completed — total payout: \${$formattedTotal}.",
             'payout_ids' => $this->payouts->pluck('id')->toArray(),
-            'total_developer_amount' => $this->payouts->sum('developer_amount'),
+            'total_developer_amount' => $totalPayout,
         ];
     }
 }

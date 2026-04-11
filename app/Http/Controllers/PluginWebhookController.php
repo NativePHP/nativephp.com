@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Jobs\SyncPluginReleases;
 use App\Models\Plugin;
 use App\Services\PluginSyncService;
 use Illuminate\Http\JsonResponse;
@@ -17,18 +18,22 @@ class PluginWebhookController extends Controller
             return response()->json(['error' => 'Invalid webhook secret'], 404);
         }
 
+        $event = $request->header('X-GitHub-Event');
+
+        if ($event === 'ping') {
+            return response()->json(['success' => true, 'message' => 'pong']);
+        }
+
         if (! $plugin->isApproved()) {
             return response()->json(['error' => 'Plugin is not approved'], 403);
         }
-
-        $event = $request->header('X-GitHub-Event');
 
         if ($event === 'release') {
             // Sync plugin metadata to update latest_version
             $syncService->sync($plugin);
 
             // Queue release sync for version records
-            dispatch(new \App\Jobs\SyncPluginReleases($plugin));
+            dispatch(new SyncPluginReleases($plugin));
 
             return response()->json([
                 'success' => true,
@@ -56,7 +61,7 @@ class PluginWebhookController extends Controller
             return response()->json(['error' => 'Failed to sync plugin'], 500);
         }
 
-        dispatch(new \App\Jobs\SyncPluginReleases($plugin));
+        dispatch(new SyncPluginReleases($plugin));
 
         return response()->json([
             'success' => true,

@@ -14,10 +14,13 @@ use App\Models\PluginLicense;
 use App\Models\User;
 use App\Notifications\PluginGranted;
 use App\Notifications\PluginReviewChecksIncomplete;
+use Filament\Actions;
+use Filament\Actions\Action;
 use Filament\Forms;
-use Filament\Forms\Form;
 use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
+use Filament\Schemas;
+use Filament\Schemas\Schema;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Support\HtmlString;
@@ -26,26 +29,30 @@ class PluginResource extends Resource
 {
     protected static ?string $model = Plugin::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-puzzle-piece';
+    protected static \BackedEnum|string|null $navigationIcon = 'heroicon-o-puzzle-piece';
 
     protected static ?string $navigationLabel = 'Plugins';
 
-    protected static ?string $navigationGroup = 'Products';
+    protected static \UnitEnum|string|null $navigationGroup = 'Products';
 
     protected static ?int $navigationSort = 1;
 
     protected static ?string $pluralModelLabel = 'Plugins';
 
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return $form
+        return $schema
+            ->inlineLabel()
+            ->columns(1)
             ->schema([
-                Forms\Components\Section::make('Plugin Details')
+                Schemas\Components\Section::make('Plugin Details')
+                    ->inlineLabel()
+                    ->columns(1)
                     ->schema([
                         Forms\Components\Placeholder::make('logo_preview')
                             ->label('Logo')
                             ->content(fn (?Plugin $record) => $record?->hasLogo()
-                                ? new \Illuminate\Support\HtmlString('<img src="'.e($record->getLogoUrl()).'" alt="Logo" class="w-16 h-16 rounded-lg object-cover" />')
+                                ? new HtmlString('<img src="'.e($record->getLogoUrl()).'" alt="Logo" style="max-width: 256px; max-height: 256px; border-radius: 0.5rem; object-fit: cover;" />')
                                 : 'No logo')
                             ->visible(fn (?Plugin $record) => $record !== null),
 
@@ -68,25 +75,44 @@ class PluginResource extends Resource
                             ->suffixIconColor('gray'),
 
                         Forms\Components\Select::make('status')
-                            ->options(PluginStatus::class),
+                            ->options(PluginStatus::class)
+                            ->disabled()
+                            ->helperText('Use the Approve/Reject actions to change status'),
+
+                        Forms\Components\Toggle::make('is_official')
+                            ->label('Official (First-Party)')
+                            ->helperText('Official plugins are free for Ultra subscribers'),
 
                         Forms\Components\Textarea::make('description')
-                            ->label('Description')
-
-                            ->columnSpanFull(),
+                            ->label('Description'),
 
                         Forms\Components\Textarea::make('rejection_reason')
                             ->label('Rejection Reason')
 
                             ->visible(fn (?Plugin $record) => $record?->isRejected()),
-                    ])
-                    ->columns(2),
+                    ]),
 
-                Forms\Components\Section::make('Review Checks')
+                Schemas\Components\Section::make('Review Checks')
+                    ->inlineLabel()
+                    ->columns(1)
                     ->schema([
                         Forms\Components\Placeholder::make('reviewed_at_display')
                             ->label('Last Reviewed')
                             ->content(fn (?Plugin $record) => $record?->reviewed_at?->diffForHumans() ?? 'Never'),
+
+                        Forms\Components\Placeholder::make('review_license')
+                            ->label('License File (required)')
+                            ->content(fn (?Plugin $record) => ($record?->review_checks['has_license_file'] ?? false) ? '✅ Found' : '❌ Missing'),
+
+                        Forms\Components\Placeholder::make('review_release')
+                            ->label('Release Version (required)')
+                            ->content(fn (?Plugin $record) => ($record?->review_checks['has_release_version'] ?? false)
+                                ? '✅ '.($record->review_checks['release_version'] ?? '')
+                                : '❌ Missing'),
+
+                        Forms\Components\Placeholder::make('review_webhook')
+                            ->label('Webhook Configured (required)')
+                            ->content(fn (?Plugin $record) => $record?->webhook_installed ? '✅ Configured' : '❌ Not configured'),
 
                         Forms\Components\Placeholder::make('review_ios')
                             ->label('iOS Support')
@@ -99,12 +125,6 @@ class PluginResource extends Resource
                         Forms\Components\Placeholder::make('review_js')
                             ->label('JS Support')
                             ->content(fn (?Plugin $record) => ($record?->review_checks['supports_js'] ?? false) ? '✅ Found' : '❌ Missing'),
-
-                        Forms\Components\Placeholder::make('review_email')
-                            ->label('Support Email')
-                            ->content(fn (?Plugin $record) => ($record?->review_checks['has_support_email'] ?? false)
-                                ? '✅ '.($record->review_checks['support_email'] ?? '')
-                                : '❌ Missing'),
 
                         Forms\Components\Placeholder::make('review_sdk')
                             ->label('Requires nativephp/mobile')
@@ -124,9 +144,8 @@ class PluginResource extends Resource
                                 ? '✅ '.($record->review_checks['android_min_version'] ?? '')
                                 : '❌ Missing'),
                     ])
-                    ->columns(4)
                     ->headerActions([
-                        Forms\Components\Actions\Action::make('emailReviewChecks')
+                        Action::make('emailReviewChecks')
                             ->label('Email Developer')
                             ->icon('heroicon-o-envelope')
                             ->color('warning')
@@ -151,7 +170,23 @@ class PluginResource extends Resource
                     ])
                     ->visible(fn (?Plugin $record) => $record?->review_checks !== null),
 
-                Forms\Components\Section::make('Submission Info')
+                Schemas\Components\Section::make('Developer Submission Details')
+                    ->inlineLabel()
+                    ->columns(1)
+                    ->schema([
+                        Forms\Components\Placeholder::make('support_channel_display')
+                            ->label('Support Channel')
+                            ->content(fn (?Plugin $record) => $record?->support_channel ?? 'Not provided'),
+
+                        Forms\Components\Placeholder::make('notes_display')
+                            ->label('Notes')
+                            ->content(fn (?Plugin $record) => $record?->notes ?? 'Not provided'),
+                    ])
+                    ->visible(fn (?Plugin $record) => $record !== null),
+
+                Schemas\Components\Section::make('Submission Info')
+                    ->inlineLabel()
+                    ->columns(1)
                     ->schema([
                         Forms\Components\Select::make('user_id')
                             ->relationship('user', 'email')
@@ -169,8 +204,7 @@ class PluginResource extends Resource
                         Forms\Components\DateTimePicker::make('approved_at')
 
                             ->visible(fn (?Plugin $record) => $record?->approved_at !== null),
-                    ])
-                    ->columns(2),
+                    ]),
             ]);
     }
 
@@ -213,10 +247,20 @@ class PluginResource extends Resource
                 Tables\Columns\TextColumn::make('status')
                     ->badge()
                     ->color(fn (PluginStatus $state): string => match ($state) {
+                        PluginStatus::Draft => 'gray',
                         PluginStatus::Pending => 'warning',
                         PluginStatus::Approved => 'success',
                         PluginStatus::Rejected => 'danger',
                     })
+                    ->sortable(),
+
+                Tables\Columns\TextColumn::make('mobile_min_version')
+                    ->label('Mobile SDK')
+                    ->placeholder('-')
+                    ->toggleable(isToggledHiddenByDefault: true),
+
+                Tables\Columns\ToggleColumn::make('is_official')
+                    ->label('Official')
                     ->sortable(),
 
                 Tables\Columns\ToggleColumn::make('featured')
@@ -251,13 +295,15 @@ class PluginResource extends Resource
                     ->options(PluginStatus::class),
                 Tables\Filters\SelectFilter::make('type')
                     ->options(PluginType::class),
+                Tables\Filters\TernaryFilter::make('is_official')
+                    ->label('Official'),
                 Tables\Filters\TernaryFilter::make('featured'),
                 Tables\Filters\TernaryFilter::make('is_active')
                     ->label('Active'),
             ])
             ->actions([
-                Tables\Actions\ActionGroup::make([
-                    Tables\Actions\Action::make('resync')
+                Actions\ActionGroup::make([
+                    Action::make('resync')
                         ->label('Re-sync from GitHub')
                         ->icon('heroicon-o-arrow-path')
                         ->color('primary')
@@ -275,7 +321,7 @@ class PluginResource extends Resource
                                 ->send();
                         }),
 
-                    Tables\Actions\Action::make('grantToUser')
+                    Action::make('grantToUser')
                         ->label('Grant to User')
                         ->icon('heroicon-o-gift')
                         ->color('success')
@@ -331,7 +377,7 @@ class PluginResource extends Resource
                         ->modalDescription(fn (Plugin $record): string => "Grant '{$record->name}' to a user for free.")
                         ->modalSubmitActionLabel('Grant'),
 
-                    Tables\Actions\Action::make('runReviewChecks')
+                    Action::make('runReviewChecks')
                         ->label('Run Review Checks')
                         ->icon('heroicon-o-clipboard-document-check')
                         ->color('primary')
@@ -353,10 +399,11 @@ class PluginResource extends Resource
                             }
 
                             $lines = collect([
+                                ['License file *', $checks['has_license_file']],
+                                ['Release version *', $checks['has_release_version'] ? $checks['release_version'] : false],
                                 ['iOS support', $checks['supports_ios']],
                                 ['Android support', $checks['supports_android']],
                                 ['JS support', $checks['supports_js']],
-                                ['Support email', $checks['has_support_email'] ? $checks['support_email'] : false],
                                 ['Requires nativephp/mobile', $checks['requires_mobile_sdk'] ? $checks['mobile_sdk_constraint'] : false],
                                 ['iOS min_version', $checks['has_ios_min_version'] ? $checks['ios_min_version'] : false],
                                 ['Android min_version', $checks['has_android_min_version'] ? $checks['android_min_version'] : false],
@@ -373,16 +420,17 @@ class PluginResource extends Resource
                             })->implode('<br>');
 
                             $passed = collect($checks)->only([
+                                'has_license_file', 'has_release_version',
                                 'supports_ios', 'supports_android', 'supports_js',
-                                'has_support_email', 'requires_mobile_sdk',
+                                'requires_mobile_sdk',
                                 'has_ios_min_version', 'has_android_min_version',
                             ])->filter()->count();
 
                             Notification::make()
-                                ->title("Review checks complete ({$passed}/7 passed)")
+                                ->title("Review checks complete ({$passed}/8 passed)")
                                 ->body(new HtmlString($lines))
                                 ->duration(15000)
-                                ->color($passed === 7 ? 'success' : 'warning')
+                                ->color($passed === 8 ? 'success' : 'warning')
                                 ->send();
                         }),
                 ])
@@ -390,7 +438,7 @@ class PluginResource extends Resource
                     ->color('primary')
                     ->tooltip('Quick Actions'),
 
-                Tables\Actions\EditAction::make(),
+                Actions\EditAction::make(),
             ])
             ->bulkActions([
 

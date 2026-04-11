@@ -4,10 +4,12 @@ namespace Tests\Feature;
 
 use App\Features\ShowAuthButtons;
 use App\Features\ShowPlugins;
+use App\Livewire\Customer\Plugins\Create;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Http;
 use Laravel\Pennant\Feature;
+use Livewire\Livewire;
 use Tests\TestCase;
 
 class GitHubMigrationBannerTest extends TestCase
@@ -28,7 +30,7 @@ class GitHubMigrationBannerTest extends TestCase
 
         $user = User::factory()->withLegacyGitHub()->create();
 
-        $response = $this->actingAs($user)->get('/customer/integrations');
+        $response = $this->actingAs($user)->get('/dashboard/integrations');
 
         $response->assertStatus(200);
         $response->assertSee('GitHub Connection Upgrade Required');
@@ -41,7 +43,7 @@ class GitHubMigrationBannerTest extends TestCase
 
         $user = User::factory()->withGitHubApp()->create();
 
-        $response = $this->actingAs($user)->get('/customer/integrations');
+        $response = $this->actingAs($user)->get('/dashboard/integrations');
 
         $response->assertStatus(200);
         $response->assertDontSee('GitHub Connection Upgrade Required');
@@ -53,7 +55,7 @@ class GitHubMigrationBannerTest extends TestCase
 
         $user = User::factory()->create();
 
-        $response = $this->actingAs($user)->get('/customer/integrations');
+        $response = $this->actingAs($user)->get('/dashboard/integrations');
 
         $response->assertStatus(200);
         $response->assertDontSee('GitHub Connection Upgrade Required');
@@ -65,24 +67,27 @@ class GitHubMigrationBannerTest extends TestCase
 
         $user = User::factory()->withLegacyGitHub()->create();
 
-        $response = $this->actingAs($user)->get('/customer/plugins');
+        $this->actingAs($user);
+
+        $response = $this->get('/dashboard/developer/plugins');
 
         $response->assertStatus(200);
         $response->assertSee('GitHub Connection Upgrade Required');
     }
 
-    public function test_legacy_oauth_user_is_blocked_from_plugin_submission(): void
+    public function test_legacy_oauth_user_is_blocked_from_plugin_creation_via_livewire(): void
     {
         $user = User::factory()->withLegacyGitHub()->create();
 
-        $response = $this->actingAs($user)
-            ->post('/customer/plugins', [
-                'repository' => 'testuser/test-plugin',
-                'type' => 'free',
-            ]);
+        Livewire::actingAs($user)
+            ->test(Create::class)
+            ->set('repository', 'testuser/test-plugin')
+            ->set('pluginType', 'free')
+            ->call('createPlugin')
+            ->assertHasNoErrors();
 
-        $response->assertRedirect(route('customer.integrations'));
-        $response->assertSessionHas('error', 'Please upgrade your GitHub connection before submitting plugins.');
+        // Verify no plugin was created
+        $this->assertDatabaseCount('plugins', 0);
     }
 
     public function test_legacy_oauth_user_sees_blocking_banner_on_plugin_create(): void
@@ -91,7 +96,7 @@ class GitHubMigrationBannerTest extends TestCase
 
         $user = User::factory()->withLegacyGitHub()->create();
 
-        $response = $this->actingAs($user)->get('/customer/plugins/submit');
+        $response = $this->actingAs($user)->get('/dashboard/developer/plugins/create');
 
         $response->assertStatus(200);
         $response->assertSee('GitHub Connection Upgrade Required');

@@ -8,11 +8,11 @@ use Illuminate\Support\Facades\DB;
 
 class PluginRevenueChart extends ChartWidget
 {
-    protected static ?string $heading = 'Revenue by Plugin';
+    protected ?string $heading = 'Revenue by Plugin';
 
     protected static ?int $sort = 5;
 
-    protected static ?string $maxHeight = '300px';
+    protected ?string $maxHeight = '300px';
 
     protected function getData(): array
     {
