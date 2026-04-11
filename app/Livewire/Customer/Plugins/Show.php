@@ -8,7 +8,9 @@ use App\Jobs\ReviewPluginRepository;
 use App\Models\Plugin;
 use App\Notifications\PluginSubmitted;
 use App\Services\GitHubUserService;
+use Flux\Flux;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Validation\ValidationException;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Title;
@@ -74,45 +76,86 @@ class Show extends Component
         $this->tier = $this->plugin->tier?->value;
     }
 
+    public function runPreflightChecks(): void
+    {
+        if (! $this->plugin->isDraft()) {
+            return;
+        }
+
+        $user = auth()->user();
+        $repoInfo = $this->plugin->getRepositoryOwnerAndName();
+
+        // Ensure a webhook secret exists so we can always show setup instructions
+        if (! $this->plugin->webhook_secret) {
+            $this->plugin->generateWebhookSecret();
+        }
+
+        // Verify or install webhook
+        if ($repoInfo && $user->hasGitHubToken()) {
+            $githubService = GitHubUserService::for($user);
+            $webhookUrl = $this->plugin->getWebhookUrl();
+
+            // Check if our webhook already exists on the repo
+            if ($webhookUrl && $githubService->webhookExists($repoInfo['owner'], $repoInfo['repo'], $webhookUrl)) {
+                if (! $this->plugin->webhook_installed) {
+                    $this->plugin->update(['webhook_installed' => true]);
+                }
+            } else {
+                // Webhook not found on GitHub — try to create it
+                $webhookSecret = $this->plugin->webhook_secret ?? $this->plugin->generateWebhookSecret();
+                $webhookResult = $githubService->createWebhook(
+                    $repoInfo['owner'],
+                    $repoInfo['repo'],
+                    $this->plugin->getWebhookUrl(),
+                    $webhookSecret
+                );
+                $this->plugin->update(['webhook_installed' => $webhookResult['success']]);
+            }
+        }
+
+        // Run review checks
+        (new ReviewPluginRepository($this->plugin))->handle();
+
+        $this->plugin->refresh();
+    }
+
     public function submitForReview(): void
     {
         if (! $this->plugin->isDraft()) {
-            session()->flash('error', 'Only draft plugins can be submitted for review.');
+            Flux::toast(variant: 'danger', text: 'Only draft plugins can be submitted for review.');
+
+            return;
+        }
+
+        if (! $this->plugin->description) {
+            Flux::toast(variant: 'danger', text: 'Please add a description before submitting for review.');
 
             return;
         }
 
         if (! $this->plugin->support_channel) {
-            session()->flash('error', 'Please set a support channel before submitting for review.');
+            Flux::toast(variant: 'danger', text: 'Please set a support channel before submitting for review.');
 
             return;
         }
 
         if ($this->plugin->isPaid() && ! $this->plugin->tier) {
-            session()->flash('error', 'Please select a pricing tier for your paid plugin.');
+            Flux::toast(variant: 'danger', text: 'Please select a pricing tier for your paid plugin.');
+
+            return;
+        }
+
+        // Run preflight checks
+        $this->runPreflightChecks();
+
+        // Only submit if required checks pass
+        if (! $this->plugin->passesRequiredReviewChecks()) {
+            Flux::toast(variant: 'danger', text: 'Your plugin doesn\'t pass all required checks yet. Please resolve the failing checks and try again.');
 
             return;
         }
 
         $user = auth()->user();
-
-        // Install webhook
-        $repoInfo = $this->plugin->getRepositoryOwnerAndName();
-
-        if ($repoInfo && $user->hasGitHubToken()) {
-            $webhookSecret = $this->plugin->webhook_secret ?? $this->plugin->generateWebhookSecret();
-            $githubService = GitHubUserService::for($user);
-            $webhookResult = $githubService->createWebhook(
-                $repoInfo['owner'],
-                $repoInfo['repo'],
-                $this->plugin->getWebhookUrl(),
-                $webhookSecret
-            );
-            $this->plugin->update(['webhook_installed' => $webhookResult['success']]);
-        }
-
-        // Run review checks
-        (new ReviewPluginRepository($this->plugin))->handle();
 
         // Submit
         $this->plugin->submit();
@@ -121,13 +164,61 @@ class Show extends Component
         // Notify
         $user->notify(new PluginSubmitted($this->plugin));
 
-        session()->flash('success', 'Your plugin has been submitted for review!');
+        Flux::toast(variant: 'success', text: 'Your plugin has been submitted for review!');
+    }
+
+    public function certifyWebhook(): void
+    {
+        if ($this->plugin->webhook_installed) {
+            return;
+        }
+
+        if (! $this->plugin->webhook_secret) {
+            $this->plugin->generateWebhookSecret();
+        }
+
+        $this->plugin->update(['webhook_installed' => true]);
+        $this->plugin->refresh();
+
+        $this->modal('certify-webhook')->close();
+
+        Flux::toast(variant: 'success', text: 'Webhook marked as installed.');
+    }
+
+    public function retryWebhook(): void
+    {
+        $user = auth()->user();
+        $repoInfo = $this->plugin->getRepositoryOwnerAndName();
+
+        if (! $repoInfo || ! $user->hasGitHubToken()) {
+            Flux::toast(variant: 'danger', text: 'Unable to register webhook automatically. Please ensure your GitHub account is connected and the repository URL is valid.');
+
+            return;
+        }
+
+        $webhookSecret = $this->plugin->webhook_secret ?? $this->plugin->generateWebhookSecret();
+        $githubService = GitHubUserService::for($user);
+        $webhookResult = $githubService->createWebhook(
+            $repoInfo['owner'],
+            $repoInfo['repo'],
+            $this->plugin->getWebhookUrl(),
+            $webhookSecret
+        );
+
+        $this->plugin->update(['webhook_installed' => $webhookResult['success']]);
+        $this->plugin->refresh();
+
+        if ($webhookResult['success']) {
+            Flux::toast(variant: 'success', text: 'Webhook installed successfully.');
+        } else {
+            Flux::toast(variant: 'danger', text: 'Failed to install webhook: '.($webhookResult['error'] ?? 'Unknown error'));
+        }
     }
 
     public function withdrawFromReview(): void
     {
         if (! $this->plugin->isPending()) {
-            session()->flash('error', 'Only pending plugins can be withdrawn.');
+            Flux::toast(variant: 'danger', text: 'Only pending plugins can be withdrawn.');
 
             return;
         }
@@ -135,13 +226,13 @@ class Show extends Component
         $this->plugin->withdraw();
         $this->plugin->refresh();
 
-        session()->flash('success', 'Your plugin has been withdrawn from review and returned to draft.');
+        Flux::toast(variant: 'success', text: 'Your plugin has been withdrawn from review and returned to draft.');
     }
 
     public function returnToDraft(): void
     {
         if (! $this->plugin->isRejected()) {
-            session()->flash('error', 'Only rejected plugins can be returned to draft.');
+            Flux::toast(variant: 'danger', text: 'Only rejected plugins can be returned to draft.');
 
             return;
         }
@@ -149,13 +240,13 @@ class Show extends Component
         $this->plugin->returnToDraft();
         $this->plugin->refresh();
 
-        session()->flash('success', 'Your plugin has been returned to draft. You can make changes and resubmit.');
+        Flux::toast(variant: 'success', text: 'Your plugin has been returned to draft. You can make changes and resubmit.');
     }
 
     public function save(): void
     {
         if (! $this->plugin->isDraft() && ! $this->plugin->isApproved()) {
-            session()->flash('error', 'You can only edit draft or approved plugins.');
+            Flux::toast(variant: 'danger', text: 'You can only edit draft or approved plugins.');
 
             return;
         }
@@ -189,7 +280,7 @@ class Show extends Component
         ]);
 
         if ($this->plugin->isDraft() && $this->pluginType === 'paid' && ! $this->hasCompletedDeveloperOnboarding) {
-            session()->flash('error', 'You must complete developer onboarding before setting a plugin as paid.');
+            Flux::toast(variant: 'danger', text: 'You must complete developer onboarding before setting a plugin as paid.');
 
             return;
         }
@@ -211,13 +302,13 @@ class Show extends Component
         $this->plugin->updateDescription($this->description, auth()->id());
         $this->plugin->refresh();
 
-        session()->flash('success', 'Plugin details saved successfully!');
+        Flux::toast(variant: 'success', text: 'Plugin details saved successfully!');
     }
 
     public function updateIcon(): void
     {
         if (! $this->plugin->isDraft() && ! $this->plugin->isApproved()) {
-            session()->flash('error', 'You can only edit the icon for draft or approved plugins.');
+            Flux::toast(variant: 'danger', text: 'You can only edit the icon for draft or approved plugins.');
 
             return;
         }
@@ -239,13 +330,13 @@ class Show extends Component
 
         $this->plugin->refresh();
 
-        session()->flash('success', 'Plugin icon updated successfully!');
+        Flux::toast(variant: 'success', text: 'Plugin icon updated successfully!');
     }
 
     public function uploadLogo(): void
     {
         if (! $this->plugin->isDraft() && ! $this->plugin->isApproved()) {
-            session()->flash('error', 'You can only upload a logo for draft or approved plugins.');
+            Flux::toast(variant: 'danger', text: 'You can only upload a logo for draft or approved plugins.');
 
             return;
         }
@@ -270,13 +361,13 @@ class Show extends Component
         $this->logo = null;
         $this->iconMode = 'upload';
 
-        session()->flash('success', 'Plugin logo updated successfully!');
+        Flux::toast(variant: 'success', text: 'Plugin logo updated successfully!');
     }
 
     public function deleteIcon(): void
     {
         if (! $this->plugin->isDraft() && ! $this->plugin->isApproved()) {
-            session()->flash('error', 'You can only remove the icon for draft or approved plugins.');
+            Flux::toast(variant: 'danger', text: 'You can only remove the icon for draft or approved plugins.');
 
             return;
         }
@@ -294,13 +385,13 @@ class Show extends Component
         $this->plugin->refresh();
         $this->iconMode = 'gradient';
 
-        session()->flash('success', 'Plugin icon removed successfully!');
+        Flux::toast(variant: 'success', text: 'Plugin icon removed successfully!');
     }
 
     public function toggleListing(): void
     {
         if (! $this->plugin->isApproved()) {
-            session()->flash('error', 'Only approved plugins can be listed or de-listed.');
+            Flux::toast(variant: 'danger', text: 'Only approved plugins can be listed or de-listed.');
 
             return;
         }
@@ -312,7 +403,18 @@ class Show extends Component
         $this->plugin->refresh();
 
         $action = $this->plugin->is_active ? 'listed' : 'de-listed';
-        session()->flash('success', "Your plugin has been {$action}.");
+        Flux::toast(variant: 'success', text: "Your plugin has been {$action}.");
+    }
+
+    public function validate($rules = [], $messages = [], $attributes = []): array
+    {
+        try {
+            return parent::validate($rules, $messages, $attributes);
+        } catch (ValidationException $e) {
+            $this->dispatch('scroll-to-first-error');
+
+            throw $e;
+        }
     }
 
     public function render()
