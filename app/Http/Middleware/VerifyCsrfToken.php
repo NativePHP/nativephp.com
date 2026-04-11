@@ -15,5 +15,6 @@ class VerifyCsrfToken extends Middleware
         'stripe/webhook',
         'opencollective/contribution',
         'webhooks/plugins/*',
+        'webhooks/github-app',
     ];
 }

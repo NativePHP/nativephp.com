@@ -3,6 +3,7 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use App\Enums\GitHubAuthType;
 use Filament\Models\Contracts\FilamentUser;
 use Filament\Panel;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -258,6 +259,29 @@ class User extends Authenticatable implements FilamentUser
     }
 
     /**
+     * @return HasMany<GitHubInstallation>
+     */
+    public function githubInstallations(): HasMany
+    {
+        return $this->hasMany(GitHubInstallation::class);
+    }
+
+    public function isUsingGitHubApp(): bool
+    {
+        return $this->github_auth_type === GitHubAuthType::App;
+    }
+
+    public function isUsingLegacyOAuth(): bool
+    {
+        return $this->github_auth_type === GitHubAuthType::OAuth;
+    }
+
+    public function needsGitHubAppMigration(): bool
+    {
+        return $this->isUsingLegacyOAuth();
+    }
+
+    /**
      * Plugin names that are available for free to eligible subscribers.
      */
     public const FREE_PLUGINS_OFFER = [
@@ -339,6 +363,7 @@ class User extends Authenticatable implements FilamentUser
             'mobile_repo_access_granted_at' => 'datetime',
             'claude_plugins_repo_access_granted_at' => 'datetime',
             'discord_role_granted_at' => 'datetime',
+            'github_auth_type' => GitHubAuthType::class,
         ];
     }
 }

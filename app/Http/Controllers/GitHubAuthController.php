@@ -9,10 +9,24 @@ class GitHubAuthController extends Controller
 {
     public function redirect(): RedirectResponse
     {
-        session(['github_auth_intent' => 'login']);
+        $driver = $this->resolveDriver();
 
-        return Socialite::driver('github')
+        session([
+            'github_auth_intent' => 'login',
+            'github_auth_driver' => $driver,
+        ]);
+
+        return Socialite::driver($driver)
             ->scopes(['read:user', 'user:email'])
             ->redirect();
+    }
+
+    protected function resolveDriver(): string
+    {
+        if (config('services.github_app.client_id')) {
+            return 'github-app';
+        }
+
+        return 'github';
     }
 }

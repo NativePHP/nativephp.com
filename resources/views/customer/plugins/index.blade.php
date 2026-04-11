@@ -23,6 +23,9 @@
 
         {{-- Content --}}
         <div class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
+            {{-- GitHub App Migration Banner --}}
+            <x-github-migration-banner />
+
             {{-- Action Cards --}}
             <div class="grid gap-6 md:grid-cols-3">
                 {{-- Submit Plugin Card (Most Prominent) --}}

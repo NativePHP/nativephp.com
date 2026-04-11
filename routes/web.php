@@ -275,11 +275,15 @@ Route::get('auth/github/callback', [App\Http\Controllers\GitHubIntegrationContro
 // GitHub OAuth routes (auth required)
 Route::middleware(['auth', EnsureFeaturesAreActive::using(ShowAuthButtons::class)])->group(function (): void {
     Route::get('auth/github', [App\Http\Controllers\GitHubIntegrationController::class, 'redirectToGitHub'])->name('github.redirect');
+    Route::get('auth/github/setup', [App\Http\Controllers\GitHubIntegrationController::class, 'handleSetup'])->name('github.setup');
     Route::post('customer/github/request-access', [App\Http\Controllers\GitHubIntegrationController::class, 'requestRepoAccess'])->name('github.request-access');
     Route::post('customer/github/request-claude-plugins-access', [App\Http\Controllers\GitHubIntegrationController::class, 'requestClaudePluginsAccess'])->name('github.request-claude-plugins-access');
     Route::delete('customer/github/disconnect', [App\Http\Controllers\GitHubIntegrationController::class, 'disconnect'])->name('github.disconnect');
     Route::get('customer/github/repositories', [App\Http\Controllers\GitHubIntegrationController::class, 'repositories'])->name('github.repositories');
 });
+
+// GitHub App webhook
+Route::post('webhooks/github-app', App\Http\Controllers\GitHubAppWebhookController::class)->name('webhooks.github-app');
 
 // Discord OAuth routes
 Route::middleware(['auth', EnsureFeaturesAreActive::using(ShowAuthButtons::class)])->group(function (): void {

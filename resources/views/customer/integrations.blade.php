@@ -57,6 +57,16 @@
                 </div>
             @endif
 
+            {{-- GitHub App Migration Banner --}}
+            <x-github-migration-banner />
+
+            {{-- GitHub App Status (for users who have migrated) --}}
+            @if(auth()->user()->isUsingGitHubApp())
+                <div class="mb-6">
+                    <livewire:git-hub-app-status />
+                </div>
+            @endif
+
             {{-- Info Section --}}
             <div class="mb-6 bg-gray-50 dark:bg-gray-800 rounded-lg p-6">
                 <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">About Integrations</h3>

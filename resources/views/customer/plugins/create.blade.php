@@ -34,6 +34,10 @@
 
         {{-- Content --}}
         <div class="mx-auto max-w-3xl px-4 py-6 sm:px-6 lg:px-8">
+            {{-- GitHub App Migration Banner (blocking) --}}
+            @if(auth()->user()->needsGitHubAppMigration())
+                <x-github-migration-banner :blocking="true" />
+            @else
             {{-- Session Error Message --}}
             @if (session('error'))
                 <div class="mb-6 rounded-md bg-red-50 p-4 dark:bg-red-900/20">
@@ -348,6 +352,7 @@
                     </button>
                 </div>
             </form>
+            @endif
             @endif
         </div>
     </div>

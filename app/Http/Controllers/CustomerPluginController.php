@@ -49,6 +49,12 @@ class CustomerPluginController extends Controller
     {
         $user = Auth::user();
 
+        // Block legacy OAuth users from submitting plugins
+        if ($user->needsGitHubAppMigration()) {
+            return to_route('customer.integrations')
+                ->with('error', 'Please upgrade your GitHub connection before submitting plugins.');
+        }
+
         // Require developer onboarding and terms acceptance for all plugin submissions
         $developerAccount = $user->developerAccount;
 

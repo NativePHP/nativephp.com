@@ -19,8 +19,40 @@ class GitHubUserService
         return new static($user);
     }
 
+    public function resolveTokenForRepo(string $owner, string $repo): ?string
+    {
+        // Priority 1: Installation token (GitHub App)
+        if ($this->user->isUsingGitHubApp()) {
+            $appService = app(GitHubAppService::class);
+            $installation = $appService->findInstallationForRepo($this->user, $owner, $repo);
+
+            if ($installation) {
+                $token = $appService->getInstallationToken($installation);
+
+                if ($token) {
+                    return $token;
+                }
+            }
+        }
+
+        // Priority 2: User OAuth token
+        $userToken = $this->user->getGitHubToken();
+
+        if ($userToken) {
+            return $userToken;
+        }
+
+        // Priority 3: Platform token
+        return config('services.github.token');
+    }
+
     public function getRepositories(bool $includePrivate = true): Collection
     {
+        // For GitHub App users, aggregate repos from all installations
+        if ($this->user->isUsingGitHubApp() && $this->user->githubInstallations()->exists()) {
+            return $this->getRepositoriesFromInstallations($includePrivate);
+        }
+
         $token = $this->user->getGitHubToken();
 
         if (! $token) {
@@ -31,6 +63,60 @@ class GitHubUserService
 
         return Cache::remember($cacheKey, now()->addMinutes(5), function () use ($token, $includePrivate) {
             return $this->fetchRepositories($token, $includePrivate);
+        });
+    }
+
+    protected function getRepositoriesFromInstallations(bool $includePrivate): Collection
+    {
+        $cacheKey = "github_repos_{$this->user->id}";
+
+        return Cache::remember($cacheKey, now()->addMinutes(5), function () use ($includePrivate) {
+            $repos = collect();
+            $appService = app(GitHubAppService::class);
+
+            foreach ($this->user->githubInstallations()->whereNull('suspended_at')->get() as $installation) {
+                $token = $appService->getInstallationToken($installation);
+
+                if (! $token) {
+                    continue;
+                }
+
+                $page = 1;
+                $perPage = 100;
+
+                do {
+                    $response = Http::withToken($token)
+                        ->get('https://api.github.com/installation/repositories', [
+                            'per_page' => $perPage,
+                            'page' => $page,
+                        ]);
+
+                    if ($response->failed()) {
+                        break;
+                    }
+
+                    $pageRepos = collect($response->json('repositories') ?? []);
+                    $repos = $repos->concat($pageRepos);
+                    $page++;
+                } while ($pageRepos->count() === $perPage && $page <= 10);
+            }
+
+            if (! $includePrivate) {
+                $repos = $repos->where('private', false);
+            }
+
+            return $repos->map(function ($repo) {
+                return [
+                    'id' => $repo['id'],
+                    'name' => $repo['name'],
+                    'full_name' => $repo['full_name'],
+                    'private' => $repo['private'],
+                    'html_url' => $repo['html_url'],
+                    'description' => $repo['description'],
+                    'default_branch' => $repo['default_branch'],
+                    'pushed_at' => $repo['pushed_at'],
+                ];
+            })->unique('id')->values();
         });
     }
 
@@ -90,7 +176,7 @@ class GitHubUserService
 
     public function getRepository(string $owner, string $repo): ?array
     {
-        $token = $this->user->getGitHubToken();
+        $token = $this->resolveTokenForRepo($owner, $repo);
 
         if (! $token) {
             return null;
@@ -118,7 +204,7 @@ class GitHubUserService
 
     public function getComposerJson(string $owner, string $repo, string $branch = 'main'): ?array
     {
-        $token = $this->user->getGitHubToken();
+        $token = $this->resolveTokenForRepo($owner, $repo);
 
         if (! $token) {
             return null;
@@ -151,7 +237,7 @@ class GitHubUserService
      */
     public function createWebhook(string $owner, string $repo, string $webhookUrl, string $secret): array
     {
-        $token = $this->user->getGitHubToken();
+        $token = $this->resolveTokenForRepo($owner, $repo);
 
         if (! $token) {
             return [
