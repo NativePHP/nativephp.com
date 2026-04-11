@@ -250,6 +250,8 @@
             {{ $slot }}
         </flux:main>
 
+        <flux:toast />
+
         <x-impersonate::banner/>
 
         @livewireScriptConfig

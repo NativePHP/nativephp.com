@@ -145,6 +145,33 @@ class GitHubUserService
     }
 
     /**
+     * Check if a webhook with the given URL exists on a GitHub repository.
+     */
+    public function webhookExists(string $owner, string $repo, string $webhookUrl): bool
+    {
+        $token = $this->user->getGitHubToken();
+
+        if (! $token) {
+            return false;
+        }
+
+        $response = Http::withToken($token)
+            ->get("https://api.github.com/repos/{$owner}/{$repo}/hooks");
+
+        if ($response->failed()) {
+            return false;
+        }
+
+        foreach ($response->json() as $hook) {
+            if (($hook['config']['url'] ?? null) === $webhookUrl) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
      * Create a webhook on a GitHub repository.
      *
      * @return array{success: bool, error?: string, webhook_id?: int}
