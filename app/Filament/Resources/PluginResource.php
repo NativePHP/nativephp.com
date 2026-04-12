@@ -52,12 +52,16 @@ class PluginResource extends Resource
                         Forms\Components\Placeholder::make('logo_preview')
                             ->label('Logo')
                             ->content(fn (?Plugin $record) => $record?->hasLogo()
-                                ? new HtmlString('<img src="'.e($record->getLogoUrl()).'" alt="Logo" class="w-16 h-16 rounded-lg object-cover" />')
+                                ? new HtmlString('<img src="'.e($record->getLogoUrl()).'" alt="Logo" style="max-width: 256px; max-height: 256px; border-radius: 0.5rem; object-fit: cover;" />')
                                 : 'No logo')
                             ->visible(fn (?Plugin $record) => $record !== null),
 
-                        Forms\Components\TextInput::make('name')
-                            ->label('Composer Package Name'),
+                        Forms\Components\TextInput::make('display_name')
+                            ->label('Display Name'),
+
+                        Forms\Components\Placeholder::make('name')
+                            ->label('Composer Package Name')
+                            ->content(fn (?Plugin $record) => $record?->name ?? '-'),
 
                         Forms\Components\Select::make('type')
                             ->options(PluginType::class),
@@ -67,12 +71,29 @@ class PluginResource extends Resource
                             ->placeholder('No tier')
                             ->helperText('Set pricing tier for paid plugins'),
 
-                        Forms\Components\TextInput::make('repository_url')
+                        Forms\Components\Placeholder::make('repository_url')
                             ->label('Repository URL')
+                            ->content(fn (?Plugin $record) => $record?->repository_url
+                                ? new HtmlString('<a href="'.e($record->repository_url).'" target="_blank" rel="noopener noreferrer" class="text-primary-600 hover:underline">'.e($record->repository_url).' ↗</a>')
+                                : '-'),
 
-                            ->url()
-                            ->suffixIcon('heroicon-o-arrow-top-right-on-square')
-                            ->suffixIconColor('gray'),
+                        Forms\Components\Placeholder::make('license_type')
+                            ->label('License')
+                            ->content(function (?Plugin $record) {
+                                $license = $record?->getLicense();
+                                $licenseUrl = $record?->getLicenseUrl();
+
+                                if (! $license) {
+                                    return '-';
+                                }
+
+                                if ($licenseUrl) {
+                                    return new HtmlString('<a href="'.e($licenseUrl).'" target="_blank" rel="noopener noreferrer" class="text-primary-600 hover:underline">'.e($license).' ↗</a>');
+                                }
+
+                                return $license;
+                            })
+                            ->visible(fn (?Plugin $record) => $record !== null),
 
                         Forms\Components\Select::make('status')
                             ->options(PluginStatus::class)
@@ -193,8 +214,9 @@ class PluginResource extends Resource
                             ->searchable()
                             ->preload(),
 
-                        Forms\Components\DateTimePicker::make('created_at')
-                            ->label('Submitted At'),
+                        Forms\Components\Placeholder::make('created_at')
+                            ->label('Submitted At')
+                            ->content(fn (?Plugin $record) => $record?->created_at?->format('M j, Y g:i A') ?? '-'),
 
                         Forms\Components\Select::make('approved_by')
                             ->relationship('approvedBy', 'email')

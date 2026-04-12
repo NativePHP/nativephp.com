@@ -354,10 +354,11 @@
                                         <a
                                             href="{{ $plugin->support_channel }}"
                                             target="_blank"
+                                            title="{{ $plugin->support_channel }}"
                                             class="inline-flex items-center gap-1 text-sm font-medium text-indigo-600 hover:text-indigo-700 dark:text-indigo-400 dark:hover:text-indigo-300"
                                         >
-                                            {{ $plugin->support_channel }}
-                                            <x-heroicon-o-arrow-top-right-on-square class="size-3" />
+                                            {{ Str::limit(preg_replace('#^https?://#', '', $plugin->support_channel), 25) }}
+                                            <x-heroicon-o-arrow-top-right-on-square class="size-3 shrink-0" />
                                         </a>
                                     @elseif (filter_var($plugin->support_channel, FILTER_VALIDATE_EMAIL))
                                         <a

@@ -25,12 +25,29 @@ class ReviewPluginRepository implements ShouldQueue
     {
         $repo = $this->plugin->getRepositoryOwnerAndName();
 
+        $failedChecks = [
+            'has_license_file' => false,
+            'has_release_version' => false,
+            'release_version' => null,
+            'supports_ios' => false,
+            'supports_android' => false,
+            'supports_js' => false,
+            'requires_mobile_sdk' => false,
+            'mobile_sdk_constraint' => null,
+            'has_ios_min_version' => false,
+            'ios_min_version' => null,
+            'has_android_min_version' => false,
+            'android_min_version' => null,
+        ];
+
         if (! $repo) {
             Log::warning('[ReviewPluginRepository] No valid repository URL', [
                 'plugin_id' => $this->plugin->id,
             ]);
 
-            return [];
+            $this->plugin->update(['review_checks' => $failedChecks, 'reviewed_at' => now()]);
+
+            return $failedChecks;
         }
 
         $token = $this->getGitHubToken();
@@ -44,7 +61,9 @@ class ReviewPluginRepository implements ShouldQueue
                 'plugin_id' => $this->plugin->id,
             ]);
 
-            return [];
+            $this->plugin->update(['review_checks' => $failedChecks, 'reviewed_at' => now()]);
+
+            return $failedChecks;
         }
 
         $tree = $this->fetchRepoTree($owner, $repoName, $defaultBranch, $token);

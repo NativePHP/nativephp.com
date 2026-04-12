@@ -25,19 +25,6 @@
     </div>
 
     <div class="mx-auto max-w-3xl">
-        {{-- Success/Error Messages --}}
-        @if (session('success'))
-            <flux:callout variant="success" icon="check-circle" class="mb-6">
-                <flux:callout.text>{{ session('success') }}</flux:callout.text>
-            </flux:callout>
-        @endif
-
-        @if (session('error'))
-            <flux:callout variant="danger" icon="x-circle" class="mb-6">
-                <flux:callout.text>{{ session('error') }}</flux:callout.text>
-            </flux:callout>
-        @endif
-
         {{-- Status-specific banners --}}
         @if ($plugin->isDraft())
             <flux:callout variant="info" icon="information-circle" class="mb-6">
@@ -49,9 +36,30 @@
                 <flux:callout.heading>Under Review</flux:callout.heading>
                 <flux:callout.text>Your plugin is currently being reviewed. You can withdraw it to make changes.</flux:callout.text>
                 <x-slot name="actions">
-                    <flux:button variant="ghost" wire:click="withdrawFromReview" wire:confirm="Are you sure you want to withdraw this plugin from review? It will return to draft status.">Withdraw from Review</flux:button>
+                    <flux:modal.trigger name="withdraw-from-review">
+                        <flux:button variant="ghost">Withdraw from Review</flux:button>
+                    </flux:modal.trigger>
                 </x-slot>
             </flux:callout>
+
+            <flux:modal name="withdraw-from-review" class="md:w-96">
+                <div class="space-y-6">
+                    <div>
+                        <flux:heading size="lg">Withdraw from Review</flux:heading>
+                        <flux:text class="mt-2">
+                            Are you sure you want to withdraw this plugin from review? It will return to draft status.
+                        </flux:text>
+                    </div>
+
+                    <div class="flex gap-2">
+                        <flux:spacer />
+                        <flux:modal.close>
+                            <flux:button variant="ghost">Cancel</flux:button>
+                        </flux:modal.close>
+                        <flux:button variant="danger" wire:click="withdrawFromReview">Withdraw</flux:button>
+                    </div>
+                </div>
+            </flux:modal>
         @elseif ($plugin->isRejected() && $plugin->rejection_reason)
             <flux:callout variant="danger" icon="x-circle" class="mb-6">
                 <flux:callout.heading>Rejection Reason</flux:callout.heading>
@@ -78,8 +86,8 @@
             </flux:card>
         @endif
 
-        {{-- Review Checks (show for Pending, Rejected, Approved — not Draft) --}}
-        @if (! $plugin->isDraft() && $plugin->review_checks)
+        {{-- Review Checks (show when review checks have been run) --}}
+        @if ($plugin->review_checks)
             <flux:card class="mb-6">
                 <flux:heading size="lg">Review Checks</flux:heading>
                 <flux:text class="mt-1">Automated checks run against your repository.</flux:text>
@@ -122,29 +130,68 @@
                                 @endif
                             </div>
 
-                            @if ($check['key'] === 'webhook_configured' && ! $isPassing && $plugin->webhook_secret)
-                                <div class="ml-7 mt-2 rounded-md border border-amber-200 bg-amber-50 p-4 dark:border-amber-900/50 dark:bg-amber-900/20">
-                                    <p class="text-sm text-amber-800 dark:text-amber-200">
-                                        We couldn't automatically install the webhook. Please set it up manually:
-                                    </p>
-                                    <div class="mt-2">
-                                        <label class="text-xs font-medium text-amber-900 dark:text-amber-100">Webhook URL</label>
-                                        <div class="mt-1 flex items-center gap-2">
-                                            <code class="block flex-1 overflow-x-auto rounded-md bg-white px-3 py-2 font-mono text-xs dark:bg-gray-800">{{ $plugin->getWebhookUrl() }}</code>
-                                            <flux:button size="xs" variant="ghost" x-on:click="navigator.clipboard.writeText('{{ $plugin->getWebhookUrl() }}')">
-                                                <x-heroicon-o-clipboard class="size-3" />
+                            @if ($check['key'] === 'webhook_configured')
+                                @if (! $isPassing)
+                                    <div wire:key="webhook-status-failing" class="ml-7 mt-2 rounded-md border border-amber-200 bg-amber-50 p-4 dark:border-amber-900/50 dark:bg-amber-900/20">
+                                        <p class="text-sm text-amber-800 dark:text-amber-200">
+                                            We couldn't automatically install the webhook. Please set it up manually:
+                                        </p>
+                                        <div class="mt-2">
+                                            <label class="text-xs font-medium text-amber-900 dark:text-amber-100">Webhook URL</label>
+                                            <div class="mt-1 flex items-center gap-2">
+                                                <code class="block flex-1 overflow-x-auto rounded-md bg-white px-3 py-2 font-mono text-xs dark:bg-gray-800">{{ $plugin->getWebhookUrl() }}</code>
+                                                <flux:button size="xs" variant="ghost" x-on:click="navigator.clipboard.writeText('{{ $plugin->getWebhookUrl() }}')">
+                                                    <x-heroicon-o-clipboard class="size-3" />
+                                                </flux:button>
+                                            </div>
+                                        </div>
+                                        <ol class="mt-3 list-inside list-decimal space-y-1 text-xs text-amber-700 dark:text-amber-300">
+                                            <li>Go to your repository's <a href="{{ $plugin->repository_url }}/settings/hooks" target="_blank" rel="noopener noreferrer" class="font-medium underline hover:no-underline"><strong>Settings &rarr; Webhooks</strong></a></li>
+                                            <li>Click <strong>Add webhook</strong></li>
+                                            <li>Paste the URL above into the <strong>Payload URL</strong> field</li>
+                                            <li>Set <strong>Content type</strong> to <code class="rounded bg-amber-100 px-1 dark:bg-amber-800">application/json</code></li>
+                                            <li>Select events: <strong>Pushes</strong> and <strong>Releases</strong></li>
+                                            <li>Click <strong>Add webhook</strong></li>
+                                        </ol>
+
+                                        <div class="mt-3 flex items-center gap-2">
+                                            <flux:button size="sm" wire:click="retryWebhook">
+                                                Retry automatic setup
                                             </flux:button>
+                                            <flux:modal.trigger name="certify-webhook">
+                                                <flux:button size="sm" variant="ghost">
+                                                    I've installed it manually
+                                                </flux:button>
+                                            </flux:modal.trigger>
                                         </div>
                                     </div>
-                                    <ol class="mt-3 list-inside list-decimal space-y-1 text-xs text-amber-700 dark:text-amber-300">
-                                        <li>Go to your repository's <strong>Settings &rarr; Webhooks</strong></li>
-                                        <li>Click <strong>Add webhook</strong></li>
-                                        <li>Paste the URL above into the <strong>Payload URL</strong> field</li>
-                                        <li>Set <strong>Content type</strong> to <code class="rounded bg-amber-100 px-1 dark:bg-amber-800">application/json</code></li>
-                                        <li>Select events: <strong>Pushes</strong> and <strong>Releases</strong></li>
-                                        <li>Click <strong>Add webhook</strong></li>
-                                    </ol>
-                                </div>
+                                @elseif ($plugin->webhook_secret)
+                                    <div wire:key="webhook-status-passing" class="ml-7 mt-1" x-data="{ open: false }">
+                                        <button type="button" x-on:click="open = !open" class="inline-flex items-center gap-1 text-xs text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300">
+                                            <x-heroicon-o-chevron-right class="size-3 transition-transform" x-bind:class="open && 'rotate-90'" />
+                                            View setup instructions
+                                        </button>
+                                        <div x-show="open" x-cloak class="mt-2 rounded-md border border-gray-200 bg-gray-50 p-4 dark:border-gray-700 dark:bg-gray-800/50">
+                                            <div>
+                                                <label class="text-xs font-medium text-gray-700 dark:text-gray-300">Webhook URL</label>
+                                                <div class="mt-1 flex items-center gap-2">
+                                                    <code class="block flex-1 overflow-x-auto rounded-md bg-white px-3 py-2 font-mono text-xs dark:bg-gray-800">{{ $plugin->getWebhookUrl() }}</code>
+                                                    <flux:button size="xs" variant="ghost" x-on:click="navigator.clipboard.writeText('{{ $plugin->getWebhookUrl() }}')">
+                                                        <x-heroicon-o-clipboard class="size-3" />
+                                                    </flux:button>
+                                                </div>
+                                            </div>
+                                            <ol class="mt-3 list-inside list-decimal space-y-1 text-xs text-gray-600 dark:text-gray-400">
+                                                <li>Go to your repository's <a href="{{ $plugin->repository_url }}/settings/hooks" target="_blank" rel="noopener noreferrer" class="font-medium underline hover:no-underline"><strong>Settings &rarr; Webhooks</strong></a></li>
+                                                <li>Click <strong>Add webhook</strong></li>
+                                                <li>Paste the URL above into the <strong>Payload URL</strong> field</li>
+                                                <li>Set <strong>Content type</strong> to <code class="rounded bg-gray-200 px-1 dark:bg-gray-700">application/json</code></li>
+                                                <li>Select events: <strong>Pushes</strong> and <strong>Releases</strong></li>
+                                                <li>Click <strong>Add webhook</strong></li>
+                                            </ol>
+                                        </div>
+                                    </div>
+                                @endif
                             @endif
                         </li>
                     @endforeach
@@ -175,6 +222,31 @@
                         Last checked {{ $plugin->reviewed_at->diffForHumans() }}
                     </flux:text>
                 @endif
+
+                <flux:modal name="certify-webhook" class="md:w-96">
+                    <div class="space-y-6">
+                        <div>
+                            <flux:heading size="lg">Confirm Webhook Installation</flux:heading>
+                            <flux:text class="mt-2">
+                                Please confirm that you have manually installed the webhook on your GitHub repository.
+                            </flux:text>
+                        </div>
+
+                        <flux:callout variant="warning" icon="exclamation-triangle">
+                            <flux:callout.text>
+                                If the webhook is not correctly installed, we won't be able to sync your plugin's releases and metadata automatically.
+                            </flux:callout.text>
+                        </flux:callout>
+
+                        <div class="flex gap-2">
+                            <flux:spacer />
+                            <flux:modal.close>
+                                <flux:button variant="ghost">Cancel</flux:button>
+                            </flux:modal.close>
+                            <flux:button variant="primary" wire:click="certifyWebhook">Confirm</flux:button>
+                        </div>
+                    </div>
+                </flux:modal>
             </flux:card>
         @endif
 
@@ -242,16 +314,14 @@
                                 <div class="mt-6 space-y-4">
                                     @foreach (\App\Enums\PluginTier::cases() as $pluginTier)
                                         @php
-                                            $prices = $pluginTier->getPrices();
-                                            $subscriberPrice = $prices[\App\Enums\PriceTier::Subscriber->value] / 100;
-                                            $regularPrice = $prices[\App\Enums\PriceTier::Regular->value] / 100;
+                                            $regularPrice = $pluginTier->getPrices()[\App\Enums\PriceTier::Regular->value] / 100;
                                         @endphp
                                         <label class="relative flex cursor-pointer rounded-lg border p-4 transition focus:outline-none"
                                             :class="$wire.tier === '{{ $pluginTier->value }}' ? 'border-indigo-500 bg-indigo-50 dark:border-indigo-400 dark:bg-indigo-950/30' : 'border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/50'">
                                             <input type="radio" wire:model.live="tier" value="{{ $pluginTier->value }}" class="sr-only" />
                                             <span class="flex flex-1 items-center justify-between">
                                                 <span class="text-sm font-medium text-gray-900 dark:text-white">{{ $pluginTier->label() }}</span>
-                                                <span class="text-lg font-semibold text-gray-900 dark:text-white">${{ number_format($subscriberPrice) }} – ${{ number_format($regularPrice) }}</span>
+                                                <span class="text-lg font-semibold text-gray-900 dark:text-white">${{ number_format($regularPrice) }}</span>
                                             </span>
                                         </label>
                                     @endforeach
@@ -445,11 +515,8 @@
                                     </div>
                                 </div>
                                 @if ($plugin->isPaid() && $plugin->tier)
-                                    @php
-                                        $regularPrice = $plugin->tier->getPrices()[\App\Enums\PriceTier::Regular->value] / 100;
-                                    @endphp
                                     <span class="inline-flex shrink-0 items-center text-center rounded-full bg-emerald-100 px-2.5 py-0.5 text-xs font-medium text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-400">
-                                        {{ $plugin->tier->label() }}&nbsp;&mdash;&nbsp;${{ number_format($regularPrice) }}
+                                        {{ $plugin->tier->label() }}
                                     </span>
                                 @elseif ($plugin->isPaid())
                                     <span class="inline-flex shrink-0 items-center text-center rounded-full bg-emerald-100 px-2.5 py-0.5 text-xs font-medium text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-400">
@@ -464,30 +531,110 @@
 
                             <flux:separator class="my-4" />
 
-                            <div class="space-y-3">
-                                <div>
-                                    <flux:heading size="sm">Support Channel</flux:heading>
-                                    @if ($plugin->support_channel)
-                                        <flux:text class="mt-1">{{ $plugin->support_channel }}</flux:text>
-                                    @else
-                                        <flux:text class="mt-1 text-gray-400 dark:text-gray-500">No support channel set</flux:text>
-                                    @endif
+                            <dl class="grid grid-cols-2 gap-3">
+                                {{-- Author --}}
+                                <div class="col-span-2">
+                                    <dt class="text-xs font-medium text-gray-500 dark:text-gray-400">Author</dt>
+                                    <dd class="mt-1">
+                                        <a href="{{ route('customer.developer.settings') }}" class="inline-flex items-center gap-1 text-sm font-medium text-indigo-600 hover:text-indigo-500 dark:text-indigo-400 dark:hover:text-indigo-300">
+                                            {{ $plugin->user->display_name }}
+                                            <x-heroicon-o-pencil-square class="size-3" />
+                                        </a>
+                                    </dd>
                                 </div>
 
+                                {{-- Version --}}
                                 <div>
-                                    <flux:heading size="sm">Repository</flux:heading>
-                                    <a href="{{ $plugin->repository_url }}" target="_blank" rel="noopener noreferrer" class="mt-1 inline-flex items-center gap-1 text-sm text-indigo-600 hover:text-indigo-500 dark:text-indigo-400 dark:hover:text-indigo-300">
-                                        {{ $plugin->repository_url }}
-                                        <x-heroicon-o-arrow-top-right-on-square class="size-3.5" />
-                                    </a>
+                                    <dt class="text-xs font-medium text-gray-500 dark:text-gray-400">Version</dt>
+                                    <dd class="mt-1">
+                                        @if ($plugin->latest_version)
+                                            <a href="{{ $plugin->repository_url }}/releases" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 text-sm font-medium text-indigo-600 hover:text-indigo-500 dark:text-indigo-400 dark:hover:text-indigo-300">
+                                                {{ $plugin->latest_version }}
+                                                <x-heroicon-o-arrow-top-right-on-square class="size-3" />
+                                            </a>
+                                        @elseif ($plugin->review_checks['release_version'] ?? null)
+                                            <a href="{{ $plugin->repository_url }}/releases" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 text-sm font-medium text-indigo-600 hover:text-indigo-500 dark:text-indigo-400 dark:hover:text-indigo-300">
+                                                {{ $plugin->review_checks['release_version'] }}
+                                                <x-heroicon-o-arrow-top-right-on-square class="size-3" />
+                                            </a>
+                                        @else
+                                            <span class="text-sm text-gray-400 dark:text-gray-500">&mdash;</span>
+                                        @endif
+                                    </dd>
                                 </div>
-                            </div>
+
+                                {{-- License --}}
+                                <div>
+                                    <dt class="text-xs font-medium text-gray-500 dark:text-gray-400">License</dt>
+                                    <dd class="mt-1">
+                                        @if ($plugin->getLicense())
+                                            <a href="{{ $plugin->getLicenseUrl() }}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 text-sm font-medium text-indigo-600 hover:text-indigo-500 dark:text-indigo-400 dark:hover:text-indigo-300">
+                                                {{ $plugin->getLicense() }}
+                                                <x-heroicon-o-arrow-top-right-on-square class="size-3" />
+                                            </a>
+                                        @else
+                                            <span class="text-sm text-gray-400 dark:text-gray-500">&mdash;</span>
+                                        @endif
+                                    </dd>
+                                </div>
+
+                                {{-- iOS Version --}}
+                                <div>
+                                    <dt class="text-xs font-medium text-gray-500 dark:text-gray-400">Min iOS</dt>
+                                    <dd class="mt-1 text-sm font-medium text-gray-900 dark:text-white">
+                                        {{ $plugin->ios_version ?? ($plugin->review_checks['ios_min_version'] ?? '—') }}
+                                    </dd>
+                                </div>
+
+                                {{-- Android Version --}}
+                                <div>
+                                    <dt class="text-xs font-medium text-gray-500 dark:text-gray-400">Min Android</dt>
+                                    <dd class="mt-1 text-sm font-medium text-gray-900 dark:text-white">
+                                        {{ $plugin->android_version ?? ($plugin->review_checks['android_min_version'] ?? '—') }}
+                                    </dd>
+                                </div>
+
+                                {{-- Support Channel --}}
+                                <div class="col-span-2">
+                                    <dt class="text-xs font-medium text-gray-500 dark:text-gray-400">Support Channel</dt>
+                                    <dd class="mt-1">
+                                        @if ($plugin->support_channel)
+                                            @if (filter_var($plugin->support_channel, FILTER_VALIDATE_URL))
+                                                <a href="{{ $plugin->support_channel }}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 text-sm font-medium text-indigo-600 hover:text-indigo-500 dark:text-indigo-400 dark:hover:text-indigo-300">
+                                                    {{ $plugin->support_channel }}
+                                                    <x-heroicon-o-arrow-top-right-on-square class="size-3" />
+                                                </a>
+                                            @elseif (filter_var($plugin->support_channel, FILTER_VALIDATE_EMAIL))
+                                                <a href="mailto:{{ $plugin->support_channel }}" class="inline-flex items-center gap-1 text-sm font-medium text-indigo-600 hover:text-indigo-500 dark:text-indigo-400 dark:hover:text-indigo-300">
+                                                    {{ $plugin->support_channel }}
+                                                    <x-heroicon-o-envelope class="size-3" />
+                                                </a>
+                                            @else
+                                                <span class="text-sm font-medium text-gray-900 dark:text-white">{{ $plugin->support_channel }}</span>
+                                            @endif
+                                        @else
+                                            <span class="text-sm text-gray-400 dark:text-gray-500">Not set</span>
+                                        @endif
+                                    </dd>
+                                </div>
+
+                                {{-- Repository --}}
+                                <div class="col-span-2">
+                                    <dt class="text-xs font-medium text-gray-500 dark:text-gray-400">Repository</dt>
+                                    <dd class="mt-1">
+                                        <a href="{{ $plugin->repository_url }}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 text-sm text-indigo-600 hover:text-indigo-500 dark:text-indigo-400 dark:hover:text-indigo-300">
+                                            {{ $plugin->repository_url }}
+                                            <x-heroicon-o-arrow-top-right-on-square class="size-3.5" />
+                                        </a>
+                                    </dd>
+                                </div>
+                            </dl>
                         </flux:card>
 
                         {{-- Notes --}}
                         <flux:card>
                             <flux:heading size="lg">Notes</flux:heading>
-                            <flux:text class="mt-1">Any notes for the review team? These won't be displayed on your plugin listing.</flux:text>
+                            <flux:text class="mt-1">Share links to videos demonstrating the plugin in use or applications already available on the app stores using this plugin. Provide as much extra context for the review team so they can review your plugin more easily. <em>These notes will not be displayed on your plugin listing.</em></flux:text>
 
                             <div class="mt-4">
                                 <flux:textarea
@@ -498,9 +645,12 @@
                             </div>
                         </flux:card>
 
-                        {{-- Submit Button --}}
-                        <div class="flex items-center justify-end">
-                            <flux:button variant="primary" wire:click="submitForReview">Submit for Review</flux:button>
+                        {{-- Preflight Checks & Submit --}}
+                        <div class="flex items-center justify-end gap-3">
+                            @if ($plugin->review_checks)
+                                <flux:button variant="ghost" wire:click="runPreflightChecks">Re-run Checks</flux:button>
+                            @endif
+                            <flux:button variant="primary" wire:click="submitForReview">{{ $plugin->review_checks ? 'Submit for Review' : 'Submit' }}</flux:button>
                         </div>
                     </div>
                 </flux:tab.panel>
@@ -528,12 +678,7 @@
                         <flux:heading size="lg">Type</flux:heading>
                         <flux:text class="mt-1">
                             @if ($plugin->isPaid() && $plugin->tier)
-                                @php
-                                    $prices = $plugin->tier->getPrices();
-                                    $subscriberPrice = $prices[\App\Enums\PriceTier::Subscriber->value] / 100;
-                                    $regularPrice = $prices[\App\Enums\PriceTier::Regular->value] / 100;
-                                @endphp
-                                Paid &mdash; {{ $plugin->tier->label() }} (${{ number_format($subscriberPrice) }} – ${{ number_format($regularPrice) }})
+                                Paid &mdash; {{ $plugin->tier->label() }}
                             @elseif ($plugin->isPaid())
                                 Paid
                             @else
@@ -716,11 +861,8 @@
                         </div>
                     </div>
                     @if ($plugin->isPaid() && $plugin->tier)
-                        @php
-                            $regularPrice = $plugin->tier->getPrices()[\App\Enums\PriceTier::Regular->value] / 100;
-                        @endphp
                         <span class="inline-flex shrink-0 items-center text-center rounded-full bg-emerald-100 px-2.5 py-0.5 text-xs font-medium text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-400">
-                            {{ $plugin->tier->label() }}&nbsp;&mdash;&nbsp;${{ number_format($regularPrice) }}
+                            {{ $plugin->tier->label() }}
                         </span>
                     @elseif ($plugin->isPaid())
                         <span class="inline-flex shrink-0 items-center text-center rounded-full bg-emerald-100 px-2.5 py-0.5 text-xs font-medium text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-400">
@@ -735,24 +877,101 @@
 
                 <flux:separator class="my-4" />
 
-                <div class="space-y-3">
-                    <div>
-                        <flux:heading size="sm">Support Channel</flux:heading>
-                        @if ($plugin->support_channel)
-                            <flux:text class="mt-1">{{ $plugin->support_channel }}</flux:text>
-                        @else
-                            <flux:text class="mt-1 text-gray-400 dark:text-gray-500">No support channel set</flux:text>
-                        @endif
+                <dl class="grid grid-cols-2 gap-3">
+                    {{-- Author --}}
+                    <div class="col-span-2">
+                        <dt class="text-xs font-medium text-gray-500 dark:text-gray-400">Author</dt>
+                        <dd class="mt-1 text-sm font-medium text-gray-900 dark:text-white">
+                            {{ $plugin->user->display_name }}
+                        </dd>
                     </div>
 
+                    {{-- Version --}}
                     <div>
-                        <flux:heading size="sm">Repository</flux:heading>
-                        <a href="{{ $plugin->repository_url }}" target="_blank" rel="noopener noreferrer" class="mt-1 inline-flex items-center gap-1 text-sm text-indigo-600 hover:text-indigo-500 dark:text-indigo-400 dark:hover:text-indigo-300">
-                            {{ $plugin->repository_url }}
-                            <x-heroicon-o-arrow-top-right-on-square class="size-3.5" />
-                        </a>
+                        <dt class="text-xs font-medium text-gray-500 dark:text-gray-400">Version</dt>
+                        <dd class="mt-1">
+                            @if ($plugin->latest_version)
+                                <a href="{{ $plugin->repository_url }}/releases" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 text-sm font-medium text-indigo-600 hover:text-indigo-500 dark:text-indigo-400 dark:hover:text-indigo-300">
+                                    {{ $plugin->latest_version }}
+                                    <x-heroicon-o-arrow-top-right-on-square class="size-3" />
+                                </a>
+                            @elseif ($plugin->review_checks['release_version'] ?? null)
+                                <a href="{{ $plugin->repository_url }}/releases" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 text-sm font-medium text-indigo-600 hover:text-indigo-500 dark:text-indigo-400 dark:hover:text-indigo-300">
+                                    {{ $plugin->review_checks['release_version'] }}
+                                    <x-heroicon-o-arrow-top-right-on-square class="size-3" />
+                                </a>
+                            @else
+                                <span class="text-sm text-gray-400 dark:text-gray-500">&mdash;</span>
+                            @endif
+                        </dd>
                     </div>
-                </div>
+
+                    {{-- License --}}
+                    <div>
+                        <dt class="text-xs font-medium text-gray-500 dark:text-gray-400">License</dt>
+                        <dd class="mt-1">
+                            @if ($plugin->getLicense())
+                                <a href="{{ $plugin->getLicenseUrl() }}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 text-sm font-medium text-indigo-600 hover:text-indigo-500 dark:text-indigo-400 dark:hover:text-indigo-300">
+                                    {{ $plugin->getLicense() }}
+                                    <x-heroicon-o-arrow-top-right-on-square class="size-3" />
+                                </a>
+                            @else
+                                <span class="text-sm text-gray-400 dark:text-gray-500">&mdash;</span>
+                            @endif
+                        </dd>
+                    </div>
+
+                    {{-- iOS Version --}}
+                    <div>
+                        <dt class="text-xs font-medium text-gray-500 dark:text-gray-400">Min iOS</dt>
+                        <dd class="mt-1 text-sm font-medium text-gray-900 dark:text-white">
+                            {{ $plugin->ios_version ?? ($plugin->review_checks['ios_min_version'] ?? '—') }}
+                        </dd>
+                    </div>
+
+                    {{-- Android Version --}}
+                    <div>
+                        <dt class="text-xs font-medium text-gray-500 dark:text-gray-400">Min Android</dt>
+                        <dd class="mt-1 text-sm font-medium text-gray-900 dark:text-white">
+                            {{ $plugin->android_version ?? ($plugin->review_checks['android_min_version'] ?? '—') }}
+                        </dd>
+                    </div>
+
+                    {{-- Support Channel --}}
+                    <div class="col-span-2">
+                        <dt class="text-xs font-medium text-gray-500 dark:text-gray-400">Support Channel</dt>
+                        <dd class="mt-1">
+                            @if ($plugin->support_channel)
+                                @if (filter_var($plugin->support_channel, FILTER_VALIDATE_URL))
+                                    <a href="{{ $plugin->support_channel }}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 text-sm font-medium text-indigo-600 hover:text-indigo-500 dark:text-indigo-400 dark:hover:text-indigo-300">
+                                        {{ $plugin->support_channel }}
+                                        <x-heroicon-o-arrow-top-right-on-square class="size-3" />
+                                    </a>
+                                @elseif (filter_var($plugin->support_channel, FILTER_VALIDATE_EMAIL))
+                                    <a href="mailto:{{ $plugin->support_channel }}" class="inline-flex items-center gap-1 text-sm font-medium text-indigo-600 hover:text-indigo-500 dark:text-indigo-400 dark:hover:text-indigo-300">
+                                        {{ $plugin->support_channel }}
+                                        <x-heroicon-o-envelope class="size-3" />
+                                    </a>
+                                @else
+                                    <span class="text-sm font-medium text-gray-900 dark:text-white">{{ $plugin->support_channel }}</span>
+                                @endif
+                            @else
+                                <span class="text-sm text-gray-400 dark:text-gray-500">Not set</span>
+                            @endif
+                        </dd>
+                    </div>
+
+                    {{-- Repository --}}
+                    <div class="col-span-2">
+                        <dt class="text-xs font-medium text-gray-500 dark:text-gray-400">Repository</dt>
+                        <dd class="mt-1">
+                            <a href="{{ $plugin->repository_url }}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 text-sm text-indigo-600 hover:text-indigo-500 dark:text-indigo-400 dark:hover:text-indigo-300">
+                                {{ $plugin->repository_url }}
+                                <x-heroicon-o-arrow-top-right-on-square class="size-3.5" />
+                            </a>
+                        </dd>
+                    </div>
+                </dl>
             </flux:card>
 
             @if ($plugin->notes)
@@ -764,4 +983,17 @@
         @endif
 
     </div>
+
+    @script
+    <script>
+        $wire.on('scroll-to-first-error', () => {
+            setTimeout(() => {
+                const firstError = document.querySelector('.text-red-600, .text-red-500, [data-flux-error]:not(.hidden)');
+                if (firstError) {
+                    firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+            }, 100);
+        });
+    </script>
+    @endscript
 </div>

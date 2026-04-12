@@ -341,7 +341,7 @@
                                     />
                                 @endif
 
-                                <div>Dashboard</div>
+                                <div>Log in</div>
                             </a>
                         @endauth
                     </div>
