@@ -21,8 +21,6 @@ class LeadSubmissionForm extends Component
 
     public string $description = '';
 
-    public string $budget = '';
-
     public string $turnstileToken = '';
 
     #[Locked]
@@ -35,7 +33,6 @@ class LeadSubmissionForm extends Component
             'email' => ['required', 'email', 'max:255'],
             'company' => ['required', 'string', 'max:255'],
             'description' => ['required', 'string', 'max:5000'],
-            'budget' => ['required', 'string', 'in:'.implode(',', array_keys(Lead::BUDGETS))],
         ];
 
         if (config('services.turnstile.secret_key')) {
@@ -48,7 +45,6 @@ class LeadSubmissionForm extends Component
     public function messages(): array
     {
         return [
-            'budget.in' => 'Please select a budget range.',
             'turnstileToken.required' => 'Please complete the security check.',
         ];
     }
@@ -73,7 +69,6 @@ class LeadSubmissionForm extends Component
             'email' => $this->email,
             'company' => $this->company,
             'description' => $this->description,
-            'budget' => $this->budget,
             'ip_address' => request()->ip(),
         ]);
 
@@ -87,8 +82,6 @@ class LeadSubmissionForm extends Component
 
     public function render()
     {
-        return view('livewire.lead-submission-form', [
-            'budgets' => Lead::BUDGETS,
-        ]);
+        return view('livewire.lead-submission-form');
     }
 }

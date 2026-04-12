@@ -96,7 +96,7 @@
                     $isUltraActive = request()->routeIs('pricing');
                     $isBlogActive = request()->routeIs('blog*');
                     $isPartnersActive = request()->routeIs('partners*');
-                    $isServicesActive = request()->routeIs('build-my-app');
+                    $isServicesActive = request()->routeIs('consulting');
                     $isCourseActive = request()->routeIs('course');
                     $isSupportActive = request()->routeIs('support.*');
                     $isSponsorActive = request()->routeIs('sponsoring*');
@@ -231,10 +231,10 @@
                     </a>
                 </div>
 
-                {{-- Services Link --}}
+                {{-- Consulting Link --}}
                 <div>
                     <a
-                        href="{{ route('build-my-app') }}"
+                        href="{{ route('consulting') }}"
                         @class([
                             'flex items-center gap-2 py-3 transition duration-200',
                             'font-medium' => $isServicesActive,
@@ -250,7 +250,7 @@
                             />
                         @endif
 
-                        <div>Develop</div>
+                        <div>Consulting</div>
                     </a>
                 </div>
 
