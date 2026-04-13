@@ -4,6 +4,26 @@
         <flux:text>Welcome back, {{ auth()->user()->first_name ?? auth()->user()->name }}</flux:text>
     </div>
 
+    {{-- Email Verification Banner --}}
+    @if (!auth()->user()->hasVerifiedEmail())
+        <flux:callout variant="warning" icon="envelope" class="mb-6">
+            <flux:callout.heading>Please verify your email address.</flux:callout.heading>
+            <flux:callout.text>
+                We sent a verification email when you registered. Click the link in that email to verify your account.
+
+                @if (session('status'))
+                    <span class="font-medium">{{ session('status') }}</span>
+                @endif
+            </flux:callout.text>
+            <x-slot:actions>
+                <form method="POST" action="{{ route('verification.send') }}">
+                    @csrf
+                    <flux:button type="submit" variant="filled" size="sm">Resend verification email</flux:button>
+                </form>
+            </x-slot:actions>
+        </flux:callout>
+    @endif
+
     {{-- Session Messages --}}
     @if (session('success'))
         <flux:callout variant="success" icon="check-circle" class="mb-6">
