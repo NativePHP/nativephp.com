@@ -85,19 +85,23 @@ class PluginDirectoryController extends Controller
     {
         $plugin = Plugin::findByVendorPackageOrFail($vendor, $package);
 
-        abort_unless($plugin->isApproved(), 404);
-        abort_unless($plugin->isPaid(), 404);
-        abort_unless($plugin->license_html, 404);
-
         $user = Auth::user();
 
-        // For paid plugins, check if user has an accessible price
-        if (! $plugin->hasAccessiblePriceFor($user)) {
+        $isAdmin = $user?->isAdmin() ?? false;
+        $isOwner = $user && $plugin->user_id === $user->id;
+
+        abort_unless($plugin->isPaid(), 404);
+        abort_unless($plugin->license_html, 404);
+        abort_unless(($plugin->isApproved() && $plugin->is_active) || $isAdmin || $isOwner, 404);
+
+        // For paid plugins, check if user has an accessible price (admins and owners bypass)
+        if (! $isAdmin && ! $isOwner && ! $plugin->hasAccessiblePriceFor($user)) {
             abort(404);
         }
 
         return view('plugin-license', [
             'plugin' => $plugin,
+            'isAdminPreview' => (! $plugin->isApproved() || ! $plugin->is_active) && ($isAdmin || $isOwner),
         ]);
     }
 }
