@@ -5,6 +5,7 @@ namespace App\Support\CommonMark;
 use App\Extensions\TorchlightWithCopyExtension;
 use League\CommonMark\Environment\Environment;
 use League\CommonMark\Extension\CommonMark\CommonMarkCoreExtension;
+use League\CommonMark\Extension\CommonMark\Node\Block\BlockQuote;
 use League\CommonMark\Extension\CommonMark\Node\Block\Heading;
 use League\CommonMark\Extension\Embed\Bridge\OscaroteroEmbedAdapter;
 use League\CommonMark\Extension\Embed\Embed as EmbedNode;
@@ -53,6 +54,7 @@ class CommonMark
             $environment->addExtension(new GithubFlavoredMarkdownExtension);
             static::$headingRenderer = new HeadingRenderer;
             $environment->addRenderer(Heading::class, static::$headingRenderer);
+            $environment->addRenderer(BlockQuote::class, new AlertBlockQuoteRenderer, 10);
             $environment->addExtension(new TableExtension);
 
             $environment->addExtension(new EmbedExtension);
