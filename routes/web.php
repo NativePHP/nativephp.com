@@ -4,6 +4,7 @@ use App\Features\ShowAuthButtons;
 use App\Features\ShowPlugins;
 use App\Http\Controllers\ApplinksController;
 use App\Http\Controllers\Auth\CustomerAuthController;
+use App\Http\Controllers\Auth\EmailVerificationController;
 use App\Http\Controllers\BundleController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\CustomerLicenseController;
@@ -13,6 +14,7 @@ use App\Http\Controllers\DiscordIntegrationController;
 use App\Http\Controllers\GitHubAuthController;
 use App\Http\Controllers\GitHubIntegrationController;
 use App\Http\Controllers\LicenseRenewalController;
+use App\Http\Controllers\NotificationUnsubscribeController;
 use App\Http\Controllers\OpenCollectiveWebhookController;
 use App\Http\Controllers\PluginDirectoryController;
 use App\Http\Controllers\PluginWebhookController;
@@ -288,6 +290,13 @@ Route::middleware(['guest'])->group(function (): void {
     Route::get('auth/github/login', [GitHubAuthController::class, 'redirect'])->name('login.github');
 });
 
+// Email verification routes
+Route::middleware('auth')->group(function (): void {
+    Route::get('email/verify', [EmailVerificationController::class, 'notice'])->name('verification.notice');
+    Route::get('email/verify/{id}/{hash}', [EmailVerificationController::class, 'verify'])->middleware(['signed', 'throttle:6,1'])->name('verification.verify');
+    Route::post('email/verification-notification', [EmailVerificationController::class, 'resend'])->middleware('throttle:6,1')->name('verification.send');
+});
+
 Route::post('logout', [CustomerAuthController::class, 'logout'])
     ->middleware(EnsureFeaturesAreActive::using(ShowAuthButtons::class))
     ->name('customer.logout');
@@ -404,6 +413,12 @@ Route::middleware(['auth', EnsureFeaturesAreActive::using(ShowAuthButtons::class
     Route::delete('licenses/{licenseKey}/sub-licenses/{subLicense}', [CustomerSubLicenseController::class, 'destroy'])->name('licenses.sub-licenses.destroy');
     Route::patch('licenses/{licenseKey}/sub-licenses/{subLicense}/suspend', [CustomerSubLicenseController::class, 'suspend'])->name('licenses.sub-licenses.suspend');
     Route::post('licenses/{licenseKey}/sub-licenses/{subLicense}/send-email', [CustomerSubLicenseController::class, 'sendEmail'])->name('licenses.sub-licenses.send-email');
+});
+
+// Notification unsubscribe/resubscribe (signed URLs, no auth required)
+Route::middleware('signed')->group(function (): void {
+    Route::get('notifications/unsubscribe/{user}', [NotificationUnsubscribeController::class, 'unsubscribe'])->name('notifications.unsubscribe');
+    Route::get('notifications/resubscribe/{user}', [NotificationUnsubscribeController::class, 'resubscribe'])->name('notifications.resubscribe');
 });
 
 Route::get('.well-known/assetlinks.json', [ApplinksController::class, 'assetLinks']);

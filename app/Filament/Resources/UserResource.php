@@ -2,7 +2,6 @@
 
 namespace App\Filament\Resources;
 
-use App\Enums\StripeConnectStatus;
 use App\Filament\Resources\UserResource\Pages;
 use App\Filament\Resources\UserResource\RelationManagers;
 use App\Models\User;
@@ -38,11 +37,11 @@ class UserResource extends Resource
                             ->email()
                             ->required()
                             ->maxLength(255),
-                        Forms\Components\DateTimePicker::make('email_verified_at'),
                         Forms\Components\TextInput::make('password')
                             ->password()
                             ->dehydrated(fn ($state) => filled($state))
                             ->required(fn (string $context): bool => $context === 'create')
+                            ->hidden(fn (string $context): bool => $context === 'edit')
                             ->maxLength(255),
                     ]),
                 Schemas\Components\Section::make('Billing Information')
@@ -64,15 +63,26 @@ class UserResource extends Resource
                             ->maxLength(255)
                             ->disabled(),
                     ]),
+                Schemas\Components\Section::make('Notifications')
+                    ->description('Once these are disabled, they cannot be re-enabled by an admin.')
+                    ->inlineLabel()
+                    ->columns(1)
+                    ->schema([
+                        Forms\Components\Toggle::make('receives_notification_emails')
+                            ->label('Email notifications')
+                            ->disabled(fn (?User $record) => $record && ! $record->receives_notification_emails),
+                        Forms\Components\Toggle::make('receives_new_plugin_notifications')
+                            ->label('New plugin notifications')
+                            ->disabled(fn (?User $record) => $record && ! $record->receives_new_plugin_notifications),
+                    ]),
                 Schemas\Components\Section::make('Developer Account')
                     ->inlineLabel()
                     ->columns(1)
                     ->visible(fn (?User $record) => $record?->developerAccount !== null)
                     ->schema([
-                        Forms\Components\Select::make('developerAccount.stripe_connect_status')
+                        Forms\Components\Placeholder::make('developerAccount.stripe_connect_status')
                             ->label('Stripe Connect Status')
-                            ->options(StripeConnectStatus::class)
-                            ->disabled(),
+                            ->content(fn (User $record) => $record->developerAccount->stripe_connect_status?->label() ?? '—'),
                         Forms\Components\Placeholder::make('developerAccount.stripe_connect_account_id')
                             ->label('Stripe Connect Account')
                             ->content(fn (User $record) => new HtmlString(

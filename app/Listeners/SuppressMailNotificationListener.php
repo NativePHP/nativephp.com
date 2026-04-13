@@ -3,6 +3,7 @@
 namespace App\Listeners;
 
 use App\Models\User;
+use Illuminate\Auth\Notifications\VerifyEmail;
 use Illuminate\Notifications\Events\NotificationSending;
 
 class SuppressMailNotificationListener
@@ -17,6 +18,11 @@ class SuppressMailNotificationListener
             return true;
         }
 
-        return $event->notifiable->receives_notification_emails;
+        // System notifications like email verification should always be sent
+        if ($event->notification instanceof VerifyEmail) {
+            return true;
+        }
+
+        return (bool) $event->notifiable->receives_notification_emails;
     }
 }

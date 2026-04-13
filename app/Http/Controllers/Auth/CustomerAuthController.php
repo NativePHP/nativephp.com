@@ -9,6 +9,7 @@ use App\Models\Plugin;
 use App\Models\TeamUser;
 use App\Models\User;
 use App\Services\CartService;
+use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Passwords\PasswordBroker;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -44,6 +45,8 @@ class CustomerAuthController extends Controller
             'email' => $request->email,
             'password' => Hash::make($request->password),
         ]);
+
+        event(new Registered($user));
 
         Auth::login($user);
 
