@@ -18,6 +18,7 @@ class SendNewPluginNotifications implements ShouldQueue
     public function handle(): void
     {
         $recipients = User::query()
+            ->whereNotNull('email_verified_at')
             ->where('receives_new_plugin_notifications', true)
             ->where('id', '!=', $this->plugin->user_id)
             ->get();

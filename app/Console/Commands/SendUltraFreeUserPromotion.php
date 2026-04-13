@@ -22,6 +22,7 @@ class SendUltraFreeUserPromotion extends Command
         }
 
         $users = User::query()
+            ->whereNotNull('email_verified_at')
             ->whereDoesntHave('licenses')
             ->whereDoesntHave('subscriptions')
             ->get();

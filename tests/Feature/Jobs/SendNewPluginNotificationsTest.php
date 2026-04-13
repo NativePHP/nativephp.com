@@ -41,4 +41,17 @@ class SendNewPluginNotificationsTest extends TestCase
 
         Notification::assertNotSentTo($author, NewPluginAvailable::class);
     }
+
+    public function test_job_does_not_notify_unverified_users(): void
+    {
+        Notification::fake();
+
+        $author = User::factory()->create();
+        $unverified = User::factory()->unverified()->create(['receives_new_plugin_notifications' => true]);
+        $plugin = Plugin::factory()->approved()->for($author)->create();
+
+        (new SendNewPluginNotifications($plugin))->handle();
+
+        Notification::assertNotSentTo($unverified, NewPluginAvailable::class);
+    }
 }

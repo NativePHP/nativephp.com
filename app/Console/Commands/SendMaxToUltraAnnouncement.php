@@ -29,6 +29,7 @@ class SendMaxToUltraAnnouncement extends Command
         ]);
 
         $users = User::query()
+            ->whereNotNull('email_verified_at')
             ->whereHas('subscriptions', function ($query) use ($maxPriceIds) {
                 $query->where('stripe_status', 'active')
                     ->where('is_comped', false)
