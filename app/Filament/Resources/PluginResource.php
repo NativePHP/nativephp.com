@@ -115,6 +115,11 @@ class PluginResource extends Resource
                         Forms\Components\Toggle::make('is_official')
                             ->label('Official (First-Party)')
                             ->helperText('Official plugins are free for Ultra subscribers'),
+
+                        Forms\Components\Toggle::make('featured'),
+
+                        Forms\Components\Toggle::make('is_active')
+                            ->label('Active'),
                     ]),
 
                 Schemas\Components\Section::make('Review Checks')
