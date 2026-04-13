@@ -371,6 +371,7 @@ class PluginResource extends Resource
                         ->label('Grant to User')
                         ->icon('heroicon-o-gift')
                         ->color('success')
+                        ->visible(fn (Plugin $record): bool => ! $record->isFree())
                         ->form([
                             Forms\Components\Select::make('user_id')
                                 ->label('User')

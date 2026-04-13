@@ -106,7 +106,7 @@ class EditPlugin extends EditRecord
                     ->label('Grant to User')
                     ->icon('heroicon-o-gift')
                     ->color('success')
-                    ->visible(fn () => $this->record->isApproved())
+                    ->visible(fn () => $this->record->isApproved() && ! $this->record->isFree())
                     ->form([
                         Forms\Components\Select::make('user_id')
                             ->label('User')
@@ -158,14 +158,6 @@ class EditPlugin extends EditRecord
                     ->modalHeading('Grant Plugin to User')
                     ->modalDescription(fn () => "Grant '{$this->record->name}' to a user for free.")
                     ->modalSubmitActionLabel('Grant'),
-
-                Actions\Action::make('viewPackagist')
-                    ->label('View on Packagist')
-                    ->icon('heroicon-o-arrow-top-right-on-square')
-                    ->color('gray')
-                    ->url(fn () => $this->record->getPackagistUrl())
-                    ->openUrlInNewTab()
-                    ->visible(fn () => $this->record->isFree()),
 
                 Actions\Action::make('runReviewChecks')
                     ->label('Run Review Checks')
@@ -244,14 +236,6 @@ class EditPlugin extends EditRecord
                             ->success()
                             ->send();
                     }),
-
-                Actions\Action::make('viewGithub')
-                    ->label('View on GitHub')
-                    ->icon('heroicon-o-arrow-top-right-on-square')
-                    ->color('gray')
-                    ->visible(fn () => $this->record->repository_url !== null)
-                    ->url(fn () => $this->record->getGithubUrl())
-                    ->openUrlInNewTab(),
 
                 Actions\Action::make('viewListing')
                     ->label('View Listing Page')
