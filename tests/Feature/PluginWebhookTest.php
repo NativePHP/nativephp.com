@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Models\Plugin;
+use App\Services\PluginSyncService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
@@ -42,9 +43,9 @@ class PluginWebhookTest extends TestCase
     }
 
     #[Test]
-    public function non_ping_event_returns_403_for_unapproved_plugin(): void
+    public function non_ping_event_returns_403_for_inactive_plugin(): void
     {
-        $plugin = Plugin::factory()->create();
+        $plugin = Plugin::factory()->inactive()->create();
 
         $response = $this->postJson(
             route('webhooks.plugins', $plugin->webhook_secret),
@@ -53,7 +54,29 @@ class PluginWebhookTest extends TestCase
         );
 
         $response->assertForbidden()
-            ->assertJson(['error' => 'Plugin is not approved']);
+            ->assertJson(['error' => 'Plugin is not active']);
+    }
+
+    #[Test]
+    public function non_ping_event_succeeds_for_unapproved_but_active_plugin(): void
+    {
+        $plugin = Plugin::factory()->create([
+            'is_active' => true,
+            'last_synced_at' => now(),
+        ]);
+
+        $this->mock(PluginSyncService::class, function ($mock) {
+            $mock->shouldReceive('sync')->once()->andReturn(true);
+        });
+
+        $response = $this->postJson(
+            route('webhooks.plugins', $plugin->webhook_secret),
+            [],
+            ['X-GitHub-Event' => 'push']
+        );
+
+        $response->assertOk()
+            ->assertJson(['success' => true]);
     }
 
     #[Test]
