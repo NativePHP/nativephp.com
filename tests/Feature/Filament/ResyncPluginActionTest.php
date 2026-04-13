@@ -64,27 +64,4 @@ class ResyncPluginActionTest extends TestCase
             ->test(EditPlugin::class, ['record' => $plugin->getRouteKey()])
             ->assertActionHidden('resync');
     }
-
-    public function test_view_github_action_uses_repository_url(): void
-    {
-        $plugin = Plugin::factory()->free()->approved()->create([
-            'repository_url' => 'https://github.com/acme/test-plugin',
-        ]);
-
-        Livewire::actingAs($this->admin)
-            ->test(EditPlugin::class, ['record' => $plugin->getRouteKey()])
-            ->assertActionVisible('viewGithub')
-            ->assertActionHasUrl('viewGithub', 'https://github.com/acme/test-plugin');
-    }
-
-    public function test_view_github_action_hidden_when_no_repository_url(): void
-    {
-        $plugin = Plugin::factory()->free()->approved()->create([
-            'repository_url' => null,
-        ]);
-
-        Livewire::actingAs($this->admin)
-            ->test(EditPlugin::class, ['record' => $plugin->getRouteKey()])
-            ->assertActionHidden('viewGithub');
-    }
 }

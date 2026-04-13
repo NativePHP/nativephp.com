@@ -59,6 +59,17 @@ class PluginResource extends Resource
                         Forms\Components\TextInput::make('display_name')
                             ->label('Display Name'),
 
+                        Forms\Components\Textarea::make('description')
+                            ->label('Description'),
+
+                        Forms\Components\Select::make('type')
+                            ->options(PluginType::class),
+
+                        Forms\Components\Select::make('tier')
+                            ->options(PluginTier::class)
+                            ->placeholder('No tier')
+                            ->helperText('Set pricing tier for paid plugins'),
+
                         Forms\Components\Placeholder::make('name')
                             ->label('Composer Package Name')
                             ->content(function (?Plugin $record) {
@@ -72,14 +83,6 @@ class PluginResource extends Resource
 
                                 return $record->name;
                             }),
-
-                        Forms\Components\Select::make('type')
-                            ->options(PluginType::class),
-
-                        Forms\Components\Select::make('tier')
-                            ->options(PluginTier::class)
-                            ->placeholder('No tier')
-                            ->helperText('Set pricing tier for paid plugins'),
 
                         Forms\Components\Placeholder::make('repository_url')
                             ->label('Repository URL')
@@ -109,22 +112,14 @@ class PluginResource extends Resource
                             })
                             ->visible(fn (?Plugin $record) => $record !== null),
 
-                        Forms\Components\Select::make('status')
-                            ->options(PluginStatus::class)
-                            ->disabled()
-                            ->helperText('Use the Approve/Reject actions to change status'),
-
                         Forms\Components\Toggle::make('is_official')
                             ->label('Official (First-Party)')
                             ->helperText('Official plugins are free for Ultra subscribers'),
 
-                        Forms\Components\Textarea::make('description')
-                            ->label('Description'),
+                        Forms\Components\Toggle::make('featured'),
 
-                        Forms\Components\Textarea::make('rejection_reason')
-                            ->label('Rejection Reason')
-
-                            ->visible(fn (?Plugin $record) => $record?->isRejected()),
+                        Forms\Components\Toggle::make('is_active')
+                            ->label('Active'),
                     ]),
 
                 Schemas\Components\Section::make('Review Checks')
@@ -371,6 +366,7 @@ class PluginResource extends Resource
                         ->label('Grant to User')
                         ->icon('heroicon-o-gift')
                         ->color('success')
+                        ->visible(fn (Plugin $record): bool => ! $record->isFree())
                         ->form([
                             Forms\Components\Select::make('user_id')
                                 ->label('User')
