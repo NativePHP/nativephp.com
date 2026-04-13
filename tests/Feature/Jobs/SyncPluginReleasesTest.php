@@ -41,8 +41,10 @@ class SyncPluginReleasesTest extends TestCase
             'latest_version' => '0.9.0',
         ]);
 
+        $satisService = $this->mock(SatisService::class);
+
         $job = new SyncPluginReleases($plugin, triggerSatisBuild: false);
-        $job->handle(app(SatisService::class));
+        $job->handle($satisService);
 
         $plugin->refresh();
 
@@ -79,8 +81,10 @@ class SyncPluginReleasesTest extends TestCase
             'published_at' => '2026-01-01T00:00:00Z',
         ]);
 
+        $satisService = $this->mock(SatisService::class);
+
         $job = new SyncPluginReleases($plugin, triggerSatisBuild: false);
-        $job->handle(app(SatisService::class));
+        $job->handle($satisService);
 
         $plugin->refresh();
 
