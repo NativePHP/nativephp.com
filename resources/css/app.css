@@ -393,6 +393,108 @@ nav.docs-navigation li:has(.third-tier .exact-active) > .subsection-header {
     @apply relative z-0 mt-5 overflow-hidden rounded-2xl bg-gradient-to-tl from-transparent to-violet-100/75 px-5 ring-1 ring-black/5 dark:from-slate-900/30 dark:to-indigo-900/35;
 }
 
+/* GitHub-style markdown alerts */
+.prose .markdown-alert {
+    @apply relative z-0 my-4 overflow-hidden rounded-2xl border-l-4 px-5 py-3 ring-1 ring-black/5;
+}
+
+.prose .markdown-alert > :first-child {
+    @apply mt-0;
+}
+
+.prose .markdown-alert > :last-child {
+    @apply mb-0;
+}
+
+.prose .markdown-alert-title {
+    @apply flex items-center gap-2 font-semibold;
+}
+
+.prose .markdown-alert-title svg {
+    @apply shrink-0;
+}
+
+.prose .markdown-alert-note {
+    @apply border-blue-400 bg-gradient-to-tl from-transparent to-blue-100/75 text-blue-900;
+}
+
+.prose .markdown-alert-note .markdown-alert-title {
+    @apply text-blue-700;
+}
+
+.prose .markdown-alert-tip {
+    @apply border-green-400 bg-gradient-to-tl from-transparent to-green-100/75 text-green-900;
+}
+
+.prose .markdown-alert-tip .markdown-alert-title {
+    @apply text-green-700;
+}
+
+.prose .markdown-alert-important {
+    @apply border-purple-400 bg-gradient-to-tl from-transparent to-purple-100/75 text-purple-900;
+}
+
+.prose .markdown-alert-important .markdown-alert-title {
+    @apply text-purple-700;
+}
+
+.prose .markdown-alert-warning {
+    @apply border-amber-400 bg-gradient-to-tl from-transparent to-amber-100/75 text-amber-900;
+}
+
+.prose .markdown-alert-warning .markdown-alert-title {
+    @apply text-amber-700;
+}
+
+.prose .markdown-alert-caution {
+    @apply border-red-400 bg-gradient-to-tl from-transparent to-red-100/75 text-red-900;
+}
+
+.prose .markdown-alert-caution .markdown-alert-title {
+    @apply text-red-700;
+}
+
+/* Dark mode markdown alerts */
+.dark .prose .markdown-alert-note {
+    @apply border-blue-500 from-slate-900/30 to-blue-900/35 text-blue-200;
+}
+
+.dark .prose .markdown-alert-note .markdown-alert-title {
+    @apply text-blue-400;
+}
+
+.dark .prose .markdown-alert-tip {
+    @apply border-green-500 from-slate-900/30 to-green-900/35 text-green-200;
+}
+
+.dark .prose .markdown-alert-tip .markdown-alert-title {
+    @apply text-green-400;
+}
+
+.dark .prose .markdown-alert-important {
+    @apply border-purple-500 from-slate-900/30 to-purple-900/35 text-purple-200;
+}
+
+.dark .prose .markdown-alert-important .markdown-alert-title {
+    @apply text-purple-400;
+}
+
+.dark .prose .markdown-alert-warning {
+    @apply border-amber-500 from-slate-900/30 to-amber-900/35 text-amber-200;
+}
+
+.dark .prose .markdown-alert-warning .markdown-alert-title {
+    @apply text-amber-400;
+}
+
+.dark .prose .markdown-alert-caution {
+    @apply border-red-500 from-slate-900/30 to-red-900/35 text-red-200;
+}
+
+.dark .prose .markdown-alert-caution .markdown-alert-title {
+    @apply text-red-400;
+}
+
 .images-two-up {
     @apply grid gap-8 mt-0 items-center;
 
