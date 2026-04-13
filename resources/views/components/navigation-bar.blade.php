@@ -94,6 +94,14 @@
                 Masterclass
             </a>
 
+            {{-- Consulting link (desktop only) --}}
+            <a
+                href="{{ route('consulting') }}"
+                class="hidden items-center gap-1.5 rounded-full bg-blue-500/10 px-3 py-1.5 text-sm font-medium text-blue-600 transition duration-200 hover:bg-blue-500/20 lg:inline-flex dark:text-blue-400 dark:hover:bg-blue-500/20"
+            >
+                Consulting
+            </a>
+
             {{-- Bifrost button (visible on large screens) --}}
             <div class="hidden lg:block">
                 <x-bifrost-button small />

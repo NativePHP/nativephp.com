@@ -24,13 +24,13 @@ class NewLeadSubmitted extends Notification implements ShouldQueue
     public function toMail(object $notifiable): MailMessage
     {
         return (new MailMessage)
-            ->subject('New Build My App Enquiry: '.$this->lead->company)
+            ->subject('New Consulting Enquiry: '.$this->lead->company)
             ->replyTo($this->lead->email, $this->lead->name)
             ->greeting('New lead received!')
             ->line("**Name:** {$this->lead->name}")
             ->line("**Email:** {$this->lead->email}")
             ->line("**Company:** {$this->lead->company}")
-            ->line("**Budget:** {$this->lead->budget_label}")
+            ->when($this->lead->budget, fn (MailMessage $message) => $message->line("**Budget:** {$this->lead->budget_label}"))
             ->line('**Project Description:**')
             ->line($this->lead->description);
     }
