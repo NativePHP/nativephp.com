@@ -268,6 +268,11 @@ class Plugin extends Model
         return $this->status === PluginStatus::Rejected;
     }
 
+    public function isActive(): bool
+    {
+        return $this->is_active ?? true;
+    }
+
     public function isFree(): bool
     {
         return $this->type === PluginType::Free;

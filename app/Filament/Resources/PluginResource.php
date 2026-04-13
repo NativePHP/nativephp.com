@@ -61,7 +61,17 @@ class PluginResource extends Resource
 
                         Forms\Components\Placeholder::make('name')
                             ->label('Composer Package Name')
-                            ->content(fn (?Plugin $record) => $record?->name ?? '-'),
+                            ->content(function (?Plugin $record) {
+                                if (! $record?->name) {
+                                    return '-';
+                                }
+
+                                if ($record->isFree()) {
+                                    return new HtmlString('<a href="'.e($record->getPackagistUrl()).'" target="_blank" rel="noopener noreferrer" class="text-primary-600 hover:underline">'.e($record->name).' ↗</a>');
+                                }
+
+                                return $record->name;
+                            }),
 
                         Forms\Components\Select::make('type')
                             ->options(PluginType::class),
@@ -75,20 +85,24 @@ class PluginResource extends Resource
                             ->label('Repository URL')
                             ->content(fn (?Plugin $record) => $record?->repository_url
                                 ? new HtmlString('<a href="'.e($record->repository_url).'" target="_blank" rel="noopener noreferrer" class="text-primary-600 hover:underline">'.e($record->repository_url).' ↗</a>')
-                                : '-'),
+                                : '-')
+                            ->visible(fn (?Plugin $record) => ! ($record?->isPaid() && ! $record?->isOfficial())),
 
                         Forms\Components\Placeholder::make('license_type')
                             ->label('License')
                             ->content(function (?Plugin $record) {
                                 $license = $record?->getLicense();
-                                $licenseUrl = $record?->getLicenseUrl();
 
                                 if (! $license) {
                                     return '-';
                                 }
 
-                                if ($licenseUrl) {
-                                    return new HtmlString('<a href="'.e($licenseUrl).'" target="_blank" rel="noopener noreferrer" class="text-primary-600 hover:underline">'.e($license).' ↗</a>');
+                                $url = $record->isPaid()
+                                    ? route('plugins.license', $record->routeParams())
+                                    : $record->getLicenseUrl();
+
+                                if ($url) {
+                                    return new HtmlString('<a href="'.e($url).'" target="_blank" rel="noopener noreferrer" class="text-primary-600 hover:underline">'.e($license).' ↗</a>');
                                 }
 
                                 return $license;
@@ -212,7 +226,17 @@ class PluginResource extends Resource
                         Forms\Components\Select::make('user_id')
                             ->relationship('user', 'email')
                             ->searchable()
-                            ->preload(),
+                            ->preload()
+                            ->suffixAction(
+                                Action::make('viewUser')
+                                    ->label('Go to User')
+                                    ->icon('heroicon-o-arrow-top-right-on-square')
+                                    ->url(fn (?Plugin $record) => $record?->user_id
+                                        ? UserResource::getUrl('edit', ['record' => $record->user_id])
+                                        : null)
+                                    ->openUrlInNewTab()
+                                    ->visible(fn (?Plugin $record) => $record?->user_id !== null),
+                            ),
 
                         Forms\Components\Placeholder::make('created_at')
                             ->label('Submitted At')
