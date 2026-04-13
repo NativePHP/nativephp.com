@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\PluginResource\Pages;
 
+use App\Enums\PluginStatus;
 use App\Enums\PluginTier;
 use App\Enums\PluginType;
 use App\Filament\Resources\PluginResource;
@@ -15,11 +16,29 @@ use Filament\Actions;
 use Filament\Forms;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
+use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\HtmlString;
 
 class EditPlugin extends EditRecord
 {
     protected static string $resource = PluginResource::class;
+
+    public function getSubheading(): string|HtmlString|null
+    {
+        $color = match ($this->record->status) {
+            PluginStatus::Draft => 'gray',
+            PluginStatus::Pending => 'warning',
+            PluginStatus::Approved => 'success',
+            PluginStatus::Rejected => 'danger',
+        };
+
+        return new HtmlString(
+            Blade::render('<x-filament::badge :color="$color">{{ $label }}</x-filament::badge>', [
+                'color' => $color,
+                'label' => $this->record->status->label(),
+            ])
+        );
+    }
 
     protected function getHeaderActions(): array
     {

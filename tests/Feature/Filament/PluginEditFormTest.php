@@ -105,4 +105,33 @@ class PluginEditFormTest extends TestCase
             ->test(EditPlugin::class, ['record' => $plugin->getRouteKey()])
             ->assertActionHidden('approve');
     }
+
+    public function test_status_is_shown_as_badge_in_subheading(): void
+    {
+        $plugin = Plugin::factory()->approved()->create();
+
+        Livewire::actingAs($this->admin)
+            ->test(EditPlugin::class, ['record' => $plugin->getRouteKey()])
+            ->assertSee('Approved');
+    }
+
+    public function test_status_field_is_not_in_form(): void
+    {
+        $plugin = Plugin::factory()->approved()->create();
+
+        Livewire::actingAs($this->admin)
+            ->test(EditPlugin::class, ['record' => $plugin->getRouteKey()])
+            ->assertFormFieldDoesNotExist('status');
+    }
+
+    public function test_rejection_reason_field_is_not_in_form(): void
+    {
+        $plugin = Plugin::factory()->rejected()->create([
+            'rejection_reason' => 'Missing license',
+        ]);
+
+        Livewire::actingAs($this->admin)
+            ->test(EditPlugin::class, ['record' => $plugin->getRouteKey()])
+            ->assertFormFieldDoesNotExist('rejection_reason');
+    }
 }
