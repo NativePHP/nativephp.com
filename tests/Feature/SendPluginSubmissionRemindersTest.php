@@ -151,4 +151,17 @@ class SendPluginSubmissionRemindersTest extends TestCase
         $this->assertArrayHasKey('plugin_names', $data);
         $this->assertContains('acme/test-plugin', $data['plugin_names']);
     }
+
+    public function test_does_not_send_to_unverified_users(): void
+    {
+        Notification::fake();
+
+        $user = User::factory()->unverified()->create();
+        Plugin::factory()->draft()->for($user)->create();
+
+        $this->artisan('plugins:send-submission-reminders')
+            ->assertExitCode(0);
+
+        Notification::assertNothingSent();
+    }
 }

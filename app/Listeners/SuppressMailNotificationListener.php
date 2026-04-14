@@ -23,6 +23,10 @@ class SuppressMailNotificationListener
             return true;
         }
 
+        if (! $event->notifiable->email_verified_at) {
+            return false;
+        }
+
         return (bool) $event->notifiable->receives_notification_emails;
     }
 }
