@@ -149,6 +149,41 @@
             </div>
         </section>
 
+        {{-- Video --}}
+        <section class="mt-16">
+            <div
+                x-init="
+                    () => {
+                        motion.inView($el, (element) => {
+                            motion.animate(
+                                $el,
+                                {
+                                    opacity: [0, 1],
+                                    scale: [0.95, 1],
+                                },
+                                {
+                                    duration: 0.7,
+                                    ease: motion.easeOut,
+                                },
+                            )
+                        })
+                    }
+                "
+                class="mx-auto max-w-3xl overflow-hidden rounded-2xl shadow-xl"
+            >
+                <div class="relative w-full" style="padding-bottom: 56.25%">
+                    <iframe
+                        class="absolute inset-0 size-full"
+                        src="https://www.youtube-nocookie.com/embed/HO9zbS2dM7M?rel=0&modestbranding=1"
+                        title="The NativePHP Masterclass"
+                        frameborder="0"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                        allowfullscreen
+                    ></iframe>
+                </div>
+            </div>
+        </section>
+
         {{-- What You'll Learn --}}
         <section
             class="mt-24"
@@ -513,6 +548,105 @@
                         Tired of being told you need to learn a completely new
                         stack for native apps? This course proves you don't.
                     </p>
+                </div>
+            </div>
+        </section>
+
+        {{-- Meet Your Instructors --}}
+        <section
+            class="mt-24"
+            aria-labelledby="instructors-heading"
+        >
+            <header class="text-center">
+                <h2
+                    id="instructors-heading"
+                    x-init="
+                        () => {
+                            motion.inView($el, (element) => {
+                                motion.animate(
+                                    $el,
+                                    {
+                                        opacity: [0, 1],
+                                        y: [-10, 0],
+                                    },
+                                    {
+                                        duration: 0.7,
+                                        ease: motion.easeOut,
+                                    },
+                                )
+                            })
+                        }
+                    "
+                    class="text-3xl font-semibold"
+                >
+                    Meet Your Instructors
+                </h2>
+                <p class="mx-auto mt-3 max-w-2xl text-gray-600 dark:text-gray-400">
+                    Learn from experienced developers and educators who built NativePHP
+                </p>
+            </header>
+
+            <div
+                x-init="
+                    () => {
+                        motion.inView($el, (element) => {
+                            motion.animate(
+                                Array.from($el.children),
+                                {
+                                    y: [30, 0],
+                                    opacity: [0, 1],
+                                },
+                                {
+                                    duration: 0.7,
+                                    ease: motion.backOut,
+                                    delay: motion.stagger(0.15),
+                                },
+                            )
+                        })
+                    }
+                "
+                class="mx-auto mt-10 max-w-3xl space-y-8"
+            >
+                {{-- Shruti --}}
+                <div class="rounded-2xl bg-gradient-to-br from-emerald-50 to-teal-50 p-8 ring-1 ring-emerald-200 dark:from-emerald-950/30 dark:to-teal-950/30 dark:ring-emerald-800/50 sm:flex sm:items-start sm:gap-8">
+                    <img
+                        src="/img/shruti.jpg"
+                        alt="Shruti Balasa"
+                        class="mx-auto size-28 shrink-0 rounded-full object-cover sm:mx-0"
+                    />
+                    <div class="mt-4 text-center sm:mt-0 sm:text-left">
+                        <h3 class="text-xl font-semibold">Shruti Balasa</h3>
+                        <p class="text-sm font-medium text-emerald-600 dark:text-emerald-400">Your Tutor</p>
+                        <p class="mt-3 text-sm text-gray-600 dark:text-gray-400">
+                            Shruti is a regular contributor to Laracasts, a veteran public speaker, and one of the best tech educators around. She brings clarity and warmth to even the most complex topics, making sure you never feel lost.
+                        </p>
+                    </div>
+                </div>
+
+                {{-- Simon & Shane --}}
+                <p class="text-center text-sm font-medium text-gray-500 dark:text-gray-400">You'll also see...</p>
+                <div class="grid gap-6 sm:grid-cols-2">
+                    {{-- Simon --}}
+                    <div class="rounded-2xl bg-gray-100 p-6 text-center dark:bg-mirage">
+                        <img
+                            src="/img/team/simonhamp.jpg"
+                            alt="Simon Hamp"
+                            class="mx-auto size-20 rounded-full object-cover"
+                        />
+                        <h3 class="mt-4 text-lg font-semibold">Simon Hamp</h3>
+                        <p class="text-sm text-gray-500 dark:text-gray-400">Co-creator of NativePHP</p>
+                    </div>
+
+                    {{-- Shane --}}
+                    <div class="rounded-2xl bg-gray-100 p-6 text-center dark:bg-mirage">
+                        <img
+                            src="/img/team/shanerosenthal.jpg"
+                            alt="Shane Rosenthal"
+                            class="mx-auto size-20 rounded-full object-cover"
+                        />
+                        <h3 class="mt-4 text-lg font-semibold">Shane Rosenthal</h3>
+                        <p class="text-sm text-gray-500 dark:text-gray-400">Co-creator of NativePHP</p>
+                    </div>
                 </div>
             </div>
         </section>
