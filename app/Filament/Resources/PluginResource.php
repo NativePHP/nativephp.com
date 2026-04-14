@@ -23,6 +23,7 @@ use Filament\Schemas;
 use Filament\Schemas\Schema;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\HtmlString;
 
 class PluginResource extends Resource
@@ -333,7 +334,11 @@ class PluginResource extends Resource
             ])
             ->filters([
                 Tables\Filters\SelectFilter::make('status')
-                    ->options(PluginStatus::class),
+                    ->options(PluginStatus::class)
+                    ->query(fn (Builder $query, array $data): Builder => filled($data['value'])
+                        ? $query->where('status', $data['value'])
+                        : $query->where('status', '!=', PluginStatus::Draft)
+                    ),
                 Tables\Filters\SelectFilter::make('type')
                     ->options(PluginType::class),
                 Tables\Filters\TernaryFilter::make('is_official')
