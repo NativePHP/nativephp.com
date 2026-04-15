@@ -124,7 +124,7 @@
                             href="#pricing"
                             class="inline-flex items-center gap-2 rounded-xl bg-emerald-600 px-8 py-4 font-semibold text-white transition hover:bg-emerald-700"
                         >
-                            Get Early Bird Access &mdash; $150
+                            Get Early Bird Access &mdash; $101
                             <svg
                                 xmlns="http://www.w3.org/2000/svg"
                                 viewBox="0 0 20 20"
@@ -523,7 +523,7 @@
                         </div>
                     @else
                         <div class="mt-4 flex items-baseline gap-2">
-                            <span class="text-5xl font-bold text-gray-900 dark:text-white">$150</span>
+                            <span class="text-5xl font-bold text-gray-900 dark:text-white">$101</span>
                             <span class="text-2xl text-gray-400 line-through">$299</span>
                             <span class="text-sm text-gray-500 dark:text-gray-400">one-time</span>
                         </div>
