@@ -523,7 +523,7 @@ class HandleInvoicePaidJob implements ShouldQueue
         if ($plugin->developerAccount && $plugin->developerAccount->canReceivePayouts() && $amount > 0) {
             $platformFeePercent = ($user->hasActiveUltraSubscription() && ! $plugin->isOfficial())
                 ? 0
-                : PluginPayout::PLATFORM_FEE_PERCENT;
+                : $plugin->developerAccount->platformFeePercent();
 
             $split = PluginPayout::calculateSplit($amount, $platformFeePercent);
 
@@ -565,7 +565,7 @@ class HandleInvoicePaidJob implements ShouldQueue
         if ($plugin->developerAccount && $plugin->developerAccount->canReceivePayouts() && $allocatedAmount > 0) {
             $platformFeePercent = ($user->hasActiveUltraSubscription() && ! $plugin->isOfficial())
                 ? 0
-                : PluginPayout::PLATFORM_FEE_PERCENT;
+                : $plugin->developerAccount->platformFeePercent();
 
             $split = PluginPayout::calculateSplit($allocatedAmount, $platformFeePercent);
 

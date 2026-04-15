@@ -66,6 +66,11 @@ class DeveloperAccount extends Model
             && $this->plugin_terms_version === self::CURRENT_PLUGIN_TERMS_VERSION;
     }
 
+    public function platformFeePercent(): int
+    {
+        return 100 - $this->payout_percentage;
+    }
+
     protected function casts(): array
     {
         return [
@@ -74,6 +79,7 @@ class DeveloperAccount extends Model
             'charges_enabled' => 'boolean',
             'onboarding_completed_at' => 'datetime',
             'accepted_plugin_terms_at' => 'datetime',
+            'payout_percentage' => 'integer',
         ];
     }
 }
