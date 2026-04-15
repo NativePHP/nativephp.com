@@ -101,6 +101,35 @@ class UserResourceDeveloperTest extends TestCase
             ->assertCountTableRecords(0);
     }
 
+    public function test_payout_percentage_can_be_updated(): void
+    {
+        $developerAccount = DeveloperAccount::factory()->create([
+            'user_id' => $this->user->id,
+            'payout_percentage' => 70,
+        ]);
+
+        Livewire::actingAs($this->admin)
+            ->test(EditUser::class, ['record' => $this->user->id])
+            ->fillForm(['developerAccount.payout_percentage' => 80])
+            ->call('save')
+            ->assertHasNoFormErrors();
+
+        $this->assertEquals(80, $developerAccount->fresh()->payout_percentage);
+    }
+
+    public function test_payout_percentage_is_validated(): void
+    {
+        DeveloperAccount::factory()->create([
+            'user_id' => $this->user->id,
+        ]);
+
+        Livewire::actingAs($this->admin)
+            ->test(EditUser::class, ['record' => $this->user->id])
+            ->fillForm(['developerAccount.payout_percentage' => 101])
+            ->call('save')
+            ->assertHasFormErrors(['developerAccount.payout_percentage']);
+    }
+
     public function test_users_index_shows_developer_column(): void
     {
         DeveloperAccount::factory()->create([
