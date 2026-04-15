@@ -184,6 +184,26 @@
                         </flux:sidebar.item>
                     </flux:sidebar.group>
                 @endfeature
+
+                @feature(App\Features\ShowMasterclass::class)
+                    @php
+                        $sidebarCourse = \App\Models\Course::where('is_published', true)
+                            ->with(['modules' => fn ($q) => $q->where('is_published', true)->orderBy('sort_order')])
+                            ->first();
+                    @endphp
+                    <flux:sidebar.group expandable :expanded="false" heading="Masterclass" class="mt-4 grid" x-data="sidebarGroup('masterclass')">
+                        <flux:sidebar.item icon="device-phone-mobile" href="{{ route('customer.course.index') }}" :current="request()->routeIs('customer.course.*')">
+                            Mobile
+                        </flux:sidebar.item>
+                        @if($sidebarCourse)
+                            @foreach($sidebarCourse->modules as $sidebarModule)
+                                <flux:sidebar.item class="!pl-8 !text-xs">
+                                    {{ $sidebarModule->title }}
+                                </flux:sidebar.item>
+                            @endforeach
+                        @endif
+                    </flux:sidebar.group>
+                @endfeature
             </flux:sidebar.nav>
 
             <flux:sidebar.spacer />

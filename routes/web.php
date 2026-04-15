@@ -26,6 +26,7 @@ use App\Http\Controllers\TeamController;
 use App\Http\Controllers\TeamUserController;
 use App\Http\Controllers\UltraController;
 use App\Livewire\ClaimDonationLicense;
+use App\Livewire\Customer\Course\LessonShow;
 use App\Livewire\Customer\Dashboard;
 use App\Livewire\Customer\Developer\Onboarding;
 use App\Livewire\Customer\Integrations;
@@ -38,13 +39,13 @@ use App\Livewire\Customer\WallOfLove\Create;
 use App\Livewire\LicenseRenewalSuccess;
 use App\Livewire\OrderSuccess;
 use App\Livewire\PluginDirectory;
+use App\Models\Course;
 use App\Models\Product;
 use App\Services\CartService;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Exceptions\UrlGenerationException;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Str;
-use Laravel\Cashier\Cashier;
 use Laravel\Pennant\Middleware\EnsureFeaturesAreActive;
 
 /*
@@ -93,8 +94,15 @@ Route::get('course', function () {
     $product = Product::where('slug', 'nativephp-masterclass')->first();
     $alreadyOwned = $user && $product && $product->isOwnedBy($user);
 
+    $course = Course::where('is_published', true)
+        ->with(['modules' => function ($query) {
+            $query->where('is_published', true)->orderBy('sort_order')->withCount('lessons');
+        }])
+        ->first();
+
     return view('course', [
         'alreadyOwned' => $alreadyOwned,
+        'course' => $course,
     ]);
 })->name('course');
 
@@ -114,37 +122,23 @@ Route::post('course/checkout', function (Request $request) {
         return to_route('course')->with('error', 'You already own this course.');
     }
 
+    $priceId = config('services.stripe.course_price_id');
+
+    if (! $priceId) {
+        return to_route('course')->with('error', 'Course checkout is not configured yet.');
+    }
+
+    $user->createOrGetStripeCustomer();
+
     $cartService = resolve(CartService::class);
     $cart = $cartService->getCart($user);
     $cartService->addProduct($cart, $product);
 
-    $cart->load('items.product');
-    $item = $cart->items->where('product_id', $product->id)->first();
-
-    $user->createOrGetStripeCustomer();
-
     $metadata = ['cart_id' => (string) $cart->id];
 
-    $session = Cashier::stripe()->checkout->sessions->create([
-        'mode' => 'payment',
-        'line_items' => [[
-            'price_data' => [
-                'currency' => strtolower($item->currency),
-                'unit_amount' => $item->product_price_at_addition,
-                'product_data' => [
-                    'name' => $product->name,
-                    'description' => $product->description,
-                ],
-            ],
-            'quantity' => 1,
-        ]],
+    return $user->checkout([$priceId => 1], [
         'success_url' => route('cart.success').'?session_id={CHECKOUT_SESSION_ID}',
         'cancel_url' => route('course'),
-        'customer' => $user->stripe_id,
-        'customer_update' => [
-            'name' => 'auto',
-            'address' => 'auto',
-        ],
         'metadata' => $metadata,
         'allow_promotion_codes' => true,
         'billing_address_collection' => 'required',
@@ -157,10 +151,6 @@ Route::post('course/checkout', function (Request $request) {
             ],
         ],
     ]);
-
-    $cart->update(['stripe_checkout_session_id' => $session->id]);
-
-    return redirect($session->url);
 })->name('course.checkout');
 
 Route::view('wall-of-love', 'wall-of-love')->name('wall-of-love');
@@ -373,6 +363,10 @@ Route::middleware(['auth', EnsureFeaturesAreActive::using(ShowAuthButtons::class
     Route::patch('licenses/{licenseKey}', [CustomerLicenseController::class, 'update'])->name('licenses.update');
     Route::post('plugin-license-key/rotate', [CustomerLicenseController::class, 'rotatePluginLicenseKey'])->name('plugin-license-key.rotate');
     Route::post('claim-free-plugins', [CustomerLicenseController::class, 'claimFreePlugins'])->name('claim-free-plugins');
+
+    // Course
+    Route::livewire('course', App\Livewire\Customer\Course\Index::class)->name('course.index');
+    Route::livewire('course/lessons/{lesson:slug}', LessonShow::class)->name('course.lesson');
 
     // Wall of Love submission
     Route::livewire('wall-of-love/create', Create::class)->name('wall-of-love.create');

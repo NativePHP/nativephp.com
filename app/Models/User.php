@@ -121,6 +121,14 @@ class User extends Authenticatable implements FilamentUser, HasName, MustVerifyE
     }
 
     /**
+     * @return HasMany<LessonProgress>
+     */
+    public function lessonProgress(): HasMany
+    {
+        return $this->hasMany(LessonProgress::class);
+    }
+
+    /**
      * @return HasOne<DeveloperAccount>
      */
     public function developerAccount(): HasOne

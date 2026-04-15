@@ -47,7 +47,7 @@ class ProductPageTest extends TestCase
             ->withoutVite()
             ->get(route('course'))
             ->assertStatus(200)
-            ->assertSee('Get Early Bird Access')
+            ->assertSee('Buy Now')
             ->assertDontSee('You Own This Course');
     }
 
@@ -61,7 +61,7 @@ class ProductPageTest extends TestCase
             ->actingAs($user)
             ->get(route('course'))
             ->assertStatus(200)
-            ->assertSee('Get Early Bird Access')
+            ->assertSee('Buy Now')
             ->assertDontSee('You Own This Course');
     }
 
@@ -82,6 +82,6 @@ class ProductPageTest extends TestCase
             ->get(route('course'))
             ->assertStatus(200)
             ->assertSee('You Own This Course')
-            ->assertDontSee('Get Early Bird Access');
+            ->assertDontSee('Buy Now');
     }
 }

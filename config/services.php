@@ -69,6 +69,10 @@ return [
         'api_key' => env('SATIS_API_KEY'),
     ],
 
+    'stripe' => [
+        'course_price_id' => env('STRIPE_COURSE_PRICE_ID'),
+    ],
+
     'stripe_connect' => [
         'client_id' => env('STRIPE_CONNECT_CLIENT_ID'),
         'platform_fee_percent' => 30,

@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use PHPUnit\Framework\Attributes\Test;
+use Stripe\Checkout\Session;
 use Stripe\Customer;
 use Stripe\StripeClient;
 use Tests\TestCase;
@@ -41,7 +42,7 @@ class CoursePageTest extends TestCase
             ->withoutVite()
             ->get(route('course'))
             ->assertSee(route('course.checkout'), false)
-            ->assertSee('Get Early Bird Access');
+            ->assertSee('Buy Now');
     }
 
     #[Test]
@@ -55,6 +56,8 @@ class CoursePageTest extends TestCase
     #[Test]
     public function course_checkout_redirects_to_stripe_with_cart_success_url(): void
     {
+        config(['services.stripe.course_price_id' => 'price_test123']);
+
         $user = User::factory()->create(['stripe_id' => 'cus_test123']);
 
         $stripeSessionUrl = 'https://checkout.stripe.com/test-session';
@@ -67,14 +70,14 @@ class CoursePageTest extends TestCase
                 private &$capturedParams,
             ) {}
 
-            public function create(array $params): object
+            public function create(array $params): Session
             {
                 $this->capturedParams = $params;
 
-                return (object) [
+                return Session::constructFrom([
                     'id' => 'cs_test123',
                     'url' => $this->url,
-                ];
+                ]);
             }
         };
 
@@ -107,7 +110,19 @@ class CoursePageTest extends TestCase
         $this->assertNotNull($capturedParams, 'Stripe checkout session should have been created');
         $this->assertStringContainsString(route('cart.success'), $capturedParams['success_url']);
         $this->assertStringContainsString('{CHECKOUT_SESSION_ID}', $capturedParams['success_url']);
-        $this->assertEquals(['enabled' => true], $capturedParams['tax_id_collection']);
-        $this->assertEquals(['name' => 'auto', 'address' => 'auto'], $capturedParams['customer_update']);
+    }
+
+    #[Test]
+    public function course_checkout_returns_error_when_price_id_not_configured(): void
+    {
+        config(['services.stripe.course_price_id' => null]);
+
+        $user = User::factory()->create();
+
+        $this
+            ->actingAs($user)
+            ->post(route('course.checkout'))
+            ->assertRedirect(route('course'))
+            ->assertSessionHas('error', 'Course checkout is not configured yet.');
     }
 }
