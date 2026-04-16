@@ -207,7 +207,9 @@ class Create extends Component
         $officialPlugins = collect();
 
         if ($this->selectedProduct === 'mobile') {
-            $officialPlugins = Plugin::where('is_official', true)
+            $officialPlugins = Plugin::query()
+                ->approved()
+                ->where('is_official', true)
                 ->orderBy('name')
                 ->pluck('name', 'id');
         }

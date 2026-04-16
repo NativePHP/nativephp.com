@@ -551,11 +551,11 @@ class SupportTicketTest extends TestCase
     }
 
     #[Test]
-    public function plugin_type_shows_official_plugins_in_select(): void
+    public function plugin_type_shows_approved_official_plugins_in_select(): void
     {
         $user = $this->createUltraUser();
 
-        Plugin::factory()->create([
+        Plugin::factory()->approved()->create([
             'name' => 'nativephp/mobile-camera',
             'is_official' => true,
             'user_id' => $user->id,
@@ -568,6 +568,32 @@ class SupportTicketTest extends TestCase
             ->set('mobileAreaType', 'plugin')
             ->assertSee('nativephp/mobile-camera')
             ->assertSee('Jump');
+    }
+
+    #[Test]
+    public function plugin_type_does_not_show_unapproved_official_plugins(): void
+    {
+        $user = $this->createUltraUser();
+
+        Plugin::factory()->pending()->create([
+            'name' => 'nativephp/mobile-pending',
+            'is_official' => true,
+            'user_id' => $user->id,
+        ]);
+
+        Plugin::factory()->draft()->create([
+            'name' => 'nativephp/mobile-draft',
+            'is_official' => true,
+            'user_id' => $user->id,
+        ]);
+
+        Livewire::actingAs($user)
+            ->test(Create::class)
+            ->set('selectedProduct', 'mobile')
+            ->call('nextStep')
+            ->set('mobileAreaType', 'plugin')
+            ->assertDontSee('nativephp/mobile-pending')
+            ->assertDontSee('nativephp/mobile-draft');
     }
 
     #[Test]
