@@ -275,7 +275,7 @@ nav.docs-navigation li:has(.third-tier .exact-active) > .subsection-header {
 }
 
 .prose p:has(img) img {
-    @apply inline-block w-full shadow-none;
+    @apply inline-block w-full rounded-none shadow-none;
 }
 
 /*
