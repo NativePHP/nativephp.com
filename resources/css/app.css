@@ -270,6 +270,14 @@ nav.docs-navigation li:has(.third-tier .exact-active) > .subsection-header {
     @apply rounded-none shadow-none;
 }
 
+.prose p:has(img) {
+    @apply grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3;
+}
+
+.prose p:has(img) img {
+    @apply inline-block w-full rounded-none shadow-none;
+}
+
 /*
  Margin and rounding are personal preferences,
  overflow-x-auto is recommended.
