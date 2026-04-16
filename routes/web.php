@@ -22,6 +22,7 @@ use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ShowBlogController;
 use App\Http\Controllers\ShowcaseController;
 use App\Http\Controllers\ShowDocumentationController;
+use App\Http\Controllers\SupportTicketAttachmentController;
 use App\Http\Controllers\TeamController;
 use App\Http\Controllers\TeamUserController;
 use App\Http\Controllers\UltraController;
@@ -358,6 +359,8 @@ Route::middleware(['auth', EnsureFeaturesAreActive::using(ShowAuthButtons::class
     Route::livewire('support/tickets', App\Livewire\Customer\Support\Index::class)->name('support.tickets');
     Route::livewire('support/tickets/create', App\Livewire\Customer\Support\Create::class)->name('support.tickets.create');
     Route::livewire('support/tickets/{supportTicket}', App\Livewire\Customer\Support\Show::class)->name('support.tickets.show');
+    Route::get('support/tickets/{supportTicket}/attachments/{index}', [SupportTicketAttachmentController::class, 'downloadTicketAttachment'])->name('support.tickets.attachment');
+    Route::get('support/tickets/{supportTicket}/replies/{reply}/attachments/{index}', [SupportTicketAttachmentController::class, 'downloadReplyAttachment'])->name('support.tickets.reply.attachment');
 
     Route::livewire('licenses/{licenseKey}', Show::class)->name('licenses.show');
     Route::patch('licenses/{licenseKey}', [CustomerLicenseController::class, 'update'])->name('licenses.update');

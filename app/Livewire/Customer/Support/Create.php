@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Customer\Support;
 
+use App\Enums\PluginStatus;
 use App\Models\Plugin;
 use App\Models\SupportTicket;
 use App\Notifications\SupportTicketSubmitted;
@@ -12,11 +13,14 @@ use Livewire\Attributes\Layout;
 use Livewire\Attributes\Locked;
 use Livewire\Attributes\Title;
 use Livewire\Component;
+use Livewire\WithFileUploads;
 
 #[Layout('components.layouts.dashboard')]
 #[Title('Submit a Request')]
 class Create extends Component
 {
+    use WithFileUploads;
+
     public function boot(): void
     {
         abort_unless(auth()->user()->hasUltraAccess(), 403);
@@ -43,6 +47,9 @@ class Create extends Component
 
     public string $environment = '';
 
+    /** File uploads */
+    public array $uploads = [];
+
     /** Step 3: Subject + Message */
     public string $subject = '';
 
@@ -57,6 +64,7 @@ class Create extends Component
         $this->whatHappened = '';
         $this->reproductionSteps = '';
         $this->environment = '';
+        $this->uploads = [];
         $this->subject = '';
         $this->message = '';
         $this->resetValidation();
@@ -139,6 +147,23 @@ class Create extends Component
             'metadata' => $metadata ?: null,
         ]);
 
+        if (! empty($this->uploads)) {
+            $attachments = [];
+
+            foreach ($this->uploads as $file) {
+                $path = $file->store($ticket->mask, 'support-tickets');
+
+                $attachments[] = [
+                    'name' => $file->getClientOriginalName(),
+                    'path' => $path,
+                    'size' => $file->getSize(),
+                    'mime_type' => $file->getMimeType(),
+                ];
+            }
+
+            $ticket->update(['attachments' => $attachments]);
+        }
+
         Notification::route('mail', 'support@nativephp.com')
             ->notify(new SupportTicketSubmitted($ticket));
 
@@ -185,7 +210,7 @@ class Create extends Component
             $rules['tryingToDo'] = ['required', 'string', 'max:5000'];
             $rules['whatHappened'] = ['required', 'string', 'max:5000'];
             $rules['reproductionSteps'] = ['required', 'string', 'max:5000'];
-            $rules['environment'] = ['required', 'string', 'max:1000'];
+            $rules['environment'] = ['required', 'string', 'max:5000'];
 
             $messages['tryingToDo.required'] = 'Please describe what you were trying to do.';
             $messages['whatHappened.required'] = 'Please describe what happened instead.';
@@ -199,7 +224,20 @@ class Create extends Component
             $messages['issueType.required'] = 'Please select an issue type.';
         }
 
+        $rules['uploads'] = ['array', 'max:5'];
+        $rules['uploads.*'] = ['file', 'max:10240'];
+
+        $messages['uploads.max'] = 'You may attach up to 5 files.';
+        $messages['uploads.*.max'] = 'Each file must not exceed 10MB.';
+
         $this->validate($rules, $messages);
+    }
+
+    public function removeUpload(int $index): void
+    {
+        $uploads = $this->uploads;
+        array_splice($uploads, $index, 1);
+        $this->uploads = $uploads;
     }
 
     public function render()
@@ -207,7 +245,9 @@ class Create extends Component
         $officialPlugins = collect();
 
         if ($this->selectedProduct === 'mobile') {
-            $officialPlugins = Plugin::where('is_official', true)
+            $officialPlugins = Plugin::query()
+                ->where('status', PluginStatus::Approved)
+                ->where('is_official', true)
                 ->orderBy('name')
                 ->pluck('name', 'id');
         }

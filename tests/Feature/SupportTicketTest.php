@@ -18,7 +18,9 @@ use App\Notifications\SupportTicketUserReplied;
 use App\SupportTicket\Status;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Notification;
+use Illuminate\Support\Facades\Storage;
 use Laravel\Cashier\Subscription;
 use Livewire\Livewire;
 use PHPUnit\Framework\Attributes\Test;
@@ -551,11 +553,11 @@ class SupportTicketTest extends TestCase
     }
 
     #[Test]
-    public function plugin_type_shows_official_plugins_in_select(): void
+    public function plugin_type_shows_approved_official_plugins_in_select(): void
     {
         $user = $this->createUltraUser();
 
-        Plugin::factory()->create([
+        Plugin::factory()->approved()->create([
             'name' => 'nativephp/mobile-camera',
             'is_official' => true,
             'user_id' => $user->id,
@@ -568,6 +570,51 @@ class SupportTicketTest extends TestCase
             ->set('mobileAreaType', 'plugin')
             ->assertSee('nativephp/mobile-camera')
             ->assertSee('Jump');
+    }
+
+    #[Test]
+    public function plugin_type_shows_inactive_approved_official_plugins(): void
+    {
+        $user = $this->createUltraUser();
+
+        Plugin::factory()->approved()->inactive()->create([
+            'name' => 'nativephp/mobile-inactive',
+            'is_official' => true,
+            'user_id' => $user->id,
+        ]);
+
+        Livewire::actingAs($user)
+            ->test(Create::class)
+            ->set('selectedProduct', 'mobile')
+            ->call('nextStep')
+            ->set('mobileAreaType', 'plugin')
+            ->assertSee('nativephp/mobile-inactive');
+    }
+
+    #[Test]
+    public function plugin_type_does_not_show_unapproved_official_plugins(): void
+    {
+        $user = $this->createUltraUser();
+
+        Plugin::factory()->pending()->create([
+            'name' => 'nativephp/mobile-pending',
+            'is_official' => true,
+            'user_id' => $user->id,
+        ]);
+
+        Plugin::factory()->draft()->create([
+            'name' => 'nativephp/mobile-draft',
+            'is_official' => true,
+            'user_id' => $user->id,
+        ]);
+
+        Livewire::actingAs($user)
+            ->test(Create::class)
+            ->set('selectedProduct', 'mobile')
+            ->call('nextStep')
+            ->set('mobileAreaType', 'plugin')
+            ->assertDontSee('nativephp/mobile-pending')
+            ->assertDontSee('nativephp/mobile-draft');
     }
 
     #[Test]
@@ -1247,5 +1294,306 @@ class SupportTicketTest extends TestCase
             ->get(route('customer.support.tickets'))
             ->assertOk()
             ->assertSeeLivewire(Index::class);
+    }
+
+    #[Test]
+    public function environment_field_accepts_more_than_1000_characters(): void
+    {
+        $user = $this->createUltraUser();
+
+        $longEnvironment = str_repeat('a', 2000);
+
+        Livewire::actingAs($user)
+            ->test(Create::class)
+            ->set('selectedProduct', 'desktop')
+            ->call('nextStep')
+            ->set('tryingToDo', 'Build an app')
+            ->set('whatHappened', 'It crashed')
+            ->set('reproductionSteps', '1. Open app')
+            ->set('environment', $longEnvironment)
+            ->call('nextStep')
+            ->assertSet('currentStep', 3)
+            ->assertHasNoErrors('environment');
+    }
+
+    #[Test]
+    public function files_can_be_uploaded_during_ticket_creation(): void
+    {
+        Storage::fake('support-tickets');
+        Notification::fake();
+
+        $user = $this->createUltraUser();
+
+        $files = [
+            UploadedFile::fake()->image('screenshot.png', 100, 100),
+            UploadedFile::fake()->create('log.txt', 50),
+        ];
+
+        Livewire::actingAs($user)
+            ->test(Create::class)
+            ->set('selectedProduct', 'nativephp.com')
+            ->call('nextStep')
+            ->set('issueType', 'bug')
+            ->set('subject', 'Need help')
+            ->set('message', 'Please see attached files')
+            ->set('uploads', $files)
+            ->call('nextStep')
+            ->assertSet('currentStep', 3)
+            ->call('submit')
+            ->assertHasNoErrors();
+
+        $ticket = SupportTicket::where('user_id', $user->id)->first();
+
+        $this->assertNotNull($ticket);
+        $this->assertCount(2, $ticket->attachments);
+        $this->assertEquals('screenshot.png', $ticket->attachments[0]['name']);
+        $this->assertEquals('log.txt', $ticket->attachments[1]['name']);
+
+        Storage::disk('support-tickets')->assertExists($ticket->attachments[0]['path']);
+        Storage::disk('support-tickets')->assertExists($ticket->attachments[1]['path']);
+    }
+
+    #[Test]
+    public function ticket_creation_rejects_more_than_5_files(): void
+    {
+        Storage::fake('support-tickets');
+
+        $user = $this->createUltraUser();
+
+        $files = [];
+        for ($i = 0; $i < 6; $i++) {
+            $files[] = UploadedFile::fake()->create("file{$i}.txt", 10);
+        }
+
+        Livewire::actingAs($user)
+            ->test(Create::class)
+            ->set('selectedProduct', 'nativephp.com')
+            ->call('nextStep')
+            ->set('issueType', 'bug')
+            ->set('subject', 'Too many files')
+            ->set('message', 'This has too many files')
+            ->set('uploads', $files)
+            ->call('nextStep')
+            ->assertHasErrors('uploads');
+    }
+
+    #[Test]
+    public function ticket_creation_rejects_file_over_10mb(): void
+    {
+        Storage::fake('support-tickets');
+
+        $user = $this->createUltraUser();
+
+        $largeFile = UploadedFile::fake()->create('huge.zip', 11000);
+
+        Livewire::actingAs($user)
+            ->test(Create::class)
+            ->set('selectedProduct', 'nativephp.com')
+            ->call('nextStep')
+            ->set('issueType', 'bug')
+            ->set('subject', 'Large file')
+            ->set('message', 'This file is too big')
+            ->set('uploads', [$largeFile])
+            ->call('nextStep')
+            ->assertHasErrors('uploads.*');
+    }
+
+    #[Test]
+    public function ticket_creation_works_without_uploads(): void
+    {
+        Storage::fake('support-tickets');
+        Notification::fake();
+
+        $user = $this->createUltraUser();
+
+        Livewire::actingAs($user)
+            ->test(Create::class)
+            ->set('selectedProduct', 'nativephp.com')
+            ->call('nextStep')
+            ->set('issueType', 'other')
+            ->set('subject', 'No files')
+            ->set('message', 'No attachments here')
+            ->call('nextStep')
+            ->call('submit')
+            ->assertHasNoErrors();
+
+        $ticket = SupportTicket::where('user_id', $user->id)->first();
+
+        $this->assertNotNull($ticket);
+        $this->assertNull($ticket->attachments);
+    }
+
+    #[Test]
+    public function files_can_be_uploaded_with_reply(): void
+    {
+        Storage::fake('support-tickets');
+        Notification::fake();
+
+        $user = $this->createUltraUser();
+        $ticket = SupportTicket::factory()->create([
+            'user_id' => $user->id,
+            'status' => 'open',
+        ]);
+
+        $file = UploadedFile::fake()->image('reply-screenshot.png', 100, 100);
+
+        Livewire::actingAs($user)
+            ->test(Show::class, ['supportTicket' => $ticket])
+            ->set('replyMessage', 'See attached')
+            ->set('replyAttachments', [$file])
+            ->call('reply')
+            ->assertHasNoErrors();
+
+        $reply = $ticket->replies()->latest()->first();
+
+        $this->assertNotNull($reply);
+        $this->assertCount(1, $reply->attachments);
+        $this->assertEquals('reply-screenshot.png', $reply->attachments[0]['name']);
+
+        Storage::disk('support-tickets')->assertExists($reply->attachments[0]['path']);
+    }
+
+    #[Test]
+    public function reply_rejects_more_than_5_attachments(): void
+    {
+        Storage::fake('support-tickets');
+
+        $user = $this->createUltraUser();
+        $ticket = SupportTicket::factory()->create([
+            'user_id' => $user->id,
+            'status' => 'open',
+        ]);
+
+        $files = [];
+        for ($i = 0; $i < 6; $i++) {
+            $files[] = UploadedFile::fake()->create("file{$i}.txt", 10);
+        }
+
+        Livewire::actingAs($user)
+            ->test(Show::class, ['supportTicket' => $ticket])
+            ->set('replyMessage', 'Too many files')
+            ->set('replyAttachments', $files)
+            ->call('reply')
+            ->assertHasErrors('replyAttachments');
+    }
+
+    #[Test]
+    public function admin_can_upload_files_with_reply(): void
+    {
+        Storage::fake('support-tickets');
+        Notification::fake();
+
+        $admin = User::factory()->create(['email' => 'admin@test.com']);
+        config(['filament.users' => ['admin@test.com']]);
+
+        $user = User::factory()->create();
+        $ticket = SupportTicket::factory()->create([
+            'user_id' => $user->id,
+            'status' => 'open',
+        ]);
+
+        $file = UploadedFile::fake()->create('admin-attachment.pdf', 100);
+
+        Livewire::actingAs($admin)
+            ->test(TicketRepliesWidget::class, ['record' => $ticket])
+            ->set('newMessage', 'Here is the fix')
+            ->set('replyAttachments', [$file])
+            ->call('sendReply')
+            ->assertHasNoErrors();
+
+        $reply = $ticket->replies()->latest()->first();
+
+        $this->assertNotNull($reply);
+        $this->assertCount(1, $reply->attachments);
+        $this->assertEquals('admin-attachment.pdf', $reply->attachments[0]['name']);
+
+        Storage::disk('support-tickets')->assertExists($reply->attachments[0]['path']);
+    }
+
+    #[Test]
+    public function ticket_owner_can_download_ticket_attachment(): void
+    {
+        Storage::fake('support-tickets');
+
+        $user = $this->createUltraUser();
+        $ticket = SupportTicket::factory()->create([
+            'user_id' => $user->id,
+            'attachments' => [
+                ['name' => 'test.png', 'path' => 'ticket_123/abc.png', 'size' => 1000, 'mime_type' => 'image/png'],
+            ],
+        ]);
+
+        Storage::disk('support-tickets')->put('ticket_123/abc.png', 'fake content');
+
+        $response = $this->actingAs($user)
+            ->get(route('customer.support.tickets.attachment', [$ticket, 0]));
+
+        $response->assertRedirect();
+    }
+
+    #[Test]
+    public function other_user_cannot_download_ticket_attachment(): void
+    {
+        Storage::fake('support-tickets');
+
+        $owner = $this->createUltraUser();
+        $other = $this->createUltraUser();
+
+        $ticket = SupportTicket::factory()->create([
+            'user_id' => $owner->id,
+            'attachments' => [
+                ['name' => 'test.png', 'path' => 'ticket_123/abc.png', 'size' => 1000, 'mime_type' => 'image/png'],
+            ],
+        ]);
+
+        $this->actingAs($other)
+            ->get(route('customer.support.tickets.attachment', [$ticket, 0]))
+            ->assertForbidden();
+    }
+
+    #[Test]
+    public function admin_can_download_ticket_attachment(): void
+    {
+        Storage::fake('support-tickets');
+
+        $admin = User::factory()->create(['email' => 'admin@test.com']);
+        config(['filament.users' => ['admin@test.com']]);
+        License::factory()->max()->active()->create(['user_id' => $admin->id]);
+        Subscription::factory()->for($admin)->active()->create([
+            'stripe_price' => self::MAX_PRICE_ID,
+        ]);
+
+        $user = User::factory()->create();
+        $ticket = SupportTicket::factory()->create([
+            'user_id' => $user->id,
+            'attachments' => [
+                ['name' => 'test.png', 'path' => 'ticket_123/abc.png', 'size' => 1000, 'mime_type' => 'image/png'],
+            ],
+        ]);
+
+        Storage::disk('support-tickets')->put('ticket_123/abc.png', 'fake content');
+
+        $response = $this->actingAs($admin)
+            ->get(route('customer.support.tickets.attachment', [$ticket, 0]));
+
+        $response->assertRedirect();
+    }
+
+    #[Test]
+    public function invalid_attachment_index_returns_404(): void
+    {
+        Storage::fake('support-tickets');
+
+        $user = $this->createUltraUser();
+        $ticket = SupportTicket::factory()->create([
+            'user_id' => $user->id,
+            'attachments' => [
+                ['name' => 'test.png', 'path' => 'ticket_123/abc.png', 'size' => 1000, 'mime_type' => 'image/png'],
+            ],
+        ]);
+
+        $this->actingAs($user)
+            ->get(route('customer.support.tickets.attachment', [$ticket, 5]))
+            ->assertNotFound();
     }
 }

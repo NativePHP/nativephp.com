@@ -70,6 +70,24 @@
                         </dd>
                     </div>
                 @endif
+
+                @if($supportTicket->attachments)
+                    <div class="mt-4">
+                        <dt class="text-sm font-medium text-zinc-500 dark:text-zinc-400">Attachments</dt>
+                        <dd class="mt-1">
+                            <ul class="space-y-1">
+                                @foreach($supportTicket->attachments as $index => $attachment)
+                                    <li>
+                                        <a href="{{ route('customer.support.tickets.attachment', [$supportTicket, $index]) }}" class="inline-flex items-center gap-1.5 text-sm text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300">
+                                            <x-heroicon-s-paper-clip class="size-4" />
+                                            {{ $attachment['name'] }}
+                                        </a>
+                                    </li>
+                                @endforeach
+                            </ul>
+                        </dd>
+                    </div>
+                @endif
             </flux:accordion.content>
         </flux:accordion.item>
     </flux:accordion>
@@ -90,6 +108,30 @@
                         @keydown.meta.enter="$wire.reply()"
                         @keydown.ctrl.enter="$wire.reply()"
                     />
+
+                    <div class="mt-3">
+                        <flux:input type="file" wire:model="replyAttachments" multiple />
+                        @error('replyAttachments')
+                            <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
+                        @enderror
+                        @error('replyAttachments.*')
+                            <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
+                        @enderror
+
+                        @if(count($replyAttachments))
+                            <ul class="mt-2 space-y-1">
+                                @foreach($replyAttachments as $index => $file)
+                                    <li class="flex items-center justify-between rounded-md bg-zinc-50 px-3 py-2 text-sm dark:bg-zinc-700" wire:key="reply-upload-{{ $index }}">
+                                        <span class="truncate text-zinc-700 dark:text-zinc-300">{{ $file->getClientOriginalName() }}</span>
+                                        <button type="button" wire:click="removeReplyAttachment({{ $index }})" class="ml-2 shrink-0 text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300">
+                                            <x-heroicon-s-x-mark class="size-4" />
+                                        </button>
+                                    </li>
+                                @endforeach
+                            </ul>
+                        @endif
+                    </div>
+
                     <div class="mt-3 flex items-center justify-end gap-3">
                         <flux:text class="text-xs">&#8984;/Ctrl + Enter to send</flux:text>
                         <flux:button type="submit" variant="primary" icon="arrow-uturn-left">
@@ -121,6 +163,21 @@
                                 @endif
                             </p>
                             <div class="prose prose-sm mt-1 max-w-none text-zinc-800 dark:prose-invert dark:text-zinc-200">{!! App\Support\CommonMark\CommonMark::convertToHtml($reply->message) !!}</div>
+
+                            @if($reply->attachments)
+                                <div class="mt-2 border-t border-zinc-200 pt-2 dark:border-zinc-600">
+                                    <ul class="space-y-1">
+                                        @foreach($reply->attachments as $index => $attachment)
+                                            <li>
+                                                <a href="{{ route('customer.support.tickets.reply.attachment', [$supportTicket, $reply, $index]) }}" class="inline-flex items-center gap-1.5 text-sm text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300">
+                                                    <x-heroicon-s-paper-clip class="size-4" />
+                                                    {{ $attachment['name'] }}
+                                                </a>
+                                            </li>
+                                        @endforeach
+                                    </ul>
+                                </div>
+                            @endif
                         </div>
                     </div>
                     <div class="mt-1 {{ $reply->is_from_user ? 'text-right mr-10' : 'text-left ml-10' }}">
