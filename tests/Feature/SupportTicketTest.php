@@ -1248,4 +1248,24 @@ class SupportTicketTest extends TestCase
             ->assertOk()
             ->assertSeeLivewire(Index::class);
     }
+
+    #[Test]
+    public function environment_field_accepts_more_than_1000_characters(): void
+    {
+        $user = $this->createUltraUser();
+
+        $longEnvironment = str_repeat('a', 2000);
+
+        Livewire::actingAs($user)
+            ->test(Create::class)
+            ->set('selectedProduct', 'desktop')
+            ->call('nextStep')
+            ->set('tryingToDo', 'Build an app')
+            ->set('whatHappened', 'It crashed')
+            ->set('reproductionSteps', '1. Open app')
+            ->set('environment', $longEnvironment)
+            ->call('nextStep')
+            ->assertSet('currentStep', 3)
+            ->assertHasNoErrors('environment');
+    }
 }

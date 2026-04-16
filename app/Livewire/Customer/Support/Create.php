@@ -185,7 +185,7 @@ class Create extends Component
             $rules['tryingToDo'] = ['required', 'string', 'max:5000'];
             $rules['whatHappened'] = ['required', 'string', 'max:5000'];
             $rules['reproductionSteps'] = ['required', 'string', 'max:5000'];
-            $rules['environment'] = ['required', 'string', 'max:1000'];
+            $rules['environment'] = ['required', 'string', 'max:5000'];
 
             $messages['tryingToDo.required'] = 'Please describe what you were trying to do.';
             $messages['whatHappened.required'] = 'Please describe what happened instead.';
