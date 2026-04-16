@@ -12,6 +12,7 @@ use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Illuminate\Support\HtmlString;
 
 class SupportTicketResource extends Resource
 {
@@ -77,6 +78,24 @@ class SupportTicketResource extends Resource
                         Infolists\Components\TextEntry::make('message')
                             ->label('Message')
                             ->markdown(),
+                        Infolists\Components\TextEntry::make('attachments')
+                            ->label('Attachments')
+                            ->formatStateUsing(function (SupportTicket $record): HtmlString {
+                                $attachments = $record->attachments;
+
+                                if (empty($attachments)) {
+                                    return new HtmlString('<span style="color: #9ca3af;">None</span>');
+                                }
+
+                                $links = collect($attachments)->map(function (array $attachment, int $index) use ($record): string {
+                                    $url = route('customer.support.tickets.attachment', [$record, $index]);
+
+                                    return '<a href="'.e($url).'" target="_blank" style="color: #2563eb; text-decoration: underline;">'.e($attachment['name']).'</a>';
+                                });
+
+                                return new HtmlString($links->implode('<br>'));
+                            })
+                            ->html(),
                     ])
                     ->collapsible()
                     ->persistCollapsed(),
