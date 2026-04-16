@@ -26,6 +26,7 @@
         "laravel/tinker": "^2.8",
         "league/commonmark": "^2.4",
         "league/flysystem-aws-s3-v3": "^3.30",
+        "league/flysystem-path-prefixing": "^3.0",
         "livewire/blaze": "^1.0",
         "livewire/flux": "^2.13",
         "livewire/flux-pro": "^2.13",
