@@ -21,34 +21,23 @@ class CourseContentTest extends TestCase
     use RefreshDatabase;
 
     #[Test]
-    public function course_page_shows_dynamic_modules_from_database(): void
+    public function course_page_loads_successfully(): void
     {
-        $course = Course::factory()->published()->create();
-        $module = CourseModule::factory()->published()->free()->create([
-            'course_id' => $course->id,
-            'title' => 'Getting Started Module',
-        ]);
-        CourseLesson::factory()->published()->free()->create([
-            'course_module_id' => $module->id,
-        ]);
-
         $this
             ->withoutVite()
             ->get(route('course'))
             ->assertStatus(200)
-            ->assertSee('Getting Started Module')
-            ->assertSee('Free');
+            ->assertSee('The NativePHP Masterclass');
     }
 
     #[Test]
-    public function course_page_shows_free_and_pro_pricing_tiers(): void
+    public function course_page_shows_pricing(): void
     {
         $this
             ->withoutVite()
             ->get(route('course'))
             ->assertStatus(200)
-            ->assertSee('$0')
-            ->assertSee('$150')
+            ->assertSee('$101')
             ->assertSee('$299');
     }
 
@@ -73,9 +62,26 @@ class CourseContentTest extends TestCase
     }
 
     #[Test]
-    public function course_dashboard_shows_modules_and_lessons(): void
+    public function course_dashboard_shows_purchase_page_for_non_owners(): void
     {
         $user = User::factory()->create();
+
+        Livewire::actingAs($user)
+            ->test(Index::class)
+            ->assertSee('Build native apps')
+            ->assertSee('Get Early Bird Access');
+    }
+
+    #[Test]
+    public function course_dashboard_shows_modules_and_lessons_for_owners(): void
+    {
+        $user = User::factory()->create();
+        $product = Product::where('slug', 'nativephp-masterclass')->first();
+        ProductLicense::factory()->create([
+            'user_id' => $user->id,
+            'product_id' => $product->id,
+        ]);
+
         $course = Course::factory()->published()->create();
         $module = CourseModule::factory()->published()->free()->create([
             'course_id' => $course->id,
