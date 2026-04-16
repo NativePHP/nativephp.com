@@ -1519,11 +1519,11 @@ class SupportTicketTest extends TestCase
         $ticket = SupportTicket::factory()->create([
             'user_id' => $user->id,
             'attachments' => [
-                ['name' => 'test.png', 'path' => 'support-tickets/ticket_123/abc.png', 'size' => 1000, 'mime_type' => 'image/png'],
+                ['name' => 'test.png', 'path' => 'ticket_123/abc.png', 'size' => 1000, 'mime_type' => 'image/png'],
             ],
         ]);
 
-        Storage::disk('support-tickets')->put('support-tickets/ticket_123/abc.png', 'fake content');
+        Storage::disk('support-tickets')->put('ticket_123/abc.png', 'fake content');
 
         $response = $this->actingAs($user)
             ->get(route('customer.support.tickets.attachment', [$ticket, 0]));
@@ -1542,7 +1542,7 @@ class SupportTicketTest extends TestCase
         $ticket = SupportTicket::factory()->create([
             'user_id' => $owner->id,
             'attachments' => [
-                ['name' => 'test.png', 'path' => 'support-tickets/ticket_123/abc.png', 'size' => 1000, 'mime_type' => 'image/png'],
+                ['name' => 'test.png', 'path' => 'ticket_123/abc.png', 'size' => 1000, 'mime_type' => 'image/png'],
             ],
         ]);
 
@@ -1567,11 +1567,11 @@ class SupportTicketTest extends TestCase
         $ticket = SupportTicket::factory()->create([
             'user_id' => $user->id,
             'attachments' => [
-                ['name' => 'test.png', 'path' => 'support-tickets/ticket_123/abc.png', 'size' => 1000, 'mime_type' => 'image/png'],
+                ['name' => 'test.png', 'path' => 'ticket_123/abc.png', 'size' => 1000, 'mime_type' => 'image/png'],
             ],
         ]);
 
-        Storage::disk('support-tickets')->put('support-tickets/ticket_123/abc.png', 'fake content');
+        Storage::disk('support-tickets')->put('ticket_123/abc.png', 'fake content');
 
         $response = $this->actingAs($admin)
             ->get(route('customer.support.tickets.attachment', [$ticket, 0]));
@@ -1588,7 +1588,7 @@ class SupportTicketTest extends TestCase
         $ticket = SupportTicket::factory()->create([
             'user_id' => $user->id,
             'attachments' => [
-                ['name' => 'test.png', 'path' => 'support-tickets/ticket_123/abc.png', 'size' => 1000, 'mime_type' => 'image/png'],
+                ['name' => 'test.png', 'path' => 'ticket_123/abc.png', 'size' => 1000, 'mime_type' => 'image/png'],
             ],
         ]);
 

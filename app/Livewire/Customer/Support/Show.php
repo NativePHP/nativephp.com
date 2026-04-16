@@ -63,7 +63,7 @@ class Show extends Component
             $attachments = [];
 
             foreach ($this->replyAttachments as $file) {
-                $path = $file->store("support-tickets/{$this->supportTicket->mask}/replies", 'support-tickets');
+                $path = $file->store("{$this->supportTicket->mask}/replies", 'support-tickets');
 
                 $attachments[] = [
                     'name' => $file->getClientOriginalName(),

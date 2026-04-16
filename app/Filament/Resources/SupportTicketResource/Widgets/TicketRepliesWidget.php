@@ -43,7 +43,7 @@ class TicketRepliesWidget extends Widget
             $attachments = [];
 
             foreach ($this->replyAttachments as $file) {
-                $path = $file->store("support-tickets/{$this->record->mask}/replies", 'support-tickets');
+                $path = $file->store("{$this->record->mask}/replies", 'support-tickets');
 
                 $attachments[] = [
                     'name' => $file->getClientOriginalName(),

@@ -151,7 +151,7 @@ class Create extends Component
             $attachments = [];
 
             foreach ($this->uploads as $file) {
-                $path = $file->store("support-tickets/{$ticket->mask}", 'support-tickets');
+                $path = $file->store($ticket->mask, 'support-tickets');
 
                 $attachments[] = [
                     'name' => $file->getClientOriginalName(),
