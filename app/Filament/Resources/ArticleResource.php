@@ -40,8 +40,8 @@ class ArticleResource extends Resource
                     ->required()
                     ->maxLength(255)
                     ->live(onBlur: true)
-                    ->afterStateUpdated(function (Article $article, Set $set, ?string $state): void {
-                        if ($article->isPublished()) {
+                    ->afterStateUpdated(function (?Article $article, Set $set, ?string $state): void {
+                        if ($article?->isPublished()) {
                             return;
                         }
 
@@ -53,11 +53,11 @@ class ArticleResource extends Resource
                     ->maxLength(255)
                     ->live(onBlur: true)
                     ->unique(Article::class, 'slug', ignoreRecord: true)
-                    ->disabled(fn (Article $article) => $article->isPublished())
+                    ->disabled(fn (?Article $article) => $article?->isPublished() ?? false)
                     ->afterStateUpdated(
                         fn (Set $set, ?string $state) => $set('slug', Str::slug($state))
                     )
-                    ->helperText(fn (Article $article) => $article->isPublished()
+                    ->helperText(fn (?Article $article) => $article?->isPublished()
                         ? 'The slug cannot be changed after the article is published.'
                         : false
                     ),
