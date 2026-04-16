@@ -571,6 +571,25 @@ class SupportTicketTest extends TestCase
     }
 
     #[Test]
+    public function plugin_type_shows_inactive_approved_official_plugins(): void
+    {
+        $user = $this->createUltraUser();
+
+        Plugin::factory()->approved()->inactive()->create([
+            'name' => 'nativephp/mobile-inactive',
+            'is_official' => true,
+            'user_id' => $user->id,
+        ]);
+
+        Livewire::actingAs($user)
+            ->test(Create::class)
+            ->set('selectedProduct', 'mobile')
+            ->call('nextStep')
+            ->set('mobileAreaType', 'plugin')
+            ->assertSee('nativephp/mobile-inactive');
+    }
+
+    #[Test]
     public function plugin_type_does_not_show_unapproved_official_plugins(): void
     {
         $user = $this->createUltraUser();

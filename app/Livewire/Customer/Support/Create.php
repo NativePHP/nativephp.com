@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Customer\Support;
 
+use App\Enums\PluginStatus;
 use App\Models\Plugin;
 use App\Models\SupportTicket;
 use App\Notifications\SupportTicketSubmitted;
@@ -208,7 +209,7 @@ class Create extends Component
 
         if ($this->selectedProduct === 'mobile') {
             $officialPlugins = Plugin::query()
-                ->approved()
+                ->where('status', PluginStatus::Approved)
                 ->where('is_official', true)
                 ->orderBy('name')
                 ->pluck('name', 'id');
