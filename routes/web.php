@@ -167,6 +167,7 @@ Route::view('partners', 'partners')->name('partners');
 Route::redirect('build-my-app', '/consulting', 301);
 Route::view('consulting', 'consulting')->name('consulting');
 Route::view('the-vibes', 'the-vibes')->name('the-vibes');
+Route::view('the-vibes-prospectus', 'the-vibes-prospectus')->name('the-vibes-prospectus');
 
 // Public plugin directory routes
 Route::middleware(EnsureFeaturesAreActive::using(ShowPlugins::class))->group(function (): void {
