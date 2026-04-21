@@ -133,7 +133,7 @@
                 <div class="rounded-2xl border-2 border-yellow-400/60 bg-gray-50 p-6 dark:bg-white/5">
                     <p class="text-center text-xs font-bold uppercase tracking-widest text-yellow-500">Headline Partner</p>
                     <p class="mt-3 text-center text-4xl font-extrabold">$1,000</p>
-                    <div class="mx-auto mt-3 w-fit rounded-full bg-yellow-500/15 px-4 py-1 text-xs font-medium text-yellow-500">5 spots</div>
+                    <div class="mx-auto mt-3 w-fit rounded-full bg-yellow-500/15 px-4 py-1 text-xs font-medium text-yellow-700 dark:text-yellow-500">5 spots</div>
 
                     <hr class="my-5 border-gray-200 dark:border-white/10">
 
@@ -148,15 +148,11 @@
                         </li>
                         <li class="flex items-start gap-2">
                             <span class="mt-0.5 font-bold text-yellow-500">✓</span>
-                            Logo in The Vibes newsletter
+                            Mentions in pre- and post-event emails and posts
                         </li>
                         <li class="flex items-start gap-2">
                             <span class="mt-0.5 font-bold text-yellow-500">✓</span>
-                            Premium brand visibility
-                        </li>
-                        <li class="flex items-start gap-2">
-                            <span class="mt-0.5 font-bold text-yellow-500">✓</span>
-                            First pick of table/booth space
+                            Premium brand visibility (bigger logo, direct call-outs)
                         </li>
                     </ul>
                 </div>
@@ -180,11 +176,11 @@
                         </li>
                         <li class="flex items-start gap-2">
                             <span class="mt-0.5 font-bold text-violet-500">✓</span>
-                            Logo in The Vibes newsletter
+                            Mentions in pre- and post-event emails and posts
                         </li>
                         <li class="flex items-start gap-2">
                             <span class="mt-0.5 font-bold text-violet-500">✓</span>
-                            Community recognition
+                            Standard brand visibility
                         </li>
                     </ul>
                 </div>
