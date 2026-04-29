@@ -9,8 +9,10 @@ use App\Http\Resources\Api\LicenseResource;
 use App\Jobs\CreateAnystackLicenseJob;
 use App\Models\License;
 use App\Models\User;
+use App\Notifications\ClaimAccount;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rules\Enum;
 
@@ -45,6 +47,12 @@ class LicenseController extends Controller
                 'password' => Hash::make(Str::random(32)), // Random password
             ]
         );
+
+        if ($user->wasRecentlyCreated) {
+            $user->notify(new ClaimAccount(
+                Password::broker()->createToken($user)
+            ));
+        }
 
         // Create the license via job
         $subscription = Subscription::from($validated['subscription']);

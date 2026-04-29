@@ -3,7 +3,6 @@
 namespace App\Livewire;
 
 use App\Enums\Subscription;
-use App\Models\License;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Laravel\Cashier\Cashier;
 use Livewire\Attributes\Layout;
@@ -17,9 +16,9 @@ class OrderSuccess extends Component
 {
     public ?string $email = null;
 
-    public ?string $licenseKey = null;
-
     public ?Subscription $subscription = null;
+
+    public bool $isExistingUser = false;
 
     public string $checkoutSessionId;
 
@@ -67,9 +66,10 @@ class OrderSuccess extends Component
             return;
         }
 
-        $this->email = $subscriptionRecord->user->email;
-        $this->licenseKey = License::query()
-            ->whereBelongsTo($subscriptionItem)
-            ->first()?->key;
+        $user = $subscriptionRecord->user;
+        $this->email = $user->email;
+        // Users created via checkout start with email_verified_at = null and
+        // are sent a ClaimAccount email. Verified users already have access.
+        $this->isExistingUser = ! is_null($user->email_verified_at);
     }
 }

@@ -5,8 +5,10 @@ namespace Tests\Feature;
 use App\Livewire\MobilePricing;
 use App\Models\License;
 use App\Models\User;
+use App\Notifications\ClaimAccount;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Notification;
 use Laravel\Cashier\Cashier;
 use Livewire\Livewire;
 use PHPUnit\Framework\Attributes\Test;
@@ -75,6 +77,40 @@ class MobilePricingTest extends TestCase
         Livewire::test(MobilePricing::class)
             ->call('handlePurchaseRequest', ['email' => 'invalid-email'])
             ->assertHasErrors('email');
+    }
+
+    #[Test]
+    public function purchase_with_new_email_sends_claim_account_notification()
+    {
+        Notification::fake();
+
+        // Invalid plan short-circuits the Stripe call but the user is still
+        // created — we want to assert the claim email is dispatched in that path.
+        Livewire::test(MobilePricing::class)
+            ->call('handlePurchaseRequest', [
+                'email' => 'new-customer@example.com',
+                'plan' => 'not-a-real-plan',
+            ]);
+
+        $user = User::where('email', 'new-customer@example.com')->first();
+        $this->assertNotNull($user);
+        Notification::assertSentTo($user, ClaimAccount::class);
+    }
+
+    #[Test]
+    public function purchase_with_existing_email_does_not_send_claim_account_notification()
+    {
+        Notification::fake();
+
+        $user = User::factory()->create(['email' => 'existing@example.com']);
+
+        Livewire::test(MobilePricing::class)
+            ->call('handlePurchaseRequest', [
+                'email' => 'existing@example.com',
+                'plan' => 'not-a-real-plan',
+            ]);
+
+        Notification::assertNotSentTo($user, ClaimAccount::class);
     }
 
     #[Test]
