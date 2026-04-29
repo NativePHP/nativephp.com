@@ -4,9 +4,11 @@ namespace App\Livewire;
 
 use App\Enums\Subscription;
 use App\Models\User;
+use App\Notifications\ClaimAccount;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 use Laravel\Cashier\Cashier;
@@ -182,11 +184,19 @@ class MobilePricing extends Component
             'email' => 'required|email|max:255',
         ]);
 
-        return User::firstOrCreate([
+        $user = User::firstOrCreate([
             'email' => $email,
         ], [
             'password' => Hash::make(Str::random(72)),
         ]);
+
+        if ($user->wasRecentlyCreated) {
+            $user->notify(new ClaimAccount(
+                Password::broker()->createToken($user)
+            ));
+        }
+
+        return $user;
     }
 
     private function successUrl(): string
