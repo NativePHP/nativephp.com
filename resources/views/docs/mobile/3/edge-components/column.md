@@ -89,3 +89,18 @@ Accepts any EDGE elements as children. Children are arranged vertically from top
 </native:column>
 ```
 @endverbatim
+
+## Element
+
+```php
+use Native\Mobile\Edge\Elements\Column;
+use Native\Mobile\Edge\Elements\Text;
+
+Column::make(
+    Text::make('First'),
+    Text::make('Second'),
+)->fill()->padding(16)->gap(12);
+```
+
+- `make(Element ...$children)` - Create a column with children. Layout / style fluent methods are inherited from
+  the base `Element` class — see [Layout & Styling](layout)

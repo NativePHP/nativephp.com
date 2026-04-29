@@ -5,37 +5,89 @@ order: 310
 
 ## Overview
 
-A tappable button element. The label can be set via the `label` attribute or as slot content between the tags. Buttons
-support custom colors, font sizing, and disabled state.
+A native button. Renders as a SwiftUI `Button` with `buttonStyle(...)` on iOS and a Material3 `Button` on Android.
+
+Visual styling follows Model 3 — colors, radius, shadow, and typography come from the theme. There are intentionally
+**no per-instance** color, background, border, radius, shadow, font-size, or font-weight overrides. For full visual
+control drop to a [`<native:pressable>`](pressable) wrapping your own content.
 
 @verbatim
 ```blade
-<native:button label="Get Started" @press="handleStart" color="#7C3AED" label-color="#FFFFFF" />
+<native:button label="Get Started" @press="handleStart" />
 ```
 @endverbatim
 
 ## Props
 
-All [shared layout and style attributes](layout) are supported, plus:
+The label can be passed as the `label` attribute or as slot content between the tags. If both are set, `label` wins.
 
 - `label` - Button text (optional if using slot content)
-- `color` - Background color as hex string (optional)
-- `label-color` - Text color as hex string (optional)
-- `font-size` - Label text size (optional, float)
+- `variant` - Semantic style: `primary` (default), `secondary`, `destructive`, `ghost`
+- `size` - `sm`, `md` (default), `lg`
+- `icon` - A leading [icon](icons) name (optional)
+- `icon-trailing` - A trailing [icon](icons) name (optional)
 - `disabled` - Disable the button (optional, boolean, default: `false`)
+- `loading` - Show a spinner in place of the leading icon and prevent presses (optional, boolean, default: `false`)
+- `a11y-label` - Accessibility label override (optional)
+- `a11y-hint` - Accessibility hint (optional)
 
 ## Events
 
 - `@press` - Livewire method to call when tapped
-- `@longPress` - Livewire method to call on long press
+
+<aside>
+
+Layout attributes (`width`, `height`, `flex-grow`, `margin`, `align-self`) flow through to position the button
+inside its parent. Per-instance `padding`, `bg`, `border-*`, `border-radius`, `elevation`, `opacity`, `font-*`
+attributes are intentionally dropped before reaching the renderer.
+
+</aside>
 
 ## Examples
 
-### Label as attribute
+### Variants
 
 @verbatim
 ```blade
-<native:button label="Save" @press="save" color="#22C55E" label-color="#FFFFFF" />
+<native:column class="w-full gap-3 p-4">
+    <native:button label="Save"   variant="primary"     @press="save" />
+    <native:button label="Cancel" variant="secondary"   @press="cancel" />
+    <native:button label="Delete" variant="destructive" @press="delete" />
+    <native:button label="Skip"   variant="ghost"       @press="skip" />
+</native:column>
+```
+@endverbatim
+
+### Sizes
+
+@verbatim
+```blade
+<native:row :gap="8" :align-items="1">
+    <native:button label="Small"  size="sm" @press="action" />
+    <native:button label="Medium" size="md" @press="action" />
+    <native:button label="Large"  size="lg" @press="action" />
+</native:row>
+```
+@endverbatim
+
+### With icons
+
+@verbatim
+```blade
+<native:button
+    label="Continue"
+    icon="check"
+    icon-trailing="forward"
+    @press="next"
+/>
+```
+@endverbatim
+
+### Loading state
+
+@verbatim
+```blade
+<native:button label="Saving..." loading @press="save" />
 ```
 @endverbatim
 
@@ -43,41 +95,34 @@ All [shared layout and style attributes](layout) are supported, plus:
 
 @verbatim
 ```blade
-<native:button @press="save" class="bg-violet-600 rounded-full text-white text-lg">
+<native:button @press="save" variant="primary">
     Save Changes
 </native:button>
 ```
 @endverbatim
 
-<aside>
+## Element
 
-When both a `label` attribute and slot content are provided, the `label` attribute takes precedence.
+```php
+use Nativephp\NativeUi\Elements\Button;
 
-</aside>
-
-### Button row
-
-@verbatim
-```blade
-<native:row :gap="8" :justify-content="1">
-    <native:button label="Cancel" @press="cancel" color="#94A3B8" label-color="#FFFFFF" />
-    <native:button label="Confirm" @press="confirm" color="#7C3AED" label-color="#FFFFFF" />
-</native:row>
+Button::make('Save')
+    ->variant('primary')
+    ->size('md')
+    ->icon('check')
+    ->iconTrailing('forward')
+    ->disabled(false)
+    ->loading(false)
+    ->onPress('save');
 ```
-@endverbatim
 
-### Disabled button
-
-@verbatim
-```blade
-<native:button label="Submit" disabled color="#CBD5E1" label-color="#94A3B8" />
-```
-@endverbatim
-
-### Long press
-
-@verbatim
-```blade
-<native:button label="Hold me" @press="tap" @longPress="longTap" color="#272d48" label-color="#FFFFFF" />
-```
-@endverbatim
+- `make(string $label = '')` - Create a button with an optional label
+- `variant(string $value)` - `primary | secondary | destructive | ghost`
+- `size(string $value)` - `sm | md | lg`
+- `icon(string $name)` - Leading icon
+- `iconTrailing(string $name)` - Trailing icon
+- `disabled(bool $value = true)` - Disable the button
+- `loading(bool $value = true)` - Show a spinner and prevent presses
+- `a11yLabel(string $value)` - Accessibility label override
+- `a11yHint(string $value)` - Accessibility hint
+- `onPress(string $method)` - Livewire method to invoke on tap

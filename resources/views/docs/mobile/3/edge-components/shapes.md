@@ -5,25 +5,18 @@ order: 600
 
 ## Overview
 
-Shape elements are used for drawing basic geometric forms. They are typically placed inside a `<native:canvas>` or
-used standalone for simple visual elements like colored backgrounds and decorative accents.
+Shape primitives for drawing simple geometric forms. Three primitives are available:
 
-## Canvas
+- `<native:rect>` — rectangle
+- `<native:circle>` — circle
+- `<native:line>` — horizontal rule
 
-A container for shape elements. Provides a drawing surface for rects, circles, and lines.
-
-@verbatim
-```blade
-<native:canvas :width="200" :height="200">
-    <native:rect :width="100" :height="100" bg="#3B82F6" :border-radius="8" />
-    <native:circle :width="50" :height="50" bg="#EF4444" />
-</native:canvas>
-```
-@endverbatim
+These are typically placed inside a [`<native:canvas>`](canvas) or used standalone for decorative accents.
 
 ## Rect
 
-A rectangle shape. Styled via the shared layout and style attributes.
+A rectangle filled with `bg`. All [shared layout and style attributes](layout) apply, so border, radius, opacity,
+and elevation behave as on any other element.
 
 @verbatim
 ```blade
@@ -33,14 +26,15 @@ A rectangle shape. Styled via the shared layout and style attributes.
 
 ### Props
 
-All [shared layout and style attributes](layout) are supported, plus:
-
-- `left` - X position offset in dp (optional, float)
+- `left` - X position offset in dp (optional, float). Used inside an absolutely-positioned parent
 - `top` - Y position offset in dp (optional, float)
+
+`<native:rect>` may optionally wrap children if you need to layer content on top of the fill.
 
 ## Circle
 
-A circle shape. Automatically applies a large `border-radius` to create a circular form.
+A circle filled with `bg`. Defaults to `border-radius: 9999` so any square-ish frame appears as a circle. For a
+perfect circle use equal `width` and `height`.
 
 @verbatim
 ```blade
@@ -50,34 +44,35 @@ A circle shape. Automatically applies a large `border-radius` to create a circul
 
 ### Props
 
-All [shared layout and style attributes](layout) are supported, plus:
-
 - `left` - X position offset in dp (optional, float)
 - `top` - Y position offset in dp (optional, float)
 
-<aside>
-
-`<native:circle>` sets `border-radius` to `9999` by default, making any square element appear circular. Set equal
-`width` and `height` for a perfect circle.
-
-</aside>
+`<native:circle>` is a self-closing element. It does not accept children.
 
 ## Line
 
-A line drawn between two points. Defined by `from` and `to` coordinates.
+A 1pt horizontal rule across the available width.
 
 @verbatim
 ```blade
-<native:line from="0, 0" to="200, 100" :border-width="2" border-color="#94A3B8" />
+<native:line :border-width="2" border-color="#94A3B8" />
 ```
 @endverbatim
 
 ### Props
 
-All [shared layout and style attributes](layout) are supported, plus:
+All [shared layout and style attributes](layout) are supported. The most useful:
 
-- `from` - Start point as `"x, y"` string (optional)
-- `to` - End point as `"x, y"` string (optional)
+- `border-color` - Line color as hex string (optional, default: platform separator color)
+- `border-width` - Stroke thickness in dp (optional, float, default: `1`)
+
+<aside>
+
+`<native:line>` always paints a centered horizontal stroke across its frame — `from`/`to` coordinates are accepted
+on the PHP element but the iOS and Android renderers don't read them. To position a line, control the parent
+container's frame or use a styled `<native:divider>`.
+
+</aside>
 
 ## Examples
 
@@ -103,13 +98,20 @@ All [shared layout and style attributes](layout) are supported, plus:
 
 @verbatim
 ```blade
-<native:line from="0, 0" to="300, 0" :border-width="1" border-color="#E2E8F0" />
+<native:line :border-width="1" border-color="#E2E8F0" />
 ```
 @endverbatim
 
-<aside>
+## Element
 
-All shape elements (`<native:rect />`, `<native:circle />`, `<native:line />`) are self-closing by default and do
-not accept children, except `<native:rect>` which can optionally wrap child elements.
+```php
+use Native\Mobile\Edge\Elements\Rect;
+use Native\Mobile\Edge\Elements\Circle;
+use Native\Mobile\Edge\Elements\Line;
 
-</aside>
+Rect::make();
+Circle::make();
+Line::make();
+```
+
+All three expose `make()` and inherit the standard layout / style fluent API.

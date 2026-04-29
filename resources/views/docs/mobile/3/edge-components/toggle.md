@@ -5,7 +5,10 @@ order: 510
 
 ## Overview
 
-A native on/off switch control. Renders as a `UISwitch` on iOS and a Material `Switch` on Android.
+A native on/off switch. Renders as a SwiftUI `Toggle` on iOS and a Material3 `Switch` on Android.
+
+Per Model 3, the active track / thumb colors come from `theme.primary` / `theme.onPrimary`. There are no per-instance
+color overrides. For custom visuals drop to [`<native:pressable>`](pressable) wrapping your own drawing.
 
 @verbatim
 ```blade
@@ -15,10 +18,11 @@ A native on/off switch control. Renders as a `UISwitch` on iOS and a Material `S
 
 ## Props
 
-All [shared layout and style attributes](layout) are supported, plus:
-
 - `value` - Current toggle state (optional, boolean, default: `false`)
+- `label` - Inline label text rendered to the left of the switch (optional)
 - `disabled` - Disable the toggle (optional, boolean, default: `false`)
+- `a11y-label` - Accessibility label (optional)
+- `a11y-hint` - Accessibility hint (optional)
 
 ## Events
 
@@ -28,17 +32,25 @@ All [shared layout and style attributes](layout) are supported, plus:
 
 `<native:toggle />` is a self-closing element. It does not accept children.
 
+Layout attributes flow through; per-instance `padding`, `bg`, `border-*`, `elevation`, `opacity` are dropped
+before rendering.
+
 </aside>
 
 ## Two-way Binding
 
-Use `@model` for automatic two-way binding with a Livewire property.
+Use the `native:model` directive for automatic two-way binding with a Livewire property. This expands to
+`:value` plus an `@change` handler that calls `__syncProperty`.
 
 @verbatim
 ```blade
-<native:toggle @model="notifications" />
+<native:toggle native:model="notifications" />
 ```
 @endverbatim
+
+`sync-mode` and `debounce-ms` are accepted for API consistency with the other stateful components, but for a
+discrete tap the distinction between `live`, `blur`, and `debounce` makes no real difference — every flip is one
+event.
 
 ## Examples
 
@@ -49,12 +61,12 @@ Use `@model` for automatic two-way binding with a Livewire property.
 <native:column class="w-full gap-0">
     <native:row class="w-full px-4 py-3" :justify-content="3" :align-items="1">
         <native:text class="text-base">Dark Mode</native:text>
-        <native:toggle :value="$darkMode" @change="toggleDarkMode" />
+        <native:toggle native:model="darkMode" />
     </native:row>
     <native:divider />
     <native:row class="w-full px-4 py-3" :justify-content="3" :align-items="1">
         <native:text class="text-base">Notifications</native:text>
-        <native:toggle :value="$notifications" @change="toggleNotifications" />
+        <native:toggle native:model="notifications" />
     </native:row>
     <native:divider />
     <native:row class="w-full px-4 py-3" :justify-content="3" :align-items="1">
@@ -65,17 +77,32 @@ Use `@model` for automatic two-way binding with a Livewire property.
 ```
 @endverbatim
 
-### With icon and description
+### With inline label
 
 @verbatim
 ```blade
-<native:row class="w-full px-4 py-3 gap-3" :align-items="1">
-    <native:icon name="bell" :size="24" color="#7C3AED" />
-    <native:column :flex-grow="1" :gap="2">
-        <native:text class="text-base font-medium">Push Notifications</native:text>
-        <native:text class="text-sm text-slate-400">Receive alerts for new messages</native:text>
-    </native:column>
-    <native:toggle :value="$pushEnabled" @change="togglePush" />
-</native:row>
+<native:toggle label="Push Notifications" native:model="pushEnabled" />
 ```
 @endverbatim
+
+## Element
+
+```php
+use Nativephp\NativeUi\Elements\Toggle;
+
+Toggle::make()
+    ->value($darkMode)
+    ->label('Dark Mode')
+    ->disabled(false)
+    ->onChange('toggleDarkMode');
+```
+
+- `make()` - Create a toggle
+- `value(bool $checked)` - Current state
+- `label(string $text)` - Inline label
+- `disabled(bool $value = true)` - Disable the toggle
+- `a11yLabel(string $value)` - Accessibility label
+- `a11yHint(string $value)` - Accessibility hint
+- `syncMode(string $mode)` - `live | blur | debounce` (set by `native:model` modifiers)
+- `debounceMs(int $ms)` - Debounce interval when `syncMode === 'debounce'`
+- `onChange(string $method)` - Livewire method invoked on flip

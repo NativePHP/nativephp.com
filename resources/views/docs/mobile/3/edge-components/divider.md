@@ -5,7 +5,8 @@ order: 340
 
 ## Overview
 
-A horizontal line separator used to visually divide sections of content. Renders as a thin native divider line.
+A thin horizontal line separator. Renders as a 1pt rule. Color resolves from `border-color` if set, otherwise the
+platform separator color.
 
 @verbatim
 ```blade
@@ -13,17 +14,22 @@ A horizontal line separator used to visually divide sections of content. Renders
 ```
 @endverbatim
 
+`<native:horizontal-divider />` is an alias of `<native:divider />` exposed for use inside [side
+navigation](side-nav).
+
 ## Props
 
 All [shared layout and style attributes](layout) are supported. The most useful for dividers:
 
-- `bg` - Line color as hex string (optional, default: platform default separator color)
+- `border-color` - Line color as hex string (optional, default: platform separator color)
 - `opacity` - Line opacity from 0.0 to 1.0 (optional)
 - `margin` - Spacing around the divider (optional)
 
 <aside>
 
 `<native:divider />` is a self-closing element. It does not accept children.
+
+The line is always 1pt high. To change thickness, use a styled `<native:column>` instead.
 
 </aside>
 
@@ -47,7 +53,7 @@ All [shared layout and style attributes](layout) are supported. The most useful 
 
 @verbatim
 ```blade
-<native:divider bg="#E2E8F0" :margin="[8, 16]" />
+<native:divider border-color="#E2E8F0" :margin="[8, 16]" />
 ```
 @endverbatim
 
@@ -67,3 +73,13 @@ All [shared layout and style attributes](layout) are supported. The most useful 
 </native:column>
 ```
 @endverbatim
+
+## Element
+
+```php
+use Native\Mobile\Edge\Elements\Divider;
+
+Divider::make()->borderColor('#E2E8F0');
+```
+
+- `make()` - Create a divider

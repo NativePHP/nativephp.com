@@ -26,7 +26,14 @@ be configured for horizontal scrolling. On the native side, this uses `LazyColum
 All [shared layout and style attributes](layout) are supported, plus:
 
 - `horizontal` - Scroll horizontally instead of vertically (optional, boolean, default: `false`)
-- `shows-indicators` - Show scroll indicators (optional, boolean, default: `true`)
+- `shows-indicators` - Show scroll indicators (optional, boolean, default: `true`) [iOS]
+
+<aside>
+
+Android `LazyRow` / `LazyColumn` don't render scrollbars by default, so `shows-indicators` is effectively iOS-only.
+The prop is silently accepted on Android.
+
+</aside>
 
 ## Children
 

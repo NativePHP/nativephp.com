@@ -24,40 +24,59 @@ interactive forms and navigation chrome.
 ### Layout
 
 - **[Layout & Styling](layout)** - Shared sizing, spacing, flex, style, and event attributes available on all elements
+- **[Screen](screen)** - Themed page-level container
 - **[Column](column)** - Vertical flex container
 - **[Row](row)** - Horizontal flex container
 - **[Scroll View](scroll-view)** - Scrollable container with virtualization
 - **[Stack](stack)** - Overlay container (ZStack) for layering elements
 - **[Spacer](spacer)** - Flexible space element
 - **[Pressable](pressable)** - Touch-sensitive container wrapper
+- **[Card](card)** - Content surface with filled / outlined / elevated variants
 
 ### Content
 
 - **[Text](text)** - Text display with font sizing, weight, color, and alignment
-- **[Button](button)** - Tappable button with label, colors, and disabled state
 - **[Image](image)** - Image display with fit modes and tinting
 - **[Icon](icon)** - Platform-native icons (SF Symbols on iOS, Material Icons on Android)
 - **[Divider](divider)** - Horizontal line separator
 - **[Activity Indicator](activity-indicator)** - Loading spinner
+- **[Progress Bar](progress-bar)** - Linear progress indicator
+- **[Badge](badge)** - Count or label pill marker
 
 ### Forms
 
-- **[Text Input](text-input)** - Text input field with labels, validation, and keyboard types
+- **[Button](button)** - Tappable button with variants, sizes, and disabled / loading state
+- **[Button Group](button-group)** - Segmented single-choice selector
+- **[Text Input](text-input)** - Outlined and filled text input variants
 - **[Toggle](toggle)** - On/off switch control
+- **[Checkbox](checkbox)** - Tick/untick control with optional inline label
+- **[Radio Group](radio-group)** - Single-choice radio selector
+- **[Select](select)** - Dropdown picker
+- **[Slider](slider)** - Continuous (or stepped) value selector
+- **[Chip](chip)** - Compact selectable tag
 
 ### Navigation
 
 - **[Bottom Navigation](bottom-nav)** - The always-accessible bottom navigation bar
 - **[Top Bar](top-bar)** - A title bar with action buttons
 - **[Side Navigation](side-nav)** - A slide-out navigation drawer
+- **[Tab Row](tab-row)** - Horizontal tab strip for in-screen sectioning
 
-### Shapes
+### Lists & data
 
-- **[Shapes](shapes)** - Rect, circle, and line elements for drawing
+- **[List](list)** - Virtualized list with pull-to-refresh, end-reached, and swipe actions
+- **[List Item](list)** - Material3 row with leading + trailing slot system
+- **[Carousel](carousel)** - Horizontal paging carousel
 
 ### Overlays
 
 - **[Bottom Sheet](bottom-sheet)** - Modal bottom sheet for contextual actions and forms
+- **[Modal](modal)** - Full-screen modal overlay
+
+### Drawing
+
+- **[Canvas](canvas)** - Drawing surface for shape primitives
+- **[Shapes](shapes)** - Rect, circle, and line elements
 
 ## How It Works
 

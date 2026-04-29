@@ -76,3 +76,15 @@ and platform-specific usage, see the [Icons](icons) reference page.
 />
 ```
 @endverbatim
+
+## Element
+
+```php
+use Nativephp\NativeUi\Elements\Icon;
+
+Icon::make('home')->size(24)->color('#1E293B');
+```
+
+- `make(string $name = '')` - Create an icon
+- `size(float $size)` - Icon size in dp
+- `color(string $hex)` - Icon color

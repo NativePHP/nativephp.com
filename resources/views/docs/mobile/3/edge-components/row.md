@@ -70,3 +70,18 @@ Accepts any EDGE elements as children. Children are arranged horizontally from l
 </native:row>
 ```
 @endverbatim
+
+## Element
+
+```php
+use Native\Mobile\Edge\Elements\Row;
+use Native\Mobile\Edge\Elements\Text;
+
+Row::make(
+    Text::make('Left'),
+    Text::make('Right'),
+)->gap(8)->alignItems(1);
+```
+
+- `make(Element ...$children)` - Create a row with children. Layout / style fluent methods are inherited from the
+  base `Element` class — see [Layout & Styling](layout)

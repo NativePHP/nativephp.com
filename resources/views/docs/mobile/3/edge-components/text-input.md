@@ -5,81 +5,99 @@ order: 500
 
 ## Overview
 
-A native text input field for user input. Supports placeholders, labels, secure entry for passwords, multiline mode,
-keyboard type selection, and validation states.
+Native text input fields come in two variants:
+
+- `<native:outlined-text-input>` — bordered field. Default, lower emphasis.
+- `<native:filled-text-input>` — surface-fill background + bottom indicator line. Higher emphasis.
+
+Both share the same prop set and event API. Choose based on emphasis, not behavior.
+
+On iOS they render as SwiftUI `TextField` / `SecureField` with Material3-style chrome; on Android they map to
+`OutlinedTextField` / `TextField` (filled). Per Model 3 there are no per-instance color, font, or border overrides
+— all chrome resolves from the theme. For fully custom input visuals drop to [`<native:pressable>`](pressable)
+wrapping your own drawing.
 
 @verbatim
 ```blade
-<native:text-input
-    placeholder="Enter your name"
-    :value="$name"
-    @change="updateName"
+<native:outlined-text-input
+    label="Email"
+    placeholder="you@example.com"
+    native:model="email"
+    keyboard="email"
+    leading-icon="email"
 />
 ```
 @endverbatim
 
 ## Props
 
-All [shared layout and style attributes](layout) are supported, plus:
+Both variants accept identical props.
+
+### Content
 
 - `value` - Current text value (optional, string)
-- `placeholder` - Placeholder text shown when empty (optional, string)
-- `label` - Floating label text (optional, string)
-- `secure` - Mask input for passwords (optional, boolean, default: `false`)
-- `multiline` - Allow multiple lines of text (optional, boolean, default: `false`)
+- `placeholder` - Placeholder shown when empty (optional, string)
+- `label` - Label rendered above the field (optional, string)
+- `supporting` - Helper text rendered below the field (optional, string)
+
+### State
+
 - `disabled` - Disable the input (optional, boolean, default: `false`)
 - `read-only` - Make the input read-only (optional, boolean, default: `false`)
-- `is-error` - Show error styling (optional, boolean, default: `false`)
-- `keyboard` - Keyboard type (optional, int): `0`=default, `1`=number, `2`=email, `3`=phone, `4`=URL
+- `is-error` - Show error styling (border / indicator + supporting text turn `theme.destructive`)
+- `loading` - Show a spinner in the trailing position (optional, boolean, default: `false`)
+
+### Behavior
+
+- `keyboard` - Keyboard hint string: `text` (default), `number`, `email`, `phone`, `url`, `decimal`, `numberPassword`
+- `secure` - Mask input for passwords (optional, boolean, default: `false`)
+- `multiline` - Allow multiple lines (optional, boolean, default: `false`)
 - `max-length` - Maximum character count (optional, int)
-- `max-lines` - Maximum visible lines (optional, int)
-- `min-lines` - Minimum visible lines (optional, int)
-- `variant` - Input style (optional, int): `0`=outlined, `1`=filled
-- `font-size` - Text size (optional, float)
-- `font-weight` - Text weight 1-7 (optional, int)
-- `color` - Accent/cursor color as hex (optional)
-- `text-color` - Input text color as hex (optional)
-- `container-color` - Background color as hex (optional)
-- `label-color` - Label text color as hex (optional)
+- `max-lines` - Maximum visible lines when `multiline` (optional, int)
+- `min-lines` - Minimum visible lines when `multiline` (optional, int)
 
 ### Decorations
 
-- `prefix` - Text displayed before the input (optional, string)
-- `suffix` - Text displayed after the input (optional, string)
-- `supporting` - Helper text displayed below the input (optional, string)
-- `supporting-color` - Helper text color as hex (optional)
-- `leading-icon` - Icon name displayed at the start (optional, string)
-- `trailing-icon` - Icon name displayed at the end (optional, string)
+- `prefix` - Text rendered before the input (optional, string)
+- `suffix` - Text rendered after the input (optional, string)
+- `leading-icon` - Icon name rendered at the start (optional, string)
+- `trailing-icon` - Icon name rendered at the end (optional, string)
+
+### Sizing & accessibility
+
+- `size` - `sm | md (default) | lg`
+- `a11y-label` - Accessibility label (optional)
+- `a11y-hint` - Accessibility hint (optional)
 
 ## Events
 
-- `@change` - Livewire method called when the text value changes. Receives the new text value as a parameter
-- `@submit` - Livewire method called when the user submits (e.g. presses return). Receives the text value as a parameter
+- `@change` - Livewire method called when the text changes. Receives the new value
+- `@submit` - Livewire method called when the user submits (e.g. presses return). Receives the current value
 
 <aside>
 
-`<native:text-input />` is a self-closing element. It does not accept children.
+Both variants are self-closing. They do not accept children.
 
 </aside>
 
 ## Two-way Binding
 
-Use the `@model` directive for automatic two-way binding with a Livewire property. This is shorthand for setting
-`:value` and `@change` together.
+Use the `native:model` directive for automatic two-way binding with a Livewire property. The directive expands to
+`:value`, `@change="__syncProperty(...)"`, and a `sync-mode` prop driven by the modifier chain.
 
 @verbatim
 ```blade
-<native:text-input placeholder="Your name" @model="name" />
+<native:outlined-text-input native:model="name" />
+<native:outlined-text-input native:model.blur="email" />
+<native:outlined-text-input native:model.debounce.500ms="search" />
 ```
 @endverbatim
 
-This is equivalent to:
+`sync-mode` semantics:
 
-@verbatim
-```blade
-<native:text-input placeholder="Your name" :value="$name" @change="__syncProperty('name')" />
-```
-@endverbatim
+- `live` (default) — every keystroke fires `@change`
+- `blur` — only fires on focus loss / submit
+- `debounce` — fires after `debounce_ms` of inactivity, or immediately on blur / submit
 
 ## Examples
 
@@ -88,38 +106,34 @@ This is equivalent to:
 @verbatim
 ```blade
 <native:column class="w-full gap-4 p-4">
-    <native:text-input
+    <native:outlined-text-input
         label="Email"
         placeholder="you@example.com"
-        :value="$email"
-        @change="updateEmail"
-        :keyboard="2"
+        native:model="email"
+        keyboard="email"
         leading-icon="email"
     />
-    <native:text-input
+    <native:outlined-text-input
         label="Password"
         placeholder="Enter password"
-        :value="$password"
-        @change="updatePassword"
+        native:model="password"
         secure
         leading-icon="lock"
     />
-    <native:button label="Sign In" @press="login" color="#7C3AED" label-color="#FFFFFF" />
+    <native:button label="Sign In" @press="login" />
 </native:column>
 ```
 @endverbatim
 
-### With validation error
+### Filled variant with validation error
 
 @verbatim
 ```blade
-<native:text-input
+<native:filled-text-input
     label="Email"
-    :value="$email"
-    @change="updateEmail"
+    native:model="email"
     is-error
     supporting="Please enter a valid email address"
-    supporting-color="#EF4444"
 />
 ```
 @endverbatim
@@ -128,11 +142,10 @@ This is equivalent to:
 
 @verbatim
 ```blade
-<native:text-input
+<native:outlined-text-input
     label="Message"
     placeholder="Type your message..."
-    :value="$message"
-    @change="updateMessage"
+    native:model="message"
     multiline
     :min-lines="3"
     :max-lines="8"
@@ -140,32 +153,56 @@ This is equivalent to:
 ```
 @endverbatim
 
-### Search field
+### Search with submit
 
 @verbatim
 ```blade
-<native:text-input
+<native:filled-text-input
     placeholder="Search..."
-    :value="$query"
-    @change="search"
+    native:model.debounce.300ms="query"
     @submit="submitSearch"
     leading-icon="search"
-    :variant="1"
 />
 ```
 @endverbatim
 
-### With prefix and suffix
+### Prefix and suffix
 
 @verbatim
 ```blade
-<native:text-input
+<native:outlined-text-input
     label="Price"
-    :value="$price"
-    @change="updatePrice"
+    native:model="price"
     prefix="$"
     suffix=".00"
-    :keyboard="1"
+    keyboard="decimal"
 />
 ```
 @endverbatim
+
+## Element
+
+```php
+use Nativephp\NativeUi\Elements\OutlinedTextInput;
+use Nativephp\NativeUi\Elements\FilledTextInput;
+
+OutlinedTextInput::make()
+    ->label('Email')
+    ->placeholder('you@example.com')
+    ->value($email)
+    ->keyboard('email')
+    ->leadingIcon('email')
+    ->onChange('updateEmail');
+```
+
+Both elements share the same fluent API (defined on `BaseTextInput`):
+
+- `value(string $text)`, `placeholder(string $text)`, `label(string $text)`, `supporting(string $text)`
+- `disabled(bool $value = true)`, `readOnly(bool $value = true)`, `error(bool $value = true)`, `loading(bool $value = true)`
+- `keyboard(string|int $type)`, `secure(bool $value = true)`, `maxLength(int $length)`
+- `multiline(bool $value = true)`, `maxLines(int $lines)`, `minLines(int $lines)`
+- `prefix(string $text)`, `suffix(string $text)`, `leadingIcon(string $name)`, `trailingIcon(string $name)`
+- `size(string $value)` - `sm | md | lg`
+- `a11yLabel(string $value)`, `a11yHint(string $value)`
+- `syncMode(string $mode)`, `debounceMs(int $ms)`
+- `onChange(string $method)`, `onSubmit(string $method)`

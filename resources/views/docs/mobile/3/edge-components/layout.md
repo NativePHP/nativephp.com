@@ -110,6 +110,13 @@ properties control how children grow, shrink, and align.
 - `flex-shrink` - How much this element shrinks when space is limited (float)
 - `flex-basis` - Initial size before flex distribution (float or string)
 
+<aside>
+
+The Tailwind `flex-1` class is shorthand for `flex-grow: 1; flex-basis: 0` — the most common pattern for "fill the
+remaining space along the parent's main axis."
+
+</aside>
+
 ## Alignment
 
 Alignment values are integers that map to standard flex alignment:
@@ -146,6 +153,13 @@ Alignment values are integers that map to standard flex alignment:
 - `justify-content` - Main-axis distribution (int, 0=start, 1=center, 2=end, 3=space-between, 4=space-around, 5=space-evenly)
 - `align-self` - Override parent's `align-items` for this element (int, 0-4)
 - `center` - Shorthand: sets both `align-items` and `justify-content` to center (boolean)
+
+<aside>
+
+A child with `w-full` (or `h-full`) overrides its parent's `items-center` along that axis — same semantics as CSS
+`align-self: stretch`. This is the easiest way to make one row in a centered column span the full width.
+
+</aside>
 
 ## Style
 
@@ -202,7 +216,12 @@ typically applied to your outermost column.
 ```
 @endverbatim
 
-- `safe-area` - Inset content to avoid system UI (boolean)
+- `safe-area` - Inset content on both top and bottom edges (boolean)
+- `safe-area-top` - Inset only the top edge (status bar / notch)
+- `safe-area-bottom` - Inset only the bottom edge (home indicator)
+
+See [Safe Area](../the-basics/safe-area) for the full picture, including how the framework's [layout](../the-basics/layouts)
+chrome already handles safe-area insets for you.
 
 ## Visibility
 
@@ -271,7 +290,8 @@ the `class` attribute on any element.
 | Justify | `justify-start`, `justify-center`, `justify-end`, `justify-between`, `justify-around`, `justify-evenly` |
 | Self | `self-start`, `self-center`, `self-end`, `self-stretch` |
 | Flex | `flex-1`, `flex-grow`, `flex-grow-0`, `flex-shrink`, `flex-shrink-0` |
-| Safe area | `safe-area` |
+| Safe area | `safe-area`, `safe-area-top`, `safe-area-bottom` |
+| Position | `absolute`, `relative`, `top-[N]`, `right-[N]`, `bottom-[N]`, `left-[N]` |
 | Text align | `text-left`, `text-center`, `text-right` |
 
 <aside>

@@ -5,8 +5,7 @@ order: 320
 
 ## Overview
 
-Displays an image from a URL. Supports multiple content fit modes and optional tinting. Images are loaded
-asynchronously by the native platform.
+Displays an image from a URL. Loaded asynchronously by the native platform — `AsyncImage` on iOS, Coil on Android.
 
 @verbatim
 ```blade
@@ -20,13 +19,14 @@ All [shared layout and style attributes](layout) are supported, plus:
 
 - `src` - Image URL (required, string)
 - `fit` - Content fit mode (optional, int, default: `1`):
-  - `0` - None (original size)
-  - `1` - Fit (scale to fit within bounds, preserving aspect ratio)
-  - `2` - Crop (scale to fill bounds, cropping excess)
-  - `3` - Fill (stretch to fill bounds, may distort)
+    - `0` / `1` — fit (scale to fit within bounds, preserving aspect ratio)
+    - `2` / `3` — fill (scale to fill bounds, cropping excess)
 - `tint-color` - Apply a color tint as hex string (optional)
 
 <aside>
+
+The renderer collapses fit modes to two effective behaviors: `fit` and `fill`. Modes `0`/`1` both render as fit;
+`2`/`3` both render as fill. Use `:fit="1"` for "scale within" and `:fit="2"` for "scale to fill / crop".
 
 `<native:image />` is a self-closing element. It does not accept children.
 
@@ -82,3 +82,17 @@ All [shared layout and style attributes](layout) are supported, plus:
 </native:column>
 ```
 @endverbatim
+
+## Element
+
+```php
+use Native\Mobile\Edge\Elements\Image;
+
+Image::make('https://example.com/photo.jpg')
+    ->fit(2)
+    ->tintColor('#7C3AED');
+```
+
+- `make(string $src = '')` - Create an image with a source URL
+- `fit(int $mode)` - `0`/`1` = fit, `2`/`3` = fill
+- `tintColor(string $hex)` - Apply a color tint

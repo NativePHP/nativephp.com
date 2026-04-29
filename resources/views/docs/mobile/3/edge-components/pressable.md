@@ -87,3 +87,14 @@ Accepts any EDGE elements as children. Children are arranged vertically (like a 
 </native:pressable>
 ```
 @endverbatim
+
+## Element
+
+```php
+use Native\Mobile\Edge\Elements\Pressable;
+
+Pressable::make($child1, $child2)->onPress('handleTap');
+```
+
+- `make(Element ...$children)` - Create a pressable with children. Inherits the standard layout / style API from
+  the base `Element` class
