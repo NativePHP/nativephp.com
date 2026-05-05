@@ -192,42 +192,5 @@
                 </a>
             </div>
         </div>
-
-        {{-- Sponsor logos --}}
-        <div
-            class="mt-5 grid grid-cols-[repeat(auto-fill,minmax(10rem,1fr))] gap-3.5"
-            aria-label="Sponsors of the NativePHP project"
-        >
-            <x-home.partner-card
-                partnerName="Sevalla"
-                href="https://sevalla.com/?utm_source=nativephp&utm_medium=Referral&utm_campaign=homepage"
-            >
-                <x-sponsors.logos.sevalla
-                    class="text-black dark:text-white"
-                    alt="Sevalla logo"
-                    loading="lazy"
-                />
-            </x-home.partner-card>
-            <x-home.partner-card
-                partnerName="KaasHosting"
-                href="https://www.kaashosting.nl/?lang=en"
-            >
-                <x-sponsors.logos.kaashosting
-                    class="fill-[#042340] dark:fill-white"
-                    alt="KaasHosting logo"
-                    loading="lazy"
-                />
-            </x-home.partner-card>
-            <x-home.partner-card
-                partnerName="Quantumweb"
-                href="https://www.quantumweb.co/"
-            >
-                <x-sponsors.logos.quantumweb
-                    class="fill-[#042340] dark:fill-white"
-                    alt="Quantumweb logo"
-                    loading="lazy"
-                />
-            </x-home.partner-card>
-        </div>
     </div>
 </section>
