@@ -35,11 +35,11 @@
 
                         <flux:radio.group wire:model.live="selectedProduct" variant="cards" class="flex-col">
                             @foreach ([
-                                'mobile' => ['label' => 'Mobile', 'desc' => 'iOS & Android apps'],
-                                'desktop' => ['label' => 'Desktop', 'desc' => 'macOS, Windows & Linux apps'],
-                                'nativephp.com' => ['label' => 'nativephp.com', 'desc' => 'Website, account & billing'],
+                                'mobile' => ['label' => 'Mobile', 'desc' => 'iOS and Android apps'],
+                                'desktop' => ['label' => 'Desktop', 'desc' => 'macOS, Windows and Linux apps'],
+                                'nativephp.com' => ['label' => 'nativephp.com', 'desc' => 'Website, account and billing'],
                             ] as $value => $product)
-                                <flux:radio value="{{ $value }}" label="{{ $product['label'] }}" description="{{ $product['desc'] }}" />
+                                <flux:radio :value="$value" :label="$product['label']" :description="$product['desc']" />
                             @endforeach
                         </flux:radio.group>
                     </div>
@@ -105,7 +105,7 @@
                                         wire:model="reproductionSteps"
                                         label="Steps to reproduce"
                                         rows="4"
-                                        placeholder="1. Open the app&#10;2. Navigate to...&#10;3. Click on..."
+                                        :placeholder="implode(PHP_EOL, ['1. Open the app', '2. Navigate to...', '3. Click on...'])"
                                     />
 
                                     <flux:field>
