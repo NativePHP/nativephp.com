@@ -97,6 +97,7 @@
                     $isBlogActive = request()->routeIs('blog*');
                     $isPartnersActive = request()->routeIs('partners*');
                     $isServicesActive = request()->routeIs('consulting');
+                    $isBuildActive = request()->routeIs('build-my-app');
                     $isCourseActive = request()->routeIs('course');
                     $isSupportActive = request()->routeIs('support.*');
                     $isSponsorActive = request()->routeIs('sponsoring*');
@@ -252,6 +253,32 @@
 
                         <div class="inline-flex items-center gap-2">
                             Consulting
+                            <span class="rounded-full bg-emerald-500 px-1.5 py-px text-[10px] font-bold leading-tight text-white">New</span>
+                        </div>
+                    </a>
+                </div>
+
+                {{-- Build Link (mobile only, shown in navbar on desktop) --}}
+                <div class="lg:hidden">
+                    <a
+                        href="{{ route('build-my-app') }}"
+                        @class([
+                            'flex items-center gap-2 py-3 transition duration-200',
+                            'font-medium' => $isBuildActive,
+                            'opacity-70 hover:translate-x-1 hover:opacity-100 dark:opacity-50' => ! $isBuildActive,
+                        ])
+                        aria-current="{{ $isBuildActive ? 'page' : 'false' }}"
+                    >
+                        @if ($isBuildActive)
+                            <x-icons.right-arrow
+                                class="size-4 shrink-0"
+                                aria-hidden="true"
+                                focusable="false"
+                            />
+                        @endif
+
+                        <div class="inline-flex items-center gap-2">
+                            Build
                             <span class="rounded-full bg-emerald-500 px-1.5 py-px text-[10px] font-bold leading-tight text-white">New</span>
                         </div>
                     </a>

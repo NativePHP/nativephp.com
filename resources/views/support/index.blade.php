@@ -88,5 +88,27 @@
             </a>
 
         </div>
+
+        {{-- Book a Consulting Session --}}
+        <div class="mt-10 flex flex-col items-center gap-4 rounded-xl border border-gray-200 bg-gray-50 p-6 text-center sm:flex-row sm:gap-6 sm:text-left dark:border-gray-700/50 dark:bg-gray-800/30">
+            <div class="grid size-12 shrink-0 place-items-center rounded-full bg-white text-gray-700 ring-1 ring-black/5 dark:bg-gray-900 dark:text-gray-300 dark:ring-white/10">
+                <svg xmlns="http://www.w3.org/2000/svg" class="size-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                    <line x1="16" y1="2" x2="16" y2="6"></line>
+                    <line x1="8" y1="2" x2="8" y2="6"></line>
+                    <line x1="3" y1="10" x2="21" y2="10"></line>
+                </svg>
+            </div>
+            <div class="flex-1">
+                <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Need help even more quickly?</h2>
+                <p class="mt-1 text-gray-600 dark:text-gray-400">
+                    Book a working session with the NativePHP core team &mdash; available as soon as two hours from now.
+                    Discounted rate for Ultra subscribers.
+                </p>
+            </div>
+            <a href="{{ route('consulting') }}" class="inline-flex items-center rounded-md bg-gray-800 px-4 py-2 text-sm font-medium text-white shadow-sm transition duration-200 hover:bg-gray-900 dark:bg-gray-200 dark:text-gray-900 dark:hover:bg-white">
+                Book a session
+            </a>
+        </div>
     </section>
 </x-layout>

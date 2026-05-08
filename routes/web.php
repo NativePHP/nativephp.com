@@ -164,7 +164,7 @@ Route::view('privacy-policy', 'privacy-policy')->name('privacy-policy');
 Route::view('terms-of-service', 'terms-of-service')->name('terms-of-service');
 Route::view('developer-terms', 'developer-terms')->name('developer-terms');
 Route::view('partners', 'partners')->name('partners');
-Route::redirect('build-my-app', '/consulting', 301);
+Route::view('build-my-app', 'build-my-app')->name('build-my-app');
 Route::view('consulting', 'consulting')->name('consulting');
 Route::view('the-vibes', 'the-vibes')->name('the-vibes');
 Route::view('the-vibes-prospectus', 'the-vibes-prospectus')->name('the-vibes-prospectus');

@@ -81,7 +81,7 @@
             {{-- Ultra link (desktop only) --}}
             <a
                 href="{{ route('pricing') }}"
-                class="hidden items-center gap-1.5 rounded-full bg-violet-500/10 px-3 py-1.5 text-sm font-medium text-violet-600 transition duration-200 hover:bg-violet-500/20 lg:inline-flex dark:text-violet-400 dark:hover:bg-violet-500/20"
+                class="hidden items-center gap-1.5 rounded-full bg-orange-500/10 px-3 py-1.5 text-sm font-medium text-orange-600 transition duration-200 hover:bg-orange-500/20 lg:inline-flex dark:text-orange-400 dark:hover:bg-orange-500/20"
             >
                 Ultra
             </a>
@@ -100,6 +100,14 @@
                 class="hidden items-center gap-1.5 rounded-full bg-blue-500/10 px-3 py-1.5 text-sm font-medium text-blue-600 transition duration-200 hover:bg-blue-500/20 lg:inline-flex dark:text-blue-400 dark:hover:bg-blue-500/20"
             >
                 Consulting
+            </a>
+
+            {{-- Build link (desktop only) --}}
+            <a
+                href="{{ route('build-my-app') }}"
+                class="hidden items-center gap-1.5 rounded-full bg-violet-500/10 px-3 py-1.5 text-sm font-medium text-violet-600 transition duration-200 hover:bg-violet-500/20 lg:inline-flex dark:text-violet-400 dark:hover:bg-violet-500/20"
+            >
+                Build
             </a>
 
             {{-- Bifrost button (visible on large screens) --}}
