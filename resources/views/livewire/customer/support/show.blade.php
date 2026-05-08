@@ -133,7 +133,7 @@
                     </div>
 
                     <div class="mt-3 flex items-center justify-end gap-3">
-                        <flux:text class="text-xs">&#8984;/Ctrl + Enter to send</flux:text>
+                        <flux:text class="text-xs">⌘/Ctrl + Enter to send</flux:text>
                         <flux:button type="submit" variant="primary" icon="arrow-uturn-left">
                             Send Reply
                         </flux:button>
