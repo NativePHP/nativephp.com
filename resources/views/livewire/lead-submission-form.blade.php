@@ -56,16 +56,33 @@
 
             <div>
                 <label for="description" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                    Tell us about your project *
+                    Tell us about your app *
                 </label>
                 <textarea
                     wire:model="description"
                     id="description"
                     rows="5"
-                    placeholder="Tell us about your project, goals, timeline, and any specific requirements..."
+                    placeholder="Describe your app idea, the problems it solves, target platforms, and any specific requirements..."
                     class="mt-1 block w-full rounded-md border-gray-300 focus:border-gray-500 focus:ring-gray-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white sm:text-sm"
                 ></textarea>
                 @error('description') <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p> @enderror
+            </div>
+
+            <div>
+                <label for="budget" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                    Budget Range *
+                </label>
+                <select
+                    wire:model="budget"
+                    id="budget"
+                    class="mt-1 block w-full rounded-md border-gray-300 focus:border-gray-500 focus:ring-gray-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white sm:text-sm"
+                >
+                    <option value="">Select a budget range</option>
+                    @foreach ($budgets as $value => $label)
+                        <option value="{{ $value }}">{{ $label }}</option>
+                    @endforeach
+                </select>
+                @error('budget') <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p> @enderror
             </div>
 
             <div>
@@ -100,7 +117,7 @@
                     class="rounded-xl bg-zinc-800 px-6 py-3 text-sm font-medium text-white transition duration-200 hover:bg-zinc-900 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 dark:bg-indigo-700/80 dark:hover:bg-indigo-900"
                     wire:loading.attr="disabled"
                 >
-                    <span wire:loading.remove>Request Consultation</span>
+                    <span wire:loading.remove>Send Enquiry</span>
                     <span wire:loading>Submitting...</span>
                 </button>
             </div>

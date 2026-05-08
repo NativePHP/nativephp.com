@@ -1,9 +1,6 @@
 <x-layout title="Consulting">
     @push('head')
         <style>html { scroll-behavior: smooth; }</style>
-        @if (config('services.turnstile.site_key'))
-            <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
-        @endif
     @endpush
 
     <div class="mx-auto max-w-5xl">
@@ -307,12 +304,16 @@
                         We've worked with all kinds of organisations, from indie developers and small funded startups, to large enterprises including blue-chip and pharmaceutical companies.
                     </p>
                     <p>
-                        We bill hourly and scope every engagement to your needs. Whether you need a half-day architecture
+                        We bill hourly at <strong class="font-semibold text-gray-900 dark:text-white">$250/hour</strong> and scope every engagement to your needs. Whether you need a half-day architecture
                         review, regular guidance and advice, or daily delivery, we can tailor the arrangement to fit.
+                        <a href="{{ route('pricing') }}" class="font-medium text-blue-600 hover:underline dark:text-blue-400">Ultra subscribers</a>
+                        get a discounted hourly rate, and our
+                        <a href="{{ route('partners') }}" class="font-medium text-blue-600 hover:underline dark:text-blue-400">partners</a>
+                        get an even better one.
                     </p>
                     <p>
-                        Every engagement begins with a free, no-commitments discovery call so we can understand your goals, assess feasibility,
-                        and outline a clear path forward.
+                        Pick a slot that works for you &mdash; you can book a session as soon as two hours from now.
+                        We'll dive straight into your problem, no preamble required.
                     </p>
                 </div>
             </div>
@@ -343,12 +344,12 @@
             >
                 {{-- Book a Consultation --}}
                 <a
-                    href="#enquiry-form"
+                    href="#book-a-session"
                     class="group rounded-2xl bg-zinc-800 p-8 text-white transition duration-200 hover:bg-zinc-900 dark:bg-indigo-700/80 dark:hover:bg-indigo-900"
                 >
-                    <h3 class="text-xl font-semibold">Book a Consultation</h3>
+                    <h3 class="text-xl font-semibold">Book a Session</h3>
                     <p class="mt-2 text-sm text-gray-300 dark:text-indigo-200">
-                        Tell us about your project and we'll arrange a discovery call.
+                        Pick a time and jump straight into a working session with us.
                     </p>
                     <div class="mt-4 inline-flex items-center gap-2 text-sm font-medium transition duration-200 group-hover:translate-x-1">
                         Get started
@@ -388,8 +389,8 @@
             </div>
         </section>
 
-        {{-- Enquiry Form --}}
-        <section id="enquiry-form" class="mt-24 scroll-mt-24">
+        {{-- Book a Session --}}
+        <section id="book-a-session" class="mt-24 scroll-mt-24">
             <h2
                 x-init="
                     () => {
@@ -410,14 +411,38 @@
                 "
                 class="text-center text-3xl font-semibold"
             >
-                Request a Consultation
+                Book a Session
             </h2>
             <p class="mx-auto mt-4 max-w-2xl text-center text-gray-600 dark:text-zinc-400">
-                Tell us about your project and we'll be in touch to arrange a discovery call.
+                Grab a slot on our calendar &mdash; available as soon as two hours from now &mdash; and we'll get straight to work.
+                Sessions are billed at <strong class="font-semibold text-gray-900 dark:text-white">$250/hour</strong> and paid up front.
+                <a href="{{ route('pricing') }}" class="font-medium text-blue-600 hover:underline dark:text-blue-400">Ultra subscribers</a>
+                get a discounted rate, and
+                <a href="{{ route('partners') }}" class="font-medium text-blue-600 hover:underline dark:text-blue-400">partners</a>
+                get an even better one.
             </p>
 
-            <div class="mx-auto mt-8 max-w-2xl rounded-2xl bg-gray-100 p-8 dark:bg-[#1a1a2e] md:p-12">
-                <livewire:lead-submission-form />
+            <div class="mx-auto mt-8 flex max-w-2xl flex-col items-center gap-4 rounded-2xl bg-gray-100 p-8 text-center dark:bg-[#1a1a2e] md:p-12">
+                <a
+                    href="https://cal.com/team/nativephp/consult"
+                    target="_blank"
+                    rel="noopener"
+                    class="inline-flex items-center gap-2 rounded-xl bg-zinc-800 px-6 py-3 text-sm font-medium text-white transition duration-200 hover:bg-zinc-900 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 dark:bg-indigo-700/80 dark:hover:bg-indigo-900"
+                >
+                    <svg xmlns="http://www.w3.org/2000/svg" class="size-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                        <line x1="16" y1="2" x2="16" y2="6"></line>
+                        <line x1="8" y1="2" x2="8" y2="6"></line>
+                        <line x1="3" y1="10" x2="21" y2="10"></line>
+                    </svg>
+                    See available times
+                </a>
+                <p class="text-sm text-gray-500 dark:text-gray-400">
+                    Got a bigger project to scope?
+                    <a href="{{ route('build-my-app') }}" class="font-medium text-blue-600 hover:underline dark:text-blue-400">
+                        Tell us about your app instead
+                    </a>.
+                </p>
             </div>
         </section>
 

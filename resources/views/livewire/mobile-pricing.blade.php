@@ -273,6 +273,15 @@
                     >
                         <x-icons.checkmark class="size-5 shrink-0" />
                     </div>
+                    <div class="font-medium">Discounted consult hourly rate</div>
+                </div>
+                <div class="flex items-center gap-2">
+                    <div
+                        class="grid size-7 shrink-0 place-items-center rounded-xl bg-[#D4FD7D] dark:bg-[#d68ffe] dark:text-black"
+                        aria-hidden="true"
+                    >
+                        <x-icons.checkmark class="size-5 shrink-0" />
+                    </div>
                     <div class="font-medium">Teams &mdash; invite your whole team to share your Ultra benefits</div>
                 </div>
                 <div class="flex items-center gap-2">
