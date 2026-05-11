@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Filament\Resources\SupportTicketResource;
 use App\Filament\Resources\SupportTicketResource\Pages\ViewSupportTicket;
 use App\Filament\Resources\SupportTicketResource\Widgets\TicketRepliesWidget;
 use App\Livewire\Customer\Support\Create;
@@ -1266,6 +1267,74 @@ class SupportTicketTest extends TestCase
             ->assertOk()
             ->assertSee('Jane Doe')
             ->assertSee($namedUser->email);
+    }
+
+    #[Test]
+    public function admin_view_page_renders_message_markdown_and_ascii_tables_as_html_tables(): void
+    {
+        $admin = User::factory()->create(['email' => 'admin@test.com']);
+        config(['filament.users' => ['admin@test.com']]);
+
+        $message = "**What I was trying to do:**\nDeploy quickly\n\n"
+            ."**Environment:**\n+--------------------+---------------+\n"
+            ."| Package Version    | 3.3.3         |\n"
+            ."| PHP Version (Host) | 8.4.16        |\n"
+            .'+--------------------+---------------+';
+
+        $ticket = SupportTicket::factory()->create(['message' => $message]);
+
+        $html = Livewire::actingAs($admin)
+            ->test(ViewSupportTicket::class, ['record' => $ticket->getRouteKey()])
+            ->assertOk()
+            ->assertSeeHtml('<strong>What I was trying to do:</strong>')
+            ->html();
+
+        $this->assertMatchesRegularExpression('/<td[^>]*>Package Version<\/td>/', $html);
+        $this->assertMatchesRegularExpression('/<td[^>]*>3\.3\.3<\/td>/', $html);
+    }
+
+    #[Test]
+    public function render_ticket_message_converts_ascii_table_without_header_to_html_table(): void
+    {
+        $message = "Intro line\n+---+---+\n| a | b |\n| c | d |\n+---+---+\nOutro line";
+
+        $html = SupportTicketResource::renderTicketMessage($message);
+
+        $this->assertStringContainsString('Intro line', $html);
+        $this->assertStringNotContainsString('<thead>', $html);
+        $this->assertMatchesRegularExpression('/<tr><td[^>]*>a<\/td><td[^>]*>b<\/td><\/tr>/', $html);
+        $this->assertMatchesRegularExpression('/<tr style="[^"]*"><td[^>]*>c<\/td><td[^>]*>d<\/td><\/tr>/', $html);
+        $this->assertStringContainsString('Outro line', $html);
+    }
+
+    #[Test]
+    public function render_ticket_message_treats_first_row_as_header_when_separated(): void
+    {
+        $message = "+----------+---------+\n| Package  | Version |\n+----------+---------+\n| camera   | 1.0.2   |\n+----------+---------+";
+
+        $html = SupportTicketResource::renderTicketMessage($message);
+
+        $this->assertMatchesRegularExpression('/<thead><tr><th[^>]*>Package<\/th><th[^>]*>Version<\/th><\/tr><\/thead>/', $html);
+        $this->assertMatchesRegularExpression('/<tr><td[^>]*>camera<\/td><td[^>]*>1\.0\.2<\/td><\/tr>/', $html);
+    }
+
+    #[Test]
+    public function render_ticket_message_applies_paragraph_spacing(): void
+    {
+        $html = SupportTicketResource::renderTicketMessage("First paragraph\n\nSecond paragraph");
+
+        $this->assertStringContainsString('<p style="margin: 0 0 1rem 0;">First paragraph</p>', $html);
+        $this->assertStringContainsString('<p style="margin: 0 0 1rem 0;">Second paragraph</p>', $html);
+    }
+
+    #[Test]
+    public function render_ticket_message_converts_single_newlines_to_line_breaks(): void
+    {
+        $message = "Line one\nLine two";
+
+        $html = SupportTicketResource::renderTicketMessage($message);
+
+        $this->assertStringContainsString("Line one<br />\nLine two", $html);
     }
 
     #[Test]
