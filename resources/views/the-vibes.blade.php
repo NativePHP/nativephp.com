@@ -811,7 +811,7 @@
                         })
                     }
                 "
-                class="mt-10 grid grid-cols-2 gap-5 md:grid-cols-4"
+                class="mt-10 grid grid-cols-1 gap-5 sm:grid-cols-2 md:grid-cols-4"
             >
                 {{-- Web Mavens --}}
                 <a
@@ -884,6 +884,26 @@
                         />
                     </div>
                     <span class="sr-only">Beyond Code</span>
+                </a>
+
+                {{-- Mostly Technical --}}
+                <a
+                    href="https://mostlytechnical.com/"
+                    target="_blank"
+                    rel="noopener noreferrer sponsored"
+                    class="grid h-28 place-items-center rounded-2xl bg-gray-100 px-6 transition duration-200 will-change-transform hover:-translate-y-0.5 hover:bg-gray-200/80 hover:shadow-lg hover:shadow-gray-200/70 dark:bg-[#1a1a2e] dark:hover:bg-slate-800/80 dark:hover:shadow-transparent"
+                >
+                    <div class="grid h-15 w-35 place-items-center">
+                        <img
+                            src="/img/sponsors/mostly-technical.webp"
+                            loading="lazy"
+                            alt="Mostly Technical logo"
+                            width="60"
+                            height="60"
+                            class="h-15 w-15 rounded"
+                        />
+                    </div>
+                    <span class="sr-only">Mostly Technical</span>
                 </a>
             </div>
 
