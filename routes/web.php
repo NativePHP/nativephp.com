@@ -66,6 +66,7 @@ Route::redirect('docs/1/getting-started/sponsoring', '/sponsor');
 Route::redirect('docs/desktop/1/getting-started/sponsoring', '/sponsor');
 Route::redirect('discord', 'https://discord.gg/nativephp');
 Route::redirect('bifrost', 'https://bifrost.nativephp.com');
+Route::redirect('jump', '/docs/mobile/3/the-basics/jump');
 Route::redirect('mobile', 'blog/nativephp-for-mobile-is-now-free');
 Route::redirect('ios', 'blog/nativephp-for-mobile-is-now-free');
 Route::redirect('t-shirt', 'blog/nativephp-for-mobile-is-now-free');
