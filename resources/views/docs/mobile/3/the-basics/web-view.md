@@ -128,6 +128,46 @@ But note that this will overwrite any changes you've made to your copy of this c
 
 </aside>
 
+## Keyboard Visibility
+
+When the on-screen keyboard appears, it can cover inputs, action buttons or other parts of your UI that the user needs
+to see or interact with. To help you adapt your layout, NativePHP automatically toggles a `keyboard-visible` class on
+the `<body>` element whenever the software keyboard opens or closes — on both iOS and Android.
+
+You can use this class to hide, move or resize elements while the keyboard is up, using CSS alone:
+
+```css
+/* Hide a fixed bottom navigation bar while the user is typing */
+.bottom-nav {
+    transition: transform 0.2s ease-out;
+}
+
+body.keyboard-visible .bottom-nav {
+    transform: translateY(100%);
+}
+```
+
+If you're using Tailwind, you can register a `keyboard-visible` variant in your CSS file using the `@custom-variant`
+directive:
+
+```css
+@import "tailwindcss";
+
+@custom-variant keyboard-visible (&:where(body.keyboard-visible *));
+```
+
+You can then use it like any built-in variant:
+
+```html
+<nav class="fixed bottom-0 left-0 w-full transition-transform
+            keyboard-visible:translate-y-full">
+    ...
+</nav>
+```
+
+This pairs well with the [Safe Areas](#safe-areas) insets, allowing you to build layouts that respond cleanly to both
+device geometry and keyboard state without writing any JavaScript.
+
 ## WebView Compatibility
 
 On Android, the web view is powered by the system's built-in WebView component, which varies by device and OS version.
