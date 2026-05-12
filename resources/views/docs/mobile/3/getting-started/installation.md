@@ -35,11 +35,9 @@ NativePHP does not work in WSL (Windows Subsystem for Linux). You must install a
 
 ```dotenv
 NATIVEPHP_APP_ID=com.yourcompany.yourapp
-NATIVEPHP_APP_VERSION="DEBUG"
-NATIVEPHP_APP_VERSION_CODE="1"
 ```
 
-Find out more about these options in
+Find out more about this option in
 [Configuration](/docs/getting-started/configuration#codenativephp-app-idcode).
 
 <aside>
