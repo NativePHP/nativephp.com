@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Filament\Resources\SupportTicketResource;
+use App\Filament\Resources\SupportTicketResource\Pages\ListSupportTickets;
 use App\Filament\Resources\SupportTicketResource\Pages\ViewSupportTicket;
 use App\Filament\Resources\SupportTicketResource\Widgets\TicketRepliesWidget;
 use App\Livewire\Customer\Support\Create;
@@ -1236,6 +1237,30 @@ class SupportTicketTest extends TestCase
         Livewire::actingAs($admin)
             ->test(TicketRepliesWidget::class, ['record' => $ticket])
             ->call('togglePin', $reply->id);
+    }
+
+    #[Test]
+    public function admin_list_page_tabs_filter_tickets_by_status(): void
+    {
+        $admin = User::factory()->create(['email' => 'admin@test.com']);
+        config(['filament.users' => ['admin@test.com']]);
+
+        $openTicket = SupportTicket::factory()->create(['status' => Status::OPEN]);
+        $inProgressTicket = SupportTicket::factory()->create(['status' => Status::IN_PROGRESS]);
+        $onHoldTicket = SupportTicket::factory()->create(['status' => Status::ON_HOLD]);
+
+        Livewire::actingAs($admin)
+            ->test(ListSupportTickets::class)
+            ->assertCanSeeTableRecords([$openTicket, $inProgressTicket, $onHoldTicket])
+            ->set('activeTab', 'new')
+            ->assertCanSeeTableRecords([$openTicket])
+            ->assertCanNotSeeTableRecords([$inProgressTicket, $onHoldTicket])
+            ->set('activeTab', 'in_progress')
+            ->assertCanSeeTableRecords([$inProgressTicket])
+            ->assertCanNotSeeTableRecords([$openTicket, $onHoldTicket])
+            ->set('activeTab', 'on_hold')
+            ->assertCanSeeTableRecords([$onHoldTicket])
+            ->assertCanNotSeeTableRecords([$openTicket, $inProgressTicket]);
     }
 
     #[Test]
