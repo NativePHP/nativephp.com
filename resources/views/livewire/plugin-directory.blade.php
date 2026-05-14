@@ -231,10 +231,11 @@
         </div>
     </section>
 
-    {{-- Plugin Dev Kit Banner --}}
+    {{-- Plugin Dev Kit + Packagist Banners --}}
     <section class="pb-16">
-        <a href="{{ route('products.show', 'plugin-dev-kit') }}" class="group block overflow-hidden rounded-2xl bg-gradient-to-r from-purple-600 via-indigo-600 to-purple-700 p-6 shadow-lg transition hover:shadow-xl sm:p-8">
-            <div class="flex flex-col items-center justify-between gap-6 sm:flex-row">
+        <div class="grid gap-6 lg:grid-cols-2">
+            {{-- Plugin Dev Kit Banner --}}
+            <a href="{{ route('products.show', 'plugin-dev-kit') }}" class="group flex flex-col overflow-hidden rounded-2xl bg-gradient-to-r from-purple-600 via-indigo-600 to-purple-700 p-6 shadow-lg transition hover:shadow-xl sm:p-8">
                 <div class="flex items-center gap-4 text-white">
                     <div class="grid size-14 shrink-0 place-items-center rounded-xl bg-white/20 backdrop-blur-sm">
                         <x-heroicon-s-cube class="size-8" />
@@ -244,13 +245,41 @@
                         <p class="mt-1 text-purple-100">Build native plugins with Claude Code. Skip the Kotlin & Swift learning curve.</p>
                     </div>
                 </div>
-                <div class="inline-flex shrink-0 items-center gap-2 rounded-lg bg-white px-5 py-2.5 font-semibold text-purple-700 transition group-hover:bg-purple-50">
+                <div class="mt-6 inline-flex w-fit shrink-0 items-center gap-2 self-start rounded-lg bg-white px-5 py-2.5 font-semibold text-purple-700 transition group-hover:bg-purple-50">
                     Learn More
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="size-4 transition group-hover:translate-x-0.5">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
                     </svg>
                 </div>
-            </div>
-        </a>
+            </a>
+
+            {{-- Open Source Plugins on Packagist --}}
+            <a
+                href="https://packagist.org/search/?type=nativephp-plugin"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="group flex flex-col overflow-hidden rounded-2xl bg-gradient-to-r from-orange-500 via-red-500 to-rose-600 p-6 shadow-lg transition hover:shadow-xl sm:p-8"
+            >
+                <div class="flex items-center gap-4 text-white">
+                    <div class="grid size-14 shrink-0 place-items-center rounded-xl bg-white/20 backdrop-blur-sm">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-8">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M21 7.5l-9-5.25L3 7.5m18 0l-9 5.25m9-5.25v9l-9 5.25M3 7.5l9 5.25M3 7.5v9l9 5.25m0-9v9" />
+                        </svg>
+                    </div>
+                    <div>
+                        <h2 class="text-xl font-bold sm:text-2xl">Looking for more?</h2>
+                        <p class="mt-1 text-orange-50">
+                            We can't list every plugin here. Find more free &amp; open source NativePHP Plugins on Packagist.
+                        </p>
+                    </div>
+                </div>
+                <div class="mt-6 inline-flex w-fit shrink-0 items-center gap-2 self-start rounded-lg bg-white px-5 py-2.5 font-semibold text-rose-700 transition group-hover:bg-orange-50">
+                    Browse on Packagist
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="size-4 transition group-hover:translate-x-0.5">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
+                    </svg>
+                </div>
+            </a>
+        </div>
     </section>
 </div>
