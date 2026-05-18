@@ -70,11 +70,11 @@ class DiscordIntegrationController extends Controller
 
             if (! $discord->isGuildMember($discordUser['id'])) {
                 return to_route('customer.integrations')
-                    ->with('warning', 'Discord account connected! Please join the NativePHP Discord server to receive the Max role.');
+                    ->with('warning', 'Discord account connected! Please join the NativePHP Discord server to receive the Ultra role.');
             }
 
-            if ($user->hasMaxAccess()) {
-                $success = $discord->assignMaxRole($discordUser['id']);
+            if ($user->hasMaxAccess() || $user->hasUltraAccess()) {
+                $success = $discord->assignUltraRole($discordUser['id']);
 
                 if ($success) {
                     $user->update([
@@ -82,11 +82,11 @@ class DiscordIntegrationController extends Controller
                     ]);
 
                     return to_route('customer.integrations')
-                        ->with('success', 'Discord account connected and Max role assigned!');
+                        ->with('success', 'Discord account connected and Ultra role assigned!');
                 }
 
                 return to_route('customer.integrations')
-                    ->with('warning', 'Discord account connected, but we could not assign the Max role. Please try again later.');
+                    ->with('warning', 'Discord account connected, but we could not assign the Ultra role. Please try again later.');
             }
 
             return to_route('customer.integrations')
@@ -108,7 +108,7 @@ class DiscordIntegrationController extends Controller
 
         if ($user->discord_role_granted_at && $user->discord_id) {
             $discord = DiscordApi::make();
-            $discord->removeMaxRole($user->discord_id);
+            $discord->removeUltraRole($user->discord_id);
         }
 
         $user->update([

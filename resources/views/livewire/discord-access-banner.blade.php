@@ -10,7 +10,7 @@
                     </div>
                     <div class="ml-4">
                         <h3 class="font-medium text-gray-900 dark:text-white">
-                            Discord Max Role
+                            Discord Ultra Role
                         </h3>
                         <div class="mt-1 text-sm text-gray-600 dark:text-gray-400">
                             @if(auth()->user()->discord_username)
@@ -22,13 +22,13 @@
                                             Not in Server
                                         </span>
                                     </p>
-                                @elseif($hasMaxRole)
+                                @elseif($hasUltraRole)
                                     <p class="mt-1">
                                         <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
-                                            Max Role Active
+                                            Ultra Role Active
                                         </span>
                                     </p>
-                                @elseif(auth()->user()->hasMaxAccess())
+                                @elseif(auth()->user()->hasMaxAccess() || auth()->user()->hasUltraAccess())
                                     <p class="mt-1">
                                         <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
                                             Eligible
@@ -36,14 +36,14 @@
                                     </p>
                                 @endif
                             @else
-                                <p>Connect your Discord account to receive the Max role.</p>
+                                <p>Connect your Discord account to receive the Ultra role.</p>
                             @endif
                         </div>
                     </div>
                 </div>
                 <div class="flex flex-wrap gap-2 lg:flex-shrink-0">
                     @if(auth()->user()->discord_username)
-                        @if($hasMaxRole)
+                        @if($hasUltraRole)
                             <a href="https://discord.gg/nativephp" target="_blank" rel="noopener noreferrer" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
                                 Open Discord
                             </a>
@@ -55,10 +55,10 @@
                                 <span wire:loading.remove wire:target="refreshStatus">Check Status</span>
                                 <span wire:loading wire:target="refreshStatus">Checking...</span>
                             </button>
-                        @elseif(auth()->user()->hasMaxAccess())
-                            <button wire:click="requestMaxRole" type="button" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                                <span wire:loading.remove wire:target="requestMaxRole">Request Max Role</span>
-                                <span wire:loading wire:target="requestMaxRole">Requesting...</span>
+                        @elseif(auth()->user()->hasMaxAccess() || auth()->user()->hasUltraAccess())
+                            <button wire:click="requestUltraRole" type="button" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                                <span wire:loading.remove wire:target="requestUltraRole">Request Ultra Role</span>
+                                <span wire:loading wire:target="requestUltraRole">Requesting...</span>
                             </button>
                         @endif
                         <form action="{{ route('discord.disconnect') }}" method="POST">

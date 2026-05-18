@@ -12,7 +12,7 @@ class DiscordApi
     public function __construct(
         private ?string $botToken,
         private ?string $guildId,
-        private ?string $maxRoleId
+        private ?string $ultraRoleId
     ) {}
 
     public static function make(): static
@@ -20,7 +20,7 @@ class DiscordApi
         return new static(
             config('services.discord.bot_token', ''),
             config('services.discord.guild_id', ''),
-            config('services.discord.max_role_id', '')
+            config('services.discord.ultra_role_id', '')
         );
     }
 
@@ -69,7 +69,7 @@ class DiscordApi
         return true;
     }
 
-    public function assignMaxRole(string $discordUserId): bool
+    public function assignUltraRole(string $discordUserId): bool
     {
         $response = Http::withToken($this->botToken, 'Bot')
             ->put(sprintf(
@@ -77,11 +77,11 @@ class DiscordApi
                 self::BASE_URL,
                 $this->guildId,
                 $discordUserId,
-                $this->maxRoleId
+                $this->ultraRoleId
             ));
 
         if ($response->failed()) {
-            Log::error('Failed to assign Discord Max role', [
+            Log::error('Failed to assign Discord Ultra role', [
                 'discord_user_id' => $discordUserId,
                 'status' => $response->status(),
                 'response' => $response->json(),
@@ -93,7 +93,7 @@ class DiscordApi
         return true;
     }
 
-    public function removeMaxRole(string $discordUserId): bool
+    public function removeUltraRole(string $discordUserId): bool
     {
         $response = Http::withToken($this->botToken, 'Bot')
             ->delete(sprintf(
@@ -101,11 +101,11 @@ class DiscordApi
                 self::BASE_URL,
                 $this->guildId,
                 $discordUserId,
-                $this->maxRoleId
+                $this->ultraRoleId
             ));
 
         if ($response->failed()) {
-            Log::error('Failed to remove Discord Max role', [
+            Log::error('Failed to remove Discord Ultra role', [
                 'discord_user_id' => $discordUserId,
                 'status' => $response->status(),
                 'response' => $response->json(),
@@ -117,7 +117,7 @@ class DiscordApi
         return true;
     }
 
-    public function hasMaxRole(string $discordUserId): bool
+    public function hasUltraRole(string $discordUserId): bool
     {
         $response = Http::withToken($this->botToken, 'Bot')
             ->get(sprintf(
@@ -140,6 +140,6 @@ class DiscordApi
         $member = $response->json();
         $roles = $member['roles'] ?? [];
 
-        return in_array($this->maxRoleId, $roles, true);
+        return in_array($this->ultraRoleId, $roles, true);
     }
 }

@@ -11,7 +11,7 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Log;
 
-class AssignDiscordMaxRoleJob implements ShouldQueue
+class RemoveDiscordUltraRoleJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
@@ -24,15 +24,7 @@ class AssignDiscordMaxRoleJob implements ShouldQueue
     public function handle(): void
     {
         if (! $this->user->discord_id) {
-            Log::info('Skipping Discord role assignment - user has no Discord connected', [
-                'user_id' => $this->user->id,
-            ]);
-
-            return;
-        }
-
-        if (! $this->user->hasMaxAccess()) {
-            Log::info('Skipping Discord role assignment - user has no Max access', [
+            Log::info('Skipping Discord role removal - user has no Discord connected', [
                 'user_id' => $this->user->id,
             ]);
 
@@ -41,26 +33,17 @@ class AssignDiscordMaxRoleJob implements ShouldQueue
 
         $discord = DiscordApi::make();
 
-        if (! $discord->isGuildMember($this->user->discord_id)) {
-            Log::info('Skipping Discord role assignment - user is not in guild', [
-                'user_id' => $this->user->id,
-                'discord_id' => $this->user->discord_id,
-            ]);
-
-            return;
-        }
-
-        $success = $discord->assignMaxRole($this->user->discord_id);
+        $success = $discord->removeUltraRole($this->user->discord_id);
 
         if ($success) {
-            $this->user->update(['discord_role_granted_at' => now()]);
+            $this->user->update(['discord_role_granted_at' => null]);
 
-            Log::info('Discord Max role assigned successfully', [
+            Log::info('Discord Ultra role removed successfully', [
                 'user_id' => $this->user->id,
                 'discord_id' => $this->user->discord_id,
             ]);
         } else {
-            Log::error('Failed to assign Discord Max role', [
+            Log::warning('Failed to remove Discord Ultra role (user may not have role)', [
                 'user_id' => $this->user->id,
                 'discord_id' => $this->user->discord_id,
             ]);
