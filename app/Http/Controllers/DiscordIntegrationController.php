@@ -70,23 +70,30 @@ class DiscordIntegrationController extends Controller
 
             if (! $discord->isGuildMember($discordUser['id'])) {
                 return to_route('customer.integrations')
-                    ->with('warning', 'Discord account connected! Please join the NativePHP Discord server to receive the Max role.');
+                    ->with('warning', 'Discord account connected! Please join the NativePHP Discord server to receive your roles.');
             }
 
+            $rolesAssigned = [];
+
             if ($user->hasMaxAccess()) {
-                $success = $discord->assignMaxRole($discordUser['id']);
-
-                if ($success) {
-                    $user->update([
-                        'discord_role_granted_at' => now(),
-                    ]);
-
-                    return to_route('customer.integrations')
-                        ->with('success', 'Discord account connected and Max role assigned!');
+                if ($discord->assignMaxRole($discordUser['id'])) {
+                    $user->update(['discord_role_granted_at' => now()]);
+                    $rolesAssigned[] = 'Max';
                 }
+            }
+
+            if ($user->isEapCustomer()) {
+                if ($discord->assignEarlyAdopterRole($discordUser['id'])) {
+                    $user->update(['discord_early_adopter_role_granted_at' => now()]);
+                    $rolesAssigned[] = 'Early Adopter';
+                }
+            }
+
+            if (count($rolesAssigned) > 0) {
+                $roleNames = implode(' and ', $rolesAssigned);
 
                 return to_route('customer.integrations')
-                    ->with('warning', 'Discord account connected, but we could not assign the Max role. Please try again later.');
+                    ->with('success', "Discord account connected and {$roleNames} role(s) assigned!");
             }
 
             return to_route('customer.integrations')
@@ -106,15 +113,23 @@ class DiscordIntegrationController extends Controller
     {
         $user = Auth::user();
 
-        if ($user->discord_role_granted_at && $user->discord_id) {
+        if ($user->discord_id) {
             $discord = DiscordApi::make();
-            $discord->removeMaxRole($user->discord_id);
+
+            if ($user->discord_role_granted_at) {
+                $discord->removeMaxRole($user->discord_id);
+            }
+
+            if ($user->discord_early_adopter_role_granted_at) {
+                $discord->removeEarlyAdopterRole($user->discord_id);
+            }
         }
 
         $user->update([
             'discord_id' => null,
             'discord_username' => null,
             'discord_role_granted_at' => null,
+            'discord_early_adopter_role_granted_at' => null,
         ]);
 
         return back()->with('success', 'Discord account disconnected successfully.');
