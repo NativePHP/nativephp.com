@@ -570,6 +570,7 @@ class User extends Authenticatable implements FilamentUser, HasName, MustVerifyE
             'mobile_repo_access_granted_at' => 'datetime',
             'claude_plugins_repo_access_granted_at' => 'datetime',
             'discord_role_granted_at' => 'datetime',
+            'discord_early_adopter_role_granted_at' => 'datetime',
         ];
     }
 }
