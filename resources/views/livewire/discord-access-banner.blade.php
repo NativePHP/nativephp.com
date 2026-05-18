@@ -10,7 +10,7 @@
                     </div>
                     <div class="ml-4">
                         <h3 class="font-medium text-gray-900 dark:text-white">
-                            Discord Ultra Role
+                            Discord Roles
                         </h3>
                         <div class="mt-1 text-sm text-gray-600 dark:text-gray-400">
                             @if(auth()->user()->discord_username)
@@ -22,32 +22,38 @@
                                             Not in Server
                                         </span>
                                     </p>
-                                @elseif($hasUltraRole)
-                                    <p class="mt-1">
-                                        <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
-                                            Ultra Role Active
-                                        </span>
-                                    </p>
-                                @elseif(auth()->user()->hasMaxAccess() || auth()->user()->hasUltraAccess())
-                                    <p class="mt-1">
-                                        <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
-                                            Eligible
-                                        </span>
-                                    </p>
+                                @else
+                                    <div class="mt-1 flex flex-wrap gap-1">
+                                        @if($hasUltraRole)
+                                            <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
+                                                Ultra Role Active
+                                            </span>
+                                        @elseif(auth()->user()->hasMaxAccess() || auth()->user()->hasUltraAccess())
+                                            <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
+                                                Ultra Eligible
+                                            </span>
+                                        @endif
+
+                                        @if($hasEarlyAdopterRole)
+                                            <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
+                                                Early Adopter Active
+                                            </span>
+                                        @elseif(auth()->user()->isEapCustomer())
+                                            <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
+                                                Early Adopter Eligible
+                                            </span>
+                                        @endif
+                                    </div>
                                 @endif
                             @else
-                                <p>Connect your Discord account to receive the Ultra role.</p>
+                                <p>Connect your Discord account to receive your roles.</p>
                             @endif
                         </div>
                     </div>
                 </div>
                 <div class="flex flex-wrap gap-2 lg:flex-shrink-0">
                     @if(auth()->user()->discord_username)
-                        @if($hasUltraRole)
-                            <a href="https://discord.gg/nativephp" target="_blank" rel="noopener noreferrer" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                                Open Discord
-                            </a>
-                        @elseif(!$isGuildMember)
+                        @if(!$isGuildMember)
                             <a href="https://discord.gg/nativephp" target="_blank" rel="noopener noreferrer" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
                                 Join Discord Server
                             </a>
@@ -55,11 +61,24 @@
                                 <span wire:loading.remove wire:target="refreshStatus">Check Status</span>
                                 <span wire:loading wire:target="refreshStatus">Checking...</span>
                             </button>
-                        @elseif(auth()->user()->hasMaxAccess() || auth()->user()->hasUltraAccess())
-                            <button wire:click="requestUltraRole" type="button" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                                <span wire:loading.remove wire:target="requestUltraRole">Request Ultra Role</span>
-                                <span wire:loading wire:target="requestUltraRole">Requesting...</span>
-                            </button>
+                        @else
+                            @if(!$hasUltraRole && (auth()->user()->hasMaxAccess() || auth()->user()->hasUltraAccess()))
+                                <button wire:click="requestUltraRole" type="button" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                                    <span wire:loading.remove wire:target="requestUltraRole">Request Ultra Role</span>
+                                    <span wire:loading wire:target="requestUltraRole">Requesting...</span>
+                                </button>
+                            @endif
+                            @if(!$hasEarlyAdopterRole && auth()->user()->isEapCustomer())
+                                <button wire:click="requestEarlyAdopterRole" type="button" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                                    <span wire:loading.remove wire:target="requestEarlyAdopterRole">Request Early Adopter Role</span>
+                                    <span wire:loading wire:target="requestEarlyAdopterRole">Requesting...</span>
+                                </button>
+                            @endif
+                            @if(($hasUltraRole || !(auth()->user()->hasMaxAccess() || auth()->user()->hasUltraAccess())) && ($hasEarlyAdopterRole || !auth()->user()->isEapCustomer()))
+                                <a href="https://discord.gg/nativephp" target="_blank" rel="noopener noreferrer" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                                    Open Discord
+                                </a>
+                            @endif
                         @endif
                         <form action="{{ route('discord.disconnect') }}" method="POST">
                             @csrf

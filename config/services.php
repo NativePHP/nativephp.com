@@ -57,6 +57,7 @@ return [
         'bot_token' => env('DISCORD_BOT_TOKEN'),
         'guild_id' => env('DISCORD_GUILD_ID'),
         'ultra_role_id' => env('DISCORD_ULTRA_ROLE_ID'),
+        'early_adopter_role_id' => env('DISCORD_EARLY_ADOPTER_ROLE_ID'),
     ],
 
     'turnstile' => [

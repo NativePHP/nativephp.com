@@ -29,7 +29,7 @@
         <div class="mt-4 prose dark:prose-invert prose-sm max-w-none">
             <ul class="list-disc list-inside space-y-2">
                 <li><strong>GitHub:</strong> Max license holders can access the private <code>nativephp/mobile</code> repository. Plugin Dev Kit license holders and Ultra subscribers can access <code>nativephp/claude-code</code>.</li>
-                <li><strong>Discord:</strong> Max license holders and Ultra subscribers receive a special "Ultra" role in the NativePHP Discord server.</li>
+                <li><strong>Discord:</strong> Max license holders and Ultra subscribers receive a special "Ultra" role in the NativePHP Discord server. Early Access Program customers receive the "Early Adopter" role.</li>
             </ul>
             <p class="mt-4">
                 Need help? Join our <a href="https://discord.gg/nativephp" target="_blank" class="text-blue-600 hover:underline dark:text-blue-400">Discord community</a>.
@@ -47,7 +47,7 @@
             <livewire:git-hub-access-banner :inline="true" />
         @endif
 
-        @if(auth()->user()->hasMaxAccess() || auth()->user()->hasUltraAccess())
+        @if(auth()->user()->hasMaxAccess() || auth()->user()->hasUltraAccess() || auth()->user()->isEapCustomer())
             <livewire:discord-access-banner :inline="true" />
         @endif
     </div>

@@ -12,7 +12,8 @@ class DiscordApi
     public function __construct(
         private ?string $botToken,
         private ?string $guildId,
-        private ?string $ultraRoleId
+        private ?string $ultraRoleId,
+        private ?string $earlyAdopterRoleId
     ) {}
 
     public static function make(): static
@@ -20,7 +21,8 @@ class DiscordApi
         return new static(
             config('services.discord.bot_token', ''),
             config('services.discord.guild_id', ''),
-            config('services.discord.ultra_role_id', '')
+            config('services.discord.ultra_role_id', ''),
+            config('services.discord.early_adopter_role_id', '')
         );
     }
 
@@ -71,17 +73,47 @@ class DiscordApi
 
     public function assignUltraRole(string $discordUserId): bool
     {
+        return $this->assignRole($discordUserId, $this->ultraRoleId, 'Ultra');
+    }
+
+    public function removeUltraRole(string $discordUserId): bool
+    {
+        return $this->removeRole($discordUserId, $this->ultraRoleId, 'Ultra');
+    }
+
+    public function hasUltraRole(string $discordUserId): bool
+    {
+        return $this->hasRole($discordUserId, $this->ultraRoleId);
+    }
+
+    public function assignEarlyAdopterRole(string $discordUserId): bool
+    {
+        return $this->assignRole($discordUserId, $this->earlyAdopterRoleId, 'Early Adopter');
+    }
+
+    public function removeEarlyAdopterRole(string $discordUserId): bool
+    {
+        return $this->removeRole($discordUserId, $this->earlyAdopterRoleId, 'Early Adopter');
+    }
+
+    public function hasEarlyAdopterRole(string $discordUserId): bool
+    {
+        return $this->hasRole($discordUserId, $this->earlyAdopterRoleId);
+    }
+
+    private function assignRole(string $discordUserId, ?string $roleId, string $roleName): bool
+    {
         $response = Http::withToken($this->botToken, 'Bot')
             ->put(sprintf(
                 '%s/guilds/%s/members/%s/roles/%s',
                 self::BASE_URL,
                 $this->guildId,
                 $discordUserId,
-                $this->ultraRoleId
+                $roleId
             ));
 
         if ($response->failed()) {
-            Log::error('Failed to assign Discord Ultra role', [
+            Log::error("Failed to assign Discord {$roleName} role", [
                 'discord_user_id' => $discordUserId,
                 'status' => $response->status(),
                 'response' => $response->json(),
@@ -93,7 +125,7 @@ class DiscordApi
         return true;
     }
 
-    public function removeUltraRole(string $discordUserId): bool
+    private function removeRole(string $discordUserId, ?string $roleId, string $roleName): bool
     {
         $response = Http::withToken($this->botToken, 'Bot')
             ->delete(sprintf(
@@ -101,11 +133,11 @@ class DiscordApi
                 self::BASE_URL,
                 $this->guildId,
                 $discordUserId,
-                $this->ultraRoleId
+                $roleId
             ));
 
         if ($response->failed()) {
-            Log::error('Failed to remove Discord Ultra role', [
+            Log::error("Failed to remove Discord {$roleName} role", [
                 'discord_user_id' => $discordUserId,
                 'status' => $response->status(),
                 'response' => $response->json(),
@@ -117,7 +149,7 @@ class DiscordApi
         return true;
     }
 
-    public function hasUltraRole(string $discordUserId): bool
+    private function hasRole(string $discordUserId, ?string $roleId): bool
     {
         $response = Http::withToken($this->botToken, 'Bot')
             ->get(sprintf(
@@ -140,6 +172,6 @@ class DiscordApi
         $member = $response->json();
         $roles = $member['roles'] ?? [];
 
-        return in_array($this->ultraRoleId, $roles, true);
+        return in_array($roleId, $roles, true);
     }
 }
