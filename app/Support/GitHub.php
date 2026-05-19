@@ -17,6 +17,8 @@ class GitHub
 
     public const PACKAGE_PHP_BIN = 'nativephp/php-bin';
 
+    public const PACKAGE_MOBILE_AIR = 'nativephp/mobile-air';
+
     public function __construct(
         private string $package
     ) {}
@@ -43,6 +45,11 @@ class GitHub
         return new static(static::PACKAGE_PHP_BIN);
     }
 
+    public static function mobileAir(): static
+    {
+        return new static(static::PACKAGE_MOBILE_AIR);
+    }
+
     public function latestVersion()
     {
         $release = Cache::remember(
@@ -61,6 +68,15 @@ class GitHub
             now()->addHour(),
             fn () => $this->fetchReleases()
         ) ?? collect();
+    }
+
+    public function releasesAfter(string $version): Collection
+    {
+        $version = ltrim($version, 'v');
+
+        return $this->releases()->filter(
+            fn (Release $release) => version_compare(ltrim((string) $release->tag_name, 'v'), $version, '>')
+        )->values();
     }
 
     private function fetchLatestVersion(): ?Release
@@ -83,14 +99,24 @@ class GitHub
 
     private function fetchReleases(): ?Collection
     {
-        // Make a request to GitHub
-        $response = Http::get('https://api.github.com/repos/'.$this->package.'/releases');
+        $releases = collect();
+        $page = 1;
 
-        // Check if the request was successful
-        if ($response->failed()) {
-            return collect();
-        }
+        do {
+            $response = Http::get('https://api.github.com/repos/'.$this->package.'/releases', [
+                'per_page' => 100,
+                'page' => $page,
+            ]);
 
-        return collect($response->json())->map(fn (array $release) => new Release($release));
+            if ($response->failed()) {
+                return $releases;
+            }
+
+            $pageReleases = $response->json();
+            $releases = $releases->concat($pageReleases);
+            $page++;
+        } while (count($pageReleases) === 100);
+
+        return $releases->map(fn (array $release) => new Release($release));
     }
 }
