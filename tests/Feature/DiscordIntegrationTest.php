@@ -22,7 +22,7 @@ class DiscordIntegrationTest extends TestCase
             'services.discord.client_secret' => 'test-client-secret',
             'services.discord.bot_token' => 'test-bot-token',
             'services.discord.guild_id' => 'test-guild-id',
-            'services.discord.max_role_id' => 'max-role-id',
+            'services.discord.ultra_role_id' => 'ultra-role-id',
             'services.discord.early_adopter_role_id' => 'early-adopter-role-id',
         ]);
     }

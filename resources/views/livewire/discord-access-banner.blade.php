@@ -24,13 +24,13 @@
                                     </p>
                                 @else
                                     <div class="mt-1 flex flex-wrap gap-1">
-                                        @if($hasMaxRole)
+                                        @if($hasUltraRole)
                                             <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
-                                                Max Role Active
+                                                Ultra Role Active
                                             </span>
-                                        @elseif(auth()->user()->hasMaxAccess())
+                                        @elseif(auth()->user()->hasMaxAccess() || auth()->user()->hasUltraAccess())
                                             <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
-                                                Max Eligible
+                                                Ultra Eligible
                                             </span>
                                         @endif
 
@@ -62,10 +62,10 @@
                                 <span wire:loading wire:target="refreshStatus">Checking...</span>
                             </button>
                         @else
-                            @if(!$hasMaxRole && auth()->user()->hasMaxAccess())
-                                <button wire:click="requestMaxRole" type="button" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                                    <span wire:loading.remove wire:target="requestMaxRole">Request Max Role</span>
-                                    <span wire:loading wire:target="requestMaxRole">Requesting...</span>
+                            @if(!$hasUltraRole && (auth()->user()->hasMaxAccess() || auth()->user()->hasUltraAccess()))
+                                <button wire:click="requestUltraRole" type="button" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                                    <span wire:loading.remove wire:target="requestUltraRole">Request Ultra Role</span>
+                                    <span wire:loading wire:target="requestUltraRole">Requesting...</span>
                                 </button>
                             @endif
                             @if(!$hasEarlyAdopterRole && auth()->user()->isEapCustomer())
@@ -74,7 +74,7 @@
                                     <span wire:loading wire:target="requestEarlyAdopterRole">Requesting...</span>
                                 </button>
                             @endif
-                            @if(($hasMaxRole || !auth()->user()->hasMaxAccess()) && ($hasEarlyAdopterRole || !auth()->user()->isEapCustomer()))
+                            @if(($hasUltraRole || !(auth()->user()->hasMaxAccess() || auth()->user()->hasUltraAccess())) && ($hasEarlyAdopterRole || !auth()->user()->isEapCustomer()))
                                 <a href="https://discord.gg/nativephp" target="_blank" rel="noopener noreferrer" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
                                     Open Discord
                                 </a>

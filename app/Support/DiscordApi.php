@@ -12,7 +12,7 @@ class DiscordApi
     public function __construct(
         private ?string $botToken,
         private ?string $guildId,
-        private ?string $maxRoleId,
+        private ?string $ultraRoleId,
         private ?string $earlyAdopterRoleId
     ) {}
 
@@ -21,7 +21,7 @@ class DiscordApi
         return new static(
             config('services.discord.bot_token', ''),
             config('services.discord.guild_id', ''),
-            config('services.discord.max_role_id', ''),
+            config('services.discord.ultra_role_id', ''),
             config('services.discord.early_adopter_role_id', '')
         );
     }
@@ -71,19 +71,19 @@ class DiscordApi
         return true;
     }
 
-    public function assignMaxRole(string $discordUserId): bool
+    public function assignUltraRole(string $discordUserId): bool
     {
-        return $this->assignRole($discordUserId, $this->maxRoleId, 'Max');
+        return $this->assignRole($discordUserId, $this->ultraRoleId, 'Ultra');
     }
 
-    public function removeMaxRole(string $discordUserId): bool
+    public function removeUltraRole(string $discordUserId): bool
     {
-        return $this->removeRole($discordUserId, $this->maxRoleId, 'Max');
+        return $this->removeRole($discordUserId, $this->ultraRoleId, 'Ultra');
     }
 
-    public function hasMaxRole(string $discordUserId): bool
+    public function hasUltraRole(string $discordUserId): bool
     {
-        return $this->hasRole($discordUserId, $this->maxRoleId);
+        return $this->hasRole($discordUserId, $this->ultraRoleId);
     }
 
     public function assignEarlyAdopterRole(string $discordUserId): bool

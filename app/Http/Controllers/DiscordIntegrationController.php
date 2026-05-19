@@ -75,10 +75,10 @@ class DiscordIntegrationController extends Controller
 
             $rolesAssigned = [];
 
-            if ($user->hasMaxAccess()) {
-                if ($discord->assignMaxRole($discordUser['id'])) {
+            if ($user->hasMaxAccess() || $user->hasUltraAccess()) {
+                if ($discord->assignUltraRole($discordUser['id'])) {
                     $user->update(['discord_role_granted_at' => now()]);
-                    $rolesAssigned[] = 'Max';
+                    $rolesAssigned[] = 'Ultra';
                 }
             }
 
@@ -117,7 +117,7 @@ class DiscordIntegrationController extends Controller
             $discord = DiscordApi::make();
 
             if ($user->discord_role_granted_at) {
-                $discord->removeMaxRole($user->discord_id);
+                $discord->removeUltraRole($user->discord_id);
             }
 
             if ($user->discord_early_adopter_role_granted_at) {

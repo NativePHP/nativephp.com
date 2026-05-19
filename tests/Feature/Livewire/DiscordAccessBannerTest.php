@@ -23,7 +23,7 @@ class DiscordAccessBannerTest extends TestCase
         config([
             'services.discord.bot_token' => 'test-bot-token',
             'services.discord.guild_id' => 'test-guild-id',
-            'services.discord.max_role_id' => 'max-role-id',
+            'services.discord.ultra_role_id' => 'ultra-role-id',
             'services.discord.early_adopter_role_id' => 'early-adopter-role-id',
         ]);
     }
@@ -69,18 +69,18 @@ class DiscordAccessBannerTest extends TestCase
     }
 
     #[Test]
-    public function it_shows_max_role_active_when_user_has_max_role(): void
+    public function it_shows_ultra_role_active_when_user_has_ultra_role(): void
     {
         $user = User::factory()->create([
             'discord_id' => '123456789',
             'discord_username' => 'testuser',
         ]);
 
-        $this->fakeDiscordApi(isGuildMember: true, roles: ['max-role-id']);
+        $this->fakeDiscordApi(isGuildMember: true, roles: ['ultra-role-id']);
 
         Livewire::actingAs($user)
             ->test(DiscordAccessBanner::class)
-            ->assertSee('Max Role Active');
+            ->assertSee('Ultra Role Active');
     }
 
     #[Test]
@@ -224,11 +224,11 @@ class DiscordAccessBannerTest extends TestCase
             'discord_username' => 'testuser',
         ]);
 
-        $this->fakeDiscordApi(isGuildMember: true, roles: ['max-role-id', 'early-adopter-role-id']);
+        $this->fakeDiscordApi(isGuildMember: true, roles: ['ultra-role-id', 'early-adopter-role-id']);
 
         Livewire::actingAs($user)
             ->test(DiscordAccessBanner::class)
-            ->assertSee('Max Role Active')
+            ->assertSee('Ultra Role Active')
             ->assertSee('Early Adopter Active');
     }
 
