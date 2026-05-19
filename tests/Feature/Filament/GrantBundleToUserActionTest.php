@@ -51,4 +51,25 @@ class GrantBundleToUserActionTest extends TestCase
             ]);
         }
     }
+
+    public function test_grant_to_user_action_works_for_user_with_null_name(): void
+    {
+        $recipient = User::factory()->create(['name' => null]);
+        $plugins = Plugin::factory()->count(1)->approved()->create();
+        $this->bundle->plugins()->attach($plugins->pluck('id'));
+
+        Livewire::actingAs($this->admin)
+            ->test(ListPluginBundles::class)
+            ->callAction(
+                TestAction::make('grantToUser')->table($this->bundle),
+                data: ['user_id' => $recipient->id],
+            )
+            ->assertHasNoFormErrors();
+
+        $this->assertDatabaseHas('plugin_licenses', [
+            'user_id' => $recipient->id,
+            'plugin_id' => $plugins->first()->id,
+            'plugin_bundle_id' => $this->bundle->id,
+        ]);
+    }
 }
