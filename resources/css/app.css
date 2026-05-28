@@ -519,6 +519,16 @@ nav.docs-navigation li:has(.third-tier .exact-active) > .subsection-header {
     }
 }
 
+/*
+ Let the course purchase page fill the entire main area (the gradient hero
+ should bleed edge to edge), overriding flux:main's centered max-w-7xl
+ container. Inner content re-applies its own max-width and padding.
+*/
+[data-flux-main]:has(.course-fullbleed) {
+    max-width: none;
+    padding: 0;
+}
+
 /* Snippet component with tabbed code blocks */
 .snippet {
     @apply rounded-xl shadow-lg;

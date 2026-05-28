@@ -72,6 +72,9 @@ return [
 
     'stripe' => [
         'course_price_id' => env('STRIPE_COURSE_PRICE_ID'),
+        'course_price_id_199' => env('STRIPE_COURSE_PRICE_ID_199'),
+        'course_price_id_299' => env('STRIPE_COURSE_PRICE_ID_299'),
+        'course_price_increase_at' => '2026-06-15T00:00:00Z',
     ],
 
     'stripe_connect' => [

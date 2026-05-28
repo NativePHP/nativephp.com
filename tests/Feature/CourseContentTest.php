@@ -12,6 +12,7 @@ use App\Models\Product;
 use App\Models\ProductLicense;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Carbon;
 use Livewire\Livewire;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
@@ -37,7 +38,7 @@ class CourseContentTest extends TestCase
             ->withoutVite()
             ->get(route('course'))
             ->assertStatus(200)
-            ->assertSee('$101')
+            ->assertSee('$199')
             ->assertSee('$299');
     }
 
@@ -69,7 +70,24 @@ class CourseContentTest extends TestCase
         Livewire::actingAs($user)
             ->test(Index::class)
             ->assertSee('Build native apps')
-            ->assertSee('Get Early Bird Access');
+            ->assertSee('Get Early Bird Access')
+            ->assertSee('$199');
+    }
+
+    #[Test]
+    public function course_dashboard_shows_299_pricing_after_deadline(): void
+    {
+        Carbon::setTestNow('2026-06-15 00:00:01');
+
+        $user = User::factory()->create();
+
+        Livewire::actingAs($user)
+            ->test(Index::class)
+            ->assertSee('$299')
+            ->assertSee('Get Access')
+            ->assertDontSee('Get Early Bird Access');
+
+        Carbon::setTestNow();
     }
 
     #[Test]

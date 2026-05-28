@@ -3,13 +3,17 @@
 namespace Tests\Feature;
 
 use App\Features\ShowAuthButtons;
+use App\Features\ShowMasterclass;
 use App\Features\ShowPlugins;
 use App\Livewire\Customer\Dashboard;
 use App\Models\License;
+use App\Models\Product;
+use App\Models\ProductLicense;
 use App\Models\Team;
 use App\Models\TeamUser;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Carbon;
 use Laravel\Cashier\Subscription;
 use Laravel\Pennant\Feature;
 use Livewire\Livewire;
@@ -208,5 +212,55 @@ class DashboardLayoutTest extends TestCase
             ->test(Dashboard::class)
             ->assertOk()
             ->assertDontSee('Claim Your Free Plugins!');
+    }
+
+    // ========================================
+    // Masterclass Countdown Banner Tests
+    // ========================================
+
+    public function test_dashboard_shows_masterclass_countdown_for_non_owner_before_deadline(): void
+    {
+        Feature::define(ShowMasterclass::class, true);
+
+        $user = User::factory()->create();
+
+        Livewire::actingAs($user)
+            ->test(Dashboard::class)
+            ->assertOk()
+            ->assertSee('The NativePHP Masterclass')
+            ->assertSee('Lock in early bird pricing')
+            ->assertSee('Get the course');
+    }
+
+    public function test_dashboard_hides_masterclass_countdown_after_deadline(): void
+    {
+        Feature::define(ShowMasterclass::class, true);
+        Carbon::setTestNow('2026-06-15 00:00:01');
+
+        $user = User::factory()->create();
+
+        Livewire::actingAs($user)
+            ->test(Dashboard::class)
+            ->assertOk()
+            ->assertDontSee('Lock in early bird pricing');
+
+        Carbon::setTestNow();
+    }
+
+    public function test_dashboard_hides_masterclass_countdown_for_course_owner(): void
+    {
+        Feature::define(ShowMasterclass::class, true);
+
+        $user = User::factory()->create();
+        $product = Product::where('slug', 'nativephp-masterclass')->first();
+        ProductLicense::factory()->create([
+            'user_id' => $user->id,
+            'product_id' => $product->id,
+        ]);
+
+        Livewire::actingAs($user)
+            ->test(Dashboard::class)
+            ->assertOk()
+            ->assertDontSee('Lock in early bird pricing');
     }
 }

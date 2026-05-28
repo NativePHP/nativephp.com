@@ -37,6 +37,24 @@ class Index extends Component
     }
 
     #[Computed]
+    public function priceIncreaseAt(): string
+    {
+        return config('services.stripe.course_price_increase_at');
+    }
+
+    #[Computed]
+    public function priceIncreased(): bool
+    {
+        return now()->gte($this->priceIncreaseAt());
+    }
+
+    #[Computed]
+    public function currentPrice(): int
+    {
+        return $this->priceIncreased() ? 299 : 199;
+    }
+
+    #[Computed]
     public function completedLessonIds(): array
     {
         return LessonProgress::where('user_id', auth()->id())
