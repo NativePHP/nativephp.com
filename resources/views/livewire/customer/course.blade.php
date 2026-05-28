@@ -97,16 +97,20 @@
         @endif
     @else
         {{-- Not purchased: Full-width marketing/purchase page --}}
-        <div class="-mx-6 -mt-6 sm:-mx-8 sm:-mt-8">
+        <div class="course-fullbleed">
             {{-- Hero --}}
-            <div class="relative overflow-hidden rounded-2xl bg-gradient-to-b from-violet-50 to-white px-6 py-16 sm:px-12 sm:py-20 dark:from-zinc-900 dark:to-zinc-950">
+            <div class="relative overflow-hidden bg-gradient-to-b from-violet-50 to-white px-6 py-16 sm:px-12 sm:py-20 dark:from-zinc-900 dark:to-zinc-950">
                 {{-- Background glow --}}
                 <div class="pointer-events-none absolute -top-24 left-1/2 size-[500px] -translate-x-1/2 rounded-full bg-violet-500/5 blur-[120px] dark:bg-violet-500/10" aria-hidden="true"></div>
                 <div class="pointer-events-none absolute -bottom-32 -right-32 size-[400px] rounded-full bg-indigo-500/5 blur-[100px] dark:bg-indigo-500/10" aria-hidden="true"></div>
 
                 <div class="relative z-10 mx-auto max-w-2xl text-center">
                     <span class="inline-flex items-center gap-2 rounded-md bg-violet-500/10 px-3 py-1 text-xs font-bold uppercase tracking-widest text-violet-600 ring-1 ring-violet-500/20 dark:text-violet-400">
-                        New Course &mdash; Early Bird
+                        @if ($this->priceIncreased)
+                            New Course
+                        @else
+                            New Course &mdash; Early Bird
+                        @endif
                     </span>
 
                     <h1 class="mt-8 text-4xl font-black tracking-tight text-zinc-900 sm:text-5xl lg:text-6xl dark:text-white">
@@ -135,17 +139,30 @@
 
                     {{-- Price --}}
                     <div class="mt-10 flex items-baseline justify-center gap-3">
-                        <span class="text-5xl font-black text-zinc-900 dark:text-white">$101</span>
-                        <span class="text-xl text-zinc-400 line-through dark:text-zinc-600">$299</span>
+                        <span class="text-5xl font-black text-zinc-900 dark:text-white">${{ $this->currentPrice }}</span>
+                        @unless ($this->priceIncreased)
+                            <span class="text-xl text-zinc-400 line-through dark:text-zinc-600">$299</span>
+                        @endunless
                         <span class="text-sm text-zinc-500">one-time</span>
                     </div>
+
+                    {{-- Countdown --}}
+                    <x-course.countdown
+                        :deadline="$this->priceIncreaseAt"
+                        :expired="$this->priceIncreased"
+                        class="mx-auto mt-8 w-full max-w-sm rounded-xl bg-white/70 p-4 ring-1 ring-zinc-200 dark:bg-white/5 dark:ring-white/10"
+                    />
 
                     {{-- CTA --}}
                     <div class="mt-8 flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
                         <form action="{{ route('course.checkout') }}" method="POST">
                             @csrf
                             <button type="submit" class="inline-flex items-center gap-2 rounded-xl bg-gradient-to-b from-violet-500 to-violet-600 px-8 py-3.5 text-sm font-semibold text-white shadow-lg shadow-violet-500/25 ring-1 ring-violet-400/20 transition hover:shadow-xl hover:shadow-violet-500/30">
-                                Get Early Bird Access
+                                @if ($this->priceIncreased)
+                                    Get Access
+                                @else
+                                    Get Early Bird Access
+                                @endif
                                 <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3"/></svg>
                             </button>
                         </form>
@@ -157,7 +174,7 @@
             </div>
 
             {{-- What's Included --}}
-            <div class="mt-8 grid gap-4 px-1 sm:grid-cols-2 lg:grid-cols-4">
+            <div class="mx-auto mt-8 grid max-w-7xl gap-4 px-6 pb-6 sm:grid-cols-2 lg:grid-cols-4 lg:px-8 lg:pb-8">
                 <div class="rounded-xl border border-zinc-200 bg-white p-5 dark:border-white/10 dark:bg-white/5">
                     <div class="flex size-9 items-center justify-center rounded-lg bg-violet-100 dark:bg-violet-500/15">
                         <x-heroicon-s-device-phone-mobile class="size-4 text-violet-600 dark:text-violet-400" />

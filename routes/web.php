@@ -102,9 +102,15 @@ Route::get('course', function () {
         }])
         ->first();
 
+    $priceIncreaseAt = config('services.stripe.course_price_increase_at');
+    $priceIncreased = now()->gte($priceIncreaseAt);
+
     return view('course', [
         'alreadyOwned' => $alreadyOwned,
         'course' => $course,
+        'priceIncreaseAt' => $priceIncreaseAt,
+        'priceIncreased' => $priceIncreased,
+        'currentPrice' => $priceIncreased ? 299 : 199,
     ]);
 })->name('course');
 
@@ -124,7 +130,10 @@ Route::post('course/checkout', function (Request $request) {
         return to_route('course')->with('error', 'You already own this course.');
     }
 
-    $priceId = config('services.stripe.course_price_id');
+    $priceIncreased = now()->gte(config('services.stripe.course_price_increase_at'));
+    $priceId = $priceIncreased
+        ? config('services.stripe.course_price_id_299')
+        : config('services.stripe.course_price_id_199');
 
     if (! $priceId) {
         return to_route('course')->with('error', 'Course checkout is not configured yet.');

@@ -31,7 +31,11 @@
                         <span class="absolute inline-flex size-full animate-ping rounded-full bg-emerald-400 opacity-75"></span>
                         <span class="relative inline-flex size-2 rounded-full bg-emerald-500"></span>
                     </span>
-                    Early Bird Pricing Available
+                    @if ($priceIncreased)
+                        Now Available
+                    @else
+                        Early Bird Pricing Available
+                    @endif
                 </div>
 
                 {{-- Title --}}
@@ -124,7 +128,7 @@
                             href="#pricing"
                             class="inline-flex items-center gap-2 rounded-xl bg-emerald-600 px-8 py-4 font-semibold text-white transition hover:bg-emerald-700"
                         >
-                            Get Early Bird Access &mdash; $101
+                            Get Access &mdash; ${{ $currentPrice }}
                             <svg
                                 xmlns="http://www.w3.org/2000/svg"
                                 viewBox="0 0 20 20"
@@ -146,6 +150,14 @@
                         </a>
                     @endif
                 </div>
+
+                @unless ($alreadyOwned)
+                    <x-course.countdown
+                        :deadline="$priceIncreaseAt"
+                        :expired="$priceIncreased"
+                        class="mx-auto mt-8 w-full max-w-sm rounded-xl bg-gray-100 p-4 dark:bg-mirage"
+                    />
+                @endunless
             </div>
         </section>
 
@@ -504,8 +516,23 @@
                 </div>
 
                 {{-- Pro Tier --}}
-                <div class="relative overflow-hidden rounded-3xl bg-gradient-to-br from-emerald-50 to-teal-50 p-8 ring-2 ring-emerald-300 dark:from-emerald-950/40 dark:to-teal-950/40 dark:ring-emerald-700">
-                    <div class="absolute right-6 top-6 rounded-full bg-emerald-600 px-3 py-1 text-xs font-bold text-white">
+                <div
+                    class="relative overflow-hidden rounded-3xl bg-gradient-to-br from-emerald-50 to-teal-50 p-8 ring-2 ring-emerald-300 dark:from-emerald-950/40 dark:to-teal-950/40 dark:ring-emerald-700"
+                    x-data="{
+                        deadline: new Date('{{ $priceIncreaseAt }}').getTime(),
+                        expired: {{ $priceIncreased ? 'true' : 'false' }},
+                        init() {
+                            const check = () => {
+                                if (Date.now() >= this.deadline) {
+                                    this.expired = true
+                                }
+                            }
+                            check()
+                            setInterval(check, 1000)
+                        },
+                    }"
+                >
+                    <div x-show="!expired" class="absolute right-6 top-6 rounded-full bg-emerald-600 px-3 py-1 text-xs font-bold text-white">
                         EARLY BIRD
                     </div>
 
@@ -522,12 +549,30 @@
                             <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">You have full access to all content.</p>
                         </div>
                     @else
-                        <div class="mt-4 flex items-baseline gap-2">
-                            <span class="text-5xl font-bold text-gray-900 dark:text-white">$101</span>
-                            <span class="text-2xl text-gray-400 line-through">$299</span>
-                            <span class="text-sm text-gray-500 dark:text-gray-400">one-time</span>
+                        {{-- $199 pricing (before deadline) --}}
+                        <div x-show="!expired" x-cloak>
+                            <div class="mt-4 flex items-baseline gap-2">
+                                <span class="text-5xl font-bold text-gray-900 dark:text-white">$199</span>
+                                <span class="text-2xl text-gray-400 line-through">$299</span>
+                                <span class="text-sm text-gray-500 dark:text-gray-400">one-time</span>
+                            </div>
+                            <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">Early bird pricing. Lock it in now &mdash; full access forever.</p>
+
+                            <x-course.countdown
+                                :deadline="$priceIncreaseAt"
+                                :expired="$priceIncreased"
+                                class="mt-4 rounded-xl bg-white/60 p-4 dark:bg-white/5"
+                            />
                         </div>
-                        <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">Early bird pricing. Lock it in now &mdash; full access forever.</p>
+
+                        {{-- $299 pricing (after deadline) --}}
+                        <div x-show="expired" x-cloak>
+                            <div class="mt-4 flex items-baseline gap-2">
+                                <span class="text-5xl font-bold text-gray-900 dark:text-white">$299</span>
+                                <span class="text-sm text-gray-500 dark:text-gray-400">one-time</span>
+                            </div>
+                            <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">One price. Full access forever.</p>
+                        </div>
                     @endif
 
                     <ul class="mt-8 space-y-3">
@@ -558,7 +603,7 @@
                             </button>
                         </form>
 
-                        <p class="mt-4 text-center text-xs text-gray-500 dark:text-gray-400">
+                        <p x-show="!expired" class="mt-4 text-center text-xs text-gray-500 dark:text-gray-400">
                             Early bird pricing won't last forever. Lock in the lowest price today.
                         </p>
                     @endunless
