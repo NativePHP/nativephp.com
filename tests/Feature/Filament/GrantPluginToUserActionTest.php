@@ -6,6 +6,7 @@ use App\Filament\Resources\PluginResource\Pages\EditPlugin;
 use App\Filament\Resources\PluginResource\Pages\ListPlugins;
 use App\Models\Plugin;
 use App\Models\User;
+use Filament\Actions\Testing\TestAction;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Livewire\Livewire;
 use Tests\TestCase;
@@ -58,5 +59,40 @@ class GrantPluginToUserActionTest extends TestCase
         Livewire::actingAs($this->admin)
             ->test(EditPlugin::class, ['record' => $plugin->getRouteKey()])
             ->assertActionVisible('grantToUser');
+    }
+
+    public function test_grant_to_user_action_can_be_called_with_user_id_on_list(): void
+    {
+        $plugin = Plugin::factory()->paid()->approved()->create();
+        $recipient = User::factory()->create();
+
+        Livewire::actingAs($this->admin)
+            ->test(ListPlugins::class)
+            ->callAction(
+                TestAction::make('grantToUser')->table($plugin),
+                data: ['user_id' => $recipient->id],
+            )
+            ->assertHasNoFormErrors();
+
+        $this->assertDatabaseHas('plugin_licenses', [
+            'user_id' => $recipient->id,
+            'plugin_id' => $plugin->id,
+        ]);
+    }
+
+    public function test_grant_to_user_action_can_be_called_with_user_id_on_edit(): void
+    {
+        $plugin = Plugin::factory()->paid()->approved()->create();
+        $recipient = User::factory()->create();
+
+        Livewire::actingAs($this->admin)
+            ->test(EditPlugin::class, ['record' => $plugin->getRouteKey()])
+            ->callAction('grantToUser', data: ['user_id' => $recipient->id])
+            ->assertHasNoFormErrors();
+
+        $this->assertDatabaseHas('plugin_licenses', [
+            'user_id' => $recipient->id,
+            'plugin_id' => $plugin->id,
+        ]);
     }
 }

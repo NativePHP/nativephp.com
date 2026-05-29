@@ -139,6 +139,7 @@ class EditPlugin extends EditRecord
                                     ->mapWithKeys(fn (User $user) => [$user->id => "{$user->name} ({$user->email})"])
                                     ->toArray();
                             })
+                            ->getOptionLabelUsing(fn ($value): ?string => ($user = User::find($value)) ? "{$user->name} ({$user->email})" : null)
                             ->required(),
                     ])
                     ->action(function (array $data): void {
