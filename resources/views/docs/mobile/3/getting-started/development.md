@@ -38,8 +38,14 @@ To facilitate ease of development, you should install the `nativephpMobile` Vite
 
 ### The `nativephpMobile` Vite plugin
 
-To make your frontend build process works well with NativePHP, simply add the `nativephpMobile` plugin to your
-`vite.config.js`:
+If you're using an Inertia (React or Vue) starter kit, `php artisan native:install` will offer to configure this for
+you automatically. You can also skip the prompt by passing the `--with-vite` flag:
+
+```shell
+php artisan native:install --with-vite
+```
+
+If you need to set it up manually, add the `nativephpMobile` plugin to your `vite.config.js`:
 
 ```js
 import { nativephpMobile, nativephpHotFile } from './vendor/nativephp/mobile/resources/js/vite-plugin.js'; // [tl! focus]
