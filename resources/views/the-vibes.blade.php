@@ -918,6 +918,19 @@
                     </div>
                     <span class="sr-only">Geocodio</span>
                 </a>
+
+                {{-- The PHP Foundation --}}
+                <a
+                    href="https://thephp.foundation/?utm_source=nativephp&utm_medium=sponsorship&utm_campaign=thevibes"
+                    target="_blank"
+                    rel="noopener noreferrer sponsored"
+                    class="grid h-28 place-items-center rounded-2xl bg-gray-100 px-6 transition duration-200 will-change-transform hover:-translate-y-0.5 hover:bg-gray-200/80 hover:shadow-lg hover:shadow-gray-200/70 dark:bg-[#1a1a2e] dark:hover:bg-slate-800/80 dark:hover:shadow-transparent"
+                >
+                    <div class="grid h-15 w-35 place-items-center">
+                        <x-sponsors.logos.php-foundation aria-hidden="true" class="h-15 w-15 rounded" />
+                    </div>
+                    <span class="sr-only">The PHP Foundation</span>
+                </a>
             </div>
 
             {{-- Become a Sponsor CTA --}}
