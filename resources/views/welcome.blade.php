@@ -14,6 +14,9 @@
     {{-- Partners --}}
     <x-home.partners />
 
+    {{-- Sponsors --}}
+    <x-home.sponsors />
+
     {{-- Feedback --}}
     <x-home.feedback />
 </x-layout>
