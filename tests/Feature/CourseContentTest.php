@@ -65,6 +65,8 @@ class CourseContentTest extends TestCase
     #[Test]
     public function course_dashboard_shows_purchase_page_for_non_owners(): void
     {
+        Carbon::setTestNow('2026-06-14 23:59:59');
+
         $user = User::factory()->create();
 
         Livewire::actingAs($user)
@@ -72,6 +74,8 @@ class CourseContentTest extends TestCase
             ->assertSee('Build native apps')
             ->assertSee('Get Early Bird Access')
             ->assertSee('$199');
+
+        Carbon::setTestNow();
     }
 
     #[Test]

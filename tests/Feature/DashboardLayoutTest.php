@@ -221,6 +221,7 @@ class DashboardLayoutTest extends TestCase
     public function test_dashboard_shows_masterclass_countdown_for_non_owner_before_deadline(): void
     {
         Feature::define(ShowMasterclass::class, true);
+        Carbon::setTestNow('2026-06-14 23:59:59');
 
         $user = User::factory()->create();
 
@@ -230,6 +231,8 @@ class DashboardLayoutTest extends TestCase
             ->assertSee('The NativePHP Masterclass')
             ->assertSee('Lock in early bird pricing')
             ->assertSee('Get the course');
+
+        Carbon::setTestNow();
     }
 
     public function test_dashboard_hides_masterclass_countdown_after_deadline(): void
