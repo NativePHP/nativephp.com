@@ -646,10 +646,6 @@
                     The NativePHP Masterclass is coming <strong class="text-gray-900 dark:text-white">Summer/Fall 2026</strong>.
                     We're putting the finishing touches on the content to make sure it's the best learning experience possible.
                 </p>
-                <p class="mt-4 text-gray-600 dark:text-gray-400">
-                    Grab the early bird price now and you'll be first in line when the doors open.
-                    Sign up below to stay in the loop.
-                </p>
             </div>
         </section>
 

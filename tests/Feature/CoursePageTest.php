@@ -71,6 +71,7 @@ class CoursePageTest extends TestCase
     #[Test]
     public function course_checkout_redirects_to_stripe_with_cart_success_url(): void
     {
+        Carbon::setTestNow('2026-06-14 23:59:59');
         config(['services.stripe.course_price_id_199' => 'price_test123']);
 
         $user = User::factory()->create(['stripe_id' => 'cus_test123']);
@@ -125,6 +126,8 @@ class CoursePageTest extends TestCase
         $this->assertNotNull($capturedParams, 'Stripe checkout session should have been created');
         $this->assertStringContainsString(route('cart.success'), $capturedParams['success_url']);
         $this->assertStringContainsString('{CHECKOUT_SESSION_ID}', $capturedParams['success_url']);
+
+        Carbon::setTestNow();
     }
 
     #[Test]
