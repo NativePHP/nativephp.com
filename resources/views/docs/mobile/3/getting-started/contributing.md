@@ -1,6 +1,6 @@
 ---
 title: Contributing
-order: 1
+order: 700
 ---
 
 ## Contributing
