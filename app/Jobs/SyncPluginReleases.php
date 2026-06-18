@@ -78,7 +78,17 @@ class SyncPluginReleases implements ShouldQueue
             }
         }
 
-        $this->plugin->update(['last_synced_at' => now()]);
+        $updateData = ['last_synced_at' => now()];
+
+        if ($this->hasNewReleases) {
+            $latestVersion = $this->plugin->versions()->latest('published_at')->first();
+
+            if ($latestVersion) {
+                $updateData['latest_version'] = $latestVersion->version;
+            }
+        }
+
+        $this->plugin->update($updateData);
 
         Log::info('[SyncPluginReleases] Processing complete', [
             'plugin_id' => $this->plugin->id,

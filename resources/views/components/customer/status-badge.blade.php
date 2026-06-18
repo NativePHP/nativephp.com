@@ -7,7 +7,7 @@ $color = match($status) {
     'Needs Renewal', 'In Progress' => 'blue',
     'Suspended', 'Rejected', 'Closed' => 'red',
     'Responded' => 'green',
-    'On Hold' => 'zinc',
+    'Draft', 'On Hold' => 'zinc',
     default => 'zinc',
 };
 @endphp

@@ -24,12 +24,9 @@
 
     {{-- License Information Card --}}
     <flux:card class="mb-6">
-        <div class="flex items-center justify-between mb-4">
-            <div>
-                <flux:heading size="lg">License Information</flux:heading>
-                <flux:text>Details about your NativePHP license.</flux:text>
-            </div>
-            <x-customer.status-badge :status="$license->is_suspended ? 'Suspended' : ($license->expires_at && $license->expires_at->isPast() ? 'Expired' : 'Active')" />
+        <div class="mb-4">
+            <flux:heading size="lg">License Information</flux:heading>
+            <flux:text>Details about your NativePHP license.</flux:text>
         </div>
 
         <flux:separator />
@@ -80,23 +77,6 @@
                         <flux:text class="inline text-xs">({{ $license->created_at->diffForHumans() }})</flux:text>
                     </flux:table.cell>
                 </flux:table.row>
-
-                {{-- Expires --}}
-                <flux:table.row>
-                    <flux:table.cell class="font-medium text-zinc-500 dark:text-zinc-400">Expires</flux:table.cell>
-                    <flux:table.cell>
-                        @if($license->expires_at)
-                            {{ $license->expires_at->format('F j, Y \a\t g:i A') }}
-                            @if($license->expires_at->isPast())
-                                <flux:text class="inline text-xs">(Expired {{ $license->expires_at->diffForHumans() }})</flux:text>
-                            @else
-                                <flux:text class="inline text-xs">({{ $license->expires_at->diffForHumans() }})</flux:text>
-                            @endif
-                        @else
-                            Never
-                        @endif
-                    </flux:table.cell>
-                </flux:table.row>
             </flux:table.rows>
         </flux:table>
     </flux:card>
@@ -126,20 +106,11 @@
         </flux:callout>
     @endif
 
-    @if($license->is_suspended || ($license->expires_at && $license->expires_at->isPast()))
+    @if($license->is_suspended)
         <flux:callout variant="warning" icon="exclamation-triangle" class="mt-6">
-            <flux:callout.heading>
-                {{ $license->is_suspended ? 'License Suspended' : 'License Expired' }}
-            </flux:callout.heading>
+            <flux:callout.heading>License Suspended</flux:callout.heading>
             <flux:callout.text>
-                @if($license->is_suspended)
-                    This license has been suspended. Please contact support for assistance.
-                @elseif($isLegacyLicense)
-                    This license has expired. You can still renew it to restore access.
-                    <a href="{{ route('license.renewal', $license->key) }}" class="font-medium underline hover:no-underline">Renew now</a>
-                @else
-                    This license has expired. Please renew your subscription to continue using NativePHP.
-                @endif
+                This license has been suspended. Please contact support for assistance.
             </flux:callout.text>
         </flux:callout>
     @endif

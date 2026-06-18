@@ -36,6 +36,7 @@ class SendUltraUpgradePromotion extends Command
         $eligiblePriceIds = array_merge($miniPriceIds, $proPriceIds);
 
         $users = User::query()
+            ->whereNotNull('email_verified_at')
             ->whereHas('subscriptions', function ($query) use ($eligiblePriceIds) {
                 $query->where('stripe_status', 'active')
                     ->where('is_comped', false)

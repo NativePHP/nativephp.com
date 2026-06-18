@@ -127,6 +127,18 @@
     @endif
 
     @if ($tab === 'notifications')
+        @if (session('new-plugin-notifications-disabled'))
+            <flux:callout variant="success" icon="check-circle" class="mb-6">
+                <flux:callout.text>New plugin notifications have been disabled.</flux:callout.text>
+            </flux:callout>
+        @endif
+
+        @if (session('new-plugin-notifications-enabled'))
+            <flux:callout variant="success" icon="check-circle" class="mb-6">
+                <flux:callout.text>New plugin notifications have been re-enabled.</flux:callout.text>
+            </flux:callout>
+        @endif
+
         <flux:card class="space-y-6">
             <flux:switch
                 wire:model.live="receivesNotificationEmails"

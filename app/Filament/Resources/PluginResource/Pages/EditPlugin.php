@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\PluginResource\Pages;
 
+use App\Enums\PluginStatus;
 use App\Enums\PluginTier;
 use App\Enums\PluginType;
 use App\Filament\Resources\PluginResource;
@@ -15,43 +16,61 @@ use Filament\Actions;
 use Filament\Forms;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
+use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\HtmlString;
 
 class EditPlugin extends EditRecord
 {
     protected static string $resource = PluginResource::class;
 
+    public function getSubheading(): string|HtmlString|null
+    {
+        $color = match ($this->record->status) {
+            PluginStatus::Draft => 'gray',
+            PluginStatus::Pending => 'warning',
+            PluginStatus::Approved => 'success',
+            PluginStatus::Rejected => 'danger',
+        };
+
+        return new HtmlString(
+            Blade::render('<x-filament::badge :color="$color">{{ $label }}</x-filament::badge>', [
+                'color' => $color,
+                'label' => $this->record->status->label(),
+            ])
+        );
+    }
+
     protected function getHeaderActions(): array
     {
         return [
+            Actions\Action::make('approve')
+                ->icon('heroicon-o-check')
+                ->color('success')
+                ->visible(fn () => $this->record->isPending())
+                ->disabled(fn () => ! $this->record->passesRequiredReviewChecks())
+                ->action(fn () => $this->record->approve(auth()->id()))
+                ->requiresConfirmation()
+                ->modalHeading('Approve Plugin')
+                ->modalDescription(fn () => ! $this->record->passesRequiredReviewChecks()
+                    ? "Cannot approve '{$this->record->name}' — required checks are failing: ".implode(', ', $this->record->getFailingRequiredChecks())
+                    : "Are you sure you want to approve '{$this->record->name}'?"),
+
+            Actions\Action::make('reject')
+                ->icon('heroicon-o-x-mark')
+                ->color('danger')
+                ->visible(fn () => $this->record->isPending() || $this->record->isApproved())
+                ->form([
+                    Forms\Components\Textarea::make('rejection_reason')
+                        ->label('Reason for Rejection')
+                        ->required()
+                        ->rows(3)
+                        ->placeholder('Please explain why this plugin is being rejected...'),
+                ])
+                ->action(fn (array $data) => $this->record->reject($data['rejection_reason'], auth()->id()))
+                ->modalHeading('Reject Plugin')
+                ->modalDescription(fn () => "Are you sure you want to reject '{$this->record->name}'?"),
+
             Actions\ActionGroup::make([
-                Actions\Action::make('approve')
-                    ->icon('heroicon-o-check')
-                    ->color('success')
-                    ->visible(fn () => $this->record->isPending())
-                    ->disabled(fn () => ! $this->record->passesRequiredReviewChecks())
-                    ->action(fn () => $this->record->approve(auth()->id()))
-                    ->requiresConfirmation()
-                    ->modalHeading('Approve Plugin')
-                    ->modalDescription(fn () => ! $this->record->passesRequiredReviewChecks()
-                        ? "Cannot approve '{$this->record->name}' — required checks are failing: ".implode(', ', $this->record->getFailingRequiredChecks())
-                        : "Are you sure you want to approve '{$this->record->name}'?"),
-
-                Actions\Action::make('reject')
-                    ->icon('heroicon-o-x-mark')
-                    ->color('danger')
-                    ->visible(fn () => $this->record->isPending() || $this->record->isApproved())
-                    ->form([
-                        Forms\Components\Textarea::make('rejection_reason')
-                            ->label('Reason for Rejection')
-                            ->required()
-                            ->rows(3)
-                            ->placeholder('Please explain why this plugin is being rejected...'),
-                    ])
-                    ->action(fn (array $data) => $this->record->reject($data['rejection_reason'], auth()->id()))
-                    ->modalHeading('Reject Plugin')
-                    ->modalDescription(fn () => "Are you sure you want to reject '{$this->record->name}'?"),
-
                 Actions\Action::make('convertToPaid')
                     ->label('Convert to Paid')
                     ->icon('heroicon-o-currency-dollar')
@@ -106,6 +125,7 @@ class EditPlugin extends EditRecord
                     ->label('Grant to User')
                     ->icon('heroicon-o-gift')
                     ->color('success')
+                    ->visible(fn () => $this->record->isApproved() && ! $this->record->isFree())
                     ->form([
                         Forms\Components\Select::make('user_id')
                             ->label('User')
@@ -119,6 +139,7 @@ class EditPlugin extends EditRecord
                                     ->mapWithKeys(fn (User $user) => [$user->id => "{$user->name} ({$user->email})"])
                                     ->toArray();
                             })
+                            ->getOptionLabelUsing(fn ($value): ?string => ($user = User::find($value)) ? "{$user->name} ({$user->email})" : null)
                             ->required(),
                     ])
                     ->action(function (array $data): void {
@@ -157,22 +178,6 @@ class EditPlugin extends EditRecord
                     ->modalHeading('Grant Plugin to User')
                     ->modalDescription(fn () => "Grant '{$this->record->name}' to a user for free.")
                     ->modalSubmitActionLabel('Grant'),
-
-                Actions\Action::make('viewListing')
-                    ->label('View Listing Page')
-                    ->icon('heroicon-o-eye')
-                    ->color('gray')
-                    ->url(fn () => route('plugins.show', $this->record->routeParams()))
-                    ->openUrlInNewTab()
-                    ->visible(fn () => $this->record->isApproved() || $this->record->isPending()),
-
-                Actions\Action::make('viewPackagist')
-                    ->label('View on Packagist')
-                    ->icon('heroicon-o-arrow-top-right-on-square')
-                    ->color('gray')
-                    ->url(fn () => $this->record->getPackagistUrl())
-                    ->openUrlInNewTab()
-                    ->visible(fn () => $this->record->isFree()),
 
                 Actions\Action::make('runReviewChecks')
                     ->label('Run Review Checks')
@@ -252,13 +257,13 @@ class EditPlugin extends EditRecord
                             ->send();
                     }),
 
-                Actions\Action::make('viewGithub')
-                    ->label('View on GitHub')
-                    ->icon('heroicon-o-arrow-top-right-on-square')
+                Actions\Action::make('viewListing')
+                    ->label('View Listing Page')
+                    ->icon('heroicon-o-eye')
                     ->color('gray')
-                    ->visible(fn () => $this->record->repository_url !== null)
-                    ->url(fn () => $this->record->getGithubUrl())
-                    ->openUrlInNewTab(),
+                    ->url(fn () => route('plugins.show', $this->record->routeParams()))
+                    ->openUrlInNewTab()
+                    ->visible(fn () => $this->record->isApproved() || $this->record->isPending()),
             ])
                 ->icon('heroicon-m-ellipsis-vertical'),
         ];

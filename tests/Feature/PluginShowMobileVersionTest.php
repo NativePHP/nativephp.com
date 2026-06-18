@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Features\ShowPlugins;
 use App\Models\Plugin;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Laravel\Pennant\Feature;
 use Tests\TestCase;
@@ -40,5 +41,54 @@ class PluginShowMobileVersionTest extends TestCase
         $this->get(route('plugins.show', $plugin->routeParams()))
             ->assertStatus(200)
             ->assertSee('NativePHP Mobile');
+    }
+
+    public function test_owner_can_preview_draft_plugin_listing(): void
+    {
+        $user = User::factory()->create();
+        $plugin = Plugin::factory()->draft()->for($user)->create();
+
+        $this->actingAs($user)
+            ->get(route('plugins.show', $plugin->routeParams()))
+            ->assertStatus(200)
+            ->assertSee('Preview');
+    }
+
+    public function test_non_owner_cannot_view_draft_plugin_listing(): void
+    {
+        $owner = User::factory()->create();
+        $otherUser = User::factory()->create();
+        $plugin = Plugin::factory()->draft()->for($owner)->create();
+
+        $this->actingAs($otherUser)
+            ->get(route('plugins.show', $plugin->routeParams()))
+            ->assertStatus(404);
+    }
+
+    public function test_guest_cannot_view_draft_plugin_listing(): void
+    {
+        $plugin = Plugin::factory()->draft()->create();
+
+        $this->get(route('plugins.show', $plugin->routeParams()))
+            ->assertStatus(404);
+    }
+
+    public function test_delisted_plugin_is_not_visible_to_public(): void
+    {
+        $plugin = Plugin::factory()->approved()->create(['is_active' => false]);
+
+        $this->get(route('plugins.show', $plugin->routeParams()))
+            ->assertStatus(404);
+    }
+
+    public function test_owner_can_preview_delisted_plugin(): void
+    {
+        $user = User::factory()->create();
+        $plugin = Plugin::factory()->approved()->for($user)->create(['is_active' => false]);
+
+        $this->actingAs($user)
+            ->get(route('plugins.show', $plugin->routeParams()))
+            ->assertStatus(200)
+            ->assertSee('de-listed');
     }
 }

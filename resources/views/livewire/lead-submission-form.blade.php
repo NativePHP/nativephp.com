@@ -23,7 +23,7 @@
                     wire:model="name"
                     type="text"
                     id="name"
-                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white sm:text-sm"
+                    class="mt-1 block w-full rounded-md border-gray-300 focus:border-gray-500 focus:ring-gray-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white sm:text-sm"
                 >
                 @error('name') <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p> @enderror
             </div>
@@ -36,7 +36,7 @@
                     wire:model="email"
                     type="email"
                     id="email"
-                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white sm:text-sm"
+                    class="mt-1 block w-full rounded-md border-gray-300 focus:border-gray-500 focus:ring-gray-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white sm:text-sm"
                 >
                 @error('email') <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p> @enderror
             </div>
@@ -49,7 +49,7 @@
                     wire:model="company"
                     type="text"
                     id="company"
-                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white sm:text-sm"
+                    class="mt-1 block w-full rounded-md border-gray-300 focus:border-gray-500 focus:ring-gray-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white sm:text-sm"
                 >
                 @error('company') <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p> @enderror
             </div>
@@ -63,7 +63,7 @@
                     id="description"
                     rows="5"
                     placeholder="Describe your app idea, the problems it solves, target platforms, and any specific requirements..."
-                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white sm:text-sm"
+                    class="mt-1 block w-full rounded-md border-gray-300 focus:border-gray-500 focus:ring-gray-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white sm:text-sm"
                 ></textarea>
                 @error('description') <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p> @enderror
             </div>
@@ -75,7 +75,7 @@
                 <select
                     wire:model="budget"
                     id="budget"
-                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white sm:text-sm"
+                    class="mt-1 block w-full rounded-md border-gray-300 focus:border-gray-500 focus:ring-gray-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white sm:text-sm"
                 >
                     <option value="">Select a budget range</option>
                     @foreach ($budgets as $value => $label)
@@ -114,10 +114,10 @@
             <div class="pt-4">
                 <button
                     type="submit"
-                    class="w-full rounded-md bg-blue-600 px-6 py-3 text-sm font-medium text-white shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                    class="rounded-xl bg-zinc-800 px-6 py-3 text-sm font-medium text-white transition duration-200 hover:bg-zinc-900 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 dark:bg-indigo-700/80 dark:hover:bg-indigo-900"
                     wire:loading.attr="disabled"
                 >
-                    <span wire:loading.remove>Submit Enquiry</span>
+                    <span wire:loading.remove>Send Enquiry</span>
                     <span wire:loading>Submitting...</span>
                 </button>
             </div>

@@ -21,8 +21,8 @@ class LeadReceived extends Notification implements ShouldQueue
         return (new MailMessage)
             ->subject('Thank you for your enquiry')
             ->greeting("Hi {$notifiable->name},")
-            ->line('Thank you for reaching out to NativePHP about your app development project.')
-            ->line('We have received your enquiry and one of our team members will be in touch soon to discuss your requirements.')
+            ->line('Thank you for reaching out to NativePHP about consulting.')
+            ->line('We have received your enquiry and one of our team will be in touch soon to discuss your project.')
             ->line('In the meantime, feel free to explore our documentation or join our Discord community.')
             ->action('Visit NativePHP', url('/'))
             ->salutation('Best regards,<br>The NativePHP Team');

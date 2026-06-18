@@ -37,7 +37,7 @@ class SendUltraLicenseHolderPromotion extends Command
         foreach ($userLicenses as $userId => $licenses) {
             $user = $licenses->first()->user;
 
-            if (! $user) {
+            if (! $user || ! $user->email_verified_at) {
                 $skipped++;
 
                 continue;

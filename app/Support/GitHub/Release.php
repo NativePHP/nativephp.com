@@ -67,7 +67,7 @@ class Release
         // Change any @ tags to markdown links to GitHub
         if ($this->withUserLinks) {
             $body = preg_replace(
-                '/@([a-zA-Z0-9_]+)/',
+                '/@([a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?)/',
                 '[@$1](https://github.com/$1)',
                 $body
             );

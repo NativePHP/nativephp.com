@@ -4,7 +4,7 @@ namespace App\Listeners;
 
 use App\Jobs\CreateUserFromStripeCustomer;
 use App\Jobs\HandleInvoicePaidJob;
-use App\Jobs\RemoveDiscordMaxRoleJob;
+use App\Jobs\RemoveDiscordUltraRoleJob;
 use App\Jobs\RevokeTeamUserAccessJob;
 use App\Jobs\SuspendTeamJob;
 use App\Jobs\UnsuspendTeamJob;
@@ -75,7 +75,7 @@ class StripeWebhookReceivedListener
             return;
         }
 
-        $this->removeDiscordRoleIfNoMaxLicense($user);
+        $this->removeDiscordRoleIfNoAccess($user);
 
         dispatch(new SuspendTeamJob($user->id));
         dispatch(new RevokeTeamUserAccessJob($user->id));
@@ -101,7 +101,7 @@ class StripeWebhookReceivedListener
         }
 
         if (in_array($status, ['canceled', 'unpaid', 'past_due', 'incomplete_expired'])) {
-            $this->removeDiscordRoleIfNoMaxLicense($user);
+            $this->removeDiscordRoleIfNoAccess($user);
             dispatch(new SuspendTeamJob($user->id));
             dispatch(new RevokeTeamUserAccessJob($user->id));
         }
@@ -112,16 +112,16 @@ class StripeWebhookReceivedListener
         }
     }
 
-    private function removeDiscordRoleIfNoMaxLicense(User $user): void
+    private function removeDiscordRoleIfNoAccess(User $user): void
     {
         if (! $user->discord_id) {
             return;
         }
 
-        if ($user->hasMaxAccess()) {
+        if ($user->hasMaxAccess() || $user->hasUltraAccess()) {
             return;
         }
 
-        dispatch(new RemoveDiscordMaxRoleJob($user));
+        dispatch(new RemoveDiscordUltraRoleJob($user));
     }
 }

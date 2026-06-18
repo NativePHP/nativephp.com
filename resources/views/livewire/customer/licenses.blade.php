@@ -9,24 +9,10 @@
             <flux:table.columns>
                 <flux:table.column>License</flux:table.column>
                 <flux:table.column>Key</flux:table.column>
-                <flux:table.column>Status</flux:table.column>
-                <flux:table.column>Expires</flux:table.column>
             </flux:table.columns>
 
             <flux:table.rows>
                 @foreach($this->licenses as $license)
-                    @php
-                        $isLegacyLicense = $license->isLegacy();
-                        $daysUntilExpiry = $license->expires_at ? (int) now()->diffInDays($license->expires_at, false) : null;
-                        $needsRenewal = $isLegacyLicense && $daysUntilExpiry !== null && !$license->expires_at->isPast();
-
-                        $status = match(true) {
-                            $license->is_suspended => 'Suspended',
-                            $license->expires_at && $license->expires_at->isPast() => 'Expired',
-                            $needsRenewal => 'Needs Renewal',
-                            default => 'Active',
-                        };
-                    @endphp
                     <flux:table.row :key="$license->id">
                         <flux:table.cell>
                             <div>
@@ -42,32 +28,6 @@
                         <flux:table.cell>
                             <x-customer.masked-key :key-value="$license->key" />
                         </flux:table.cell>
-
-                        <flux:table.cell>
-                            <x-customer.status-badge :status="$status" />
-                        </flux:table.cell>
-
-                        <flux:table.cell>
-                            @if($needsRenewal)
-                                <div>
-                                    <span class="font-medium text-blue-600 dark:text-blue-400">
-                                        {{ $daysUntilExpiry }} day{{ $daysUntilExpiry === 1 ? '' : 's' }}
-                                    </span>
-                                    @if($isLegacyLicense)
-                                        <flux:text class="text-xs text-blue-500 dark:text-blue-300">Lock in Early Access Pricing</flux:text>
-                                    @endif
-                                </div>
-                            @elseif($license->expires_at)
-                                <div>
-                                    {{ $license->expires_at->format('M j, Y') }}
-                                    @if($license->expires_at->isPast())
-                                        <flux:text class="text-xs">Expired {{ $license->expires_at->diffForHumans() }}</flux:text>
-                                    @endif
-                                </div>
-                            @else
-                                No expiration
-                            @endif
-                        </flux:table.cell>
                     </flux:table.row>
                 @endforeach
             </flux:table.rows>
@@ -82,19 +42,10 @@
                 <flux:table.columns>
                     <flux:table.column>License</flux:table.column>
                     <flux:table.column>Key</flux:table.column>
-                    <flux:table.column>Status</flux:table.column>
-                    <flux:table.column>Expires</flux:table.column>
                 </flux:table.columns>
 
                 <flux:table.rows>
                     @foreach($this->assignedSubLicenses as $subLicense)
-                        @php
-                            $subStatus = match(true) {
-                                $subLicense->is_suspended => 'Suspended',
-                                $subLicense->expires_at && $subLicense->expires_at->isPast() => 'Expired',
-                                default => 'Active',
-                            };
-                        @endphp
                         <flux:table.row :key="$subLicense->id">
                             <flux:table.cell>
                                 <div>
@@ -105,23 +56,6 @@
 
                             <flux:table.cell>
                                 <x-customer.masked-key :key-value="$subLicense->key" />
-                            </flux:table.cell>
-
-                            <flux:table.cell>
-                                <x-customer.status-badge :status="$subStatus" />
-                            </flux:table.cell>
-
-                            <flux:table.cell>
-                                @if($subLicense->expires_at)
-                                    <div>
-                                        {{ $subLicense->expires_at->format('M j, Y') }}
-                                        @if($subLicense->expires_at->isPast())
-                                            <flux:text class="text-xs">Expired {{ $subLicense->expires_at->diffForHumans() }}</flux:text>
-                                        @endif
-                                    </div>
-                                @else
-                                    No expiration
-                                @endif
                             </flux:table.cell>
                         </flux:table.row>
                     @endforeach

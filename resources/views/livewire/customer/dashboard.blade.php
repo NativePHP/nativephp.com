@@ -4,6 +4,26 @@
         <flux:text>Welcome back, {{ auth()->user()->first_name ?? auth()->user()->name }}</flux:text>
     </div>
 
+    {{-- Email Verification Banner --}}
+    @if (!auth()->user()->hasVerifiedEmail())
+        <flux:callout variant="warning" icon="envelope" class="mb-6">
+            <flux:callout.heading>Please verify your email address.</flux:callout.heading>
+            <flux:callout.text>
+                We sent a verification email when you registered. Click the link in that email to verify your account.
+
+                @if (session('status'))
+                    <span class="font-medium">{{ session('status') }}</span>
+                @endif
+            </flux:callout.text>
+            <x-slot:actions>
+                <form method="POST" action="{{ route('verification.send') }}">
+                    @csrf
+                    <flux:button type="submit" variant="filled" size="sm">Resend verification email</flux:button>
+                </form>
+            </x-slot:actions>
+        </flux:callout>
+    @endif
+
     {{-- Session Messages --}}
     @if (session('success'))
         <flux:callout variant="success" icon="check-circle" class="mb-6">
@@ -22,6 +42,41 @@
             <flux:callout.text>{{ session('error') }}</flux:callout.text>
         </flux:callout>
     @endif
+
+    {{-- Masterclass Countdown Banner --}}
+    @feature(App\Features\ShowMasterclass::class)
+        @if(!$this->hasPurchasedCourse && !$this->priceIncreased)
+            <div class="mb-6 overflow-hidden rounded-lg border border-violet-200 bg-gradient-to-br from-violet-50 to-white p-6 dark:border-violet-700/50 dark:from-violet-950/30 dark:to-zinc-900">
+                <div class="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
+                    <div class="flex items-start gap-4">
+                        <div class="shrink-0 text-violet-600 dark:text-violet-400">
+                            <x-heroicon-s-academic-cap class="size-6" />
+                        </div>
+                        <div>
+                            <h3 class="font-medium text-violet-900 dark:text-violet-100">
+                                The NativePHP Masterclass
+                            </h3>
+                            <p class="mt-1 text-sm text-violet-700 dark:text-violet-300">
+                                Lock in early bird pricing &mdash; <span class="font-semibold">$199</span> now, before it goes up to $299.
+                            </p>
+                            <div class="mt-4">
+                                <a href="{{ route('customer.course.index') }}" class="inline-flex items-center gap-2 rounded-md bg-violet-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-violet-700">
+                                    Get the course
+                                    <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3"/></svg>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <x-course.countdown
+                        :deadline="$this->priceIncreaseAt"
+                        :expired="$this->priceIncreased"
+                        class="w-full shrink-0 rounded-xl bg-white/70 p-4 ring-1 ring-violet-200 sm:w-auto sm:min-w-72 dark:bg-white/5 dark:ring-white/10"
+                    />
+                </div>
+            </div>
+        @endif
+    @endfeature
 
     {{-- Ultra Upsell Banner --}}
     @if(!$this->hasUltraSubscription)

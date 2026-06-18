@@ -2,12 +2,13 @@
 
 namespace Tests\Feature\Notifications;
 
+use App\Jobs\SendNewPluginNotifications;
 use App\Models\Plugin;
 use App\Models\User;
 use App\Notifications\NewPluginAvailable;
 use App\Services\PluginSyncService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\Notification;
+use Illuminate\Support\Facades\Bus;
 use Tests\TestCase;
 
 class NewPluginAvailableTest extends TestCase
@@ -23,31 +24,26 @@ class NewPluginAvailableTest extends TestCase
         });
     }
 
-    public function test_notification_is_sent_to_opted_in_users_on_first_approval(): void
+    public function test_notification_job_is_dispatched_on_first_approval(): void
     {
-        Notification::fake();
+        Bus::fake(SendNewPluginNotifications::class);
 
         $author = User::factory()->create();
-        $optedIn = User::factory()->create(['receives_new_plugin_notifications' => true]);
-        $optedOut = User::factory()->create(['receives_new_plugin_notifications' => false]);
-
         $plugin = Plugin::factory()->pending()->for($author)->create();
         $admin = User::factory()->create();
 
         $plugin->approve($admin->id);
 
-        Notification::assertSentTo($optedIn, NewPluginAvailable::class);
-        Notification::assertNotSentTo($optedOut, NewPluginAvailable::class);
-        Notification::assertNotSentTo($author, NewPluginAvailable::class);
+        Bus::assertDispatched(SendNewPluginNotifications::class, function ($job) use ($plugin) {
+            return $job->plugin->id === $plugin->id;
+        });
     }
 
-    public function test_notification_is_not_sent_on_re_approval(): void
+    public function test_notification_job_is_not_dispatched_on_re_approval(): void
     {
-        Notification::fake();
+        Bus::fake(SendNewPluginNotifications::class);
 
         $author = User::factory()->create();
-        $optedIn = User::factory()->create(['receives_new_plugin_notifications' => true]);
-
         $plugin = Plugin::factory()->pending()->for($author)->create([
             'approved_at' => now()->subDay(),
         ]);
@@ -55,7 +51,7 @@ class NewPluginAvailableTest extends TestCase
 
         $plugin->approve($admin->id);
 
-        Notification::assertNotSentTo($optedIn, NewPluginAvailable::class);
+        Bus::assertNotDispatched(SendNewPluginNotifications::class);
     }
 
     public function test_via_returns_empty_array_when_user_opted_out(): void
@@ -115,7 +111,7 @@ class NewPluginAvailableTest extends TestCase
         $this->assertEquals('View Plugin', $data['action_label']);
     }
 
-    public function test_mail_contains_notification_preferences_link(): void
+    public function test_mail_contains_signed_unsubscribe_link(): void
     {
         $user = User::factory()->create();
         $plugin = Plugin::factory()->for($user)->create();
@@ -123,12 +119,13 @@ class NewPluginAvailableTest extends TestCase
         $notification = new NewPluginAvailable($plugin);
         $mail = $notification->toMail($user);
 
-        $expectedUrl = route('customer.settings', ['tab' => 'notifications']);
-        $found = collect($mail->introLines)->concat($mail->outroLines)->contains(function ($line) use ($expectedUrl) {
-            return str_contains($line, $expectedUrl);
+        $baseUrl = route('notifications.unsubscribe', ['user' => $user]);
+        $found = collect($mail->introLines)->concat($mail->outroLines)->contains(function ($line) use ($baseUrl) {
+            return str_contains($line, 'Unsubscribe from new plugin notifications')
+                && str_contains($line, $baseUrl);
         });
 
-        $this->assertTrue($found, 'Mail should contain a link to the notification preferences page.');
+        $this->assertTrue($found, 'Mail should contain a signed unsubscribe link.');
     }
 
     public function test_new_users_receive_new_plugin_notifications_by_default(): void

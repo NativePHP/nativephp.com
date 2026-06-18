@@ -7,6 +7,7 @@ use App\Enums\Subscription;
 use App\Jobs\CreateAnystackLicenseJob;
 use App\Models\OpenCollectiveDonation;
 use App\Models\User;
+use Illuminate\Auth\Events\Registered;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules\Password;
@@ -107,6 +108,8 @@ class ClaimDonationLicense extends Component
                 'name' => $this->name,
                 'password' => Hash::make($this->password),
             ]);
+
+            event(new Registered($user));
         }
 
         // Parse name for first/last

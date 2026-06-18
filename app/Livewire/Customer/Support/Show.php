@@ -11,14 +11,19 @@ use Illuminate\Support\Facades\RateLimiter;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Title;
 use Livewire\Component;
+use Livewire\WithFileUploads;
 
 #[Layout('components.layouts.dashboard')]
 #[Title('Support Ticket')]
 class Show extends Component
 {
+    use WithFileUploads;
+
     public SupportTicket $supportTicket;
 
     public string $replyMessage = '';
+
+    public array $replyAttachments = [];
 
     public function mount(SupportTicket $supportTicket): void
     {
@@ -46,20 +51,41 @@ class Show extends Component
 
         $this->validate([
             'replyMessage' => ['required', 'string', 'max:5000'],
+            'replyAttachments' => ['array', 'max:5'],
+            'replyAttachments.*' => ['file', 'max:10240'],
         ]);
 
         RateLimiter::hit($key, 60);
+
+        $attachments = null;
+
+        if (! empty($this->replyAttachments)) {
+            $attachments = [];
+
+            foreach ($this->replyAttachments as $file) {
+                $path = $file->store("{$this->supportTicket->mask}/replies", 'support-tickets');
+
+                $attachments[] = [
+                    'name' => $file->getClientOriginalName(),
+                    'path' => $path,
+                    'size' => $file->getSize(),
+                    'mime_type' => $file->getMimeType(),
+                ];
+            }
+        }
 
         $reply = $this->supportTicket->replies()->create([
             'user_id' => auth()->id(),
             'message' => $this->replyMessage,
             'note' => false,
+            'attachments' => $attachments,
         ]);
 
         Notification::route('mail', 'support@nativephp.com')
             ->notify(new SupportTicketUserReplied($this->supportTicket, $reply));
 
         $this->replyMessage = '';
+        $this->replyAttachments = [];
         $this->supportTicket->load(['user', 'replies.user']);
     }
 
@@ -78,6 +104,13 @@ class Show extends Component
         ]);
 
         $this->supportTicket->load(['user', 'replies.user']);
+    }
+
+    public function removeReplyAttachment(int $index): void
+    {
+        $attachments = $this->replyAttachments;
+        array_splice($attachments, $index, 1);
+        $this->replyAttachments = $attachments;
     }
 
     public function reopenTicket(): void

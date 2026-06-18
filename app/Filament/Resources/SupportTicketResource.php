@@ -12,6 +12,8 @@ use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Illuminate\Support\HtmlString;
+use Illuminate\Support\Str;
 
 class SupportTicketResource extends Resource
 {
@@ -76,7 +78,28 @@ class SupportTicketResource extends Resource
                             ->label('Subject'),
                         Infolists\Components\TextEntry::make('message')
                             ->label('Message')
-                            ->markdown(),
+                            ->formatStateUsing(fn (?string $state): ?HtmlString => $state === null
+                                ? null
+                                : new HtmlString(self::renderTicketMessage($state)))
+                            ->html(),
+                        Infolists\Components\TextEntry::make('attachments')
+                            ->label('Attachments')
+                            ->formatStateUsing(function (SupportTicket $record): HtmlString {
+                                $attachments = $record->attachments;
+
+                                if (empty($attachments)) {
+                                    return new HtmlString('<span style="color: #9ca3af;">None</span>');
+                                }
+
+                                $links = collect($attachments)->map(function (array $attachment, int $index) use ($record): string {
+                                    $url = route('customer.support.tickets.attachment', [$record, $index]);
+
+                                    return '<a href="'.e($url).'" target="_blank" style="color: #2563eb; text-decoration: underline;">'.e($attachment['name']).'</a>';
+                                });
+
+                                return new HtmlString($links->implode('<br>'));
+                            })
+                            ->html(),
                     ])
                     ->collapsible()
                     ->persistCollapsed(),
@@ -147,6 +170,127 @@ class SupportTicketResource extends Resource
     public static function getRelations(): array
     {
         return [];
+    }
+
+    public static function renderTicketMessage(string $message): string
+    {
+        $html = Str::markdown(self::convertAsciiTablesToHtml($message), [
+            'renderer' => [
+                'soft_break' => "<br />\n",
+            ],
+        ]);
+
+        return str_replace('<p>', '<p style="margin: 0 0 1rem 0;">', $html);
+    }
+
+    protected static function convertAsciiTablesToHtml(string $message): string
+    {
+        $lines = preg_split('/\R/', $message) ?: [];
+        $result = [];
+        $buffer = [];
+
+        $flush = function () use (&$result, &$buffer): void {
+            if ($buffer === []) {
+                return;
+            }
+
+            $rendered = self::renderAsciiTable($buffer);
+
+            if ($rendered === null) {
+                foreach ($buffer as $bufferedLine) {
+                    $result[] = $bufferedLine;
+                }
+            } else {
+                $result[] = '';
+                $result[] = $rendered;
+                $result[] = '';
+            }
+
+            $buffer = [];
+        };
+
+        foreach ($lines as $line) {
+            if (preg_match('/^\s*[+|]/', $line)) {
+                $buffer[] = $line;
+
+                continue;
+            }
+
+            $flush();
+            $result[] = $line;
+        }
+
+        $flush();
+
+        return implode("\n", $result);
+    }
+
+    protected static function renderAsciiTable(array $lines): ?string
+    {
+        $rows = [];
+        $separatorAfterRow = [];
+
+        foreach ($lines as $line) {
+            $trimmed = ltrim($line);
+
+            if (str_starts_with($trimmed, '+')) {
+                $separatorAfterRow[count($rows)] = true;
+
+                continue;
+            }
+
+            if (str_starts_with($trimmed, '|')) {
+                $rows[] = self::splitAsciiTableRow($trimmed);
+            }
+        }
+
+        if ($rows === []) {
+            return null;
+        }
+
+        $hasHeader = count($rows) > 1 && isset($separatorAfterRow[1]);
+
+        $tableStyle = 'border-collapse: collapse; width: auto; margin: 0 0 1rem 0; border: 1px solid rgba(127, 127, 127, 0.25);';
+        $cellStyle = 'padding: 0.25rem 0.75rem; border: 1px solid rgba(127, 127, 127, 0.2); text-align: left; vertical-align: top;';
+        $headerCellStyle = $cellStyle.' font-weight: 600; background: rgba(127, 127, 127, 0.12);';
+        $stripeStyle = 'background: rgba(127, 127, 127, 0.06);';
+
+        $html = '<table style="'.$tableStyle.'">';
+
+        if ($hasHeader) {
+            $html .= '<thead><tr>';
+            foreach ($rows[0] as $cell) {
+                $html .= '<th style="'.$headerCellStyle.'">'.e($cell).'</th>';
+            }
+            $html .= '</tr></thead>';
+            $bodyRows = array_slice($rows, 1);
+        } else {
+            $bodyRows = $rows;
+        }
+
+        $html .= '<tbody>';
+        foreach ($bodyRows as $index => $row) {
+            $rowStyle = $index % 2 === 1 ? ' style="'.$stripeStyle.'"' : '';
+            $html .= '<tr'.$rowStyle.'>';
+            foreach ($row as $cell) {
+                $html .= '<td style="'.$cellStyle.'">'.e($cell).'</td>';
+            }
+            $html .= '</tr>';
+        }
+        $html .= '</tbody></table>';
+
+        return $html;
+    }
+
+    /**
+     * @return list<string>
+     */
+    protected static function splitAsciiTableRow(string $line): array
+    {
+        $line = trim($line);
+        $line = trim($line, '|');
+
+        return array_map('trim', explode('|', $line));
     }
 
     public static function getPages(): array

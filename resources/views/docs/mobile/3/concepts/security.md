@@ -42,12 +42,9 @@ This data is only accessible by your app and is persisted beyond the lifetime of
 the next time your app is opened.
 
 
-<aside>
-
-Secure Storage is only meant for small amounts of text data, usually no more than a few KBs. If you need to store
-larger amounts of data or files, you should store this in a database or as a file.
-
-</aside>
+> [!NOTE]
+> Secure Storage is only meant for small amounts of text data, usually no more than a few KBs. If you need to store
+> larger amounts of data or files, you should store this in a database or as a file.
 
 ### When to use the Laravel `Crypt` facade
 
@@ -58,11 +55,8 @@ stored on the device.
 NativePHP securely reads the `APP_KEY` from secure storage and makes it available to Laravel. So you can safely use the
 `Crypt` facade to encrypt and decrypt data!
 
-<aside>
-
-Make sure you do not leak the `APP_KEY` or decrypted data inadvertently through error tracking or debug logging tools.
-
-</aside>
+> [!WARNING]
+> Make sure you do not leak the `APP_KEY` or decrypted data inadvertently through error tracking or debug logging tools.
 
 This is great for encrypting larger amounts of data that wouldn't easily fit in secure storage. You can encrypt values
 and store them in the file system or in the SQLite database, knowing that they are safe at rest:
@@ -85,14 +79,11 @@ $decryptedContents = Crypt::decryptString(
 );
 ```
 
-<aside>
-
-Data encrypted with the `Crypt` facade should stay on the user's device with your app. Placing it encrypted anywhere
-else risks the chance that it will be unrecoverable. If the user loses their device or deletes your app,
-they will lose the encryption key and the data will be encrypted forever.
-
-If you wish to share data, decrypt it first, transmit securely (e.g. over HTTPS) and re-encrypt it with a different key
-that is safely managed elsewhere.
-
-</aside>
+> [!CAUTION]
+> Data encrypted with the `Crypt` facade should stay on the user's device with your app. Placing it encrypted anywhere
+> else risks the chance that it will be unrecoverable. If the user loses their device or deletes your app,
+> they will lose the encryption key and the data will be encrypted forever.
+>
+> If you wish to share data, decrypt it first, transmit securely (e.g. over HTTPS) and re-encrypt it with a different key
+> that is safely managed elsewhere.
 

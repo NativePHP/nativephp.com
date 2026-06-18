@@ -22,7 +22,7 @@ class LeadFactory extends Factory
             'email' => fake()->safeEmail(),
             'company' => fake()->company(),
             'description' => fake()->paragraphs(2, true),
-            'budget' => fake()->randomElement(array_keys(Lead::BUDGETS)),
+            'budget' => fake()->optional()->randomElement(array_keys(Lead::BUDGETS)),
             'ip_address' => fake()->ipv4(),
         ];
     }

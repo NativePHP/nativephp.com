@@ -56,7 +56,8 @@ return [
         'redirect' => env('APP_URL').'/auth/discord/callback',
         'bot_token' => env('DISCORD_BOT_TOKEN'),
         'guild_id' => env('DISCORD_GUILD_ID'),
-        'max_role_id' => env('DISCORD_MAX_ROLE_ID'),
+        'ultra_role_id' => env('DISCORD_ULTRA_ROLE_ID'),
+        'early_adopter_role_id' => env('DISCORD_EARLY_ADOPTER_ROLE_ID'),
     ],
 
     'turnstile' => [
@@ -67,6 +68,13 @@ return [
     'satis' => [
         'url' => env('SATIS_API_URL', 'https://plugins.nativephp.com'),
         'api_key' => env('SATIS_API_KEY'),
+    ],
+
+    'stripe' => [
+        'course_price_id' => env('STRIPE_COURSE_PRICE_ID'),
+        'course_price_id_199' => env('STRIPE_COURSE_PRICE_ID_199'),
+        'course_price_id_299' => env('STRIPE_COURSE_PRICE_ID_299'),
+        'course_price_increase_at' => '2026-06-15T00:00:00Z',
     ],
 
     'stripe_connect' => [

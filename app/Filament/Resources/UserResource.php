@@ -12,6 +12,7 @@ use Filament\Schemas;
 use Filament\Schemas\Schema;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Illuminate\Support\HtmlString;
 use STS\FilamentImpersonate\Actions\Impersonate;
 
 class UserResource extends Resource
@@ -36,11 +37,11 @@ class UserResource extends Resource
                             ->email()
                             ->required()
                             ->maxLength(255),
-                        Forms\Components\DateTimePicker::make('email_verified_at'),
                         Forms\Components\TextInput::make('password')
                             ->password()
                             ->dehydrated(fn ($state) => filled($state))
                             ->required(fn (string $context): bool => $context === 'create')
+                            ->hidden(fn (string $context): bool => $context === 'edit')
                             ->maxLength(255),
                     ]),
                 Schemas\Components\Section::make('Billing Information')
@@ -61,6 +62,63 @@ class UserResource extends Resource
                         Forms\Components\TextInput::make('anystack_contact_id')
                             ->maxLength(255)
                             ->disabled(),
+                    ]),
+                Schemas\Components\Section::make('Notifications')
+                    ->description('Once these are disabled, they cannot be re-enabled by an admin.')
+                    ->inlineLabel()
+                    ->columns(1)
+                    ->schema([
+                        Forms\Components\Toggle::make('receives_notification_emails')
+                            ->label('Email notifications')
+                            ->disabled(fn (?User $record) => $record && ! $record->receives_notification_emails),
+                        Forms\Components\Toggle::make('receives_new_plugin_notifications')
+                            ->label('New plugin notifications')
+                            ->disabled(fn (?User $record) => $record && ! $record->receives_new_plugin_notifications),
+                    ]),
+                Schemas\Components\Section::make('Developer Account')
+                    ->inlineLabel()
+                    ->columns(1)
+                    ->visible(fn (?User $record) => $record?->developerAccount !== null)
+                    ->schema([
+                        Forms\Components\Placeholder::make('developerAccount.stripe_connect_status')
+                            ->label('Stripe Connect Status')
+                            ->content(fn (User $record) => $record->developerAccount->stripe_connect_status?->label() ?? '—'),
+                        Forms\Components\Placeholder::make('developerAccount.stripe_connect_account_id')
+                            ->label('Stripe Connect Account')
+                            ->content(fn (User $record) => new HtmlString(
+                                '<a href="https://dashboard.stripe.com/connect/accounts/'
+                                .e($record->developerAccount->stripe_connect_account_id)
+                                .'" target="_blank" class="text-primary-600 hover:underline">'
+                                .e($record->developerAccount->stripe_connect_account_id)
+                                .' &#8599;</a>'
+                            )),
+                        Forms\Components\Placeholder::make('developerAccount.country')
+                            ->label('Country')
+                            ->content(fn (User $record) => $record->developerAccount->country ?? '—'),
+                        Forms\Components\Placeholder::make('developerAccount.payout_currency')
+                            ->label('Payout Currency')
+                            ->content(fn (User $record) => strtoupper($record->developerAccount->payout_currency ?? '—')),
+                        Forms\Components\Placeholder::make('developerAccount.payouts_enabled')
+                            ->label('Payouts Enabled')
+                            ->content(fn (User $record) => $record->developerAccount->payouts_enabled ? 'Yes' : 'No'),
+                        Forms\Components\Placeholder::make('developerAccount.charges_enabled')
+                            ->label('Charges Enabled')
+                            ->content(fn (User $record) => $record->developerAccount->charges_enabled ? 'Yes' : 'No'),
+                        Forms\Components\Placeholder::make('developerAccount.onboarding_completed_at')
+                            ->label('Onboarding Completed')
+                            ->content(fn (User $record) => $record->developerAccount->onboarding_completed_at?->format('M j, Y g:i A') ?? '—'),
+                        Forms\Components\Placeholder::make('developerAccount.accepted_plugin_terms_at')
+                            ->label('Plugin Terms Accepted')
+                            ->content(fn (User $record) => $record->developerAccount->accepted_plugin_terms_at?->format('M j, Y g:i A') ?? '—'),
+                        Forms\Components\TextInput::make('developerAccount.payout_percentage')
+                            ->label('Payout Percentage')
+                            ->numeric()
+                            ->minValue(0)
+                            ->maxValue(100)
+                            ->suffix('%'),
+                        Forms\Components\Placeholder::make('developerAccount.plugin_terms_version')
+                            ->label('Terms Version')
+                            ->content(fn (User $record) => $record->developerAccount->plugin_terms_version ?? '—'),
                     ]),
             ]);
     }
@@ -85,6 +143,10 @@ class UserResource extends Resource
                 Tables\Columns\TextColumn::make('anystack_contact_id')
                     ->hidden()
                     ->searchable(),
+                Tables\Columns\IconColumn::make('developerAccount.id')
+                    ->label('Developer')
+                    ->boolean()
+                    ->getStateUsing(fn (User $record) => $record->developerAccount !== null),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable(),
@@ -128,6 +190,7 @@ class UserResource extends Resource
     public static function getRelations(): array
     {
         return [
+            RelationManagers\DeveloperPluginsRelationManager::class,
             RelationManagers\PluginLicensesRelationManager::class,
             RelationManagers\ProductLicensesRelationManager::class,
             RelationManagers\LicensesRelationManager::class,

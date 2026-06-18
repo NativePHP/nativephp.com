@@ -23,6 +23,7 @@ use Filament\Schemas;
 use Filament\Schemas\Schema;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\HtmlString;
 
 class PluginResource extends Resource
@@ -52,12 +53,15 @@ class PluginResource extends Resource
                         Forms\Components\Placeholder::make('logo_preview')
                             ->label('Logo')
                             ->content(fn (?Plugin $record) => $record?->hasLogo()
-                                ? new HtmlString('<img src="'.e($record->getLogoUrl()).'" alt="Logo" class="w-16 h-16 rounded-lg object-cover" />')
+                                ? new HtmlString('<img src="'.e($record->getLogoUrl()).'" alt="Logo" style="max-width: 256px; max-height: 256px; border-radius: 0.5rem; object-fit: cover;" />')
                                 : 'No logo')
                             ->visible(fn (?Plugin $record) => $record !== null),
 
-                        Forms\Components\TextInput::make('name')
-                            ->label('Composer Package Name'),
+                        Forms\Components\TextInput::make('display_name')
+                            ->label('Display Name'),
+
+                        Forms\Components\Textarea::make('description')
+                            ->label('Description'),
 
                         Forms\Components\Select::make('type')
                             ->options(PluginType::class),
@@ -67,29 +71,56 @@ class PluginResource extends Resource
                             ->placeholder('No tier')
                             ->helperText('Set pricing tier for paid plugins'),
 
-                        Forms\Components\TextInput::make('repository_url')
+                        Forms\Components\Placeholder::make('name')
+                            ->label('Composer Package Name')
+                            ->content(function (?Plugin $record) {
+                                if (! $record?->name) {
+                                    return '-';
+                                }
+
+                                if ($record->isFree()) {
+                                    return new HtmlString('<a href="'.e($record->getPackagistUrl()).'" target="_blank" rel="noopener noreferrer" class="text-primary-600 hover:underline">'.e($record->name).' ↗</a>');
+                                }
+
+                                return $record->name;
+                            }),
+
+                        Forms\Components\Placeholder::make('repository_url')
                             ->label('Repository URL')
+                            ->content(fn (?Plugin $record) => $record?->repository_url
+                                ? new HtmlString('<a href="'.e($record->repository_url).'" target="_blank" rel="noopener noreferrer" class="text-primary-600 hover:underline">'.e($record->repository_url).' ↗</a>')
+                                : '-')
+                            ->visible(fn (?Plugin $record) => ! ($record?->isPaid() && ! $record?->isOfficial())),
 
-                            ->url()
-                            ->suffixIcon('heroicon-o-arrow-top-right-on-square')
-                            ->suffixIconColor('gray'),
+                        Forms\Components\Placeholder::make('license_type')
+                            ->label('License')
+                            ->content(function (?Plugin $record) {
+                                $license = $record?->getLicense();
 
-                        Forms\Components\Select::make('status')
-                            ->options(PluginStatus::class)
-                            ->disabled()
-                            ->helperText('Use the Approve/Reject actions to change status'),
+                                if (! $license) {
+                                    return '-';
+                                }
+
+                                $url = $record->isPaid()
+                                    ? route('plugins.license', $record->routeParams())
+                                    : $record->getLicenseUrl();
+
+                                if ($url) {
+                                    return new HtmlString('<a href="'.e($url).'" target="_blank" rel="noopener noreferrer" class="text-primary-600 hover:underline">'.e($license).' ↗</a>');
+                                }
+
+                                return $license;
+                            })
+                            ->visible(fn (?Plugin $record) => $record !== null),
 
                         Forms\Components\Toggle::make('is_official')
                             ->label('Official (First-Party)')
                             ->helperText('Official plugins are free for Ultra subscribers'),
 
-                        Forms\Components\Textarea::make('description')
-                            ->label('Description'),
+                        Forms\Components\Toggle::make('featured'),
 
-                        Forms\Components\Textarea::make('rejection_reason')
-                            ->label('Rejection Reason')
-
-                            ->visible(fn (?Plugin $record) => $record?->isRejected()),
+                        Forms\Components\Toggle::make('is_active')
+                            ->label('Active'),
                     ]),
 
                 Schemas\Components\Section::make('Review Checks')
@@ -191,10 +222,21 @@ class PluginResource extends Resource
                         Forms\Components\Select::make('user_id')
                             ->relationship('user', 'email')
                             ->searchable()
-                            ->preload(),
+                            ->preload()
+                            ->suffixAction(
+                                Action::make('viewUser')
+                                    ->label('Go to User')
+                                    ->icon('heroicon-o-arrow-top-right-on-square')
+                                    ->url(fn (?Plugin $record) => $record?->user_id
+                                        ? UserResource::getUrl('edit', ['record' => $record->user_id])
+                                        : null)
+                                    ->openUrlInNewTab()
+                                    ->visible(fn (?Plugin $record) => $record?->user_id !== null),
+                            ),
 
-                        Forms\Components\DateTimePicker::make('created_at')
-                            ->label('Submitted At'),
+                        Forms\Components\Placeholder::make('created_at')
+                            ->label('Submitted At')
+                            ->content(fn (?Plugin $record) => $record?->created_at?->format('M j, Y g:i A') ?? '-'),
 
                         Forms\Components\Select::make('approved_by')
                             ->relationship('approvedBy', 'email')
@@ -247,6 +289,7 @@ class PluginResource extends Resource
                 Tables\Columns\TextColumn::make('status')
                     ->badge()
                     ->color(fn (PluginStatus $state): string => match ($state) {
+                        PluginStatus::Draft => 'gray',
                         PluginStatus::Pending => 'warning',
                         PluginStatus::Approved => 'success',
                         PluginStatus::Rejected => 'danger',
@@ -291,7 +334,11 @@ class PluginResource extends Resource
             ])
             ->filters([
                 Tables\Filters\SelectFilter::make('status')
-                    ->options(PluginStatus::class),
+                    ->options(PluginStatus::class)
+                    ->query(fn (Builder $query, array $data): Builder => filled($data['value'])
+                        ? $query->where('status', $data['value'])
+                        : $query->where('status', '!=', PluginStatus::Draft)
+                    ),
                 Tables\Filters\SelectFilter::make('type')
                     ->options(PluginType::class),
                 Tables\Filters\TernaryFilter::make('is_official')
@@ -324,6 +371,7 @@ class PluginResource extends Resource
                         ->label('Grant to User')
                         ->icon('heroicon-o-gift')
                         ->color('success')
+                        ->visible(fn (Plugin $record): bool => ! $record->isFree())
                         ->form([
                             Forms\Components\Select::make('user_id')
                                 ->label('User')
@@ -337,6 +385,7 @@ class PluginResource extends Resource
                                         ->mapWithKeys(fn (User $user) => [$user->id => "{$user->name} ({$user->email})"])
                                         ->toArray();
                                 })
+                                ->getOptionLabelUsing(fn ($value): ?string => ($user = User::find($value)) ? "{$user->name} ({$user->email})" : null)
                                 ->required(),
                         ])
                         ->action(function (Plugin $record, array $data): void {

@@ -57,4 +57,34 @@ class HeadingRendererTest extends TestCase
 
         $this->assertStringNotContainsString('heading-anchor', $html);
     }
+
+    public function test_duplicate_headings_get_unique_ids(): void
+    {
+        $html = CommonMark::convertToHtml("## Installation\n\nSome text.\n\n## Installation");
+
+        preg_match_all('/id="([^"]+)"/', $html, $matches);
+        $ids = $matches[1];
+
+        $this->assertCount(2, $ids);
+        $this->assertCount(2, array_unique($ids), 'Heading IDs should be unique');
+        $this->assertSame('installation', $ids[0]);
+        $this->assertSame('installation-1', $ids[1]);
+    }
+
+    public function test_empty_slug_gets_fallback_id(): void
+    {
+        // A heading with only special characters that Str::slug strips
+        $html = CommonMark::convertToHtml('## !!!');
+
+        $this->assertStringContainsString('id="heading"', $html);
+    }
+
+    public function test_ids_reset_between_conversions(): void
+    {
+        CommonMark::convertToHtml('## Installation');
+        $html = CommonMark::convertToHtml('## Installation');
+
+        $this->assertStringContainsString('id="installation"', $html);
+        $this->assertStringNotContainsString('id="installation-1"', $html);
+    }
 }

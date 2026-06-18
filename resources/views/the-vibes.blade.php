@@ -811,7 +811,7 @@
                         })
                     }
                 "
-                class="mt-10 grid grid-cols-2 gap-5 md:grid-cols-4"
+                class="mt-10 grid grid-cols-1 gap-5 sm:grid-cols-2 md:grid-cols-4"
             >
                 {{-- Web Mavens --}}
                 <a
@@ -884,6 +884,80 @@
                         />
                     </div>
                     <span class="sr-only">Beyond Code</span>
+                </a>
+
+                {{-- Mostly Technical --}}
+                <a
+                    href="https://mostlytechnical.com/"
+                    target="_blank"
+                    rel="noopener noreferrer sponsored"
+                    class="grid h-28 place-items-center rounded-2xl bg-gray-100 px-6 transition duration-200 will-change-transform hover:-translate-y-0.5 hover:bg-gray-200/80 hover:shadow-lg hover:shadow-gray-200/70 dark:bg-[#1a1a2e] dark:hover:bg-slate-800/80 dark:hover:shadow-transparent"
+                >
+                    <div class="grid h-15 w-35 place-items-center">
+                        <img
+                            src="/img/sponsors/mostly-technical.webp"
+                            loading="lazy"
+                            alt="Mostly Technical logo"
+                            width="60"
+                            height="60"
+                            class="h-15 w-15 rounded"
+                        />
+                    </div>
+                    <span class="sr-only">Mostly Technical</span>
+                </a>
+
+                {{-- Geocodio --}}
+                <a
+                    href="https://www.geocod.io/?utm_source=nativephp&utm_medium=sponsorship&utm_campaign=thevibes"
+                    target="_blank"
+                    rel="noopener noreferrer sponsored"
+                    class="grid h-28 place-items-center rounded-2xl bg-gray-100 px-6 transition duration-200 will-change-transform hover:-translate-y-0.5 hover:bg-gray-200/80 hover:shadow-lg hover:shadow-gray-200/70 dark:bg-[#1a1a2e] dark:hover:bg-slate-800/80 dark:hover:shadow-transparent"
+                >
+                    <div class="grid h-15 w-35 place-items-center">
+                        <x-sponsors.logos.geocodio aria-hidden="true" />
+                    </div>
+                    <span class="sr-only">Geocodio</span>
+                </a>
+
+                {{-- The PHP Foundation --}}
+                <a
+                    href="https://thephp.foundation/?utm_source=nativephp&utm_medium=sponsorship&utm_campaign=thevibes"
+                    target="_blank"
+                    rel="noopener noreferrer sponsored"
+                    class="grid h-28 place-items-center rounded-2xl bg-gray-100 px-6 transition duration-200 will-change-transform hover:-translate-y-0.5 hover:bg-gray-200/80 hover:shadow-lg hover:shadow-gray-200/70 dark:bg-[#1a1a2e] dark:hover:bg-slate-800/80 dark:hover:shadow-transparent"
+                >
+                    <div class="grid h-15 w-35 place-items-center">
+                        <x-sponsors.logos.php-foundation aria-hidden="true" class="h-15 w-15 rounded" />
+                    </div>
+                    <span class="sr-only">The PHP Foundation</span>
+                </a>
+
+                {{-- Artisan Build --}}
+                <a
+                    href="https://artisan.build/?utm_source=nativephp&utm_medium=sponsorship&utm_campaign=thevibes"
+                    target="_blank"
+                    rel="noopener noreferrer sponsored"
+                    class="grid h-28 place-items-center rounded-2xl bg-gray-100 px-6 transition duration-200 will-change-transform hover:-translate-y-0.5 hover:bg-gray-200/80 hover:shadow-lg hover:shadow-gray-200/70 dark:bg-[#1a1a2e] dark:hover:bg-slate-800/80 dark:hover:shadow-transparent"
+                >
+                    <div class="grid h-15 w-35 place-items-center">
+                        <img
+                            src="/img/sponsors/artisan-build.webp"
+                            class="block dark:hidden"
+                            loading="lazy"
+                            alt="Artisan Build logo"
+                            width="160"
+                            height="20"
+                        />
+                        <img
+                            src="/img/sponsors/artisan-build-dark.webp"
+                            class="hidden dark:block"
+                            loading="lazy"
+                            alt="Artisan Build logo"
+                            width="160"
+                            height="20"
+                        />
+                    </div>
+                    <span class="sr-only">Artisan Build</span>
                 </a>
             </div>
 

@@ -1,4 +1,4 @@
-<div {!! ! $licenseKey ? 'wire:poll.2s="loadData"' : '' !!}>
+<div {!! ! $subscription ? 'wire:poll.2s="loadData"' : '' !!}>
     {{-- Hero Section --}}
     <section
         class="mt-10 px-5 md:mt-14"
@@ -112,136 +112,51 @@
                             class="text-sm opacity-0"
                             style="transform: none; opacity: 0.5"
                         >
-                            You've purchased a license.
+                            Welcome to NativePHP Ultra.
                         </div>
                     </div>
                 </div>
 
                 <div class="mt-6">
-                    @if ($licenseKey)
-                        <p class="text-gray-600 dark:text-gray-400">
-                            License key
-                        </p>
-                        <div
-                            class="relative mt-2 rounded-md bg-gray-200 p-4 dark:bg-gray-800"
-                            x-data="{
-                                showMessage: false,
-                                copyToClipboard() {
-                                    navigator.clipboard
-                                        .writeText(
-                                            this.$root.querySelector('.copy-license').textContent.trim(),
-                                        )
-                                        .then(() => (this.showMessage = true))
-
-                                    setTimeout(() => (this.showMessage = false), 2000)
-                                },
-                            }"
-                        >
-                            <div
-                                class="absolute top-3 right-2 flex items-center space-x-2"
+                    @if ($subscription)
+                        @if ($isExistingUser)
+                            <p
+                                class="text-center text-gray-600 dark:text-gray-400"
                             >
-                                <div
-                                    x-show="showMessage"
-                                    x-transition
-                                    class="py-1 font-bold text-indigo-400 transition duration-300"
-                                    style="display: none"
-                                >
-                                    Copied!
-                                </div>
-                                <button
-                                    type="button"
-                                    title="Copy to clipboard"
-                                    class="bg-gray-200 p-1 transition duration-300 dark:bg-gray-800"
-                                    @click.prevent="copyToClipboard"
-                                    :class="{
-                                        'text-black/50 hover:text-black/80 dark:text-white/20 dark:hover:text-white/60': !showMessage,
-                                        'text-indigo-400 hover:text-indigo-400': showMessage,
-                                    }"
-                                >
-                                    <svg
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        fill="none"
-                                        viewBox="0 0 24 24"
-                                        stroke-width="1.5"
-                                        stroke="currentColor"
-                                        class="block size-5"
-                                    >
-                                        <path
-                                            stroke-linecap="round"
-                                            stroke-linejoin="round"
-                                            d="M11.35 3.836c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 00.75-.75 2.25 2.25 0 00-.1-.664m-5.8 0A2.251 2.251 0 0113.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m8.9-4.414c.376.023.75.05 1.124.08 1.131.094 1.976 1.057 1.976 2.192V16.5A2.25 2.25 0 0118 18.75h-2.25m-7.5-10.5H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V18.75m-7.5-10.5h6.375c.621 0 1.125.504 1.125 1.125v9.375m-8.25-3l1.5 1.5 3-3.75"
-                                        ></path>
-                                    </svg>
-                                </button>
-                            </div>
-                            <pre
-                                class="mt-0 overflow-clip pt-0"
-                            ><code class="copy-license">{{ $licenseKey }}</code></pre>
-                        </div>
-                        <p
-                            class="mt-2 text-sm text-gray-600 dark:text-gray-400"
-                        >
-                            Store this somewhere safe. You'll need it later.
-                        </p>
-                        @if ($email)
-                            <p class="mt-6 text-gray-600 dark:text-gray-400">
-                                Email
+                                Your subscription is now active. Head to your
+                                dashboard to manage it and access everything
+                                included with Ultra.
                             </p>
-                            <div
-                                class="relative mt-2 rounded-md bg-gray-200 p-4 dark:bg-gray-800"
-                                x-data="{
-                                    showMessage: false,
-                                    copyToClipboard() {
-                                        navigator.clipboard
-                                            .writeText(
-                                                this.$root.querySelector('.copy-email').textContent.trim(),
-                                            )
-                                            .then(() => (this.showMessage = true))
-                                        setTimeout(() => (this.showMessage = false), 2000)
-                                    },
-                                }"
+
+                            <a
+                                href="{{ route('dashboard') }}"
+                                class="mt-6 block w-full rounded-2xl bg-zinc-800 py-4 text-center text-sm font-medium text-white transition duration-200 ease-in-out hover:bg-zinc-900 dark:bg-[#d68ffe] dark:text-black dark:hover:bg-[#e1acff]"
                             >
-                                <div
-                                    class="absolute top-3 right-2 flex items-center space-x-2"
-                                >
-                                    <div
-                                        x-show="showMessage"
-                                        x-transition
-                                        class="py-1 font-bold text-indigo-400 transition duration-300"
-                                        style="display: none"
-                                    >
-                                        Copied!
-                                    </div>
-                                    <button
-                                        type="button"
-                                        title="Copy to clipboard"
-                                        class="bg-gray-200 p-1 transition duration-300 dark:bg-gray-800"
-                                        @click.prevent="copyToClipboard"
-                                        :class="{
-                                        'text-black/50 hover:text-black/80 dark:text-white/20 dark:hover:text-white/60': !showMessage,
-                                        'text-indigo-400 hover:text-indigo-400': showMessage,
-                                    }"
-                                    >
-                                        <svg
-                                            xmlns="http://www.w3.org/2000/svg"
-                                            fill="none"
-                                            viewBox="0 0 24 24"
-                                            stroke-width="1.5"
-                                            stroke="currentColor"
-                                            class="block size-5"
-                                        >
-                                            <path
-                                                stroke-linecap="round"
-                                                stroke-linejoin="round"
-                                                d="M11.35 3.836c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 00.75-.75 2.25 2.25 0 00-.1-.664m-5.8 0A2.251 2.251 0 0113.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m8.9-4.414c.376.023.75.05 1.124.08 1.131.094 1.976 1.057 1.976 2.192V16.5A2.25 2.25 0 0118 18.75h-2.25m-7.5-10.5H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V18.75m-7.5-10.5h6.375c.621 0 1.125.504 1.125 1.125v9.375m-8.25-3l1.5 1.5 3-3.75"
-                                            ></path>
-                                        </svg>
-                                    </button>
-                                </div>
-                                <pre
-                                    class="mt-0 overflow-clip pt-0"
-                                ><code class="copy-email">{{ $email }}</code></pre>
-                            </div>
+                                Go to Dashboard
+                            </a>
+                        @else
+                            <p
+                                class="text-center text-gray-600 dark:text-gray-400"
+                            >
+                                We've sent a link to
+                                <span
+                                    class="font-medium dark:text-gray-300"
+                                >{{ $email }}</span>
+                                so you can claim your account and access your
+                                dashboard.
+                            </p>
+
+                            <p
+                                class="mt-4 text-center text-sm text-gray-600 dark:text-gray-400"
+                            >
+                                Didn't get the email? Check your spam folder, or
+                                reach out to
+                                <a
+                                    href="mailto:support@nativephp.com"
+                                    class="font-medium text-violet-600 hover:text-violet-800 dark:text-violet-400 dark:hover:text-violet-300"
+                                >support@nativephp.com</a>
+                                and we'll sort it out.
+                            </p>
                         @endif
                     @else
                         <div
@@ -261,103 +176,17 @@
                             <span
                                 class="ml-2 text-lg text-gray-600 dark:text-gray-400"
                             >
-                                License registration in progress
+                                Finalising your subscription
                             </span>
                         </div>
                         <p
                             class="mt-6 text-center text-gray-600 dark:text-gray-400"
                         >
-                            Please
-                            <span class="font-medium dark:text-gray-300">
-                                check your email
-                            </span>
-                            shortly for a copy of your license key. This page
-                            will also update if your license key is ready.
-                        </p>
-
-                        <p
-                            class="mt-2 text-center text-gray-600 dark:text-gray-400"
-                        >
-                            Once you receive your license key, you can start
-                            building amazing mobile apps with NativePHP!
+                            This will only take a moment. The page will update
+                            automatically.
                         </p>
                     @endif
                 </div>
-
-                <a
-                    href="/docs/mobile/1/getting-started/installation"
-                    class="mt-10 block w-full rounded-2xl bg-zinc-800 py-4 text-center text-sm font-medium text-white transition duration-200 ease-in-out hover:bg-zinc-900 dark:bg-[#d68ffe] dark:text-black dark:hover:bg-[#e1acff]"
-                >
-                    <div class="flex items-center justify-center gap-2">
-                        <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            class="size-5"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            stroke-width="2"
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                        >
-                            <path
-                                d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"
-                            ></path>
-                            <path
-                                d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"
-                            ></path>
-                        </svg>
-                        <span>View Installation Guide</span>
-                    </div>
-                </a>
-
-                @if ($subscription === \App\Enums\Subscription::Max)
-                    <div
-                        class="mt-6 rounded-xl bg-indigo-50 p-4 dark:bg-indigo-900/20"
-                    >
-                        <div class="flex">
-                            <div class="shrink-0">
-                                <svg
-                                    class="h-5 w-5 text-indigo-400"
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    viewBox="0 0 24 24"
-                                    fill="currentColor"
-                                    aria-hidden="true"
-                                >
-                                    <path
-                                        fill-rule="evenodd"
-                                        d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12zm8.706-1.442c1.146-.573 2.437.463 2.126 1.706l-.709 2.836.042-.02a.75.75 0 01.67 1.34l-.04.022c-1.147.573-2.438-.463-2.127-1.706l.71-2.836-.042.02a.75.75 0 11-.671-1.34l.041-.022zM12 9a.75.75 0 100-1.5.75.75 0 000 1.5z"
-                                        clip-rule="evenodd"
-                                    />
-                                </svg>
-                            </div>
-                            <div class="ml-3">
-                                <h3
-                                    class="text-sm font-medium text-indigo-800 dark:text-indigo-300"
-                                >
-                                    Repo Access
-                                </h3>
-                                <div
-                                    class="mt-2 text-sm text-indigo-700 dark:text-indigo-200"
-                                >
-                                    <p>
-                                        As a Max subscriber, you have access to
-                                        the NativePHP/mobile repository. To
-                                        access it, please log in to
-                                        <!-- display: inline -->
-                                        <a
-                                            href="https://auth.anystack.sh/?accountType=customer"
-                                            class="font-medium underline hover:text-indigo-600 dark:hover:text-indigo-100"
-                                            target="_blank"
-                                            >AnyStack.sh</a
-                                        >
-                                        using the same email address you used
-                                        for your purchase.
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                @endif
             </div>
         </div>
 
@@ -496,38 +325,6 @@
                     </p>
                 </div>
 
-                @if ($subscription === \App\Enums\Subscription::Max)
-                    <div
-                        class="dark:bg-mirage dark:hover:bg-haiti dark:hover:ring-cloud rounded-2xl bg-gray-100 p-6 transition duration-200 hover:bg-gray-200/70 hover:ring-1 hover:ring-black/60"
-                    >
-                        <div
-                            class="mb-4 flex h-12 w-12 items-center justify-center rounded-full"
-                        >
-                            <x-icons.github class="dark:text-white" />
-                        </div>
-                        <h4 class="text-lg font-medium">Access the Repo</h4>
-                        <p class="mt-2 text-gray-600 dark:text-gray-400">
-                            <a
-                                href="https://auth.anystack.sh/register?accountType=customer"
-                                target="_blank"
-                                class="text-violet-600 hover:text-violet-800 dark:text-violet-400 dark:hover:text-violet-300"
-                            >
-                                Create a customer account
-                            </a>
-                            on Anystack to gain access to the NativePHP for
-                            Mobile
-                            <a
-                                href="https://github.com/nativephp/mobile/issues"
-                                target="_blank"
-                                class="text-violet-600 hover:text-violet-800 dark:text-violet-400 dark:hover:text-violet-300"
-                            >
-                                repository
-                            </a>
-                            where you can let us know if you find any bugs as
-                            you build.
-                        </p>
-                    </div>
-                @endif
             </div>
         </div>
     </section>

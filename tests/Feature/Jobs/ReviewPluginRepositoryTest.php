@@ -221,7 +221,7 @@ class ReviewPluginRepositoryTest extends TestCase
     }
 
     /** @test */
-    public function it_returns_empty_array_when_no_repository_url(): void
+    public function it_returns_failed_checks_when_no_repository_url(): void
     {
         $plugin = Plugin::factory()->create([
             'repository_url' => null,
@@ -229,8 +229,10 @@ class ReviewPluginRepositoryTest extends TestCase
 
         $checks = (new ReviewPluginRepository($plugin))->handle();
 
-        $this->assertEmpty($checks);
-        $this->assertNull($plugin->fresh()->reviewed_at);
+        $this->assertFalse($checks['has_license_file']);
+        $this->assertFalse($checks['has_release_version']);
+        $this->assertNotNull($plugin->fresh()->reviewed_at);
+        $this->assertNotNull($plugin->fresh()->review_checks);
     }
 
     /** @test */

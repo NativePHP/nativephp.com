@@ -66,6 +66,32 @@
                 @error('newMessage')
                     <p style="font-size: 0.875rem; color: #dc2626;">{{ $message }}</p>
                 @enderror
+                <div>
+                    <input
+                        type="file"
+                        wire:model="replyAttachments"
+                        multiple
+                        style="display: block; width: 100%; font-size: 0.875rem; color: #6b7280;"
+                    />
+                    @error('replyAttachments')
+                        <p style="font-size: 0.875rem; color: #dc2626; margin-top: 0.25rem;">{{ $message }}</p>
+                    @enderror
+                    @error('replyAttachments.*')
+                        <p style="font-size: 0.875rem; color: #dc2626; margin-top: 0.25rem;">{{ $message }}</p>
+                    @enderror
+                    @if(count($replyAttachments))
+                        <div style="margin-top: 0.5rem; display: flex; flex-direction: column; gap: 0.25rem;">
+                            @foreach($replyAttachments as $index => $file)
+                                <div style="display: flex; align-items: center; justify-content: space-between; background: #f9fafb; padding: 0.25rem 0.5rem; border-radius: 0.25rem; font-size: 0.8125rem;">
+                                    <span style="color: #374151;">{{ $file->getClientOriginalName() }}</span>
+                                    <button type="button" wire:click="removeReplyAttachment({{ $index }})" style="color: #dc2626; cursor: pointer; background: none; border: none; font-size: 0.75rem;">
+                                        &times;
+                                    </button>
+                                </div>
+                            @endforeach
+                        </div>
+                    @endif
+                </div>
                 <div style="display: flex; align-items: center; justify-content: space-between;">
                     <label style="display: inline-flex; align-items: center; gap: 0.5rem; font-size: 0.875rem; color: #6b7280; cursor: pointer;">
                         <input type="checkbox" wire:model="isNote" style="border-radius: 0.25rem;" />
@@ -130,6 +156,15 @@
                         </div>
                     </div>
                     <div class="fi-prose ticket-reply-message" style="margin-top: 0.25rem; font-size: 0.875rem; color: #374151;">{!! App\Support\CommonMark\CommonMark::convertToHtml($reply->message) !!}</div>
+                    @if($reply->attachments)
+                        <div style="margin-top: 0.5rem; border-top: 1px solid {{ $borderColor }}; padding-top: 0.5rem;">
+                            @foreach($reply->attachments as $index => $attachment)
+                                <a href="{{ route('customer.support.tickets.reply.attachment', [$record, $reply, $index]) }}" style="display: inline-flex; align-items: center; gap: 0.25rem; font-size: 0.8125rem; color: #2563eb; text-decoration: none; margin-right: 0.75rem;" target="_blank">
+                                    &#128206; {{ $attachment['name'] }}
+                                </a>
+                            @endforeach
+                        </div>
+                    @endif
                 </div>
             @empty
                 <p style="padding: 1rem 0; text-align: center; font-size: 0.875rem; color: #6b7280;">No replies yet.</p>

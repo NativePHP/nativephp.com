@@ -2,7 +2,9 @@
 
 namespace App\Notifications;
 
+use App\Http\Controllers\NotificationUnsubscribeController;
 use App\Models\Plugin;
+use App\Models\User;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
@@ -30,12 +32,15 @@ class NewPluginAvailable extends Notification implements ShouldQueue
 
     public function toMail(object $notifiable): MailMessage
     {
+        /** @var User $notifiable */
+        $unsubscribeUrl = NotificationUnsubscribeController::signedUnsubscribeUrl($notifiable);
+
         return (new MailMessage)
             ->subject("New Plugin: {$this->plugin->name}")
             ->greeting('A new plugin is available!')
             ->line("**{$this->plugin->name}** has just been added to the NativePHP Plugin Marketplace.")
             ->action('View Plugin', route('plugins.show', $this->plugin->routeParams()))
-            ->line('[Manage your notification preferences]('.route('customer.settings', ['tab' => 'notifications']).').');
+            ->line('[Unsubscribe from new plugin notifications]('.$unsubscribeUrl.').');
     }
 
     /**

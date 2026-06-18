@@ -7,7 +7,9 @@ use App\Services\StripeConnectService;
 use App\Support\StripeConnectCountries;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\Rule;
+use Stripe\Exception\InvalidRequestException;
 
 class DeveloperOnboardingController extends Controller
 {
@@ -38,7 +40,17 @@ class DeveloperOnboardingController extends Controller
         $developerAccount = $user->developerAccount;
 
         if (! $developerAccount) {
-            $developerAccount = $this->stripeConnectService->createConnectAccount($user, $country, $payoutCurrency);
+            try {
+                $developerAccount = $this->stripeConnectService->createConnectAccount($user, $country, $payoutCurrency);
+            } catch (InvalidRequestException $e) {
+                Log::warning('Stripe Connect account creation failed', [
+                    'user_id' => $user->id,
+                    'country' => $country,
+                    'error' => $e->getMessage(),
+                ]);
+
+                return back()->withErrors(['country' => 'Stripe does not currently support developer accounts in your selected country. Please choose a different country or contact support for assistance.']);
+            }
         } else {
             $developerAccount->update([
                 'country' => $country,

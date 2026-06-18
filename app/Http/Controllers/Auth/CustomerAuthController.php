@@ -9,6 +9,7 @@ use App\Models\Plugin;
 use App\Models\TeamUser;
 use App\Models\User;
 use App\Services\CartService;
+use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Passwords\PasswordBroker;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -44,6 +45,8 @@ class CustomerAuthController extends Controller
             'email' => $request->email,
             'password' => Hash::make($request->password),
         ]);
+
+        event(new Registered($user));
 
         Auth::login($user);
 
@@ -153,9 +156,17 @@ class CustomerAuthController extends Controller
         $status = Password::reset(
             $request->only('email', 'password', 'password_confirmation', 'token'),
             function ($user, $password): void {
-                $user->forceFill([
-                    'password' => $password,
-                ]);
+                $attributes = ['password' => $password];
+
+                // Proving control of the inbox + setting a password is sufficient
+                // to consider the email verified. This also lets the same flow
+                // serve as the "claim your account" path for users created via
+                // checkout.
+                if (! $user->email_verified_at) {
+                    $attributes['email_verified_at'] = now();
+                }
+
+                $user->forceFill($attributes);
 
                 $user->save();
             }
