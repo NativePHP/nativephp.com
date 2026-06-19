@@ -16,6 +16,8 @@ use App\Models\Product;
 use App\Models\ProductLicense;
 use App\Models\User;
 use App\Notifications\PluginSaleCompleted;
+use App\Notifications\PurchaseReceipt;
+use App\Notifications\UltraSubscriptionStarted;
 use App\Support\GitHubOAuth;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -26,6 +28,7 @@ use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\Log;
 use Laravel\Cashier\Cashier;
 use Laravel\Cashier\SubscriptionItem;
+use RuntimeException;
 use Stripe\Invoice;
 use Stripe\StripeObject;
 use UnexpectedValueException;
@@ -66,6 +69,8 @@ class HandleInvoicePaidJob implements ShouldQueue
 
     private function handleSubscriptionCreated(): void
     {
+        $this->notifyUltraSubscriber();
+
         // Get the subscription to check for renewal metadata
         $subscription = Cashier::stripe()->subscriptions->retrieve($this->invoice->subscription);
 
@@ -211,6 +216,9 @@ class HandleInvoicePaidJob implements ShouldQueue
 
         // Notify developers of their sales
         $this->sendDeveloperSaleNotifications($this->invoice->id);
+
+        // Thank the buyer for their purchase
+        $user->notify(new PurchaseReceipt);
     }
 
     private function processCartPurchase(string $cartId): void
@@ -276,6 +284,9 @@ class HandleInvoicePaidJob implements ShouldQueue
 
         // Notify developers of their sales
         $this->sendDeveloperSaleNotifications($this->invoice->id);
+
+        // Thank the buyer for their purchase
+        $user->notify(new PurchaseReceipt);
 
         Log::info('Cart purchase completed', [
             'invoice_id' => $this->invoice->id,
@@ -647,6 +658,27 @@ class HandleInvoicePaidJob implements ShouldQueue
 
                 $developerAccount->user->notify(new PluginSaleCompleted($developerPayouts));
             });
+    }
+
+    private function notifyUltraSubscriber(): void
+    {
+        $line = $this->findPlanLineItem();
+
+        if (! $line || ! $line->price) {
+            return;
+        }
+
+        try {
+            $plan = Subscription::fromStripePriceId($line->price->id);
+        } catch (RuntimeException) {
+            return;
+        }
+
+        if ($plan !== Subscription::Max) {
+            return;
+        }
+
+        $this->billable()->notify(new UltraSubscriptionStarted);
     }
 
     private function billable(): User
