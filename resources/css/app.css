@@ -26,6 +26,10 @@
     --color-snow-flurry-200: #a2fd00;
     --color-snow-flurry-300: #97ed00;
 
+    /* Torchlight code surface (matches the material-theme-palenight theme) */
+    --color-torchlight-surface: #292d3e;
+    --color-torchlight-text: #a6accd;
+
     --font-poppins: 'Poppins', Verdana, sans-serif;
 }
 
@@ -294,6 +298,19 @@ nav.docs-navigation li:has(.third-tier .exact-active) > .subsection-header {
 */
 .prose pre code.torchlight {
     @apply block min-w-max py-4;
+}
+
+/*
+ Fallback for blocks Torchlight returns un-highlighted (e.g. a language
+ its API can't tokenise, like the Svelte snippets on some plugin pages).
+ These come back with an empty `style` attribute and no per-token color
+ spans, so without this they have no background and inherit prose's light
+ text color, rendering the block invisible. Successfully highlighted
+ blocks set `background-color` inline, so they're excluded here and keep
+ their own theme colors.
+*/
+.prose pre code.torchlight:not([style*='background-color']) {
+    @apply bg-torchlight-surface text-torchlight-text;
 }
 
 /*
