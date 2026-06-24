@@ -3,10 +3,26 @@
 namespace Tests\Feature;
 
 use App\Support\CommonMark\CommonMark;
+use Illuminate\Support\Facades\Http;
 use Tests\TestCase;
 
 class TorchlightCodeBlockTest extends TestCase
 {
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        // A token is required for Torchlight to attempt highlighting (it throws
+        // outside production otherwise), and faking the API forces its built-in
+        // "un-highlighted" fallback — the same state produced in the wild when
+        // Torchlight cannot tokenise a block. This keeps the test deterministic
+        // and offline regardless of whether a real token is present locally.
+        config(['torchlight.token' => 'test-token']);
+        Http::fake([
+            '*' => Http::response(['blocks' => []], 200),
+        ]);
+    }
+
     public function test_fenced_code_renders_as_a_torchlight_block(): void
     {
         $html = CommonMark::convertToHtml("```php\necho 'hello';\n```");
@@ -16,14 +32,14 @@ class TorchlightCodeBlockTest extends TestCase
 
     public function test_unhighlighted_block_carries_torchlight_class_for_css_fallback(): void
     {
-        // When Torchlight cannot highlight a block (no API token, as in the
-        // test environment, or a language its API can't tokenise such as the
-        // Svelte snippet below) it returns the block un-highlighted with an
-        // empty `style` attribute and no per-token color spans. The fallback
-        // CSS targets `code.torchlight:not([style*='background-color'])` to
-        // give these otherwise-invisible blocks a background and readable
-        // text, so the markup must still carry the `torchlight` class without
-        // an inline background color.
+        // When Torchlight cannot highlight a block (e.g. a language its API
+        // can't tokenise, such as the Svelte snippet below) it returns the
+        // block un-highlighted with an empty `style` attribute and no per-token
+        // color spans. The fallback CSS targets
+        // `code.torchlight:not([style*='background-color'])` to give these
+        // otherwise-invisible blocks a background and readable text, so the
+        // markup must still carry the `torchlight` class without an inline
+        // background color.
         $svelte = <<<'MD'
         ```svelte
         <div>
