@@ -1,7 +1,10 @@
 ---
 title: Divider
 order: 340
+super_native: true
 ---
+
+<x-docs.super-native-beta />
 
 ## Overview
 

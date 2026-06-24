@@ -1,7 +1,10 @@
 ---
 title: Activity Indicator
 order: 350
+super_native: true
 ---
+
+<x-docs.super-native-beta />
 
 ## Overview
 

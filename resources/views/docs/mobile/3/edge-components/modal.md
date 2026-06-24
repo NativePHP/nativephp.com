@@ -1,7 +1,10 @@
 ---
 title: Modal
 order: 710
+super_native: true
 ---
+
+<x-docs.super-native-beta />
 
 ## Overview
 

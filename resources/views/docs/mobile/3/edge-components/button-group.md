@@ -1,7 +1,10 @@
 ---
 title: Button Group
 order: 315
+super_native: true
 ---
+
+<x-docs.super-native-beta />
 
 ## Overview
 

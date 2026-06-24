@@ -1,7 +1,10 @@
 ---
 title: Icon
 order: 330
+super_native: true
 ---
+
+<x-docs.super-native-beta />
 
 ## Overview
 

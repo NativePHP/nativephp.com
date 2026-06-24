@@ -1,7 +1,10 @@
 ---
 title: Card
 order: 260
+super_native: true
 ---
+
+<x-docs.super-native-beta />
 
 ## Overview
 

@@ -1,7 +1,10 @@
 ---
 title: Screen
 order: 100
+super_native: true
 ---
+
+<x-docs.super-native-beta />
 
 ## Overview
 

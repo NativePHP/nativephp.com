@@ -1,7 +1,10 @@
 ---
 title: Text Input
 order: 500
+super_native: true
 ---
+
+<x-docs.super-native-beta />
 
 ## Overview
 

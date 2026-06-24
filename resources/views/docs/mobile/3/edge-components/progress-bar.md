@@ -1,7 +1,10 @@
 ---
 title: Progress Bar
 order: 355
+super_native: true
 ---
+
+<x-docs.super-native-beta />
 
 ## Overview
 

@@ -1,7 +1,10 @@
 ---
 title: Toggle
 order: 510
+super_native: true
 ---
+
+<x-docs.super-native-beta />
 
 ## Overview
 

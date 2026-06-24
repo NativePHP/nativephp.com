@@ -1,7 +1,10 @@
 ---
 title: Slider
 order: 545
+super_native: true
 ---
+
+<x-docs.super-native-beta />
 
 ## Overview
 

@@ -32,6 +32,7 @@ interactive forms and navigation chrome.
 - **[Spacer](spacer)** - Flexible space element
 - **[Pressable](pressable)** - Touch-sensitive container wrapper
 - **[Card](card)** - Content surface with filled / outlined / elevated variants
+- **[Web View](web-view)** - Embed web content as a native element and surround it with native UI
 
 ### Content
 
