@@ -141,13 +141,17 @@ class SatisSyncTest extends TestCase
         $this->assertTrue($result['success']);
         $this->assertEquals(1, $result['plugins_count']);
 
+        // buildAll dispatches an individual partial build per paid plugin, each
+        // authenticated with the owner's token, so a single failure can never
+        // authoritatively overwrite the published index.
+        Http::assertSentCount(1);
         Http::assertSent(function ($request) use ($paidPlugin) {
             $data = $request->data();
             $plugins = $data['plugins'] ?? [];
 
             return count($plugins) === 1
                 && $plugins[0]['name'] === $paidPlugin->name
-                && $data['full_build'] === true;
+                && $data['full_build'] === false;
         });
     }
 }
