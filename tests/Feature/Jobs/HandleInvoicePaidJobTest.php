@@ -7,6 +7,7 @@ use App\Jobs\HandleInvoicePaidJob;
 use App\Models\Cart;
 use App\Models\CartItem;
 use App\Models\Plugin;
+use App\Models\PluginBundle;
 use App\Models\User;
 use App\Notifications\PurchaseReceipt;
 use App\Notifications\UltraSubscriptionStarted;
@@ -201,6 +202,68 @@ class HandleInvoicePaidJobTest extends TestCase
         (new HandleInvoicePaidJob($invoice))->handle();
 
         Notification::assertSentTo($buyer, PurchaseReceipt::class);
+    }
+
+    #[Test]
+    public function it_only_licenses_cart_items_recorded_in_the_invoice_snapshot(): void
+    {
+        Notification::fake();
+
+        $buyer = User::factory()->create(['stripe_id' => 'cus_test_buyer']);
+
+        $purchasedPlugin = Plugin::factory()->approved()->create(['is_active' => true]);
+
+        $leftoverPlugin = Plugin::factory()->approved()->create(['is_active' => true]);
+        $leftoverBundle = PluginBundle::factory()->create();
+        $leftoverBundle->plugins()->attach($leftoverPlugin->id, ['sort_order' => 1]);
+
+        $cart = Cart::factory()->for($buyer)->create();
+
+        $purchasedItem = CartItem::create([
+            'cart_id' => $cart->id,
+            'plugin_id' => $purchasedPlugin->id,
+            'price_at_addition' => 2500,
+        ]);
+
+        // This bundle is still sitting in the cart but was never part of the checkout.
+        CartItem::create([
+            'cart_id' => $cart->id,
+            'plugin_bundle_id' => $leftoverBundle->id,
+            'bundle_price_at_addition' => 9999,
+        ]);
+
+        $invoice = Invoice::constructFrom([
+            'id' => 'in_test_'.uniqid(),
+            'billing_reason' => Invoice::BILLING_REASON_MANUAL,
+            'customer' => $buyer->stripe_id,
+            'payment_intent' => 'pi_test_'.uniqid(),
+            'currency' => 'usd',
+            'metadata' => [
+                'cart_id' => (string) $cart->id,
+                'cart_item_ids' => (string) $purchasedItem->id,
+            ],
+            'lines' => [],
+        ]);
+
+        (new HandleInvoicePaidJob($invoice))->handle();
+
+        $this->assertDatabaseHas('plugin_licenses', [
+            'user_id' => $buyer->id,
+            'plugin_id' => $purchasedPlugin->id,
+            'plugin_bundle_id' => null,
+            'price_paid' => 2500,
+        ]);
+
+        $this->assertDatabaseMissing('plugin_licenses', [
+            'plugin_bundle_id' => $leftoverBundle->id,
+        ]);
+
+        $this->assertDatabaseMissing('plugin_licenses', [
+            'plugin_id' => $leftoverPlugin->id,
+        ]);
+
+        $this->assertEquals(1, $buyer->pluginLicenses()->count());
+        $this->assertNotNull($cart->fresh()->completed_at);
     }
 
     public static function subscriptionPlanProvider(): array
