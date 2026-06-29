@@ -455,6 +455,7 @@ class CartController extends Controller
         $cart->load('items.plugin', 'items.pluginBundle.plugins', 'items.product');
 
         $lineItems = [];
+        $purchasedItemIds = [];
 
         Log::info('Creating multi-item checkout session', [
             'cart_id' => $cart->id,
@@ -463,6 +464,8 @@ class CartController extends Controller
         ]);
 
         foreach ($cart->items as $item) {
+            $purchasedItemIds[] = $item->id;
+
             if ($item->isBundle()) {
                 $bundle = $item->pluginBundle;
 
@@ -516,9 +519,12 @@ class CartController extends Controller
         // Ensure the user has a valid Stripe customer ID
         $this->ensureValidStripeCustomer($user);
 
-        // Metadata only needs cart_id - we'll look up items from the cart
+        // Record the exact cart items that were turned into priced line items so the
+        // webhook only grants licenses for what was actually purchased, not whatever
+        // happens to be in the cart when the payment is confirmed.
         $metadata = [
             'cart_id' => (string) $cart->id,
+            'cart_item_ids' => implode(',', $purchasedItemIds),
         ];
 
         $session = Cashier::stripe()->checkout->sessions->create([
