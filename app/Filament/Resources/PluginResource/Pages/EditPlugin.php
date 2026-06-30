@@ -6,6 +6,7 @@ use App\Enums\PluginStatus;
 use App\Enums\PluginTier;
 use App\Enums\PluginType;
 use App\Filament\Resources\PluginResource;
+use App\Jobs\GeneratePluginOgImage;
 use App\Jobs\ReviewPluginRepository;
 use App\Jobs\SyncPlugin;
 use App\Jobs\SyncPluginReleases;
@@ -22,6 +23,11 @@ use Illuminate\Support\HtmlString;
 class EditPlugin extends EditRecord
 {
     protected static string $resource = PluginResource::class;
+
+    protected function afterSave(): void
+    {
+        GeneratePluginOgImage::dispatch($this->record);
+    }
 
     public function getSubheading(): string|HtmlString|null
     {

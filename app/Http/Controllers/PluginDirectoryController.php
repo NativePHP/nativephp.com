@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Plugin;
 use App\Models\PluginBundle;
+use Artesaos\SEOTools\Facades\SEOTools;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
 
@@ -71,6 +72,8 @@ class PluginDirectoryController extends Controller
         $bestPrice = $plugin->getBestPriceForUser($user);
         $regularPrice = $plugin->getRegularPrice();
 
+        $this->setPluginSeo($plugin);
+
         return view('plugin-show', [
             'plugin' => $plugin,
             'bundles' => $bundles,
@@ -99,9 +102,32 @@ class PluginDirectoryController extends Controller
             abort(404);
         }
 
+        $this->setPluginSeo($plugin, suffix: 'License');
+
         return view('plugin-license', [
             'plugin' => $plugin,
             'isAdminPreview' => (! $plugin->isApproved() || ! $plugin->is_active) && ($isAdmin || $isOwner),
         ]);
+    }
+
+    protected function setPluginSeo(Plugin $plugin, string $suffix = 'Plugin'): void
+    {
+        $name = $plugin->display_name ?? $plugin->name;
+        $description = $plugin->description ?: "{$name} is a plugin for NativePHP Mobile.";
+
+        SEOTools::setTitle("{$name} - {$suffix}");
+        SEOTools::setDescription($description);
+
+        SEOTools::opengraph()->setTitle($name);
+        SEOTools::opengraph()->setDescription($description);
+        SEOTools::opengraph()->setType('website');
+
+        SEOTools::twitter()->setTitle($name);
+        SEOTools::twitter()->setDescription($description);
+
+        if ($plugin->og_image) {
+            SEOTools::opengraph()->addImage($plugin->og_image);
+            SEOTools::twitter()->setImage($plugin->og_image);
+        }
     }
 }

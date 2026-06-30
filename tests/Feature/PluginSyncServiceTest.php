@@ -6,11 +6,19 @@ use App\Models\Plugin;
 use App\Services\PluginSyncService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Queue;
 use Tests\TestCase;
 
 class PluginSyncServiceTest extends TestCase
 {
     use RefreshDatabase;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        Queue::fake();
+    }
 
     public function test_sync_extracts_mobile_min_version_from_composer_data(): void
     {
