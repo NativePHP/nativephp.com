@@ -127,6 +127,10 @@ class CoursePageTest extends TestCase
         $this->assertStringContainsString(route('cart.success'), $capturedParams['success_url']);
         $this->assertStringContainsString('{CHECKOUT_SESSION_ID}', $capturedParams['success_url']);
 
+        $this->assertTrue($capturedParams['tax_id_collection']['enabled']);
+        $this->assertSame('auto', $capturedParams['customer_update']['address'] ?? null, 'Tax ID collection requires customer_update[address] = auto for existing customers');
+        $this->assertSame('auto', $capturedParams['customer_update']['name'] ?? null);
+
         Carbon::setTestNow();
     }
 
