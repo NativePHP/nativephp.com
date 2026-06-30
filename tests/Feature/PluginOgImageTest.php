@@ -6,6 +6,7 @@ use App\Jobs\GeneratePluginOgImage;
 use App\Models\Plugin;
 use App\Services\PluginOgLayout;
 use App\Services\PluginSyncService;
+use App\Services\SatisService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Queue;
@@ -116,6 +117,11 @@ class PluginOgImageTest extends TestCase
     public function test_deleting_plugin_removes_its_og_image(): void
     {
         Storage::fake('public');
+
+        // The plugin's deleting hook also talks to Satis, which we don't exercise here.
+        $this->mock(SatisService::class)
+            ->shouldReceive('removePackage')
+            ->andReturn([]);
 
         $plugin = Plugin::factory()->approved()->create([
             'og_image' => 'https://nativephp.com.test/storage/og-images/plugins/42.png',
