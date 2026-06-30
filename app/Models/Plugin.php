@@ -10,6 +10,7 @@ use App\Enums\PriceTier;
 use App\Jobs\SendNewPluginNotifications;
 use App\Notifications\PluginApproved;
 use App\Notifications\PluginRejected;
+use App\Services\OgImageService;
 use App\Services\PluginSyncService;
 use App\Services\SatisService;
 use Illuminate\Database\Eloquent\Attributes\Scope;
@@ -82,6 +83,8 @@ class Plugin extends Model
             if ($plugin->name) {
                 resolve(SatisService::class)->removePackage($plugin->name);
             }
+
+            resolve(OgImageService::class)->deleteForPlugin($plugin);
         });
     }
 

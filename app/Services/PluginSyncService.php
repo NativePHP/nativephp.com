@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Jobs\GeneratePluginOgImage;
 use App\Models\Plugin;
 use App\Support\CommonMark\CommonMark;
 use Illuminate\Support\Facades\Http;
@@ -117,6 +118,8 @@ class PluginSyncService
         ]);
 
         $plugin->update($updateData);
+
+        GeneratePluginOgImage::dispatch($plugin);
 
         Log::info('[PluginSync] Sync complete', ['plugin_id' => $plugin->id, 'name' => $plugin->name]);
 

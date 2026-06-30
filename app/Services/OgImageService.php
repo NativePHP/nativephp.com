@@ -3,10 +3,12 @@
 namespace App\Services;
 
 use App\Models\Article;
+use App\Models\Plugin;
 use Illuminate\Support\Facades\Storage;
 use Intervention\Image\Colors\Rgb\Color;
 use SimonHamp\TheOg\BorderPosition;
 use SimonHamp\TheOg\Image;
+use SimonHamp\TheOg\Interfaces\Layout;
 
 class OgImageService
 {
@@ -15,27 +17,31 @@ class OgImageService
      */
     public function generate(Article $article): string
     {
-        $image = new Image;
+        return $this->render(
+            "og-images/{$article->slug}.png",
+            $article->title,
+            $article->excerpt ?? '',
+            url('/blog/'.$article->slug),
+        );
+    }
 
-        // Ensure the directory exists
-        $directory = Storage::disk('public')->path('og-images');
-        if (! is_dir($directory)) {
-            mkdir($directory, 0755, true);
-        }
-
-        $image
-            ->layout(new NativePhpLayout)
-            ->title($article->title)
-            ->description($article->excerpt ?? '')
-            ->backgroundColor('#ffffff')
-            ->titleColor('#141624')
-            ->descriptionColor('#141624')
-            ->border(BorderPosition::All, new Color(80, 91, 147), 5)
-            ->watermark(public_path('logo.svg'))
-            ->url(url('/blog/'.$article->slug))
-            ->save($this->getImagePath($article));
-
-        return $this->getImageUrl($article);
+    /**
+     * Generate an OG image for the given plugin.
+     */
+    public function generateForPlugin(Plugin $plugin): string
+    {
+        return $this->render(
+            "og-images/plugins/{$plugin->id}.png",
+            $plugin->display_name ?? $plugin->name,
+            $plugin->description ?? '',
+            route('plugins.show', $plugin->routeParams()),
+            new PluginOgLayout(
+                version: $plugin->latest_version,
+                mobileVersion: $plugin->mobile_min_version,
+                iosVersion: $plugin->ios_version,
+                androidVersion: $plugin->android_version,
+            ),
+        );
     }
 
     /**
@@ -43,28 +49,55 @@ class OgImageService
      */
     public function delete(Article $article): bool
     {
-        if ($article->og_image) {
-            $path = str_replace('/storage/', '', parse_url($article->og_image, PHP_URL_PATH));
+        return $this->deleteByUrl($article->og_image);
+    }
 
-            return Storage::disk('public')->delete($path);
+    /**
+     * Delete the OG image for the given plugin.
+     */
+    public function deleteForPlugin(Plugin $plugin): bool
+    {
+        return $this->deleteByUrl($plugin->og_image);
+    }
+
+    /**
+     * Render an OG image to the public disk and return its public URL.
+     */
+    protected function render(string $path, string $title, string $description, string $url, ?Layout $layout = null): string
+    {
+        $fullPath = Storage::disk('public')->path($path);
+
+        $directory = dirname($fullPath);
+        if (! is_dir($directory)) {
+            mkdir($directory, 0755, true);
         }
 
-        return false;
+        (new Image)
+            ->layout($layout ?? new NativePhpLayout)
+            ->title($title)
+            ->description($description)
+            ->backgroundColor('#ffffff')
+            ->titleColor('#141624')
+            ->descriptionColor('#141624')
+            ->border(BorderPosition::All, new Color(80, 91, 147), 5)
+            ->watermark(public_path('logo.svg'))
+            ->url($url)
+            ->save($fullPath);
+
+        return Storage::disk('public')->url($path);
     }
 
     /**
-     * Get the file path for storing the OG image.
+     * Delete a previously generated OG image given its public URL.
      */
-    protected function getImagePath(Article $article): string
+    protected function deleteByUrl(?string $ogImageUrl): bool
     {
-        return Storage::disk('public')->path("og-images/{$article->slug}.png");
-    }
+        if (! $ogImageUrl) {
+            return false;
+        }
 
-    /**
-     * Get the public URL for the OG image.
-     */
-    protected function getImageUrl(Article $article): string
-    {
-        return Storage::disk('public')->url("og-images/{$article->slug}.png");
+        $path = str_replace('/storage/', '', parse_url($ogImageUrl, PHP_URL_PATH));
+
+        return Storage::disk('public')->delete($path);
     }
 }
