@@ -1,16 +1,24 @@
 ---
 title: Web View
-order: 60
+order: 265
 ---
 
-Every mobile app built with NativePHP centers around a single native web view. The web view allows you to use whichever
-web technologies you are most comfortable with to build your app's user interface (UI).
+With EDGE, native UI is the primary way to build your app — the web view is just one more component you can reach for,
+not the foundation everything sits on. You're free to compose entire screens from native EDGE components and never
+render a web view at all.
 
-You're not limited to any one tool or framework — you can use Livewire, Vue, React, Svelte, HTMX... even jQuery!
-Whatever you're most comfortable with for building a web UI, you can use to build a mobile app with NativePHP.
+That said, the web view is a first-class component, and you can lean on it as much (or as little) as you like. The web
+view lets you use whichever web technologies you are most comfortable with — Livewire, Vue, React, Svelte, HTMX... even
+jQuery! — to build part or all of your UI.
 
-The web view is rendered to fill the entire view of your application and is intended to remain visible to your users at
-all times — except when another full-screen action takes place, such as accessing the camera or an in-app browser.
+A common pattern is to embed a web view for your content-heavy or existing web UI, then sprinkle native EDGE components
+around it — a native [Top Bar](top-bar), [Bottom Navigation](bottom-nav) or [Bottom Sheet](bottom-sheet) — to give the
+app a truly native feel where it matters most. If you prefer, you can still let a full-screen web view drive the whole
+app and call native functions and dispatch native UI from within it.
+
+When you do use a full-screen web view, it's rendered to fill the view of your application and remains visible to your
+users until another full-screen action takes place, such as accessing the camera or an in-app browser. The rest of this
+page covers how to make that surface behave well on device.
 
 ## The Viewport
 

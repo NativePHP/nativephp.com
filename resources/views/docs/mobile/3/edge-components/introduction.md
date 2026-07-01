@@ -18,18 +18,66 @@ step that happens at runtime. You end up with pure, fast and flexible native com
 
 ## Available Components
 
-Our first set of components are focused on navigation, framing your application with beautiful, platform-dependent UI
-components. These familiar navigational elements will help your users feel immediately at home in your app and elevate
-your app to feeling built for their chosen platform, just like a true native app.
+EDGE provides a full suite of native UI components for building your app, from layout containers and typography to
+interactive forms and navigation chrome.
 
-And all that without compromising your ability to build using tools and techniques you're already the most comfortable
-with.
+### Layout
 
-For now, we have 3 main native components that you can configure:
+- **[Layout & Styling](layout)** - Shared sizing, spacing, flex, style, and event attributes available on all elements
+- **[Screen](screen)** - Themed page-level container
+- **[Column](column)** - Vertical flex container
+- **[Row](row)** - Horizontal flex container
+- **[Scroll View](scroll-view)** - Scrollable container with virtualization
+- **[Stack](stack)** - Overlay container (ZStack) for layering elements
+- **[Spacer](spacer)** - Flexible space element
+- **[Pressable](pressable)** - Touch-sensitive container wrapper
+- **[Card](card)** - Content surface with filled / outlined / elevated variants
+- **[Web View](web-view)** - Embed web content as a native element and surround it with native UI
+
+### Content
+
+- **[Text](text)** - Text display with font sizing, weight, color, and alignment
+- **[Image](image)** - Image display with fit modes and tinting
+- **[Icon](icon)** - Platform-native icons (SF Symbols on iOS, Material Icons on Android)
+- **[Divider](divider)** - Horizontal line separator
+- **[Activity Indicator](activity-indicator)** - Loading spinner
+- **[Progress Bar](progress-bar)** - Linear progress indicator
+- **[Badge](badge)** - Count or label pill marker
+
+### Forms
+
+- **[Button](button)** - Tappable button with variants, sizes, and disabled / loading state
+- **[Button Group](button-group)** - Segmented single-choice selector
+- **[Text Input](text-input)** - Outlined and filled text input variants
+- **[Toggle](toggle)** - On/off switch control
+- **[Checkbox](checkbox)** - Tick/untick control with optional inline label
+- **[Radio Group](radio-group)** - Single-choice radio selector
+- **[Select](select)** - Dropdown picker
+- **[Slider](slider)** - Continuous (or stepped) value selector
+- **[Chip](chip)** - Compact selectable tag
+
+### Navigation
 
 - **[Bottom Navigation](bottom-nav)** - The always-accessible bottom navigation bar
 - **[Top Bar](top-bar)** - A title bar with action buttons
 - **[Side Navigation](side-nav)** - A slide-out navigation drawer
+- **[Tab Row](tab-row)** - Horizontal tab strip for in-screen sectioning
+
+### Lists & data
+
+- **[List](list)** - Virtualized list with pull-to-refresh, end-reached, and swipe actions
+- **[List Item](list)** - Material3 row with leading + trailing slot system
+- **[Carousel](carousel)** - Horizontal paging carousel
+
+### Overlays
+
+- **[Bottom Sheet](bottom-sheet)** - Modal bottom sheet for contextual actions and forms
+- **[Modal](modal)** - Full-screen modal overlay
+
+### Drawing
+
+- **[Canvas](canvas)** - Drawing surface for shape primitives
+- **[Shapes](shapes)** - Rect, circle, and line elements
 
 ## How It Works
 
