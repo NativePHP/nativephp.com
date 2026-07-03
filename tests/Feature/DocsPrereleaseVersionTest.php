@@ -4,11 +4,26 @@ namespace Tests\Feature;
 
 use App\Services\DocsVersionService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Http;
 use Tests\TestCase;
 
 class DocsPrereleaseVersionTest extends TestCase
 {
     use RefreshDatabase;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        // These tests render full docs pages that contain fenced code blocks.
+        // Torchlight throws outside production when no token is configured (as
+        // in CI), so give it a token and fake the API to force its offline
+        // fallback — the pages render deterministically without a real token.
+        config(['torchlight.token' => 'test-token']);
+        Http::fake([
+            '*' => Http::response(['blocks' => []], 200),
+        ]);
+    }
 
     public function test_prerelease_pages_show_the_beta_notice(): void
     {
