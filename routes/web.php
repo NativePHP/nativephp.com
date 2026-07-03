@@ -153,6 +153,10 @@ Route::post('course/checkout', function (Request $request) {
         'metadata' => $metadata,
         'allow_promotion_codes' => true,
         'billing_address_collection' => 'required',
+        'customer_update' => [
+            'name' => 'auto',
+            'address' => 'auto',
+        ],
         'tax_id_collection' => ['enabled' => true],
         'invoice_creation' => [
             'enabled' => true,

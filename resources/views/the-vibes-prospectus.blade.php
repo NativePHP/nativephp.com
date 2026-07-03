@@ -247,7 +247,7 @@
 
                 <p class="text-xs font-bold uppercase tracking-wide text-violet-500 dark:text-violet-400">Email</p>
                 <p class="mb-4">
-                    <a href="mailto:sponsors@nativephp.com" class="text-gray-700 hover:text-violet-500 dark:text-gray-300 dark:hover:text-violet-400">sponsors@nativephp.com</a>
+                    <a href="mailto:support@nativephp.com" class="text-gray-700 hover:text-violet-500 dark:text-gray-300 dark:hover:text-violet-400">support@nativephp.com</a>
                 </p>
 
                 <p class="text-xs font-bold uppercase tracking-wide text-violet-500 dark:text-violet-400">Event Page</p>
