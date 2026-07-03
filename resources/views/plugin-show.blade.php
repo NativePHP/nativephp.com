@@ -114,77 +114,108 @@
                     @endif
 
                     @if ($plugin->isPaid())
-                        <aside class="mb-6 rounded-2xl border border-indigo-200 bg-indigo-50 p-5 dark:border-indigo-800 dark:bg-indigo-950/30">
-                            <h3 class="text-sm font-semibold text-indigo-900 dark:text-indigo-200">Installing this plugin</h3>
-                            <p class="mt-1 text-sm text-indigo-800 dark:text-indigo-300">
-                                Premium plugins require Composer to be configured with the NativePHP plugin repository and your credentials.
-                            </p>
-                            <div class="mt-3 space-y-2">
-                                <div class="flex items-center gap-2 rounded-lg bg-zinc-900 dark:bg-zinc-800">
-                                    <div class="min-w-0 flex-1 overflow-x-auto p-3">
-                                        <code class="block whitespace-pre font-mono text-xs text-zinc-100">composer config repositories.nativephp-plugins composer https://plugins.nativephp.com</code>
-                                    </div>
+                        <aside
+                            x-data="{ open: false }"
+                            class="mb-6 rounded-2xl border border-indigo-200 bg-indigo-50 p-5 dark:border-indigo-800 dark:bg-indigo-950/30"
+                        >
+                            <h3 class="text-sm font-semibold text-indigo-900 dark:text-indigo-200">
+                                <button
+                                    type="button"
+                                    x-on:click="open = !open"
+                                    :aria-expanded="open"
+                                    class="flex w-full items-center justify-between gap-2 text-left"
+                                >
+                                    Installation Instructions
+                                    <svg
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        fill="none"
+                                        viewBox="0 0 24 24"
+                                        stroke-width="2"
+                                        stroke="currentColor"
+                                        class="size-4 shrink-0 text-indigo-500 transition-transform duration-200 dark:text-indigo-400"
+                                        :class="{ 'rotate-180': open }"
+                                        aria-hidden="true"
+                                    >
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
+                                    </svg>
+                                </button>
+                            </h3>
+
+                            <div x-show="open" x-collapse x-cloak>
+                                <p class="mt-3 text-sm text-indigo-800 dark:text-indigo-300">
+                                    Premium plugins are served from the NativePHP plugins repository. Configure Composer with your credentials, then install and register the plugin.
+                                </p>
+
+                                <div
+                                    x-data="{ open: false }"
+                                    class="mt-4"
+                                >
                                     <button
                                         type="button"
-                                        x-data="{ copied: false }"
-                                        x-on:click="navigator.clipboard.writeText('composer config repositories.nativephp-plugins composer https://plugins.nativephp.com').then(() => { copied = true; setTimeout(() => copied = false, 2000) })"
-                                        class="shrink-0 self-stretch px-3 text-zinc-400 hover:text-zinc-200"
-                                        title="Copy command"
+                                        x-on:click="open = !open"
+                                        :aria-expanded="open"
+                                        class="flex w-full items-center justify-between gap-2 text-left"
                                     >
-                                        <x-heroicon-o-clipboard x-show="!copied" class="size-4" />
-                                        <x-heroicon-o-check-circle x-show="copied" x-cloak class="size-4 text-green-400" />
+                                        <span class="text-xs font-semibold text-indigo-900 dark:text-indigo-200">Configure Composer</span>
+                                        <svg
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            fill="none"
+                                            viewBox="0 0 24 24"
+                                            stroke-width="2"
+                                            stroke="currentColor"
+                                            class="size-4 shrink-0 text-indigo-500 transition-transform duration-200 dark:text-indigo-400"
+                                            :class="{ 'rotate-180': open }"
+                                            aria-hidden="true"
+                                        >
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
+                                        </svg>
                                     </button>
+
+                                    <div x-show="open" x-collapse x-cloak class="mt-3 space-y-2">
+                                        <p class="text-xs text-indigo-800 dark:text-indigo-300">
+                                            A one-time Composer setup so you can install premium plugins.
+                                        </p>
+                                        @auth
+                                            @php
+                                                $pluginCredentialUser = auth()->user();
+                                                $pluginCredentialEmail = $pluginCredentialUser->email;
+                                                $pluginCredentialKey = $pluginCredentialUser->getPluginLicenseKey();
+                                                [$pluginCredentialEmailLocal, $pluginCredentialEmailDomain] = array_pad(explode('@', $pluginCredentialEmail, 2), 2, '');
+                                                $maskedPluginCredentialEmail = mb_substr($pluginCredentialEmailLocal, 0, 1).str_repeat('•', 6).($pluginCredentialEmailDomain !== '' ? '@'.$pluginCredentialEmailDomain : '');
+                                                $maskedPluginCredentialKey = str_repeat('•', 16);
+                                                $pluginRepositoryCommand = 'composer config repositories.nativephp-plugins composer https://plugins.nativephp.com';
+                                                $pluginConfigCommand = $pluginRepositoryCommand."\n".'composer config http-basic.plugins.nativephp.com '.$pluginCredentialEmail.' '.$pluginCredentialKey;
+                                                $pluginConfigDisplay = e($pluginRepositoryCommand)."\n".'composer config http-basic.plugins.nativephp.com '.e($maskedPluginCredentialEmail).' '.e($maskedPluginCredentialKey);
+                                            @endphp
+                                            <x-plugin-command :command="$pluginConfigCommand">{!! $pluginConfigDisplay !!}</x-plugin-command>
+                                        @else
+                                            @php
+                                                $pluginRepositoryCommand = 'composer config repositories.nativephp-plugins composer https://plugins.nativephp.com';
+                                                $pluginConfigCommand = $pluginRepositoryCommand."\n".'composer config http-basic.plugins.nativephp.com your-email@example.com your-license-key';
+                                                $pluginConfigDisplay = e($pluginRepositoryCommand)."\n".'composer config http-basic.plugins.nativephp.com <span class="text-zinc-400">your-email@example.com</span> <span class="text-zinc-400">your-license-key</span>';
+                                            @endphp
+                                            <x-plugin-command :command="$pluginConfigCommand">{!! $pluginConfigDisplay !!}</x-plugin-command>
+                                        @endauth
+                                        <p class="text-xs text-indigo-700 dark:text-indigo-400">
+                                            @auth
+                                                Manage your credentials on your <a href="{{ route('customer.purchased-plugins.index') }}" class="font-medium underline hover:no-underline">Purchased Plugins</a> dashboard.
+                                            @else
+                                                <a href="{{ route('customer.login') }}" class="font-medium underline hover:no-underline">Log in</a> to see your credentials, or find them on your <a href="{{ route('customer.purchased-plugins.index') }}" class="font-medium underline hover:no-underline">Purchased Plugins</a> dashboard.
+                                            @endauth
+                                        </p>
+                                    </div>
                                 </div>
-                                @auth
-                                    @php
-                                        $pluginCredentialUser = auth()->user();
-                                        $pluginCredentialEmail = $pluginCredentialUser->email;
-                                        $pluginCredentialKey = $pluginCredentialUser->getPluginLicenseKey();
-                                        [$pluginCredentialEmailLocal, $pluginCredentialEmailDomain] = array_pad(explode('@', $pluginCredentialEmail, 2), 2, '');
-                                        $maskedPluginCredentialEmail = mb_substr($pluginCredentialEmailLocal, 0, 1).str_repeat('•', 6).($pluginCredentialEmailDomain !== '' ? '@'.$pluginCredentialEmailDomain : '');
-                                        $maskedPluginCredentialKey = str_repeat('•', 16);
-                                    @endphp
-                                    <div class="flex items-center gap-2 rounded-lg bg-zinc-900 dark:bg-zinc-800">
-                                        <div class="min-w-0 flex-1 overflow-x-auto p-3">
-                                            <code class="block whitespace-pre font-mono text-xs text-zinc-100">composer config http-basic.plugins.nativephp.com {{ $maskedPluginCredentialEmail }} {{ $maskedPluginCredentialKey }}</code>
-                                        </div>
-                                        <button
-                                            type="button"
-                                            x-data="{ copied: false }"
-                                            x-on:click="navigator.clipboard.writeText('composer config http-basic.plugins.nativephp.com {{ $pluginCredentialEmail }} {{ $pluginCredentialKey }}').then(() => { copied = true; setTimeout(() => copied = false, 2000) })"
-                                            class="shrink-0 self-stretch px-3 text-zinc-400 hover:text-zinc-200"
-                                            title="Copy command"
-                                        >
-                                            <x-heroicon-o-clipboard x-show="!copied" class="size-4" />
-                                            <x-heroicon-o-check-circle x-show="copied" x-cloak class="size-4 text-green-400" />
-                                        </button>
-                                    </div>
-                                @else
-                                    <div class="flex items-center gap-2 rounded-lg bg-zinc-900 dark:bg-zinc-800">
-                                        <div class="min-w-0 flex-1 overflow-x-auto p-3">
-                                            <code class="block whitespace-pre font-mono text-xs text-zinc-100">composer config http-basic.plugins.nativephp.com <span class="text-zinc-400">your-email@example.com</span> <span class="text-zinc-400">your-license-key</span></code>
-                                        </div>
-                                        <button
-                                            type="button"
-                                            x-data="{ copied: false }"
-                                            x-on:click="navigator.clipboard.writeText('composer config http-basic.plugins.nativephp.com your-email@example.com your-license-key').then(() => { copied = true; setTimeout(() => copied = false, 2000) })"
-                                            class="shrink-0 self-stretch px-3 text-zinc-400 hover:text-zinc-200"
-                                            title="Copy command"
-                                        >
-                                            <x-heroicon-o-clipboard x-show="!copied" class="size-4" />
-                                            <x-heroicon-o-check-circle x-show="copied" x-cloak class="size-4 text-green-400" />
-                                        </button>
-                                    </div>
-                                @endauth
+
+                                @php
+                                    $pluginInstallCommands = "php artisan vendor:publish --tag=nativephp-plugins-provider\ncomposer require {$plugin->name}\nphp artisan native:plugin:register {$plugin->name}";
+                                @endphp
+                                <div class="mt-4 space-y-1.5 border-t border-indigo-200 pt-4 dark:border-indigo-800">
+                                    <x-plugin-command :command="$pluginInstallCommands" />
+                                    <p class="text-xs text-indigo-700 dark:text-indigo-400">
+                                        Full walkthrough in the <a href="{{ url('docs/mobile/3/plugins/using-plugins') }}" class="font-medium underline hover:no-underline">Using Plugins guide &rarr;</a>
+                                    </p>
+                                </div>
                             </div>
-                            <p class="mt-3 text-xs text-indigo-700 dark:text-indigo-400">
-                                @auth
-                                    Manage your credentials on your <a href="{{ route('customer.purchased-plugins.index') }}" class="font-medium underline hover:no-underline">Purchased Plugins</a> dashboard.
-                                @else
-                                    <a href="{{ route('customer.login') }}" class="font-medium underline hover:no-underline">Log in</a> to see your credentials, or find them on your <a href="{{ route('customer.purchased-plugins.index') }}" class="font-medium underline hover:no-underline">Purchased Plugins</a> dashboard.
-                                @endauth
-                                <a href="{{ url('docs/mobile/3/plugins/using-plugins') }}" class="font-medium underline hover:no-underline">Learn more &rarr;</a>
-                            </p>
                         </aside>
                     @endif
 

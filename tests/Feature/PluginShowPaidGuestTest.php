@@ -31,7 +31,7 @@ class PluginShowPaidGuestTest extends TestCase
 
         $this->get(route('plugins.show', $plugin->routeParams()))
             ->assertStatus(200)
-            ->assertSee('Installing this plugin')
+            ->assertSee('Installation Instructions')
             ->assertSee('Log in');
     }
 }
