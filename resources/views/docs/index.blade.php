@@ -19,7 +19,8 @@
             <livewire:version-switcher :versions="[
                 1 => '1.x',
                 2 => '2.x',
-                3 => '3.x'
+                3 => '3.x',
+                4 => '4.x'
             ]" />
         @endif
 
@@ -32,6 +33,12 @@
     </x-slot>
 
     <x-docs.old-version-notice
+        :platform="$platform"
+        :version="$version"
+        :page="request()->route('page')"
+    />
+
+    <x-docs.beta-version-notice
         :platform="$platform"
         :version="$version"
         :page="request()->route('page')"
@@ -56,7 +63,8 @@
             <livewire:version-switcher :versions="[
                 1 => '1.x',
                 2 => '2.x',
-                3 => '3.x'
+                3 => '3.x',
+                4 => '4.x'
             ]" />
         @endif
 
@@ -67,7 +75,7 @@
 
     @if (count($tableOfContents) > 0)
         <div class="sticky top-20 z-10 mt-8 mb-4 flex justify-end">
-            <div class="rounded-full bg-white shadow-sm dark:bg-zinc-800">
+            <div class="mr-2 rounded-full bg-white shadow-sm dark:bg-zinc-800">
                 <flux:dropdown position="bottom" align="end">
                     <flux:button variant="filled" size="sm" class="!rounded-full">
                         <x-icons.stacked-lines class="size-4" />
@@ -75,14 +83,14 @@
                     </flux:button>
 
                     <flux:popover class="w-64">
-                        <nav class="flex max-h-80 flex-col gap-0.5 overflow-y-auto">
+                        <nav class="flex max-h-96 flex-col gap-0.5 overflow-y-auto">
                             @foreach ($tableOfContents as $item)
                                 <a
                                     href="#{{ $item['anchor'] }}"
                                     x-on:click.prevent="document.getElementById('{{ $item['anchor'] }}')?.scrollIntoView({ behavior: 'smooth', block: 'start' })"
                                     @class([
-                                        'rounded-md px-2 py-1.5 text-xs transition hover:bg-zinc-100 dark:text-white/80 dark:hover:bg-zinc-700',
-                                        'pl-2' => $item['level'] == 2,
+                                        'rounded-md px-2 py-1.5 text-sm transition hover:bg-zinc-100 dark:text-white/80 dark:hover:bg-zinc-700',
+                                        'pl-2 font-semibold' => $item['level'] == 2,
                                         'pl-5' => $item['level'] == 3,
                                     ])
                                 >

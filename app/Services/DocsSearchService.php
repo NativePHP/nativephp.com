@@ -144,8 +144,8 @@ class DocsSearchService
         $versions = $this->getVersions();
 
         return [
-            'desktop' => collect($versions['desktop'] ?? [])->sort()->last() ?? '2',
-            'mobile' => collect($versions['mobile'] ?? [])->sort()->last() ?? '3',
+            'desktop' => (string) (config('docs.latest_versions.desktop') ?? collect($versions['desktop'] ?? [])->sort()->last() ?? '2'),
+            'mobile' => (string) (config('docs.latest_versions.mobile') ?? collect($versions['mobile'] ?? [])->sort()->last() ?? '3'),
         ];
     }
 
