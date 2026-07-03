@@ -10,7 +10,6 @@ use Illuminate\Contracts\View\Factory as ViewFactory;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
-use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Str;
 use Illuminate\View\View;
@@ -117,18 +116,9 @@ class ShowDocumentationController extends Controller
         $pageProperties['tableOfContents'] = $this->extractTableOfContents($pageProperties['content']);
 
         $navigation = $this->getNavigation($platform, $version);
-
-        $superNativeBadge = Blade::render(
-            '<x-icons.super-native class="ml-1 inline-block size-3.5 shrink-0 align-[-0.2em] text-yellow-500" aria-label="Super Native (beta)" />'
-        );
-
-        $label = fn (array $node): string => ($node['super_native'] ?? false)
-            ? $node['title'].$superNativeBadge
-            : $node['title'];
-
-        $pageProperties['navigation'] = Menu::build($navigation, function (Menu $menu, $nav) use ($label): void {
+        $pageProperties['navigation'] = Menu::build($navigation, function (Menu $menu, $nav): void {
             if (array_key_exists('path', $nav)) {
-                $menu->link($nav['path'], $label($nav));
+                $menu->link($nav['path'], $nav['title']);
             } elseif (array_key_exists('children', $nav)) {
                 $menu->setItemParentAttribute('x-data', '{ open: $el.classList.contains(\'active\') }');
 
@@ -178,14 +168,14 @@ class ShowDocumentationController extends Controller
                             ]);
 
                         foreach ($child['children'] as $subChild) {
-                            $subSubmenu->link($subChild['path'], $label($subChild));
+                            $subSubmenu->link($subChild['path'], $subChild['title']);
                         }
 
                         $subSubmenu->append('</div>');
 
                         $submenu->submenu($subHeader, $subSubmenu);
                     } else {
-                        $submenu->link($child['path'], $label($child));
+                        $submenu->link($child['path'], $child['title']);
                     }
                 }
 
@@ -259,7 +249,6 @@ class ShowDocumentationController extends Controller
                 'path' => $path,
                 'title' => $parsedSection->matter('title', ''),
                 'order' => $parsedSection->matter('order', 0),
-                'super_native' => (bool) $parsedSection->matter('super_native', false),
             ]);
         }
 
@@ -299,7 +288,6 @@ class ShowDocumentationController extends Controller
                     'path' => $path,
                     'title' => $title,
                     'order' => $parsedSection->matter('order', 0),
-                    'super_native' => (bool) $parsedSection->matter('super_native', false),
                 ]);
             }
 
@@ -347,7 +335,6 @@ class ShowDocumentationController extends Controller
                         'path' => $path,
                         'title' => $title,
                         'order' => $parsedPage->matter('order', 0),
-                        'super_native' => (bool) $parsedPage->matter('super_native', false),
                     ]);
                 }
 

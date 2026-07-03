@@ -34,6 +34,17 @@ class VersionSwitcher extends Component
         $this->platform = request()->route()->parameter('platform');
         $this->version = request()->route()->parameter('version');
         $this->page = request()->route()->parameter('page');
+
+        $prereleaseVersions = config("docs.prerelease_versions.{$this->platform}", []);
+
+        foreach ($versions as $number => $label) {
+            if (in_array($number, $prereleaseVersions)) {
+                $versions[$number] = "{$label} (beta)";
+            }
+        }
+
+        krsort($versions);
+
         $this->versions = $versions;
     }
 

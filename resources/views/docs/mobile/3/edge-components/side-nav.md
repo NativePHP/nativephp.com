@@ -63,8 +63,7 @@ A slide-out navigation drawer with support for groups, headers, and dividers.
 ## Props
 
 - `gestures-enabled` - Swipe to open (default: `false`) [Android]
-- `label-visibility` - `labeled` (default), `selected`, or `unlabeled` (optional)
-- `dark` - Force dark mode (optional, boolean)
+- `dark` - Force dark mode (optional)
 
 <aside>
 

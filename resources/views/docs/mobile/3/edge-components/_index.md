@@ -1,4 +1,4 @@
 ---
 title: EDGE Components
-order: 50
+order: 30
 ---

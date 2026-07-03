@@ -58,32 +58,29 @@ If you want more hands-on support, we happily work with our [Partners](/partners
 
 ## Releasing
 
-To prepare your app for release, bump the version number using the
-[`native:release` command](/docs/mobile/3/getting-started/commands#nativerelease):
+To prepare your app for release, you should set the version number to a new version number that you have not used
+before and increment the build number:
 
-```shell
-php artisan native:release patch
+```dotenv
+NATIVEPHP_APP_VERSION=1.2.3
+NATIVEPHP_APP_VERSION_CODE=48
 ```
-
-You can pass `patch`, `minor`, or `major` depending on the type of release you're cutting. This updates
-`NATIVEPHP_APP_VERSION` in your `.env` and increments the build number for you.
 
 ### Versioning
 
-App version numbers should follow [semantic versioning](https://semver.org) (e.g. `1.2.3`). The `native:release` command
-relies on this format to determine how to bump your version.
+You have complete freedom in how you version your applications. You may use semantic versioning, codenames,
+date-based versions, or any scheme that works for your project, team or business.
 
 Remember that your app versions are usually public-facing (e.g. in store listings and on-device settings and update
 screens) and can be useful for customers to reference if they need to contact you for help and support.
 
-The app version is managed via the `NATIVEPHP_APP_VERSION` key in your `.env`.
+The build number is managed via the `NATIVEPHP_APP_VERSION` key in your `.env`.
 
 ### Build numbers
 
 Both the Google Play Store and Apple App Store require your app's build number to increase for each release you submit.
 
-The build number is managed via the `NATIVEPHP_APP_VERSION_CODE` key in your `.env`. You don't need to manage this
-yourself — running `native:release` automatically increments the build number and persists it back to your `.env`.
+The build number is managed via the `NATIVEPHP_APP_VERSION_CODE` key in your `.env`.
 
 ### Run a `release` build
 

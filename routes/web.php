@@ -72,15 +72,15 @@ Route::redirect('ios', 'blog/nativephp-for-mobile-is-now-free');
 Route::redirect('t-shirt', 'blog/nativephp-for-mobile-is-now-free');
 Route::redirect('tshirt', 'blog/nativephp-for-mobile-is-now-free');
 
-// Redirect mobile v3 core plugin docs to plugin directory pages
-Route::get('docs/mobile/3/plugins/core/{page}', function (string $page) {
+// Redirect mobile core plugin docs to plugin directory pages
+Route::get('docs/mobile/{version}/plugins/core/{page}', function (string $version, string $page) {
     return redirect("/plugins/nativephp/mobile-{$page}", 301);
-})->where('page', '[a-z-]+');
+})->where('version', '[0-9]+')->where('page', '[a-z-]+');
 
-// Redirect old mobile v3 API docs to plugin directory pages
-Route::get('docs/mobile/3/apis/{page}', function (string $page) {
+// Redirect old mobile API docs to plugin directory pages
+Route::get('docs/mobile/{version}/apis/{page}', function (string $version, string $page) {
     return redirect("/plugins/nativephp/mobile-{$page}", 301);
-})->where('page', '[a-z-]+');
+})->where('version', '[0-9]+')->where('page', '[a-z-]+');
 
 // Webhook routes (must be outside web middleware for CSRF bypass)
 Route::post('opencollective/contribution', [OpenCollectiveWebhookController::class, 'handle'])->name('opencollective.webhook');
@@ -206,23 +206,23 @@ Route::get('docs/{platform}/{version}/{page?}', ShowDocumentationController::cla
     ->where('version', '[0-9]+')
     ->name('docs.show');
 
-// Forward platform requests without version to the latest version
+// Forward platform requests without version to the latest stable version
 Route::get('docs/{platform}/{page?}', function (string $platform, $page = null) {
     $page ??= 'getting-started/introduction';
 
-    // Find the latest version for this platform
     $docsPath = resource_path('views/docs/'.$platform);
 
     if (! is_dir($docsPath)) {
         abort(404);
     }
 
-    $versions = collect(scandir($docsPath))
-        ->filter(fn ($dir) => is_numeric($dir))
-        ->sort()
-        ->values();
-
-    $latestVersion = $versions->last() ?? '1';
+    $latestVersion = config("docs.latest_versions.{$platform}")
+        ?? collect(scandir($docsPath))
+            ->filter(fn ($dir) => is_numeric($dir))
+            ->reject(fn ($dir) => in_array((int) $dir, config("docs.prerelease_versions.{$platform}", [])))
+            ->sort()
+            ->last()
+        ?? '1';
 
     return redirect("/docs/{$platform}/{$latestVersion}/{$page}", 301);
 })

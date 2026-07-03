@@ -69,17 +69,16 @@ Start the NativePHP development server for testing mobile apps without building.
 php artisan native:jump
 ```
 
-| Option | Description |
-|--------|-------------|
-| `--host=0.0.0.0` | Host address to serve on |
-| `--ip=` <span class="ml-1 inline-flex items-center rounded bg-indigo-100 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-indigo-700 dark:bg-indigo-900/40 dark:text-indigo-300">v3.3+</span> | IP address to display in the QR code (overrides auto-detection) |
-| `--http-port=` | HTTP port to serve on (defaults to `nativephp.server.http_port`, typically `3000`) |
-| `--ws-port=` <span class="ml-1 inline-flex items-center rounded bg-indigo-100 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-indigo-700 dark:bg-indigo-900/40 dark:text-indigo-300">v3.3+</span> | WebSocket bridge port (defaults to `3001`) |
-| `--bridge-port=` <span class="ml-1 inline-flex items-center rounded bg-indigo-100 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-indigo-700 dark:bg-indigo-900/40 dark:text-indigo-300">v3.3+</span> | Internal TCP bridge port (defaults to `3002`) |
-| `--vite-proxy-port=` <span class="ml-1 inline-flex items-center rounded bg-indigo-100 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-indigo-700 dark:bg-indigo-900/40 dark:text-indigo-300">v3.3+</span> | Port Jump uses to proxy Vite HMR to the phone (defaults to `3003`) |
-| `--no-serve` <span class="ml-1 inline-flex items-center rounded bg-indigo-100 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-indigo-700 dark:bg-indigo-900/40 dark:text-indigo-300">v3.3+</span> | Do not start `artisan serve` automatically (use if running your own server) |
-| `--laravel-port=` | Laravel dev server port (defaults to `8000`; auto-detected when `artisan serve` is managed) |
-| `--no-mdns` | Disable mDNS service advertisement |
+| Option                | Description |
+|-----------------------|-------------|
+| `--platform=`         | Target platform: `android` or `ios` |
+| `ios/i`               | Shorthand for `--platform=ios` |
+| `android/a`           | Shorthand for `--platform=android` |
+| `--host=0.0.0.0`      | Host address to serve on |
+| `--http-port=`        | HTTP port to serve on |
+| `--laravel-port=8000` | Laravel dev server port to proxy to |
+| `--no-mdns`           | Disable mDNS service advertisement |
+| `--skip-build`        | Skip building if `app.zip` exists |
 
 ### native:open
 

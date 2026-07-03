@@ -34,37 +34,27 @@ So it's not something you want to be changing very often.
 
 ## `NATIVEPHP_APP_VERSION`
 
-The `NATIVEPHP_APP_VERSION` environment variable sets your app's **public version string** - what shows up in App Store
-and Play Store listings, and on-device under "Settings → Apps" (or equivalent). It maps to `CFBundleShortVersionString`
-on iOS and `versionName` on Android.
+The `NATIVEPHP_APP_VERSION` environment variable controls your app's versioning behavior.
 
-Its companion, `NATIVEPHP_APP_VERSION_CODE`, sets the **internal build number** the stores use to distinguish uploads
-(`CFBundleVersion` on iOS, `versionCode` on Android). Users don't normally see this one, but the stores require it to
-increase with every upload.
+When your app is compiling, NativePHP first copies the relevant Laravel files into a temporary directory, zips them up,
+and embeds the archive into the native application.
 
-`NATIVEPHP_APP_VERSION` defaults to `DEBUG`, which is what you want during development - every boot picks up your
-latest code without needing to bump a version number by hand.
+When your app boots, it checks the embedded version against the previously installed version to see if it needs to
+extract the bundled Laravel application.
 
-You only need to change this when you're cutting a release build for distribution. Rather than editing your `.env`
-manually, use the
-[`native:release` command](/docs/mobile/3/getting-started/commands#nativerelease), which bumps the version (and build
-number) for you.
+If the versions match, the app uses the existing files without re-extracting the archive.
 
-<aside>
+To force your application to always install the latest version of your code - especially useful during development -
+set this to `DEBUG`:
 
-#### How NativePHP uses these values internally
+```dotenv
+NATIVEPHP_APP_VERSION=DEBUG
+```
 
-When your app is compiling, NativePHP copies the relevant Laravel files into a temporary directory, zips them up, and
-embeds the archive into the native application.
+Note that this will make your application's boot up slightly slower as it must unpack the zip every time it loads.
 
-On boot, the app compares the embedded `NATIVEPHP_APP_VERSION` and `NATIVEPHP_APP_VERSION_CODE` against the values from
-the previously installed version. If they match, it skips extracting the archive and reuses the already-unpacked files.
-
-This means the first boot after an install or update unpacks the bundled Laravel app, and every subsequent boot is
-significantly faster. It's also why `DEBUG` makes development boots a bit slower - the archive is always extracted so
-you see your latest changes.
-
-</aside>
+But this ensures that you can iterate quickly during development, while providing a faster, more stable experience for
+end users once an app is published.
 
 ## Persistent Runtime
 
@@ -302,35 +292,6 @@ Set your Apple Developer Team ID for code signing:
 
 This is typically detected from your installed certificates, but you can override it here. Find your Team ID
 in your Apple Developer account under Membership details.
-
-## iOS Permission Strings
-
-Plugins declare their own iOS `Info.plist` usage descriptions through their manifests (see
-[Permissions & Dependencies](../plugins/permissions-dependencies)). When you install multiple plugins that
-claim the same key — for example, `mobile-camera` and `mobile-scanner` both setting
-`NSCameraUsageDescription` — the merged result is whichever plugin loaded last, which isn't always what you
-want to show App Store reviewers.
-
-The top-level `permissions` array in `config/nativephp.php` lets you override those merged values. Anything
-you set here is applied **after** all plugin manifests are merged, so it always wins:
-
-```php
-'permissions' => [
-    'NSCameraUsageDescription' => 'Used to take a profile photo.',
-    'NSMicrophoneUsageDescription' => 'Used to record audio with your videos.',
-    'NSPhotoLibraryUsageDescription' => 'Used to select photos for your post.',
-],
-```
-
-Use this when you want a single, explicit usage string for App Store review, or when you need to tailor a
-plugin-provided description to match how your app actually uses the permission.
-
-<aside>
-
-This block is iOS-only. Android doesn't declare permission rationale in its manifest — rationale strings
-are shown at runtime by app code, so there's no equivalent override.
-
-</aside>
 
 ## App Store Connect
 

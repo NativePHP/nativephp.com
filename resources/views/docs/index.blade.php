@@ -19,7 +19,8 @@
             <livewire:version-switcher :versions="[
                 1 => '1.x',
                 2 => '2.x',
-                3 => '3.x'
+                3 => '3.x',
+                4 => '4.x'
             ]" />
         @endif
 
@@ -32,6 +33,12 @@
     </x-slot>
 
     <x-docs.old-version-notice
+        :platform="$platform"
+        :version="$version"
+        :page="request()->route('page')"
+    />
+
+    <x-docs.beta-version-notice
         :platform="$platform"
         :version="$version"
         :page="request()->route('page')"
@@ -56,7 +63,8 @@
             <livewire:version-switcher :versions="[
                 1 => '1.x',
                 2 => '2.x',
-                3 => '3.x'
+                3 => '3.x',
+                4 => '4.x'
             ]" />
         @endif
 
