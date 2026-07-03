@@ -107,7 +107,7 @@
                 <div class="min-w-0 grow">
                     @if ($plugin->readme_html)
                         <div class="sticky top-20 z-10 mb-4 flex justify-end">
-                            <div class="rounded-full bg-white shadow-sm dark:bg-zinc-800">
+                            <div class="mr-2 rounded-full bg-white shadow-sm dark:bg-zinc-800">
                                 <x-plugin-toc />
                             </div>
                         </div>

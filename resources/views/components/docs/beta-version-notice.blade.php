@@ -5,6 +5,7 @@
 
     if ($isPrerelease) {
         $stableVersion = config("docs.latest_versions.{$platform}");
+        $page = app(\App\Services\DocsVersionService::class)->resolvePageForVersion($platform, $stableVersion, $page);
         $stablePagePath = resource_path("views/docs/{$platform}/{$stableVersion}/{$page}.md");
         $targetPage = file_exists($stablePagePath) ? $page : 'getting-started/introduction';
 

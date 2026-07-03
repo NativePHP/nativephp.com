@@ -46,6 +46,16 @@ class ShowDocumentationController extends Controller
                 fn () => $this->getPageProperties($platform, $version, $page)
             );
         } catch (InvalidArgumentException $e) {
+            $resolvedPage = app(DocsVersionService::class)->resolvePageForVersion($platform, $version, $page);
+
+            if ($resolvedPage !== $page && file_exists(resource_path("views/docs/{$platform}/{$version}/{$resolvedPage}.md"))) {
+                return redirect(route('docs.show', [
+                    'platform' => $platform,
+                    'version' => $version,
+                    'page' => $resolvedPage,
+                ]), 301);
+            }
+
             return $this->redirectToFirstNavigationPage($navigation, $page);
         }
         $title = $pageProperties['title'].' - NativePHP '.$platform.' v'.$version;

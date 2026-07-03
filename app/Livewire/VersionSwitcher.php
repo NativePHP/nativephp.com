@@ -2,6 +2,7 @@
 
 namespace App\Livewire;
 
+use App\Services\DocsVersionService;
 use Illuminate\View\ViewException;
 use Livewire\Attributes\Locked;
 use Livewire\Component;
@@ -50,6 +51,9 @@ class VersionSwitcher extends Component
 
     public function updatedVersion()
     {
+        $this->page = app(DocsVersionService::class)
+            ->resolvePageForVersion($this->platform, $this->version, $this->page);
+
         if (! $this->pageExists($this->platform, $this->version, $this->page)) {
             $this->page = 'introduction';
         }
