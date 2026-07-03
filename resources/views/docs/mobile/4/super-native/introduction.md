@@ -15,6 +15,25 @@ SuperNative is **the default** in v4. New apps render native screens from the ve
 required. Prefer to keep building with the web view? [Opting out](#is-the-web-view-still-an-option) is one route
 and one component.
 
+## Try it now
+
+The fastest way to see SuperNative is to run the demo app,
+[`nativephp/super-native`](https://github.com/nativephp/super-native), on a simulator or device.
+
+You'll need a working NativePHP for Mobile [development environment](../getting-started/environment-setup) first
+(Xcode for iOS, Android Studio for Android). Then clone the demo, install it, and run it:
+
+```shell
+git clone https://github.com/nativephp/super-native
+cd super-native
+composer install
+php artisan native:install
+php artisan native:run
+```
+
+`native:run` builds the app and launches it on your connected device or simulator. Explore the source to see how
+the screens are built, then start swapping in your own.
+
 ## How it works
 
 SuperNative builds on three ideas working together:
@@ -63,17 +82,6 @@ Route::native('/', WebShell::class);
 
 That's it — your whole Laravel app renders in the web view exactly as it did in v3, and you can still sprinkle
 native UI around it or adopt SuperNative screen by screen whenever you're ready.
-
-> [!TIP]
-> **Try it now** with the demo repo [`nativephp/super-native`](https://github.com/nativephp/super-native):
->
-> ```shell
-> git clone https://github.com/nativephp/super-native
-> cd super-native
-> composer install
-> php artisan native:install
-> php artisan native:run
-> ```
 
 ## What's coming
 
