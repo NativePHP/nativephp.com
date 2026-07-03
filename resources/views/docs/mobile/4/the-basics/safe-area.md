@@ -5,16 +5,16 @@ order: 180
 
 ## Overview
 
-Safe areas are the regions of the screen not obscured by system UI — the notch and status bar at the top, the home
-indicator or gesture bar at the bottom. The framework lets you inset content past those regions with a single
-attribute.
+Safe areas are the regions of the screen not obscured by device features or system UI — the notch and status bar at the
+top, the home indicator or gesture bar at the bottom. The framework lets you inset content past those regions with a
+single attribute.
 
-`safe_area` is encoded as a single bitmask field on the layout struct, so you can request both edges, only the top,
-or only the bottom.
+Safe areas take care of all of the necessary calculations to support almost every device, ensuring your UI doesn't get
+obscured regardless of the user's device or its orientation.
 
-## Tailwind classes
+## Component classes
 
-The simplest way to apply a safe-area inset is with a class:
+The simplest way to apply a safe area inset is with a class:
 
 @verbatim
 ```blade
@@ -43,9 +43,9 @@ The same variants are available as fluent methods when building elements in PHP:
 ```php
 use Native\Mobile\Edge\Elements\Column;
 
-Column::make()->fill()->safeArea();        // both edges
-Column::make()->fill()->safeAreaTop();     // top only
-Column::make()->fill()->safeAreaBottom();  // bottom only
+Column::make()->safeArea();        // both edges
+Column::make()->safeAreaTop();     // top only
+Column::make()->safeAreaBottom();  // bottom only
 ```
 
 ## Layouts already handle this for you
@@ -63,21 +63,8 @@ variant for the wrapper based on which chrome is present:
 <aside>
 
 Don't apply `safe-area-bottom` to a child of a chrome-wrapped screen — the chrome already handles it, and stacking
-the insets pushes content up by ~34pt on iPhones with a home indicator.
+the insets will push content up even further.
 
 Use `safe-area*` directly on standalone full-screen views without chrome (e.g. a login page or a custom modal).
 
 </aside>
-
-## Common pattern: standalone full-screen view
-
-A login screen with no nav bar and no tab bar should apply `safe-area` itself:
-
-@verbatim
-```blade
-<native:column class="w-full h-full bg-white safe-area items-center justify-center p-6">
-    <native:text class="text-3xl font-bold">Sign in</native:text>
-    {{-- ... --}}
-</native:column>
-```
-@endverbatim

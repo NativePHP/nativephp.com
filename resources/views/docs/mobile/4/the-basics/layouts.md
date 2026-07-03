@@ -1,6 +1,6 @@
 ---
 title: Layouts
-order: 160
+order: 170
 ---
 
 ## Overview
@@ -8,9 +8,9 @@ order: 160
 Layouts wrap the screens routed beneath them with shared chrome — a top nav bar, a bottom tab bar, or both — so
 individual screens stay focused on their content.
 
-The pattern is borrowed from Expo Router: a `NativeLayout` class declares what chrome to render, and the framework
-automatically wraps every screen registered under that layout with the result. Push a detail screen onto a tabs
-section and the chrome swaps from "tabs" to "stack" automatically; pop back and it swaps back.
+A `NativeLayout` class declares which chrome to render, and the framework automatically wraps every screen registered
+under that layout with the result. Push a detail screen onto a tabs section and the chrome swaps from "tabs" to "stack"
+automatically; pop back and it swaps back.
 
 ## Attaching a layout to a route
 

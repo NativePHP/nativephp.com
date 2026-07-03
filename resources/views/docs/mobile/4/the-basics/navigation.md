@@ -1,6 +1,6 @@
 ---
 title: Navigation
-order: 170
+order: 160
 ---
 
 ## Overview
@@ -10,7 +10,8 @@ inside a `NativeComponent`, you push, pop, and replace screens using methods on 
 
 ## Registering routes
 
-Native routes are registered alongside your web routes using the `Route::native()` macro:
+Native routes are registered similarly to Livewire routes, but instead of using `Route::livewire()` you use the
+`Route::native()` macro:
 
 ```php
 use App\NativeComponents\Home;
@@ -19,6 +20,9 @@ use App\NativeComponents\ItemDetail;
 Route::native('/', Home::class);
 Route::native('/item/{id}', ItemDetail::class);
 ```
+
+You can put these routes anywhere that makes sense for your application, but you may find that creating a
+`routes/mobile.php` to keep them all together is a clean option.
 
 Route parameters work just like Laravel web routes — `{id}` matches a path segment and is exposed to the screen
 through `$this->param('id')`.
