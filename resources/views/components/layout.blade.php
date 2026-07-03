@@ -66,6 +66,14 @@
             type="image/svg+xml"
         />
 
+        {{-- Blog RSS feed autodiscovery --}}
+        <link
+            rel="alternate"
+            type="application/rss+xml"
+            title="NativePHP Blog"
+            href="{{ route('blog.feed') }}"
+        />
+
         {!! SEOMeta::generate() !!}
         {!! OpenGraph::generate() !!}
         {!! Twitter::generate() !!}

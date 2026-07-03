@@ -196,6 +196,7 @@ Route::view('vs-react-native-expo', 'vs-react-native-expo')->name('vs-react-nati
 Route::view('vs-flutter', 'vs-flutter')->name('vs-flutter');
 
 Route::get('blog', [ShowBlogController::class, 'index'])->name('blog');
+Route::get('blog/feed', [ShowBlogController::class, 'feed'])->name('blog.feed');
 Route::get('blog/{article}', [ShowBlogController::class, 'show'])->name('article');
 
 Route::get('docs/{platform}/{version}/{page}.md', [ShowDocumentationController::class, 'serveRawMarkdown'])
