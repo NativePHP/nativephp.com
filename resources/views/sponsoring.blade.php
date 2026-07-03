@@ -70,14 +70,14 @@
 
             <p>
                 We operate two major open source projects &mdash; NativePHP for Desktop and
-                NativePHP for Mobile &mdash; as well as <a href="https://bifrost.nativephp.com">Bifrost</a>,
-                an optional paid SaaS that complements NativePHP by providing cloud-based build services.
+                NativePHP for Mobile &mdash; as well as a suite of adjacent open source and premium
+                tools &amp; services.
             </p>
 
             <h2>Sponsorship</h2>
 
             <p>
-                NativePHP is free and open source. We encourage and appreciate any
+                <b>NativePHP is free and open source.</b> We encourage and appreciate any
                 contributions to the project, whether it's through code,
                 documentation, spreading the word, or a financial sponsorship.
                 We provide the following ways of making an easy financial
@@ -112,6 +112,23 @@
                 releases, and discounts on future premium services.
             </p>
 
+            <p>
+                If you'd like to make a bigger impact, take a look at our
+                <a href="https://opencollective.com/nativephp/contribute/live-stream-sponsor-96286">Corporate Sponsor package</a>,
+                which offers greater visibility and recognition for your brand
+                while providing vital funding for the project.
+            </p>
+
+            <h2>Bifrost</h2>
+
+            <p>
+                <a href="https://bifrost.nativephp.com">Bifrost</a> is an optional
+                paid SaaS that complements NativePHP by providing cloud-based
+                build services. Subscribing to Bifrost supports the continued
+                development of NativePHP while giving you a faster, simpler way
+                to build and ship your apps.
+            </p>
+
             <h2>NativePHP Ultra</h2>
 
             <p>
@@ -137,27 +154,16 @@
                 <a href="{{ route('pricing') }}">See Ultra plans</a>.
             </p>
 
-            <h2>Corporate Partners</h2>
+            <h2>Partner Program</h2>
 
             <p>
                 If your organization is using NativePHP, we strongly encourage
-                you to consider a Corporate Sponsorship. This level of support
+                you to consider becoming a
+                <a href="/partners">NativePHP Partner</a>. Partnership
                 will provide your team with the added benefits of increased
                 levels of support, hands-on help directly from the maintainers
                 of NativePHP and promotion of your brand as a supporter of
                 cutting-edge open source work.
-            </p>
-
-            <p>
-                For more details, please view our
-                <a href="/partners">partners page</a>
-                or email us at
-                <a
-                    href="mailto:partners@nativephp.com?subject=Corporate%20Sponsorship"
-                >
-                    partners@nativephp.com
-                </a>
-                .
             </p>
         </article>
     </section>
