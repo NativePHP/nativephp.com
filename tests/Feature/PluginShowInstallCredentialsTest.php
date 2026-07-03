@@ -53,4 +53,38 @@ class PluginShowInstallCredentialsTest extends TestCase
             ->assertSee('developer@example.test', false)
             ->assertSee($key, false);
     }
+
+    public function test_install_commands_are_shown(): void
+    {
+        $plugin = $this->paidPlugin();
+
+        $this->get(route('plugins.show', $plugin->routeParams()))
+            ->assertStatus(200)
+            ->assertSee('php artisan vendor:publish --tag=nativephp-plugins-provider')
+            ->assertSee('composer require '.$plugin->name)
+            ->assertSee('php artisan native:plugin:register '.$plugin->name);
+    }
+
+    public function test_credentials_section_is_collapsible_and_still_renders_credentials(): void
+    {
+        $user = User::factory()->create(['email' => 'developer@example.test']);
+        $key = $user->getPluginLicenseKey();
+        $plugin = $this->paidPlugin();
+
+        $this->actingAs($user)
+            ->get(route('plugins.show', $plugin->routeParams()))
+            ->assertStatus(200)
+            ->assertSee('Configure Composer')
+            ->assertSee($key, false);
+    }
+
+    public function test_install_box_links_to_the_using_plugins_guide(): void
+    {
+        $plugin = $this->paidPlugin();
+
+        $this->get(route('plugins.show', $plugin->routeParams()))
+            ->assertStatus(200)
+            ->assertSee(url('docs/mobile/3/plugins/using-plugins'), false)
+            ->assertSee('Using Plugins guide');
+    }
 }
