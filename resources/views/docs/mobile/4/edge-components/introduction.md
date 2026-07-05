@@ -108,6 +108,17 @@ It doesn't even rely on the web view!
 
 </aside>
 
+## The `native:` prefix is optional
+
+`<native:column>` and `<column>` compile to exactly the same thing — the prefix is optional. We use it throughout
+these docs for two reasons:
+
+- **Clarity** — `<native:button>` is unmistakably a native component, never confused with an HTML `<button>`.
+- **IDE support** — editors resolve the prefixed form to its component class and offer attribute autocomplete on
+  props; a bare `<column>` reads as plain HTML, so you lose that typeahead.
+
+Drop the prefix for terser templates whenever you prefer — both forms are fully supported.
+
 ## Why Blade?
 
 Blade is an expressive and straightforward templating language that is very familiar to most Laravel users, and also
