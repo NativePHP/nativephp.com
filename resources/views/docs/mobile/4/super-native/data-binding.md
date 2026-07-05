@@ -61,13 +61,6 @@ useful for text inputs where syncing on every character is wasteful:
 ```
 @endverbatim
 
-<aside>
-
-There is no `.number` or `.defer` modifier — the value is always coerced by control type, and binding is never
-deferred. The full set is `live` / `blur` / `lazy` / `debounce.<n>ms`.
-
-</aside>
-
 ## Reacting to changes
 
 When a bound property changes from the UI, the framework fires the matching
