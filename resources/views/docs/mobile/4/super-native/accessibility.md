@@ -1,6 +1,6 @@
 ---
 title: Accessibility
-order: 160
+order: 30
 ---
 
 ## Overview
@@ -79,7 +79,7 @@ is treated as decorative and skipped:
 
 ## List items
 
-The tappable trailing icon button on a [list item](list) takes its own label via `trailing-a11y-label`:
+The tappable trailing icon button on a [list item](../edge-components/list) takes its own label via `trailing-a11y-label`:
 
 @verbatim
 ```blade
@@ -123,7 +123,7 @@ NavBarOptions::make()->actions([
 
 ## Testing accessibility
 
-The [testing suite](../testing/advanced#accessibility-audits) can audit a rendered screen for missing labels
+The [testing suite](../testing/accessibility) can audit a rendered screen for missing labels
 without a device. Sweep every screen in one data-driven test so a new screen can't ship an unlabeled control:
 
 @verbatim

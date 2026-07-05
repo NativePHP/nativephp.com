@@ -29,46 +29,8 @@ it('omits the android translucency on ios', function () {
 `assertElement($type, $matcher)` finds an element of a wire type, optionally narrowed by a closure receiving the wire
 node; `assertMissingElement()` is its inverse.
 
-## Accessibility audits
-
-`assertAccessible()` walks the rendered wire tree with the same rules a screen reader cares about and fails with a
-located list of every violation: icon-only buttons, chips, and tabs without an `a11y-label`, clickable icons and
-images without labels or `alt` text, pressables with neither visible text nor a label, form controls with no label
-of any kind, and list items whose trailing icon button is unlabeled.
-
-```php
-it('renders an accessible screen', function () {
-    Native::visit('/checkout')->assertAccessible();
-});
-```
-
-Sweep every registered screen in one data-driven test — `NativeRouter::registeredRoutes()` returns the full route
-table, so a newly added screen is audited automatically:
-
-```php
-use Native\Mobile\Edge\NativeRouter;
-
-it('renders every registered screen accessibly', function (string $uri) {
-    Native::visit($uri)->assertAccessible();
-})->with(array_keys(NativeRouter::registeredRoutes()));
-```
-
-The audit only sees the current frame. Content behind an `@@if` — a photo grid that appears after images load, a
-send button that replaces a mic button once you type — exists only once its state does, so drive the state in
-first, then assert:
-
-```php
-it('stays accessible after a photo is captured', function () {
-    Native::test(CameraDemo::class)
-        ->call('takePhoto')
-        ->emitNative(PhotoTaken::class, ['path' => '/tmp/photo-1.jpg'])
-        ->assertAccessible();
-});
-```
-
-`accessibilityViolations()` returns the raw list of violation strings instead of asserting — use it to allow-list a
-known exception, or to fail with your own message. See [Accessibility](../edge-components/accessibility) for the
-labeling rules the audit enforces.
+To audit a tree for screen-reader accessibility rather than a specific element, see
+[Accessibility](accessibility).
 
 ## Render-count guards
 

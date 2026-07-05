@@ -79,7 +79,7 @@ content slots.
 - `trailingSwitch` - Boolean value for a trailing switch [Android]
 - `trailingIconButton` - Icon name for a tappable trailing button
 - `trailing-a11y-label` - Accessibility label for the trailing icon button (recommended whenever
-  `trailingIconButton` is set). See [Accessibility](accessibility)
+  `trailingIconButton` is set). See [Accessibility](../super-native/accessibility)
 
 ### Color overrides
 

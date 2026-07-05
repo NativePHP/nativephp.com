@@ -49,6 +49,9 @@ SuperNative builds on three ideas working together:
 
 If you've built anything with Livewire, you already know how to build with SuperNative.
 
+For a look under the hood — how Blade becomes SwiftUI and Compose, how state flows across the shared-memory
+boundary, and the threading model behind it — see the [Architecture](../architecture/overview) section.
+
 ## Why SuperNative?
 
 Two reasons above all:
