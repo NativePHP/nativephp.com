@@ -72,13 +72,70 @@ if you need the derived number rather than the raw translation.
 
 ## Property animations
 
-For state-driven motion that isn't gesture-tracked — a card that slides in when a value changes — use the
-`animate-*` props on any element (`animate-duration`, `animate-easing`) together with the transform props. Those
-animate whenever the target value changes between renders, no shared value required.
+Any element animates when a value you bind to it changes between renders — no shared value, no gesture. Wrap the
+change in `animate-duration` (milliseconds) and the element eases from its old value to the new one on the next
+render. The animatable props are `translate-x`, `translate-y`, `scale`, `rotate`, and `opacity`:
+
+@verbatim
+```blade
+{{-- A panel slides up from below when $shown flips to true --}}
+<native:column
+    :translate-y="$shown ? 0 : 120"
+    :animate-duration="450"
+    animate-easing="ease-out"
+    class="bg-theme-surface rounded-2xl p-4">
+    <native:text>Surprise!</native:text>
+</native:column>
+```
+@endverbatim
+
+Toggle `$shown` in a method and the panel eases into place — there's no animation code to write beyond the props.
+
+### Duration & easing
+
+- `animate-duration` — length in milliseconds (e.g. `250`). Without it, a change snaps instantly.
+- `animate-easing` — the curve: `linear`, `ease-in`, `ease-out`, or `ease-in-out`.
+
+Combine transforms freely under one duration — a card can slide, fade, and scale at once by animating
+`translate-y`, `opacity`, and `scale` together.
+
+### Looping
+
+Set `animate-loop` to repeat an animation continuously — a pulsing dot, a breathing highlight:
+
+@verbatim
+```blade
+<native:column :scale="$pulsing ? 1.15 : 1.0" :animate-duration="600" :animate-loop="true">
+    <native:icon name="heart.fill" />
+</native:column>
+```
+@endverbatim
+
+## Press feedback
+
+Press feedback is a special case: it reacts the instant a finger touches down — **before any PHP round-trip** — so
+a tap feels immediate. Set any of these on a pressable element and the effect holds while pressed, then springs
+back on release:
+
+- `press-scale` — scale while pressed (e.g. `0.9` to shrink slightly)
+- `press-opacity` — dim while pressed (e.g. `0.55`)
+- `press-translate-y` — nudge down while pressed (e.g. `3`)
+
+@verbatim
+```blade
+<native:pressable :press-scale="0.92" :press-opacity="0.85" :press-translate-y="3" @press="open">
+    <native:text>Press me</native:text>
+</native:pressable>
+```
+@endverbatim
+
+Unlike `animate-*` (which runs when a re-render changes a value), press feedback needs no state and no handler —
+the native side plays it locally on touch.
 
 <aside>
 
-Reach for a shared value when motion must track a finger or run at display refresh rate. For a one-shot
-transition between two states, `animate-*` props are simpler.
+Three tools, three jobs: **`animate-*` props** for state-driven motion (a value changed — ease to it), **press
+feedback** for instant touch response, and **shared values** for finger-tracking or refresh-rate animation. For
+motion *between screens*, see [Navigation](navigation#custom-transitions).
 
 </aside>
