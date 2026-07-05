@@ -22,6 +22,8 @@ All [shared layout and style attributes](layout) are supported, plus:
     - `0` / `1` — fit (scale to fit within bounds, preserving aspect ratio)
     - `2` / `3` — fill (scale to fill bounds, cropping excess)
 - `tint-color` - Apply a color tint as hex string (optional)
+- `alt` - Accessibility alt text (optional). When set, screen readers announce the image with this label; when
+  omitted, the image is treated as decorative and hidden from VoiceOver/TalkBack. See [Accessibility](accessibility)
 
 <aside>
 

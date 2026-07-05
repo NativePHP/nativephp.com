@@ -78,6 +78,8 @@ content slots.
 - `trailingCheckbox` - Boolean value for a trailing checkbox
 - `trailingSwitch` - Boolean value for a trailing switch [Android]
 - `trailingIconButton` - Icon name for a tappable trailing button
+- `trailing-a11y-label` - Accessibility label for the trailing icon button (recommended whenever
+  `trailingIconButton` is set). See [Accessibility](accessibility)
 
 ### Color overrides
 
@@ -188,6 +190,7 @@ Trailing slot:
 - `trailingCheckbox(bool $checked = false)`
 - `trailingSwitch(bool $checked = false)`
 - `trailingIconButton(string $icon)`
+- `trailingA11yLabel(string $label)` - Accessibility label for the trailing icon button
 
 Styling:
 
