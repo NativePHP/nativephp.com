@@ -59,6 +59,10 @@ above the indicator, mirroring iOS `UITabBar`.
 
 ## Children
 
+> [!IMPORTANT]
+> In the [Layout model](../super-native/layouts#builder-reference) a bottom-nav item is a `Tab` — use that builder
+> rather than placing `<native:bottom-nav-item>` inline.
+
 A `<native:bottom-nav>` can contain up to 5 `<native:bottom-nav-item>` elements.
 
 ### Props

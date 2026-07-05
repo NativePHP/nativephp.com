@@ -79,6 +79,11 @@ On iOS, gesture support is always enabled for the side nav.
 
 ## Children
 
+> [!IMPORTANT]
+> In the [Layout model](../super-native/layouts#drawer-navigation) a drawer's contents are any Blade view — build
+> the header, items, and groups below with standard EDGE components inside a `Drawer`, rather than the
+> `<native:side-nav-*>` elements.
+
 ### `<native:side-nav-header>`
 
 - `title` - Title text (optional)

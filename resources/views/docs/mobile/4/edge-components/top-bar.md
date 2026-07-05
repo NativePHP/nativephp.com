@@ -64,6 +64,10 @@ On iOS, if more than 5 actions are provided, they collapse into an overflow menu
 
 ### `<native:top-bar-action>` Props
 
+> [!IMPORTANT]
+> In the [Layout model](../super-native/layouts#builder-reference) a top-bar action is a `NavAction` — use that
+> builder rather than placing `<native:top-bar-action>` inline.
+
 - `id` - Unique identifier (required)
 - `icon` - A named [icon](icons) (required)
 - `label` - Text label for the action. Used for accessibility and displayed in overflow menus (optional but recommended)
