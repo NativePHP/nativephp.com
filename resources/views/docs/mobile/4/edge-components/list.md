@@ -80,6 +80,7 @@ content slots.
 - `trailingIconButton` - Icon name for a tappable trailing button
 - `trailing-a11y-label` - Accessibility label for the trailing icon button (recommended whenever
   `trailingIconButton` is set). See [Accessibility](../super-native/accessibility)
+- `trailing-menu` - Attach a tap-to-open dropdown to the row's trailing edge. See [Menus](menus)
 
 ### Color overrides
 
