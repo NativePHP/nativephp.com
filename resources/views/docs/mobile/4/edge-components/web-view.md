@@ -3,6 +3,10 @@ title: Web View
 order: 460
 ---
 
+> [!IMPORTANT]
+> **Planned — not yet available.** `<native:web-view>` is documented ahead of its release and does not render
+> in the current version. Track the changelog for availability.
+
 With EDGE, native UI is the primary way to build your app — the web view is just one more component you can reach for,
 not the foundation everything sits on. You're free to compose entire screens from native EDGE components and never
 render a web view at all.
