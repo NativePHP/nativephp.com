@@ -86,6 +86,10 @@ Route::get('docs/mobile/{version}/apis/{page}', function (string $version, strin
 Route::redirect('docs/mobile/4/the-basics/navigation', '/docs/mobile/4/super-native/navigation', 301);
 Route::redirect('docs/mobile/4/the-basics/layouts', '/docs/mobile/4/super-native/layouts', 301);
 
+// v4: Screen & Card components were removed — theme surfaces with bg-theme-* classes instead
+Route::redirect('docs/mobile/4/edge-components/screen', '/docs/mobile/4/edge-components/layout', 301);
+Route::redirect('docs/mobile/4/edge-components/card', '/docs/mobile/4/edge-components/layout', 301);
+
 // Webhook routes (must be outside web middleware for CSRF bypass)
 Route::post('opencollective/contribution', [OpenCollectiveWebhookController::class, 'handle'])->name('opencollective.webhook');
 

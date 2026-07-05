@@ -15,12 +15,10 @@ component through it.
 
 @verbatim
 ```blade
-<native:screen>
-    <native:column class="p-4 gap-4">
-        <native:text class="text-2xl font-bold">{{ $title }}</native:text>
-        <native:button label="Refresh" @press="refresh" />
-    </native:column>
-</native:screen>
+<native:column class="p-4 gap-4 bg-theme-background">
+    <native:text class="text-2xl font-bold">{{ $title }}</native:text>
+    <native:button label="Refresh" @press="refresh" />
+</native:column>
 ```
 @endverbatim
 

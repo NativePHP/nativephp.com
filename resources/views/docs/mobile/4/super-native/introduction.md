@@ -77,9 +77,9 @@ Route::native('/', WebShell::class);
 
 @verbatim
 ```blade
-<native:screen>
+<native:column class="w-full h-full">
     <native:web-view class="w-full h-full" />
-</native:screen>
+</native:column>
 ```
 @endverbatim
 

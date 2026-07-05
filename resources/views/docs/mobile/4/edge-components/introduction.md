@@ -24,14 +24,12 @@ interactive forms and navigation chrome.
 ### Layout
 
 - **[Layout & Styling](layout)** - Shared sizing, spacing, flex, style, and event attributes available on all elements
-- **[Screen](screen)** - Themed page-level container
 - **[Column](column)** - Vertical flex container
 - **[Row](row)** - Horizontal flex container
 - **[Scroll View](scroll-view)** - Scrollable container with virtualization
 - **[Stack](stack)** - Overlay container (ZStack) for layering elements
 - **[Spacer](spacer)** - Flexible space element
 - **[Pressable](pressable)** - Touch-sensitive container wrapper
-- **[Card](card)** - Content surface with filled / outlined / elevated variants
 - **[Web View](web-view)** - Embed web content as a native element and surround it with native UI
 
 ### Content

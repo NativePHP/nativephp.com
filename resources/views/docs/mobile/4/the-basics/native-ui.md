@@ -25,12 +25,10 @@ Every EDGE element is a Blade component under the `native:` namespace:
 
 @verbatim
 ```blade
-<native:screen>
-    <native:column class="w-full p-4 gap-4">
-        <native:text class="text-2xl font-bold">Welcome</native:text>
-        <native:button label="Refresh" @press="refresh" />
-    </native:column>
-</native:screen>
+<native:column class="w-full h-full p-4 gap-4 bg-theme-background text-theme-on-background">
+    <native:text class="text-2xl font-bold">Welcome</native:text>
+    <native:button label="Refresh" @press="refresh" />
+</native:column>
 ```
 @endverbatim
 
