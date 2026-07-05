@@ -92,8 +92,70 @@ class SyncUpTabsLayout extends NativeLayout
 The `$screen` parameter is the live `NativeComponent` instance for the current screen, so the layout can read
 properties or methods on it (such as `$screen->navTitle()`) to customize the chrome per screen.
 
-See the [Top Bar](../edge-components/top-bar) and [Bottom Navigation](../edge-components/bottom-nav) pages for the
-full builder API.
+## Builder reference
+
+The chrome is described entirely with these fluent builders — you never place a top bar or tab bar as an element
+in a screen's Blade.
+
+### `NavBar` — the top bar
+
+- `make()` — create a builder
+- `title(?string)` / `subtitle(?string)` — title and the small line under it
+- `back(bool $show = true)` — show the back chevron
+- `backgroundColor(string)` / `textColor(string)` — bar background and title/icon tint
+- `elevation(int $px)` — hairline thickness at the bottom of the bar
+- `displayMode(string)` — `large`, `inline`, or `automatic`
+- `scrollBehavior(string)` — `collapse`, `pinned`, or `enterAlways`
+- `searchBar(string $placeholder = '', ?string $onQuery = null, int $debounceMs = 300)` — attach a native search bar (see [Search](search))
+- `action(NavAction $action)` — append a trailing action
+
+### `NavAction` — a top-bar button or menu
+
+- `make(string $id)` — create an action with a unique id
+- `icon(?string $name = null, ios:, android:)` — a named [icon](../edge-components/icon), optionally per-platform
+- `label(string)` — visible/overflow label; `a11yLabel(string)` — screen-reader label for icon-only actions
+- `press(string $method)` — screen method to call when tapped
+- `url(string)` — navigate to a URL when tapped; `event(string)` — dispatch a native event (advanced)
+- `destructive(bool = true)` — render in the destructive tint
+- `items(array $actions)` — nest `NavAction`s to render a pull-down menu; `NavAction::divider()` adds a separator
+
+### `TabBar` — the bottom tabs
+
+- `make()` — create a builder; `add(Tab $tab)` — append a tab (up to 5)
+- `activeColor(string)` / `backgroundColor(string)` / `textColor(string)` — tab colors
+- `labelVisibility(string)` — `labeled`, `selected`, or `unlabeled`
+- `dark(bool = true)` — force dark styling
+- `minimizeOnScroll(bool = true)` — shrink the bar as content scrolls (iOS 26)
+- `highlight(string $currentUrl)` — mark the active tab by longest-prefix URL match
+
+### `Tab` — a tab item
+
+- `Tab::link(string $label, string $url, icon:, ios:, android:)` — a navigating tab
+- `Tab::action(string $label, icon:)` — a tab that calls a method instead of navigating
+- `Tab::search(string $label, icon:, placeholder:)` — a tab that presents a search bar
+- `id(string)`, `press(string $method)`, `badge(string $text, ?string $color = null)`, `news(bool = true)` (red dot), `active(bool = true)`
+
+## Drawer navigation
+
+For a slide-out side drawer, mix the native-ui `HasLayoutDrawer` trait into your layout and return a `Drawer` from
+`drawer()`. The content is any Blade view, so you build the drawer's UI with normal EDGE components:
+
+```php
+use Nativephp\NativeUi\Builders\Drawer;
+use Nativephp\NativeUi\Concerns\HasLayoutDrawer;
+
+class AppLayout extends NativeLayout
+{
+    use HasLayoutDrawer;
+
+    public function drawer(NativeComponent $screen): ?Drawer
+    {
+        return Drawer::make(view('native.sidebar'))
+            ->width(320)
+            ->reveal();   // ->modal() (dim + slide over) is the default
+    }
+}
+```
 
 ## How chrome wraps the screen
 

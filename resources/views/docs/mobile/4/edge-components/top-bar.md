@@ -3,6 +3,11 @@ title: Top Bar
 order: 450
 ---
 
+> [!IMPORTANT]
+> **Prefer the [Layout model](../super-native/layouts).** Declare your app's top bar with the `NavBar`
+> builder in a `NativeLayout` class rather than placing `<native:top-bar>` in a screen. This page documents the
+> inline element, which still works but is no longer the recommended approach.
+
 ## Overview
 <div class="images-two-up not-prose">
 

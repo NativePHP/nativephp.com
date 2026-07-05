@@ -3,6 +3,11 @@ title: Bottom Navigation
 order: 120
 ---
 
+> [!IMPORTANT]
+> **Prefer the [Layout model](../super-native/layouts).** Declare your app's bottom tabs with the `TabBar`
+> builder in a `NativeLayout` class rather than placing `<native:bottom-nav>` in a screen. This page documents the
+> inline element, which still works but is no longer the recommended approach.
+
 ## Overview
 
 <div class="images-two-up not-prose">
