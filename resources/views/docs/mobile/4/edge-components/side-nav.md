@@ -1,7 +1,12 @@
 ---
 title: Side Navigation
-order: 400
+order: 370
 ---
+
+> [!IMPORTANT]
+> **Prefer the [Layout model](../super-native/layouts#drawer-navigation).** Provide a slide-out drawer with the
+> `Drawer` builder from a `NativeLayout` rather than placing `<native:side-nav>` in a screen. This page documents
+> the inline element, which still works but is no longer the recommended approach.
 
 ## Overview
 
@@ -73,6 +78,11 @@ On iOS, gesture support is always enabled for the side nav.
 </aside>
 
 ## Children
+
+> [!IMPORTANT]
+> In the [Layout model](../super-native/layouts#drawer-navigation) a drawer's contents are any Blade view — build
+> the header, items, and groups below with standard EDGE components inside a `Drawer`, rather than the
+> `<native:side-nav-*>` elements.
 
 ### `<native:side-nav-header>`
 

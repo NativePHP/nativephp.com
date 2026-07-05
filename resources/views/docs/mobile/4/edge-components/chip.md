@@ -1,6 +1,6 @@
 ---
 title: Chip
-order: 525
+order: 200
 ---
 
 ## Overview

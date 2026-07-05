@@ -1,6 +1,6 @@
 ---
 title: Slider
-order: 545
+order: 380
 ---
 
 ## Overview

@@ -1,6 +1,6 @@
 ---
 title: Divider
-order: 340
+order: 220
 ---
 
 ## Overview

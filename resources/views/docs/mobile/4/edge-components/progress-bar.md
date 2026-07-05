@@ -1,6 +1,6 @@
 ---
 title: Progress Bar
-order: 355
+order: 300
 ---
 
 ## Overview

@@ -39,9 +39,9 @@ just like you would in Livewire or React:
 @verbatim
 ```blade
 @foreach ($messages as $message)
-    <native:card :native:key="$message->id">
+    <native:column :native:key="$message->id" class="bg-theme-surface rounded-lg p-3">
         <native:text>{{ $message->body }}</native:text>
-    </native:card>
+    </native:column>
 @endforeach
 ```
 @endverbatim

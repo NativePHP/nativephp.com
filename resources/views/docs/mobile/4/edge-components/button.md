@@ -1,6 +1,6 @@
 ---
 title: Button
-order: 310
+order: 140
 ---
 
 ## Overview
@@ -30,6 +30,7 @@ The label can be passed as the `label` attribute or as slot content between the 
 - `loading` - Show a spinner in place of the leading icon and prevent presses (optional, boolean, default: `false`)
 - `a11y-label` - Accessibility label override (optional)
 - `a11y-hint` - Accessibility hint (optional)
+- `menu` - Attach a tap-to-open dropdown; opening the menu shadows `@press`. See [Menus](menus)
 
 ## Events
 

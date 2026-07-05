@@ -1,6 +1,6 @@
 ---
 title: Checkbox
-order: 520
+order: 190
 ---
 
 ## Overview

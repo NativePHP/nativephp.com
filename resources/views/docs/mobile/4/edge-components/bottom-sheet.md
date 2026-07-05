@@ -1,6 +1,6 @@
 ---
 title: Bottom Sheet
-order: 700
+order: 130
 ---
 
 ## Overview

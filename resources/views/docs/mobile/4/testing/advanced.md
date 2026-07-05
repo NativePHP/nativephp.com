@@ -29,6 +29,9 @@ it('omits the android translucency on ios', function () {
 `assertElement($type, $matcher)` finds an element of a wire type, optionally narrowed by a closure receiving the wire
 node; `assertMissingElement()` is its inverse.
 
+To audit a tree for screen-reader accessibility rather than a specific element, see
+[Accessibility](accessibility).
+
 ## Render-count guards
 
 Every interaction re-renders. When performance matters, assert on exactly how many frames a screen produced.
@@ -115,8 +118,8 @@ If you prefer Pest's `expect()` style end to end, register the expectation exten
 \Native\Mobile\Testing\PestExpectations::register();
 ```
 
-That adds `toSee`, `toNotSee`, `toHaveSet`, `toHaveNavigatedTo`, `toHaveElement`, and `toBeOnScreen`, so harness
-assertions compose into `expect()` chains:
+That adds `toSee`, `toNotSee`, `toHaveSet`, `toHaveNavigatedTo`, `toHaveElement`, `toBeOnScreen`, and
+`toBeAccessible`, so harness assertions compose into `expect()` chains:
 
 ```php
 it('composes harness assertions into expect() chains', function () {
@@ -124,6 +127,7 @@ it('composes harness assertions into expect() chains', function () {
         ->toSee('Toasts')
         ->toHaveSet('duration', 'long')
         ->toHaveElement('button')
+        ->toBeAccessible()
         ->toNotSee('Nonexistent');
 
     expect(Native::visit('/media')->tap('Scanner'))
@@ -149,3 +153,19 @@ it('mounts and renders every routed screen without a device', function (string $
     // ...every route your app registers
 ]);
 ```
+
+Rather than hand-maintain that list, pull it from the router so new screens are covered the moment they're
+registered. `NativeRouter::registeredRoutes()` returns the `uri => ['class' => ..., 'layout' => ...]` table;
+substitute a value for any `{param}` segments:
+
+```php
+use Native\Mobile\Edge\NativeRouter;
+
+it('mounts every registered screen', function (string $uri) {
+    $visit = preg_replace('/\{[^}]+\}/', '1', $uri); // /post/{id} -> /post/1
+    expect(Native::visit($visit)->tree())->not->toBeEmpty();
+})->with(array_keys(NativeRouter::registeredRoutes()));
+```
+
+Exclude screens that hit the bridge or network on mount (they need a `FakeBridge` expectation or an
+`emitNative()` first) by filtering the list.

@@ -49,6 +49,9 @@ SuperNative builds on three ideas working together:
 
 If you've built anything with Livewire, you already know how to build with SuperNative.
 
+For a look under the hood — how Blade becomes SwiftUI and Compose, how state flows across the shared-memory
+boundary, and the threading model behind it — see the [Architecture](../architecture/overview) section.
+
 ## Why SuperNative?
 
 Two reasons above all:
@@ -62,26 +65,19 @@ Two reasons above all:
 
 ## Is the web view still an option?
 
-Yes. SuperNative is the default, but it's entirely **opt-out**: the [web view](../edge-components/web-view) is
-still available and fully supported — as a component. To run your app the classic web-view-first way, register a
-single native route that renders a full-screen web view:
+Yes. SuperNative applies **per route**: a URL you register with `Route::native()` renders as a native screen,
+while every other route renders in the web view as ordinary Laravel HTML — exactly as it did in v3.
 
 ```php
-use App\NativeComponents\WebShell;
+// Native screen — SuperNative renders it natively
+Route::native('/dashboard', Dashboard::class);
 
-Route::native('/', WebShell::class);
+// A normal route — served to the web view as HTML, unchanged
+Route::get('/settings', fn () => view('settings'));
 ```
 
-@verbatim
-```blade
-<native:screen>
-    <native:web-view class="w-full h-full" />
-</native:screen>
-```
-@endverbatim
-
-That's it — your whole Laravel app renders in the web view exactly as it did in v3, and you can still sprinkle
-native UI around it or adopt SuperNative screen by screen whenever you're ready.
+So an existing app keeps working web-view-first with no changes, and you adopt SuperNative one screen at a time
+whenever you're ready — or not at all.
 
 ## What's coming
 

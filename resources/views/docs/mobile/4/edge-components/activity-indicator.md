@@ -1,6 +1,6 @@
 ---
 title: Activity Indicator
-order: 350
+order: 100
 ---
 
 ## Overview

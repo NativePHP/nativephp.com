@@ -50,7 +50,7 @@ Column::make()->safeAreaBottom();  // bottom only
 
 ## Layouts already handle this for you
 
-When a screen is wrapped by a [layout](layouts), the framework's `wrapWithChrome` flow picks the right safe-area
+When a screen is wrapped by a [layout](../super-native/layouts), the framework's `wrapWithChrome` flow picks the right safe-area
 variant for the wrapper based on which chrome is present:
 
 | Chrome           | Wrapper inset    | Why                                                  |

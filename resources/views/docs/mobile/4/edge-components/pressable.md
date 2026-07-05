@@ -1,6 +1,6 @@
 ---
 title: Pressable
-order: 250
+order: 290
 ---
 
 ## Overview
@@ -22,8 +22,9 @@ provides a clear tap target that wraps multiple children.
 
 ## Props
 
-All [shared layout and style attributes](layout) are supported. There are no pressable-specific props beyond the
-standard event handlers.
+All [shared layout and style attributes](layout) are supported, plus:
+
+- `menu` - Attach a tap-to-open dropdown; opening the menu shadows `@press`. See [Menus](menus)
 
 ## Events
 
