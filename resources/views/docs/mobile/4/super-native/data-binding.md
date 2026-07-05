@@ -64,7 +64,7 @@ useful for text inputs where syncing on every character is wasteful:
 ## Reacting to changes
 
 When a bound property changes from the UI, the framework fires the matching
-[`updated{Property}()`](lifecycle-hooks#updated-property) hook, passing the new value — the place to run
+[`updated{Property}()`](lifecycle-hooks#updatedproperty) hook, passing the new value — the place to run
 validation or trigger side effects:
 
 ```php
