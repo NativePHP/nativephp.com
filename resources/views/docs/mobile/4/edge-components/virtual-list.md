@@ -29,6 +29,9 @@ scrolls, and the next render emits the new slice.
 - `item` - Name of a Blade view rendered once per index in the window. It receives `['index' => $i]` (required,
   string).
 - `on-window-change` - Component method called as the visible range moves, with `(int $from, int $to)`.
+- `estimated-row-height` - Estimated row height in dp, used to size the scroll extent before rows measure
+  (optional, float, default: `56`).
+- `overscan` - Extra rows built beyond the visible window to smooth fast scrolling (optional, int, default: `30`).
 
 `<native:virtual-list />` is self-closing — the `item` view is the row template, not slot content.
 

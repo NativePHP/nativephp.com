@@ -92,6 +92,7 @@ Independent of the mutually-exclusive slot above, a row can also show a stack of
 - `headlineColor`, `supportingColor`, `overlineColor` - Hex colors for the text styles
 - `containerColor` - Row background color
 - `leadingIconColor`, `trailingIconColor`, `trailingTextColor` - Colors for the slot content
+- `leadingIconBgColor` - Background color of the leading icon's circle
 
 ### State
 
@@ -102,6 +103,9 @@ Independent of the mutually-exclusive slot above, a row can also show a stack of
 ### Events
 
 - `@press` / `@longPress` - Standard press handlers on the row
+- `@leading-change` - Fired when a leading checkbox or radio toggles; receives the new value
+- `@trailing-change` - Fired when a trailing checkbox or switch toggles; receives the new value
+- `@trailing-press` - Fired when the trailing icon button is tapped
 - `on-swipe-delete` - Shortcut for a single destructive trailing swipe. For anything richer, use
   `trailing-actions` below.
 
@@ -130,6 +134,34 @@ definitions the user reveals by swiping the row. Each action is an array:
 />
 ```
 @endverbatim
+
+## List Section
+
+Group rows under a header (and optional footer) with `<native:list-section>` — a SwiftUI `Section` on iOS, a
+sticky-header group on Android. Place `<native:list-item>` children inside; a section on its own renders nothing.
+
+@verbatim
+```blade
+<native:list>
+    <native:list-section header="Fruits" footer="2 items">
+        <native:list-item headline="Apple" />
+        <native:list-item headline="Banana" />
+    </native:list-section>
+    <native:list-section header="Vegetables">
+        <native:list-item headline="Carrot" />
+    </native:list-section>
+</native:list>
+```
+@endverbatim
+
+- `header` - Section header text
+- `footer` - Optional footer text below the section
+
+```php
+use Nativephp\NativeUi\Elements\ListSection;
+
+ListSection::make('Fruits', ListItem::make('Apple'))->footer('1 item');
+```
 
 ## Examples
 

@@ -18,7 +18,10 @@ A smart mapping system translates common icon names across platforms automatical
 
 All [shared layout and style attributes](layout) are supported, plus:
 
-- `name` - Icon name (required, string). See the [Icons](icons) reference for available names
+- `name` - Icon name (required unless `ios`/`android` are given, string). See the [Icons](icons) reference
+- `ios` / `android` - Per-platform overrides: an [SF Symbol](icons) name for iOS and a [Material Icon](icons) name
+  for Android, so one tag renders the right symbol on each platform. Use in place of `name` when the platforms
+  need different icons (`<native:icon ios="gearshape" android="settings" />`)
 - `size` - Icon size in dp (optional, float, default: `24`)
 - `color` - Icon color as hex string (optional, default: platform default)
 - `a11y-label` - Accessibility label (optional). Icons are decorative by default — hidden from screen readers
