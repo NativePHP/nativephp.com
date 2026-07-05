@@ -82,6 +82,10 @@ Route::get('docs/mobile/{version}/apis/{page}', function (string $version, strin
     return redirect("/plugins/nativephp/mobile-{$page}", 301);
 })->where('version', '[0-9]+')->where('page', '[a-z-]+');
 
+// v4: navigation & layouts moved from The Basics into the SuperNative section
+Route::redirect('docs/mobile/4/the-basics/navigation', '/docs/mobile/4/super-native/navigation', 301);
+Route::redirect('docs/mobile/4/the-basics/layouts', '/docs/mobile/4/super-native/layouts', 301);
+
 // Webhook routes (must be outside web middleware for CSRF bypass)
 Route::post('opencollective/contribution', [OpenCollectiveWebhookController::class, 'handle'])->name('opencollective.webhook');
 

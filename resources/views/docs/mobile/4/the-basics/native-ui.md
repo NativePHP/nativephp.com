@@ -46,13 +46,13 @@ Once you're comfortable with the component syntax, two concepts organize your sc
 
 ### Navigation
 
-[Navigation](navigation) works like a native navigation stack, because it is one. Register screens with
+[Navigation](../super-native/navigation) works like a native navigation stack, because it is one. Register screens with
 `Route::native()`, then push, pop, and replace them from inside your components — with native transitions, route
 parameters, and data passing along the way.
 
 ### Layouts
 
-[Layouts](layouts) wrap the screens routed beneath them with shared chrome — a top nav bar, a bottom tab bar, or
+[Layouts](../super-native/layouts) wrap the screens routed beneath them with shared chrome — a top nav bar, a bottom tab bar, or
 both — so individual screens stay focused on their content. Declare the chrome once in a `NativeLayout` class,
 attach it to a route or group of routes, and the framework swaps between "tabs" and "stack" chrome automatically as
 users move around.

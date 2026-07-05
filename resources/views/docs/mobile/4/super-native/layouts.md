@@ -1,6 +1,6 @@
 ---
 title: Layouts
-order: 170
+order: 40
 ---
 
 ## Overview

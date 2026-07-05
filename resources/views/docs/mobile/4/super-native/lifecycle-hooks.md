@@ -1,6 +1,6 @@
 ---
 title: Lifecycle Hooks
-order: 20
+order: 10
 ---
 
 ## Overview
@@ -16,7 +16,7 @@ on top, **resumes** when those screens pop away, and is **unmounted** when it fi
 ## mount()
 
 Runs **once**, right after the screen is pushed onto the stack. This is where you load the screen's initial data
-and read any [route params or navigation data](../the-basics/navigation#reading-params-and-data).
+and read any [route params or navigation data](../super-native/navigation#reading-params-and-data).
 
 ```php
 class ProductScreen extends NativeComponent
@@ -98,7 +98,7 @@ Most cleanup registered by plugins (e.g. Vibe leaving a channel) is wired automa
 
 ## updated{Property}()
 
-Runs whenever a [model-bound](../the-basics/native-ui) property changes from the UI — the native equivalent of
+Runs whenever a [model-bound](data-binding) property changes from the UI — the native equivalent of
 Livewire's updated hooks. The hook name is `updated` + the studly-cased property name, and it receives the new
 value.
 

@@ -72,7 +72,7 @@ Any `url` that doesn't match a registered native route will exit to the web view
 
 ## Builder API
 
-When a `<native:top-bar>` is supplied by a [layout](../the-basics/layouts), you build it fluently with the `NavBar`
+When a `<native:top-bar>` is supplied by a [layout](../super-native/layouts), you build it fluently with the `NavBar`
 and `NavAction` builders rather than writing it in Blade.
 
 ```php
@@ -135,4 +135,4 @@ class ItemDetail extends NativeComponent
 }
 ```
 
-See [Layouts](../the-basics/layouts) for the full picture.
+See [Layouts](../super-native/layouts) for the full picture.
