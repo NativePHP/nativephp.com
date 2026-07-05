@@ -1,6 +1,6 @@
 ---
 title: Web View
-order: 265
+order: 460
 ---
 
 With EDGE, native UI is the primary way to build your app — the web view is just one more component you can reach for,

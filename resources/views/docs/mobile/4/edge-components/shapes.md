@@ -1,6 +1,6 @@
 ---
 title: Shapes
-order: 600
+order: 360
 ---
 
 ## Overview

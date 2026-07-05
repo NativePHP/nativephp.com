@@ -1,6 +1,6 @@
 ---
 title: Side Navigation
-order: 400
+order: 370
 ---
 
 ## Overview

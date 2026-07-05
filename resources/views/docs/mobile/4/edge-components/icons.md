@@ -1,6 +1,6 @@
 ---
 title: Icons
-order: 9999
+order: 240
 ---
 
 ## Overview

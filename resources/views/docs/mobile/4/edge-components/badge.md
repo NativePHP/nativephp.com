@@ -1,6 +1,6 @@
 ---
 title: Badge
-order: 360
+order: 110
 ---
 
 ## Overview

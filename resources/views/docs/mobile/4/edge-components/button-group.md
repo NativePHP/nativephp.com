@@ -1,6 +1,6 @@
 ---
 title: Button Group
-order: 315
+order: 150
 ---
 
 ## Overview

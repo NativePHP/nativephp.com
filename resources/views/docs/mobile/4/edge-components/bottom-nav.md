@@ -1,6 +1,6 @@
 ---
 title: Bottom Navigation
-order: 100
+order: 120
 ---
 
 ## Overview

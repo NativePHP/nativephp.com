@@ -1,6 +1,6 @@
 ---
 title: Text Input
-order: 500
+order: 430
 ---
 
 ## Overview
