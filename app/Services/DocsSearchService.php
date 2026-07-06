@@ -232,18 +232,30 @@ class DocsSearchService
 
     protected function stripBladeComponents(string $content): string
     {
-        // Remove <x-component>...</x-component> tags
-        $content = preg_replace('/<x-[^>]+>[\s\S]*?<\/x-[^>]+>/s', '', $content);
-        // Remove self-closing <x-component /> tags
-        $content = preg_replace('/<x-[^\/]+\/>/s', '', $content);
-        // Remove {{ }} blade echoes
-        $content = preg_replace('/\{\{.*?\}\}/s', '', $content);
-        // Remove {!! !!} unescaped echoes
-        $content = preg_replace('/\{!![\s\S]*?!!\}/s', '', $content);
-        // Remove @directives
-        $content = preg_replace('/@\w+(\([^)]*\))?/', '', $content);
+        // Fenced code blocks are preserved verbatim: they document the component
+        // API itself (<native:*> tags, @press/@change directives, {{ }} bindings),
+        // and Jump renders them as live examples. Only prose is cleaned — stripping
+        // directives from a code block turns `@press="save"` into `="save"`.
+        $segments = preg_split('/(```[\s\S]*?```)/', $content, -1, PREG_SPLIT_DELIM_CAPTURE);
 
-        return $content;
+        foreach ($segments as $i => $segment) {
+            if (str_starts_with($segment, '```')) {
+                continue; // code block — leave untouched
+            }
+            // Remove <x-component>...</x-component> tags
+            $segment = preg_replace('/<x-[^>]+>[\s\S]*?<\/x-[^>]+>/s', '', $segment);
+            // Remove self-closing <x-component /> tags
+            $segment = preg_replace('/<x-[^\/]+\/>/s', '', $segment);
+            // Remove {{ }} blade echoes
+            $segment = preg_replace('/\{\{.*?\}\}/s', '', $segment);
+            // Remove {!! !!} unescaped echoes
+            $segment = preg_replace('/\{!![\s\S]*?!!\}/s', '', $segment);
+            // Remove @directives (@verbatim wrappers, @php, etc.)
+            $segment = preg_replace('/@\w+(\([^)]*\))?/', '', $segment);
+            $segments[$i] = $segment;
+        }
+
+        return implode('', $segments);
     }
 
     protected function extractHeadings(string $content): array
