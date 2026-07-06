@@ -443,6 +443,7 @@ Route::middleware('signed')->group(function (): void {
 });
 
 Route::get('.well-known/assetlinks.json', [ApplinksController::class, 'assetLinks']);
+Route::get('.well-known/apple-app-site-association', [ApplinksController::class, 'appSiteAssociation']);
 
 Route::post('webhooks/plugins/{secret}', PluginWebhookController::class)->name('webhooks.plugins');
 
