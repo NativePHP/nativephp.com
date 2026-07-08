@@ -7,9 +7,22 @@
                 PARTNER PROSPECTUS &middot; 2026
             </p>
 
-            <h1 class="text-5xl font-extrabold md:text-6xl lg:text-7xl">
-                The
-                <span class="bg-gradient-to-r from-violet-500 to-indigo-500 bg-clip-text text-transparent dark:from-violet-400 dark:to-indigo-400">Vibes</span>
+            <h1>
+                <span class="sr-only">The Vibes, hosted by NativePHP</span>
+                <img
+                    src="/img/the-vibes/logo.svg"
+                    alt=""
+                    width="708"
+                    height="392"
+                    class="mx-auto block h-auto w-72 dark:hidden sm:w-96"
+                />
+                <img
+                    src="/img/the-vibes/logo-dark.svg"
+                    alt=""
+                    width="708"
+                    height="392"
+                    class="mx-auto hidden h-auto w-72 dark:block sm:w-96"
+                />
             </h1>
 
             <p class="mt-4 text-lg text-gray-600 dark:text-gray-400">
@@ -122,6 +135,17 @@
             </ul>
         </section>
 
+        {{-- ═══ CURRENT PARTNERS ═══ --}}
+        <section class="mb-20">
+            <h2 class="text-3xl font-bold md:text-4xl">Already On Board</h2>
+            <p class="mt-2 text-gray-600 dark:text-gray-400">The partners already backing the first-ever NativePHP meetup. Join them.</p>
+            <div class="mt-2 h-1 w-32 rounded bg-violet-500"></div>
+
+            <div class="mt-10 grid grid-cols-1 gap-5 sm:grid-cols-2 md:grid-cols-4">
+                <x-sponsors.vibes-partners />
+            </div>
+        </section>
+
         {{-- ═══ PARTNERSHIP TIERS ═══ --}}
         <section class="mb-20">
             <h2 class="text-3xl font-bold md:text-4xl">Partnership Tiers</h2>
@@ -227,6 +251,48 @@
                         Association with the NativePHP and Laravel community
                     </li>
                 </ul>
+            </div>
+        </section>
+
+        {{-- ═══ IN-KIND PARTNERS: FOOD & VENUE ═══ --}}
+        <section class="mb-20">
+            <div class="overflow-hidden rounded-2xl border-2 border-dashed border-violet-500/40 bg-violet-50/60 p-8 dark:bg-violet-500/5 sm:p-10">
+                <div class="flex flex-col gap-8 lg:flex-row lg:items-center lg:justify-between">
+                    <div class="max-w-2xl">
+                        <p class="text-xs font-bold uppercase tracking-widest text-violet-500 dark:text-violet-400">Now Seeking</p>
+                        <h2 class="mt-2 text-2xl font-bold md:text-3xl">Food &amp; Venue Partners</h2>
+                        <p class="mt-4 text-gray-600 dark:text-gray-400">
+                            Beyond the tiers above, we're looking for in-kind partners to help feed and host the room.
+                            Cover the catering or provide the venue and we'll give you headline-level recognition to
+                            match — prominent logo placement, day-of call-outs, and our lasting gratitude.
+                        </p>
+                        <div class="mt-6 flex flex-wrap gap-3">
+                            <span class="inline-flex items-center gap-2 rounded-full bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm dark:bg-white/10 dark:text-gray-200">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-4 text-violet-500 dark:text-violet-400">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 8.25v-1.5m0 1.5c-1.355 0-2.697.056-4.024.166C6.845 8.51 6 9.473 6 10.608v2.513m6-4.871c1.355 0 2.697.056 4.024.166C17.155 8.51 18 9.473 18 10.608v2.513M15 8.25v-1.5m-6 1.5v-1.5m12 9.75-1.5.75a3.354 3.354 0 0 1-3 0 3.354 3.354 0 0 0-3 0 3.354 3.354 0 0 1-3 0 3.354 3.354 0 0 0-3 0 3.354 3.354 0 0 1-3 0L3 16.5m15-3.379a48.474 48.474 0 0 0-6-.371c-2.032 0-4.034.126-6 .371m12 0c.39.049.777.102 1.163.16 1.07.16 1.837 1.094 1.837 2.175v5.169c0 .621-.504 1.125-1.125 1.125H4.125A1.125 1.125 0 0 1 3 20.625v-5.17c0-1.08.768-2.014 1.837-2.174A47.78 47.78 0 0 1 6 13.12" />
+                                </svg>
+                                Food &amp; Drink Partner
+                            </span>
+                            <span class="inline-flex items-center gap-2 rounded-full bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm dark:bg-white/10 dark:text-gray-200">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-4 text-violet-500 dark:text-violet-400">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z" />
+                                </svg>
+                                Venue Partner
+                            </span>
+                        </div>
+                    </div>
+                    <a
+                        href="mailto:support@nativephp.com?subject=The%20Vibes%20-%20Food%20%26%20Venue%20Partnership"
+                        class="inline-flex shrink-0 items-center justify-center gap-2 rounded-xl bg-violet-600 px-6 py-3 font-semibold text-white transition duration-200 hover:bg-violet-700 dark:bg-violet-500 dark:hover:bg-violet-400"
+                    >
+                        <svg xmlns="http://www.w3.org/2000/svg" class="size-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                            <polyline points="22,6 12,13 2,6"></polyline>
+                        </svg>
+                        Discuss a Partnership
+                    </a>
+                </div>
             </div>
         </section>
 
