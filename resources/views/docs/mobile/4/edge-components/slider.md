@@ -30,7 +30,7 @@ under control while the user drags.
 
 ## Events
 
-- `@change` - Livewire method called when the value changes. Receives the new float value
+- `@change` - Component method called when the value changes. Receives the new float value
 
 ## Two-way Binding
 
@@ -93,4 +93,4 @@ Slider::make()
 - `size(string $value)` - `sm | md | lg`
 - `a11yLabel(string $value)`, `a11yHint(string $value)` - Accessibility
 - `syncMode(string $mode)`, `debounceMs(int $ms)` - Set by `native:model` modifiers
-- `onChange(string $method)` - Livewire method invoked on change
+- `onChange(string $method)` - Component method invoked on change

@@ -31,8 +31,8 @@ Pair with [`<native:list-item>`](#list-item) for Material3 list rows, or use any
 - `horizontal` - Lay out children horizontally instead of vertically (optional, boolean, default: `false`)
 - `shows-indicators` - Show scroll indicators (optional, boolean, default: `false`) [iOS]
 - `separator` - Render dividers between rows (optional, boolean, default: `false`) [iOS]
-- `on-refresh` - Livewire method called on pull-to-refresh (optional, string) [iOS]
-- `on-end-reached` - Livewire method called when the user nears the end of the list (optional, string)
+- `on-refresh` - Component method called on pull-to-refresh (optional, string) [iOS]
+- `on-end-reached` - Component method called when the user nears the end of the list (optional, string)
 
 ## Children
 

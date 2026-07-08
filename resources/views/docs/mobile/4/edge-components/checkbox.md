@@ -27,11 +27,11 @@ Per Model 3, check/border/label colors come from the theme — no per-instance o
 
 ## Events
 
-- `@change` - Livewire method called when toggled. Receives the new boolean value as a parameter
+- `@change` - Component method called when toggled. Receives the new boolean value as a parameter
 
 ## Two-way Binding
 
-Use `native:model` for automatic two-way binding with a Livewire boolean property.
+Use `native:model` for automatic two-way binding with a boolean property on your component.
 
 @verbatim
 ```blade
@@ -79,4 +79,4 @@ Checkbox::make()
 - `a11yLabel(string $value)` - Accessibility label
 - `a11yHint(string $value)` - Accessibility hint
 - `syncMode(string $mode)`, `debounceMs(int $ms)` - Set by `native:model` modifiers
-- `onChange(string $method)` - Livewire method invoked on toggle
+- `onChange(string $method)` - Component method invoked on toggle

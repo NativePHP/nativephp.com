@@ -26,11 +26,11 @@ Use this for short, mutually-exclusive choices that fit on one row. For more opt
 
 ## Events
 
-- `@change` - Livewire method called when the selection changes. Receives the new index as a parameter
+- `@change` - Component method called when the selection changes. Receives the new index as a parameter
 
 ## Two-way Binding
 
-`native:model` binds the selected index to a Livewire integer property:
+`native:model` binds the selected index to an integer property on your component:
 
 @verbatim
 ```blade
@@ -80,4 +80,4 @@ ButtonGroup::make()
 - `disabled(bool $value = true)` - Disable the group
 - `a11yLabel(string $value)` - Accessibility label
 - `syncMode(string $mode)` - `live | blur | debounce` (set by `native:model` modifiers)
-- `onChange(string $method)` - Livewire method invoked on change
+- `onChange(string $method)` - Component method invoked on change

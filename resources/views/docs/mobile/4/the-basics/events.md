@@ -77,7 +77,7 @@ Dialog::alert('Warning!', 'You are about to delete everything! Are you sure?', [
 
 ### Handle the event
 
-Here's an example handling a custom event class inside a Livewire component.
+Here's an example handling a custom event class inside a component.
 
 ```php
 use App\Events\MyButtonPressed;

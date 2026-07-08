@@ -26,7 +26,7 @@ color overrides. For custom visuals drop to [`<native:pressable>`](pressable) wr
 
 ## Events
 
-- `@change` - Livewire method called when the toggle is flipped. Receives the new boolean value as a parameter
+- `@change` - Component method called when the toggle is flipped. Receives the new boolean value as a parameter
 
 <aside>
 
@@ -39,7 +39,7 @@ before rendering.
 
 ## Two-way Binding
 
-Use the `native:model` directive for automatic two-way binding with a Livewire property. This expands to
+Use the `native:model` directive for automatic two-way binding with a component property. This expands to
 `:value` plus an `@change` handler that calls `__syncProperty`.
 
 @verbatim
@@ -105,4 +105,4 @@ Toggle::make()
 - `a11yHint(string $value)` - Accessibility hint
 - `syncMode(string $mode)` - `live | blur | debounce` (set by `native:model` modifiers)
 - `debounceMs(int $ms)` - Debounce interval when `syncMode === 'debounce'`
-- `onChange(string $method)` - Livewire method invoked on flip
+- `onChange(string $method)` - Component method invoked on flip

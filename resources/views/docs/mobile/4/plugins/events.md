@@ -8,7 +8,7 @@ order: 500
 Many native operations are asynchronous — ML inference, sensor readings, background tasks. Your native code needs a
 way to send results back to PHP when they're ready. That's where events come in.
 
-Events are dispatched from native code and received by your Livewire components.
+Events are dispatched from native code and received by your components.
 
 ## Declaring Events
 

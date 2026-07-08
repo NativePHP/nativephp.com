@@ -71,8 +71,8 @@ Both variants accept identical props.
 
 ## Events
 
-- `@change` - Livewire method called when the text changes. Receives the new value
-- `@submit` - Livewire method called when the user submits (e.g. presses return). Receives the current value
+- `@change` - Component method called when the text changes. Receives the new value
+- `@submit` - Component method called when the user submits (e.g. presses return). Receives the current value
 
 <aside>
 
@@ -82,7 +82,7 @@ Both variants are self-closing. They do not accept children.
 
 ## Two-way Binding
 
-Use the `native:model` directive for automatic two-way binding with a Livewire property. The directive expands to
+Use the `native:model` directive for automatic two-way binding with a component property. The directive expands to
 `:value`, `@change="__syncProperty(...)"`, and a `sync-mode` prop driven by the modifier chain.
 
 @verbatim

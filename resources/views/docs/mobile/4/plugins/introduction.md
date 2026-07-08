@@ -31,7 +31,7 @@ Install a plugin and its native features become available to your PHP code throu
 Plugins have full access to native platform capabilities:
 
 - **Bridge functions** — Call Swift/Kotlin code from PHP and get results back
-- **Events** — Dispatch events from native code to your Livewire components
+- **Events** — Dispatch events from native code to your components
 - **Permissions** — Declare required permissions (camera, location, etc.)
 - **Dependencies** — Include native libraries via Gradle, CocoaPods, or Swift Package Manager
 - **Custom repositories** — Use private Maven repos for enterprise SDKs
@@ -59,7 +59,7 @@ public function handleResult($data)
 ```
 
 The native code runs on-device, communicates with your PHP through the bridge, and dispatches events back to your
-Livewire components. It's the same model you're already using.
+components. It's the same model you're already using.
 
 ## Getting Started
 

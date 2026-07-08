@@ -32,11 +32,11 @@ Per Model 3, the active tab uses `theme.primary` and the underline is `theme.pri
 
 ## Events
 
-- `@change` - Livewire method called when the selection changes. Receives the new index as a parameter
+- `@change` - Component method called when the selection changes. Receives the new index as a parameter
 
 ## Two-way Binding
 
-`native:model` binds the selected index to a Livewire integer property:
+`native:model` binds the selected index to an integer property on your component:
 
 @verbatim
 ```blade
@@ -119,7 +119,7 @@ TabRow::make(
 - `selectedIndex(int $index)` - Currently selected index
 - `a11yLabel(string $value)` - Accessibility label
 - `syncMode(string $mode)` - Set by `native:model` modifiers
-- `onChange(string $method)` - Livewire method invoked on change
+- `onChange(string $method)` - Component method invoked on change
 
 ### `Tab` methods
 

@@ -27,11 +27,11 @@ When selected, the chip fills with `theme.primary` and uses `theme.onPrimary` fo
 
 ## Events
 
-- `@change` - Livewire method called when toggled. Receives the new boolean value
+- `@change` - Component method called when toggled. Receives the new boolean value
 
 ## Two-way Binding
 
-`native:model` binds the selected state to a Livewire boolean property:
+`native:model` binds the selected state to a boolean property on your component:
 
 @verbatim
 ```blade
@@ -79,4 +79,4 @@ Chip::make('Verified')
 - `disabled(bool $value = true)` - Disable the chip
 - `a11yLabel(string $value)`, `a11yHint(string $value)` - Accessibility
 - `syncMode(string $mode)` - Set by `native:model` modifiers
-- `onChange(string $method)` - Livewire method invoked on toggle
+- `onChange(string $method)` - Component method invoked on toggle
