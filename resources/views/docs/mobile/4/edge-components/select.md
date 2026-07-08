@@ -33,11 +33,11 @@ Per Model 3, colors and borders come from theme tokens.
 
 ## Events
 
-- `@change` - Livewire method called when the selection changes. Receives the new option string
+- `@change` - Component method called when the selection changes. Receives the new option string
 
 ## Two-way Binding
 
-`native:model` binds the selected option to a Livewire string property:
+`native:model` binds the selected option to a string property on your component:
 
 @verbatim
 ```blade
@@ -93,4 +93,4 @@ Select::make()
 - `disabled(bool $value = true)` - Disable the picker
 - `a11yLabel(string $value)`, `a11yHint(string $value)` - Accessibility
 - `syncMode(string $mode)` - Set by `native:model` modifiers
-- `onChange(string $method)` - Livewire method invoked on change
+- `onChange(string $method)` - Component method invoked on change

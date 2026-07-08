@@ -93,7 +93,7 @@ $result = PluginName::doSomething(['option' => 'value']);
 
 ## Listening to Plugin Events
 
-Plugins dispatch events to your Livewire components. Use the `#[OnNative]` attribute to listen for them:
+Plugins dispatch events to your components. Use the `#[OnNative]` attribute to listen for them:
 
 ```php
 use Native\Mobile\Attributes\OnNative;

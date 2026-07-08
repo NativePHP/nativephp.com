@@ -63,7 +63,7 @@ PushNotifications::getToken();
 If the user has approved your app to use push notifications and the request to FCM succeeded, a `TokenGenerated` event
 will fire.
 
-Listen for this event to receive the token. Here's an example in a Livewire component:
+Listen for this event to receive the token. Here's an example in a component class:
 
 ```php
 use App\Services\APIService;

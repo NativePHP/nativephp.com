@@ -321,7 +321,7 @@ Writing native mobile code is hard. These agents understand:
 - NativePHP's bridge function patterns and response formats
 - Platform-specific APIs and how to expose them to PHP
 - Permission declarations, entitlements, and manifest configuration
-- Event dispatching from native code to Livewire components
+- Event dispatching from native code to your components
 - Dependency management across Gradle, CocoaPods, and SPM
 
 Instead of learning two new languages and their ecosystems, describe what you need and let the agents handle the

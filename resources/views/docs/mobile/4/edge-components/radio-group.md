@@ -30,11 +30,11 @@ Per Model 3, all colors come from theme tokens.
 
 ## Events
 
-- `@change` - Livewire method called when the selection changes. Receives the new value as a parameter
+- `@change` - Component method called when the selection changes. Receives the new value as a parameter
 
 ## Two-way Binding
 
-`native:model` binds the group's selected value to a Livewire string property:
+`native:model` binds the group's selected value to a string property on your component:
 
 @verbatim
 ```blade
@@ -104,7 +104,7 @@ RadioGroup::make(
 - `disabled(bool $value = true)` - Disable the group
 - `a11yLabel(string $value)`, `a11yHint(string $value)` - Accessibility
 - `syncMode(string $mode)` - Set by `native:model` modifiers
-- `onChange(string $method)` - Livewire method invoked on selection change
+- `onChange(string $method)` - Component method invoked on selection change
 
 ### `Radio` methods
 

@@ -28,8 +28,8 @@ All [shared layout and style attributes](layout) are supported, plus:
 
 ## Events
 
-- `@press` - Livewire method to call on tap
-- `@longPress` - Livewire method to call on long press
+- `@press` - Component method to call on tap
+- `@longPress` - Component method to call on long press
 
 ## Children
 

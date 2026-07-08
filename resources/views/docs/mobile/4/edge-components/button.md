@@ -34,7 +34,7 @@ The label can be passed as the `label` attribute or as slot content between the 
 
 ## Events
 
-- `@press` - Livewire method to call when tapped
+- `@press` - Component method to call when tapped
 
 <aside>
 
@@ -126,4 +126,4 @@ Button::make('Save')
 - `loading(bool $value = true)` - Show a spinner and prevent presses
 - `a11yLabel(string $value)` - Accessibility label override
 - `a11yHint(string $value)` - Accessibility hint
-- `onPress(string $method)` - Livewire method to invoke on tap
+- `onPress(string $method)` - Component method to invoke on tap

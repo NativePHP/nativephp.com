@@ -115,7 +115,7 @@ NavBar::make()
 - `icon(string $icon)` - A named [icon](icons)
 - `label(string $label)` - Accessibility / overflow-menu label
 - `url(string $url)` - A URL to navigate to when tapped
-- `press(string $method)` - A Livewire-style method on the screen to invoke when tapped
+- `press(string $method)` - A component method on the screen to invoke when tapped
 - `event(string $event)` - A native event name to dispatch (advanced)
 
 ## Per-screen overrides
