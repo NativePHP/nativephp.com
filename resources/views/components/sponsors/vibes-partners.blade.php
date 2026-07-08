@@ -65,6 +65,14 @@
             'component' => 'sponsors.logos.jump24',
             'class' => 'h-10 text-black dark:text-white',
         ],
+        [
+            'url' => 'https://www.jetbrains.com/phpstorm/?utm_source=nativephp&utm_medium=sponsorship&utm_campaign=thevibes',
+            'name' => 'PhpStorm',
+            'image' => '/img/sponsors/phpstorm.svg',
+            'imageDark' => '/img/sponsors/phpstorm-dark.svg',
+            'width' => 275,
+            'height' => 79,
+        ],
     ];
 @endphp
 
