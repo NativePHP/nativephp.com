@@ -21,7 +21,7 @@ the platform separator color (`UIColor.separator` on iOS, Material `outlineVaria
 `<native:divider />` is a self-closing element. It does not accept children.
 
 The line is **always 1pt high**. For thicker rules, drop in a styled column instead:
-`<native:column class="h-px bg-zinc-200" />` for 1px, `<native:column class="h-1 bg-zinc-200" />` for 4dp, etc.
+`<native:column class="h-px bg-theme-outline" />` for 1px, `<native:column class="h-1 bg-theme-outline" />` for 4dp, etc.
 
 </aside>
 

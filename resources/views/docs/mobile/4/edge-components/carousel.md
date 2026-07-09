@@ -14,7 +14,7 @@ stack with `item-spacing` between items.
     @foreach($posts as $post)
         <native:column :height="200" bg="#F1F5F9" :border-radius="16" :padding="16">
             <native:text class="text-lg font-bold">{{ $post->title }}</native:text>
-            <native:text class="text-sm text-slate-500">{{ $post->excerpt }}</native:text>
+            <native:text class="text-sm text-theme-on-surface-variant">{{ $post->excerpt }}</native:text>
         </native:column>
     @endforeach
 </native:carousel>

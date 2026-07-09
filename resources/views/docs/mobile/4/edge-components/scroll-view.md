@@ -51,7 +51,7 @@ scrollable content.
         @foreach($posts as $post)
             <native:column class="w-full p-4 gap-2" :border-width="1" border-color="#F1F5F9">
                 <native:text class="text-lg font-semibold">{{ $post->title }}</native:text>
-                <native:text class="text-base text-slate-500">{{ $post->excerpt }}</native:text>
+                <native:text class="text-base text-theme-on-surface-variant">{{ $post->excerpt }}</native:text>
             </native:column>
         @endforeach
     </native:column>
@@ -88,7 +88,7 @@ scrollable content.
 <native:scroll-view class="w-full h-full" bg="#FFFFFF">
     <native:column class="w-full gap-4 safe-area p-4">
         <native:text class="text-3xl font-bold">Welcome</native:text>
-        <native:text class="text-base text-slate-500">
+        <native:text class="text-base text-theme-on-surface-variant">
             Scroll down to see more content.
         </native:text>
         {{-- Long content here --}}

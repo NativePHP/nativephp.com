@@ -26,6 +26,11 @@ For changes prior to v4, see the [v3 documentation](/docs/mobile/3/getting-start
 - **[Native navigation stack](../super-native/navigation)** — register screens with `Route::native()`, then push, pop, and replace them with native transitions
 - **[Component testing suite](../testing/introduction)** — mount a `NativeComponent`, drive interactions, and assert on state and output entirely in-process, with no device or simulator
 
+### Breaking Changes
+
+- **Device, Dialog, File and System are now core built-ins** — the `nativephp/mobile-device`, `nativephp/mobile-dialog`, `nativephp/mobile-file`, and `nativephp/mobile-system` plugins have moved into `nativephp/mobile`. **Remove the standalone plugins before upgrading** (see the [Upgrade Guide](upgrade-guide)). The facades and events are unchanged, so no application code changes are needed.
+- **The Vite dev server is now opt-in** — `native:run` / `native:watch` no longer start Vite automatically. Pass `--vite` to enable JS/CSS HMR. The `--no-vite` flag still works but is now redundant. See [Hot Reloading](development#hot-reloading).
+
 ### For Plugin Developers
 
 - **No breaking changes** to the plugin architecture — add the `^4.0` constraint to your plugin's `nativephp/mobile` dependency and you're done

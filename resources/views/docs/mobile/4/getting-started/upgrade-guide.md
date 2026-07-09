@@ -3,6 +3,90 @@ title: Upgrade Guide
 order: 3
 ---
 
+## Upgrading To 4.0 From 3.x
+
+v4's headline is [SuperNative](../super-native/introduction) — fully native UI. Most of the release is additive,
+but there is **one breaking change to your dependencies**: a handful of APIs that used to be separate plugins are
+now core built-ins.
+
+### Why SuperNative
+
+For its first three major versions, NativePHP for Mobile was built around a fast, opinionated web view. It worked
+well — but it tied your app's UI to a stack of moving parts we didn't own, and every upstream release was a chance
+for something to break. Inertia 3 dropped its axios dependency and broke Inertia apps. Livewire 4 began emitting
+filenames containing an emoji (🔥) that our bundled PHP binaries initially couldn't read. We spent real energy
+chasing a target that kept moving, on layers we couldn't control.
+
+SuperNative changes that equation. Instead of rendering your UI in a browser and hoping the layers above stay
+compatible, it renders real SwiftUI and Jetpack Compose views driven directly by your PHP — a stack we own end to
+end, from your Laravel app all the way down to the native view tree. That means our effort goes into making *that*
+fast, stable, and capable, rather than reacting to churn elsewhere. The web view's advantages have narrowed as
+SuperNative's rendering has matured, and for new work SuperNative is where the platform — and our focus — is
+headed.
+
+The web view isn't going away: [it's still available as a component](../edge-components/web-view) for the cases
+that genuinely need HTML. But it's now opt-in, not the foundation.
+
+### Device, Dialog, File and System are now built in
+
+`Device`, `Dialog`, `File`, and `System` now ship inside `nativephp/mobile` — their native bridge functions are
+registered by core. `nativephp/mobile` v4 declares a Composer **conflict** with the four standalone plugins, so
+`composer update` will refuse to resolve until you **remove them**.
+
+Uninstall each one you have (this also unregisters it from your `NativeServiceProvider`):
+
+```shell
+php artisan native:plugin:uninstall nativephp/mobile-device
+php artisan native:plugin:uninstall nativephp/mobile-dialog
+php artisan native:plugin:uninstall nativephp/mobile-file
+php artisan native:plugin:uninstall nativephp/mobile-system
+```
+
+Or remove them directly with Composer if they were never registered in your `NativeServiceProvider`:
+
+```shell
+composer remove nativephp/mobile-device nativephp/mobile-dialog nativephp/mobile-file nativephp/mobile-system
+```
+
+**No application code changes are required.** The `Native\Mobile\Facades\{Device, Dialog, File, System}` facades
+and their events (`ButtonPressed`, etc.) are unchanged. Their docs now live in the SuperNative section:
+[Device](../super-native/device), [Dialog](../super-native/dialog), [File](../super-native/file), and
+[System](../super-native/system).
+
+### The Vite dev server is now opt-in
+
+`native:run` and `native:watch` no longer start the Vite dev server automatically. If you rely on Vite HMR during
+development (React/Vue/Tailwind, etc.), add the `--vite` flag:
+
+```shell
+php artisan native:watch --vite
+php artisan native:run --watch --vite
+```
+
+The old `--no-vite` flag still exists but is now redundant — Vite is off unless you ask for it. If you have
+`--no-vite` in your scripts, you can drop it.
+
+### Update your dependency
+
+```json
+"require": {
+    "nativephp/mobile": "~3.1.0" // [tl! remove]
+    "nativephp/mobile": "~4.0.0" // [tl! add]
+}
+```
+
+```sh
+composer update
+php artisan native:install --force
+```
+
+<aside>
+
+The `--force` flag rebuilds the native project files with the v4 versions.
+
+</aside>
+
+
 ## Upgrading To 3.1 From 3.0
 
 v3.1 is a drop-in upgrade with no breaking changes. The headline feature is a **persistent PHP runtime** that

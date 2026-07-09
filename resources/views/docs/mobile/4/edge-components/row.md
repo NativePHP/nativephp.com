@@ -67,7 +67,7 @@ Everything else from the shared list applies the same as on any element (`w-*`, 
 @verbatim
 ```blade
 <native:row class="w-full justify-between items-center">
-    <native:text class="text-base text-slate-500">Status</native:text>
+    <native:text class="text-base text-theme-on-surface-variant">Status</native:text>
     <native:row class="gap-1 items-center">
         <native:icon name="check" color="#22C55E" :size="16" />
         <native:text class="text-base font-semibold text-green-500">Active</native:text>

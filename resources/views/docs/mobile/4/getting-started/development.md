@@ -177,12 +177,27 @@ application to the target device and _then_ start the watcher, all in one go.
 This will start a long-lived process that watches your application's source files for changes, pushing them into the
 emulator after any updates and reloading the current screen.
 
-If you're using Vite, we'll also use your Node CLI tool of choice (`npm`, `bun`, `pnpm`, or `yarn`) to run Vite's HMR
-server.
+If you're using Vite for your UI (React/Vue/Tailwind, etc.), pass the `--vite` flag and we'll also start Vite's HMR
+server using your Node CLI tool of choice (`npm`, `bun`, `pnpm`, or `yarn`):
+
+```shell
+php artisan native:watch --vite
+
+# or build, deploy, and start watching in one go:
+php artisan native:run --watch --vite
+```
+
+<aside>
+
+As of **v4**, the Vite dev server is **opt-in** — it only starts when you pass `--vite`. In earlier versions it
+started automatically and you disabled it with `--no-vite` (that flag still exists but is now redundant).
+
+</aside>
 
 ### Enabling HMR
 
-To make HMR work, you'll need to add the `hot` file helper to your `laravel` plugin's config in your `vite.config.js`:
+To make HMR work, add the `hot` file helper to your `laravel` plugin's config in your `vite.config.js`, then run
+the watcher with `--vite` (above):
 
 ```js
 import { nativephpMobile, nativephpHotFile } from './vendor/nativephp/mobile/resources/js/vite-plugin.js'; // [tl! focus]

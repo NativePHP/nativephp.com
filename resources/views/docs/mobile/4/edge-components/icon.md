@@ -66,7 +66,7 @@ and platform-specific usage, see the [Icons](icons) reference page.
 ```blade
 <native:column center :padding="32">
     <native:icon name="email" :size="64" color="#94A3B8" />
-    <native:text class="text-lg text-slate-400">No messages</native:text>
+    <native:text class="text-lg text-theme-on-surface-variant">No messages</native:text>
 </native:column>
 ```
 @endverbatim

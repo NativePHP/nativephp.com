@@ -101,6 +101,8 @@ in a screen's Blade.
 
 - `make()` — create a builder
 - `title(?string)` / `subtitle(?string)` — title and the small line under it
+- `titleView(Element|View)` — render a custom element or Blade view in the bar's centered slot instead of the string title (a logo lockup, wordmark, …)
+- `logo(string $src, float $height = 28)` — convenience over `titleView()` for a bundled logo image
 - `back(bool $show = true)` — show the back chevron
 - `backgroundColor(string)` / `textColor(string)` — bar background and title/icon tint
 - `elevation(int $px)` — hairline thickness at the bottom of the bar
@@ -118,6 +120,29 @@ in a screen's Blade.
 - `url(string)` — navigate to a URL when tapped; `event(string)` — dispatch a native event (advanced)
 - `destructive(bool = true)` — render in the destructive tint
 - `items(array $actions)` — nest `NavAction`s to render a pull-down menu; `NavAction::divider()` adds a separator
+
+#### Custom title view / logo
+
+Use `logo()` for the common case — a bundled brand image in place of the string title — or `titleView()` for any
+element tree or Blade view:
+
+```php
+public function navBar(NativeComponent $screen): ?NavBar
+{
+    return NavBar::make()
+        ->logo('images/logo.png');                       // bundled asset, ~28pt tall
+        // ->titleView(Image::make('images/logo.png')->height(24))
+        // ->titleView(view('native.brand-lockup'))
+}
+```
+
+<aside>
+
+A custom title view takes over the bar's centered slot and forces **inline** display mode, replacing the string
+title entirely. Bundle the image as an app asset rather than a remote URL so the bar doesn't flash while it loads.
+On iOS it renders as a `.principal` toolbar item; on Android it fills the `TopAppBar` title slot.
+
+</aside>
 
 ### `TabBar` — the bottom tabs
 
@@ -156,6 +181,58 @@ class AppLayout extends NativeLayout
     }
 }
 ```
+
+## Keyboard-aware bottom content
+
+Beyond the tab bar, a layout or an individual screen can pin its own content to the bottom of the screen — a chat
+input, a search field, a contextual action bar. This content **stays above the software keyboard automatically**:
+on iOS via `.safeAreaInset(.bottom)`, on Android via the `Scaffold` bottom bar plus `imePadding()`. The main
+content region sits above it and keeps its own scroll.
+
+The most ergonomic way is an inline `<native:bottom-bar>` at the root of a screen's Blade. It's lifted out of the
+content flow and pinned, and it overrides the layout's `bottomBar()` for that screen:
+
+@verbatim
+```blade
+<native:column class="w-full h-full">
+    <native:scroll-view class="w-full flex-1">
+        @foreach($messages as $message)
+            <native:text class="p-3">{{ $message->body }}</native:text>
+        @endforeach
+    </native:scroll-view>
+
+    {{-- Pinned to the bottom, riding above the keyboard while typing --}}
+    <native:bottom-bar class="p-2 glass">
+        <native:row class="w-full gap-2 items-center">
+            <native:outlined-text-input native:model="draft" placeholder="Message…" class="flex-1" />
+            <native:button label="Send" @press="send" />
+        </native:row>
+    </native:bottom-bar>
+</native:column>
+```
+@endverbatim
+
+To pin the same content across every screen under a layout, override `bottomBar()` instead — it returns any
+element tree:
+
+```php
+public function bottomBar(NativeComponent $screen): ?Element
+{
+    // Return an element tree, or null for no bottom bar.
+    // An inline <native:bottom-bar> on a screen overrides this for that screen.
+}
+```
+
+Style the bar with the `glass` / `glass-thick` classes for a Liquid Glass capsule. Bottom-pinned content is only
+rendered by layouts using native chrome (`usesNativeChrome()` is `true`).
+
+<aside>
+
+Let the bottom bar handle keyboard avoidance — don't add manual padding or shift the screen yourself. The platform
+lifts the bar (and the content above it) when the keyboard appears; doubling that up with your own padding pushes
+the content too far.
+
+</aside>
 
 ## How chrome wraps the screen
 

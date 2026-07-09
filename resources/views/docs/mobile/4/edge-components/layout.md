@@ -295,6 +295,7 @@ The parser recognizes the classes listed below.
 | Text size | `text-xs`, `text-sm`, `text-base`, `text-lg`, `text-xl`, `text-2xl`, `text-3xl`, `text-4xl`, `text-5xl`, `text-6xl`, arbitrary `text-[N]` |
 | Font weight | `font-thin`, `font-extralight`, `font-light`, `font-normal`, `font-medium`, `font-semibold`, `font-bold`, `font-extrabold`, `font-black` |
 | Text align | `text-left`, `text-center`, `text-right` |
+| Text selection | `select-text`, `select-none` (container-scoped; descendants inherit) |
 | Safe area | `safe-area` (top + bottom), `safe-area-top`, `safe-area-bottom` |
 | Liquid Glass | `glass`, `glass:prominent`, `glass:interactive`, `glass:clear` (compose: `glass:clear:interactive`) |
 
