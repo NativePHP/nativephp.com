@@ -38,6 +38,7 @@ php artisan native:run {os?} {udid?}
 | `udid` | Specific device/simulator UDID                    |
 | `--build=debug` | Build type: `debug`, `release`, or `bundle`       |
 | `--watch` | Enable hot reloading during development           |
+| `--vite` | Start the Vite dev server for JS/CSS HMR (opt-in; off by default) |
 | `--start-url=` | Initial URL/path to load (e.g., `/dashboard`)     |
 | `--no-tty` | Disable TTY mode for non-interactive environments |
 
@@ -60,6 +61,15 @@ php artisan native:watch {platform?} {target?}
 |--------|-----------------------------------------|
 | `platform` | Target platform: `ios/i` or `android/a` |
 | `target` | The device/simulator UDID to watch      |
+| `--vite` | Start the Vite dev server for JS/CSS HMR (opt-in; off by default) |
+
+<aside>
+
+As of **v4**, the Vite dev server is **opt-in** — pass `--vite` to `native:run`/`native:watch` to start it. It
+was previously started automatically; the old `--no-vite` flag still exists but is now redundant. See the
+[Upgrade Guide](upgrade-guide).
+
+</aside>
 
 ### native:jump
 
