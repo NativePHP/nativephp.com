@@ -80,6 +80,14 @@ Both variants are self-closing. They do not accept children.
 
 </aside>
 
+<aside>
+
+To keep an input visible while the keyboard is up — a chat composer, a search bar — place it in a
+[`<native:bottom-bar>`](../super-native/layouts#keyboard-aware-bottom-content), which pins above the keyboard
+automatically. Avoid manually padding or shifting the screen yourself.
+
+</aside>
+
 ## Two-way Binding
 
 Use the `native:model` directive for automatic two-way binding with a component property. The directive expands to

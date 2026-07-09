@@ -76,6 +76,71 @@ Specify any token under `dark` to override just that value:
 ],
 ```
 
+## Appearance in PHP
+
+The renderers switch between the `light` and `dark` token blocks automatically as the system appearance changes.
+When you need the current appearance in PHP — to pick an asset, resolve a token, or branch logic — read it from
+the `System` facade:
+
+```php
+use Native\Mobile\Facades\System;
+
+System::appearance();   // 'light' | 'dark'
+System::isDarkMode();   // bool
+System::isLightMode();  // bool
+```
+
+Global helper functions wrap the same calls for terse use in Blade and components:
+
+```php
+isDark();   // bool
+isLight();  // bool
+```
+
+### Resolving a token in PHP
+
+The `theme()` helper returns a token's value **for the current appearance** — the PHP-side counterpart to the
+`bg-theme-*` / `text-theme-*` classes, reading from the same `config/native-ui.php` theme config:
+
+```php
+theme('primary');            // config('native-ui.theme.dark.primary') in dark mode, light otherwise
+theme('primary', '#0F766E'); // fall back to a value when the token is unset
+```
+
+Pass a fallback when a setter needs a non-null string — `theme()` returns your default when the key is missing
+(or `native-ui` isn't installed).
+
+### Reacting to changes
+
+When the OS flips the theme — a Control Center toggle, or the sunset auto-switch — the `AppearanceChanged` event
+fires. React in a component with `#[On]`; `$mode` is `'light'` or `'dark'`:
+
+```php
+use Native\Mobile\Attributes\On;
+use Native\Mobile\Events\System\AppearanceChanged;
+
+#[On(AppearanceChanged::class)]
+public function appearanceChanged(string $mode): void
+{
+    // re-resolve anything appearance-dependent
+}
+```
+
+`AppearanceChanged` also dispatches globally, so code anywhere in the app can listen — not just the active
+screen:
+
+```php
+use Illuminate\Support\Facades\Event;
+use Native\Mobile\Events\System\AppearanceChanged;
+
+Event::listen(AppearanceChanged::class, function (AppearanceChanged $e) {
+    // $e->mode
+});
+```
+
+The query side (`System::appearance()` / `isDark()`) is kept in sync off this event, so reads stay fresh without
+a bridge round-trip.
+
 ## Runtime theming
 
 For per-tenant or user-selectable themes, merge tokens at runtime from a service provider with `Theme::merge()`.

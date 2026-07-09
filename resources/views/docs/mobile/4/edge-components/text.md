@@ -34,8 +34,50 @@ All [shared layout and style attributes](layout) are supported, plus:
 
 <aside>
 
-`<native:text>` is **not** self-closing. Text content goes between the tags as slot content. HTML tags inside the
-slot are stripped — only plain text is rendered.
+`<native:text>` is **not** self-closing — content goes between the tags. Nested `<native:text>` elements are
+supported as [inline runs](#inline-runs); any other HTML tags in the slot are stripped.
+
+</aside>
+
+## Inline runs
+
+Nest `<native:text>` elements inside a `<native:text>` to style spans within a single paragraph. The nested runs
+and the surrounding text compose into **one** attributed string that wraps together as a unit — each run carries
+its own classes (weight, color, size):
+
+@verbatim
+```blade
+<native:text class="text-base text-slate-700">
+    Use <native:text class="font-bold">bold</native:text> and
+    <native:text class="text-blue-500 font-semibold">color</native:text> inline.
+</native:text>
+```
+@endverbatim
+
+Runs render in document order, so interleaved text and nested `<native:text>` stay in sequence. A `<native:text>`
+with no nested runs behaves exactly like a plain string.
+
+## Text selection
+
+Text isn't selectable by default. Add `select-text` to make a subtree long-press-selectable (the native Copy
+menu). It's container-scoped and inherited, so it covers every descendant — put it on a wrapping element to make a
+whole region selectable. Use `select-none` to opt a nested subtree back out:
+
+@verbatim
+```blade
+<native:column class="select-text">
+    <native:text class="text-lg font-bold">Selectable heading</native:text>
+    <native:text class="text-base">This body copy can be selected and copied.</native:text>
+
+    <native:text class="select-none text-xs text-slate-400">Not selectable</native:text>
+</native:column>
+```
+@endverbatim
+
+<aside>
+
+`select-text` / `select-none` work on **any** element, not just text — they scope selection for the whole
+subtree. The programmatic equivalent is `->selectable()` / `->selectable(false)`.
 
 </aside>
 
@@ -135,3 +177,4 @@ Text::make('Hello')
 - `color(string $hex)` - Text color
 - `textAlign(int $align)` - `0`=start, `1`=center, `2`=end
 - `maxLines(int $lines)` - Truncate after N lines
+- `selectable(bool $on = true)` - Make the subtree selectable (mirrors `select-text` / `select-none`)
