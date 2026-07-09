@@ -47,7 +47,7 @@ latest code without needing to bump a version number by hand.
 
 You only need to change this when you're cutting a release build for distribution. Rather than editing your `.env`
 manually, use the
-[`native:release` command](/docs/mobile/3/getting-started/commands#nativerelease), which bumps the version (and build
+[`native:release` command](commands#nativerelease), which bumps the version (and build
 number) for you.
 
 <aside>
@@ -68,7 +68,7 @@ you see your latest changes.
 
 ## Persistent Runtime
 
-v3.1 introduces a persistent PHP runtime that boots Laravel once and reuses the kernel across all subsequent requests.
+NativePHP uses a persistent PHP runtime that boots Laravel once and reuses the kernel across all subsequent requests.
 This dramatically improves performance — from ~200-300ms per request down to ~5-30ms.
 
 The `runtime` section controls this behavior:
@@ -131,7 +131,7 @@ to function and bloat your downloads.
 
 ## Orientation
 
-NativePHP (as of v1.10.3) allows users to custom specific orientations per device through the config file. The config
+NativePHP allows users to custom specific orientations per device through the config file. The config
 allows for granularity for iPad, iPhone and Android devices. Options for each device can be seen below.
 
 NOTE: if you want to disable iPad support completely simply apply `false` for each option.

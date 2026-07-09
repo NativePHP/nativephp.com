@@ -65,7 +65,7 @@ php artisan native:watch {platform?} {target?}
 
 <aside>
 
-As of **v4**, the Vite dev server is **opt-in** — pass `--vite` to `native:run`/`native:watch` to start it. It
+The Vite dev server is **opt-in** — pass `--vite` to `native:run`/`native:watch` to start it. It
 was previously started automatically; the old `--no-vite` flag still exists but is now redundant. See the
 [Upgrade Guide](upgrade-guide).
 

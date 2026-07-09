@@ -3,8 +3,8 @@ title: About the New Architecture
 order: 10
 ---
 
-Since v1, NativePHP for Mobile has run your Laravel app on the device itself — no server, no network round-trip. In
-v3 and earlier, your app's UI rendered as HTML inside a web view. That model is productive and familiar, and it's
+NativePHP for Mobile runs your Laravel app on the device itself — no server, no network round-trip. Traditionally,
+your app's UI rendered as HTML inside a web view. That model is productive and familiar, and it's
 [still fully supported](../super-native/introduction#is-the-web-view-still-an-option). But it puts a browser between
 your app and the platform, and some things can only feel truly native when they *are* native.
 
@@ -68,7 +68,7 @@ app faster. If your app is happy in the web view, it will keep working exactly a
 
 ## Should you use it today?
 
-SuperNative is **the default** in v4: new apps render native screens from the very first route. It's in beta, so
+SuperNative is **the default**: new apps render native screens from the very first route. It's in beta, so
 expect rapid iteration — and if you'd rather wait, [opting out](../super-native/introduction#is-the-web-view-still-an-option)
 is one route and one component.
 

@@ -1,6 +1,6 @@
 ---
 title: Device
-order: 100
+order: 110
 ---
 
 ## Overview
@@ -8,7 +8,7 @@ order: 100
 The `Device` API exposes device hardware and information — vibration, the flashlight, a stable device
 identifier, and device + battery details.
 
-It's a **core built-in** in v4: the facade resolves with nothing to install or register.
+It's a **core built-in**: the facade resolves with nothing to install or register.
 
 ```php
 use Native\Mobile\Facades\Device;

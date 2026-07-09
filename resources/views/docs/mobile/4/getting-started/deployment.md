@@ -59,7 +59,7 @@ If you want more hands-on support, we happily work with our [Partners](/partners
 ## Releasing
 
 To prepare your app for release, bump the version number using the
-[`native:release` command](/docs/mobile/3/getting-started/commands#nativerelease):
+[`native:release` command](commands#nativerelease):
 
 ```shell
 php artisan native:release patch
@@ -115,7 +115,7 @@ Before you can package your app for distribution, ensure:
 2. You have a valid bundle ID and app ID configured in your `nativephp.php` config
 3. For Android: You have a signing keystore with a valid key alias
 4. For iOS: You have the necessary signing certificates and provisioning profiles from Apple Developer
-5. All configuration is complete (see the [configuration guide](/docs/mobile/3/getting-started/configuration))
+5. All configuration is complete (see the [configuration guide](configuration))
 
 ## Android Packaging
 

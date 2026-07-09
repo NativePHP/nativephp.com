@@ -24,7 +24,7 @@ When writing migrations, you need to consider any special recommendations for wo
 For example, prior to Laravel 11, SQLite foreign key constraints are turned off by default. If your application relies
 upon foreign key constraints, [you need to enable SQLite support for them](https://laravel.com/docs/database#configuration) before running your migrations.
 
-**It's important to test your migrations on [prod builds](/docs/mobile/1/getting-started/development#releasing)
+**It's important to test your migrations on [prod builds](../getting-started/deployment#releasing)
 before releasing updates!** You don't want to accidentally delete your user's data when they update your app.
 
 ## Seeding data with migrations
@@ -117,7 +117,7 @@ If anything, you should provide a client key that **only** allows client apps to
 authenticated your user, you can pass an access token back to your mobile app and use this for communicating with your
 API.
 
-Store these tokens on your users' devices securely with the [`SecureStorage`](/docs/mobile/1/apis/secure-storage) API.
+Store these tokens on your users' devices securely with the [`SecureStorage`](../plugins/core/secure-storage) API.
 
 It's a good practice to ensure these tokens have high entropy so that they are very hard to guess and a short lifespan.
 Generating tokens is cheap; leaking personal customer data can get _very_ expensive!

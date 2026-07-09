@@ -1,6 +1,6 @@
 ---
 title: Dialog
-order: 110
+order: 160
 ---
 
 ## Overview
@@ -8,7 +8,7 @@ order: 110
 The `Dialog` API shows native alert dialogs and toast/snackbar notifications — a real `UIAlertController` on
 iOS and `AlertDialog` on Android, so they look and feel exactly like the platform.
 
-It's a **core built-in** in v4: the facade resolves with nothing to install or register.
+It's a **core built-in**: the facade resolves with nothing to install or register.
 
 ```php
 use Native\Mobile\Facades\Dialog;

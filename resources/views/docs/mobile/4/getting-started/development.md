@@ -189,7 +189,7 @@ php artisan native:run --watch --vite
 
 <aside>
 
-As of **v4**, the Vite dev server is **opt-in** — it only starts when you pass `--vite`. In earlier versions it
+The Vite dev server is **opt-in** — it only starts when you pass `--vite`. It previously
 started automatically and you disabled it with `--no-vite` (that flag still exists but is now redundant).
 
 </aside>

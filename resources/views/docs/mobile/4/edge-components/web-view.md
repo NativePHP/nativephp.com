@@ -188,7 +188,7 @@ Older Android versions ship with older WebView engines that may not support mode
 For example, Tailwind CSS v4 uses `@theme` and other newer CSS features that are not supported on older WebView
 versions. If you are targeting a lower `min_sdk` to support older devices, consider using Tailwind CSS v3 or another
 CSS framework that generates compatible output. You can configure your minimum SDK version in your
-[Android SDK Versions](/docs/mobile/3/getting-started/configuration#android-sdk-versions) settings.
+[Android SDK Versions](../getting-started/configuration#android-sdk-versions) settings.
 
 Always test your app on emulators running your minimum supported Android version to catch these issues early. You can
 create emulators for older API levels in Android Studio's Virtual Device Manager.

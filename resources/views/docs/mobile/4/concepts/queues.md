@@ -83,7 +83,7 @@ NativePHP manages the worker lifecycle natively on both platforms.
 
 ## Things to Note
 
-- The queue worker requires [ZTS (Thread-Safe) PHP](/docs/mobile/3/getting-started/changelog), which is included by default in v3.1+.
+- The queue worker requires ZTS (Thread-Safe) PHP, which NativePHP includes by default.
 - Only the `database` queue connection is supported. This uses the same SQLite database as your app.
 - Jobs are persisted to the database, so they survive app restarts.
 - If a job fails, Laravel's standard retry and failure handling applies.

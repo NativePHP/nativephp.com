@@ -1,13 +1,13 @@
 ---
 title: System
-order: 130
+order: 140
 ---
 
 ## Overview
 
 The `System` API covers system-level concerns — platform detection and opening the app's settings screen.
 
-It's a **core built-in** in v4: the facade resolves with nothing to install or register.
+It's a **core built-in**: the facade resolves with nothing to install or register.
 
 ```php
 use Native\Mobile\Facades\System;

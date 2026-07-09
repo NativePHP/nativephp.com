@@ -5,13 +5,13 @@ order: 1
 
 ## What is SuperNative?
 
-SuperNative is the headline feature of NativePHP for Mobile v4: it drops the web view entirely in favor of fully
+SuperNative is the headline feature of NativePHP for Mobile: it drops the web view entirely in favor of fully
 native UI — SwiftUI on iOS and Jetpack Compose on Android.
 
 Your screens are no longer HTML rendered inside a browser shell. They are real, platform-native views, built and
 updated by your PHP code. Same Laravel app, same Blade templates — genuinely native UI.
 
-SuperNative is **the default** in v4. New apps render native screens from the very first route — no configuration
+SuperNative is **the default**. New apps render native screens from the very first route — no configuration
 required. Prefer to keep building with the web view? [Opting out](#is-the-web-view-still-an-option) is one route
 and one component.
 
@@ -66,7 +66,7 @@ Two reasons above all:
 ## Is the web view still an option?
 
 Yes. SuperNative applies **per route**: a URL you register with `Route::native()` renders as a native screen,
-while every other route renders in the web view as ordinary Laravel HTML — exactly as it did in v3.
+while every other route renders in the web view as ordinary Laravel HTML — exactly as it always has.
 
 ```php
 // Native screen — SuperNative renders it natively
@@ -89,10 +89,10 @@ SuperNative is in beta and moving quickly. On the roadmap:
 
 ## For Plugin Developers
 
-There are **no breaking changes** in our plugin architecture for v4.
+There are **no breaking changes** in our plugin architecture.
 
-Start updating your plugins now by widening the `nativephp/mobile` constraint in your plugin's `composer.json` to
-allow v4:
+When a new major version of `nativephp/mobile` ships, widen the constraint in your plugin's `composer.json` to
+allow the new release:
 
 ```json
 "require": {

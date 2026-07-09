@@ -49,9 +49,9 @@ composer remove nativephp/mobile-device nativephp/mobile-dialog nativephp/mobile
 ```
 
 **No application code changes are required.** The `Native\Mobile\Facades\{Device, Dialog, File, System}` facades
-and their events (`ButtonPressed`, etc.) are unchanged. Their docs now live in the SuperNative section:
-[Device](../super-native/device), [Dialog](../super-native/dialog), [File](../super-native/file), and
-[System](../super-native/system).
+and their events (`ButtonPressed`, etc.) are unchanged. Their docs now live in The Basics section:
+[Device](../the-basics/device), [Dialog](../the-basics/dialog), [File](../the-basics/file), and
+[System](../the-basics/system).
 
 ### The Vite dev server is now opt-in
 

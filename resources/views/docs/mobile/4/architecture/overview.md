@@ -4,7 +4,7 @@ order: 1
 ---
 
 Welcome! This section is a look under the hood of [SuperNative](../super-native/introduction), the engine that powers
-native rendering in NativePHP for Mobile v4. It explains how your Blade templates become real SwiftUI and Jetpack
+native rendering in NativePHP for Mobile. It explains how your Blade templates become real SwiftUI and Jetpack
 Compose views, how state flows between PHP and the screen, and why the whole thing is fast.
 
 <aside>
