@@ -24,7 +24,7 @@ When writing migrations, you need to consider any special recommendations for wo
 For example, prior to Laravel 11, SQLite foreign key constraints are turned off by default. If your application relies
 upon foreign key constraints, [you need to enable SQLite support for them](https://laravel.com/docs/database#configuration) before running your migrations.
 
-**It's important to test your migrations on [prod builds](../getting-started/deployment#releasing)
+**It's important to test your migrations on [prod builds](../publishing/introduction#releasing)
 before releasing updates!** You don't want to accidentally delete your user's data when they update your app.
 
 ## Seeding data with migrations

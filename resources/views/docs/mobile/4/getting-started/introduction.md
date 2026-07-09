@@ -43,8 +43,7 @@ ever. In just a few minutes, you can go from code to app store submission.
 1. A pre-compiled version of PHP is bundled with your code into a Swift/Kotlin shell application.
 2. NativePHP's custom Swift/Kotlin bridges manage the PHP environment, running your PHP code directly.
 3. A custom PHP extension is compiled into PHP, that exposes PHP interfaces to native functions.
-4. Build with HTML, JavaScript, Tailwind, Blade, Livewire, React, Vue, Svelte — whatever you're most comfortable with!
-5. Or build truly native UI with [EDGE](../edge-components/introduction) components!
+4. Build truly native UI with [EDGE](../edge-components/introduction) components — Blade components that render as real native views, so it feels just like building with Livewire. Read more about how it works in the [Architecture](../architecture/super-native) section.
 
 You simply interact with an easy-to-use set of functions from PHP and everything just works!
 
@@ -53,10 +52,15 @@ You simply interact with an easy-to-use set of functions from PHP and everything
 NativePHP for Mobile is way more than just a web view wrapper for your server-based application. Your application lives
 _on device_ and is shipped with each installation.
 
-Thanks to our custom PHP extension, you can interact with many native APIs today, with more coming all the time. Check out the API documentation section to see everything that's available.
+It's not a bare-bones package that leaves you assembling an array of third-party dependencies just to build your app —
+a great deal comes included. At the same time, the shell applications intentionally _don't_ bundle everything you might
+need: keeping them lean means a smaller app footprint, shorter build times, and minimal permission requirements — all of
+which smooths app store review and improves adoption.
 
-You have the full power of PHP and Laravel at your fingertips... literally! And you're not sandboxed into the web view;
-this goes way beyond what's possible with PWAs and WASM without any of the complexity... we've got full-cream PHP at
-the ready!
+Thanks to our custom PHP extension, you can interact with many native APIs today, with more coming all the time. Check out the [Plugins](../plugins/introduction) section to see everything that's available.
+
+You have the full power of PHP and Laravel at your fingertips... literally! And you're not sandboxed into a web view —
+NativePHP for Mobile renders full native UI by default, going way beyond what's possible with PWAs and WASM without any
+of the complexity... this is full-fat, full-stack PHP at the ready!
 
 **What are you waiting for!? [Let's go!](quick-start)**

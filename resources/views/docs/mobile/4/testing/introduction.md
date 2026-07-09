@@ -5,7 +5,7 @@ order: 100
 
 ## Overview
 
-NativePHP ships a testing suite for your [SuperNative](../super-native/introduction) screens. It mounts a
+NativePHP ships a testing suite for your [SuperNative](../architecture/super-native) screens. It mounts a
 `NativeComponent`, renders its Blade, dispatches events, and re-renders — the whole component lifecycle — entirely
 in-process.
 

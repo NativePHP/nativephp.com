@@ -5,211 +5,63 @@ order: 200
 
 ## Overview
 
-Many native mobile operations take time to complete and await user interaction. PHP isn't really set up to handle this
-sort of asynchronous behaviour; it is built to do its work, send a response and move on as quickly as possible.
+Screens react to things that happen outside a user tap — a push notification arrives, a websocket message lands,
+a bridge call finishes. A component **listens** for these native events and updates its state in response; the
+screen re-renders like any other state change.
 
-NativePHP for Mobile smooths over this disparity between the different paradigms using a simple event system that
-handles completion of asynchronous methods using a webhook-/websocket-style approach to notify your Laravel app.
+This page covers listening for these native events from a component.
 
-## Understanding Async vs Sync
+## Listening with #[On]
 
-Not all actions are async. Some methods run immediately, and in some cases return a result straight away.
-
-Here are a few of the **synchronous** APIs:
-
-```php
-Haptics::vibrate();
-System::flashlight();
-Dialog::toast('Hello!');
-```
-Asynchronous actions trigger operations that may complete later. These return immediately, usually with a `bool` or
-`void`, allowing PHP's execution to finish. In many of these cases, the user interacts directly with a native component.
-
-When the user has completed their task and the native UI is dismissed, the app will emit an event that represents the
-outcome.
-
-The _type_ (the class name) of the event and its properties all help you to choose the appropriate action to take in
-response to the outcome.
+Annotate a method with `#[On(EventClass::class)]` and it runs whenever that event fires. The method's parameters
+are bound **by name** from the event's public properties:
 
 ```php
-// These trigger operations and fire events when complete
-Camera::getPhoto(); // → PhotoTaken event
-Biometrics::prompt(); // → Completed event
-PushNotifications::enroll(); // → TokenGenerated event
-```
+use Native\Mobile\Attributes\On;
+use NativePHP\Vibe\Events\MessageReceived;
 
-## Basic Event Structure
-
-All events are standard [Laravel Event classes](https://laravel.com/docs/12.x/events#defining-events). The public
-properties of the events contain the pertinent data coming from the native app side.
-
-## Custom Events
-
-Almost every function that emits events can be customized to emit events that you define. This is a great way to ensure
-only the relevant listeners are executed when these events are fired.
-
-Events are simple PHP classes that receive some parameters. You can extend existing events for convenience.
-
-Let's see a complete example...
-
-### Define your custom event class
-
-```php
-namespace App\Events;
-
-use Native\Mobile\Events\Alert\ButtonPressed;
-
-class MyButtonPressedEvent extends ButtonPressed
-{}
-```
-
-### Pass this class to an async function
-
-```php
-use App\Events\MyButtonPressedEvent;
-
-Dialog::alert('Warning!', 'You are about to delete everything! Are you sure?', [
-        'Cancel',
-        'Do it!'
-    ])
-    ->event(MyButtonPressedEvent::class)
-```
-
-### Handle the event
-
-Here's an example handling a custom event class inside a component.
-
-```php
-use App\Events\MyButtonPressed;
-use Native\Mobile\Attributes\OnNative;
-
-#[OnNative(MyButtonPressed::class)]
-public function buttonPressed()
+class ChatScreen extends NativeComponent
 {
-    // Do stuff
-}
-```
+    public array $messages = [];
 
-## Event Handling
-
-All asynchronous methods follow the same pattern:
-
-1. **Call the method** to trigger the operation.
-2. **Listen for the appropriate events** to handle the result.
-3. **Update your UI** based on the outcome.
-
-All events get sent directly to JavaScript in the web view _and_ to your PHP application via a special route. This
-allows you to listen for these events in the context that best suits your application.
-
-### On the frontend
-
-Events are 'broadcast' to the frontend of your application via the web view through a custom `Native` helper. You can
-easily listen for these events through JavaScript in a few ways:
-
-- The globally available `Native.on()` helper
-- Directly importing the `On` function
-- The `#[OnNative()]` PHP attribute Livewire extension
-
-<aside>
-
-Typically, you shouldn't need to use more than one of these approaches. Which one you adopt will depend on which
-frontend stack you're using to build your app.
-
-</aside>
-
-#### The `Native.on()` helper
-
-Register the event listener directly in JavaScript:
-
-```blade
-@@use(Native\Mobile\Events\Alert\ButtonPressed)
-
-<script>
-    Native.on(@@js(ButtonPressed::class), (index, label) => {
-        alert(`You pressed button ${index}: ${label}`)
-    })
-</script>
-```
-
-This approach is useful if you're not using any particular frontend JavaScript framework.
-
-#### The `On` import
-
-<aside>
-
-Make sure you've [set up the `Native` plugin](native-functions#install-the-plugin) in your `package.json` first.
-
-</aside>
-
-If you're using a SPA framework like Vue or React, it's more convenient to import the `On` function directly to
-register your event listeners. Here's an example using the amazing Vue:
-
-```js
-import { On, Events } from '#nativephp';
-import { onMounted } from 'vue';
-
-const handleButtonPressed = (payload: any) => {};
-
-onMounted(() => {
-    On(Events.Alert.ButtonPressed, handleButtonPressed);
-});
-```
-
-Note how we're also using the `Events` object above to simplify our use of built-in event names. For custom event
-classes, you will need to reference these by their full name:
-
-```js
-On('App\\Events\\MyButtonPressedEvent', handleButtonPressed);
-```
-
-In SPA land, don't forget to de-register your event handlers using the `Off` function too:
-
-```js
-import { Off, Events } from '#nativephp';
-import { onUnmounted } from 'vue';
-
-onUnmounted(() => {
-    Off(Events.Alert.ButtonPressed, handleButtonPressed);
-});
-```
-
-#### The `#[OnNative()]` attribute
-
-Livewire makes listening to 'broadcast' events simple. Just add the `#[OnNative()]` attribute attached to the Livewire
-component method you want to use as its handler:
-
-```php
-use Native\Mobile\Attributes\OnNative;
-use Native\Mobile\Events\Camera\PhotoTaken;
-
-#[OnNative(PhotoTaken::class)]
-public function handlePhoto(string $path)
-{
-    // Handle captured photo
-}
-```
-
-### On the backend
-
-You can also listen for these events on the PHP side as they are simultaneously passed to your Laravel application.
-
-Simply [add a listener](https://laravel.com/docs/12.x/events#registering-events-and-listeners) as you normally would:
-
-```php
-use App\Services\APIService;
-use Native\Mobile\Events\Camera\PhotoTaken;
-
-class UpdateAvatar
-{
-    public function __construct(private APIService $api) {}
-    
-    public function handle(PhotoTaken $event): void
+    #[On(MessageReceived::class)]
+    public function onMessage(string $body, string $from): void
     {
-        $imageData = base64_encode(
-            file_get_contents($event->path)
-        );
-        
-        $this->api->updateAvatar($imageData);
+        $this->messages[] = ['body' => $body, 'from' => $from];
     }
 }
 ```
+
+`#[On]` is repeatable — stack several on one method to handle multiple events, or put several methods on the same
+event. Listeners are torn down automatically when the screen unmounts, so they never leak onto the next screen.
+
+## Listening with ->on()
+
+For a listener you register at runtime — for example inside `mount()`, or conditionally — use the fluent `->on()`
+method with a closure:
+
+```php
+public function mount(): void
+{
+    $this->on(OrderShipped::class, function ($event) {
+        $this->status = "Shipped: {$event->trackingNumber}";
+    });
+}
+```
+
+Use `#[On]` for the common case (a fixed listener declared on the class) and `->on()` when you need to wire one up
+dynamically.
+
+## Where events come from
+
+Native events originate on the device side and are delivered to whichever screen is alive: plugin events (a
+[Vibe](../plugins/vibe) websocket message, a push notification tap), bridge-call completions, and any custom
+events an async native call resolves with. Because delivery targets the live screen, a listener only fires while
+its screen is on the stack.
+
+<aside>
+
+You can drive events in tests without a device — `emitNative(Event::class, [...])` delivers one straight to the
+component. See [Native Events & the Bridge](../testing/native-events).
+
+</aside>

@@ -220,7 +220,7 @@ typically applied to your outermost column.
 - `safe-area-top` - Inset only the top edge (status bar / notch)
 - `safe-area-bottom` - Inset only the bottom edge (home indicator)
 
-See [Safe Area](../the-basics/safe-area) for the full picture, including how the framework's [layout](../super-native/layouts)
+See [Safe Area](../the-basics/safe-area) for the full picture, including how the framework's [layout](../the-basics/layouts)
 chrome already handles safe-area insets for you.
 
 ## Visibility

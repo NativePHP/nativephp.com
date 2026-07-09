@@ -16,7 +16,7 @@ on top, **resumes** when those screens pop away, and is **unmounted** when it fi
 ## mount()
 
 Runs **once**, right after the screen is pushed onto the stack. This is where you load the screen's initial data
-and read any [route params or navigation data](../super-native/navigation#reading-params-and-data).
+and read any [route params or navigation data](../the-basics/routing#reading-params-and-data).
 
 ```php
 class ProductScreen extends NativeComponent

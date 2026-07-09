@@ -1,5 +1,5 @@
 ---
-title: Dialog
+title: Dialogs
 order: 160
 ---
 

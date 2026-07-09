@@ -83,7 +83,7 @@ Both variants are self-closing. They do not accept children.
 <aside>
 
 To keep an input visible while the keyboard is up — a chat composer, a search bar — place it in a
-[`<native:bottom-bar>`](../super-native/layouts#keyboard-aware-bottom-content), which pins above the keyboard
+[`<native:bottom-bar>`](../the-basics/layouts#keyboard-aware-bottom-content), which pins above the keyboard
 automatically. Avoid manually padding or shifting the screen yourself.
 
 </aside>

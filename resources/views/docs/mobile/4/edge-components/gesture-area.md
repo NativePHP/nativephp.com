@@ -6,7 +6,7 @@ order: 225
 ## Overview
 
 Captures a vertical pan/drag gesture over its content and writes the translation to a bound
-[shared value](../super-native/gestures), so the drag can drive animation on the UI thread with no PHP round-trip.
+[shared value](../digging-deeper/gestures), so the drag can drive animation on the UI thread with no PHP round-trip.
 Children render normally — gesture detection wraps the whole content frame.
 
 @verbatim
@@ -23,7 +23,7 @@ Children render normally — gesture detection wraps the whole content frame.
 
 ## Props
 
-- `pan-y` - A [`SharedValue`](../super-native/gestures) that receives the vertical drag translation (required for
+- `pan-y` - A [`SharedValue`](../digging-deeper/gestures) that receives the vertical drag translation (required for
   the gesture to do anything). Bind it, then read it from animatable props (`translate-y`, `opacity`, `scale`, …)
   on the children.
 
@@ -44,6 +44,6 @@ public function onRelease(float $value): void
 <aside>
 
 Per-frame drag values stay on the native side and never round-trip through PHP — only `@drag-end` calls back. See
-[Gestures & Animation](../super-native/gestures) for shared values and interpolation formulas.
+[Gestures & Animation](../digging-deeper/gestures) for shared values and interpolation formulas.
 
 </aside>

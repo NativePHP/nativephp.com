@@ -93,6 +93,6 @@ Accepted forms: `native:poll` (default 2s), `native:poll="500ms"` / `native:poll
 <aside>
 
 Polling drives a full re-render, so keep intervals as long as the UX allows. For push-style updates that arrive
-when something actually happens rather than on a timer, listen for an [event](events) instead.
+when something actually happens rather than on a timer, listen for an [event](../the-basics/events) instead.
 
 </aside>

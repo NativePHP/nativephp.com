@@ -4,7 +4,7 @@ order: 450
 ---
 
 > [!IMPORTANT]
-> **Prefer the [Layout model](../super-native/layouts).** Declare your app's top bar with the `NavBar`
+> **Prefer the [Layout model](../the-basics/layouts).** Declare your app's top bar with the `NavBar`
 > builder in a `NativeLayout` class rather than placing `<native:top-bar>` in a screen. This page documents the
 > inline element, which still works but is no longer the recommended approach.
 
@@ -65,7 +65,7 @@ On iOS, if more than 5 actions are provided, they collapse into an overflow menu
 ### `<native:top-bar-action>` Props
 
 > [!IMPORTANT]
-> In the [Layout model](../super-native/layouts#builder-reference) a top-bar action is a `NavAction` — use that
+> In the [Layout model](../the-basics/layouts#builder-reference) a top-bar action is a `NavAction` — use that
 > builder rather than placing `<native:top-bar-action>` inline.
 
 - `id` - Unique identifier (required)
@@ -81,7 +81,7 @@ Any `url` that doesn't match a registered native route will exit to the web view
 
 ## Builder API
 
-When a `<native:top-bar>` is supplied by a [layout](../super-native/layouts), you build it fluently with the `NavBar`
+When a `<native:top-bar>` is supplied by a [layout](../the-basics/layouts), you build it fluently with the `NavBar`
 and `NavAction` builders rather than writing it in Blade.
 
 ```php
@@ -144,4 +144,4 @@ class ItemDetail extends NativeComponent
 }
 ```
 
-See [Layouts](../super-native/layouts) for the full picture.
+See [Layouts](../the-basics/layouts) for the full picture.

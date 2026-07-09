@@ -4,7 +4,7 @@ order: 120
 ---
 
 > [!IMPORTANT]
-> **Prefer the [Layout model](../super-native/layouts).** Declare your app's bottom tabs with the `TabBar`
+> **Prefer the [Layout model](../the-basics/layouts).** Declare your app's bottom tabs with the `TabBar`
 > builder in a `NativeLayout` class rather than placing `<native:bottom-nav>` in a screen. This page documents the
 > inline element, which still works but is no longer the recommended approach.
 
@@ -60,7 +60,7 @@ above the indicator, mirroring iOS `UITabBar`.
 ## Children
 
 > [!IMPORTANT]
-> In the [Layout model](../super-native/layouts#builder-reference) a bottom-nav item is a `Tab` — use that builder
+> In the [Layout model](../the-basics/layouts#builder-reference) a bottom-nav item is a `Tab` — use that builder
 > rather than placing `<native:bottom-nav-item>` inline.
 
 A `<native:bottom-nav>` can contain up to 5 `<native:bottom-nav-item>` elements.
@@ -94,7 +94,7 @@ Any `url` that doesn't match a registered native route will exit to the web view
 
 ## Builder API
 
-When a `<native:bottom-nav>` is supplied by a [layout](../super-native/layouts), you build it fluently with the `TabBar`
+When a `<native:bottom-nav>` is supplied by a [layout](../the-basics/layouts), you build it fluently with the `TabBar`
 and `Tab` builders rather than writing it in Blade.
 
 ```php

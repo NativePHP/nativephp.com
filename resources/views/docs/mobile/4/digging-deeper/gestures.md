@@ -136,6 +136,6 @@ the native side plays it locally on touch.
 
 Three tools, three jobs: **`animate-*` props** for state-driven motion (a value changed — ease to it), **press
 feedback** for instant touch response, and **shared values** for finger-tracking or refresh-rate animation. For
-motion *between screens*, see [Navigation](navigation#custom-transitions).
+motion *between screens*, see [Navigation](../the-basics/routing#custom-transitions).
 
 </aside>

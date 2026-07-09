@@ -68,7 +68,7 @@ System::appSettings();
 ## Appearance (light / dark)
 
 Reading the current appearance and reacting to theme changes lives with the rest of theming — see
-[Theming → Appearance in PHP](theming#appearance-in-php) for `System::appearance()`, `isDarkMode()`,
+[Theming → Appearance in PHP](../digging-deeper/theming#appearance-in-php) for `System::appearance()`, `isDarkMode()`,
 `isLightMode()`, the `isDark()` / `theme()` helpers, and the `AppearanceChanged` event.
 
 <aside>

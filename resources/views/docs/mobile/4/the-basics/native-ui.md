@@ -9,7 +9,7 @@ Your app's UI is fully native — SwiftUI on iOS, Jetpack Compose on Android —
 
 Two pieces work together to make that happen:
 
-- **[SuperNative](../super-native/introduction)** is the engine. Each screen is a PHP component class — think
+- **[SuperNative](../architecture/super-native)** is the engine. Each screen is a PHP component class — think
   Livewire, but for native views. It holds your screen's state and behavior, shares memory directly with the native
   side, and re-renders the UI whenever your properties change.
 - **[EDGE](../edge-components/introduction)** (Element Definition and Generation Engine) is the component language.
@@ -42,15 +42,15 @@ Browse the full catalogue in the [EDGE Components](../edge-components/introducti
 
 Once you're comfortable with the component syntax, two concepts organize your screens into an app:
 
-### Navigation
+### Routing
 
-[Navigation](../super-native/navigation) works like a native navigation stack, because it is one. Register screens with
+[Routing](../the-basics/routing) works like a native navigation stack, because it is one. Register screens with
 `Route::native()`, then push, pop, and replace them from inside your components — with native transitions, route
 parameters, and data passing along the way.
 
 ### Layouts
 
-[Layouts](../super-native/layouts) wrap the screens routed beneath them with shared chrome — a top nav bar, a bottom tab bar, or
+[Layouts](../the-basics/layouts) wrap the screens routed beneath them with shared chrome — a top nav bar, a bottom tab bar, or
 both — so individual screens stay focused on their content. Declare the chrome once in a `NativeLayout` class,
 attach it to a route or group of routes, and the framework swaps between "tabs" and "stack" chrome automatically as
 users move around.

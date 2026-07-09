@@ -106,7 +106,7 @@ Configure deep linking to allow URLs to open your app directly:
 The `deeplink_scheme` enables custom URL schemes (e.g. `myapp://some/path`), while `deeplink_host` enables
 verified HTTPS links and NFC tags (e.g. `https://your-host.com/path`).
 
-See the [Deep Links](../concepts/deep-links) documentation for full details.
+See the [Deep Links](../digging-deeper/deep-links) documentation for full details.
 
 ## Start URL
 

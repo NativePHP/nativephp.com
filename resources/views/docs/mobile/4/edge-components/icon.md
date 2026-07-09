@@ -25,7 +25,7 @@ All [shared layout and style attributes](layout) are supported, plus:
 - `size` - Icon size in dp (optional, float, default: `24`)
 - `color` - Icon color as hex string (optional, default: platform default)
 - `a11y-label` - Accessibility label (optional). Icons are decorative by default — hidden from screen readers
-  unless this is set. Label any icon that conveys meaning on its own. See [Accessibility](../super-native/accessibility)
+  unless this is set. Label any icon that conveys meaning on its own. See [Accessibility](../digging-deeper/accessibility)
 
 <aside>
 

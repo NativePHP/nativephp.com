@@ -5,10 +5,10 @@ order: 10
 
 NativePHP for Mobile runs your Laravel app on the device itself — no server, no network round-trip. Traditionally,
 your app's UI rendered as HTML inside a web view. That model is productive and familiar, and it's
-[still fully supported](../super-native/introduction#is-the-web-view-still-an-option). But it puts a browser between
+[still fully supported](../architecture/super-native#is-the-web-view-still-an-option). But it puts a browser between
 your app and the platform, and some things can only feel truly native when they *are* native.
 
-The new architecture — [SuperNative](../super-native/introduction) — removes that layer entirely. Your screens are
+The new architecture — [SuperNative](../architecture/super-native) — removes that layer entirely. Your screens are
 real SwiftUI and Jetpack Compose views, created and updated directly by your PHP code. Here's why we built it, and
 what it changes.
 
@@ -69,7 +69,7 @@ app faster. If your app is happy in the web view, it will keep working exactly a
 ## Should you use it today?
 
 SuperNative is **the default**: new apps render native screens from the very first route. It's in beta, so
-expect rapid iteration — and if you'd rather wait, [opting out](../super-native/introduction#is-the-web-view-still-an-option)
+expect rapid iteration — and if you'd rather wait, [opting out](../architecture/super-native#is-the-web-view-still-an-option)
 is one route and one component.
 
 Ready to go deeper? Start with [The Renderer](renderer).
