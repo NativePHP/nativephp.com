@@ -72,6 +72,12 @@ Route::redirect('ios', 'blog/nativephp-for-mobile-is-now-free');
 Route::redirect('t-shirt', 'blog/nativephp-for-mobile-is-now-free');
 Route::redirect('tshirt', 'blog/nativephp-for-mobile-is-now-free');
 
+// v4: Device/Dialog/File/System moved from plugins into core built-ins; their docs
+// now live in the SuperNative section (must precede the generic core-plugin redirect below).
+foreach (['device', 'dialog', 'file', 'system'] as $corePage) {
+    Route::redirect("docs/mobile/4/plugins/core/{$corePage}", "/docs/mobile/4/super-native/{$corePage}", 301);
+}
+
 // Redirect mobile core plugin docs to plugin directory pages
 Route::get('docs/mobile/{version}/plugins/core/{page}', function (string $version, string $page) {
     return redirect("/plugins/nativephp/mobile-{$page}", 301);
