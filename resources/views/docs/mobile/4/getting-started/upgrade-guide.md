@@ -12,8 +12,8 @@ now core built-ins.
 ### Device, Dialog, File and System are now built in
 
 `Device`, `Dialog`, `File`, and `System` now ship inside `nativephp/mobile` — their native bridge functions are
-registered by core. If you have the standalone plugins installed, **remove them before upgrading**, otherwise
-their bridge functions register twice.
+registered by core. `nativephp/mobile` v4 declares a Composer **conflict** with the four standalone plugins, so
+`composer update` will refuse to resolve until you **remove them**.
 
 Uninstall each one you have (this also unregisters it from your `NativeServiceProvider`):
 
