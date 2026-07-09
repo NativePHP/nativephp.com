@@ -1,4 +1,4 @@
-@props(['ads' => ['mobile', 'devkit', 'ultra', 'vibes', 'masterclass']])
+@props(['ads' => ['mobile', 'desktop', 'bifrost', 'devkit', 'ultra', 'vibes', 'masterclass']])
 
 @php
     $adsJson = json_encode($ads);
@@ -73,6 +73,126 @@
                     class="h-15 w-36 rotate-30 rounded-full bg-violet-300 blur-xl dark:bg-violet-400/30"
                 ></div>
             </div>
+        </a>
+    @endif
+
+    {{-- NativePHP Desktop Ad --}}
+    @if (in_array('desktop', $ads))
+        <a
+            x-show="ad === 'desktop'"
+            x-cloak
+            href="/docs/desktop"
+            class="group relative z-0 grid place-items-center overflow-hidden rounded-2xl bg-gray-100 px-4 pt-10 text-center text-pretty transition duration-200 hover:bg-gray-200/70 hover:ring-1 hover:ring-black/60 dark:bg-mirage dark:hover:bg-haiti dark:hover:ring-cloud"
+        >
+            {{-- Logo --}}
+            <div>
+                <x-logo class="h-5" />
+                <span class="sr-only">NativePHP</span>
+            </div>
+
+            {{-- Tagline --}}
+            <div class="mt-3">
+                Bring your
+                <strong>Laravel</strong>
+                skills to the
+                <strong>desktop.</strong>
+            </div>
+
+            {{-- Macbook --}}
+            <div class="mt-4 -mb-4">
+                <img
+                    src="{{ Vite::asset('resources/images/home/macbook.webp') }}"
+                    alt=""
+                    aria-hidden="true"
+                    class="w-40 transition duration-200 will-change-transform group-hover:-translate-y-1 dark:brightness-80 dark:contrast-150"
+                    width="400"
+                    height="250"
+                    loading="lazy"
+                />
+            </div>
+
+            {{-- Star 1 --}}
+            <x-icons.star
+                class="absolute top-6 right-3 z-10 w-4 -rotate-7 text-white dark:w-3 dark:text-slate-300 animate-ping"
+            />
+            {{-- Star 2 --}}
+            <x-icons.star
+                class="absolute top-3 right-14 z-10 w-3 rotate-5 text-white dark:w-2 dark:text-slate-300 animate-spin "
+            />
+            {{-- Star 3 --}}
+            <x-icons.star
+                class="absolute top-2.5 right-7.5 z-10 w-2.5 text-white dark:w-2 dark:text-slate-300 animate-pulse"
+            />
+            {{-- White blur --}}
+            <div class="absolute top-5 -right-10 -z-5">
+                <div
+                    class="h-5 w-36 rotate-30 rounded-full bg-white/80 blur-md dark:bg-white/5"
+                ></div>
+            </div>
+            {{-- Sky blur --}}
+            <div class="absolute top-5 -right-20 -z-10">
+                <div
+                    class="h-15 w-36 rotate-30 rounded-full bg-sky-300 blur-xl dark:bg-sky-500/30"
+                ></div>
+            </div>
+            {{-- Violet blur --}}
+            <div class="absolute -top-10 -right-5 -z-10">
+                <div
+                    class="h-15 w-36 rotate-30 rounded-full bg-violet-300 blur-xl dark:bg-violet-400/30"
+                ></div>
+            </div>
+        </a>
+    @endif
+
+    {{-- Bifrost Ad --}}
+    @if (in_array('bifrost', $ads))
+        <a
+            x-show="ad === 'bifrost'"
+            x-cloak
+            href="https://bifrost.nativephp.com/"
+            target="_blank"
+            rel="noopener noreferrer"
+            onclick="fathom.trackEvent('bifrost_ad_click');"
+            class="group relative z-0 grid place-items-center overflow-hidden rounded-2xl bg-gradient-to-br from-sky-500 via-indigo-500 to-purple-600 px-4 py-8 text-center text-pretty transition duration-200 hover:from-sky-400 hover:via-indigo-400 hover:to-purple-500 hover:ring-1 hover:ring-sky-300"
+        >
+            {{-- Badge --}}
+            <div class="inline-flex w-fit items-center gap-1.5 rounded-full bg-white/20 px-2.5 py-1 text-xs font-medium text-white backdrop-blur-sm">
+                <x-heroicon-s-cloud class="size-3" />
+                Cloud Platform
+            </div>
+
+            {{-- Logo --}}
+            <div class="mt-4">
+                <x-logos.bifrost class="mx-auto h-5 text-white" />
+                <span class="sr-only">Bifrost</span>
+            </div>
+
+            {{-- Tagline --}}
+            <div class="mt-3 text-sm text-sky-50">
+                Build your NativePHP apps
+                <strong class="text-white">in the cloud.</strong>
+            </div>
+
+            {{-- CTA --}}
+            <div class="mt-4 rounded-lg bg-white/20 px-4 py-1.5 text-sm font-medium text-white backdrop-blur-sm transition group-hover:bg-white/30">
+                Ship it!
+            </div>
+
+            {{-- Price hint --}}
+            <div class="mt-2 text-xs text-sky-100">
+                Plans from $19/mo
+            </div>
+
+            {{-- Decorative stars --}}
+            <x-icons.star
+                class="absolute top-4 right-3 z-10 w-3 -rotate-7 text-sky-200 animate-ping "
+            />
+            <x-icons.star
+                class="absolute top-8 left-4 z-10 w-2 rotate-12 text-indigo-200 animate-spin "
+            />
+            <x-icons.star
+                class="absolute bottom-12 right-6 z-10 w-2.5 text-purple-200 animate-pulse "
+            />
         </a>
     @endif
 
@@ -237,11 +357,6 @@
             {{-- CTA --}}
             <div class="mt-4 rounded-lg bg-white/20 px-4 py-1.5 text-sm font-medium text-white backdrop-blur-sm transition group-hover:bg-white/30">
                 Learn More
-            </div>
-
-            {{-- Early Bird Label --}}
-            <div class="mt-2 text-xs text-emerald-100">
-                Early Bird Pricing
             </div>
 
             {{-- Decorative stars --}}
