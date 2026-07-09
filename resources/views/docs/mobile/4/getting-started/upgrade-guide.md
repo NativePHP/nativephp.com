@@ -9,6 +9,24 @@ v4's headline is [SuperNative](../super-native/introduction) — fully native UI
 but there is **one breaking change to your dependencies**: a handful of APIs that used to be separate plugins are
 now core built-ins.
 
+### Why SuperNative
+
+For its first three major versions, NativePHP for Mobile was built around a fast, opinionated web view. It worked
+well — but it tied your app's UI to a stack of moving parts we didn't own, and every upstream release was a chance
+for something to break. Inertia 3 dropped its axios dependency and broke Inertia apps. Livewire 4 began emitting
+compiled filenames containing an emoji (🔥) that iOS builds refused to package. We spent real energy chasing a
+target that kept moving, on layers we couldn't control.
+
+SuperNative changes that equation. Instead of rendering your UI in a browser and hoping the layers above stay
+compatible, it renders real SwiftUI and Jetpack Compose views driven directly by your PHP — a stack we own end to
+end, from your Laravel app all the way down to the native view tree. That means our effort goes into making *that*
+fast, stable, and capable, rather than reacting to churn elsewhere. The web view's advantages have narrowed as
+SuperNative's rendering has matured, and for new work SuperNative is where the platform — and our focus — is
+headed.
+
+The web view isn't going away: [it's still available as a component](../edge-components/web-view) for the cases
+that genuinely need HTML. But it's now opt-in, not the foundation.
+
 ### Device, Dialog, File and System are now built in
 
 `Device`, `Dialog`, `File`, and `System` now ship inside `nativephp/mobile` — their native bridge functions are
