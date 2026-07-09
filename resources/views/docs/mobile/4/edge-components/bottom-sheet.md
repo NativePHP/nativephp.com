@@ -22,7 +22,7 @@ Per Model 3, the container color resolves from `theme.surface`. For a custom sur
     <native:bottom-sheet :visible="$showSheet" @dismiss="$showSheet = false">
         <native:column class="w-full p-4 gap-3">
             <native:text class="text-xl font-bold">Sheet Title</native:text>
-            <native:text class="text-base text-slate-500">Sheet content goes here.</native:text>
+            <native:text class="text-base text-theme-on-surface-variant">Sheet content goes here.</native:text>
             <native:button label="Close" @press="$showSheet = false" />
         </native:column>
     </native:bottom-sheet>

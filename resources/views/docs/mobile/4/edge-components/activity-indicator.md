@@ -40,7 +40,7 @@ a non-theme-styled container (e.g. a light spinner over a dark image overlay).
 ```blade
 <native:column fill center>
     <native:activity-indicator size="lg" />
-    <native:text class="text-base text-slate-400 mt-4">Loading...</native:text>
+    <native:text class="text-base text-theme-on-surface-variant mt-4">Loading...</native:text>
 </native:column>
 ```
 @endverbatim
@@ -51,7 +51,7 @@ a non-theme-styled container (e.g. a light spinner over a dark image overlay).
 ```blade
 <native:row :gap="8" :align-items="1">
     <native:activity-indicator size="sm" />
-    <native:text class="text-sm text-slate-500">Refreshing</native:text>
+    <native:text class="text-sm text-theme-on-surface-variant">Refreshing</native:text>
 </native:row>
 ```
 @endverbatim

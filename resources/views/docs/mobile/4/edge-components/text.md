@@ -47,9 +47,9 @@ its own classes (weight, color, size):
 
 @verbatim
 ```blade
-<native:text class="text-base text-slate-700">
+<native:text class="text-base text-theme-on-surface">
     Use <native:text class="font-bold">bold</native:text> and
-    <native:text class="text-blue-500 font-semibold">color</native:text> inline.
+    <native:text class="text-theme-primary font-semibold">color</native:text> inline.
 </native:text>
 ```
 @endverbatim
@@ -69,7 +69,7 @@ whole region selectable. Use `select-none` to opt a nested subtree back out:
     <native:text class="text-lg font-bold">Selectable heading</native:text>
     <native:text class="text-base">This body copy can be selected and copied.</native:text>
 
-    <native:text class="select-none text-xs text-slate-400">Not selectable</native:text>
+    <native:text class="select-none text-xs text-theme-on-surface-variant">Not selectable</native:text>
 </native:column>
 ```
 @endverbatim
