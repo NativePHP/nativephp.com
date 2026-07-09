@@ -79,7 +79,7 @@ The renderer collapses fit modes to two effective behaviors: `fit` and `fill`. M
     <native:image src="https://example.com/cover.jpg" class="w-full" :height="180" :fit="2" />
     <native:column class="p-4 gap-2">
         <native:text class="text-lg font-bold">Article Title</native:text>
-        <native:text class="text-base text-slate-500">A brief description of the article.</native:text>
+        <native:text class="text-base text-theme-on-surface-variant">A brief description of the article.</native:text>
     </native:column>
 </native:column>
 ```

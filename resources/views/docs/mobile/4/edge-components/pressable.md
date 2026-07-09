@@ -15,7 +15,7 @@ provides a clear tap target that wraps multiple children.
 ```blade
 <native:pressable @press="selectItem({{ $item->id }})" class="w-full p-4 rounded-xl" bg="#FFFFFF">
     <native:text class="text-lg font-semibold">{{ $item->name }}</native:text>
-    <native:text class="text-sm text-slate-400">{{ $item->description }}</native:text>
+    <native:text class="text-sm text-theme-on-surface-variant">{{ $item->description }}</native:text>
 </native:pressable>
 ```
 @endverbatim
@@ -50,7 +50,7 @@ Accepts any EDGE elements as children. Children are arranged vertically (like a 
             <native:icon name="folder" :size="24" color="#3B82F6" />
             <native:column :flex-grow="1" :gap="2">
                 <native:text class="text-base font-medium">{{ $item->name }}</native:text>
-                <native:text class="text-sm text-slate-400">{{ $item->subtitle }}</native:text>
+                <native:text class="text-sm text-theme-on-surface-variant">{{ $item->subtitle }}</native:text>
             </native:column>
             <native:icon name="forward" :size="16" color="#94A3B8" />
         </native:row>
@@ -74,7 +74,7 @@ Accepts any EDGE elements as children. Children are arranged vertically (like a 
     :elevation="2"
 >
     <native:text class="text-lg font-bold">{{ $post->title }}</native:text>
-    <native:text class="text-base text-slate-500">{{ $post->excerpt }}</native:text>
+    <native:text class="text-base text-theme-on-surface-variant">{{ $post->excerpt }}</native:text>
 </native:pressable>
 ```
 @endverbatim

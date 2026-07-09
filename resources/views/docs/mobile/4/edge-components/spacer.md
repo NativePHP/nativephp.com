@@ -50,7 +50,7 @@ See the full shared list at [Layout & Styling](layout#supported-tailwind-classes
 ```blade
 <native:column class="w-full h-full p-4">
     <native:text class="text-2xl font-bold">Welcome</native:text>
-    <native:text class="text-base text-slate-500">Get started with your app.</native:text>
+    <native:text class="text-base text-theme-on-surface-variant">Get started with your app.</native:text>
     <native:spacer />
     <native:button label="Continue" @press="next" />
 </native:column>
