@@ -14,8 +14,8 @@ now core built-ins.
 For its first three major versions, NativePHP for Mobile was built around a fast, opinionated web view. It worked
 well — but it tied your app's UI to a stack of moving parts we didn't own, and every upstream release was a chance
 for something to break. Inertia 3 dropped its axios dependency and broke Inertia apps. Livewire 4 began emitting
-compiled filenames containing an emoji (🔥) that iOS builds refused to package. We spent real energy chasing a
-target that kept moving, on layers we couldn't control.
+filenames containing an emoji (🔥) that our bundled PHP binaries initially couldn't read. We spent real energy
+chasing a target that kept moving, on layers we couldn't control.
 
 SuperNative changes that equation. Instead of rendering your UI in a browser and hoping the layers above stay
 compatible, it renders real SwiftUI and Jetpack Compose views driven directly by your PHP — a stack we own end to
