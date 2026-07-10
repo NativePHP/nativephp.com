@@ -1,10 +1,13 @@
 <div
     x-init="
         () => {
-            const updatePopoverTop = () => {
+            const updatePopoverPosition = () => {
                 const nav = $refs.menuButton.closest('nav');
                 if (nav && $refs.mobilePopover.matches(':popover-open')) {
                     $refs.mobilePopover.style.top = (nav.getBoundingClientRect().bottom + 8) + 'px';
+                    $refs.mobilePopover.style.right = window.innerWidth >= 1024
+                        ? (window.innerWidth - $refs.menuButton.getBoundingClientRect().right - 6) + 'px'
+                        : '';
                 }
             };
 
@@ -13,10 +16,12 @@
                 showMobileMenu = $refs.mobilePopover.matches(':popover-open')
 
                 if (e.newState === 'open') {
-                    updatePopoverTop()
-                    window.addEventListener('scroll', updatePopoverTop, { passive: true })
+                    updatePopoverPosition()
+                    window.addEventListener('scroll', updatePopoverPosition, { passive: true })
+                    window.addEventListener('resize', updatePopoverPosition)
                 } else {
-                    window.removeEventListener('scroll', updatePopoverTop)
+                    window.removeEventListener('scroll', updatePopoverPosition)
+                    window.removeEventListener('resize', updatePopoverPosition)
                 }
             })
 
@@ -83,7 +88,6 @@
         role="dialog"
         aria-modal="true"
         aria-label="Site menu"
-        x-bind:style="width >= 1024 ? 'right:' + (window.innerWidth - $refs.menuButton.getBoundingClientRect().right - 6) + 'px' : ''"
         class="fixed m-0 inset-[unset] inset-x-3 bottom-3.5 w-auto -translate-y-3 overflow-y-scroll overscroll-contain rounded-2xl bg-gray-200/50 opacity-0 shadow-2xl ring-1 ring-gray-200/80 backdrop-blur-2xl transition-[opacity,transform] transition-discrete duration-300 open:translate-y-0 open:opacity-100 min-[500px]:inset-x-3.5 lg:bottom-auto lg:left-auto lg:w-md dark:bg-black/50 dark:text-white dark:shadow-black/40 dark:ring-gray-700/70 starting:open:-translate-y-3 starting:open:opacity-0"
     >
         <div class="@container flex flex-col overflow-hidden px-6 pt-4 pb-6">
