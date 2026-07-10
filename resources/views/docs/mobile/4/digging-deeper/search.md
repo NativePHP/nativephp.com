@@ -9,7 +9,7 @@ A screen can present a native search bar in its navigation chrome and feed it fr
 a **static** corpus the platform filters for you, and a **dynamic** handler you implement for server- or
 database-backed results.
 
-The search bar itself is shown by the [layout](layouts) chrome — via `NavBar::searchBar()` on a stack, or
+The search bar itself is shown by the [layout](../the-basics/layouts) chrome — via `NavBar::searchBar()` on a stack, or
 `Tab::search()` on a tab. This page covers the component side: producing the results.
 
 ## Static search
@@ -59,7 +59,7 @@ Or as a dedicated search tab:
 Tab::search('Search', icon: 'magnifyingglass', placeholder: 'Find anything');
 ```
 
-See [Layouts](layouts) for where these builders live and how a layout wraps a screen.
+See [Layouts](../the-basics/layouts) for where these builders live and how a layout wraps a screen.
 
 <aside>
 

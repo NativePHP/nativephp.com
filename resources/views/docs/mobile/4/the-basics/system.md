@@ -1,13 +1,13 @@
 ---
 title: System
-order: 130
+order: 140
 ---
 
 ## Overview
 
 The `System` API covers system-level concerns — platform detection and opening the app's settings screen.
 
-It's a **core built-in** in v4: the facade resolves with nothing to install or register.
+It's a **core built-in**: the facade resolves with nothing to install or register.
 
 ```php
 use Native\Mobile\Facades\System;
@@ -68,7 +68,7 @@ System::appSettings();
 ## Appearance (light / dark)
 
 Reading the current appearance and reacting to theme changes lives with the rest of theming — see
-[Theming → Appearance in PHP](theming#appearance-in-php) for `System::appearance()`, `isDarkMode()`,
+[Theming → Appearance in PHP](../digging-deeper/theming#appearance-in-php) for `System::appearance()`, `isDarkMode()`,
 `isLightMode()`, the `isDark()` / `theme()` helpers, and the `AppearanceChanged` event.
 
 <aside>

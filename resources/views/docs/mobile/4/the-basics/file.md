@@ -1,6 +1,6 @@
 ---
 title: File
-order: 120
+order: 130
 ---
 
 ## Overview
@@ -8,7 +8,7 @@ order: 120
 The `File` API performs native file operations — moving and copying files — using each platform's file system
 directly.
 
-It's a **core built-in** in v4: the facade resolves with nothing to install or register.
+It's a **core built-in**: the facade resolves with nothing to install or register.
 
 ```php
 use Native\Mobile\Facades\File;

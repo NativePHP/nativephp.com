@@ -7,7 +7,7 @@ Definitions for the terms used throughout the Architecture section.
 
 ## SuperNative
 
-The engine behind native rendering in NativePHP for Mobile v4. It spans everything described in this section:
+The engine behind native rendering in NativePHP for Mobile. It spans everything described in this section:
 components, the render pipeline, the shared-memory boundary and the platform renderers.
 [About the New Architecture](about-the-new-architecture) is the best starting point.
 

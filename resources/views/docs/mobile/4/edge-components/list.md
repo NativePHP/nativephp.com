@@ -79,7 +79,7 @@ content slots.
 - `trailingSwitch` - Boolean value for a trailing switch [Android]
 - `trailingIconButton` - Icon name for a tappable trailing button
 - `trailing-a11y-label` - Accessibility label for the trailing icon button (recommended whenever
-  `trailingIconButton` is set). See [Accessibility](../super-native/accessibility)
+  `trailingIconButton` is set). See [Accessibility](../digging-deeper/accessibility)
 - `trailing-menu` - Attach a tap-to-open dropdown to the row's trailing edge. See [Menus](menus)
 
 Independent of the mutually-exclusive slot above, a row can also show a stack of small status icons:

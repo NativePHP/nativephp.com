@@ -73,10 +73,13 @@ Route::redirect('t-shirt', 'blog/nativephp-for-mobile-is-now-free');
 Route::redirect('tshirt', 'blog/nativephp-for-mobile-is-now-free');
 
 // v4: Device/Dialog/File/System moved from plugins into core built-ins; their docs
-// now live in the SuperNative section (must precede the generic core-plugin redirect below).
-foreach (['device', 'dialog', 'file', 'system'] as $corePage) {
-    Route::redirect("docs/mobile/4/plugins/core/{$corePage}", "/docs/mobile/4/super-native/{$corePage}", 301);
+// now live in The Basics (must precede the generic core-plugin redirect below).
+foreach (['device', 'file', 'system'] as $corePage) {
+    Route::redirect("docs/mobile/4/plugins/core/{$corePage}", "/docs/mobile/4/the-basics/{$corePage}", 301);
 }
+
+// The Dialog docs live at the "dialogs" slug in The Basics.
+Route::redirect('docs/mobile/4/plugins/core/dialog', '/docs/mobile/4/the-basics/dialogs', 301);
 
 // Redirect mobile core plugin docs to plugin directory pages
 Route::get('docs/mobile/{version}/plugins/core/{page}', function (string $version, string $page) {
@@ -88,9 +91,15 @@ Route::get('docs/mobile/{version}/apis/{page}', function (string $version, strin
     return redirect("/plugins/nativephp/mobile-{$page}", 301);
 })->where('version', '[0-9]+')->where('page', '[a-z-]+');
 
-// v4: navigation & layouts moved from The Basics into the SuperNative section
-Route::redirect('docs/mobile/4/the-basics/navigation', '/docs/mobile/4/super-native/navigation', 301);
-Route::redirect('docs/mobile/4/the-basics/layouts', '/docs/mobile/4/super-native/layouts', 301);
+// v4: the SuperNative section was flattened; its old section root now points at
+// the SuperNative overview page, which lives in the Architecture section.
+Route::redirect('docs/mobile/4/super-native', '/docs/mobile/4/architecture/super-native', 301);
+
+// v4: the Architecture Overview page was removed; the SuperNative page now leads the section.
+Route::redirect('docs/mobile/4/architecture/overview', '/docs/mobile/4/architecture/super-native', 301);
+
+// v4: the old the-basics/navigation slug is now the-basics/routing (Layouts lives at the-basics/layouts directly).
+Route::redirect('docs/mobile/4/the-basics/navigation', '/docs/mobile/4/the-basics/routing', 301);
 
 // v4: Screen & Card components were removed — theme surfaces with bg-theme-* classes instead
 Route::redirect('docs/mobile/4/edge-components/screen', '/docs/mobile/4/edge-components/layout', 301);

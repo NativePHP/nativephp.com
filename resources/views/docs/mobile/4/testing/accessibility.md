@@ -10,7 +10,7 @@ test that drives its behavior. `assertAccessible()` walks the rendered wire tree
 reader cares about and fails with a located list of every violation, so an unlabeled control can't ship unnoticed.
 
 This checks that the tree carries the right labels — it does not replace a manual VoiceOver/TalkBack pass. See
-[Accessibility](../super-native/accessibility) for the labeling rules the audit enforces and the platform
+[Accessibility](../digging-deeper/accessibility) for the labeling rules the audit enforces and the platform
 behavior you get for free.
 
 ## assertAccessible()

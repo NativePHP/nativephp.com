@@ -12,7 +12,7 @@ standalone element — you build a list of actions and attach it with an attribu
 - `:trailing-menu` on a [list item](list) — opens from the row's trailing edge.
 
 All three share one item model: an array of `NavAction`, the same builder used for
-[nav-bar menus](../super-native/layouts#builder-reference).
+[nav-bar menus](../the-basics/layouts#builder-reference).
 
 ## Building the items
 
@@ -76,4 +76,4 @@ The menu-relevant `NavAction` methods:
 - `destructive(bool = true)` — tint the item as destructive
 - `NavAction::divider()` — a separator row
 
-See the [`NavAction` builder](../super-native/layouts#builder-reference) for the full list.
+See the [`NavAction` builder](../the-basics/layouts#builder-reference) for the full list.

@@ -273,10 +273,10 @@ developers can reach you with questions or issues. You can update this anytime f
 ### Additional Checks
 
 **iOS native code** — Your plugin must include native Swift code in `resources/ios/Sources/`. See
-[Bridge Functions](/docs/mobile/3/plugins/bridge-functions) for the implementation pattern.
+[Bridge Functions](bridge-functions) for the implementation pattern.
 
 **Android native code** — Your plugin must include native Kotlin code in `resources/android/src/`. See
-[Bridge Functions](/docs/mobile/3/plugins/bridge-functions) for the implementation pattern.
+[Bridge Functions](bridge-functions) for the implementation pattern.
 
 **JavaScript library** — Your plugin must include a JavaScript library in `resources/js/` that exports
 a function for every bridge function. This allows Inertia + Vue/React developers to call your native functions
@@ -294,7 +294,7 @@ your plugin is properly integrated with the NativePHP build pipeline:
 ```
 
 **iOS `min_version`** — Your `nativephp.json` must specify a minimum iOS version. See
-[Advanced Configuration](/docs/mobile/3/plugins/advanced-configuration) for details:
+[Advanced Configuration](advanced-configuration) for details:
 
 ```json
 {
@@ -305,7 +305,7 @@ your plugin is properly integrated with the NativePHP build pipeline:
 ```
 
 **Android `min_version`** — Your `nativephp.json` must specify a minimum Android SDK version. See
-[Advanced Configuration](/docs/mobile/3/plugins/advanced-configuration) for details:
+[Advanced Configuration](advanced-configuration) for details:
 
 ```json
 {

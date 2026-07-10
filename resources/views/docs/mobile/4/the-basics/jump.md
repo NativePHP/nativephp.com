@@ -27,7 +27,7 @@ device, executed natively, and the result is sent back to PHP — exactly as it 
 1. Install Jump on your device from the
    [App Store](https://apps.apple.com/us/app/bifrost-jump/id6757173334) or
    [Google Play](https://play.google.com/store/apps/details?id=com.bifrosttech.jump). You'll need **Jump v2 or
-   later** to work with NativePHP Mobile v3.3.
+   later**.
 2. Make sure your phone and your computer are on the same Wi-Fi network.
 3. From your Laravel project, run:
 
@@ -44,7 +44,7 @@ reload automatically.
 
 #### New to NativePHP?
 
-If you're just starting out, the [Quick Start](/docs/mobile/3/getting-started/quick-start) walks you through installing
+If you're just starting out, the [Quick Start](../getting-started/quick-start) walks you through installing
 NativePHP and running Jump for the first time.
 
 </aside>
@@ -110,10 +110,10 @@ The dev server is configured under the `server` key in your `config/nativephp.ph
 ],
 ```
 
-See [Configuration](/docs/mobile/3/getting-started/configuration#development-server) for the full reference.
+See [Configuration](../getting-started/configuration#development-server) for the full reference.
 
 Per-run options (ports, host, IP, mDNS) can all be overridden on the command line — see the
-[`native:jump` command reference](/docs/mobile/3/getting-started/commands#nativejump) for the full list of flags.
+[`native:jump` command reference](../getting-started/commands#nativejump) for the full list of flags.
 
 ### Multiple network interfaces
 
@@ -173,4 +173,4 @@ the managed `artisan serve` process cleanly.
 | You want to share a preview with a teammate over the same network | You need to test app start-up behaviour or bundled assets |
 
 For most day-to-day development, Jump is the fastest way to see changes on a real device. Once you're ready to ship,
-use [`native:package`](/docs/mobile/3/getting-started/commands#nativepackage) to build a signed binary.
+use [`native:package`](../getting-started/commands#nativepackage) to build a signed binary.

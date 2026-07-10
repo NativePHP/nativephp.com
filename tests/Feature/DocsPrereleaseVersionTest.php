@@ -123,4 +123,115 @@ class DocsPrereleaseVersionTest extends TestCase
             $service->resolvePageForVersion('mobile', 3, 'the-basics/overview'),
         );
     }
+
+    public function test_concepts_pages_redirect_to_digging_deeper_within_v4(): void
+    {
+        $this->get('/docs/mobile/4/concepts/security')
+            ->assertRedirect('/docs/mobile/4/digging-deeper/security');
+    }
+
+    public function test_old_super_native_urls_redirect_to_their_new_homes(): void
+    {
+        // The old SuperNative section root forwards to the overview page in Architecture.
+        $this->get('/docs/mobile/4/super-native')
+            ->assertRedirect('/docs/mobile/4/architecture/super-native');
+
+        // The old SuperNative introduction now forwards to the Architecture page.
+        $this->get('/docs/mobile/4/super-native/introduction')
+            ->assertRedirect('/docs/mobile/4/architecture/super-native');
+
+        // Navigation and Layouts moved into The Basics (Navigation renamed to Routing).
+        $this->get('/docs/mobile/4/super-native/navigation')
+            ->assertRedirect('/docs/mobile/4/the-basics/routing');
+        $this->get('/docs/mobile/4/super-native/layouts')
+            ->assertRedirect('/docs/mobile/4/the-basics/layouts');
+
+        // Other former sub-pages forward to direct Digging Deeper pages.
+        $this->get('/docs/mobile/4/super-native/data-binding')
+            ->assertRedirect('/docs/mobile/4/digging-deeper/data-binding');
+    }
+
+    public function test_removed_architecture_overview_redirects_to_super_native(): void
+    {
+        $this->get('/docs/mobile/4/architecture/overview')
+            ->assertRedirect('/docs/mobile/4/architecture/super-native');
+    }
+
+    public function test_deployment_page_moved_into_the_publishing_section(): void
+    {
+        // Old getting-started/deployment URL forwards to the new Publishing intro.
+        $this->get('/docs/mobile/4/getting-started/deployment')
+            ->assertRedirect('/docs/mobile/4/publishing/introduction');
+
+        // The three split pages render.
+        $this->get('/docs/mobile/4/publishing/introduction')->assertOk()->assertSee('Releasing');
+        $this->get('/docs/mobile/4/publishing/android')->assertOk()->assertSee('Play Store');
+        $this->get('/docs/mobile/4/publishing/ios')->assertOk()->assertSee('App Store');
+    }
+
+    public function test_digging_deeper_slug_maps_back_to_concepts_on_the_stable_version(): void
+    {
+        $this->get('/docs/mobile/3/digging-deeper/security')
+            ->assertRedirect('/docs/mobile/3/concepts/security');
+    }
+
+    public function test_the_basics_routing_and_layouts_pages(): void
+    {
+        // Navigation was renamed to Routing; the old slug forwards to it.
+        $this->get('/docs/mobile/4/the-basics/navigation')
+            ->assertRedirect('/docs/mobile/4/the-basics/routing');
+
+        // Routing and Layouts now render directly in The Basics.
+        $this->get('/docs/mobile/4/the-basics/routing')->assertOk();
+        $this->get('/docs/mobile/4/the-basics/layouts')->assertOk();
+    }
+
+    public function test_moved_core_builtin_docs_redirect_from_plugins_core_to_the_basics(): void
+    {
+        $this->get('/docs/mobile/4/plugins/core/device')
+            ->assertRedirect('/docs/mobile/4/the-basics/device');
+    }
+
+    public function test_vibe_docs_moved_to_websockets_with_a_core_plugin_shortcut(): void
+    {
+        // The old Vibe plugin doc now lives at Digging Deeper > WebSockets.
+        $this->get('/docs/mobile/4/plugins/vibe')
+            ->assertRedirect('/docs/mobile/4/digging-deeper/websockets');
+        $this->get('/docs/mobile/4/digging-deeper/websockets')->assertOk();
+
+        // The Core Plugins shortcut forwards to the plugin directory page.
+        $this->get('/docs/mobile/4/plugins/core/vibe')
+            ->assertRedirect('/plugins/nativephp/mobile-vibe');
+    }
+
+    public function test_dialog_page_uses_the_dialogs_slug(): void
+    {
+        // Old plugins/core slug forwards straight to the new dialogs page.
+        $this->get('/docs/mobile/4/plugins/core/dialog')
+            ->assertRedirect('/docs/mobile/4/the-basics/dialogs');
+
+        // The old the-basics/dialog slug forwards to the-basics/dialogs.
+        $this->get('/docs/mobile/4/the-basics/dialog')
+            ->assertRedirect('/docs/mobile/4/the-basics/dialogs');
+
+        // The renamed page renders.
+        $this->get('/docs/mobile/4/the-basics/dialogs')
+            ->assertOk()
+            ->assertSee('Dialogs');
+    }
+
+    public function test_flattened_digging_deeper_and_architecture_pages_render(): void
+    {
+        // The former SuperNative introduction, now the SuperNative page in Architecture.
+        $this->get('/docs/mobile/4/architecture/super-native')
+            ->assertOk()
+            ->assertSee('SuperNative');
+
+        // A flattened former sub-page and an original concept page.
+        $this->get('/docs/mobile/4/digging-deeper/data-binding')
+            ->assertOk();
+
+        $this->get('/docs/mobile/4/digging-deeper/security')
+            ->assertOk();
+    }
 }

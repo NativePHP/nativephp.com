@@ -1,4 +1,4 @@
 ---
 title: Architecture
-order: 80
+order: 10
 ---

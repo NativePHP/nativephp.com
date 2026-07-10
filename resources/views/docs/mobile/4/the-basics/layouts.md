@@ -1,6 +1,6 @@
 ---
 title: Layouts
-order: 60
+order: 154
 ---
 
 ## Overview
@@ -108,7 +108,7 @@ in a screen's Blade.
 - `elevation(int $px)` — hairline thickness at the bottom of the bar
 - `displayMode(string)` — `large`, `inline`, or `automatic`
 - `scrollBehavior(string)` — `collapse`, `pinned`, or `enterAlways`
-- `searchBar(string $placeholder = '', ?string $onQuery = null, int $debounceMs = 300)` — attach a native search bar (see [Search](search))
+- `searchBar(string $placeholder = '', ?string $onQuery = null, int $debounceMs = 300)` — attach a native search bar (see [Search](../digging-deeper/search))
 - `action(NavAction $action)` — append a trailing action
 
 ### `NavAction` — a top-bar button or menu
