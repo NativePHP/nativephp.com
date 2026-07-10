@@ -78,6 +78,26 @@
         {{-- Divider --}}
         <x-divider />
 
+        {{-- Header image --}}
+        @if ($article->header_image)
+            <img
+                x-init="
+                    () => {
+                        motion.inView($el, () => {
+                            gsap.fromTo(
+                                $el,
+                                { autoAlpha: 0, y: 5 },
+                                { autoAlpha: 1, y: 0, duration: 0.7, ease: 'power1.out' },
+                            )
+                        })
+                    }
+                "
+                src="{{ $article->header_image }}"
+                alt=""
+                class="mt-2 max-h-[500px] w-full rounded-2xl object-cover"
+            />
+        @endif
+
         <div class="mt-2 flex items-start gap-5">
             {{-- Content --}}
             <article

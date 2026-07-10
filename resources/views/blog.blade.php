@@ -103,6 +103,7 @@
                             :title="$article->title"
                             :url="route('article', $article)"
                             :date="$article->published_at"
+                            :image="$article->card_image"
                         >
                             {{ $article->excerpt }}
                         </x-blog.article-card>
