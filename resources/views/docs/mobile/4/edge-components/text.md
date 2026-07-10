@@ -152,7 +152,7 @@ Use the `dark:` prefix with Tailwind classes or pass a dark-mode color override.
 
 <aside>
 
-Blade expressions like `{{ $variable }}` work inside text slots. The content is evaluated by PHP before being passed
+Blade expressions like `@{{ $variable }}` work inside text slots. The content is evaluated by PHP before being passed
 to the native renderer.
 
 </aside>
