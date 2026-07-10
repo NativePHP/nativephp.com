@@ -192,6 +192,18 @@ class DocsPrereleaseVersionTest extends TestCase
             ->assertRedirect('/docs/mobile/4/the-basics/device');
     }
 
+    public function test_vibe_docs_moved_to_websockets_with_a_core_plugin_shortcut(): void
+    {
+        // The old Vibe plugin doc now lives at Digging Deeper > WebSockets.
+        $this->get('/docs/mobile/4/plugins/vibe')
+            ->assertRedirect('/docs/mobile/4/digging-deeper/websockets');
+        $this->get('/docs/mobile/4/digging-deeper/websockets')->assertOk();
+
+        // The Core Plugins shortcut forwards to the plugin directory page.
+        $this->get('/docs/mobile/4/plugins/core/vibe')
+            ->assertRedirect('/plugins/nativephp/mobile-vibe');
+    }
+
     public function test_dialog_page_uses_the_dialogs_slug(): void
     {
         // Old plugins/core slug forwards straight to the new dialogs page.

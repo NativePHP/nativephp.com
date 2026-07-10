@@ -55,7 +55,7 @@ dynamically.
 ## Where events come from
 
 Native events originate on the device side and are delivered to whichever screen is alive: plugin events (a
-[Vibe](../plugins/vibe) websocket message, a push notification tap), bridge-call completions, and any custom
+[Vibe](../digging-deeper/websockets) websocket message, a push notification tap), bridge-call completions, and any custom
 events an async native call resolves with. Because delivery targets the live screen, a listener only fires while
 its screen is on the stack.
 

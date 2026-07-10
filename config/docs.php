@@ -54,6 +54,7 @@ return [
                 'the-basics/native-components' => 'the-basics/native-ui',
                 'the-basics/dialog' => 'the-basics/dialogs',
                 'getting-started/deployment' => 'publishing/introduction',
+                'plugins/vibe' => 'digging-deeper/websockets',
 
                 // Concepts section renamed to Digging Deeper
                 'concepts/authentication' => 'digging-deeper/authentication',

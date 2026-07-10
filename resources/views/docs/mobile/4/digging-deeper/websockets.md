@@ -1,7 +1,14 @@
 ---
-title: Vibe (Websockets)
-order: 250
+title: WebSockets
+order: 350
 ---
+
+<aside>
+
+WebSockets functionality is provided by the (free) [Vibe plugin](../plugins/core/vibe). To use this feature, you must
+install the `nativephp/mobile-vibe` Composer package.
+
+</aside>
 
 ## Overview
 
@@ -149,7 +156,7 @@ Vibe::withToken($freshToken);
 
 <aside>
 
-Store tokens with the [SecureStorage](./core/secure-storage) plugin so they live in the device keychain/keystore rather
+Store tokens with the [SecureStorage](../plugins/core/secure-storage) plugin so they live in the device keychain/keystore rather
 than in plain application state.
 
 </aside>
@@ -364,7 +371,7 @@ Presence only. Runs when a member leaves.
 
 - **Foreground-only:** Websockets are foreground-only on mobile. The OS suspends the socket when your app goes to the
   background. For delivery while the app is closed, use push notifications via the
-  [Firebase plugin](./core/firebase).
+  [Firebase plugin](../plugins/core/firebase).
 - **Liveness, not source of truth:** Treat websocket events as a *liveness* signal, not authoritative state. On
   reconnect, refetch the canonical data from your backend.
 - **Auto-teardown:** Subscriptions are removed automatically when the component unmounts. Leaving a screen leaves its
