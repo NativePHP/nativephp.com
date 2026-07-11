@@ -25,11 +25,13 @@ provides a clear tap target that wraps multiple children.
 All [shared layout and style attributes](layout) are supported, plus:
 
 - `menu` - Attach a tap-to-open dropdown; opening the menu shadows `@press`. See [Menus](menus)
+- `@navigate` - Navigate directly from the view, with no component method. See [Routing](../the-basics/routing#navigating-from-blade)
 
 ## Events
 
 - `@press` - Component method to call on tap
 - `@longPress` - Component method to call on long press
+- `@doubleTap` - Component method to call on double tap
 
 ## Children
 
@@ -88,6 +90,32 @@ Accepts any EDGE elements as children. Children are arranged vertically (like a 
 </native:pressable>
 ```
 @endverbatim
+
+## Press feedback
+
+Give the pressable a tactile response while it's held down. These run on the native thread with no PHP round-trip, so
+the animation stays smooth even while a handler is dispatching:
+
+- `press-scale` - Scale factor while pressed (e.g. `0.92` to shrink slightly)
+- `press-opacity` - Opacity while pressed (e.g. `0.85` to dim)
+- `press-translate-y` - Vertical offset in points while pressed (e.g. `3` to nudge down)
+
+@verbatim
+```blade
+<native:pressable
+    @press="openDetail({{ $post->id }})"
+    :press-scale="0.92"
+    :press-opacity="0.85"
+    :press-translate-y="3"
+    class="w-full p-4 rounded-2xl"
+>
+    <native:text class="text-lg font-bold">{{ $post->title }}</native:text>
+</native:pressable>
+```
+@endverbatim
+
+For the full animation system — shared values, gesture-driven animation, and transitions — see
+[Gestures & Animation](../digging-deeper/gestures).
 
 ## Element
 

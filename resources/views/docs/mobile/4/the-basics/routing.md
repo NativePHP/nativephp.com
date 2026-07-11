@@ -95,7 +95,81 @@ Available cases:
 - `Transition::Fade` - default for `replace()`
 - `Transition::FadeFromBottom` - subtle vertical fade
 - `Transition::ScaleFromCenter` - zoom-in effect
+- `Transition::ParallaxPush` - incoming screen slides in from the right while the outgoing screen drifts partially left underneath
 - `Transition::None` - swap with no animation
+
+## Navigating from Blade
+
+The `@navigate` directive triggers navigation directly from your view, with no component method required. It works on
+any node, so any element can become a navigation target.
+
+The short form takes a route:
+
+@verbatim
+```blade
+<native:pressable @navigate="/item/42" class="w-full p-4">
+    <native:text>View item</native:text>
+</native:pressable>
+```
+@endverbatim
+
+To pass data along with the navigation, use the args form — a route followed by an array:
+
+@verbatim
+```blade
+<native:pressable @navigate="'/item/42', ['source' => 'home-feed']">
+    <native:text>View item</native:text>
+</native:pressable>
+```
+@endverbatim
+
+The next screen reads the data with `$this->data('source')`, exactly as with `$this->navigate()`.
+
+### Transition modifiers
+
+Add a transition as a modifier to override the default push animation:
+
+@verbatim
+```blade
+<native:pressable @navigate.slideFromBottom="/item/42">
+    <native:text>Present modally</native:text>
+</native:pressable>
+```
+@endverbatim
+
+Available transition modifiers:
+
+- `fade`
+- `slideFromRight`
+- `slideFromLeft`
+- `slideFromBottom`
+- `fadeFromBottom`
+- `scaleFromCenter`
+- `parallaxPush`
+- `none`
+
+### Action modifiers
+
+Modifiers also select the navigation action. Use these in place of a route to `back`, or combine them with a route
+to `replace` or `exitToWeb`:
+
+@verbatim
+```blade
+<native:pressable @navigate.back>
+    <native:text>Go back</native:text>
+</native:pressable>
+
+<native:pressable @navigate.replace="/login">
+    <native:text>Sign out</native:text>
+</native:pressable>
+
+<native:pressable @navigate.exitToWeb="/dashboard">
+    <native:text>Open dashboard</native:text>
+</native:pressable>
+```
+@endverbatim
+
+Transition and action modifiers can be combined — `@navigate.replace.fade="/login"`.
 
 ## Reading params and data
 
