@@ -119,6 +119,93 @@ Display the current NativePHP Mobile version.
 php artisan native:version
 ```
 
+### native:make
+
+Create a new `NativeComponent` class and its Blade view.
+
+```shell
+php artisan native:make {name}
+```
+
+| Option | Description |
+|--------|-------------|
+| `name` | The component name (e.g. `Counter`, `Settings/Profile`) |
+| `--force` | Overwrite if the component already exists |
+
+### native:rm
+
+Remove a `NativeComponent` class and its Blade view.
+
+```shell
+php artisan native:rm {name?}
+```
+
+| Option | Description |
+|--------|-------------|
+| `name` | The component to remove (e.g. `Counter`, `Settings/Profile`). Optional — omit to choose interactively |
+
+### native:make-test
+
+Create a Pest test for a `NativeComponent` screen.
+
+```shell
+php artisan native:make-test {name}
+```
+
+| Option | Description |
+|--------|-------------|
+| `name` | The component to test (e.g. `Counter`, `Settings/Profile`, or a FQCN) |
+| `--force` | Overwrite if the test already exists |
+
+### native:validate
+
+Validate native EDGE components for common errors.
+
+```shell
+php artisan native:validate
+```
+
+| Option | Description |
+|--------|-------------|
+| `--component=` | Validate only a specific component |
+
+### native:debug
+
+Show debug information about your NativePHP Mobile environment.
+
+```shell
+php artisan native:debug
+```
+
+| Option | Description |
+|--------|-------------|
+| `--json` | Output as JSON |
+
+### native:emulator
+
+List and launch an emulator or simulator.
+
+```shell
+php artisan native:emulator {os}
+```
+
+| Option | Description |
+|--------|-------------|
+| `os` | Target platform: `android/a` or `ios/i` |
+
+### native:sim
+
+Inspect or manage the app on the booted iOS simulator. (macOS only)
+
+```shell
+php artisan native:sim {target?}
+```
+
+| Option | Description |
+|--------|-------------|
+| `target` | What to do: `data`, `app`, or `uninstall` (default: `data`) |
+| `--bundle-id=` | Override the app bundle identifier |
+
 ## Building & Release Commands
 
 <aside>
@@ -310,3 +397,18 @@ php artisan native:plugin:install-agent
 |--------|-------------|
 | `--force` | Overwrite existing agent files |
 | `--all` | Install all agents without prompting |
+
+### native-ui:generate-icons
+
+Generate the `App\Icons\Ios`, `App\Icons\Android`, and `App\Icons\AndroidOutlined` enums so you can reference icons as
+typed, autocompletable enum cases. Ships with the [native-ui](https://github.com/nativephp/native-ui) plugin.
+
+```shell
+php artisan native-ui:generate-icons
+```
+
+| Option | Description |
+|--------|-------------|
+| `--refresh-material` | Fetch the latest Material Icons catalog from Google before regenerating |
+| `--output=` | Override the output directory (default: `app/Icons`) |
+| `--namespace=` | Override the generated namespace (default: `App\Icons`) |
