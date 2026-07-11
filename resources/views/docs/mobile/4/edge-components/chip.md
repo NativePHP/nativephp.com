@@ -8,7 +8,8 @@ order: 200
 A compact selectable tag with a boolean active state and an optional leading icon. Renders as a capsule.
 
 When selected, the chip fills with `theme.primary` and uses `theme.onPrimary` for content. When unselected, it uses
-`theme.surfaceVariant` with a `theme.outline` 1pt stroke. Per Model 3 — no per-instance color overrides.
+`theme.surfaceVariant` with a `theme.outline` 1pt stroke. Colors come from the theme; the capsule radius defaults to
+fully rounded and can be adjusted with `rounded-*` classes.
 
 @verbatim
 ```blade
@@ -18,7 +19,7 @@ When selected, the chip fills with `theme.primary` and uses `theme.onPrimary` fo
 
 ## Props
 
-- `label` - Chip text (required, string). Can also be passed as the first argument to `make()`
+- `label` - Chip text (optional, string). Can also be passed as the first argument to `make()`
 - `selected` / `value` - Whether the chip is active (optional, boolean, default: `false`)
 - `icon` - Leading [icon](icons) name (optional, string)
 - `disabled` - Disable the chip (optional, boolean, default: `false`)
@@ -75,7 +76,8 @@ Chip::make('Verified')
 - `make(string $label = '')` - Create a chip with an optional label
 - `label(string $label)` - Set the chip text
 - `selected(bool $selected = true)` - Active state
-- `icon(string $icon)` - Leading icon
+- `icon(?string $name = null, IosSymbol|string|null $ios = null, AndroidSymbol|string|null $android = null)` -
+  Leading icon; pass `ios:` / `android:` for per-platform symbols
 - `disabled(bool $value = true)` - Disable the chip
 - `a11yLabel(string $value)`, `a11yHint(string $value)` - Accessibility
 - `syncMode(string $mode)` - Set by `native:model` modifiers

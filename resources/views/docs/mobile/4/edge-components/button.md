@@ -20,6 +20,8 @@ control drop to a [`<native:pressable>`](pressable) wrapping your own content.
 ## Props
 
 The label can be passed as the `label` attribute or as slot content between the tags. If both are set, `label` wins.
+Slot content is treated as plain text — nested tags are stripped and whitespace is collapsed. Use the `icon` /
+`icon-trailing` props to add icons rather than nesting elements in the slot.
 
 - `label` - Button text (optional if using slot content)
 - `variant` - Semantic style: `primary` (default), `secondary`, `destructive`, `ghost`
@@ -27,11 +29,14 @@ The label can be passed as the `label` attribute or as slot content between the 
 - `icon` - A leading [icon](icons) name (optional)
 - `icon-trailing` - A trailing [icon](icons) name (optional)
 - `font` - Custom font for the label from `resources/fonts/`, by filename without extension (optional, string) — see [Text › Custom fonts](text#custom-fonts)
+- `lineHeight` - Label line height as a multiplier of the font size (optional, float)
+- `lineHeightPx` - Label line height as an absolute value in pixels (optional, float)
 - `disabled` - Disable the button (optional, boolean, default: `false`)
 - `loading` - Show a spinner in place of the leading icon and prevent presses (optional, boolean, default: `false`)
 - `a11y-label` - Accessibility label override (optional)
 - `a11y-hint` - Accessibility hint (optional)
-- `menu` - Attach a tap-to-open dropdown; opening the menu shadows `@press`. See [Menus](menus)
+- `menu` - Attach a tap-to-open dropdown menu — an array of [`NavAction`](menus) items. Tapping opens the menu
+  instead of firing `@press`. See [Menus](menus)
 
 ## Events
 
@@ -122,8 +127,10 @@ Button::make('Save')
 - `variant(string $value)` - `primary | secondary | destructive | ghost`
 - `size(string $value)` - `sm | md | lg`
 - `font(string $name)` - Custom label font (filename without extension)
-- `icon(string $name)` - Leading icon
-- `iconTrailing(string $name)` - Trailing icon
+- `icon(?string $name = null, IosSymbol|string|null $ios = null, AndroidSymbol|string|null $android = null)` -
+  Leading icon; pass `ios:` / `android:` for per-platform symbols
+- `iconTrailing(?string $name = null, IosSymbol|string|null $ios = null, AndroidSymbol|string|null $android = null)` -
+  Trailing icon; pass `ios:` / `android:` for per-platform symbols
 - `disabled(bool $value = true)` - Disable the button
 - `loading(bool $value = true)` - Show a spinner and prevent presses
 - `a11yLabel(string $value)` - Accessibility label override

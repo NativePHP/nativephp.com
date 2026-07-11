@@ -22,7 +22,9 @@ Use this for short, mutually-exclusive choices that fit on one row. For more opt
 - `options` - Array of option labels (required, array of strings)
 - `value` / `selected-index` - Currently selected index (optional, int, default: `0`)
 - `disabled` - Disable the group (optional, boolean, default: `false`)
+- `sync-mode` - How selection changes sync back to your component: `live | blur | debounce` (optional, usually set by `native:model` modifiers)
 - `a11y-label` - Accessibility label (optional)
+- `a11y-hint` - Accessibility hint (optional)
 
 ## Events
 
@@ -79,5 +81,6 @@ ButtonGroup::make()
 - `selectedIndex(int $index)` - Currently selected index
 - `disabled(bool $value = true)` - Disable the group
 - `a11yLabel(string $value)` - Accessibility label
+- `a11yHint(string $value)` - Accessibility hint
 - `syncMode(string $mode)` - `live | blur | debounce` (set by `native:model` modifiers)
 - `onChange(string $method)` - Component method invoked on change

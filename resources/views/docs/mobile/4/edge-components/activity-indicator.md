@@ -22,6 +22,7 @@ All [shared layout and style attributes](layout) are supported, plus:
 - `size` - `"sm"`, `"md"` (default), or `"lg"` (optional, string). Legacy ints `1`=large, `2`=small are also accepted
 - `color` - Spinner color as hex string (optional). Leave unset to use `theme.primary`
 - `a11y-label` - Accessibility label (optional)
+- `a11y-hint` - Accessibility hint (optional)
 
 <aside>
 
@@ -79,3 +80,4 @@ ActivityIndicator::make()
 - `size(string|int $size)` - `"sm" | "md" | "lg"`. Legacy: `1`=large, `2`=small
 - `color(string $hex)` - Override the theme tint
 - `a11yLabel(string $value)` - Accessibility label
+- `a11yHint(string $value)` - Accessibility hint

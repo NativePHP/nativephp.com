@@ -26,6 +26,7 @@ prop is an escape hatch for non-theme containers.
 - `color` - Override the fill color as hex string (optional)
 - `track-color` - Override the track color as hex string (optional)
 - `a11y-label` - Accessibility label (optional)
+- `a11y-hint` - Accessibility hint (optional)
 
 <aside>
 
@@ -81,3 +82,4 @@ ProgressBar::make()->indeterminate();
 - `color(string $hex)` - Override the fill tint
 - `trackColor(string $hex)` - Override the track color
 - `a11yLabel(string $value)` - Accessibility label
+- `a11yHint(string $value)` - Accessibility hint

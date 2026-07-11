@@ -8,7 +8,8 @@ order: 110
 A small count or text marker, typically used as an overlay on nav items, list rows, or buttons. Renders as a capsule
 pill.
 
-Per Model 3, colors come from the theme via the semantic `variant` prop — there are no per-instance overrides.
+Colors come from the theme via the semantic `variant` prop by default. To override them per instance, apply `bg-*`
+classes for the fill and `rounded-*` classes to adjust the capsule radius.
 
 @verbatim
 ```blade
@@ -25,6 +26,7 @@ Per Model 3, colors come from the theme via the semantic `variant` prop — ther
     - `primary` — `theme.primary` / `theme.onPrimary`
     - `accent` — `theme.accent` / `theme.onAccent`
 - `a11y-label` - Accessibility label (optional)
+- `a11y-hint` - Accessibility hint (optional)
 
 <aside>
 
@@ -88,3 +90,4 @@ Badge::make()
 - `label(string $text)` - Short text label (wins over `count`)
 - `variant(string $variant)` - `destructive | primary | accent`
 - `a11yLabel(string $value)` - Accessibility label
+- `a11yHint(string $value)` - Accessibility hint
