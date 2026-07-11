@@ -120,8 +120,8 @@ NavBar::make()
 
 ## Per-screen overrides
 
-Screens can contribute additional NavBar actions on top of what their layout supplies by overriding
-`navigationOptions()`:
+Screens can override the title, colors, display behavior, and add actions on top of what their layout supplies by
+overriding `navigationOptions()`:
 
 ```php
 use Native\Mobile\Edge\Layouts\Builders\NavAction;
@@ -143,5 +143,22 @@ class ItemDetail extends NativeComponent
     }
 }
 ```
+
+### `NavBarOptions` methods
+
+Non-null fields override the layout's `NavBar`; null fields fall through. `action()` appends to whatever the layout
+already declared.
+
+- `make()` - Create a new builder
+- `title(?string $title)` - Override the title text
+- `subtitle(?string $subtitle)` - Override the small line under the title
+- `back(bool $show = true)` - Show or hide the back chevron
+- `backgroundColor(string $color)` - Bar background color
+- `textColor(string $color)` - Title and icon tint
+- `elevation(int $px)` - Hairline thickness at the bottom of the bar
+- `displayMode(string $mode)` - Title display mode — `large`, `inline`, or `automatic`
+- `scrollBehavior(string $mode)` - How the bar reacts to content scrolling — `collapse`, `pinned`, or `enterAlways`
+- `searchBar(string $placeholder = '', ?string $onQuery = null, int $debounceMs = 300)` - Attach an inline native search field; text changes call the `$onQuery` method on the screen
+- `action(NavAction $action)` - Append a trailing action
 
 See [Layouts](../the-basics/layouts) for the full picture.

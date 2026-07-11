@@ -130,3 +130,37 @@ TabBar::make()
 - `badge(string $badge, ?string $color = null)` - Show a numeric/text badge
 - `news(bool $news = true)` - Show a red dot indicator
 - `active(bool $active = true)` - Mark this tab as active
+
+## Per-screen tab bar
+
+Screens can adjust their layout's tab bar for the current screen by overriding `tabBarOptions()`. Non-null fields
+override the layout's defaults; null fields fall through. This is the tab-bar parallel to the top bar's
+[`navigationOptions()`](top-bar#per-screen-overrides). Per-screen tab content edits (inserting or removing tabs) are
+out of scope — define your tabs once at the layout level.
+
+```php
+use Native\Mobile\Edge\Layouts\Builders\TabBarOptions;
+use Native\Mobile\Edge\NativeComponent;
+
+class ChatThread extends NativeComponent
+{
+    public function tabBarOptions(): ?TabBarOptions
+    {
+        return TabBarOptions::make()
+            ->hidden()              // hide the tab bar on this pushed detail screen
+            ->highlight('chats');   // keep the "Chats" tab lit while you're inside it
+    }
+}
+```
+
+### `TabBarOptions` methods
+
+- `make()` - Create a new builder
+- `hidden(bool $hidden = true)` - Hide the tab bar on this screen — the pushed-detail pattern
+- `highlight(string $tabId)` - Force a tab id to render as active, even when the screen's URL doesn't match any tab (e.g. a search-results screen reached from the Search tab)
+- `activeColor(string $color)` - Color of the active tab's icon and label on this screen
+- `backgroundColor(string $color)` - Bar background color on this screen
+
+For the common "hide the tab bar on this detail screen" case, the shorter `protected bool $hidesTabBar = true;`
+property on the screen is equivalent to `TabBarOptions::make()->hidden()`. Use either; if both are set, the explicit
+builder wins.

@@ -99,13 +99,15 @@ On iOS, gesture support is always enabled for the side nav.
 - `label` - Display text (required)
 - `icon` - A named [icon](icons) (required)
 - `url` - A URL to navigate to in the web view (required)
+- `open-in-browser` - Force the `url` to open in the device's default browser instead of the web view, whatever its domain (optional, default: `false`)
 - `active` - Highlight this item as active (optional, default: `false`)
 - `badge` - Badge text (optional)
 - `badge-color` - Hex code or named color (optional)
 
 <aside>
 
-Any `url` that doesn't match the web view's domain will open in the user's default browser.
+Any `url` that doesn't match the web view's domain will open in the user's default browser. Set `open-in-browser` to
+force the browser even for a same-domain `url`.
 
 </aside>
 

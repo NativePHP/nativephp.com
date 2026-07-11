@@ -47,6 +47,14 @@ includes two reference layouts you can copy as a starting point:
 - `App\NativeComponents\Layouts\StackLayout` - Back chevron + screen title. No bottom tabs.
 - `App\NativeComponents\Layouts\TabsLayout` - Title bar plus a 3-tab bottom nav.
 
+If you use the `nativephp/native-ui` plugin, its `native-ui-layouts` publish tag scaffolds a starter `<x-layouts.app>`
+Blade component that wraps a screen's content with safe-area handling and optional scrolling — copy it to
+`feed.blade.php`, `detail.blade.php`, and so on for multiple page archetypes.
+
+```bash
+php artisan vendor:publish --tag=native-ui-layouts
+```
+
 ## Writing a custom layout
 
 Extend `Native\Mobile\Edge\Layouts\NativeLayout` and override `navBar()` and/or `tabBar()`. Returning `null` from a
