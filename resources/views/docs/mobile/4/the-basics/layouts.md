@@ -234,6 +234,44 @@ the content too far.
 
 </aside>
 
+## Floating overlay
+
+For a pill or banner that **floats over** every screen — a "servers nearby" chip, a now-playing capsule, a
+sync-status badge — mix the native-ui `HasFloatingOverlay` trait into your layout and return a `FloatingOverlay`
+from `floatingOverlay()`. Unlike `bottomBar()`, it does **not** inset the content: it hovers on a top layer above
+the content and the tab bar, so nothing is pushed up. Return `null` and nothing floats.
+
+The content is any element tree or Blade view, so you build the overlay's UI with normal EDGE components:
+
+```php
+use Nativephp\NativeUi\Builders\FloatingOverlay;
+use Nativephp\NativeUi\Concerns\HasFloatingOverlay;
+
+class AppLayout extends NativeLayout
+{
+    use HasFloatingOverlay;
+
+    public function floatingOverlay(NativeComponent $screen): ?FloatingOverlay
+    {
+        if (NearbyServers::none()) {
+            return null;                                  // nothing floats
+        }
+
+        return FloatingOverlay::make(view('native.servers-pill'))
+            ->offset(88);          // clearance above the tab bar; ->top() pins below the nav bar instead
+    }
+}
+```
+
+<aside>
+
+Because it floats over **every** screen under the layout, the overlay's content should read from app-wide state (a
+store / singleton), not the active screen's own properties — `floatingOverlay()` is re-evaluated on each publish
+from the current `$screen`. A single screen can replace or suppress it with the `InteractsWithFloatingOverlay`
+trait. Only rendered by layouts using native chrome (`usesNativeChrome()` is `true`).
+
+</aside>
+
 ## How chrome wraps the screen
 
 When a screen renders, the framework's `wrapWithChrome` flow:
