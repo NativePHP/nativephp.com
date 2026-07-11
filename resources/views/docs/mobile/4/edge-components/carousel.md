@@ -26,11 +26,13 @@ stack with `item-spacing` between items.
 - `item-width` - Width of each child in dp (optional, float, default: `200`)
 - `item-spacing` - Spacing between items in dp (optional, float, default: `8`)
 - `variant` - Reserved for future variants (optional, string)
+- `a11y-label` - Accessibility label (optional)
+- `a11y-hint` - Accessibility hint (optional)
 
 ## Children
 
-Accepts any EDGE elements as children. Each child is clipped to a 16dp rounded rectangle by the renderer, so
-border-radius styling on the child itself is optional.
+Accepts any EDGE elements as children. Each child is clipped to a rounded rectangle by the renderer — 16pt on iOS,
+and the Material `extraLarge` shape (~28dp) on Android — so border-radius styling on the child itself is optional.
 
 <aside>
 
@@ -86,3 +88,5 @@ Carousel::make($child1, $child2, $child3)
 - `itemWidth(float $width)` - Width per item
 - `itemSpacing(float $spacing)` - Spacing between items
 - `variant(string $variant)` - Variant identifier (reserved)
+- `a11yLabel(string $value)` - Accessibility label
+- `a11yHint(string $value)` - Accessibility hint

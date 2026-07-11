@@ -28,7 +28,9 @@ Per Model 3, the active tab uses `theme.primary` and the underline is `theme.pri
 ## Props (Row)
 
 - `value` / `selected-index` - Currently selected tab index (optional, int, default: `0`)
+- `sync-mode` - How `native:model` writes the selected index back to your component (optional)
 - `a11y-label` - Accessibility label (optional)
+- `a11y-hint` - Accessibility hint (optional)
 
 ## Events
 
@@ -124,4 +126,4 @@ TabRow::make(
 ### `Tab` methods
 
 - `make(string $label = '')` - Create a tab with a label
-- `icon(string $icon)` - Tab icon
+- `icon(?string $name = null, IosSymbol|string|null $ios = null, AndroidSymbol|string|null $android = null)` - Tab icon. Pass a shared [icon](icons) name, or override per platform with the `ios:` / `android:` named arguments

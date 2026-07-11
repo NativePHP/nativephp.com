@@ -40,6 +40,7 @@ Per Model 3, the container color resolves from `theme.surface`. For a custom sur
     - `full` (100% of screen)
     - A numeric fraction `0.0`–`1.0` for a custom height (e.g. `"0.4"` for 40%)
 - `a11y-label` - Accessibility label (optional)
+- `a11y-hint` - Accessibility hint (optional)
 
 ## Events
 
@@ -157,4 +158,5 @@ BottomSheet::make()
 - `visible(bool $value = true)` - Toggle visibility
 - `detents(string $detents)` - Allowed heights
 - `a11yLabel(string $value)` - Accessibility label
+- `a11yHint(string $value)` - Accessibility hint
 - `onDismiss(string $method)` - Component method invoked on dismissal

@@ -36,6 +36,7 @@ Per Model 3, backdrop and surface colors come from `theme.background`. The close
 - `visible` - Whether the modal is shown (required, boolean)
 - `dismissible` - Render a close icon and allow swipe-to-dismiss (optional, boolean, default: `true`)
 - `a11y-label` - Accessibility label (optional)
+- `a11y-hint` - Accessibility hint (optional)
 
 ## Events
 
@@ -115,4 +116,5 @@ Modal::make()
 - `visible(bool $value = true)` - Toggle visibility
 - `dismissible(bool $value = true)` - Allow user dismissal
 - `a11yLabel(string $value)` - Accessibility label
+- `a11yHint(string $value)` - Accessibility hint
 - `onDismiss(string $method)` - Component method invoked on dismissal
