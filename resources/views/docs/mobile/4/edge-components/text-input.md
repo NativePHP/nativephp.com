@@ -5,17 +5,20 @@ order: 430
 
 ## Overview
 
-Native text input fields come in two variants:
+Native text input fields come in three variants:
 
 - `<native:outlined-text-input>` — bordered field. Default, lower emphasis.
 - `<native:filled-text-input>` — surface-fill background + bottom indicator line. Higher emphasis.
+- `<native:bare-text-input>` — chromeless field with no Material chrome, for chat pills, search bars, and inline
+  editors where the surrounding container supplies the visuals. See [Bare variant](#bare-variant).
 
-Both share the same prop set and event API. Choose based on emphasis, not behavior.
+All three share the same prop set and event API. Choose the outlined / filled pair based on emphasis, not behavior;
+reach for bare when you want to style the input yourself.
 
-On iOS they render as SwiftUI `TextField` / `SecureField` with Material3-style chrome; on Android they map to
-`OutlinedTextField` / `TextField` (filled). Per Model 3 there are no per-instance color, font, or border overrides
-— all chrome resolves from the theme. For fully custom input visuals drop to [`<native:pressable>`](pressable)
-wrapping your own drawing.
+On iOS the outlined and filled variants render as SwiftUI `TextField` / `SecureField` with Material3-style chrome; on
+Android they map to `OutlinedTextField` / `TextField` (filled). Per Model 3 these two have no per-instance color or
+border overrides — all chrome resolves from the theme. For fully custom input visuals reach for the bare variant, or
+drop to [`<native:pressable>`](pressable) wrapping your own drawing.
 
 @verbatim
 ```blade
@@ -31,7 +34,8 @@ wrapping your own drawing.
 
 ## Props
 
-Both variants accept identical props.
+All three variants accept the same shared prop set. The bare variant adds a `color` attribute on top — see
+[Bare variant](#bare-variant).
 
 ### Content
 
@@ -49,12 +53,18 @@ Both variants accept identical props.
 
 ### Behavior
 
-- `keyboard` - Keyboard hint string: `text` (default), `number`, `email`, `phone`, `url`, `decimal`, `numberPassword`
+- `keyboard` - Keyboard hint string: `text` (default), `number`, `email`, `phone`, `url`, `decimal`, `password`,
+  `numberPassword`. On iOS `password` uses the standard keyboard; `secure` is the masking mechanism
 - `secure` - Mask input for passwords (optional, boolean, default: `false`)
 - `multiline` - Allow multiple lines (optional, boolean, default: `false`)
 - `max-length` - Maximum character count (optional, int)
 - `max-lines` - Maximum visible lines when `multiline` (optional, int)
 - `min-lines` - Minimum visible lines when `multiline` (optional, int)
+- `keep-focus-on-submit` - Keep the keyboard up after `@submit` instead of unfocusing the field on return — the chat
+  "send and keep typing" pattern (optional, boolean, default: `false`)
+- `sync-mode` - How change events dispatch back to your component: `live` (default), `blur`, or `debounce`. Usually
+  set via the `native:model` modifiers below, but accepted directly too
+- `debounce-ms` - Milliseconds of inactivity before a `debounce` sync fires (optional, int, default: `300`)
 
 ### Decorations
 
@@ -67,6 +77,7 @@ Both variants accept identical props.
 
 - `font` - Custom font from `resources/fonts/`, by filename without extension (optional, string) — see [Text › Custom fonts](text#custom-fonts)
 - `leading-*` classes set line height for the typed text (multi-line only). Applies on Android; **iOS inputs don't reflect it** — SwiftUI's editable field ignores line spacing (it works on [`<native:text>`](text#line-height))
+- `lineHeight` / `lineHeightPx` attributes are an alternative to the `leading-*` classes: `lineHeight` is a multiplier of the font size, `lineHeightPx` an absolute override. Only the camelCase spellings are read for these two
 
 ### Sizing & accessibility
 
@@ -81,7 +92,7 @@ Both variants accept identical props.
 
 <aside>
 
-Both variants are self-closing. They do not accept children.
+All three variants are self-closing. They do not accept children.
 
 </aside>
 
@@ -110,7 +121,51 @@ Use the `native:model` directive for automatic two-way binding with a component 
 
 - `live` (default) — every keystroke fires `@change`
 - `blur` — only fires on focus loss / submit
-- `debounce` — fires after `debounce_ms` of inactivity, or immediately on blur / submit
+- `debounce` — fires after `debounce-ms` of inactivity (300ms when unset), or immediately on blur / submit
+
+## Bare variant
+
+`<native:bare-text-input>` is a chromeless input — no outline, no fill, no label, no Material chrome, just the typing
+affordance. It's built for chat input pills, search bars, and inline editors where the surrounding container provides
+the visuals. On iOS it renders as a plain SwiftUI `TextField`; on Android as a Compose `BasicTextField`.
+
+It inherits the full shared prop set — `native:model`, `secure`, `multiline`, `keyboard`, `@submit`,
+`keep-focus-on-submit`, `disabled`, `read-only`, and the rest — so it behaves exactly like the other variants.
+
+Two things set it apart:
+
+- **Class-based styling passes through.** Unlike the filled / outlined variants (which resolve all chrome from the
+  theme), the bare variant lets element-level styling flow to the input directly: `bg`, `rounded-*`, borders, `glass`,
+  opacity, elevation, and padding. So you can style the pill on the input itself, no wrapping row needed.
+- **A `color` attribute** sets the text color — a hex value or a Tailwind token, with `dark:text-*` support for a
+  light/dark pair. Useful when your wrapper overrides the background and the theme's default text color would vanish.
+
+@verbatim
+```blade
+<native:bare-text-input
+    class="flex-1 glass rounded-full px-4 py-2 dark:text-slate-700"
+    placeholder="Message"
+    native:model="draft"
+    @submit="send"
+    keep-focus-on-submit
+/>
+```
+@endverbatim
+
+The `color` attribute can be set explicitly or picked up from a `text-*` class on the input:
+
+@verbatim
+```blade
+<native:bare-text-input placeholder="Search" native:model="query" color="slate-700" />
+<native:bare-text-input placeholder="Search" native:model="query" class="text-slate-700 dark:text-slate-300" />
+```
+@endverbatim
+
+<aside>
+
+`<native:bare-text-input>` is self-closing. It does not accept children.
+
+</aside>
 
 ## Examples
 
@@ -198,6 +253,7 @@ Use the `native:model` directive for automatic two-way binding with a component 
 ```php
 use Nativephp\NativeUi\Elements\OutlinedTextInput;
 use Nativephp\NativeUi\Elements\FilledTextInput;
+use Nativephp\NativeUi\Elements\BareTextInput;
 
 OutlinedTextInput::make()
     ->label('Email')
@@ -208,15 +264,24 @@ OutlinedTextInput::make()
     ->onChange('updateEmail');
 ```
 
-Both elements share the same fluent API (defined on `BaseTextInput`):
+All three elements share the same fluent API (defined on `BaseTextInput`):
 
 - `value(string $text)`, `placeholder(string $text)`, `label(string $text)`, `supporting(string $text)`
 - `disabled(bool $value = true)`, `readOnly(bool $value = true)`, `error(bool $value = true)`, `loading(bool $value = true)`
 - `keyboard(string|int $type)`, `secure(bool $value = true)`, `maxLength(int $length)`
 - `multiline(bool $value = true)`, `maxLines(int $lines)`, `minLines(int $lines)`
-- `prefix(string $text)`, `suffix(string $text)`, `leadingIcon(string $name)`, `trailingIcon(string $name)`
+- `keepFocusOnSubmit(bool $value = true)` - Keep the keyboard up after `@submit`
+- `prefix(string $text)`, `suffix(string $text)`
+- `leadingIcon(?string $name = null, IosSymbol|string|null $ios = null, AndroidSymbol|string|null $android = null)` -
+  pass a shared `$name`, or per-platform `$ios` / `$android` symbols for a different icon on each platform
+- `trailingIcon(?string $name = null, IosSymbol|string|null $ios = null, AndroidSymbol|string|null $android = null)` -
+  same per-platform form as `leadingIcon()`
 - `size(string $value)` - `sm | md | lg`
 - `font(string $name)` - Custom font (filename without extension)
 - `a11yLabel(string $value)`, `a11yHint(string $value)`
 - `syncMode(string $mode)`, `debounceMs(int $ms)`
 - `onChange(string $method)`, `onSubmit(string $method)`
+
+`BareTextInput` adds one method on top of the shared API:
+
+- `color(string $color)` - Text color as a hex value or Tailwind token (with `dark:text-*` support)
