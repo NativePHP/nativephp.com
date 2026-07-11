@@ -30,7 +30,10 @@ Pair with [`<native:list-item>`](#list-item) for Material3 list rows, or use any
 
 - `horizontal` - Lay out children horizontally instead of vertically (optional, boolean, default: `false`)
 - `shows-indicators` - Show scroll indicators (optional, boolean, default: `false`) [iOS]
-- `separator` - Render dividers between rows (optional, boolean, default: `false`) [iOS]
+- `separator` - Render dividers between rows (optional, boolean, default: `false`)
+- `plain` - Force a flat, ungrouped list. By default a list containing `<native:list-section>` children adopts the
+  inset-grouped style (rounded cards — iOS `.insetGrouped`, grouped cards on Android); `plain` keeps flat rows with
+  plain section headers instead (optional, boolean, default: `false`)
 - `on-refresh` - Component method called on pull-to-refresh (optional, string) [iOS]
 - `on-end-reached` - Component method called when the user nears the end of the list (optional, string)
 
@@ -63,29 +66,36 @@ content slots.
 
 ### Leading slot (mutually exclusive)
 
-- `leadingIcon` - Icon name rendered as a leading icon
+- `leadingIcon` - Icon name rendered as a leading icon. Pair with `leadingIconIos` / `leadingIconAndroid` to
+  override the [icon](icon) per platform
 - `leadingAvatar` - URL of a circular avatar image
 - `leadingMonogram` - 1-2 character monogram (combine with `leadingMonogramColor`)
 - `leadingMonogramColor` - Hex color for monogram background
 - `leadingImage` - URL of a square image with a small radius
-- `leadingCheckbox` - Boolean value for a leading checkbox
-- `leadingRadio` - Boolean value for a leading radio button
+- `leadingCheckbox` - Boolean value for a leading checkbox. Toggling is interactive on [Android]; iOS renders a
+  static glyph
+- `leadingRadio` - Boolean value for a leading radio button. Toggling is interactive on [Android]; iOS renders a
+  static glyph
 
 ### Trailing slot (mutually exclusive)
 
-- `trailingIcon` - Icon name rendered as a trailing icon
+- `trailingIcon` - Icon name rendered as a trailing icon. Pair with `trailingIconIos` / `trailingIconAndroid` to
+  override the [icon](icon) per platform
 - `trailingText` - Trailing text label
-- `trailingCheckbox` - Boolean value for a trailing checkbox
+- `trailingCheckbox` - Boolean value for a trailing checkbox. Toggling is interactive on [Android]; iOS renders a
+  static glyph
 - `trailingSwitch` - Boolean value for a trailing switch [Android]
 - `trailingIconButton` - Icon name for a tappable trailing button
 - `trailing-a11y-label` - Accessibility label for the trailing icon button (recommended whenever
   `trailingIconButton` is set). See [Accessibility](../digging-deeper/accessibility)
-- `trailing-menu` - Attach a tap-to-open dropdown to the row's trailing edge. See [Menus](menus)
+- `trailing-menu` - Attach a tap-to-open dropdown to the row's trailing edge. When set without an explicit trailing
+  slot, an `ellipsis` icon button is auto-created as the anchor. See [Menus](menus)
 
 Independent of the mutually-exclusive slot above, a row can also show a stack of small status icons:
 
 - `trailing-badges` - An array of small status badges drawn right-aligned, so several can show at once (e.g. a
-  flag and a pin). Each badge is `['ios' => ..., 'android' => ..., 'color' => '#hex']`.
+  flag and a pin). Each badge is `['icon' => ..., 'ios' => ..., 'android' => ..., 'color' => '#hex']`, where `icon`
+  is a shared [icon](icon) name and `ios` / `android` override it per platform.
 
 ### Color overrides
 
@@ -103,11 +113,12 @@ Independent of the mutually-exclusive slot above, a row can also show a stack of
 ### Events
 
 - `@press` / `@longPress` - Standard press handlers on the row
-- `@leading-change` - Fired when a leading checkbox or radio toggles; receives the new value
-- `@trailing-change` - Fired when a trailing checkbox or switch toggles; receives the new value
-- `@trailing-press` - Fired when the trailing icon button is tapped
 - `on-swipe-delete` - Shortcut for a single destructive trailing swipe. For anything richer, use
   `trailing-actions` below.
+
+Toggle changes and trailing icon-button taps are wired through the [Element](#element) callbacks rather than Blade
+events. `onTrailingPress()` fires on both platforms when the trailing icon button is tapped. `onLeadingChange()`
+and `onTrailingChange()` fire on [Android], where the checkbox / radio / switch controls are interactive.
 
 ### Swipe actions
 
@@ -140,6 +151,9 @@ definitions the user reveals by swiping the row. Each action is an array:
 Group rows under a header (and optional footer) with `<native:list-section>` — a SwiftUI `Section` on iOS, a
 sticky-header group on Android. Place `<native:list-item>` children inside; a section on its own renders nothing.
 
+A list that contains sections automatically adopts the inset-grouped style (rounded cards); pass `plain` to the
+list to keep flat rows with plain section headers instead.
+
 @verbatim
 ```blade
 <native:list>
@@ -162,6 +176,12 @@ use Nativephp\NativeUi\Elements\ListSection;
 
 ListSection::make('Fruits', ListItem::make('Apple'))->footer('1 item');
 ```
+
+### `ListSection` methods
+
+- `make(string $header = '', Element ...$children)` - Create a section with a header and rows
+- `header(string $text)` - Set the section header text
+- `footer(string $text)` - Set the optional footer text
 
 ## Examples
 
@@ -241,7 +261,7 @@ Text:
 
 Leading slot:
 
-- `leadingIcon(string $icon)`
+- `leadingIcon(?string $name = null, IosSymbol|string|null $ios = null, AndroidSymbol|string|null $android = null)`
 - `leadingAvatar(string $url)`
 - `leadingMonogram(string $initials, ?string $color = null)`
 - `leadingImage(string $url)`
@@ -250,23 +270,24 @@ Leading slot:
 
 Trailing slot:
 
-- `trailingIcon(string $icon)`
+- `trailingIcon(?string $name = null, IosSymbol|string|null $ios = null, AndroidSymbol|string|null $android = null)`
 - `trailingText(string $text)`
 - `trailingCheckbox(bool $checked = false)`
 - `trailingSwitch(bool $checked = false)`
-- `trailingIconButton(string $icon)`
+- `trailingIconButton(?string $name = null, IosSymbol|string|null $ios = null, AndroidSymbol|string|null $android = null)`
 - `trailingA11yLabel(string $label)` - Accessibility label for the trailing icon button
 
 Swipe actions & badges:
 
 - `leadingActions(array $actions)`, `trailingActions(array $actions)` - Arrays of swipe-action definitions
   (`method`, `label`, `ios`/`android`, `tint`, and `role` for trailing)
-- `trailingBadges(array $badges)` - Stacked right-aligned status icons
+- `trailingBadges(array $badges)` - Stacked right-aligned status icons; each badge is
+  `['icon' => ..., 'ios' => ..., 'android' => ..., 'color' => '#hex']`
 
 Styling:
 
 - `headlineColor`, `supportingColor`, `overlineColor`, `containerColor`,
-  `leadingIconColor`, `trailingIconColor`, `trailingTextColor` (all `(string $color)`)
+  `leadingIconColor`, `leadingIconBackgroundColor`, `trailingIconColor`, `trailingTextColor` (all `(string $color)`)
 - `tonalElevation(float $dp)`, `shadowElevation(float $dp)`
 
 Callbacks:
