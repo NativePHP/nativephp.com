@@ -29,7 +29,9 @@ and elevation behave as on any other element.
 - `left` - X position offset in dp (optional, float). Used inside an absolutely-positioned parent
 - `top` - Y position offset in dp (optional, float)
 
-`<native:rect>` may optionally wrap children if you need to layer content on top of the fill.
+`<native:rect>` is a self-closing element, so it doesn't accept tag children. To layer content on top of the fill,
+overlay the rect and your content inside a [`<native:stack>`](stack). In PHP, the `Rect` element accepts children via
+`addChild()` if you'd rather build the layering fluently.
 
 ## Circle
 
@@ -86,11 +88,14 @@ container's frame or use a styled `<native:divider>`.
 
 ### Colored badge background
 
+Overlay the label on a filled rect with a `<native:stack>`. Give the rect an explicit frame and center the text on top:
+
 @verbatim
 ```blade
-<native:rect :padding="[4, 12]" bg="#DBEAFE" :border-radius="12">
+<native:stack class="items-center justify-center">
+    <native:rect :width="52" :height="24" bg="#DBEAFE" :border-radius="12" />
     <native:text :font-size="12" :font-weight="5" color="#2563EB">New</native:text>
-</native:rect>
+</native:stack>
 ```
 @endverbatim
 

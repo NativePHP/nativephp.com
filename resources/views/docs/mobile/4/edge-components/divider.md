@@ -14,7 +14,8 @@ the platform separator color (`UIColor.separator` on iOS, Material `outlineVaria
 ```
 @endverbatim
 
-`<native:horizontal-divider />` is an alias of `<native:divider />` exposed for use inside [side navigation](side-nav).
+`<native:horizontal-divider />` is an equivalent divider component exposed for use inside [side navigation](side-nav). It
+emits its own `horizontal_divider` element but renders the same visual rule as `<native:divider />`.
 
 <aside>
 
@@ -91,7 +92,8 @@ The classes that affect how a divider renders:
 ```php
 use Native\Mobile\Edge\Elements\Divider;
 
-Divider::make()->borderColor('#E2E8F0');
+Divider::make()->border(1, '#E2E8F0');
 ```
 
 - `make()` - Create a divider
+- `border(float $width, string $color)` - Set the line width and color
