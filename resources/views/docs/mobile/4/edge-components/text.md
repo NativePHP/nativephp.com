@@ -28,9 +28,17 @@ All [shared layout and style attributes](layout) are supported, plus:
     - `5` semibold
     - `6` bold
     - `7` heavy (extrabold)
+
+    Values outside 1-7 are clamped to the nearest supported weight.
 - `color` - Text color as hex string (optional, default: `#000000`)
 - `text-align` - Alignment: `0`=start, `1`=center, `2`=end (optional, int, default: `0`)
 - `max-lines` - Maximum lines before truncating with ellipsis (optional, int)
+- `font-style` - `0`=normal, `1`=italic (optional, int)
+- `font-family` - Typeface: `0`=sans, `1`=serif, `2`=mono (optional, int)
+- `underline` - Underline: `1`=on, `0`=off (optional, int)
+- `line-through` - Strikethrough: `1`=on, `0`=off (optional, int)
+- `text-transform` - Case: `0`=none, `1`=uppercase, `2`=lowercase, `3`=capitalize (optional, int)
+- `letter-spacing` - Tracking in em relative to font size (optional, float)
 - `font` - Custom font name — a font file from `resources/fonts/` without its extension (optional, string) — see [Custom fonts](#custom-fonts)
 
 Line height is set with `leading-*` classes — see [Line height](#line-height).
@@ -63,6 +71,35 @@ from the app's assets. An unresolved name falls back to the system font.
 
 `font` also works on [`<native:button>`](button) and the [text inputs](text-input),
 and is available fluently as `->font('Inter-Bold')`.
+
+### Downloading from Google Fonts
+
+The `native:font` command downloads any [Google Fonts](https://fonts.google.com)
+family straight into `resources/fonts/` — no API key needed:
+
+```bash
+php artisan native:font Lobster
+php artisan native:font "Rock Salt" Inter
+php artisan native:font Inter --weights=400,700 --italic
+```
+
+Files are named `<Family>-<Style>.ttf` (`Inter-Bold`, `Inter-BoldItalic`, …) —
+ready to use as `font` tokens. Google Fonts are libre-licensed (OFL / Apache),
+so bundling them in your app is permitted.
+
+### App-wide default font
+
+Set the theme's `font-family` token in `config/native-ui.php` to apply a bundled
+font everywhere — text, buttons, inputs, and navigation chrome — without touching
+individual elements:
+
+```php
+'font-family' => 'Inter-Regular',   // a resources/fonts/ token; 'System' = platform default
+```
+
+Per-element `font` attributes and explicit `font-serif` / `font-mono` classes
+still win over the default. The `native:font` command offers to set this for you
+(`--default`, or answer the prompt) and publishes the config if needed.
 
 <aside>
 
@@ -100,6 +137,27 @@ exact; tightening below the font's natural line height (`none`, `tight`) is limi
 by SwiftUI and may bottom out at the natural spacing. Android is exact both ways.
 
 </aside>
+
+## Text styling
+
+Style text with Tailwind classes — these compose with `text-*` size and `font-*` weight:
+
+- **Italic** — `italic`, `not-italic`
+- **Decoration** — `underline`, `line-through`, `no-underline`. `underline` and
+  `line-through` are independent flags, so they combine; `no-underline` clears both.
+- **Transform** — `uppercase`, `lowercase`, `capitalize`, `normal-case`
+- **Letter spacing (tracking)** — `tracking-tighter`, `tracking-tight`,
+  `tracking-normal`, `tracking-wide`, `tracking-wider`, `tracking-widest` (in em,
+  relative to the font size)
+- **Font family** — `font-sans` (default), `font-serif`, `font-mono`
+
+@verbatim
+```blade
+<native:text class="text-lg font-semibold italic underline tracking-wide">
+    Styled with Tailwind
+</native:text>
+```
+@endverbatim
 
 ## Inline runs
 
@@ -235,8 +293,10 @@ Text::make('Hello')
 - `make(string $text = '')` - Create text with content
 - `fontSize(float $size)` - Text size
 - `font(string $name)` - Custom font from `resources/fonts/` (filename without extension)
-- `fontWeight(int $weight)` - 1-7
+- `fontWeight(int $weight)` - 1-7 (clamped to the nearest supported weight)
 - `bold()` - Shortcut for `fontWeight(7)`
+- `fontStyle(int $style)` - `0`=normal, `1`=italic
+- `italic()` - Shortcut for `fontStyle(1)`
 - `color(string $hex)` - Text color
 - `textAlign(int $align)` - `0`=start, `1`=center, `2`=end
 - `maxLines(int $lines)` - Truncate after N lines

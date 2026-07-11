@@ -77,7 +77,7 @@ All three variants accept the same shared prop set. The bare variant adds a `col
 
 - `font` - Custom font from `resources/fonts/`, by filename without extension (optional, string) — see [Text › Custom fonts](text#custom-fonts)
 - `leading-*` classes set line height for the typed text (multi-line only). Applies on Android; **iOS inputs don't reflect it** — SwiftUI's editable field ignores line spacing (it works on [`<native:text>`](text#line-height))
-- `lineHeight` / `lineHeightPx` attributes are an alternative to the `leading-*` classes: `lineHeight` is a multiplier of the font size, `lineHeightPx` an absolute override. Only the camelCase spellings are read for these two
+- `line-height` / `line-height-px` attributes are an alternative to the `leading-*` classes: `line-height` is a multiplier of the font size, `line-height-px` an absolute override
 
 ### Sizing & accessibility
 

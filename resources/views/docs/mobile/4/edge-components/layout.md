@@ -112,8 +112,8 @@ properties control how children grow, shrink, and align.
 
 <aside>
 
-The Tailwind `flex-1` class is shorthand for `flex-grow: 1; flex-basis: 0` — the most common pattern for "fill the
-remaining space along the parent's main axis."
+The Tailwind `flex-1` class is shorthand for `flex-grow: 1; flex-shrink: 1; flex-basis: 0` — the most common pattern
+for "fill the remaining space along the parent's main axis."
 
 </aside>
 
@@ -189,18 +189,19 @@ Visual styling attributes that apply to any element.
 
 ## Events
 
-Any element can respond to press and long-press gestures. Use `@press` and `@longPress` directives to bind methods on
-the route's PHP component class.
+Any element can respond to tap, double-tap, and long-press gestures. Use `@press`, `@doubleTap`, and `@longPress`
+directives to bind methods on the route's PHP component class.
 
 @verbatim
 ```blade
-<native:column @press="handleTap" @longPress="handleLongPress">
-    <native:text>Tap or long press me</native:text>
+<native:column @press="handleTap" @doubleTap="handleDoubleTap" @longPress="handleLongPress">
+    <native:text>Tap, double tap, or long press me</native:text>
 </native:column>
 ```
 @endverbatim
 
 - `@press` - PHP method to call on tap
+- `@doubleTap` - PHP method to call on double tap
 - `@longPress` - PHP method to call on long press
 
 ## Safe Area
@@ -277,11 +278,13 @@ The parser recognizes the classes listed below.
 |----------|---------|
 | Width | `w-full`, `w-N`, fractional (`w-1/2`, `w-1/3`, `w-2/3`, `w-1/4`, `w-3/4`, `w-1/5`…), arbitrary `w-[N]` |
 | Height | `h-full`, `h-N`, arbitrary `h-[N]` |
+| Aspect ratio | `aspect-square`, `aspect-video`, arbitrary `aspect-[N]` |
+| Object fit (images) | `object-contain`, `object-cover`, `object-fill`, `object-none`, `object-scale-down` |
 | Padding | `p-N`, `px-N`, `py-N`, `pt-N`, `pr-N`, `pb-N`, `pl-N`, arbitrary `p-[N]` etc. |
 | Margin | `m-N`, `mx-N`, `my-N`, `mt-N`, `mr-N`, `mb-N`, `ml-N`, arbitrary `m-[N]` etc. |
 | Gap | `gap-N`, `gap-[N]` (uniform — no `gap-x-*` or `gap-y-*`) |
 | Position | `absolute`, `relative`, `top-N`, `right-N`, `bottom-N`, `left-N`, arbitrary `top-[N]` etc. |
-| Flex | `flex-1`, `flex-grow`, `flex-grow-0`, `flex-shrink`, `flex-shrink-0` |
+| Flex | `flex-1`, `flex-grow`, `flex-grow-0`, `flex-shrink`, `flex-shrink-0`, `flex-wrap`, `flex-nowrap`, `flex-wrap-reverse` |
 | Items (cross-axis) | `items-start`, `items-center`, `items-end`, `items-stretch` |
 | Justify (main-axis) | `justify-start`, `justify-center`, `justify-end`, `justify-between`, `justify-around`, `justify-evenly` |
 | Self | `self-start`, `self-center`, `self-end`, `self-stretch` |
@@ -294,6 +297,12 @@ The parser recognizes the classes listed below.
 | Opacity | `opacity-{0..100}`, arbitrary `opacity-[0.5]` |
 | Text size | `text-xs`, `text-sm`, `text-base`, `text-lg`, `text-xl`, `text-2xl`, `text-3xl`, `text-4xl`, `text-5xl`, `text-6xl`, arbitrary `text-[N]` |
 | Font weight | `font-thin`, `font-extralight`, `font-light`, `font-normal`, `font-medium`, `font-semibold`, `font-bold`, `font-extrabold`, `font-black` |
+| Font family | `font-sans`, `font-serif`, `font-mono` |
+| Font style | `italic`, `not-italic` |
+| Text decoration | `underline`, `line-through`, `no-underline` |
+| Text transform | `uppercase`, `lowercase`, `capitalize`, `normal-case` |
+| Letter spacing | `tracking-tighter`, `tracking-tight`, `tracking-normal`, `tracking-wide`, `tracking-wider`, `tracking-widest` |
+| Line height | `leading-none`, `leading-tight`, `leading-snug`, `leading-normal`, `leading-relaxed`, `leading-loose`, arbitrary `leading-[1.4]` / `leading-[24px]` |
 | Text align | `text-left`, `text-center`, `text-right` |
 | Text selection | `select-text`, `select-none` (container-scoped; descendants inherit) |
 | Safe area | `safe-area` (top + bottom), `safe-area-top`, `safe-area-bottom` |
@@ -317,7 +326,8 @@ border-theme-outline/50
 ```
 
 **Arbitrary values** — `prefix-[value]` for the prefixes shown above: `w`, `h`, `p`/`px`/`py`/`pt`/`pr`/`pb`/`pl`,
-`m`/`mx`/`my`/`mt`/`mr`/`mb`/`ml`, `gap`, `bg`, `text`, `border`, `rounded`, `opacity`, `top`, `right`, `bottom`, `left`.
+`m`/`mx`/`my`/`mt`/`mr`/`mb`/`ml`, `gap`, `bg`, `text`, `border`, `rounded`, `opacity`, `leading`, `aspect`, `top`,
+`right`, `bottom`, `left`.
 
 <aside>
 
