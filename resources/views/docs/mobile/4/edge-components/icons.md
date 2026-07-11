@@ -80,7 +80,31 @@ On Android, use any Material Icon ligature name (with underscores):
 
 ## Platform-Specific Icons
 
-When you need different icons on each platform, use the `System` facade:
+When a single mapped name won't do, give each platform its own symbol. The [`<native:icon>`](icon) component accepts
+`ios` and `android` attributes that resolve per platform, so one tag renders the right icon on each:
+
+@verbatim
+```blade
+<native:icon ios="flashlight.on.fill" android="flashlight_on" :size="24" />
+```
+@endverbatim
+
+Bind with `:ios` / `:android` to pass enum cases directly for typed, autocompletable symbol names:
+
+@verbatim
+```blade
+<native:icon :ios="Ios::FlashlightOnFill" :android="Android::FlashlightOn" :size="24" />
+```
+@endverbatim
+
+The `App\Icons\Ios` and `App\Icons\Android` enums are generated into your app by the
+[native-ui](https://github.com/nativephp/native-ui) plugin. Run this once to create them:
+
+```shell
+php artisan native-ui:generate-icons
+```
+
+For components that take a single `icon` attribute, pick the platform variant with the `System` facade:
 
 @verbatim
 ```blade
@@ -93,7 +117,7 @@ When you need different icons on each platform, use the `System` facade:
 ```
 @endverbatim
 
-This is useful when the mapped icon doesn't match your needs or you want to use platform-specific variants.
+See the [Icon](icon) reference for the full per-platform API.
 
 ## Basic Usage
 

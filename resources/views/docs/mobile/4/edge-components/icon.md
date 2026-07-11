@@ -92,6 +92,17 @@ Or bind enum cases directly with `:ios` / `:android`:
 ```
 @endverbatim
 
+<aside>
+
+The `App\Icons\Ios` and `App\Icons\Android` enums are generated into your app by the [native-ui](https://github.com/nativephp/native-ui)
+plugin. Run the command below once to create them, then reference any symbol as a typed, autocompletable case:
+
+```shell
+php artisan native-ui:generate-icons
+```
+
+</aside>
+
 ## Element
 
 ```php
