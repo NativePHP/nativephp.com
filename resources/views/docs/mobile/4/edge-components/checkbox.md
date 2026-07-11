@@ -22,6 +22,8 @@ Per Model 3, check/border/label colors come from the theme — no per-instance o
 - `value` - Current checked state (optional, boolean, default: `false`)
 - `label` - Inline label rendered to the right of the box (optional, string)
 - `disabled` - Disable the checkbox (optional, boolean, default: `false`)
+- `sync-mode` - `live | blur | debounce` (optional, string; set by `native:model` modifiers)
+- `debounce-ms` - Debounce interval when `sync-mode` is `debounce` (optional, int)
 - `a11y-label` - Accessibility label (optional)
 - `a11y-hint` - Accessibility hint (optional)
 
@@ -29,9 +31,17 @@ Per Model 3, check/border/label colors come from the theme — no per-instance o
 
 - `@change` - Component method called when toggled. Receives the new boolean value as a parameter
 
+<aside>
+
+Margin classes position the checkbox; the check, border, and label colors come from the theme.
+
+</aside>
+
 ## Two-way Binding
 
-Use `native:model` for automatic two-way binding with a boolean property on your component.
+Use `native:model` for automatic two-way binding with a boolean property on your component. The `live`, `blur`,
+and `debounce` modifiers set `sync-mode` (and `debounce-ms`) for you, though for a discrete tap every toggle is a
+single event.
 
 @verbatim
 ```blade

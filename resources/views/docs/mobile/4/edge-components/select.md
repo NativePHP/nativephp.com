@@ -21,6 +21,10 @@ Per Model 3, colors and borders come from theme tokens.
 ```
 @endverbatim
 
+Options are a flat list of display strings — pass the strings you want shown, and the selected string is the
+value bound back to your component. An associative `value => label` array is flattened to its labels, so the
+displayed text is what you get.
+
 ## Props
 
 - `options` - Array of option strings (required, array)
@@ -34,6 +38,12 @@ Per Model 3, colors and borders come from theme tokens.
 ## Events
 
 - `@change` - Component method called when the selection changes. Receives the new option string
+
+<aside>
+
+Margin classes position the picker; its colors and borders come from the theme.
+
+</aside>
 
 ## Two-way Binding
 

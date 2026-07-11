@@ -24,13 +24,18 @@ under control while the user drags.
 - `max` - Maximum value (optional, float, default: `1`)
 - `step` - Snap increment (optional, float, default: `0` for continuous)
 - `disabled` - Disable the slider (optional, boolean, default: `false`)
-- `size` - `sm | md (default) | lg` (optional, string)
 - `a11y-label` - Accessibility label (optional)
 - `a11y-hint` - Accessibility hint (optional)
 
 ## Events
 
 - `@change` - Component method called when the value changes. Receives the new float value
+
+<aside>
+
+Margin classes position the slider; the active track and thumb colors come from the theme.
+
+</aside>
 
 ## Two-way Binding
 
@@ -48,7 +53,7 @@ under control while the user drags.
 @endverbatim
 
 `live` is the default and stress-tests the runtime's round-trip; `blur` is the most efficient for unsteady hands;
-`debounce` is the middle ground.
+`debounce` is the middle ground. Omit the interval (`native:model.debounce`) and it defaults to 300ms.
 
 ## Examples
 
@@ -90,7 +95,6 @@ Slider::make()
 - `make()` - Create a slider
 - `value(float $val)`, `min(float $val)`, `max(float $val)`, `step(float $val)` - Range / current value
 - `disabled(bool $value = true)` - Disable the slider
-- `size(string $value)` - `sm | md | lg`
 - `a11yLabel(string $value)`, `a11yHint(string $value)` - Accessibility
 - `syncMode(string $mode)`, `debounceMs(int $ms)` - Set by `native:model` modifiers
 - `onChange(string $method)` - Component method invoked on change

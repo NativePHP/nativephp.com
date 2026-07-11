@@ -52,6 +52,8 @@ Per Model 3, all colors come from theme tokens.
 - `value` - The option's value (required, string). Must be unique within the group
 - `label` - Inline label (optional, string)
 - `disabled` - Disable just this option (optional, boolean, default: `false`)
+- `a11y-label` - Accessibility label (optional)
+- `a11y-hint` - Accessibility hint (optional)
 
 ## Examples
 
@@ -111,3 +113,4 @@ RadioGroup::make(
 - `make(string $value = '')` - Create a radio with a value
 - `label(string $label)` - Inline label
 - `disabled(bool $value = true)` - Disable the option
+- `a11yLabel(string $value)`, `a11yHint(string $value)` - Accessibility
