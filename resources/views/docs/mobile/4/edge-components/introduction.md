@@ -66,6 +66,8 @@ interactive forms and navigation chrome.
 - **[List](list)** - Virtualized list with pull-to-refresh, end-reached, and swipe actions
 - **[List Item](list)** - Material3 row with leading + trailing slot system
 - **[Carousel](carousel)** - Horizontal paging carousel
+- **[Lazy Grid](lazy-grid)** - Self-scrolling grid that only materializes visible cells
+- **[Refreshable](refreshable)** - Standalone scrolling container with native pull-to-refresh
 
 ### Overlays
 
