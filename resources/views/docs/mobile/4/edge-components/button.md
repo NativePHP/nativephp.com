@@ -26,6 +26,7 @@ The label can be passed as the `label` attribute or as slot content between the 
 - `size` - `sm`, `md` (default), `lg`
 - `icon` - A leading [icon](icons) name (optional)
 - `icon-trailing` - A trailing [icon](icons) name (optional)
+- `font` - Custom font for the label from `resources/fonts/`, by filename without extension (optional, string) — see [Text › Custom fonts](text#custom-fonts)
 - `disabled` - Disable the button (optional, boolean, default: `false`)
 - `loading` - Show a spinner in place of the leading icon and prevent presses (optional, boolean, default: `false`)
 - `a11y-label` - Accessibility label override (optional)
@@ -120,6 +121,7 @@ Button::make('Save')
 - `make(string $label = '')` - Create a button with an optional label
 - `variant(string $value)` - `primary | secondary | destructive | ghost`
 - `size(string $value)` - `sm | md | lg`
+- `font(string $name)` - Custom label font (filename without extension)
 - `icon(string $name)` - Leading icon
 - `iconTrailing(string $name)` - Trailing icon
 - `disabled(bool $value = true)` - Disable the button

@@ -63,6 +63,11 @@ Both variants accept identical props.
 - `leading-icon` - Icon name rendered at the start (optional, string)
 - `trailing-icon` - Icon name rendered at the end (optional, string)
 
+### Typography
+
+- `font` - Custom font from `resources/fonts/`, by filename without extension (optional, string) — see [Text › Custom fonts](text#custom-fonts)
+- `leading-*` classes set line height for the typed text (multi-line only). Applies on Android; **iOS inputs don't reflect it** — SwiftUI's editable field ignores line spacing (it works on [`<native:text>`](text#line-height))
+
 ### Sizing & accessibility
 
 - `size` - `sm | md (default) | lg`
@@ -211,6 +216,7 @@ Both elements share the same fluent API (defined on `BaseTextInput`):
 - `multiline(bool $value = true)`, `maxLines(int $lines)`, `minLines(int $lines)`
 - `prefix(string $text)`, `suffix(string $text)`, `leadingIcon(string $name)`, `trailingIcon(string $name)`
 - `size(string $value)` - `sm | md | lg`
+- `font(string $name)` - Custom font (filename without extension)
 - `a11yLabel(string $value)`, `a11yHint(string $value)`
 - `syncMode(string $mode)`, `debounceMs(int $ms)`
 - `onChange(string $method)`, `onSubmit(string $method)`

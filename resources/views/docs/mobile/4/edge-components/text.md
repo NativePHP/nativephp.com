@@ -31,11 +31,73 @@ All [shared layout and style attributes](layout) are supported, plus:
 - `color` - Text color as hex string (optional, default: `#000000`)
 - `text-align` - Alignment: `0`=start, `1`=center, `2`=end (optional, int, default: `0`)
 - `max-lines` - Maximum lines before truncating with ellipsis (optional, int)
+- `font` - Custom font name — a font file from `resources/fonts/` without its extension (optional, string) — see [Custom fonts](#custom-fonts)
+
+Line height is set with `leading-*` classes — see [Line height](#line-height).
 
 <aside>
 
 `<native:text>` is **not** self-closing — content goes between the tags. Nested `<native:text>` elements are
 supported as [inline runs](#inline-runs); any other HTML tags in the slot are stripped.
+
+</aside>
+
+## Custom fonts
+
+Ship a font with your app and use it by name. Drop `.ttf`, `.otf`, or `.ttc` files
+into your app's `resources/fonts/` directory, then reference one by its filename
+(without the extension) with the `font` attribute:
+
+@verbatim
+```blade
+<native:text font="Inter-Bold" class="text-2xl">
+    Custom heading
+</native:text>
+```
+@endverbatim
+
+So `resources/fonts/Inter-Bold.ttf` becomes `font="Inter-Bold"`. The build bundles
+the files into the native project automatically — no configuration needed. On iOS
+the font is registered and matched by its PostScript name; on Android it's loaded
+from the app's assets. An unresolved name falls back to the system font.
+
+`font` also works on [`<native:button>`](button) and the [text inputs](text-input),
+and is available fluently as `->font('Inter-Bold')`.
+
+<aside>
+
+Font size and weight still come from `text-*` / `font-*` classes (or `font-size` /
+`font-weight`) and the theme — `font` only changes the typeface.
+
+</aside>
+
+## Line height
+
+Control the leading (line spacing) with Tailwind `leading-*` classes — unitless
+multipliers of the font size:
+
+- `leading-none` (1) · `leading-tight` (1.25) · `leading-snug` (1.375)
+- `leading-normal` (1.5) · `leading-relaxed` (1.625) · `leading-loose` (2)
+
+Arbitrary values are supported too: `leading-[1.4]` (multiplier) or `leading-[24px]`
+(absolute).
+
+@verbatim
+```blade
+<native:text class="text-base leading-relaxed">
+    A comfortably spaced paragraph that wraps across several lines with a little
+    extra breathing room between them.
+</native:text>
+```
+@endverbatim
+
+Line height only affects multi-line text.
+
+<aside>
+
+On iOS, *increasing* leading (`relaxed`, `loose`, or a large `leading-[…px]`) is
+exact; tightening below the font's natural line height (`none`, `tight`) is limited
+by SwiftUI and may bottom out at the natural spacing. Android is exact both ways.
 
 </aside>
 
@@ -172,6 +234,7 @@ Text::make('Hello')
 
 - `make(string $text = '')` - Create text with content
 - `fontSize(float $size)` - Text size
+- `font(string $name)` - Custom font from `resources/fonts/` (filename without extension)
 - `fontWeight(int $weight)` - 1-7
 - `bold()` - Shortcut for `fontWeight(7)`
 - `color(string $hex)` - Text color
