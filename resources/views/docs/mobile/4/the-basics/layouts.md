@@ -182,6 +182,46 @@ class AppLayout extends NativeLayout
 }
 ```
 
+### `Drawer` builder
+
+- `make(View|Element $content)` — the drawer's content: a Blade view, or a pre-built element tree
+- `width(int $points)` — drawer width in points/dp. Omit it for the platform default: ≈85% of the screen width in portrait, 40% in landscape
+- `modal()` — slide the drawer over the content with a dim scrim (default)
+- `reveal()` — push the main content aside to expose the drawer behind it
+
+### Built-in interaction
+
+The drawer is fully interactive without any wiring on your part:
+
+- A ☰ hamburger affordance is drawn automatically at the top-leading corner while the drawer is closed, regardless of which chrome (nav bar, tab bar, or none) the screen uses.
+- An edge-swipe from the left opens it; a drag back toward the edge or a tap on the scrim closes it.
+- An open drawer closes automatically when you navigate to a screen whose layout has no drawer, so it never lingers over a screen that doesn't expect it.
+
+### Per-screen drawer overrides
+
+A single screen can replace or suppress the layout's drawer with the `InteractsWithDrawer` trait — the same shape as `navigationOptions()` for the nav bar:
+
+```php
+use Nativephp\NativeUi\Builders\Drawer;
+use Nativephp\NativeUi\Concerns\InteractsWithDrawer;
+
+class AdminScreen extends NativeComponent
+{
+    use InteractsWithDrawer;
+
+    // Suppress the layout's drawer entirely on this screen…
+    protected bool $hidesDrawer = true;
+
+    // …or replace it just for this screen instead:
+    public function drawerOverride(): ?Drawer
+    {
+        return Drawer::make(view('native.admin-sidebar'))->reveal();
+    }
+}
+```
+
+`hidesDrawer` wins outright; otherwise a non-null `drawerOverride()` beats the layout's `drawer()`, and returning `null` falls back to the layout.
+
 ## Keyboard-aware bottom content
 
 Beyond the tab bar, a layout or an individual screen can pin its own content to the bottom of the screen — a chat
@@ -271,6 +311,38 @@ from the current `$screen`. A single screen can replace or suppress it with the 
 trait. Only rendered by layouts using native chrome (`usesNativeChrome()` is `true`).
 
 </aside>
+
+### `FloatingOverlay` builder
+
+- `make(View|Element $content)` — the floating content: a Blade view, or a pre-built element tree
+- `bottom()` — float against the bottom edge, above the tab bar (default)
+- `top()` — float against the top edge, below the nav bar
+- `offset(int $points)` — extra distance between the overlay and its aligned edge, added on top of the safe-area inset. Omit it for the platform default that clears a standard bottom tab bar; a tab-less stack layout has no tab bar to clear, so pass a small value there instead
+
+### Per-screen overlay overrides
+
+A single screen replaces or suppresses the layout's overlay with the `InteractsWithFloatingOverlay` trait:
+
+```php
+use Nativephp\NativeUi\Builders\FloatingOverlay;
+use Nativephp\NativeUi\Concerns\InteractsWithFloatingOverlay;
+
+class CheckoutScreen extends NativeComponent
+{
+    use InteractsWithFloatingOverlay;
+
+    // Hide the app-wide pill on this screen…
+    protected bool $hidesFloatingOverlay = true;
+
+    // …or replace it just for this one instead:
+    public function floatingOverlayOverride(): ?FloatingOverlay
+    {
+        return FloatingOverlay::make(view('native.checkout-hint'));
+    }
+}
+```
+
+`hidesFloatingOverlay` wins outright; otherwise a non-null `floatingOverlayOverride()` beats the layout's `floatingOverlay()`, and returning `null` falls back to the layout.
 
 ## How chrome wraps the screen
 
