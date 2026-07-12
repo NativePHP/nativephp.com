@@ -42,6 +42,36 @@ on that surface. Pairing them this way is what keeps contrast correct across lig
 Plus non-color tokens: `radius-sm|md|lg|full`, `font-sm|md|lg|xl`, and `font-family` (`System` resolves to San
 Francisco on iOS / Roboto on Android; set a family name to load a custom font).
 
+Disabled controls draw from the `surface-variant` (fill) and `on-surface-variant` (label) pair on both
+platforms — tune disabled contrast by adjusting those two tokens, not per-component.
+
+## Color values
+
+Anywhere you author a color — a theme token, an element color prop (`headline-color`, badge colors, swipe-action
+tints), or an arbitrary-value class (`bg-[#…]`) — the same formats are accepted:
+
+| Format | Examples |
+| --- | --- |
+| Hex | `#B91C1C`, `#F00` |
+| Hex with alpha — CSS `#RRGGBBAA` order | `#8B5CF680` |
+| Tailwind palette name | `red-300`, `orange-800` |
+| Named | `white`, `black`, `transparent` |
+| Opacity modifier on any of the above | `red-300/20`, `#8B5CF6/50` |
+
+```php
+'light' => [
+    'primary'   => 'violet-600',      // Tailwind palette name
+    'secondary' => 'fuchsia-500/70',  // opacity modifier → tonal fill
+    'surface'   => '#F8FAFC',         // plain hex
+    'accent'    => '#00AAA680',       // hex with alpha (#RRGGBBAA)
+],
+```
+
+Alpha hex is always authored in CSS `#RRGGBBAA` order — the framework converts to what each platform expects.
+Components render color tokens **solid**; when you want a translucent or tonal fill, put the opacity on the token
+(`'secondary' => 'fuchsia-500/70'`) rather than expecting the renderer to soften it. Dark-mode auto-derivation
+preserves the alpha byte.
+
 ## Using tokens in a screen
 
 Reference any token from Blade with the `theme-{token}` class suffix, on background, text, and border utilities:

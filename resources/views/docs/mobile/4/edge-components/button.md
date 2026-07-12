@@ -24,15 +24,19 @@ Slot content is treated as plain text — nested tags are stripped and whitespac
 `icon-trailing` props to add icons rather than nesting elements in the slot.
 
 - `label` - Button text (optional if using slot content)
-- `variant` - Semantic style: `primary` (default), `secondary`, `destructive`, `ghost`
+- `variant` - Semantic style: `primary` (default), `secondary`, `destructive`, `ghost`. Each fills its theme
+  token solid; for a softer tonal fill, set opacity on the token itself (e.g. `'secondary' => 'fuchsia-500/70'`
+  in `config/native-ui.php`) — see [Theming](../digging-deeper/theming)
 - `size` - `sm`, `md` (default), `lg`
 - `icon` - A leading [icon](icons) name (optional)
 - `icon-trailing` - A trailing [icon](icons) name (optional)
 - `font` - Custom font for the label from `resources/fonts/`, by filename without extension (optional, string) — see [Text › Custom fonts](text#custom-fonts)
 - `line-height` - Label line height as a multiplier of the font size (optional, float)
 - `line-height-px` - Label line height as an absolute value in pixels (optional, float)
-- `disabled` - Disable the button (optional, boolean, default: `false`)
-- `loading` - Show a spinner in place of the leading icon and prevent presses (optional, boolean, default: `false`)
+- `disabled` - Disable the button (optional, boolean, default: `false`). Disabled buttons render with the theme's
+  `surface-variant` fill and `on-surface-variant` label on both platforms
+- `loading` - Show a spinner in place of the leading icon and prevent presses (optional, boolean, default: `false`).
+  Styled like `disabled` while the spinner runs
 - `a11y-label` - Accessibility label override (optional)
 - `a11y-hint` - Accessibility hint (optional)
 - `menu` - Attach a tap-to-open dropdown menu — an array of [`NavAction`](menus) items. Tapping opens the menu

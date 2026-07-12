@@ -94,12 +94,16 @@ content slots.
 Independent of the mutually-exclusive slot above, a row can also show a stack of small status icons:
 
 - `trailing-badges` - An array of small status badges drawn right-aligned, so several can show at once (e.g. a
-  flag and a pin). Each badge is `['icon' => ..., 'ios' => ..., 'android' => ..., 'color' => '#hex']`, where `icon`
-  is a shared [icon](icon) name and `ios` / `android` override it per platform.
+  flag and a pin). Each badge is `['icon' => ..., 'ios' => ..., 'android' => ..., 'color' => 'red-500']`, where
+  `icon` is a shared [icon](icon) name, `ios` / `android` override it per platform, and `color` takes any
+  [color value](../digging-deeper/theming#color-values).
 
 ### Color overrides
 
-- `headlineColor`, `supportingColor`, `overlineColor` - Hex colors for the text styles
+All color props accept the full [color grammar](../digging-deeper/theming#color-values) — hex (including
+`#RRGGBBAA` alpha), Tailwind palette names, and `/N` opacity modifiers (`red-300/20`).
+
+- `headlineColor`, `supportingColor`, `overlineColor` - Colors for the text styles
 - `containerColor` - Row background color
 - `leadingIconColor`, `trailingIconColor`, `trailingTextColor` - Colors for the slot content
 - `leadingIconBgColor` - Background color of the leading icon's circle
