@@ -58,13 +58,15 @@ icon, see the `badge` and `news` props on [`<native:bottom-nav-item>`](bottom-na
 
 ### Anchored to an icon
 
-Use a [`<native:stack>`](stack) to layer the badge over its target:
+Use a [`<native:stack>`](stack) to layer the badge over its target. Size the stack a little larger than the
+icon so the badge has a corner to sit in, and position it with positive `top-*` / `right-*` insets — the
+renderer anchors an absolute child to whichever edges you set (negative insets are not supported):
 
 @verbatim
 ```blade
 <native:stack :width="40" :height="40">
     <native:icon name="cart" :size="32" />
-    <native:column class="absolute top-[-2] right-[-2]">
+    <native:column class="absolute top-px right-px">
         <native:badge :count="$cartItems" />
     </native:column>
 </native:stack>
