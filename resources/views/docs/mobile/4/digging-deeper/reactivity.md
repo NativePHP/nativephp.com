@@ -32,7 +32,7 @@ class CartScreen extends NativeComponent
 Access it as `$this->total` (no parentheses) in PHP, or `@{{ $this->total }}` in the view:
 
 @verbatim
-```blade
+```blade static
 <native:text>Total: {{ $this->total }}</native:text>
 ```
 @endverbatim
@@ -82,7 +82,7 @@ You can also drive a re-render from the view with `native:poll` — useful for a
 without wiring a method:
 
 @verbatim
-```blade
+```blade static
 <native:text native:poll="1s">{{ now()->format('g:i:s A') }}</native:text>
 ```
 @endverbatim
