@@ -58,7 +58,7 @@ into your app's `resources/fonts/` directory, then reference one by its filename
 
 @verbatim
 ```blade
-<native:text font="Inter-Bold" class="text-2xl text-theme-on-surface">
+<native:text font="RockSalt-Regular" class="text-2xl text-theme-on-surface">
     Custom heading
 </native:text>
 ```

@@ -74,17 +74,17 @@ event.
 
 <native:column class="w-full gap-0">
     <native:row class="w-full px-4 py-3 justify-between items-center">
-        <native:text class="text-base">Dark Mode</native:text>
+        <native:text class="text-base text-theme-on-surface-variant">Dark Mode</native:text>
         <native:toggle native:model="darkMode" />
     </native:row>
     <native:divider />
     <native:row class="w-full px-4 py-3 justify-between items-center">
-        <native:text class="text-base">Notifications</native:text>
+        <native:text class="text-base text-theme-on-surface-variant">Notifications</native:text>
         <native:toggle native:model="notifications" />
     </native:row>
     <native:divider />
     <native:row class="w-full px-4 py-3 justify-between items-center">
-        <native:text class="text-base">Location</native:text>
+        <native:text class="text-base text-theme-on-surface-variant">Location</native:text>
         <native:toggle :value="$locationEnabled" @change="toggleLocation" disabled />
     </native:row>
 </native:column>

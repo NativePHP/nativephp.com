@@ -49,7 +49,7 @@ See the full shared list at [Layout & Styling](layout#supported-tailwind-classes
 @verbatim
 ```blade
 <native:column class="w-full h-[220] p-4 bg-theme-surface-variant rounded-xl">
-    <native:text class="text-2xl font-bold">Welcome</native:text>
+    <native:text class="text-2xl font-bold text-theme-primary">Welcome</native:text>
     <native:text class="text-base text-theme-on-surface-variant">Get started with your app.</native:text>
     <native:spacer />
     <native:button label="Continue" @press="next" />
@@ -66,9 +66,9 @@ main axis is constrained.
 @verbatim
 ```blade
 <native:row class="w-full px-4 items-center">
-    <native:text class="text-xl font-bold">Title</native:text>
+    <native:text class="text-xl font-bold text-theme-on-surface-variant">Title</native:text>
     <native:spacer />
-    <native:icon name="settings" :size="24" />
+    <native:icon name="settings" class="text-theme-on-surface-variant" :size="24" />
 </native:row>
 ```
 @endverbatim
@@ -78,9 +78,9 @@ main axis is constrained.
 @verbatim
 ```blade
 <native:column class="w-full">
-    <native:text>Section One</native:text>
+    <native:text class="text-theme-on-surface-variant">Section One</native:text>
     <native:spacer class="h-8 flex-grow-0" />
-    <native:text>Section Two</native:text>
+    <native:text class="text-theme-on-surface-variant">Section Two</native:text>
 </native:column>
 ```
 @endverbatim

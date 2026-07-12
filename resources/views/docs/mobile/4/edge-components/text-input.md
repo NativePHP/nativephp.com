@@ -153,7 +153,7 @@ Two things set it apart:
   light/dark pair. Useful when your wrapper overrides the background and the theme's default text color would vanish.
 
 @verbatim
-```blade
+```blade static
 @php $draft = ''; @endphp
 
 <native:bare-text-input
@@ -169,7 +169,7 @@ Two things set it apart:
 The `color` attribute can be set explicitly or picked up from a `text-*` class on the input:
 
 @verbatim
-```blade
+```blade static
 @php $query = ''; @endphp
 
 <native:bare-text-input placeholder="Search" native:model="query" color="slate-700" />

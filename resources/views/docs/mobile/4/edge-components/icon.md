@@ -82,7 +82,7 @@ tag renders the right icon on each:
 
 @verbatim
 ```blade
-<native:icon ios="gearshape" android="settings" :size="28" />
+<native:icon ios="gearshape" android="settings" :size="28" class="text-theme-primary" />
 ```
 @endverbatim
 
@@ -97,7 +97,7 @@ won't resolve:
 @use('App\Icons\Ios')
 @use('App\Icons\Android')
 
-<native:icon :ios="Ios::Gearshape" :android="Android::Settings" :size="28" />
+<native:icon :ios="Ios::Gearshape" :android="Android::Settings" :size="28" class="text-theme-primary"/>
 ```
 @endverbatim
 
@@ -108,7 +108,7 @@ The `AndroidOutlined` enum renders the outlined Material style instead of the fi
 @use('App\Icons\Ios')
 @use('App\Icons\AndroidOutlined')
 
-<native:icon :ios="Ios::House" :android="AndroidOutlined::Home" :size="28" />
+<native:icon :ios="Ios::House" :android="AndroidOutlined::Home" :size="28" class="text-theme-primary"/>
 ```
 @endverbatim
 
@@ -118,7 +118,7 @@ You can also combine a shared `name` with a per-platform enum override:
 ```blade
 @use('App\Icons\Ios')
 
-<native:icon name="share" :ios="Ios::SquareAndArrowUp" :size="28" />
+<native:icon name="share" :ios="Ios::SquareAndArrowUp" :size="28" class="text-theme-primary"/>
 ```
 @endverbatim
 
@@ -165,7 +165,7 @@ so pair them with an `android` override:
 
 @verbatim
 ```blade
-<native:icon ios="car.side.fill" android="directions_car" :size="28" />
+<native:icon ios="car.side.fill" android="directions_car" :size="28" class="text-theme-primary" />
 ```
 @endverbatim
 
@@ -192,7 +192,7 @@ Every EDGE component with an `icon` attribute resolves names through this same s
 would give `<native:icon>`:
 
 @verbatim
-```blade
+```blade static
 <native:bottom-nav-item
     id="home"
     icon="home"
@@ -209,7 +209,7 @@ pass a shared name, `ios:` / `android:` named arguments, or both.
 For Blade components whose tag only takes a single `icon` string, pick the platform variant with the `System` facade:
 
 @verbatim
-```blade
+```blade static
 <native:bottom-nav-item
     id="flashlight"
     icon="{{ \Native\Mobile\Facades\System::isIos() ? 'flashlight.on.fill' : 'flashlight_on' }}"

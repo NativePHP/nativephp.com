@@ -14,7 +14,7 @@ Android and `ScrollView` on iOS for efficient rendering.
 <native:scroll-view class="w-full h-[240] rounded-xl border border-theme-outline">
     <native:column class="w-full p-4 gap-3">
         @foreach (range(1, 20) as $i)
-            <native:text>Scrollable row {{ $i }}</native:text>
+            <native:text class="text-theme-on-surface-variant">Scrollable row {{ $i }}</native:text>
         @endforeach
     </native:column>
 </native:scroll-view>
@@ -96,7 +96,7 @@ meant for a real page root — run it in your app to see it edge-to-edge:
                 center
                 class="bg-theme-surface-variant rounded-xl"
             >
-                <native:text class="text-sm font-medium">{{ $category->name }}</native:text>
+                <native:text class="text-sm font-medium text-theme-on-surface-variant">{{ $category->name }}</native:text>
             </native:column>
         @endforeach
     </native:row>
@@ -130,10 +130,10 @@ bounds the preview so there's something to scroll — in a real chat screen you'
 
 @verbatim
 ```blade
-<native:scroll-view scroll-anchor="bottom" class="w-full h-[200] rounded-xl border border-theme-outline">
+<native:scroll-view scroll-anchor="bottom" class="w-full h-[100] rounded-xl border border-theme-outline">
     <native:column class="w-full gap-2 p-4">
         @foreach($messages as $message)
-            <native:text class="text-base">{{ $message->body }}</native:text>
+            <native:text class="text-base text-theme-on-surface-variant">{{ $message->body }}</native:text>
         @endforeach
     </native:column>
 </native:scroll-view>
