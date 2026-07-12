@@ -135,18 +135,25 @@ definitions the user reveals by swiping the row. Each action is an array:
 - `tint` - Background color as a hex string
 - `role` - Set to `destructive` to render in the platform's delete style (trailing only)
 
+Swipe actions only work on rows that are direct children of `<native:list>` (or a `<native:list-section>`) —
+they are attached by the list renderer, so a standalone `<native:list-item>` silently ignores them.
+
 @verbatim
 ```blade
-<native:list-item
-    :headline="$email->subject"
-    :leading-actions="[
-        ['method' => 'toggleRead('.$email->id.')', 'label' => 'Read', 'ios' => 'envelope.open', 'android' => 'mark_email_read', 'tint' => '#3B82F6'],
-    ]"
-    :trailing-actions="[
-        ['method' => 'flag('.$email->id.')',   'label' => 'Flag',   'ios' => 'flag',  'android' => 'flag',   'tint' => '#F97316'],
-        ['method' => 'delete('.$email->id.')', 'label' => 'Delete', 'ios' => 'trash', 'android' => 'delete', 'role' => 'destructive'],
-    ]"
-/>
+<native:list>
+    @foreach ($emails as $email)
+        <native:list-item
+            :headline="$email->subject"
+            :leading-actions="[
+                ['method' => 'toggleRead('.$email->id.')', 'label' => 'Read', 'ios' => 'envelope.open', 'android' => 'mark_email_read', 'tint' => '#3B82F6'],
+            ]"
+            :trailing-actions="[
+                ['method' => 'flag('.$email->id.')',   'label' => 'Flag',   'ios' => 'flag',  'android' => 'flag',   'tint' => '#F97316'],
+                ['method' => 'delete('.$email->id.')', 'label' => 'Delete', 'ios' => 'trash', 'android' => 'delete', 'role' => 'destructive'],
+            ]"
+        />
+    @endforeach
+</native:list>
 ```
 @endverbatim
 
@@ -223,11 +230,15 @@ ListSection::make('Fruits', ListItem::make('Apple'))->footer('1 item');
 
 ### Infinite scroll
 
+`loadMore()` is a method on your component that fetches the next page and appends it to the collection the loop
+renders — in a real app the loop is `@foreach ($posts as $post)` over your paginated results. The fixed `range()`
+here just gives the demo enough rows to scroll before the end-reached trigger fires.
+
 @verbatim
 ```blade
 <native:list on-end-reached="loadMore">
-    @foreach($posts as $post)
-        <native:list-item headline="{{ $post->title }}" supporting="{{ $post->excerpt }}" />
+    @foreach (range(1, 15) as $i)
+        <native:list-item headline="Post {{ $i }}" supporting="Keep scrolling — loadMore() fires near the end" />
     @endforeach
 </native:list>
 ```

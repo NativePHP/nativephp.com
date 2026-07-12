@@ -9,7 +9,7 @@ Displays text content using platform-native typography. Text content goes betwee
 
 @verbatim
 ```blade
-<native:text class="text-lg font-bold" color="#1E293B">
+<native:text class="text-lg font-bold text-theme-on-surface">
     Hello, world!
 </native:text>
 ```
@@ -58,7 +58,7 @@ into your app's `resources/fonts/` directory, then reference one by its filename
 
 @verbatim
 ```blade
-<native:text font="Inter-Bold" class="text-2xl">
+<native:text font="Inter-Bold" class="text-2xl text-theme-on-surface">
     Custom heading
 </native:text>
 ```
@@ -128,7 +128,7 @@ Arbitrary values are supported too: `leading-[1.4]` (multiplier) or `leading-[24
 
 @verbatim
 ```blade
-<native:text class="text-base leading-relaxed">
+<native:text class="text-base leading-relaxed text-theme-on-surface">
     A comfortably spaced paragraph that wraps across several lines with a little
     extra breathing room between them.
 </native:text>
@@ -160,7 +160,7 @@ Style text with Tailwind classes — these compose with `text-*` size and `font-
 
 @verbatim
 ```blade
-<native:text class="text-lg font-semibold italic underline tracking-wide">
+<native:text class="text-lg font-semibold italic underline tracking-wide text-theme-on-surface">
     Styled with Tailwind
 </native:text>
 ```
@@ -193,8 +193,8 @@ whole region selectable. Use `select-none` to opt a nested subtree back out:
 @verbatim
 ```blade
 <native:column class="select-text">
-    <native:text class="text-lg font-bold">Selectable heading</native:text>
-    <native:text class="text-base">This body copy can be selected and copied.</native:text>
+    <native:text class="text-lg font-bold text-theme-on-surface">Selectable heading</native:text>
+    <native:text class="text-base text-theme-on-surface">This body copy can be selected and copied.</native:text>
 
     <native:text class="select-none text-xs text-theme-on-surface-variant">Not selectable</native:text>
 </native:column>
@@ -226,13 +226,13 @@ Use the `dark:` prefix with Tailwind classes or pass a dark-mode color override.
 
 @verbatim
 ```blade
-<native:text :font-weight="1" :font-size="18">Thin (1)</native:text>
-<native:text :font-weight="2" :font-size="18">Light (2)</native:text>
-<native:text :font-weight="3" :font-size="18">Regular (3)</native:text>
-<native:text :font-weight="4" :font-size="18">Medium (4)</native:text>
-<native:text :font-weight="5" :font-size="18">SemiBold (5)</native:text>
-<native:text :font-weight="6" :font-size="18">Bold (6)</native:text>
-<native:text :font-weight="7" :font-size="18">Heavy (7)</native:text>
+<native:text :font-weight="1" :font-size="18" class="text-theme-on-surface">Thin (1)</native:text>
+<native:text :font-weight="2" :font-size="18" class="text-theme-on-surface">Light (2)</native:text>
+<native:text :font-weight="3" :font-size="18" class="text-theme-on-surface">Regular (3)</native:text>
+<native:text :font-weight="4" :font-size="18" class="text-theme-on-surface">Medium (4)</native:text>
+<native:text :font-weight="5" :font-size="18" class="text-theme-on-surface">SemiBold (5)</native:text>
+<native:text :font-weight="6" :font-size="18" class="text-theme-on-surface">Bold (6)</native:text>
+<native:text :font-weight="7" :font-size="18" class="text-theme-on-surface">Heavy (7)</native:text>
 ```
 @endverbatim
 
@@ -240,7 +240,7 @@ Use the `dark:` prefix with Tailwind classes or pass a dark-mode color override.
 
 @verbatim
 ```blade
-<native:text class="text-base" :max-lines="2" color="#64748B">
+<native:text class="text-base text-theme-on-surface-variant" :max-lines="2">
     This text will be truncated with an ellipsis after two lines if it overflows
     the available space in its container.
 </native:text>
@@ -251,7 +251,7 @@ Use the `dark:` prefix with Tailwind classes or pass a dark-mode color override.
 
 @verbatim
 ```blade
-<native:text class="text-3xl font-extrabold text-center" color="#7C3AED">
+<native:text class="text-3xl font-extrabold text-center text-theme-primary">
     Welcome Back
 </native:text>
 ```
@@ -261,7 +261,7 @@ Use the `dark:` prefix with Tailwind classes or pass a dark-mode color override.
 
 @verbatim
 ```blade
-<native:text class="text-base font-semibold" color="#3B82F6" @press="openLink">
+<native:text class="text-base font-semibold text-theme-primary" @press="openLink">
     Learn more
 </native:text>
 ```
@@ -271,11 +271,15 @@ Use the `dark:` prefix with Tailwind classes or pass a dark-mode color override.
 
 @verbatim
 ```blade
-<native:text class="text-lg font-semibold" color="#7C3AED">
+@php $score = 1250; @endphp
+
+<native:text class="text-lg font-semibold text-theme-primary">
     Score: {{ $score }}
 </native:text>
 ```
 @endverbatim
+
+Here `$score` stands in for a public property on your component — `public int $score = 1250;`.
 
 <aside>
 

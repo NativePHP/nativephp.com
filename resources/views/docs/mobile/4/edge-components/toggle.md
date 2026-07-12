@@ -7,14 +7,19 @@ order: 440
 
 A native on/off switch. Renders as a SwiftUI `Toggle` on iOS and a Material3 `Switch` on Android.
 
-Per Model 3, the active track / thumb colors come from `theme.primary` / `theme.onPrimary`. There are no per-instance
+Per Material 3, the active track / thumb colors come from `theme.primary` / `theme.onPrimary`. There are no per-instance
 color overrides. For custom visuals drop to [`<native:pressable>`](pressable) wrapping your own drawing.
 
 @verbatim
 ```blade
-<native:toggle :value="$darkMode" @change="toggleDarkMode" />
+@php $darkMode = false; @endphp
+
+<native:toggle label="Dark Mode" :value="$darkMode" @change="toggleDarkMode" />
 ```
 @endverbatim
+
+`darkMode` is a public bool property on your component — the `@php` line stands in for
+`public bool $darkMode = false;` — and `toggleDarkMode()` is the method that flips it.
 
 ## Props
 
@@ -44,9 +49,16 @@ Use the `native:model` directive for automatic two-way binding with a component 
 
 @verbatim
 ```blade
-<native:toggle native:model="notifications" />
+@php $notifications = true; @endphp
+
+<native:toggle label="Notifications" native:model="notifications" />
+
+<native:text class="text-sm text-theme-on-surface-variant">{{ $notifications ? 'You are subscribed' : 'Notifications are muted' }}</native:text>
 ```
 @endverbatim
+
+Flipping the switch syncs the `notifications` property back automatically — the echo below it updates
+on every flip, no `@change` handler needed.
 
 `sync-mode` and `debounce-ms` are accepted for API consistency with the other stateful components, but for a
 discrete tap the distinction between `live`, `blur`, and `debounce` makes no real difference — every flip is one
@@ -58,20 +70,22 @@ event.
 
 @verbatim
 ```blade
+@php $darkMode = false; $notifications = true; $locationEnabled = true; @endphp
+
 <native:column class="w-full gap-0">
-    <native:row class="w-full px-4 py-3" :justify-content="3" :align-items="1">
+    <native:row class="w-full px-4 py-3 justify-between items-center">
         <native:text class="text-base">Dark Mode</native:text>
         <native:toggle native:model="darkMode" />
     </native:row>
     <native:divider />
-    <native:row class="w-full px-4 py-3" :justify-content="3" :align-items="1">
+    <native:row class="w-full px-4 py-3 justify-between items-center">
         <native:text class="text-base">Notifications</native:text>
         <native:toggle native:model="notifications" />
     </native:row>
     <native:divider />
-    <native:row class="w-full px-4 py-3" :justify-content="3" :align-items="1">
+    <native:row class="w-full px-4 py-3 justify-between items-center">
         <native:text class="text-base">Location</native:text>
-        <native:toggle :value="$location" @change="toggleLocation" disabled />
+        <native:toggle :value="$locationEnabled" @change="toggleLocation" disabled />
     </native:row>
 </native:column>
 ```
@@ -81,6 +95,8 @@ event.
 
 @verbatim
 ```blade
+@php $pushEnabled = true; @endphp
+
 <native:toggle label="Push Notifications" native:model="pushEnabled" />
 ```
 @endverbatim

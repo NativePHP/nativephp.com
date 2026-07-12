@@ -16,12 +16,14 @@ All three share the same prop set and event API. Choose the outlined / filled pa
 reach for bare when you want to style the input yourself.
 
 On iOS the outlined and filled variants render as SwiftUI `TextField` / `SecureField` with Material3-style chrome; on
-Android they map to `OutlinedTextField` / `TextField` (filled). Per Model 3 these two have no per-instance color or
+Android they map to `OutlinedTextField` / `TextField` (filled). Per Material 3 these two have no per-instance color or
 border overrides — all chrome resolves from the theme. For fully custom input visuals reach for the bare variant, or
 drop to [`<native:pressable>`](pressable) wrapping your own drawing.
 
 @verbatim
 ```blade
+@php $email = ''; @endphp
+
 <native:outlined-text-input
     label="Email"
     placeholder="you@example.com"
@@ -31,6 +33,9 @@ drop to [`<native:pressable>`](pressable) wrapping your own drawing.
 />
 ```
 @endverbatim
+
+`email` is a public string property on your component — the `@php` line stands in for
+`public string $email = '';` and seeds the inline preview.
 
 ## Props
 
@@ -111,11 +116,18 @@ Use the `native:model` directive for automatic two-way binding with a component 
 
 @verbatim
 ```blade
-<native:outlined-text-input native:model="name" />
-<native:outlined-text-input native:model.blur="email" />
-<native:outlined-text-input native:model.debounce.500ms="search" />
+@php $name = 'Ada'; $email = ''; $search = ''; @endphp
+
+<native:outlined-text-input label="Name" native:model="name" />
+<native:outlined-text-input label="Email" native:model.blur="email" />
+<native:outlined-text-input label="Search" native:model.debounce.500ms="search" />
+
+<native:text class="text-sm text-theme-on-surface-variant">Hello, {{ $name }}!</native:text>
 ```
 @endverbatim
+
+`name`, `email`, and `search` are public string properties on your component — typing syncs them back
+automatically, so the `{{ $name }}` echo updates as you type.
 
 `sync-mode` semantics:
 
@@ -142,6 +154,8 @@ Two things set it apart:
 
 @verbatim
 ```blade
+@php $draft = ''; @endphp
+
 <native:bare-text-input
     class="flex-1 glass rounded-full px-4 py-2 dark:text-slate-700"
     placeholder="Message"
@@ -156,6 +170,8 @@ The `color` attribute can be set explicitly or picked up from a `text-*` class o
 
 @verbatim
 ```blade
+@php $query = ''; @endphp
+
 <native:bare-text-input placeholder="Search" native:model="query" color="slate-700" />
 <native:bare-text-input placeholder="Search" native:model="query" class="text-slate-700 dark:text-slate-300" />
 ```
@@ -173,6 +189,8 @@ The `color` attribute can be set explicitly or picked up from a `text-*` class o
 
 @verbatim
 ```blade
+@php $email = ''; $password = ''; @endphp
+
 <native:column class="w-full gap-4 p-4">
     <native:outlined-text-input
         label="Email"
@@ -197,6 +215,8 @@ The `color` attribute can be set explicitly or picked up from a `text-*` class o
 
 @verbatim
 ```blade
+@php $email = 'not-an-email'; @endphp
+
 <native:filled-text-input
     label="Email"
     native:model="email"
@@ -210,6 +230,8 @@ The `color` attribute can be set explicitly or picked up from a `text-*` class o
 
 @verbatim
 ```blade
+@php $message = ''; @endphp
+
 <native:outlined-text-input
     label="Message"
     placeholder="Type your message..."
@@ -225,6 +247,8 @@ The `color` attribute can be set explicitly or picked up from a `text-*` class o
 
 @verbatim
 ```blade
+@php $query = ''; @endphp
+
 <native:filled-text-input
     placeholder="Search..."
     native:model.debounce.300ms="query"
@@ -238,6 +262,8 @@ The `color` attribute can be set explicitly or picked up from a `text-*` class o
 
 @verbatim
 ```blade
+@php $price = '49'; @endphp
+
 <native:outlined-text-input
     label="Price"
     native:model="price"

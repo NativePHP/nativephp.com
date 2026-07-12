@@ -8,10 +8,12 @@ order: 310
 A single-choice container holding `<native:radio>` children. The group owns the selection; each child declares its
 own `value` and label.
 
-Per Model 3, all colors come from theme tokens.
+Per Material 3, all colors come from theme tokens.
 
 @verbatim
 ```blade
+@php $plan = 'pro'; @endphp
+
 <native:radio-group native:model="plan" label="Choose a plan">
     <native:radio value="free"  label="Free" />
     <native:radio value="pro"   label="Pro" />
@@ -19,6 +21,9 @@ Per Model 3, all colors come from theme tokens.
 </native:radio-group>
 ```
 @endverbatim
+
+Here `plan` is a public string property on your component — the `@php` line stands in for
+`public string $plan = 'pro';`.
 
 ## Props (Group)
 
@@ -34,16 +39,24 @@ Per Model 3, all colors come from theme tokens.
 
 ## Two-way Binding
 
-`native:model` binds the group's selected value to a string property on your component:
+`native:model` binds the group's selected value to a public string property on your component:
 
 @verbatim
 ```blade
-<native:radio-group native:model="plan">
-    <native:radio value="free" label="Free" />
-    <native:radio value="pro"  label="Pro" />
+@php $billing = 'monthly'; @endphp
+
+<native:radio-group native:model="billing" label="Billing cadence">
+    <native:radio value="monthly" label="Monthly" />
+    <native:radio value="yearly"  label="Yearly" />
 </native:radio-group>
+
+<native:text class="text-sm text-theme-on-surface-variant">Billed: {{ $billing }}</native:text>
 ```
 @endverbatim
+
+`billing` is a public string property on your component (the `@php` line stands in for
+`public string $billing = 'monthly';`). Picking an option syncs the new value back automatically,
+so the `{{ $billing }}` echo updates as soon as you tap a different option.
 
 ## Children
 
@@ -61,16 +74,24 @@ Per Model 3, all colors come from theme tokens.
 
 @verbatim
 ```blade
-<native:radio-group native:model="plan" label="Choose a plan">
+@php $selectedPlan = 'free'; @endphp
+
+<native:radio-group native:model="selectedPlan" label="Choose a plan">
     <native:radio value="free"     label="Free — $0/mo" />
     <native:radio value="pro"      label="Pro — $9/mo" />
     <native:radio value="team"     label="Team — $29/mo" />
     <native:radio value="custom"   label="Enterprise (contact sales)" disabled />
 </native:radio-group>
+
+<native:text class="text-sm text-theme-on-surface-variant">Current plan: {{ $selectedPlan }}</native:text>
 ```
 @endverbatim
 
 ### Manual handler
+
+When you need side effects beyond a simple property write, bind `:value` yourself and handle
+`@change` — `$shippingMethod` is a public string property and `setShipping()` a public method on
+your component, receiving the new value as its parameter:
 
 @verbatim
 ```blade

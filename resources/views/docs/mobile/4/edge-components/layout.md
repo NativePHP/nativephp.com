@@ -15,7 +15,7 @@ This page documents the shared attribute system that powers the layout engine ac
 Control element dimensions with width, height, and fill attributes.
 
 @verbatim
-```blade
+```blade static
 {{-- Fixed dimensions (in dp) --}}
 <native:column :width="200" :height="100">
     ...
@@ -55,7 +55,7 @@ Padding and margin follow CSS shorthand conventions. Pass a single value for uni
 per-side control.
 
 @verbatim
-```blade
+```blade static
 {{-- Uniform padding --}}
 <native:column :padding="16">
     ...
@@ -93,7 +93,7 @@ The layout engine uses a Flexbox-based system. Containers (column, row) arrange 
 properties control how children grow, shrink, and align.
 
 @verbatim
-```blade
+```blade static
 {{-- Grow to fill remaining space --}}
 <native:column :flex-grow="1">
     ...
@@ -130,7 +130,7 @@ Alignment values are integers that map to standard flex alignment:
 | `4` | baseline |
 
 @verbatim
-```blade
+```blade static
 {{-- Center children on both axes --}}
 <native:column center>
     ...
@@ -166,7 +166,7 @@ A child with `w-full` (or `h-full`) overrides its parent's `items-center` along 
 Visual styling attributes that apply to any element.
 
 @verbatim
-```blade
+```blade static
 <native:column
     bg="#F0F0FF"
     :border-radius="12"
@@ -193,7 +193,7 @@ Any element can respond to tap, double-tap, and long-press gestures. Use `@press
 directives to bind methods on the route's PHP component class.
 
 @verbatim
-```blade
+```blade static
 <native:column @press="handleTap" @doubleTap="handleDoubleTap" @longPress="handleLongPress">
     <native:text>Tap, double tap, or long press me</native:text>
 </native:column>
@@ -210,7 +210,7 @@ Respect the device's safe area insets (notch, home indicator, status bar) by add
 typically applied to your outermost column.
 
 @verbatim
-```blade
+```blade static
 <native:column fill safe-area>
     {{-- Content will not overlap the notch or home indicator --}}
 </native:column>
@@ -229,7 +229,7 @@ chrome already handles safe-area insets for you.
 Hide elements without removing them from the tree.
 
 @verbatim
-```blade
+```blade static
 <native:column hidden>
     {{-- This element is not displayed --}}
 </native:column>
@@ -243,7 +243,7 @@ Hide elements without removing them from the tree.
 Override styles for dark mode using the `dark:` prefix with Tailwind classes, or pass a `dark` attribute array.
 
 @verbatim
-```blade
+```blade static
 {{-- Tailwind dark mode --}}
 <native:column class="bg-white dark:bg-slate-900">
     <native:text class="text-black dark:text-white">
@@ -261,7 +261,7 @@ EDGE includes a built-in Tailwind CSS parser that converts familiar utility clas
 the `class` attribute on any element.
 
 @verbatim
-```blade
+```blade static
 <native:column class="w-full p-4 gap-3 bg-white rounded-xl shadow-md items-center">
     <native:text class="text-2xl font-bold text-slate-900">
         Styled with Tailwind

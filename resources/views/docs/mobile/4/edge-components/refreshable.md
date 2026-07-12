@@ -11,16 +11,18 @@ component method, and the platform handles the gesture, spinner, and physics for
 their native pull-to-refresh spinner, with system haptics on iOS.
 
 @verbatim
-```blade
+```blade static
 <native:refreshable @refresh="loadLatest">
     @foreach($items as $item)
         <native:row class="p-4 gap-3 items-center">
-            <native:text class="text-base">{{ $item->title }}</native:text>
+            <native:text class="text-base">{{ $item->name }}</native:text>
         </native:row>
     @endforeach
 </native:refreshable>
 ```
 @endverbatim
+
+The refreshable container wants the full height of the screen — run it in your app to feel the pull gesture.
 
 ## Events
 
@@ -50,7 +52,7 @@ content — cards, a [`<native:column>`](column), a dashboard — rather than a 
 ### Refreshable feed
 
 @verbatim
-```blade
+```blade static
 <native:refreshable @refresh="refreshFeed">
     <native:column class="w-full gap-3 p-4">
         @foreach($posts as $post)

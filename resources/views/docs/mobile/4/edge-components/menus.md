@@ -10,9 +10,10 @@ standalone element — you build a list of actions and attach it with an attribu
 
 - `:menu` on a [button](button) or [pressable](pressable) — tapping opens the menu instead of firing `@press`.
 - `:trailing-menu` on a [list item](list) — opens from the row's trailing edge.
+- `items()` on a nav-bar action — see [Menus in the nav bar](#menus-in-the-nav-bar) below.
 
-All three share one item model: an array of `NavAction`, the same builder used for
-[nav-bar menus](../the-basics/layouts#builder-reference).
+All of them share one item model: an array of `NavAction`, the same builder used
+[throughout layouts](../the-basics/layouts#builder-reference).
 
 ## Building the items
 
@@ -64,6 +65,53 @@ Use `:trailing-menu` to open a menu from a row's trailing edge — a common patt
 ```
 @endverbatim
 
+## Menus in the nav bar
+
+The same `NavAction` builder powers pull-down menus on nav-bar (top bar) actions. Give an action sub-items
+with `items()` and it renders as a menu that drops from the bar button instead of firing a plain press:
+
+```php
+use Native\Mobile\Edge\Layouts\Builders\NavAction;
+use Native\Mobile\Edge\Layouts\Builders\NavBarOptions;
+
+public function navigationOptions(): ?NavBarOptions
+{
+    return NavBarOptions::make()
+        ->action(
+            NavAction::make('share')
+                ->icon('share')
+                ->a11yLabel('Share')
+                ->press('share')
+        )
+        ->action(
+            NavAction::make('more')
+                ->icon('ellipsis')
+                ->a11yLabel('More options')
+                ->items([
+                    NavAction::make('mute')
+                        ->label('Mute')
+                        ->icon(ios: 'bell.slash', android: 'notifications_off')
+                        ->press('mute'),
+                    NavAction::make('pin')->label('Pin')->icon('pin')->press('pin'),
+                    NavAction::divider(),
+                    NavAction::make('delete')
+                        ->label('Delete')
+                        ->icon('trash')
+                        ->press('delete')
+                        ->destructive(),
+                ])
+        );
+}
+```
+
+Here `share` stays a plain press, while `more` opens a native pull-down (SwiftUI `Menu` / Compose `DropdownMenu`)
+with dividers and destructive tinting, exactly like the inline menus above. This works in both stack and tab
+layouts — you can also attach it directly in a layout definition via `NavBar::make()->action(...)` in your
+layout's `navBar()`.
+
+> **Note** Menus are only supported on nav-bar actions. Bottom-nav / tab-bar items and the inline
+> `<native:top-bar>` element render their actions as plain buttons — `items()` is ignored there.
+
 ## Item reference
 
 The menu-relevant `NavAction` methods:
@@ -73,6 +121,8 @@ The menu-relevant `NavAction` methods:
 - `label(string)` — the row text
 - `press(string $method)` — the component method to call when chosen
 - `url(string)` — navigate to a URL instead of calling a method
+- `items(array $items)` — sub-items that turn a nav-bar action into a pull-down menu (nav-bar actions only)
+- `a11yLabel(string)` — screen-reader label for icon-only actions
 - `destructive(bool = true)` — tint the item as destructive
 - `NavAction::divider()` — a separator row
 
