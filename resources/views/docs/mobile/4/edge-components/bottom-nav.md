@@ -20,8 +20,10 @@ order: 120
 
 A bottom navigation bar with up to 5 items. Used for your app's primary navigation.
 
+One bar demonstrates the whole item API — an `active` tab, a `news` dot, and a `badge`:
+
 @verbatim
-```blade
+```blade static
 <native:bottom-nav label-visibility="labeled">
     <native:bottom-nav-item
         id="home"
@@ -29,6 +31,13 @@ A bottom navigation bar with up to 5 items. Used for your app's primary navigati
         label="Home"
         url="/home"
         :active="true"
+    />
+    <native:bottom-nav-item
+        id="friends"
+        icon="person.3.fill"
+        label="Friends"
+        url="/friends"
+        :news="true"
     />
     <native:bottom-nav-item
         id="profile"
@@ -40,6 +49,8 @@ A bottom navigation bar with up to 5 items. Used for your app's primary navigati
 </native:bottom-nav>
 ```
 @endverbatim
+
+The [Builder API](#builder-api) below produces this same bar from a layout class — the recommended home for it.
 
 ## Props
 
@@ -68,7 +79,7 @@ A `<native:bottom-nav>` can contain up to 5 `<native:bottom-nav-item>` elements.
 ### Props
 
 - `id` - Unique identifier (required)
-- `icon` - A named [icon](icons) (required)
+- `icon` - A named [icon](icon#icon-name-reference) (required)
 - `label` - Accessibility label (required)
 - `url` - A URL to navigate to in the web view (required)
 - `active` - Highlight this item as active (optional, default: `false`)
@@ -84,7 +95,7 @@ Any `url` that doesn't match a registered native route will exit to the web view
 
 </aside>
 
-### `badge` example
+Here's `badge` on a tab item:
 
 <div class="sm:w-1/2">
 
@@ -95,22 +106,22 @@ Any `url` that doesn't match a registered native route will exit to the web view
 ## Builder API
 
 When a `<native:bottom-nav>` is supplied by a [layout](../the-basics/layouts), you build it fluently with the `TabBar`
-and `Tab` builders rather than writing it in Blade.
+and `Tab` builders rather than writing it in Blade. This is the same bar as the [Overview](#overview) example:
 
 ```php
 use Native\Mobile\Edge\Layouts\Builders\Tab;
 use Native\Mobile\Edge\Layouts\Builders\TabBar;
 
 TabBar::make()
-    ->dark()
-    ->activeColor('#0891b2')
     ->labelVisibility('labeled')
-    ->backgroundColor('#0F172A')
-    ->textColor('#94A3B8')
-    ->add(Tab::link('Chats',   '/syncup',          icon: 'chat_bubble')->badge('2'))
-    ->add(Tab::link('Friends', '/syncup/friends',  icon: 'person.3.fill')->news())
-    ->add(Tab::link('Profile', '/syncup/profile',  icon: 'person')->active());
+    ->activeColor('#0891b2')
+    ->add(Tab::link('Home',    '/home',    icon: 'home')->active())
+    ->add(Tab::link('Friends', '/friends', icon: 'person.3.fill')->news())
+    ->add(Tab::link('Profile', '/profile', icon: 'person')->badge('3'));
 ```
+
+To force a dark bar regardless of the system theme, chain `->dark()` — or take full control with
+`->backgroundColor('#0F172A')->textColor('#94A3B8')`, which wins over `dark()`'s default.
 
 ### `TabBar` methods
 
@@ -126,7 +137,7 @@ TabBar::make()
 
 - `link(string $label, string $url, ?string $icon = null)` - Build a tab. The id defaults to the label slugified
 - `id(string $id)` - Override the auto-generated id
-- `icon(string $icon)` - A named [icon](icons)
+- `icon(string $icon)` - A named [icon](icon#icon-name-reference)
 - `badge(string $badge, ?string $color = null)` - Show a numeric/text badge
 - `news(bool $news = true)` - Show a red dot indicator
 - `active(bool $active = true)` - Mark this tab as active

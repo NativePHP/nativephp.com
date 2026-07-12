@@ -103,7 +103,7 @@ Livewire's updated hooks. The hook name is `updated` + the studly-cased property
 value.
 
 @verbatim
-```blade
+```blade static
 <native:text-input native:model="query" />
 ```
 @endverbatim

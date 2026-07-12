@@ -11,6 +11,21 @@ Android and `ScrollView` on iOS for efficient rendering.
 
 @verbatim
 ```blade
+<native:scroll-view class="w-full h-[240] rounded-xl border border-theme-outline">
+    <native:column class="w-full p-4 gap-3">
+        @foreach (range(1, 20) as $i)
+            <native:text>Scrollable row {{ $i }}</native:text>
+        @endforeach
+    </native:column>
+</native:scroll-view>
+```
+@endverbatim
+
+The fixed `h-[240]` here just gives the preview a bounded viewport so the content overflows and scrolls. On a real
+screen you'd typically let the scroll view fill the page instead:
+
+@verbatim
+```blade static
 <native:scroll-view fill>
     <native:column :padding="16" :gap="12">
         @foreach($items as $item)
@@ -50,12 +65,15 @@ scrollable content.
 
 ### Vertical list
 
+A full-screen list of posts. `safe-area` keeps the content clear of the notch and home indicator, so this one is
+meant for a real page root — run it in your app to see it edge-to-edge:
+
 @verbatim
-```blade
-<native:scroll-view fill bg="#FFFFFF">
-    <native:column class="w-full gap-0 safe-area">
+```blade static
+<native:scroll-view fill class="bg-theme-background">
+    <native:column class="w-full gap-3 p-4 safe-area">
         @foreach($posts as $post)
-            <native:column class="w-full p-4 gap-2" :border-width="1" border-color="#F1F5F9">
+            <native:column class="w-full p-4 gap-2 bg-theme-surface rounded-xl">
                 <native:text class="text-lg font-semibold">{{ $post->title }}</native:text>
                 <native:text class="text-base text-theme-on-surface-variant">{{ $post->excerpt }}</native:text>
             </native:column>
@@ -76,8 +94,7 @@ scrollable content.
                 :width="120"
                 :height="80"
                 center
-                bg="#F1F5F9"
-                :border-radius="12"
+                class="bg-theme-surface-variant rounded-xl"
             >
                 <native:text class="text-sm font-medium">{{ $category->name }}</native:text>
             </native:column>
@@ -89,9 +106,12 @@ scrollable content.
 
 ### Full-page scrollable layout
 
+Another page-root pattern — `h-full` and `safe-area` only make sense against a real screen, so try this one in your
+app:
+
 @verbatim
-```blade
-<native:scroll-view class="w-full h-full" bg="#FFFFFF">
+```blade static
+<native:scroll-view class="w-full h-full bg-theme-background">
     <native:column class="w-full gap-4 safe-area p-4">
         <native:text class="text-3xl font-bold">Welcome</native:text>
         <native:text class="text-base text-theme-on-surface-variant">
@@ -105,9 +125,12 @@ scrollable content.
 
 ### Chat-style stick-to-bottom
 
+The view opens at the latest message and stays pinned to the bottom as new content arrives. The fixed `h-[200]`
+bounds the preview so there's something to scroll — in a real chat screen you'd use `fill` instead:
+
 @verbatim
 ```blade
-<native:scroll-view fill scroll-anchor="bottom">
+<native:scroll-view scroll-anchor="bottom" class="w-full h-[200] rounded-xl border border-theme-outline">
     <native:column class="w-full gap-2 p-4">
         @foreach($messages as $message)
             <native:text class="text-base">{{ $message->body }}</native:text>

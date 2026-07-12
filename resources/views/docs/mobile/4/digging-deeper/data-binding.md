@@ -10,7 +10,7 @@ Livewire's `wire:model`. Type into a field, toggle a switch, drag a slider, and 
 PHP side; change the property in PHP and the control reflects it on the next render.
 
 @verbatim
-```blade
+```blade static
 <native:text-input native:model="name" placeholder="Your name" />
 ```
 @endverbatim
@@ -52,7 +52,7 @@ useful for text inputs where syncing on every character is wasteful:
 | `native:model.debounce.300ms` | After the user stops changing it for the given delay. |
 
 @verbatim
-```blade
+```blade static
 {{-- Sync only when the user leaves the field --}}
 <native:text-input native:model.blur="email" />
 
@@ -87,7 +87,7 @@ properties, derive the rest with computed methods, and let the UI re-render itse
 something other than a public property — set the value and change handler directly:
 
 @verbatim
-```blade
+```blade static
 <native:text-input :value="$name" @change="rename" />
 ```
 @endverbatim

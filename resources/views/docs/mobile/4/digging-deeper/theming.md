@@ -77,7 +77,7 @@ preserves the alpha byte.
 Reference any token from Blade with the `theme-{token}` class suffix, on background, text, and border utilities:
 
 @verbatim
-```blade
+```blade static
 <native:column class="bg-theme-surface border border-theme-outline rounded-2xl p-4">
     <native:text class="text-theme-on-surface text-lg font-bold">Balance</native:text>
     <native:text class="text-theme-on-surface-variant">Updated just now</native:text>

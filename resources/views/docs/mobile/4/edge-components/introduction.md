@@ -82,7 +82,7 @@ interactive forms and navigation chrome.
 ## How It Works
 
 @verbatim
-```blade
+```blade static
 <native:bottom-nav>
     <native:bottom-nav-item id="home" icon="home" label="Home" url="/home" />
 </native:bottom-nav>

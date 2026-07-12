@@ -21,7 +21,7 @@ order: 370
 A slide-out navigation drawer with support for groups, headers, and dividers.
 
 @verbatim
-```blade
+```blade static
 <native:side-nav gestures-enabled="true">
     <native:side-nav-header
         title="My App"
@@ -88,7 +88,7 @@ On iOS, gesture support is always enabled for the side nav.
 
 - `title` - Title text (optional)
 - `subtitle` - Subtitle text (optional)
-- `icon` - A named [icon](icons) (optional)
+- `icon` - A named [icon](icon#icon-name-reference) (optional)
 - `background-color` - Background color. Hex code (optional)
 - `show-close-button` - Show a close &times; (optional, default: `true`) [Android]
 - `pinned` - Keep header visible when scrolling (optional, default: `false`)
@@ -97,7 +97,7 @@ On iOS, gesture support is always enabled for the side nav.
 
 - `id` - Unique identifier (required)
 - `label` - Display text (required)
-- `icon` - A named [icon](icons) (required)
+- `icon` - A named [icon](icon#icon-name-reference) (required)
 - `url` - A URL to navigate to in the web view (required)
 - `open-in-browser` - Force the `url` to open in the device's default browser instead of the web view, whatever its domain (optional, default: `false`)
 - `active` - Highlight this item as active (optional, default: `false`)

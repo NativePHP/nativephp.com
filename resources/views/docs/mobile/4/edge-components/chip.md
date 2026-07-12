@@ -13,15 +13,20 @@ fully rounded and can be adjusted with `rounded-*` classes.
 
 @verbatim
 ```blade
+@php $filterVerified = false; @endphp
+
 <native:chip label="Verified" icon="check" native:model="filterVerified" />
 ```
 @endverbatim
+
+`filterVerified` is a public boolean property on your component — the `@php` line stands in for
+`public bool $filterVerified = false;`.
 
 ## Props
 
 - `label` - Chip text (optional, string). Can also be passed as the first argument to `make()`
 - `selected` / `value` - Whether the chip is active (optional, boolean, default: `false`)
-- `icon` - Leading [icon](icons) name (optional, string)
+- `icon` - Leading [icon](icon#icon-name-reference) name (optional, string)
 - `disabled` - Disable the chip (optional, boolean, default: `false`)
 - `a11y-label` - Accessibility label (optional)
 - `a11y-hint` - Accessibility hint (optional)
@@ -36,9 +41,18 @@ fully rounded and can be adjusted with `rounded-*` classes.
 
 @verbatim
 ```blade
+@php $filterOnSale = false; @endphp
+
 <native:chip label="On Sale" native:model="filterOnSale" />
+
+<native:text class="text-sm text-theme-on-surface-variant">
+    {{ $filterOnSale ? 'Showing sale items only' : 'Showing everything' }}
+</native:text>
 ```
 @endverbatim
+
+Toggling the chip syncs the new boolean back to `filterOnSale` automatically, and anything that reads the
+property — like the `{{ $filterOnSale ? ... }}` echo above — re-renders with the new value.
 
 ## Examples
 
@@ -46,7 +60,9 @@ fully rounded and can be adjusted with `rounded-*` classes.
 
 @verbatim
 ```blade
-<native:row :gap="8" class="w-full p-4">
+@php $filter = 'all'; @endphp
+
+<native:row class="w-full gap-2 p-4">
     <native:chip label="All"     :selected="$filter === 'all'"     @change="setFilter('all')" />
     <native:chip label="Active"  :selected="$filter === 'active'"  @change="setFilter('active')" />
     <native:chip label="Archive" :selected="$filter === 'archive'" @change="setFilter('archive')" />
@@ -54,10 +70,15 @@ fully rounded and can be adjusted with `rounded-*` classes.
 ```
 @endverbatim
 
+Here `$filter` is a public string property and `setFilter()` is a public method on your component that assigns it —
+driving `selected` from one property keeps the row single-select.
+
 ### With icon
 
 @verbatim
 ```blade
+@php $onlyVerified = false; @endphp
+
 <native:chip label="Verified" icon="check" native:model="onlyVerified" />
 ```
 @endverbatim

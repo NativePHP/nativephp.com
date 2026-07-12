@@ -15,15 +15,17 @@ of thumb is around 50 or more cells.
 
 @verbatim
 ```blade
-<native:lazy-grid :columns="4" :gap="12">
-    @foreach($icons as $icon)
-        <native:column class="items-center gap-1 p-3 rounded-lg">
+<native:lazy-grid :columns="4" :gap="12" class="w-full">
+    @foreach (['star', 'heart', 'bell', 'bookmark', 'camera', 'paperplane', 'flag', 'gearshape'] as $icon)
+        <native:column class="items-center p-3 rounded-lg bg-theme-surface-variant">
             <native:icon :ios="$icon" :size="28" />
         </native:column>
     @endforeach
 </native:lazy-grid>
 ```
 @endverbatim
+
+In a real app you would typically loop a collection property on your component (`$icons`) rather than a literal list.
 
 ## Props
 
@@ -55,24 +57,26 @@ it be the screen's scroll container) to keep lazy composition.
 
 @verbatim
 ```blade
-<native:lazy-grid :columns="3" :gap="2">
-    @foreach($photos as $photo)
+<native:lazy-grid :columns="3" :gap="2" class="w-full">
+    @foreach (range(1, 9) as $i)
         <native:column :height="120">
-            <native:image src="{{ $photo->url }}" class="w-full h-full" :fit="2" />
+            <native:image src="https://picsum.photos/seed/grid{{ $i }}/300" class="w-full h-full" :fit="2" />
         </native:column>
     @endforeach
 </native:lazy-grid>
 ```
 @endverbatim
 
+Swap `range(1, 9)` for your own `$photos` collection and bind `src` from each item (e.g. `$photo->url`).
+
 ### Horizontal category shelves
 
 @verbatim
-```blade
+```blade static
 <native:lazy-grid :columns="2" :gap="12" horizontal>
     @foreach($products as $product)
         <native:column :width="160" class="p-3 gap-2 rounded-lg bg-theme-surface">
-            <native:image src="{{ $product->image }}" :width="136" :height="100" :border-radius="8" :fit="2" />
+            <native:image src="{{ $product->image }}" :width="136" :height="100" class="rounded-lg" :fit="2" />
             <native:text class="text-sm font-medium">{{ $product->name }}</native:text>
         </native:column>
     @endforeach

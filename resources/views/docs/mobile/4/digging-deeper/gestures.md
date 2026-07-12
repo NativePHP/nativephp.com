@@ -17,7 +17,7 @@ If you've used Reanimated in React Native, this is the same idea.
 Create one in PHP with `SharedValue::make($initial)`, bind it to a gesture, and read it from any animatable prop:
 
 @verbatim
-```blade
+```blade static
 @php $drag = \Native\Mobile\Edge\SharedValue::make(); @endphp
 
 <native:gesture-area :pan-y="$drag">
@@ -68,7 +68,7 @@ change in `animate-duration` (milliseconds) and the element eases from its old v
 render. The animatable props are `translate-x`, `translate-y`, `scale`, `rotate`, and `opacity`:
 
 @verbatim
-```blade
+```blade static
 {{-- A panel slides up from below when $shown flips to true --}}
 <native:column
     :translate-y="$shown ? 0 : 120"
@@ -95,7 +95,7 @@ Combine transforms freely under one duration — a card can slide, fade, and sca
 Set `animate-loop` to repeat an animation continuously — a pulsing dot, a breathing highlight:
 
 @verbatim
-```blade
+```blade static
 <native:column :scale="$pulsing ? 1.15 : 1.0" :animate-duration="600" :animate-loop="true">
     <native:icon name="heart.fill" />
 </native:column>
@@ -113,7 +113,7 @@ back on release:
 - `press-translate-y` — nudge down while pressed (e.g. `3`)
 
 @verbatim
-```blade
+```blade static
 <native:pressable :press-scale="0.92" :press-opacity="0.85" :press-translate-y="3" @press="open">
     <native:text>Press me</native:text>
 </native:pressable>

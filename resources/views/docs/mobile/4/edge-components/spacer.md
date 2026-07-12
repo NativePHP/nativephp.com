@@ -9,7 +9,7 @@ A flexible space element that expands to fill remaining space within a column or
 push elements apart without calculating explicit sizes.
 
 @verbatim
-```blade
+```blade static
 <native:spacer />
 ```
 @endverbatim
@@ -48,7 +48,7 @@ See the full shared list at [Layout & Styling](layout#supported-tailwind-classes
 
 @verbatim
 ```blade
-<native:column class="w-full h-full p-4">
+<native:column class="w-full h-[220] p-4 bg-theme-surface-variant rounded-xl">
     <native:text class="text-2xl font-bold">Welcome</native:text>
     <native:text class="text-base text-theme-on-surface-variant">Get started with your app.</native:text>
     <native:spacer />
@@ -56,6 +56,10 @@ See the full shared list at [Layout & Styling](layout#supported-tailwind-classes
 </native:column>
 ```
 @endverbatim
+
+In a real app this column is usually the page root with `h-full`, so the spacer pushes the button to the bottom of the
+screen. The fixed `h-[220]` here just gives the preview a bounded height — a spacer can only grow when its parent's
+main axis is constrained.
 
 ### Toolbar with right-aligned trailing icon
 
@@ -75,7 +79,7 @@ See the full shared list at [Layout & Styling](layout#supported-tailwind-classes
 ```blade
 <native:column class="w-full">
     <native:text>Section One</native:text>
-    <native:spacer class="h-8" />
+    <native:spacer class="h-8 flex-grow-0" />
     <native:text>Section Two</native:text>
 </native:column>
 ```
@@ -83,8 +87,9 @@ See the full shared list at [Layout & Styling](layout#supported-tailwind-classes
 
 <aside>
 
-Fixed-size spacers are useful, but a margin on the next element (`<native:text class="mt-8">…</native:text>`) is
-often more readable.
+A fixed-size spacer needs `flex-grow-0` alongside its height (or width, in a row) — without it, the default
+`flex-grow: 1` takes precedence over the explicit size. Fixed-size spacers are useful, but a margin on the next
+element (`<native:text class="mt-8">…</native:text>`) is often more readable.
 
 </aside>
 
@@ -93,6 +98,6 @@ often more readable.
 ```php
 use Native\Mobile\Edge\Elements\Spacer;
 
-Spacer::make();              // flex-grow: 1
-Spacer::make()->height(8);   // fixed 8dp vertical
+Spacer::make();                            // flex-grow: 1
+Spacer::make()->height(8)->flexGrow(0);    // fixed 8dp vertical
 ```

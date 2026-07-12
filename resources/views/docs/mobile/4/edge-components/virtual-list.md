@@ -61,7 +61,7 @@ class ContactsScreen extends NativeComponent
 The row view renders one item by absolute index:
 
 @verbatim
-```blade
+```blade static
 {{-- resources/views/native/rows/contact.blade.php --}}
 @php $contact = \App\Models\Contact::skip($index)->first(); @endphp
 

@@ -17,6 +17,8 @@ control drop to a [`<native:pressable>`](pressable) wrapping your own content.
 ```
 @endverbatim
 
+`@press` names a public method on your component — tapping this button calls `handleStart()`.
+
 ## Props
 
 The label can be passed as the `label` attribute or as slot content between the tags. If both are set, `label` wins.
@@ -28,8 +30,8 @@ Slot content is treated as plain text — nested tags are stripped and whitespac
   token solid; for a softer tonal fill, set opacity on the token itself (e.g. `'secondary' => 'fuchsia-500/70'`
   in `config/native-ui.php`) — see [Theming](../digging-deeper/theming)
 - `size` - `sm`, `md` (default), `lg`
-- `icon` - A leading [icon](icons) name (optional)
-- `icon-trailing` - A trailing [icon](icons) name (optional)
+- `icon` - A leading [icon](icon#icon-name-reference) name (optional)
+- `icon-trailing` - A trailing [icon](icon#icon-name-reference) name (optional)
 - `font` - Custom font for the label from `resources/fonts/`, by filename without extension (optional, string) — see [Text › Custom fonts](text#custom-fonts)
 - `line-height` - Label line height as a multiplier of the font size (optional, float)
 - `line-height-px` - Label line height as an absolute value in pixels (optional, float)
@@ -73,7 +75,7 @@ attributes are intentionally dropped before reaching the renderer.
 
 @verbatim
 ```blade
-<native:row :gap="8" :align-items="1">
+<native:row class="gap-2 items-center">
     <native:button label="Small"  size="sm" @press="action" />
     <native:button label="Medium" size="md" @press="action" />
     <native:button label="Large"  size="lg" @press="action" />

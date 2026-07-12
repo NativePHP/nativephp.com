@@ -20,7 +20,7 @@ order: 450
 A top bar with title, subtitle, and action buttons. This renders at the top of the screen.
 
 @verbatim
-```blade
+```blade static
 <native:top-bar title="Dashboard" subtitle="Welcome back">
     <native:top-bar-action
         id="search"
@@ -69,7 +69,7 @@ On iOS, if more than 5 actions are provided, they collapse into an overflow menu
 > builder rather than placing `<native:top-bar-action>` inline.
 
 - `id` - Unique identifier (required)
-- `icon` - A named [icon](icons) (required)
+- `icon` - A named [icon](icon#icon-name-reference) (required)
 - `label` - Text label for the action. Used for accessibility and displayed in overflow menus (optional but recommended)
 - `url` - A URL to navigate to when tapped (optional)
 
@@ -112,7 +112,7 @@ NavBar::make()
 ### `NavAction` methods
 
 - `make(string $id)` - Create an action with a unique id
-- `icon(string $icon)` - A named [icon](icons)
+- `icon(string $icon)` - A named [icon](icon#icon-name-reference)
 - `label(string $label)` - Accessibility / overflow-menu label
 - `url(string $url)` - A URL to navigate to when tapped
 - `press(string $method)` - A component method on the screen to invoke when tapped

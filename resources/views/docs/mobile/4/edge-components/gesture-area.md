@@ -10,7 +10,7 @@ Captures a vertical pan/drag gesture over its content and writes the translation
 Children render normally — gesture detection wraps the whole content frame.
 
 @verbatim
-```blade
+```blade static
 @php $drag = \Native\Mobile\Edge\SharedValue::make(); @endphp
 
 <native:gesture-area :pan-y="$drag">
@@ -20,6 +20,10 @@ Children render normally — gesture detection wraps the whole content frame.
 </native:gesture-area>
 ```
 @endverbatim
+
+This example needs a real app to try out: the drag runs entirely on the UI thread against a live
+`SharedValue` bound from your component, so there's no inline preview here — drop the snippet into a
+screen in your app and drag the card.
 
 ## Props
 

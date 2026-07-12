@@ -72,18 +72,19 @@ content slots.
 - `leadingMonogram` - 1-2 character monogram (combine with `leadingMonogramColor`)
 - `leadingMonogramColor` - Hex color for monogram background
 - `leadingImage` - URL of a square image with a small radius
-- `leadingCheckbox` - Boolean value for a leading checkbox. Toggling is interactive on [Android]; iOS renders a
-  static glyph
-- `leadingRadio` - Boolean value for a leading radio button. Toggling is interactive on [Android]; iOS renders a
-  static glyph
+- `leadingCheckbox` - Boolean value for a leading checkbox. Interactive when `on-leading-change` is set —
+  tapping the box fires your handler with the new value (the row's own `@press` still handles taps elsewhere
+  on the row); without a handler it renders as a static state glyph
+- `leadingRadio` - Boolean value for a leading radio button. Interactive when `on-leading-change` is set;
+  static glyph otherwise
 
 ### Trailing slot (mutually exclusive)
 
 - `trailingIcon` - Icon name rendered as a trailing icon. Pair with `trailingIconIos` / `trailingIconAndroid` to
   override the [icon](icon) per platform
 - `trailingText` - Trailing text label
-- `trailingCheckbox` - Boolean value for a trailing checkbox. Toggling is interactive on [Android]; iOS renders a
-  static glyph
+- `trailingCheckbox` - Boolean value for a trailing checkbox. Interactive when `on-trailing-change` is set;
+  static glyph otherwise
 - `trailingSwitch` - Boolean value for a trailing switch [Android]
 - `trailingIconButton` - Icon name for a tappable trailing button
 - `trailing-a11y-label` - Accessibility label for the trailing icon button (recommended whenever
@@ -120,9 +121,11 @@ All color props accept the full [color grammar](../digging-deeper/theming#color-
 - `on-swipe-delete` - Shortcut for a single destructive trailing swipe. For anything richer, use
   `trailing-actions` below.
 
-Toggle changes and trailing icon-button taps are wired through the [Element](#element) callbacks rather than Blade
-events. `onTrailingPress()` fires on both platforms when the trailing icon button is tapped. `onLeadingChange()`
-and `onTrailingChange()` fire on [Android], where the checkbox / radio / switch controls are interactive.
+- `on-leading-change` / `on-trailing-change` - Component method called when the leading/trailing checkbox or
+  radio is toggled, receiving the new value. Without a handler the control renders as a static state glyph.
+
+`onTrailingPress()` fires on both platforms when the trailing icon button is tapped. The trailing switch is
+interactive on [Android] only.
 
 ### Swipe actions
 
@@ -135,18 +138,25 @@ definitions the user reveals by swiping the row. Each action is an array:
 - `tint` - Background color as a hex string
 - `role` - Set to `destructive` to render in the platform's delete style (trailing only)
 
+Swipe actions only work on rows that are direct children of `<native:list>` (or a `<native:list-section>`) —
+they are attached by the list renderer, so a standalone `<native:list-item>` silently ignores them.
+
 @verbatim
 ```blade
-<native:list-item
-    :headline="$email->subject"
-    :leading-actions="[
-        ['method' => 'toggleRead('.$email->id.')', 'label' => 'Read', 'ios' => 'envelope.open', 'android' => 'mark_email_read', 'tint' => '#3B82F6'],
-    ]"
-    :trailing-actions="[
-        ['method' => 'flag('.$email->id.')',   'label' => 'Flag',   'ios' => 'flag',  'android' => 'flag',   'tint' => '#F97316'],
-        ['method' => 'delete('.$email->id.')', 'label' => 'Delete', 'ios' => 'trash', 'android' => 'delete', 'role' => 'destructive'],
-    ]"
-/>
+<native:list>
+    @foreach ($emails as $email)
+        <native:list-item
+            :headline="$email->subject"
+            :leading-actions="[
+                ['method' => 'toggleRead('.$email->id.')', 'label' => 'Read', 'ios' => 'envelope.open', 'android' => 'mark_email_read', 'tint' => '#3B82F6'],
+            ]"
+            :trailing-actions="[
+                ['method' => 'flag('.$email->id.')',   'label' => 'Flag',   'ios' => 'flag',  'android' => 'flag',   'tint' => '#F97316'],
+                ['method' => 'delete('.$email->id.')', 'label' => 'Delete', 'ios' => 'trash', 'android' => 'delete', 'role' => 'destructive'],
+            ]"
+        />
+    @endforeach
+</native:list>
 ```
 @endverbatim
 
@@ -204,6 +214,9 @@ ListSection::make('Fruits', ListItem::make('Apple'))->footer('1 item');
 
 ### Swipe-to-delete with pull-to-refresh
 
+The checkbox, swipe, and row press are three independent targets on one row: tapping the box fires
+`on-leading-change`, swiping left fires `on-swipe-delete`, tapping anywhere else fires `@press`.
+
 @verbatim
 ```blade
 <native:list separator on-refresh="refreshTasks">
@@ -212,6 +225,7 @@ ListSection::make('Fruits', ListItem::make('Apple'))->footer('1 item');
             headline="{{ $task->title }}"
             supporting="{{ $task->due }}"
             leadingCheckbox="{{ $task->done }}"
+            on-leading-change="toggleTask({{ $task->id }})"
             trailingIcon="forward"
             on-swipe-delete="deleteTask({{ $task->id }})"
             @press="openTask({{ $task->id }})"
@@ -221,13 +235,22 @@ ListSection::make('Fruits', ListItem::make('Apple'))->footer('1 item');
 ```
 @endverbatim
 
+> [!NOTE]
+> Pull-to-refresh needs to own the pull gesture, so it only fires when the list is the screen's scrolling
+> container — inside another scroll view (like this docs page) the outer container wins the pull. Swipe and
+> checkbox work inline; run the refresh on a dedicated screen.
+
 ### Infinite scroll
+
+`loadMore()` is a method on your component that fetches the next page and appends it to the collection the loop
+renders — in a real app the loop is `@foreach ($posts as $post)` over your paginated results. The fixed `range()`
+here just gives the demo enough rows to scroll before the end-reached trigger fires.
 
 @verbatim
 ```blade
 <native:list on-end-reached="loadMore">
-    @foreach($posts as $post)
-        <native:list-item headline="{{ $post->title }}" supporting="{{ $post->excerpt }}" />
+    @foreach (range(1, 15) as $i)
+        <native:list-item headline="Post {{ $i }}" supporting="Keep scrolling — loadMore() fires near the end" />
     @endforeach
 </native:list>
 ```

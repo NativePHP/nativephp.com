@@ -9,7 +9,7 @@ A full-screen modal overlay. Visibility is driven by the `visible` prop. Use a [
 contextual actions; reach for `<native:modal>` when you want the entire screen covered (e.g. an onboarding flow,
 image preview, or detail view).
 
-Per Model 3, backdrop and surface colors come from `theme.background`. The close icon uses `theme.onSurfaceVariant`.
+Per Material 3, backdrop and surface colors come from `theme.background`. The close icon uses `theme.onSurfaceVariant`.
 
 @verbatim
 ```blade
@@ -23,8 +23,8 @@ Per Model 3, backdrop and surface colors come from `theme.background`. The close
 
     <native:modal :visible="$showDetails" @dismiss="$showDetails = false">
         <native:column class="w-full h-full p-4 gap-4 safe-area">
-            <native:text class="text-2xl font-bold">Details</native:text>
-            <native:text class="text-base">{{ $description }}</native:text>
+            <native:text class="text-2xl font-bold text-theme-on-surface">Details</native:text>
+            <native:text class="text-base text-theme-on-surface-variant">{{ $description }}</native:text>
         </native:column>
     </native:modal>
 </native:column>
@@ -90,7 +90,7 @@ Programmatically setting `visible` to `false` from PHP does not fire the callbac
     <native:modal :visible="$processing" :dismissible="false">
         <native:column fill center :gap="16">
             <native:activity-indicator size="lg" />
-            <native:text class="text-base">Processing...</native:text>
+            <native:text class="text-base text-theme-on-surface">Processing...</native:text>
             {{-- A real app closes this from PHP when the work finishes;
                  the button stands in for that here since the modal can't
                  be dismissed by the user. --}}

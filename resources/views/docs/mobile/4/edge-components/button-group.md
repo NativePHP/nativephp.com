@@ -13,9 +13,15 @@ Use this for short, mutually-exclusive choices that fit on one row. For more opt
 
 @verbatim
 ```blade
+@php $period = 0; @endphp
+
 <native:button-group :options="['Daily', 'Weekly', 'Monthly']" native:model="period" />
+
+<native:text class="text-sm text-theme-on-surface-variant">Showing {{ ['Daily', 'Weekly', 'Monthly'][$period] }} stats</native:text>
 ```
 @endverbatim
+
+`period` is a public int property on your component — the `@php` line stands in for `public int $period = 0;`. Tapping a segment syncs the new index back automatically, so anything echoing `$period` re-renders.
 
 ## Props
 
@@ -32,11 +38,16 @@ Use this for short, mutually-exclusive choices that fit on one row. For more opt
 
 ## Two-way Binding
 
-`native:model` binds the selected index to an integer property on your component:
+`native:model` binds the selected index to an integer property on your component — declare it as
+`public int $planTier = 1;` and the group keeps it in sync:
 
 @verbatim
 ```blade
+@php $planTier = 1; @endphp
+
 <native:button-group :options="$tiers" native:model="planTier" />
+
+<native:text class="text-sm text-theme-on-surface-variant">Selected plan: {{ $tiers[$planTier] }}</native:text>
 ```
 @endverbatim
 
@@ -44,24 +55,38 @@ Use this for short, mutually-exclusive choices that fit on one row. For more opt
 
 ### Period picker
 
+`reportRange` is a public int property on your component (`public int $reportRange = 2;`):
+
 @verbatim
 ```blade
+@php $reportRange = 2; @endphp
+
 <native:button-group
     :options="['Day', 'Week', 'Month', 'Year']"
-    native:model="period"
+    native:model="reportRange"
 />
+
+<native:text class="text-sm text-theme-on-surface-variant">Report range: {{ ['Day', 'Week', 'Month', 'Year'][$reportRange] }}</native:text>
 ```
 @endverbatim
 
 ### With manual change handler
 
+Instead of `native:model`, pass the current index with `:value` and handle changes yourself.
+`$difficulty` is a public int property on your component, and `setDifficulty(int $index)` is the
+method that receives the new index — assign it to `$difficulty` there:
+
 @verbatim
 ```blade
+@php $difficulty = 1; @endphp
+
 <native:button-group
     :options="['Easy', 'Medium', 'Hard']"
     :value="$difficulty"
     @change="setDifficulty"
 />
+
+<native:text class="text-sm text-theme-on-surface-variant">Difficulty: {{ ['Easy', 'Medium', 'Hard'][$difficulty] }}</native:text>
 ```
 @endverbatim
 

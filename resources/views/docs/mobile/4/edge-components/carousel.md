@@ -12,8 +12,8 @@ stack with `item-spacing` between items.
 ```blade
 <native:carousel :item-width="280" :item-spacing="12">
     @foreach($posts as $post)
-        <native:column :height="200" bg="#F1F5F9" :border-radius="16" :padding="16">
-            <native:text class="text-lg font-bold">{{ $post->title }}</native:text>
+        <native:column :height="200" :padding="16" class="bg-theme-surface-variant">
+            <native:text class="text-lg font-bold text-theme-on-surface">{{ $post->title }}</native:text>
             <native:text class="text-sm text-theme-on-surface-variant">{{ $post->excerpt }}</native:text>
         </native:column>
     @endforeach
@@ -66,13 +66,22 @@ wrapping a [`<native:row>`](row).
 <native:carousel :item-width="80" :item-spacing="8">
     @foreach($contacts as $contact)
         <native:column :height="100" center :gap="6">
-            <native:image src="{{ $contact->avatar }}" :width="64" :height="64" :border-radius="32" :fit="2" />
-            <native:text class="text-xs">{{ $contact->name }}</native:text>
+            <native:stack class="w-[64] h-[64]">
+                <native:column class="w-full h-full rounded-full bg-theme-surface-variant items-center justify-center">
+                    <native:text class="text-base font-bold text-theme-on-surface-variant">{{ $contact->initials }}</native:text>
+                </native:column>
+                <native:image src="{{ $contact->avatar }}" :width="64" :height="64" class="rounded-full" :fit="2" alt="{{ $contact->name }}" />
+            </native:stack>
+            <native:text class="text-xs text-theme-on-surface">{{ $contact->name }}</native:text>
         </native:column>
     @endforeach
 </native:carousel>
 ```
 @endverbatim
+
+Use `rounded-full` (a class) to make the avatar circular — the `border-radius` *attribute* is not
+read on images. The initials layer underneath the image acts as a fallback: it shows while the
+avatar is loading, or whenever `$contact->avatar` is empty.
 
 ## Element
 

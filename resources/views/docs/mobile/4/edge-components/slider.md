@@ -13,9 +13,14 @@ under control while the user drags.
 
 @verbatim
 ```blade
-<native:slider :min="0" :max="100" :step="1" native:model="volume" />
+@php $brightness = 60; @endphp
+
+<native:slider :min="0" :max="100" :step="1" native:model="brightness" />
 ```
 @endverbatim
+
+`brightness` is a public property on your component — the `@php` line stands in for
+`public int $brightness = 60;`.
 
 ## Props
 
@@ -41,19 +46,26 @@ Margin classes position the slider; the active track and thumb colors come from 
 
 @verbatim
 ```blade
+@php $intensity = 50; @endphp
+
 {{-- Every drag tick fires --}}
-<native:slider native:model.live="volume" :min="0" :max="100" />
+<native:slider native:model.live="intensity" :min="0" :max="100" />
 
 {{-- Only fires on drag release --}}
-<native:slider native:model.blur="volume" :min="0" :max="100" />
+<native:slider native:model.blur="intensity" :min="0" :max="100" />
 
 {{-- Coalesce ticks into one event after 300ms idle --}}
-<native:slider native:model.debounce.300ms="volume" :min="0" :max="100" />
+<native:slider native:model.debounce.300ms="intensity" :min="0" :max="100" />
+
+<native:text class="text-sm text-theme-on-surface-variant">Intensity: {{ $intensity }}</native:text>
 ```
 @endverbatim
 
-`live` is the default and stress-tests the runtime's round-trip; `blur` is the most efficient for unsteady hands;
-`debounce` is the middle ground. Omit the interval (`native:model.debounce`) and it defaults to 300ms.
+`intensity` is a public property on your component (`public int $intensity = 50;`). All three sliders bind
+the same property, so dragging any one of them syncs the others and the echo — notice *when* each modifier
+pushes its update. `live` is the default and stress-tests the runtime's round-trip; `blur` is the most
+efficient for unsteady hands; `debounce` is the middle ground. Omit the interval (`native:model.debounce`)
+and it defaults to 300ms.
 
 ## Examples
 
@@ -61,21 +73,30 @@ Margin classes position the slider; the active track and thumb colors come from 
 
 @verbatim
 ```blade
+@php $volume = 40; @endphp
+
 <native:column class="w-full gap-2 p-4">
-    <native:row class="w-full" :justify-content="3">
-        <native:text class="text-sm">Volume</native:text>
-        <native:text class="text-sm">{{ $volume }}%</native:text>
+    <native:row class="w-full justify-between">
+        <native:text class="text-sm text-theme-on-surface">Volume</native:text>
+        <native:text class="text-sm text-theme-on-surface-variant">{{ $volume }}%</native:text>
     </native:row>
     <native:slider :min="0" :max="100" :step="1" native:model.debounce.150ms="volume" />
 </native:column>
 ```
 @endverbatim
 
+Declare `volume` as a public property on your component (`public int $volume = 40;`) and the label
+tracks the thumb as it settles.
+
 ### Stepped picker
 
 @verbatim
 ```blade
+@php $rating = 3; @endphp
+
 <native:slider :min="1" :max="5" :step="1" native:model="rating" />
+
+<native:text class="text-sm text-theme-on-surface-variant">Rating: {{ $rating }} / 5</native:text>
 ```
 @endverbatim
 
