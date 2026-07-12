@@ -106,6 +106,13 @@ still win over the default. The `native:font` command offers to set this for you
 Font size and weight still come from `text-*` / `font-*` classes (or `font-size` /
 `font-weight`) and the theme — `font` only changes the typeface.
 
+**Weights with single-file fonts**: a font file carries one weight, and the
+platforms treat a missing weight differently — Android *synthesizes* a faux
+bold (stretched glyphs), iOS ignores the weight and renders the file's native
+weight. Until real multi-weight family support lands, avoid `font-bold` on
+single-weight custom fonts; for a true bold, bundle the Bold file and reference
+it directly (`font="Inter-Bold"`).
+
 </aside>
 
 ## Line height

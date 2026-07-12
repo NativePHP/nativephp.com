@@ -113,6 +113,7 @@ in a screen's Blade.
 - `logo(string $src, float $height = 28)` — convenience over `titleView()` for a bundled logo image
 - `back(bool $show = true)` — show the back chevron
 - `backgroundColor(string)` / `textColor(string)` — bar background and title/icon tint
+- `font(string)` — custom font for the title/subtitle, a `resources/fonts/` token (see [Chrome fonts](#chrome-fonts))
 - `elevation(int $px)` — hairline thickness at the bottom of the bar
 - `displayMode(string)` — `large`, `inline`, or `automatic`
 - `scrollBehavior(string)` — `collapse`, `pinned`, or `enterAlways`
@@ -156,6 +157,7 @@ On iOS it renders as a `.principal` toolbar item; on Android it fills the `TopAp
 
 - `make()` — create a builder; `add(Tab $tab)` — append a tab (up to 5)
 - `activeColor(string)` / `backgroundColor(string)` / `textColor(string)` — tab colors
+- `font(string)` — custom font for tab labels, a `resources/fonts/` token (see [Chrome fonts](#chrome-fonts))
 - `labelVisibility(string)` — `labeled`, `selected`, or `unlabeled`
 - `dark(bool = true)` — force dark styling
 - `minimizeOnScroll(bool = true)` — shrink the bar as content scrolls (iOS 26)
@@ -167,6 +169,45 @@ On iOS it renders as a `.principal` toolbar item; on Android it fills the `TopAp
 - `Tab::action(string $label, icon:)` — a tab that calls a method instead of navigating
 - `Tab::search(string $label, icon:, placeholder:)` — a tab that presents a search bar
 - `id(string)`, `press(string $method)`, `badge(string $text, ?string $color = null)`, `news(bool = true)` (red dot), `active(bool = true)`
+
+## Chrome fonts
+
+Render the chrome in a custom font — a `resources/fonts/` file token
+(see [Text › Custom fonts](../edge-components/text#custom-fonts); download with
+`php artisan native:font`). Three tiers, most specific wins:
+
+```php
+class AppLayout extends NativeTabsLayout
+{
+    // 1. Layout-wide: nav bar + tab bar of every screen under this layout.
+    protected ?string $font = 'Lobster-Regular';
+
+    public function navBar(NativeComponent $screen): ?NavBar
+    {
+        // 2. Per-bar override.
+        return NavBar::make()->title($screen->navTitle())->font('Inter-Bold');
+    }
+}
+
+// 3. Per-screen override, from the screen itself:
+public function navigationOptions(): ?NavBarOptions
+{
+    return NavBarOptions::make()->font('RockSalt-Regular');
+}
+```
+
+Unset tiers fall through to the theme's app-wide `font-family` default, then
+the system font.
+
+<aside>
+
+**iOS limits** (UIKit, not configurable): system-drawn **large** titles keep
+the app-default font — per-layout fonts apply to inline titles and subtitles.
+Tab-bar label fonts apply on iOS 25 and earlier; iOS 26 Liquid Glass bars
+reject appearance overrides, so labels keep the system font there. Android
+honors every tier everywhere.
+
+</aside>
 
 ## Drawer navigation
 
