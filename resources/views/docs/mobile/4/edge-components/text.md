@@ -104,11 +104,12 @@ or a layout's `$font`:
 <native:text font="accent">Playful headline</native:text>
 ```
 
-The special `default` alias applies everywhere — text, buttons, inputs, and
-navigation chrome — without touching individual elements. Per-element `font`
-attributes and explicit `font-serif` / `font-mono` classes still win over it.
-Swapping a font app-wide becomes a one-line config change; blades keep their
-semantic names.
+Alias names are yours to choose (`brand`, `heading`, …) — only `default` is
+special: it applies everywhere — text, buttons, inputs, and navigation chrome —
+without touching individual elements. Per-element `font` attributes and
+explicit `font-serif` / `font-mono` classes still win over it. Swapping a font
+app-wide becomes a one-line config change; blades keep their semantic names.
+Each alias must point directly at a file token (no alias-to-alias chaining).
 
 Prefer aliases over the older `font-family` theme token (which `fonts.default`
 supersedes when both are set). The `native:font --default` command still writes
