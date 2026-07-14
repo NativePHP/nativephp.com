@@ -115,7 +115,7 @@ in a screen's Blade.
 - `logo(string $src, float $height = 28)` — convenience over `titleView()` for a bundled logo image
 - `back(bool $show = true)` — show the back chevron
 - `backgroundColor(string)` / `textColor(string)` — bar background and title/icon tint
-- `font(string)` — custom font for the title/subtitle, a `resources/fonts/` token (see [Chrome fonts](#chrome-fonts))
+- `font(string)` — custom font for the title/subtitle: a `resources/fonts/` token or config alias (see [Chrome fonts](#chrome-fonts))
 - `elevation(int $px)` — hairline thickness at the bottom of the bar
 - `displayMode(string)` — `large`, `inline`, or `automatic`
 - `scrollBehavior(string)` — `collapse`, `pinned`, or `enterAlways`
@@ -159,7 +159,7 @@ On iOS it renders as a `.principal` toolbar item; on Android it fills the `TopAp
 
 - `make()` — create a builder; `add(Tab $tab)` — append a tab (up to 5)
 - `activeColor(string)` / `backgroundColor(string)` / `textColor(string)` — tab colors
-- `font(string)` — custom font for tab labels, a `resources/fonts/` token (see [Chrome fonts](#chrome-fonts))
+- `font(string)` — custom font for tab labels: a `resources/fonts/` token or config alias (see [Chrome fonts](#chrome-fonts))
 - `labelVisibility(string)` — `labeled`, `selected`, or `unlabeled`
 - `dark(bool = true)` — force dark styling
 - `minimizeOnScroll(bool = true)` — shrink the bar as content scrolls (iOS 26)
@@ -174,15 +174,16 @@ On iOS it renders as a `.principal` toolbar item; on Android it fills the `TopAp
 
 ## Chrome fonts
 
-Render the chrome in a custom font — a `resources/fonts/` file token
-(see [Text › Custom fonts](../edge-components/text#custom-fonts); download with
-`php artisan native:font`). Three tiers, most specific wins:
+Render the chrome in a custom font — a `resources/fonts/` file token or a
+[config alias](../edge-components/text#font-aliases--the-app-wide-default)
+like `accent` (see [Text › Custom fonts](../edge-components/text#custom-fonts);
+download with `php artisan native:font`). Three tiers, most specific wins:
 
 ```php
 class AppLayout extends NativeTabsLayout
 {
     // 1. Layout-wide: nav bar + tab bar of every screen under this layout.
-    protected ?string $font = 'Lobster-Regular';
+    protected ?string $font = 'accent';
 
     public function navBar(NativeComponent $screen): ?NavBar
     {
@@ -198,8 +199,8 @@ public function navigationOptions(): ?NavBarOptions
 }
 ```
 
-Unset tiers fall through to the theme's app-wide `font-family` default, then
-the system font.
+Unset tiers fall through to the app-wide default font (the `fonts.default`
+alias, or the older `font-family` theme token), then the system font.
 
 <aside>
 
@@ -448,6 +449,20 @@ class ItemDetail extends NativeComponent
 
 Non-null fields on the returned `NavBarOptions` override the layout's defaults; null fields fall through. Actions
 are appended to whatever the layout already declared.
+
+A screen can also opt out of the layout's nav bar entirely — the full-bleed pattern for photo viewers, onboarding
+flows, and video screens:
+
+```php
+class PhotoViewer extends NativeComponent
+{
+    protected bool $hidesNavBar = true;
+}
+```
+
+This is equivalent to returning `NavBarOptions::make()->hidden()` from `navigationOptions()`; if both are set, the
+explicit builder wins. It mirrors the tab bar's `$hidesTabBar` / `tabBarOptions()->hidden()`. See
+[Hiding the nav bar on a screen](../edge-components/top-bar#hiding-the-nav-bar-on-a-screen) for details.
 
 ## Per-screen titles
 

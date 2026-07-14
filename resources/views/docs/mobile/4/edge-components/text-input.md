@@ -80,7 +80,7 @@ All three variants accept the same shared prop set. The bare variant adds a `col
 
 ### Typography
 
-- `font` - Custom font from `resources/fonts/`, by filename without extension (optional, string) — see [Text › Custom fonts](text#custom-fonts)
+- `font` - Custom font: a `resources/fonts/` file token or a config alias like `accent` (optional, string) — see [Text › Custom fonts](text#custom-fonts)
 - `leading-*` classes set line height for the typed text (multi-line only). Applies on Android; **iOS inputs don't reflect it** — SwiftUI's editable field ignores line spacing (it works on [`<native:text>`](text#line-height))
 - `line-height` / `line-height-px` attributes are an alternative to the `leading-*` classes: `line-height` is a multiplier of the font size, `line-height-px` an absolute override
 
@@ -303,7 +303,7 @@ All three elements share the same fluent API (defined on `BaseTextInput`):
 - `trailingIcon(?string $name = null, IosSymbol|string|null $ios = null, AndroidSymbol|string|null $android = null)` -
   same per-platform form as `leadingIcon()`
 - `size(string $value)` - `sm | md | lg`
-- `font(string $name)` - Custom font (filename without extension)
+- `font(string $name)` - Custom font (file token or config alias)
 - `a11yLabel(string $value)`, `a11yHint(string $value)`
 - `syncMode(string $mode)`, `debounceMs(int $ms)`
 - `onChange(string $method)`, `onSubmit(string $method)`

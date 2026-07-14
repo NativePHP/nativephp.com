@@ -32,7 +32,7 @@ Slot content is treated as plain text — nested tags are stripped and whitespac
 - `size` - `sm`, `md` (default), `lg`
 - `icon` - A leading [icon](icon#icon-name-reference) name (optional)
 - `icon-trailing` - A trailing [icon](icon#icon-name-reference) name (optional)
-- `font` - Custom font for the label from `resources/fonts/`, by filename without extension (optional, string) — see [Text › Custom fonts](text#custom-fonts)
+- `font` - Custom font for the label: a `resources/fonts/` file token or a config alias like `accent` (optional, string) — see [Text › Custom fonts](text#custom-fonts)
 - `line-height` - Label line height as a multiplier of the font size (optional, float)
 - `line-height-px` - Label line height as an absolute value in pixels (optional, float)
 - `disabled` - Disable the button (optional, boolean, default: `false`). Disabled buttons render with the theme's
@@ -132,7 +132,7 @@ Button::make('Save')
 - `make(string $label = '')` - Create a button with an optional label
 - `variant(string $value)` - `primary | secondary | destructive | ghost`
 - `size(string $value)` - `sm | md | lg`
-- `font(string $name)` - Custom label font (filename without extension)
+- `font(string $name)` - Custom label font (file token or config alias)
 - `icon(?string $name = null, IosSymbol|string|null $ios = null, AndroidSymbol|string|null $android = null)` -
   Leading icon; pass `ios:` / `android:` for per-platform symbols
 - `iconTrailing(?string $name = null, IosSymbol|string|null $ios = null, AndroidSymbol|string|null $android = null)` -

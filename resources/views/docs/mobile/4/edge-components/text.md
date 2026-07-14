@@ -39,7 +39,7 @@ All [shared layout and style attributes](layout) are supported, plus:
 - `line-through` - Strikethrough: `1`=on, `0`=off (optional, int)
 - `text-transform` - Case: `0`=none, `1`=uppercase, `2`=lowercase, `3`=capitalize (optional, int)
 - `letter-spacing` - Tracking in em relative to font size (optional, float)
-- `font` - Custom font name — a font file from `resources/fonts/` without its extension (optional, string) — see [Custom fonts](#custom-fonts)
+- `font` - Custom font: a `resources/fonts/` file token or a config alias like `accent` (optional, string) — see [Custom fonts](#custom-fonts)
 
 Line height is set with `leading-*` classes — see [Line height](#line-height).
 
@@ -316,7 +316,7 @@ Text::make('Hello')
 
 - `make(string $text = '')` - Create text with content
 - `fontSize(float $size)` - Text size
-- `font(string $name)` - Custom font from `resources/fonts/` (filename without extension)
+- `font(string $name)` - Custom font (file token or config alias)
 - `fontWeight(int $weight)` - 1-7 (clamped to the nearest supported weight)
 - `bold()` - Shortcut for `fontWeight(7)`
 - `fontStyle(int $style)` - `0`=normal, `1`=italic
