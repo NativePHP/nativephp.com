@@ -8,6 +8,29 @@ order: 100
 Although NativePHP tries to make it as easy as possible to make your application secure, it is your responsibility to
 protect your users.
 
+### Your code ships with your app
+
+When you build your app for release, your Laravel application — PHP source, views, and assets — is bundled into the
+app package (APK/AAB on Android, IPA on iOS) and extracted on the device the first time your app runs. The device
+needs this code to run your app, so anyone who unpacks your app package can read it.
+
+This is true of every mobile app, whatever it's built with: JavaScript ships the same way in React Native and Ionic
+apps, and even compiled Kotlin and Swift can be decompiled. Android's
+[minification and obfuscation options](../getting-started/configuration#android-build-configuration) apply R8/ProGuard
+to the app's Kotlin/Java code only; your PHP is bundled as an asset and ships as written.
+
+Encrypting the bundle wouldn't change this: the decryption key would have to ship inside the same package, where it
+can be extracted just as easily. Rather than trying to hide client-side code, build so that reading it doesn't matter:
+
+- Treat everything you bundle as public — your PHP source, views, and the parts of your `.env` file that ship with
+  the app.
+- Keep secrets and sensitive business logic on a server, behind authenticated APIs.
+- Strip sensitive keys from your bundled `.env` using the `cleanup_env_keys` option in `config/nativephp.php` — see
+  [Configuration](../getting-started/configuration).
+
+The rest of this page covers how to handle the data that genuinely needs protecting: secrets, tokens, and your users'
+data on the device.
+
 ### Secrets and .env
 
 As your application is being installed on systems outside your/your organisation's control, it is important to think
