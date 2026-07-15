@@ -6,6 +6,18 @@
             'image' => '/img/sponsors/artisan-build.webp',
             'imageDark' => '/img/sponsors/artisan-build-dark.webp',
         ],
+        [
+            'url' => 'https://beyondco.de/?utm_source=nativephp&utm_medium=logo&utm_campaign=nativephp',
+            'name' => 'BeyondCode',
+            'image' => '/img/sponsors/beyondcode.webp',
+            'imageDark' => '/img/sponsors/beyondcode-dark.webp',
+        ],
+        [
+            'url' => 'https://laradevs.com/?ref=nativephp',
+            'name' => 'Laradevs',
+            'component' => 'sponsors.logos.laradevs',
+            'class' => 'h-6 w-auto text-black dark:text-white',
+        ],
     ];
 @endphp
 
@@ -51,18 +63,26 @@
                     rel="noopener noreferrer sponsored"
                     class="opacity-70 transition duration-200 hover:opacity-100"
                 >
-                    <img
-                        src="{{ $sponsor['image'] }}"
-                        class="block h-6 w-auto dark:hidden"
-                        loading="lazy"
-                        alt="{{ $sponsor['name'] }} logo"
-                    />
-                    <img
-                        src="{{ $sponsor['imageDark'] }}"
-                        class="hidden h-6 w-auto dark:block"
-                        loading="lazy"
-                        alt="{{ $sponsor['name'] }} logo"
-                    />
+                    @if (isset($sponsor['component']))
+                        <x-dynamic-component
+                            :component="$sponsor['component']"
+                            :class="$sponsor['class'] ?? ''"
+                            aria-hidden="true"
+                        />
+                    @else
+                        <img
+                            src="{{ $sponsor['image'] }}"
+                            class="block h-6 w-auto dark:hidden"
+                            loading="lazy"
+                            alt="{{ $sponsor['name'] }} logo"
+                        />
+                        <img
+                            src="{{ $sponsor['imageDark'] }}"
+                            class="hidden h-6 w-auto dark:block"
+                            loading="lazy"
+                            alt="{{ $sponsor['name'] }} logo"
+                        />
+                    @endif
                 </a>
             @endforeach
 
