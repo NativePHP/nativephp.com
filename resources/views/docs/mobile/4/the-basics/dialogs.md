@@ -26,6 +26,25 @@ Dialog::alert('Hello', 'Welcome to the app!');
 Dialog::alert('Confirm', 'Are you sure?', ['Cancel', 'Delete']);
 ```
 
+### Button styles
+
+Any button can be an array with a `style` to get the platform's native treatment:
+
+```php
+Dialog::alert('Delete post?', 'This cannot be undone.', [
+    ['label' => 'Cancel', 'style' => 'cancel'],
+    ['label' => 'Delete', 'style' => 'destructive'],
+]);
+```
+
+| Style | Behavior |
+| --- | --- |
+| `default` | Standard button (same as passing a plain string) |
+| `cancel` | The dismissive action — bold and repositioned on iOS, placed in the conventional dismiss slot on Android |
+| `destructive` | Rendered in the platform's destructive/error color (red) |
+
+Plain strings and styled arrays mix freely in the same alert.
+
 `alert()` returns a `PendingAlert` you can configure fluently. If you don't call `->show()`, the alert displays
 automatically when the object goes out of scope.
 
