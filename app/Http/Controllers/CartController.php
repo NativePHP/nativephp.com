@@ -456,6 +456,7 @@ class CartController extends Controller
 
         $lineItems = [];
         $purchasedItemIds = [];
+        $couponIds = [];
 
         Log::info('Creating multi-item checkout session', [
             'cart_id' => $cart->id,
@@ -487,6 +488,12 @@ class CartController extends Controller
                 ];
             } elseif ($item->isProduct()) {
                 $product = $item->product;
+
+                $couponId = $product->getBestPriceForUser($user)?->stripe_coupon_id;
+
+                if ($couponId) {
+                    $couponIds[] = $couponId;
+                }
 
                 $lineItems[] = [
                     'price_data' => [
@@ -527,7 +534,7 @@ class CartController extends Controller
             'cart_item_ids' => implode(',', $purchasedItemIds),
         ];
 
-        $session = Cashier::stripe()->checkout->sessions->create([
+        $sessionParams = [
             'mode' => 'payment',
             'line_items' => $lineItems,
             'success_url' => route('cart.success').'?session_id={CHECKOUT_SESSION_ID}',
@@ -549,7 +556,25 @@ class CartController extends Controller
                     'metadata' => $metadata,
                 ],
             ],
-        ]);
+        ];
+
+        // Stripe accepts either allow_promotion_codes or discounts on a session,
+        // never both, and at most one discount per session.
+        $couponIds = array_values(array_unique($couponIds));
+
+        if ($couponIds !== []) {
+            unset($sessionParams['allow_promotion_codes']);
+            $sessionParams['discounts'] = [['coupon' => $couponIds[0]]];
+
+            if (count($couponIds) > 1) {
+                Log::warning('Cart resolved multiple pre-applied coupons; only the first was applied', [
+                    'cart_id' => $cart->id,
+                    'coupon_ids' => $couponIds,
+                ]);
+            }
+        }
+
+        $session = Cashier::stripe()->checkout->sessions->create($sessionParams);
 
         // Store the Stripe checkout session ID on the cart
         $cart->update(['stripe_checkout_session_id' => $session->id]);

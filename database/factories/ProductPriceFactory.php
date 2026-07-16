@@ -59,4 +59,11 @@ class ProductPriceFactory extends Factory
             'amount' => $amount,
         ]);
     }
+
+    public function withCoupon(string $couponId = 'coupon_test123'): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'stripe_coupon_id' => $couponId,
+        ]);
+    }
 }

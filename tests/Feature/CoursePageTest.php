@@ -2,11 +2,15 @@
 
 namespace Tests\Feature;
 
+use App\Models\Product;
+use App\Models\ProductPrice;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Carbon;
+use Laravel\Cashier\Subscription;
 use PHPUnit\Framework\Attributes\Test;
 use Stripe\Checkout\Session;
+use Stripe\Coupon;
 use Stripe\Customer;
 use Stripe\StripeClient;
 use Tests\TestCase;
@@ -15,21 +19,94 @@ class CoursePageTest extends TestCase
 {
     use RefreshDatabase;
 
+    /**
+     * Bind a StripeClient mock that serves a $100-off coupon for display price calculations.
+     */
+    private function mockStripeCoupon(): void
+    {
+        $mockCoupons = new class
+        {
+            public function retrieve(): Coupon
+            {
+                return Coupon::constructFrom([
+                    'id' => 'coupon_test123',
+                    'valid' => true,
+                    'amount_off' => 10000,
+                    'percent_off' => null,
+                ]);
+            }
+        };
+
+        $mockStripeClient = $this->createMock(StripeClient::class);
+        $mockStripeClient->coupons = $mockCoupons;
+
+        $this->app->bind(StripeClient::class, fn () => $mockStripeClient);
+    }
+
     #[Test]
     public function course_page_loads_successfully(): void
     {
+        Product::where('slug', 'nativephp-masterclass')->first()
+            ->prices()->update(['amount' => 29900]);
+
         $this
             ->withoutVite()
             ->get(route('course'))
             ->assertStatus(200)
             ->assertSee('The NativePHP Masterclass')
-            ->assertSee('$199');
+            ->assertSee('$299');
     }
 
     #[Test]
-    public function course_page_shows_299_pricing_after_deadline(): void
+    public function course_page_shows_price_from_database(): void
+    {
+        Product::where('slug', 'nativephp-masterclass')->first()
+            ->prices()->update(['amount' => 24900]);
+
+        $this
+            ->withoutVite()
+            ->get(route('course'))
+            ->assertStatus(200)
+            ->assertSee('$249');
+    }
+
+    #[Test]
+    public function course_page_shows_discounted_price_to_subscribers(): void
+    {
+        $this->mockStripeCoupon();
+
+        $masterclass = Product::where('slug', 'nativephp-masterclass')->first();
+        $masterclass->prices()->update(['amount' => 29900]);
+        ProductPrice::factory()
+            ->for($masterclass)
+            ->subscriber()
+            ->amount(29900)
+            ->withCoupon('coupon_test123')
+            ->create();
+
+        $user = User::factory()->create();
+        Subscription::factory()
+            ->for($user)
+            ->active()
+            ->create(['stripe_price' => 'price_test_pro']);
+
+        $this
+            ->withoutVite()
+            ->actingAs($user)
+            ->get(route('course'))
+            ->assertStatus(200)
+            ->assertSee('$199')
+            ->assertSee('$299')
+            ->assertSee('Your discount is applied automatically at checkout.');
+    }
+
+    #[Test]
+    public function course_page_falls_back_to_299_pricing_without_database_prices(): void
     {
         Carbon::setTestNow('2026-06-15 00:00:01');
+
+        Product::where('slug', 'nativephp-masterclass')->first()
+            ->prices()->delete();
 
         $this
             ->withoutVite()

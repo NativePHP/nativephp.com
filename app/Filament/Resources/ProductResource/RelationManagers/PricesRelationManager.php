@@ -41,6 +41,11 @@ class PricesRelationManager extends RelationManager
                     ->default('USD')
                     ->required(),
 
+                Forms\Components\TextInput::make('stripe_coupon_id')
+                    ->label('Stripe coupon ID')
+                    ->maxLength(255)
+                    ->helperText('Coupon ID from the Stripe dashboard. Keep the amount above at full price — the price shown to buyers is calculated from the coupon\'s discount, and the coupon is pre-applied at Stripe checkout. Buyers cannot enter a promotion code when a coupon is pre-applied.'),
+
                 Forms\Components\Toggle::make('is_active')
                     ->label('Active')
                     ->default(true)
@@ -70,6 +75,11 @@ class PricesRelationManager extends RelationManager
                 Tables\Columns\TextColumn::make('currency')
                     ->badge()
                     ->color('gray'),
+
+                Tables\Columns\TextColumn::make('stripe_coupon_id')
+                    ->label('Coupon')
+                    ->placeholder('—')
+                    ->toggleable(),
 
                 Tables\Columns\IconColumn::make('is_active')
                     ->label('Active')
