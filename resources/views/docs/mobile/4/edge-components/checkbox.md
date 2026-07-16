@@ -61,7 +61,7 @@ toggle is a single event.
 @endverbatim
 
 `subscribed` is a public boolean property on your component (the `@php` line stands in for
-`public bool $subscribed = true;`). Every toggle syncs the new value back, so the `{{ $subscribed }}` echo
+`public bool $subscribed = true;`). Every toggle syncs the new value back, so the `@{{ $subscribed }}` echo
 updates as soon as you tap.
 
 ## Examples

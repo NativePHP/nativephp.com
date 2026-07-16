@@ -243,7 +243,7 @@ The checkbox, swipe, and row press are three independent targets on one row: tap
 ### Infinite scroll
 
 `loadMore()` is a method on your component that fetches the next page and appends it to the collection the loop
-renders — in a real app the loop is `@foreach ($posts as $post)` over your paginated results. The fixed `range()`
+renders — in a real app the loop is `@@foreach ($posts as $post)` over your paginated results. The fixed `range()`
 here just gives the demo enough rows to scroll before the end-reached trigger fires.
 
 @verbatim

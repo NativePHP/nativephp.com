@@ -35,6 +35,15 @@ class DocumentationRenderingTest extends TestCase
     }
 
     #[Test]
+    public function layouts_page_shows_example_component_tag_literally_instead_of_compiling_it(): void
+    {
+        $this->withoutVite()
+            ->get('/docs/mobile/4/the-basics/layouts')
+            ->assertOk()
+            ->assertSee('<x-layouts.app>');
+    }
+
+    #[Test]
     public function every_documentation_page_renders_without_evaluating_example_variables(): void
     {
         /** @var ViewFactory $factory */

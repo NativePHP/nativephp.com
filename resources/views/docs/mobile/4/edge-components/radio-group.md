@@ -56,7 +56,7 @@ Here `plan` is a public string property on your component — the `@php` line st
 
 `billing` is a public string property on your component (the `@php` line stands in for
 `public string $billing = 'monthly';`). Picking an option syncs the new value back automatically,
-so the `{{ $billing }}` echo updates as soon as you tap a different option.
+so the `@{{ $billing }}` echo updates as soon as you tap a different option.
 
 ## Children
 

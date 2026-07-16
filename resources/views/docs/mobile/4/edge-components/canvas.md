@@ -52,7 +52,7 @@ heights makes a bar chart — vary the `opacity-*` class to get a tonal ramp fro
 ```
 @endverbatim
 
-In a real app you'd generate the rects with `@foreach` over a public array property on your component and
+In a real app you'd generate the rects with `@@foreach` over a public array property on your component and
 compute each `:height` from the data point.
 
 ### Pulsing beacon

@@ -52,7 +52,7 @@ fully rounded and can be adjusted with `rounded-*` classes.
 @endverbatim
 
 Toggling the chip syncs the new boolean back to `filterOnSale` automatically, and anything that reads the
-property — like the `{{ $filterOnSale ? ... }}` echo above — re-renders with the new value.
+property — like the `@{{ $filterOnSale ? ... }}` echo above — re-renders with the new value.
 
 ## Examples
 
