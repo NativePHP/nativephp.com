@@ -149,10 +149,15 @@ Route::post('course/checkout', function (Request $request) {
         return to_route('course')->with('error', 'You already own this course.');
     }
 
+    $bestPrice = $product->getBestPriceForUser($user);
+
+    // Prefer the Stripe price ID configured on the resolved price in the admin,
+    // falling back to the legacy env-configured course price IDs.
     $priceIncreased = now()->gte(config('services.stripe.course_price_increase_at'));
-    $priceId = $priceIncreased
-        ? config('services.stripe.course_price_id_299')
-        : config('services.stripe.course_price_id_199');
+    $priceId = $bestPrice?->stripe_price_id
+        ?: ($priceIncreased
+            ? config('services.stripe.course_price_id_299')
+            : config('services.stripe.course_price_id_199'));
 
     if (! $priceId) {
         return to_route('course')->with('error', 'Course checkout is not configured yet.');
@@ -187,7 +192,7 @@ Route::post('course/checkout', function (Request $request) {
     ];
 
     // Stripe accepts either allow_promotion_codes or discounts on a session, never both.
-    $couponId = $product->getBestPriceForUser($user)?->stripe_coupon_id;
+    $couponId = $bestPrice?->stripe_coupon_id;
 
     if ($couponId) {
         unset($sessionOptions['allow_promotion_codes']);

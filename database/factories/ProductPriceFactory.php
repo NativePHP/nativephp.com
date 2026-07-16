@@ -66,4 +66,11 @@ class ProductPriceFactory extends Factory
             'stripe_coupon_id' => $couponId,
         ]);
     }
+
+    public function withStripePrice(string $stripePriceId = 'price_test123'): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'stripe_price_id' => $stripePriceId,
+        ]);
+    }
 }

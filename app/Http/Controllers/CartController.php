@@ -489,23 +489,32 @@ class CartController extends Controller
             } elseif ($item->isProduct()) {
                 $product = $item->product;
 
-                $couponId = $product->getBestPriceForUser($user)?->stripe_coupon_id;
+                $bestPrice = $product->getBestPriceForUser($user);
 
-                if ($couponId) {
-                    $couponIds[] = $couponId;
+                if ($bestPrice?->stripe_coupon_id) {
+                    $couponIds[] = $bestPrice->stripe_coupon_id;
                 }
 
-                $lineItems[] = [
-                    'price_data' => [
-                        'currency' => strtolower($item->currency),
-                        'unit_amount' => $item->product_price_at_addition,
-                        'product_data' => [
-                            'name' => $product->name,
-                            'description' => $product->description ?? 'NativePHP Product',
+                // Prefer the real Stripe price when the resolved price is backed by one;
+                // otherwise fall back to an ad-hoc price built from the stored amount.
+                if ($bestPrice?->stripe_price_id) {
+                    $lineItems[] = [
+                        'price' => $bestPrice->stripe_price_id,
+                        'quantity' => 1,
+                    ];
+                } else {
+                    $lineItems[] = [
+                        'price_data' => [
+                            'currency' => strtolower($item->currency),
+                            'unit_amount' => $item->product_price_at_addition,
+                            'product_data' => [
+                                'name' => $product->name,
+                                'description' => $product->description ?? 'NativePHP Product',
+                            ],
                         ],
-                    ],
-                    'quantity' => 1,
-                ];
+                        'quantity' => 1,
+                    ];
+                }
             } else {
                 $plugin = $item->plugin;
 

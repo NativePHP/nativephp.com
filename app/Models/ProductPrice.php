@@ -153,6 +153,37 @@ class ProductPrice extends Model
         );
     }
 
+    /**
+     * Retrieve the amount (in cents) and currency from a Stripe price so a
+     * price row backed by a Stripe price ID always reflects Stripe as the
+     * source of truth.
+     *
+     * @return array{amount: int, currency: string}
+     *
+     * @throws \InvalidArgumentException when the price is missing, archived, or has no fixed amount
+     */
+    public static function detailsFromStripePrice(string $stripePriceId): array
+    {
+        try {
+            $price = Cashier::stripe()->prices->retrieve($stripePriceId);
+        } catch (\Throwable $e) {
+            throw new \InvalidArgumentException("Unable to retrieve Stripe price [{$stripePriceId}]: {$e->getMessage()}", previous: $e);
+        }
+
+        if (! $price->active) {
+            throw new \InvalidArgumentException("Stripe price [{$stripePriceId}] is archived. Activate it in Stripe or use a different price.");
+        }
+
+        if ($price->unit_amount === null) {
+            throw new \InvalidArgumentException("Stripe price [{$stripePriceId}] has no fixed unit amount (metered or customer-chosen pricing is not supported).");
+        }
+
+        return [
+            'amount' => $price->unit_amount,
+            'currency' => strtoupper($price->currency),
+        ];
+    }
+
     public function isRegularTier(): bool
     {
         return $this->tier === PriceTier::Regular;

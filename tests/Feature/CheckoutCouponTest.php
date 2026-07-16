@@ -284,4 +284,60 @@ class CheckoutCouponTest extends TestCase
         $this->assertTrue($captured->params['allow_promotion_codes']);
         $this->assertArrayNotHasKey('discounts', $captured->params);
     }
+
+    #[Test]
+    public function course_checkout_uses_stripe_price_id_from_the_database_over_config(): void
+    {
+        Carbon::setTestNow('2026-06-14 23:59:59');
+        config(['services.stripe.course_price_id_199' => 'price_env_config']);
+
+        $captured = $this->captureStripeCheckoutParams();
+        $subscriber = $this->createSubscriber();
+
+        $masterclass = Product::where('slug', 'nativephp-masterclass')->firstOrFail();
+        $masterclass->prices()->update(['amount' => 29900]);
+        ProductPrice::factory()
+            ->for($masterclass)
+            ->subscriber()
+            ->amount(29900)
+            ->withStripePrice('price_db_override')
+            ->create();
+
+        $this->actingAs($subscriber)
+            ->post(route('course.checkout'))
+            ->assertRedirect('https://checkout.stripe.com/test-session');
+
+        $this->assertNotNull($captured->params, 'Stripe checkout session should have been created');
+        $this->assertSame('price_db_override', $captured->params['line_items'][0]['price']);
+    }
+
+    #[Test]
+    public function cart_checkout_uses_stripe_price_line_item_when_price_is_backed_by_stripe(): void
+    {
+        $captured = $this->captureStripeCheckoutParams();
+        $subscriber = $this->createSubscriber();
+
+        $product = Product::factory()->active()->create();
+        ProductPrice::factory()->for($product)->regular()->amount(29900)->create();
+        ProductPrice::factory()
+            ->for($product)
+            ->subscriber()
+            ->amount(29900)
+            ->withStripePrice('price_backed')
+            ->withCoupon('coupon_test123')
+            ->create();
+
+        $cartService = resolve(CartService::class);
+        $cart = $cartService->getCart($subscriber);
+        $cartService->addProduct($cart, $product);
+
+        $this->actingAs($subscriber)
+            ->post(route('cart.checkout'))
+            ->assertRedirect('https://checkout.stripe.com/test-session');
+
+        $this->assertNotNull($captured->params, 'Stripe checkout session should have been created');
+        $this->assertSame('price_backed', $captured->params['line_items'][0]['price']);
+        $this->assertArrayNotHasKey('price_data', $captured->params['line_items'][0]);
+        $this->assertSame([['coupon' => 'coupon_test123']], $captured->params['discounts']);
+    }
 }
