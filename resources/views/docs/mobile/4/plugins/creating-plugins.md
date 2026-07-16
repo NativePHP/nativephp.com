@@ -163,6 +163,7 @@ The manifest declares native-specific configuration for your plugin. Package met
 | `ios.dependencies` | No | Swift packages and CocoaPods |
 | `ios.background_modes` | No | UIBackgroundModes values |
 | `ios.entitlements` | No | App entitlements |
+| `ios.extension_targets` | No | Isolated [iOS app-extension targets](ios-app-extensions) |
 | `ios.capabilities` | No | iOS capabilities for Xcode project |
 | `ios.min_version` | No | Minimum iOS version required |
 | `ios.init_function` | No | Native function to call during app initialization |

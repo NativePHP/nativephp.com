@@ -186,6 +186,15 @@ class DocsPrereleaseVersionTest extends TestCase
         $this->get('/docs/mobile/4/the-basics/layouts')->assertOk();
     }
 
+    public function test_ios_app_extension_documentation_renders(): void
+    {
+        $this->get('/docs/mobile/4/plugins/ios-app-extensions')
+            ->assertOk()
+            ->assertSee('iOS App Extensions')
+            ->assertSee('extension_targets')
+            ->assertSee('IOS_EXTENSION_PROVISIONING_PROFILES');
+    }
+
     public function test_moved_core_builtin_docs_redirect_from_plugins_core_to_the_basics(): void
     {
         $this->get('/docs/mobile/4/plugins/core/device')
