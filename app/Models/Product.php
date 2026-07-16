@@ -43,6 +43,8 @@ class Product extends Model
 
     /**
      * Get the best (lowest) active price for a user based on their eligible tiers.
+     * Equal amounts are broken by tier priority so a more specific tier (e.g. Subscriber)
+     * wins over Regular, ensuring perks like pre-applied coupons are picked up.
      * Returns null if no price exists for the user's eligible tiers.
      */
     public function getBestPriceForUser(?User $user): ?ProductPrice
@@ -52,7 +54,11 @@ class Product extends Model
         return $this->prices()
             ->active()
             ->forTiers($eligibleTiers)
-            ->orderBy('amount', 'asc')
+            ->get()
+            ->sort(function (ProductPrice $a, ProductPrice $b): int {
+                return $a->amount <=> $b->amount
+                    ?: $a->tier->priority() <=> $b->tier->priority();
+            })
             ->first();
     }
 

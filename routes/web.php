@@ -128,12 +128,17 @@ Route::get('course', function () {
     $priceIncreaseAt = config('services.stripe.course_price_increase_at');
     $priceIncreased = now()->gte($priceIncreaseAt);
 
+    $bestPrice = $product?->getBestPriceForUser($user);
+    $regularPrice = $product?->getRegularPrice();
+
     return view('course', [
         'alreadyOwned' => $alreadyOwned,
         'course' => $course,
         'priceIncreaseAt' => $priceIncreaseAt,
         'priceIncreased' => $priceIncreased,
-        'currentPrice' => $priceIncreased ? 299 : 199,
+        'currentPrice' => $bestPrice?->discountedDisplayAmount() ?? ($priceIncreased ? '299' : '199'),
+        'regularPrice' => $regularPrice?->display_amount,
+        'hasDiscount' => $bestPrice && $regularPrice && $bestPrice->discountedAmount() < $regularPrice->amount,
     ]);
 })->name('course');
 
@@ -153,10 +158,15 @@ Route::post('course/checkout', function (Request $request) {
         return to_route('course')->with('error', 'You already own this course.');
     }
 
+    $bestPrice = $product->getBestPriceForUser($user);
+
+    // Prefer the Stripe price ID configured on the resolved price in the admin,
+    // falling back to the legacy env-configured course price IDs.
     $priceIncreased = now()->gte(config('services.stripe.course_price_increase_at'));
-    $priceId = $priceIncreased
-        ? config('services.stripe.course_price_id_299')
-        : config('services.stripe.course_price_id_199');
+    $priceId = $bestPrice?->stripe_price_id
+        ?: ($priceIncreased
+            ? config('services.stripe.course_price_id_299')
+            : config('services.stripe.course_price_id_199'));
 
     if (! $priceId) {
         return to_route('course')->with('error', 'Course checkout is not configured yet.');
@@ -170,7 +180,7 @@ Route::post('course/checkout', function (Request $request) {
 
     $metadata = ['cart_id' => (string) $cart->id];
 
-    return $user->checkout([$priceId => 1], [
+    $sessionOptions = [
         'success_url' => route('cart.success').'?session_id={CHECKOUT_SESSION_ID}',
         'cancel_url' => route('course'),
         'metadata' => $metadata,
@@ -188,7 +198,17 @@ Route::post('course/checkout', function (Request $request) {
                 'metadata' => $metadata,
             ],
         ],
-    ]);
+    ];
+
+    // Stripe accepts either allow_promotion_codes or discounts on a session, never both.
+    $couponId = $bestPrice?->stripe_coupon_id;
+
+    if ($couponId) {
+        unset($sessionOptions['allow_promotion_codes']);
+        $sessionOptions['discounts'] = [['coupon' => $couponId]];
+    }
+
+    return $user->checkout([$priceId => 1], $sessionOptions);
 })->name('course.checkout');
 
 Route::view('wall-of-love', 'wall-of-love')->name('wall-of-love');

@@ -549,11 +549,13 @@
                             <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">You have full access to all content.</p>
                         </div>
                     @else
-                        {{-- $199 pricing (before deadline) --}}
+                        {{-- Early bird pricing (before deadline) --}}
                         <div x-show="!expired" x-cloak>
                             <div class="mt-4 flex items-baseline gap-2">
-                                <span class="text-5xl font-bold text-gray-900 dark:text-white">$199</span>
-                                <span class="text-2xl text-gray-400 line-through">$299</span>
+                                <span class="text-5xl font-bold text-gray-900 dark:text-white">${{ $currentPrice }}</span>
+                                @if ($hasDiscount)
+                                    <span class="text-2xl text-gray-400 line-through">${{ $regularPrice }}</span>
+                                @endif
                                 <span class="text-sm text-gray-500 dark:text-gray-400">one-time</span>
                             </div>
                             <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">Early bird pricing. Lock it in now &mdash; full access forever.</p>
@@ -565,13 +567,22 @@
                             />
                         </div>
 
-                        {{-- $299 pricing (after deadline) --}}
+                        {{-- Standard pricing (after deadline) --}}
                         <div x-show="expired" x-cloak>
                             <div class="mt-4 flex items-baseline gap-2">
-                                <span class="text-5xl font-bold text-gray-900 dark:text-white">$299</span>
+                                <span class="text-5xl font-bold text-gray-900 dark:text-white">${{ $currentPrice }}</span>
+                                @if ($hasDiscount)
+                                    <span class="text-2xl text-gray-400 line-through">${{ $regularPrice }}</span>
+                                @endif
                                 <span class="text-sm text-gray-500 dark:text-gray-400">one-time</span>
                             </div>
-                            <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">One price. Full access forever.</p>
+                            <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">
+                                @if ($hasDiscount)
+                                    Your discount is applied automatically at checkout.
+                                @else
+                                    One price. Full access forever.
+                                @endif
+                            </p>
                         </div>
                     @endif
 

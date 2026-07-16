@@ -5,6 +5,7 @@ namespace App\Livewire\Customer\Course;
 use App\Models\Course;
 use App\Models\LessonProgress;
 use App\Models\Product;
+use App\Models\ProductPrice;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Title;
@@ -29,11 +30,15 @@ class Index extends Component
     }
 
     #[Computed]
+    public function masterclass(): ?Product
+    {
+        return Product::where('slug', 'nativephp-masterclass')->first();
+    }
+
+    #[Computed]
     public function hasPurchased(): bool
     {
-        $product = Product::where('slug', 'nativephp-masterclass')->first();
-
-        return $product && $product->isOwnedBy(auth()->user());
+        return $this->masterclass && $this->masterclass->isOwnedBy(auth()->user());
     }
 
     #[Computed]
@@ -49,9 +54,28 @@ class Index extends Component
     }
 
     #[Computed]
-    public function currentPrice(): int
+    public function bestPrice(): ?ProductPrice
     {
-        return $this->priceIncreased() ? 299 : 199;
+        return $this->masterclass?->getBestPriceForUser(auth()->user());
+    }
+
+    #[Computed]
+    public function regularPrice(): ?ProductPrice
+    {
+        return $this->masterclass?->getRegularPrice();
+    }
+
+    #[Computed]
+    public function currentPrice(): string
+    {
+        return $this->bestPrice?->discountedDisplayAmount() ?? ($this->priceIncreased() ? '299' : '199');
+    }
+
+    #[Computed]
+    public function hasDiscount(): bool
+    {
+        return $this->bestPrice && $this->regularPrice
+            && $this->bestPrice->discountedAmount() < $this->regularPrice->amount;
     }
 
     #[Computed]
