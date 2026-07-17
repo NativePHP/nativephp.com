@@ -150,6 +150,7 @@ Non-null fields override the layout's `NavBar`; null fields fall through. `actio
 already declared.
 
 - `make()` - Create a new builder
+- `hidden(bool $hidden = true)` - Hide the nav bar on this screen — the full-bleed / immersive pattern
 - `title(?string $title)` - Override the title text
 - `subtitle(?string $subtitle)` - Override the small line under the title
 - `back(bool $show = true)` - Show or hide the back chevron
@@ -160,5 +161,40 @@ already declared.
 - `scrollBehavior(string $mode)` - How the bar reacts to content scrolling — `collapse`, `pinned`, or `enterAlways`
 - `searchBar(string $placeholder = '', ?string $onQuery = null, int $debounceMs = 300)` - Attach an inline native search field; text changes call the `$onQuery` method on the screen
 - `action(NavAction $action)` - Append a trailing action
+
+### Hiding the nav bar on a screen
+
+Individual screens can opt out of their layout's nav bar entirely — the full-bleed pattern for photo viewers,
+onboarding flows, and video screens. This is the top-bar parallel to the tab bar's
+[`hidden()`](bottom-nav#per-screen-tab-bar):
+
+```php
+use Native\Mobile\Edge\Layouts\Builders\NavBarOptions;
+use Native\Mobile\Edge\NativeComponent;
+
+class PhotoViewer extends NativeComponent
+{
+    public function navigationOptions(): ?NavBarOptions
+    {
+        return NavBarOptions::make()->hidden();
+    }
+}
+```
+
+For this common case, the shorter `protected bool $hidesNavBar = true;` property on the screen is equivalent to
+`NavBarOptions::make()->hidden()`. Use either; if both are set, the explicit builder wins.
+
+```php
+class PhotoViewer extends NativeComponent
+{
+    protected bool $hidesNavBar = true;
+}
+```
+
+Navigation keeps working while the bar is hidden — pushes, pops, and `@navigate` all behave normally. With the bar
+hidden the screen is full-bleed: on Android the content extends up to the very top edge, under the transparent
+status bar; use the safe-area utilities on elements that should stay clear of the clock and status icons. On iOS
+the edge-swipe-back gesture is tied to the visible bar, so a pushed screen that hides it should render its own back
+control (for example a floating button that uses `@navigate` to return to the parent screen).
 
 See [Layouts](../the-basics/layouts) for the full picture.
