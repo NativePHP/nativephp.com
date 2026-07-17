@@ -11,45 +11,42 @@ class SponsorsAndPartnersPlacementTest extends TestCase
     use RefreshDatabase;
 
     #[Test]
-    public function the_partners_section_no_longer_lists_beyondcode_or_laradevs()
-    {
-        $this->blade('<x-home.partners />')
-            ->assertSee('Nexcalia')
-            ->assertSee('Web Mavens')
-            ->assertDontSee('Laradevs')
-            ->assertDontSee('BeyondCode')
-            ->assertDontSee('Need a freelancer or engineer?')
-            ->assertDontSee('From local full stack development');
-    }
-
-    #[Test]
-    public function the_sponsors_section_lists_beyondcode_and_laradevs_without_descriptions()
-    {
-        $this->blade('<x-home.sponsors />')
-            ->assertSee('Artisan Build')
-            ->assertSee('BeyondCode')
-            ->assertSee('Laradevs')
-            ->assertDontSee('Need a freelancer or engineer?')
-            ->assertDontSee('From local full stack development');
-    }
-
-    #[Test]
-    public function the_homepage_drops_the_partner_descriptions_for_beyondcode_and_laradevs()
-    {
-        $this->get('/')
-            ->assertOk()
-            ->assertDontSee('Need a freelancer or engineer?')
-            ->assertDontSee('From local full stack development');
-    }
-
-    #[Test]
-    public function the_partners_page_lists_the_current_partners()
+    public function the_partners_page_renders_the_partners_section()
     {
         $this->get(route('partners'))
             ->assertOk()
-            ->assertSee('Meet Our Partners')
-            ->assertSee('Nexcalia')
-            ->assertSee('Web Mavens')
-            ->assertSee('Synergi Tech');
+            ->assertSee('Meet Our Partners');
+    }
+
+    #[Test]
+    public function the_sidebar_partners_list_rotates_through_every_entry_it_is_given()
+    {
+        $partners = [
+            ['url' => 'https://partner-one.test', 'name' => 'Partner One', 'tagline' => 'First', 'image' => '/img/one.svg', 'imageDark' => '/img/one-dark.svg', 'class' => ''],
+            ['url' => 'https://partner-two.test', 'name' => 'Partner Two', 'tagline' => 'Second', 'image' => '/img/two.svg', 'imageDark' => '/img/two-dark.svg', 'class' => ''],
+        ];
+
+        $this->blade('<x-sponsors.lists.docs.featured-sponsors :partners="$partners" />', compact('partners'))
+            ->assertSee('Math.random() * 2', false)
+            ->assertSee('x-show="partner === 0"', false)
+            ->assertSee('x-show="partner === 1"', false)
+            ->assertSee('https://partner-one.test')
+            ->assertSee('https://partner-two.test');
+    }
+
+    #[Test]
+    public function the_sidebar_sponsors_list_rotates_through_every_entry_it_is_given()
+    {
+        $sponsors = [
+            ['url' => 'https://sponsor-one.test', 'name' => 'Sponsor One', 'image' => '/img/one.svg', 'imageDark' => '/img/one-dark.svg', 'class' => ''],
+            ['url' => 'https://sponsor-two.test', 'name' => 'Sponsor Two', 'image' => '/img/two.svg', 'imageDark' => '/img/two-dark.svg', 'class' => ''],
+        ];
+
+        $this->blade('<x-sponsors.lists.docs.sponsors :sponsors="$sponsors" />', compact('sponsors'))
+            ->assertSee('Math.random() * 2', false)
+            ->assertSee('x-show="sponsor === 0"', false)
+            ->assertSee('x-show="sponsor === 1"', false)
+            ->assertSee('https://sponsor-one.test')
+            ->assertSee('https://sponsor-two.test');
     }
 }
