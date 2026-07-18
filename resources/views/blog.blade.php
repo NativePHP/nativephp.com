@@ -157,12 +157,15 @@
                     @if (! $articles->onFirstPage())
                         <a
                             href="{{ $articles->previousPageUrl() }}"
-                            class="inline-block p-1.5 opacity-60 transition duration-200 hover:opacity-100"
+                            class="group inline-flex items-center gap-2 rounded-full border border-black/10 bg-black/[0.02] py-2 pr-4 pl-3 text-sm opacity-80 transition duration-200 hover:-translate-x-0.5 hover:border-black/20 hover:bg-black/5 hover:opacity-100 dark:border-white/10 dark:bg-white/[0.02] dark:hover:border-white/20 dark:hover:bg-white/5"
                             aria-label="Go to previous page"
                             rel="prev"
                         >
-                            <span class="sr-only">Navigate to</span>
-                            Previous
+                            <x-icons.right-arrow
+                                class="size-3.5 shrink-0 -scale-x-100 transition-transform duration-200 group-hover:-translate-x-0.5"
+                                aria-hidden="true"
+                            />
+                            <span>Previous</span>
                         </a>
                     @endif
                 </div>
@@ -191,12 +194,15 @@
                     @if (! $articles->onLastPage())
                         <a
                             href="{{ $articles->nextPageUrl() }}"
-                            class="inline-block p-1.5 opacity-80 transition duration-200 hover:opacity-100"
+                            class="group inline-flex items-center gap-2 rounded-full border border-black/10 bg-black/[0.02] py-2 pr-3 pl-4 text-sm opacity-80 transition duration-200 hover:translate-x-0.5 hover:border-black/20 hover:bg-black/5 hover:opacity-100 dark:border-white/10 dark:bg-white/[0.02] dark:hover:border-white/20 dark:hover:bg-white/5"
                             aria-label="Go to next page"
                             rel="next"
                         >
-                            <span class="sr-only">Navigate to</span>
-                            Next
+                            <span>Next</span>
+                            <x-icons.right-arrow
+                                class="size-3.5 shrink-0 transition-transform duration-200 group-hover:translate-x-0.5"
+                                aria-hidden="true"
+                            />
                         </a>
                     @endif
                 </div>

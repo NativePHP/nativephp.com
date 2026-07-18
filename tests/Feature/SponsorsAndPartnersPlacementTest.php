@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Models\Article;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
@@ -16,6 +17,19 @@ class SponsorsAndPartnersPlacementTest extends TestCase
         $this->get(route('partners'))
             ->assertOk()
             ->assertSee('Meet Our Partners');
+    }
+
+    #[Test]
+    public function the_blog_article_mobile_view_shows_sponsors_below_partners()
+    {
+        $article = Article::factory()->published()->create();
+
+        $this->get(route('article', $article))
+            ->assertOk()
+            ->assertSeeInOrder([
+                'Become a Partner',
+                'Become a sponsor',
+            ]);
     }
 
     #[Test]
