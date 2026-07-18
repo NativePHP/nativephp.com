@@ -127,7 +127,7 @@ Use the `native:model` directive for automatic two-way binding with a component 
 @endverbatim
 
 `name`, `email`, and `search` are public string properties on your component — typing syncs them back
-automatically, so the `{{ $name }}` echo updates as you type.
+automatically, so the `@{{ $name }}` echo updates as you type.
 
 `sync-mode` semantics:
 
