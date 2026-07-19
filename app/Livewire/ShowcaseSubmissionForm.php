@@ -3,6 +3,8 @@
 namespace App\Livewire;
 
 use App\Models\Showcase;
+use App\Notifications\ShowcaseSubmitted;
+use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Storage;
 use Livewire\Attributes\Validate;
 use Livewire\Component;
@@ -167,6 +169,9 @@ class ShowcaseSubmissionForm extends Component
                     'approved_by' => null,
                 ]);
 
+                Notification::route('mail', 'support@nativephp.com')
+                    ->notify(new ShowcaseSubmitted($this->showcase, resubmitted: true));
+
                 return to_route('customer.showcase.index')
                     ->with('warning', 'Your submission has been updated and sent back for review.');
             }
@@ -175,10 +180,13 @@ class ShowcaseSubmissionForm extends Component
                 ->with('success', 'Your submission has been updated.');
         }
 
-        Showcase::create([
+        $showcase = Showcase::create([
             'user_id' => auth()->id(),
             ...$data,
         ]);
+
+        Notification::route('mail', 'support@nativephp.com')
+            ->notify(new ShowcaseSubmitted($showcase));
 
         return to_route('customer.showcase.index')
             ->with('success', 'Thank you! Your app has been submitted for review.');
