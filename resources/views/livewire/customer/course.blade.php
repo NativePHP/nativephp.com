@@ -140,11 +140,14 @@
                     {{-- Price --}}
                     <div class="mt-10 flex items-baseline justify-center gap-3">
                         <span class="text-5xl font-black text-zinc-900 dark:text-white">${{ $this->currentPrice }}</span>
-                        @unless ($this->priceIncreased)
-                            <span class="text-xl text-zinc-400 line-through dark:text-zinc-600">$299</span>
-                        @endunless
+                        @if ($this->hasDiscount)
+                            <span class="text-xl text-zinc-400 line-through dark:text-zinc-600">${{ $this->regularPrice->display_amount }}</span>
+                        @endif
                         <span class="text-sm text-zinc-500">one-time</span>
                     </div>
+                    @if ($this->hasDiscount)
+                        <p class="mt-3 text-sm text-zinc-500 dark:text-zinc-400">Your discount is applied automatically at checkout.</p>
+                    @endif
 
                     {{-- Countdown --}}
                     <x-course.countdown
