@@ -3,6 +3,8 @@
 namespace App\Livewire;
 
 use App\Models\WallOfLoveSubmission;
+use App\Notifications\WallOfLoveSubmitted;
+use Illuminate\Support\Facades\Notification;
 use Livewire\Component;
 use Livewire\Features\SupportFileUploads\WithFileUploads;
 
@@ -92,7 +94,7 @@ class WallOfLoveSubmissionForm extends Component
             $photoPath = $this->photo->store('wall-of-love-photos', 'public');
         }
 
-        WallOfLoveSubmission::create([
+        $submission = WallOfLoveSubmission::create([
             'user_id' => auth()->id(),
             'name' => $this->name,
             'company' => $this->company ?: null,
@@ -100,6 +102,9 @@ class WallOfLoveSubmissionForm extends Component
             'url' => $this->url ?: null,
             'testimonial' => $this->testimonial ?: null,
         ]);
+
+        Notification::route('mail', 'support@nativephp.com')
+            ->notify(new WallOfLoveSubmitted($submission));
 
         return to_route('dashboard')->with('success', 'Thank you! Your submission has been received and is awaiting review.');
     }
