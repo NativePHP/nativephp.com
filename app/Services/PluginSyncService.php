@@ -65,7 +65,7 @@ class PluginSyncService
         ];
 
         if ($composerData) {
-            if (isset($composerData['name']) && ! $plugin->name) {
+            if (! empty($composerData['name']) && $composerData['name'] !== $plugin->name) {
                 $existing = Plugin::where('name', $composerData['name'])
                     ->where('id', '!=', $plugin->id)
                     ->exists();
