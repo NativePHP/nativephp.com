@@ -9,7 +9,13 @@ Displays an image from a URL. Loaded asynchronously by the native platform — `
 
 @verbatim
 ```blade
-<native:image src="https://example.com/photo.jpg" :width="200" :height="150" :fit="2" :border-radius="12" />
+<native:image
+    src="https://picsum.photos/seed/nativephp/400/300"
+    :width="200"
+    :height="150"
+    :fit="2"
+    class="rounded-xl"
+/>
 ```
 @endverbatim
 
@@ -40,7 +46,7 @@ The renderer collapses fit modes to two effective behaviors: `fit` and `fill`. M
 
 @verbatim
 ```blade
-<native:image src="https://example.com/hero.jpg" class="w-full" :height="200" :fit="2" />
+<native:image src="https://picsum.photos/seed/hero/800/400" class="w-full rounded-xl" :height="200" :fit="2" />
 ```
 @endverbatim
 
@@ -49,11 +55,11 @@ The renderer collapses fit modes to two effective behaviors: `fit` and `fill`. M
 @verbatim
 ```blade
 <native:image
-    src="https://example.com/avatar.jpg"
+    src="https://i.pravatar.cc/128?img=12"
     :width="64"
     :height="64"
     :fit="2"
-    :border-radius="32"
+    class="rounded-full"
 />
 ```
 @endverbatim
@@ -61,24 +67,33 @@ The renderer collapses fit modes to two effective behaviors: `fit` and `fill`. M
 ### Tinted icon image
 
 @verbatim
-```blade
+```blade static
 <native:image
-    src="https://example.com/logo.png"
-    :width="40"
-    :height="40"
+    src="https://www.php.net/images/logos/new-php-logo.png"
+    :width="80"
+    :height="42"
+    :fit="1"
     tint-color="#7C3AED"
 />
 ```
 @endverbatim
 
+<aside>
+
+Use an image with an alpha channel (a monochrome logo or template asset) for tinting — tinting an opaque photo
+just fills the frame with a solid block of color. Tint rendering is still being stabilized across platforms, so
+this example is shown as code only.
+
+</aside>
+
 ### Image in a card
 
 @verbatim
 ```blade
-<native:column class="w-full rounded-2xl" :border-width="1" border-color="#E2E8F0" bg="#FFFFFF">
-    <native:image src="https://example.com/cover.jpg" class="w-full" :height="180" :fit="2" />
-    <native:column class="p-4 gap-2">
-        <native:text class="text-lg font-bold">Article Title</native:text>
+<native:column class="w-full p-2 rounded-2xl border border-theme-outline bg-theme-surface">
+    <native:image src="https://picsum.photos/seed/cover/800/360" class="w-full rounded-xl" :height="180" :fit="2" />
+    <native:column class="p-3 gap-2">
+        <native:text class="text-lg font-bold text-theme-on-surface">Article Title</native:text>
         <native:text class="text-base text-theme-on-surface-variant">A brief description of the article.</native:text>
     </native:column>
 </native:column>
@@ -90,7 +105,7 @@ The renderer collapses fit modes to two effective behaviors: `fit` and `fill`. M
 ```php
 use Native\Mobile\Edge\Elements\Image;
 
-Image::make('https://example.com/photo.jpg')
+Image::make('https://picsum.photos/seed/nativephp/400/300')
     ->fit(2)
     ->tintColor('#7C3AED');
 ```

@@ -10,7 +10,7 @@ value (or with `indeterminate`), renders an animated wave.
 
 For a circular spinner use [`<native:activity-indicator>`](activity-indicator) instead.
 
-Per Model 3, the progress fill uses `theme.primary` and the track uses `theme.surfaceVariant`. The optional `color`
+Per Material 3, the progress fill uses `theme.primary` and the track uses `theme.surfaceVariant`. The optional `color`
 prop is an escape hatch for non-theme containers.
 
 @verbatim
@@ -26,6 +26,7 @@ prop is an escape hatch for non-theme containers.
 - `color` - Override the fill color as hex string (optional)
 - `track-color` - Override the track color as hex string (optional)
 - `a11y-label` - Accessibility label (optional)
+- `a11y-hint` - Accessibility hint (optional)
 
 <aside>
 
@@ -39,15 +40,19 @@ prop is an escape hatch for non-theme containers.
 
 @verbatim
 ```blade
+@php $progress = 0.65; @endphp
+
 <native:column class="w-full gap-2 p-4">
-    <native:row class="w-full" :justify-content="3">
-        <native:text class="text-sm">Uploading</native:text>
-        <native:text class="text-sm">{{ round($progress * 100) }}%</native:text>
+    <native:row class="w-full justify-between">
+        <native:text class="text-sm text-theme-on-surface">Uploading</native:text>
+        <native:text class="text-sm text-theme-on-surface-variant">{{ round($progress * 100) }}%</native:text>
     </native:row>
     <native:progress-bar :value="$progress" />
 </native:column>
 ```
 @endverbatim
+
+Here `$progress` stands in for a public property on your component — declare `public float $progress = 0.65;` and update it as the work advances; the bar and the percentage label track it automatically.
 
 ### Indeterminate
 
@@ -65,6 +70,12 @@ prop is an escape hatch for non-theme containers.
 ```
 @endverbatim
 
+<aside>
+
+`track-color` currently applies on Android only — iOS keeps the default theme track. The `color` fill override works on both platforms. Prefer the theme defaults (fill: `theme.primary`, track: `theme.surfaceVariant`) unless a fixed color is the point, since hex overrides don't adapt to dark mode.
+
+</aside>
+
 ## Element
 
 ```php
@@ -81,3 +92,4 @@ ProgressBar::make()->indeterminate();
 - `color(string $hex)` - Override the fill tint
 - `trackColor(string $hex)` - Override the track color
 - `a11yLabel(string $value)` - Accessibility label
+- `a11yHint(string $value)` - Accessibility hint

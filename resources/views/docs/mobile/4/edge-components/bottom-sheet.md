@@ -9,7 +9,7 @@ A modal panel that slides up from the bottom of the screen. Use it for contextua
 that overlay the main content. Renders as SwiftUI's `.sheet` with `presentationDetents` on iOS and a Material3
 `ModalBottomSheet` on Android.
 
-Per Model 3, the container color resolves from `theme.surface`. For a custom surface wrap content in a
+Per Material 3, the container color resolves from `theme.surface`. For a custom surface wrap content in a
 `<native:column class="bg-...">`.
 
 @verbatim
@@ -21,7 +21,7 @@ Per Model 3, the container color resolves from `theme.surface`. For a custom sur
 
     <native:bottom-sheet :visible="$showSheet" @dismiss="$showSheet = false">
         <native:column class="w-full p-4 gap-3">
-            <native:text class="text-xl font-bold">Sheet Title</native:text>
+            <native:text class="text-xl font-bold text-theme-primary">Sheet Title</native:text>
             <native:text class="text-base text-theme-on-surface-variant">Sheet content goes here.</native:text>
             <native:button label="Close" @press="$showSheet = false" />
         </native:column>
@@ -40,6 +40,7 @@ Per Model 3, the container color resolves from `theme.surface`. For a custom sur
     - `full` (100% of screen)
     - A numeric fraction `0.0`–`1.0` for a custom height (e.g. `"0.4"` for 40%)
 - `a11y-label` - Accessibility label (optional)
+- `a11y-hint` - Accessibility hint (optional)
 
 ## Events
 
@@ -63,21 +64,21 @@ Accepts any EDGE elements as children. The children are rendered inside the shee
     <native:bottom-sheet :visible="$showActions" @dismiss="$showActions = false" detents="small">
         <native:column class="w-full gap-0 pb-8">
             <native:pressable @press="$showActions = false" class="w-full px-4 py-3">
-                <native:row :gap="12" :align-items="1">
-                    <native:icon name="edit" :size="24" />
-                    <native:text class="text-base">Edit</native:text>
+                <native:row class="gap-3 items-center">
+                    <native:icon class="text-theme-on-surface-variant" name="edit" :size="24" />
+                    <native:text class="text-base text-theme-on-surface-variant">Edit</native:text>
                 </native:row>
             </native:pressable>
             <native:divider />
             <native:pressable @press="$showActions = false" class="w-full px-4 py-3">
-                <native:row :gap="12" :align-items="1">
-                    <native:icon name="share" :size="24" />
-                    <native:text class="text-base">Share</native:text>
+                <native:row class="gap-3 items-center">
+                    <native:icon class="text-theme-on-surface-variant" name="share" :size="24" />
+                    <native:text class="text-base text-theme-on-surface-variant">Share</native:text>
                 </native:row>
             </native:pressable>
             <native:divider />
             <native:pressable @press="$showActions = false" class="w-full px-4 py-3">
-                <native:row :gap="12" :align-items="1">
+                <native:row class="gap-3 items-center">
                     <native:icon name="delete" :size="24" color="#EF4444" />
                     <native:text class="text-base" color="#EF4444">Delete</native:text>
                 </native:row>
@@ -103,10 +104,10 @@ Accepts any EDGE elements as children. The children are rendered inside the shee
 
     <native:bottom-sheet :visible="$showForm" @dismiss="$showForm = false" detents="medium,large">
         <native:column class="w-full p-4 gap-4">
-            <native:text class="text-xl font-bold">Add Item</native:text>
+            <native:text class="text-xl font-bold text-theme-on-surface-variant">Add Item</native:text>
             <native:outlined-text-input label="Name" native:model="itemName" />
             <native:outlined-text-input label="Description" native:model="itemDescription" multiline :min-lines="3" />
-            <native:row :gap="8" :justify-content="2">
+            <native:row class="gap-2 justify-end">
                 <native:button label="Cancel" variant="secondary" @press="$showForm = false" />
                 <native:button label="Save" @press="$showForm = false" />
             </native:row>
@@ -157,4 +158,5 @@ BottomSheet::make()
 - `visible(bool $value = true)` - Toggle visibility
 - `detents(string $detents)` - Allowed heights
 - `a11yLabel(string $value)` - Accessibility label
+- `a11yHint(string $value)` - Accessibility hint
 - `onDismiss(string $method)` - Component method invoked on dismissal

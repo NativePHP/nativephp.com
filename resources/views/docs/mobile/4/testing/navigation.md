@@ -17,6 +17,7 @@ After an interaction, assert on where the screen intends to go:
 - `assertReplacedWith($uri)` — the current screen was replaced with `$uri`.
 - `assertWentBack()` — a back navigation.
 - `assertExitedToWeb($uri)` — navigation left the native stack for a web URL.
+- `assertTransition($transition)` — the pending navigation carries this transition, given as a `Transition` case or its string value (e.g. `'slide_from_bottom'`).
 - `assertNoNavigation()` — the interaction stayed on this screen.
 
 ```php

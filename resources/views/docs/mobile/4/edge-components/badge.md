@@ -8,7 +8,8 @@ order: 110
 A small count or text marker, typically used as an overlay on nav items, list rows, or buttons. Renders as a capsule
 pill.
 
-Per Model 3, colors come from the theme via the semantic `variant` prop — there are no per-instance overrides.
+Colors come from the theme via the semantic `variant` prop — `destructive` (the default), `primary`, or `accent`.
+Prefer `variant` for badge colors: it keeps the label legible on both platforms and in both light and dark themes.
 
 @verbatim
 ```blade
@@ -25,6 +26,7 @@ Per Model 3, colors come from the theme via the semantic `variant` prop — ther
     - `primary` — `theme.primary` / `theme.onPrimary`
     - `accent` — `theme.accent` / `theme.onAccent`
 - `a11y-label` - Accessibility label (optional)
+- `a11y-hint` - Accessibility hint (optional)
 
 <aside>
 
@@ -39,7 +41,7 @@ icon, see the `badge` and `news` props on [`<native:bottom-nav-item>`](bottom-na
 
 @verbatim
 ```blade
-<native:row :gap="8" :align-items="1">
+<native:row class="gap-2 items-center">
     <native:icon name="notifications" :size="24" />
     <native:badge :count="$unreadCount" />
 </native:row>
@@ -56,18 +58,39 @@ icon, see the `badge` and `news` props on [`<native:bottom-nav-item>`](bottom-na
 
 ### Anchored to an icon
 
-Use a [`<native:stack>`](stack) to layer the badge over its target:
+Use a [`<native:stack>`](stack) to layer the badge over its target. Size the stack a little larger than the
+icon so the badge has a corner to sit in, and position it with positive `top-*` / `right-*` insets — the
+renderer anchors an absolute child to whichever edges you set (negative insets are not supported):
 
 @verbatim
 ```blade
 <native:stack :width="40" :height="40">
     <native:icon name="cart" :size="32" />
-    <native:column class="absolute" :top="-2" :right="-2">
+    <native:column class="absolute top-px right-px">
         <native:badge :count="$cartItems" />
     </native:column>
 </native:stack>
 ```
 @endverbatim
+
+### Custom background (iOS only)
+
+On iOS you can override the capsule fill with a `bg-*` class and the radius with a `rounded-*` class:
+
+@verbatim
+```blade static
+<native:badge label="Beta" class="bg-amber-600 rounded-md" />
+```
+@endverbatim
+
+<aside>
+
+Per-instance overrides are currently iOS-only: Android ignores `bg-*` and `rounded-*` on badges and always paints
+the variant's colors. The label also keeps the variant's on-color (white for the default `destructive`) even over a
+custom background, so pick a dark fill like `bg-amber-600` to keep the text legible. Prefer `variant` when you need
+colors that work on both platforms.
+
+</aside>
 
 ## Element
 
@@ -88,3 +111,4 @@ Badge::make()
 - `label(string $text)` - Short text label (wins over `count`)
 - `variant(string $variant)` - `destructive | primary | accent`
 - `a11yLabel(string $value)` - Accessibility label
+- `a11yHint(string $value)` - Accessibility hint

@@ -50,10 +50,11 @@ it('increments the count', function () {
 });
 ```
 
-`assertSee()` looks for text anywhere in the rendered tree. `tap()` presses the nearest pressable element whose
-subtree shows the given text (or one carrying a matching `ref` — more on that in [Interactions](interactions)).
-`assertSet()` reads a public or `#[Computed]` property and compares it. Every interaction re-renders the component, so
-the assertions that follow see the fresh frame.
+`assertSee()` looks for text anywhere in the rendered tree, and `assertDontSee()` asserts a string is absent from it.
+`tap()` presses the nearest pressable element whose subtree shows the given text (or one carrying a matching `ref` —
+more on that in [Interactions](interactions)). `assertSet()` reads a public or `#[Computed]` property and compares it,
+while `assertNotSet()` asserts a property holds anything but a given value. Every interaction re-renders the component,
+so the assertions that follow see the fresh frame.
 
 ## Passing params and data
 

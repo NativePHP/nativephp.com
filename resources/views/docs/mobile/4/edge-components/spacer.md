@@ -9,7 +9,7 @@ A flexible space element that expands to fill remaining space within a column or
 push elements apart without calculating explicit sizes.
 
 @verbatim
-```blade
+```blade static
 <native:spacer />
 ```
 @endverbatim
@@ -48,8 +48,8 @@ See the full shared list at [Layout & Styling](layout#supported-tailwind-classes
 
 @verbatim
 ```blade
-<native:column class="w-full h-full p-4">
-    <native:text class="text-2xl font-bold">Welcome</native:text>
+<native:column class="w-full h-[220] p-4 bg-theme-surface-variant rounded-xl">
+    <native:text class="text-2xl font-bold text-theme-primary">Welcome</native:text>
     <native:text class="text-base text-theme-on-surface-variant">Get started with your app.</native:text>
     <native:spacer />
     <native:button label="Continue" @press="next" />
@@ -57,14 +57,18 @@ See the full shared list at [Layout & Styling](layout#supported-tailwind-classes
 ```
 @endverbatim
 
+In a real app this column is usually the page root with `h-full`, so the spacer pushes the button to the bottom of the
+screen. The fixed `h-[220]` here just gives the preview a bounded height — a spacer can only grow when its parent's
+main axis is constrained.
+
 ### Toolbar with right-aligned trailing icon
 
 @verbatim
 ```blade
 <native:row class="w-full px-4 items-center">
-    <native:text class="text-xl font-bold">Title</native:text>
+    <native:text class="text-xl font-bold text-theme-on-surface-variant">Title</native:text>
     <native:spacer />
-    <native:icon name="settings" :size="24" />
+    <native:icon name="settings" class="text-theme-on-surface-variant" :size="24" />
 </native:row>
 ```
 @endverbatim
@@ -74,17 +78,18 @@ See the full shared list at [Layout & Styling](layout#supported-tailwind-classes
 @verbatim
 ```blade
 <native:column class="w-full">
-    <native:text>Section One</native:text>
-    <native:spacer class="h-8" />
-    <native:text>Section Two</native:text>
+    <native:text class="text-theme-on-surface-variant">Section One</native:text>
+    <native:spacer class="h-8 flex-grow-0" />
+    <native:text class="text-theme-on-surface-variant">Section Two</native:text>
 </native:column>
 ```
 @endverbatim
 
 <aside>
 
-Fixed-size spacers are useful, but a margin on the next element (`<native:text class="mt-8">…</native:text>`) is
-often more readable.
+A fixed-size spacer needs `flex-grow-0` alongside its height (or width, in a row) — without it, the default
+`flex-grow: 1` takes precedence over the explicit size. Fixed-size spacers are useful, but a margin on the next
+element (`<native:text class="mt-8">…</native:text>`) is often more readable.
 
 </aside>
 
@@ -93,6 +98,6 @@ often more readable.
 ```php
 use Native\Mobile\Edge\Elements\Spacer;
 
-Spacer::make();              // flex-grow: 1
-Spacer::make()->height(8);   // fixed 8dp vertical
+Spacer::make();                            // flex-grow: 1
+Spacer::make()->height(8)->flexGrow(0);    // fixed 8dp vertical
 ```

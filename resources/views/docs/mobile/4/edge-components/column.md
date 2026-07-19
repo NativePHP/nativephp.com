@@ -11,10 +11,10 @@ and serves as the foundation for most screen layouts — think of it as the mobi
 @verbatim
 ```blade
 <native:column class="p-4 gap-3 w-full h-full">
-    <native:text>First item</native:text>
-    <native:text>Second item</native:text>
-    <native:text>Third item</native:text>
-</native:column>
+    <native:text class="text-theme-on-surface-variant">First item</native:text>
+    <native:text class="text-theme-on-surface-variant">Second item</native:text>
+    <native:text class="text-theme-on-surface-variant">Third item</native:text>
+</native:column> 
 ```
 @endverbatim
 
@@ -42,8 +42,23 @@ Everything else from the shared list applies the same as on any element (`w-*`, 
 
 ### Full-screen layout with safe area
 
+A column at the page root typically fills the screen and pushes actions to the bottom with a spacer:
+
 @verbatim
 ```blade
+<native:column class="w-full h-[220] p-4 bg-theme-background rounded-xl border border-theme-outline">
+    <native:text class="text-2xl font-bold text-theme-on-surface-variant">My App</native:text>
+    <native:spacer />
+    <native:button label="Get Started" @press="start" />
+</native:column>
+```
+@endverbatim
+
+The full-screen version below adds `safe-area` at the page root so content clears the notch and home
+indicator — run it in your app to see it edge-to-edge:
+
+@verbatim
+```blade static
 <native:column class="w-full h-full safe-area bg-theme-background">
     <native:text class="text-2xl font-bold">My App</native:text>
     <native:spacer />
@@ -58,7 +73,7 @@ Everything else from the shared list applies the same as on any element (`w-*`, 
 ```blade
 <native:column class="w-full h-full items-center justify-center gap-2">
     <native:activity-indicator />
-    <native:text>Loading...</native:text>
+    <native:text class="text-theme-on-surface-variant">Loading...</native:text>
 </native:column>
 ```
 @endverbatim
@@ -70,7 +85,7 @@ Everything else from the shared list applies the same as on any element (`w-*`, 
 <native:column class="w-full p-4 gap-3 bg-theme-surface rounded-2xl border border-theme-outline">
     <native:text class="text-lg font-bold text-theme-on-surface">Section Title</native:text>
     <native:text class="text-base text-theme-on-surface-variant">Surface description goes here.</native:text>
-    <native:row class="gap-2 justify-end">
+    <native:row class="gap-2 justify-end items-center">
         <native:button label="Cancel" @press="cancel" variant="ghost" />
         <native:button label="Confirm" @press="confirm" />
     </native:row>
@@ -80,15 +95,20 @@ Everything else from the shared list applies the same as on any element (`w-*`, 
 
 ### Space-between distribution
 
+`justify-between` spreads children across the column's height, placing the leftover space between them:
+
 @verbatim
 ```blade
-<native:column class="w-full h-full p-4 justify-between">
-    <native:text>Top</native:text>
-    <native:text>Middle</native:text>
-    <native:text>Bottom</native:text>
+<native:column class="w-full h-[220] p-4 justify-between bg-theme-surface-variant rounded-xl">
+    <native:text class="text-theme-on-surface">Top</native:text>
+    <native:text class="text-theme-on-surface">Middle</native:text>
+    <native:text class="text-theme-on-surface">Bottom</native:text>
 </native:column>
 ```
 @endverbatim
+
+Distribution needs a bounded height to work with — on a real screen you would typically use `h-full` at the
+page root; the fixed `h-[220]` here just gives the preview a bounded height to distribute.
 
 ## Element
 

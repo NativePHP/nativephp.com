@@ -24,8 +24,9 @@ scrolls, and the next render emits the new slice.
 ## Props
 
 - `count` - Total number of items in the full collection (required, int). Used for sizing and scroll extent.
-- `from` - Absolute index of the first row to emit (int).
-- `to` - Absolute index of the last row to emit, inclusive (int).
+- `from` - Absolute index of the first row to emit (optional, int, default: `0`).
+- `to` - Absolute index of the last row to emit, inclusive (optional, int, default: `from + 29`). With both `from`
+  and `to` omitted, the list emits rows 0–29 on first paint.
 - `item` - Name of a Blade view rendered once per index in the window. It receives `['index' => $i]` (required,
   string).
 - `on-window-change` - Component method called as the visible range moves, with `(int $from, int $to)`.
@@ -60,7 +61,7 @@ class ContactsScreen extends NativeComponent
 The row view renders one item by absolute index:
 
 @verbatim
-```blade
+```blade static
 {{-- resources/views/native/rows/contact.blade.php --}}
 @php $contact = \App\Models\Contact::skip($index)->first(); @endphp
 

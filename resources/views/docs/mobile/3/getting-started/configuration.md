@@ -230,7 +230,7 @@ Fine-tune your Android build process with these options under the `android.build
 
 - `minify_enabled` — Enable R8/ProGuard code shrinking. (default: `false`)
 - `shrink_resources` — Remove unused resources from the APK. (default: `false`)
-- `obfuscate` — Obfuscate class and method names. (default: `false`)
+- `obfuscate` — Obfuscate Kotlin/Java class and method names. (default: `false`)
 - `debug_symbols` — Include debug symbols. Set to `FULL` for symbolicated crash reports. (default: `FULL`)
 - `parallel_builds` / `incremental_builds` — Gradle build performance options. (default: `true`)
 
@@ -240,6 +240,11 @@ For production builds uploaded to the Play Store, consider enabling `minify_enab
 reduce your APK size. Test thoroughly after enabling these options.
 
 </aside>
+
+The `minify_enabled`, `shrink_resources` and `obfuscate` options apply R8/ProGuard to the app's Kotlin/Java code.
+Your PHP application is bundled as an asset and ships as written — see
+[Security](../concepts/security#your-code-ships-with-your-app) for how to handle the code and secrets that
+ship with your app.
 
 ## Android Status Bar Style
 

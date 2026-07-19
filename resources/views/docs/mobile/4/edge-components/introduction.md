@@ -8,79 +8,16 @@ order: 1
 EDGE (Element Definition and Generation Engine) is NativePHP for Mobile's component system that transforms Blade
 template syntax into platform-native UI elements that look beautiful whichever device your users are using.
 
-![](/img/docs/edge.png)
-
 Instead of rendering in the web view, EDGE components are compiled into truly native elements and live apart from the
 web view's lifecycle. This means they are persistent and offer truly native performance.
 
 There's no custom rendering engine and complex ahead-of-time compilation process, just a lightweight transformation
 step that happens at runtime. You end up with pure, fast and flexible native components — all configured by PHP!
 
-## Available Components
-
-EDGE provides a full suite of native UI components for building your app, from layout containers and typography to
-interactive forms and navigation chrome.
-
-### Layout
-
-- **[Layout & Styling](layout)** - Shared sizing, spacing, flex, style, and event attributes available on all elements
-- **[Column](column)** - Vertical flex container
-- **[Row](row)** - Horizontal flex container
-- **[Scroll View](scroll-view)** - Scrollable container with virtualization
-- **[Stack](stack)** - Overlay container (ZStack) for layering elements
-- **[Spacer](spacer)** - Flexible space element
-- **[Pressable](pressable)** - Touch-sensitive container wrapper
-- **[Web View](web-view)** - Embed web content as a native element and surround it with native UI
-
-### Content
-
-- **[Text](text)** - Text display with font sizing, weight, color, and alignment
-- **[Image](image)** - Image display with fit modes and tinting
-- **[Icon](icon)** - Platform-native icons (SF Symbols on iOS, Material Icons on Android)
-- **[Divider](divider)** - Horizontal line separator
-- **[Activity Indicator](activity-indicator)** - Loading spinner
-- **[Progress Bar](progress-bar)** - Linear progress indicator
-- **[Badge](badge)** - Count or label pill marker
-
-### Forms
-
-- **[Button](button)** - Tappable button with variants, sizes, and disabled / loading state
-- **[Button Group](button-group)** - Segmented single-choice selector
-- **[Text Input](text-input)** - Outlined and filled text input variants
-- **[Toggle](toggle)** - On/off switch control
-- **[Checkbox](checkbox)** - Tick/untick control with optional inline label
-- **[Radio Group](radio-group)** - Single-choice radio selector
-- **[Select](select)** - Dropdown picker
-- **[Slider](slider)** - Continuous (or stepped) value selector
-- **[Chip](chip)** - Compact selectable tag
-
-### Navigation
-
-- **[Bottom Navigation](bottom-nav)** - The always-accessible bottom navigation bar
-- **[Top Bar](top-bar)** - A title bar with action buttons
-- **[Side Navigation](side-nav)** - A slide-out navigation drawer
-- **[Tab Row](tab-row)** - Horizontal tab strip for in-screen sectioning
-
-### Lists & data
-
-- **[List](list)** - Virtualized list with pull-to-refresh, end-reached, and swipe actions
-- **[List Item](list)** - Material3 row with leading + trailing slot system
-- **[Carousel](carousel)** - Horizontal paging carousel
-
-### Overlays
-
-- **[Bottom Sheet](bottom-sheet)** - Modal bottom sheet for contextual actions and forms
-- **[Modal](modal)** - Full-screen modal overlay
-
-### Drawing
-
-- **[Canvas](canvas)** - Drawing surface for shape primitives
-- **[Shapes](shapes)** - Rect, circle, and line elements
-
 ## How It Works
 
 @verbatim
-```blade
+```blade static
 <native:bottom-nav>
     <native:bottom-nav-item id="home" icon="home" label="Home" url="/home" />
 </native:bottom-nav>
@@ -147,19 +84,3 @@ The error message will list all missing required props and show you exactly whic
 validation happens at render time, making it easy to catch configuration issues during development.
 
 Each component's documentation page indicates which props are required vs optional.
-
-## Using Inertia?
-
-Each link in an EDGE component will do a full post back to PHP, which may not be what you want if you are using Inertia. To transform these requests into Inertia `<Link>`, add `router` to your `window` object:
-
-```typescript
-import { router } from '@inertiajs/vue3';
-
-declare global {
-    interface Window {
-        router: typeof router;
-    }
-}
-
-window.router = router;
-```

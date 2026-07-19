@@ -64,6 +64,104 @@ Add `$this->info()` or `Log::debug()` in your native code to trace execution. Ch
 
 </aside>
 
+## Shipping Test Vocabulary
+
+App developers test your plugin's screens with the [component testing suite](../testing/introduction). You can ship a
+vocabulary of first-class assertions so their tests read in your plugin's domain terms — `assertCopied()` rather than a
+raw `Clipboard.WriteText` string.
+
+The suite's `FakeBridge` is macroable, and the test harness forwards unknown methods to it. Register your macros where
+they'll be loaded before tests run — your service provider's `boot()` method, or a helper file your `composer.json`
+autoloads:
+
+```php
+use Native\Mobile\Testing\FakeBridge;
+
+public function boot(): void
+{
+    FakeBridge::macro('assertCopied', function (?string $text = null) {
+        return $this->assertCalled('Clipboard.WriteText',
+            fn (array $p) => $text === null || $p['text'] === $text);
+    });
+}
+```
+
+The macro binds to the `FakeBridge` instance, so `$this` inside it is the bridge — every built-in helper
+(`assertCalled`, `respondTo`, `callsTo`, and the rest) is available. App tests then call your macro straight off the
+harness:
+
+```php
+Native::test(ShareSheet::class)
+    ->tap('copy')
+    ->assertCopied('https://nativephp.com');
+```
+
+### Assertion macros vs scripting macros
+
+Two kinds of macro cover most plugins.
+
+**Assertion macros** wrap `assertCalled()` and its siblings to confirm the component reached the bridge as expected:
+
+```php
+FakeBridge::macro('assertShared', function (string $url) {
+    return $this->assertCalled('Share.Url', fn (array $p) => $p['url'] === $url);
+});
+```
+
+**Scripting macros** wrap `respondTo()` to stage a device response in domain terms, so a test can set the scene before
+the screen mounts:
+
+```php
+FakeBridge::macro('withLocation', function (float $lat, float $lng) {
+    return $this->respondTo('Geolocation.GetCurrentPosition', [
+        'latitude' => $lat,
+        'longitude' => $lng,
+    ]);
+});
+```
+
+```php
+Native::fakeBridge()->withLocation(48.85, 2.35);
+
+Native::test(GeolocationDemo::class)
+    ->call('locate')
+    ->assertSet('latitude', 48.85);
+```
+
+### Returning `$this` for fluent chains
+
+`assertCalled()`, `respondTo()`, and the other built-in helpers all return the bridge, so returning their result keeps
+your macro fluent. When a macro returns the bridge, the harness hands back itself instead — the chain stays on the
+component, and the next `->tap()` or `->assertSet()` follows naturally:
+
+```php
+Native::test(ShareSheet::class)
+    ->assertCopied('https://nativephp.com')  // returns the harness
+    ->assertSee('Copied!');
+```
+
+If your macro computes a value to return instead — say a helper that reads back recorded calls — the harness passes
+that value straight through, exactly as calling it on the bridge would.
+
+### How failures surface
+
+A macro that delegates to `assertCalled()` fails with that helper's underlying PHPUnit message, naming the bridge
+method and listing the calls that were actually made:
+
+```
+Expected native bridge call [Clipboard.WriteText] was not made. Calls made: (none)
+```
+
+Because the assertion carries the real method name, the app developer sees exactly which bridge call was missing —
+your domain wrapper reads cleanly without hiding the underlying cause.
+
+<aside>
+
+Calling a name that was never registered raises a clear `BadMethodCallException` naming both the harness and the
+missing macro, so a typo fails loudly rather than silently passing.
+
+</aside>
+
 ## Debugging Tips
 
 **Plugin not discovered?**
