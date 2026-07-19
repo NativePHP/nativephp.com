@@ -17,10 +17,10 @@ If you've used Reanimated in React Native, this is the same idea.
 Create one in PHP with `SharedValue::make($initial)`, bind it to a gesture, and read it from any animatable prop:
 
 @verbatim
-```blade
+```blade static
 @php $drag = \Native\Mobile\Edge\SharedValue::make(); @endphp
 
-<native:gesture-area :pan-y="$drag" @drag-end="onRelease">
+<native:gesture-area :pan-y="$drag">
     <native:column
         :translate-y="$drag"
         :opacity="$drag->interpolate([0, 200], [1, 0])"
@@ -49,26 +49,17 @@ derived value, so one gesture can drive many props differently:
 $drag->interpolate([0, 200], [1, 0]);  // 0→1, 200→0, fully faded past 200
 ```
 
-Animatable props that accept a shared value: `translate-x`, `translate-y`, `scale`, `rotate`, and `opacity`.
-
-## Reacting when the gesture ends
-
-Per-frame values stay on the native side, but you often need PHP to make a decision when the user lets go — commit
-or snap back. The [`<native:gesture-area>`](../edge-components/gesture-area) fires `@drag-end` with the final
-value:
+Formulas are chainable — each call returns a new derived value, so you can stack them:
 
 ```php
-public function onRelease(float $value): void
-{
-    if ($value > 150) {
-        $this->dismiss();      // dragged far enough — commit
-    }
-    // otherwise the view springs back to its resting position
-}
+$drag->clamp(0, 200)->multiply(0.5)->add(20);
 ```
 
-Call `->value()` on a shared value inside such a handler to read its PHP-side snapshot (with any formula applied)
-if you need the derived number rather than the raw translation.
+Animatable props that accept a shared value: `translate-x`, `translate-y`, `scale`, `rotate`, and `opacity`.
+
+Everything above runs natively on the UI thread — as the finger moves, the bound props update at the display's
+refresh rate with no PHP involved. If you need the PHP-side number (for example, the current snapshot with its
+formula applied), call `->value()` on the shared value.
 
 ## Property animations
 
@@ -77,7 +68,7 @@ change in `animate-duration` (milliseconds) and the element eases from its old v
 render. The animatable props are `translate-x`, `translate-y`, `scale`, `rotate`, and `opacity`:
 
 @verbatim
-```blade
+```blade static
 {{-- A panel slides up from below when $shown flips to true --}}
 <native:column
     :translate-y="$shown ? 0 : 120"
@@ -104,7 +95,7 @@ Combine transforms freely under one duration — a card can slide, fade, and sca
 Set `animate-loop` to repeat an animation continuously — a pulsing dot, a breathing highlight:
 
 @verbatim
-```blade
+```blade static
 <native:column :scale="$pulsing ? 1.15 : 1.0" :animate-duration="600" :animate-loop="true">
     <native:icon name="heart.fill" />
 </native:column>
@@ -122,7 +113,7 @@ back on release:
 - `press-translate-y` — nudge down while pressed (e.g. `3`)
 
 @verbatim
-```blade
+```blade static
 <native:pressable :press-scale="0.92" :press-opacity="0.85" :press-translate-y="3" @press="open">
     <native:text>Press me</native:text>
 </native:pressable>

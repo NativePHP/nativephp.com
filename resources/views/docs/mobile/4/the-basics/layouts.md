@@ -47,6 +47,16 @@ includes two reference layouts you can copy as a starting point:
 - `App\NativeComponents\Layouts\StackLayout` - Back chevron + screen title. No bottom tabs.
 - `App\NativeComponents\Layouts\TabsLayout` - Title bar plus a 3-tab bottom nav.
 
+@verbatim
+If you use the `nativephp/native-ui` plugin, its `native-ui-layouts` publish tag scaffolds a starter `<x-layouts.app>`
+Blade component that wraps a screen's content with safe-area handling and optional scrolling — copy it to
+`feed.blade.php`, `detail.blade.php`, and so on for multiple page archetypes.
+@endverbatim
+
+```bash
+php artisan vendor:publish --tag=native-ui-layouts
+```
+
 ## Writing a custom layout
 
 Extend `Native\Mobile\Edge\Layouts\NativeLayout` and override `navBar()` and/or `tabBar()`. Returning `null` from a
@@ -105,6 +115,7 @@ in a screen's Blade.
 - `logo(string $src, float $height = 28)` — convenience over `titleView()` for a bundled logo image
 - `back(bool $show = true)` — show the back chevron
 - `backgroundColor(string)` / `textColor(string)` — bar background and title/icon tint
+- `font(string)` — custom font for the title/subtitle: a `resources/fonts/` token or config alias (see [Chrome fonts](#chrome-fonts))
 - `elevation(int $px)` — hairline thickness at the bottom of the bar
 - `displayMode(string)` — `large`, `inline`, or `automatic`
 - `scrollBehavior(string)` — `collapse`, `pinned`, or `enterAlways`
@@ -148,6 +159,7 @@ On iOS it renders as a `.principal` toolbar item; on Android it fills the `TopAp
 
 - `make()` — create a builder; `add(Tab $tab)` — append a tab (up to 5)
 - `activeColor(string)` / `backgroundColor(string)` / `textColor(string)` — tab colors
+- `font(string)` — custom font for tab labels: a `resources/fonts/` token or config alias (see [Chrome fonts](#chrome-fonts))
 - `labelVisibility(string)` — `labeled`, `selected`, or `unlabeled`
 - `dark(bool = true)` — force dark styling
 - `minimizeOnScroll(bool = true)` — shrink the bar as content scrolls (iOS 26)
@@ -159,6 +171,46 @@ On iOS it renders as a `.principal` toolbar item; on Android it fills the `TopAp
 - `Tab::action(string $label, icon:)` — a tab that calls a method instead of navigating
 - `Tab::search(string $label, icon:, placeholder:)` — a tab that presents a search bar
 - `id(string)`, `press(string $method)`, `badge(string $text, ?string $color = null)`, `news(bool = true)` (red dot), `active(bool = true)`
+
+## Chrome fonts
+
+Render the chrome in a custom font — a `resources/fonts/` file token or a
+[config alias](../edge-components/text#font-aliases--the-app-wide-default)
+like `accent` (see [Text › Custom fonts](../edge-components/text#custom-fonts);
+download with `php artisan native:font`). Three tiers, most specific wins:
+
+```php
+class AppLayout extends NativeTabsLayout
+{
+    // 1. Layout-wide: nav bar + tab bar of every screen under this layout.
+    protected ?string $font = 'accent';
+
+    public function navBar(NativeComponent $screen): ?NavBar
+    {
+        // 2. Per-bar override.
+        return NavBar::make()->title($screen->navTitle())->font('Inter-Bold');
+    }
+}
+
+// 3. Per-screen override, from the screen itself:
+public function navigationOptions(): ?NavBarOptions
+{
+    return NavBarOptions::make()->font('RockSalt-Regular');
+}
+```
+
+Unset tiers fall through to the app-wide default font (the `fonts.default`
+alias, or the older `font-family` theme token), then the system font.
+
+<aside>
+
+**iOS limits** (UIKit, not configurable): system-drawn **large** titles keep
+the app-default font — per-layout fonts apply to inline titles and subtitles.
+Tab-bar label fonts apply on iOS 25 and earlier; iOS 26 Liquid Glass bars
+reject appearance overrides, so labels keep the system font there. Android
+honors every tier everywhere.
+
+</aside>
 
 ## Drawer navigation
 
@@ -181,6 +233,46 @@ class AppLayout extends NativeLayout
     }
 }
 ```
+
+### `Drawer` builder
+
+- `make(View|Element $content)` — the drawer's content: a Blade view, or a pre-built element tree
+- `width(int $points)` — drawer width in points/dp. Omit it for the platform default: ≈85% of the screen width in portrait, 40% in landscape
+- `modal()` — slide the drawer over the content with a dim scrim (default)
+- `reveal()` — push the main content aside to expose the drawer behind it
+
+### Built-in interaction
+
+The drawer is fully interactive without any wiring on your part:
+
+- A ☰ hamburger affordance is drawn automatically at the top-leading corner while the drawer is closed, regardless of which chrome (nav bar, tab bar, or none) the screen uses.
+- An edge-swipe from the left opens it; a drag back toward the edge or a tap on the scrim closes it.
+- An open drawer closes automatically when you navigate to a screen whose layout has no drawer, so it never lingers over a screen that doesn't expect it.
+
+### Per-screen drawer overrides
+
+A single screen can replace or suppress the layout's drawer with the `InteractsWithDrawer` trait — the same shape as `navigationOptions()` for the nav bar:
+
+```php
+use Nativephp\NativeUi\Builders\Drawer;
+use Nativephp\NativeUi\Concerns\InteractsWithDrawer;
+
+class AdminScreen extends NativeComponent
+{
+    use InteractsWithDrawer;
+
+    // Suppress the layout's drawer entirely on this screen…
+    protected bool $hidesDrawer = true;
+
+    // …or replace it just for this screen instead:
+    public function drawerOverride(): ?Drawer
+    {
+        return Drawer::make(view('native.admin-sidebar'))->reveal();
+    }
+}
+```
+
+`hidesDrawer` wins outright; otherwise a non-null `drawerOverride()` beats the layout's `drawer()`, and returning `null` falls back to the layout.
 
 ## Keyboard-aware bottom content
 
@@ -233,6 +325,76 @@ lifts the bar (and the content above it) when the keyboard appears; doubling tha
 the content too far.
 
 </aside>
+
+## Floating overlay
+
+For a pill or banner that **floats over** every screen — a "servers nearby" chip, a now-playing capsule, a
+sync-status badge — mix the native-ui `HasFloatingOverlay` trait into your layout and return a `FloatingOverlay`
+from `floatingOverlay()`. Unlike `bottomBar()`, it does **not** inset the content: it hovers on a top layer above
+the content and the tab bar, so nothing is pushed up. Return `null` and nothing floats.
+
+The content is any element tree or Blade view, so you build the overlay's UI with normal EDGE components:
+
+```php
+use Nativephp\NativeUi\Builders\FloatingOverlay;
+use Nativephp\NativeUi\Concerns\HasFloatingOverlay;
+
+class AppLayout extends NativeLayout
+{
+    use HasFloatingOverlay;
+
+    public function floatingOverlay(NativeComponent $screen): ?FloatingOverlay
+    {
+        if (NearbyServers::none()) {
+            return null;                                  // nothing floats
+        }
+
+        return FloatingOverlay::make(view('native.servers-pill'))
+            ->offset(88);          // clearance above the tab bar; ->top() pins below the nav bar instead
+    }
+}
+```
+
+<aside>
+
+Because it floats over **every** screen under the layout, the overlay's content should read from app-wide state (a
+store / singleton), not the active screen's own properties — `floatingOverlay()` is re-evaluated on each publish
+from the current `$screen`. A single screen can replace or suppress it with the `InteractsWithFloatingOverlay`
+trait. Only rendered by layouts using native chrome (`usesNativeChrome()` is `true`).
+
+</aside>
+
+### `FloatingOverlay` builder
+
+- `make(View|Element $content)` — the floating content: a Blade view, or a pre-built element tree
+- `bottom()` — float against the bottom edge, above the tab bar (default)
+- `top()` — float against the top edge, below the nav bar
+- `offset(int $points)` — extra distance between the overlay and its aligned edge, added on top of the safe-area inset. Omit it for the platform default that clears a standard bottom tab bar; a tab-less stack layout has no tab bar to clear, so pass a small value there instead
+
+### Per-screen overlay overrides
+
+A single screen replaces or suppresses the layout's overlay with the `InteractsWithFloatingOverlay` trait:
+
+```php
+use Nativephp\NativeUi\Builders\FloatingOverlay;
+use Nativephp\NativeUi\Concerns\InteractsWithFloatingOverlay;
+
+class CheckoutScreen extends NativeComponent
+{
+    use InteractsWithFloatingOverlay;
+
+    // Hide the app-wide pill on this screen…
+    protected bool $hidesFloatingOverlay = true;
+
+    // …or replace it just for this one instead:
+    public function floatingOverlayOverride(): ?FloatingOverlay
+    {
+        return FloatingOverlay::make(view('native.checkout-hint'));
+    }
+}
+```
+
+`hidesFloatingOverlay` wins outright; otherwise a non-null `floatingOverlayOverride()` beats the layout's `floatingOverlay()`, and returning `null` falls back to the layout.
 
 ## How chrome wraps the screen
 
@@ -287,6 +449,20 @@ class ItemDetail extends NativeComponent
 
 Non-null fields on the returned `NavBarOptions` override the layout's defaults; null fields fall through. Actions
 are appended to whatever the layout already declared.
+
+A screen can also opt out of the layout's nav bar entirely — the full-bleed pattern for photo viewers, onboarding
+flows, and video screens:
+
+```php
+class PhotoViewer extends NativeComponent
+{
+    protected bool $hidesNavBar = true;
+}
+```
+
+This is equivalent to returning `NavBarOptions::make()->hidden()` from `navigationOptions()`; if both are set, the
+explicit builder wins. It mirrors the tab bar's `$hidesTabBar` / `tabBarOptions()->hidden()`. See
+[Hiding the nav bar on a screen](../edge-components/top-bar#hiding-the-nav-bar-on-a-screen) for details.
 
 ## Per-screen titles
 

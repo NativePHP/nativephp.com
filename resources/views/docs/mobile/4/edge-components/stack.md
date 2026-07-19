@@ -12,10 +12,10 @@ Useful for badges, image overlays, floating labels, and layered UI effects.
 
 @verbatim
 ```blade
-<native:stack class="w-[200] h-[200]">
-    <native:image src="https://example.com/photo.jpg" class="w-full h-full" />
+<native:stack class="w-[200] h-[200] rounded-2xl">
+    <native:column class="w-full h-full bg-theme-primary rounded-2xl" />
     <native:column class="w-full h-full items-center justify-center">
-        <native:text class="text-xl font-bold text-white">Overlay Text</native:text>
+        <native:text class="text-xl font-bold text-theme-on-primary">Overlay Text</native:text>
     </native:column>
 </native:stack>
 ```
@@ -51,11 +51,14 @@ Everything else from the shared list applies as on any element (`p-*`, `m-*`, `b
 @verbatim
 ```blade
 <native:stack class="w-[56] h-[56]">
-    <native:image src="https://example.com/avatar.jpg" class="w-[56] h-[56] rounded-full" />
+    <native:column class="w-[56] h-[56] rounded-full bg-theme-surface-variant" />
     <native:column class="w-[20] h-[20] bg-green-500 rounded-full border-2 border-white" />
 </native:stack>
 ```
 @endverbatim
+
+In a real app the base layer would typically be a `<native:image>` avatar (e.g.
+`<native:image src="https://i.pravatar.cc/128?img=12" class="w-[56] h-[56] rounded-full" />`).
 
 ### Badge on an icon
 
@@ -75,8 +78,8 @@ Everything else from the shared list applies as on any element (`p-*`, `m-*`, `b
 @verbatim
 ```blade
 <native:stack class="w-full h-[250] rounded-2xl">
-    <native:image src="https://example.com/banner.jpg" class="w-full h-full" :fit="2" />
-    <native:column class="w-full h-full justify-end p-4">
+    <native:image src="https://picsum.photos/seed/banner/800/500" class="w-full h-full" :fit="2" />
+    <native:column class="w-full h-full justify-end p-4 bg-black/40">
         <native:text class="text-2xl font-bold text-white">Featured Article</native:text>
         <native:text class="text-base text-white">Read more about this topic</native:text>
     </native:column>
@@ -100,7 +103,7 @@ use Native\Mobile\Edge\Elements\Image;
 use Native\Mobile\Edge\Elements\Text;
 
 Stack::make(
-    Image::make('https://example.com/photo.jpg'),
+    Image::make('https://picsum.photos/seed/nativephp/400/300'),
     Text::make('Overlay'),
 )->width(200)->height(200);
 ```

@@ -17,20 +17,32 @@ control drop to a [`<native:pressable>`](pressable) wrapping your own content.
 ```
 @endverbatim
 
+`@press` names a public method on your component — tapping this button calls `handleStart()`.
+
 ## Props
 
 The label can be passed as the `label` attribute or as slot content between the tags. If both are set, `label` wins.
+Slot content is treated as plain text — nested tags are stripped and whitespace is collapsed. Use the `icon` /
+`icon-trailing` props to add icons rather than nesting elements in the slot.
 
 - `label` - Button text (optional if using slot content)
-- `variant` - Semantic style: `primary` (default), `secondary`, `destructive`, `ghost`
+- `variant` - Semantic style: `primary` (default), `secondary`, `destructive`, `ghost`. Each fills its theme
+  token solid; for a softer tonal fill, set opacity on the token itself (e.g. `'secondary' => 'fuchsia-500/70'`
+  in `config/native-ui.php`) — see [Theming](../digging-deeper/theming)
 - `size` - `sm`, `md` (default), `lg`
-- `icon` - A leading [icon](icons) name (optional)
-- `icon-trailing` - A trailing [icon](icons) name (optional)
-- `disabled` - Disable the button (optional, boolean, default: `false`)
-- `loading` - Show a spinner in place of the leading icon and prevent presses (optional, boolean, default: `false`)
+- `icon` - A leading [icon](icon#icon-name-reference) name (optional)
+- `icon-trailing` - A trailing [icon](icon#icon-name-reference) name (optional)
+- `font` - Custom font for the label: a `resources/fonts/` file token or a config alias like `accent` (optional, string) — see [Text › Custom fonts](text#custom-fonts)
+- `line-height` - Label line height as a multiplier of the font size (optional, float)
+- `line-height-px` - Label line height as an absolute value in pixels (optional, float)
+- `disabled` - Disable the button (optional, boolean, default: `false`). Disabled buttons render with the theme's
+  `surface-variant` fill and `on-surface-variant` label on both platforms
+- `loading` - Show a spinner in place of the leading icon and prevent presses (optional, boolean, default: `false`).
+  Styled like `disabled` while the spinner runs
 - `a11y-label` - Accessibility label override (optional)
 - `a11y-hint` - Accessibility hint (optional)
-- `menu` - Attach a tap-to-open dropdown; opening the menu shadows `@press`. See [Menus](menus)
+- `menu` - Attach a tap-to-open dropdown menu — an array of [`NavAction`](menus) items. Tapping opens the menu
+  instead of firing `@press`. See [Menus](menus)
 
 ## Events
 
@@ -63,7 +75,7 @@ attributes are intentionally dropped before reaching the renderer.
 
 @verbatim
 ```blade
-<native:row :gap="8" :align-items="1">
+<native:row class="gap-2 items-center">
     <native:button label="Small"  size="sm" @press="action" />
     <native:button label="Medium" size="md" @press="action" />
     <native:button label="Large"  size="lg" @press="action" />
@@ -120,8 +132,11 @@ Button::make('Save')
 - `make(string $label = '')` - Create a button with an optional label
 - `variant(string $value)` - `primary | secondary | destructive | ghost`
 - `size(string $value)` - `sm | md | lg`
-- `icon(string $name)` - Leading icon
-- `iconTrailing(string $name)` - Trailing icon
+- `font(string $name)` - Custom label font (file token or config alias)
+- `icon(?string $name = null, IosSymbol|string|null $ios = null, AndroidSymbol|string|null $android = null)` -
+  Leading icon; pass `ios:` / `android:` for per-platform symbols
+- `iconTrailing(?string $name = null, IosSymbol|string|null $ios = null, AndroidSymbol|string|null $android = null)` -
+  Trailing icon; pass `ios:` / `android:` for per-platform symbols
 - `disabled(bool $value = true)` - Disable the button
 - `loading(bool $value = true)` - Show a spinner and prevent presses
 - `a11yLabel(string $value)` - Accessibility label override

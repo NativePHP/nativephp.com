@@ -37,8 +37,10 @@ It's not another virtual machine on top of or adjacent to PHP trying to convert 
 equivalents. It's explicitly focused on turning PHP objects that conform to a known interface into a fixed-length
 byte array that can be processed by an explicit native-side interpreter.
 
-It is also not a transpiler or HTML-to-native converter. We've built our own Blade engine that converts Blade components
-into a simplified binary format instead of HTML ([The Renderer](renderer)) and passes the
+Neither is it a transpiler or HTML-to-native converter. We've built our own Blade engine that converts real Blade
+components into a simple binary representation instead of HTML ([The Renderer](renderer)). This gets passed immediately
+to the native shell — no other serialization, no bridge function calls — and Swift and Kotlin can pick it up and parse
+it immediately into a native UI tree.
 
 ## Try it now
 

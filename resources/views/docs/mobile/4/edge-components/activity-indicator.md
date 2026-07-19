@@ -22,6 +22,7 @@ All [shared layout and style attributes](layout) are supported, plus:
 - `size` - `"sm"`, `"md"` (default), or `"lg"` (optional, string). Legacy ints `1`=large, `2`=small are also accepted
 - `color` - Spinner color as hex string (optional). Leave unset to use `theme.primary`
 - `a11y-label` - Accessibility label (optional)
+- `a11y-hint` - Accessibility hint (optional)
 
 <aside>
 
@@ -38,18 +39,21 @@ a non-theme-styled container (e.g. a light spinner over a dark image overlay).
 
 @verbatim
 ```blade
-<native:column fill center>
+<native:column class="w-full h-[200] items-center justify-center">
     <native:activity-indicator size="lg" />
     <native:text class="text-base text-theme-on-surface-variant mt-4">Loading...</native:text>
 </native:column>
 ```
 @endverbatim
 
+On a real loading screen, use `<native:column fill center>` at the page root instead — the fixed `h-[200]` here just
+gives the example a bounded area to center in.
+
 ### Inline loading
 
 @verbatim
 ```blade
-<native:row :gap="8" :align-items="1">
+<native:row class="gap-2 items-center">
     <native:activity-indicator size="sm" />
     <native:text class="text-sm text-theme-on-surface-variant">Refreshing</native:text>
 </native:row>
@@ -79,3 +83,4 @@ ActivityIndicator::make()
 - `size(string|int $size)` - `"sm" | "md" | "lg"`. Legacy: `1`=large, `2`=small
 - `color(string $hex)` - Override the theme tint
 - `a11yLabel(string $value)` - Accessibility label
+- `a11yHint(string $value)` - Accessibility hint

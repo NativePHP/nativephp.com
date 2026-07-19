@@ -110,6 +110,66 @@ it('accumulates continuous scans', function () {
 });
 ```
 
+## Bridge helpers on the harness
+
+The `FakeBridge`'s own helpers are callable straight off the harness — the harness forwards any method it doesn't
+recognise to this test's bridge. For the simple cases that means you skip the `bridge()` hop entirely and assert on
+native traffic right in the chain:
+
+```php
+it('copies the share link', function () {
+    Native::test(ShareSheet::class)
+        ->tap('copy')
+        ->assertCalled('Clipboard.WriteText', fn (array $p) => $p['text'] === 'https://nativephp.com');
+});
+```
+
+`assertCalled`, `assertCalledTimes`, `assertNotCalled`, `assertCallOrder`, and `assertNothingCalled` all read this
+way, as do the scripting and inspection helpers `respondTo`, `callsTo`, and `lastPublish`. When a bridge helper
+answers fluently — returning the bridge — the harness returns itself instead, so the chain stays on the component and
+the next interaction just follows:
+
+```php
+Native::test(ScannerDemo::class)
+    ->call('scanContinuously')
+    ->emitNative(CodeScanned::class, ['data' => 'SKU-1', 'format' => 'ean13'])
+    ->assertCalledTimes('Barcode.Scan', 1)
+    ->assertSee('SKU-1');
+```
+
+The `assertNative*` methods documented in [Native Events & the Bridge](native-events) remain the most explicit way to
+read a test; these forwarded helpers are the shorter path when you're already thinking in bridge-method terms.
+
+## Plugin test vocabulary
+
+Plugins can teach the `FakeBridge` their own assertions, so app tests read in the plugin's domain terms instead of raw
+bridge-method strings. A clipboard plugin might ship `assertCopied()`; once its package is installed, you call it
+straight off the harness like any built-in helper:
+
+```php
+it('copies the link in domain terms', function () {
+    Native::test(ShareSheet::class)
+        ->tap('copy')
+        ->assertCopied('https://nativephp.com');
+});
+```
+
+Scripting vocabulary works the same way. A geolocation plugin might ship a `withLocation()` macro that stages a device
+response, so you set the scene before mounting without naming the underlying bridge method:
+
+```php
+it('reads the scripted location', function () {
+    Native::fakeBridge()->withLocation(48.85, 2.35);
+
+    Native::test(GeolocationDemo::class)
+        ->call('locate')
+        ->assertSet('latitude', 48.85);
+});
+```
+
+These read as first-class harness methods because the same forwarding backs them. If you write plugins yourself, see
+[Validation & Testing](../plugins/validation-testing) for how to register this vocabulary.
+
 ## Pest expectation sugar
 
 If you prefer Pest's `expect()` style end to end, register the expectation extensions once in `tests/Pest.php`:

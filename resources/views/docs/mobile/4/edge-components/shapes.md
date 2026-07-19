@@ -15,21 +15,25 @@ These are typically placed inside a [`<native:canvas>`](canvas) or used standalo
 
 ## Rect
 
-A rectangle filled with `bg`. All [shared layout and style attributes](layout) apply, so border, radius, opacity,
-and elevation behave as on any other element.
+A rectangle filled with `bg`. All [shared layout and style attributes](layout) apply — use Tailwind-style classes
+(`rounded-*`, `border-*`, `opacity-*`, `shadow-*`) for radius, borders, opacity, and elevation, just as on any
+other element.
 
 @verbatim
 ```blade
-<native:rect :width="120" :height="80" bg="#7C3AED" :border-radius="12" />
+<native:rect :width="120" :height="80" bg="#7C3AED" class="rounded-xl" />
 ```
 @endverbatim
 
 ### Props
 
-- `left` - X position offset in dp (optional, float). Used inside an absolutely-positioned parent
-- `top` - Y position offset in dp (optional, float)
+The `left` / `top` position props are accepted by the PHP element but are not currently read by the iOS or Android
+renderers. To offset a rect inside a parent, use absolute-positioning classes instead — e.g.
+`class="absolute top-[8] left-[8]"`.
 
-`<native:rect>` may optionally wrap children if you need to layer content on top of the fill.
+`<native:rect>` is a self-closing element, so it doesn't accept tag children. To layer content on top of the fill,
+overlay the rect and your content inside a [`<native:stack>`](stack). In PHP, the `Rect` element accepts children via
+`addChild()` if you'd rather build the layering fluently.
 
 ## Circle
 
@@ -44,33 +48,35 @@ perfect circle use equal `width` and `height`.
 
 ### Props
 
-- `left` - X position offset in dp (optional, float)
-- `top` - Y position offset in dp (optional, float)
+As with `<native:rect>`, the `left` / `top` position props exist on the PHP element but the renderers don't read
+them — position circles with absolute-positioning classes (`class="absolute top-[8] left-[8]"`) or by centering
+them in a [`<native:stack>`](stack).
 
 `<native:circle>` is a self-closing element. It does not accept children.
 
 ## Line
 
-A 1pt horizontal rule across the available width.
+A horizontal rule. Style it with `border-*` classes:
 
 @verbatim
-```blade
-<native:line :border-width="2" border-color="#94A3B8" />
+```blade static
+<native:line class="border-2 border-theme-outline" />
 ```
 @endverbatim
 
 ### Props
 
-All [shared layout and style attributes](layout) are supported. The most useful:
+All [shared layout and style attributes](layout) are supported. Set the stroke through classes:
 
-- `border-color` - Line color as hex string (optional, default: platform separator color)
-- `border-width` - Stroke thickness in dp (optional, float, default: `1`)
+- `border-theme-outline` / `border-[#94A3B8]` - Line color (default: platform separator color)
+- `border` / `border-2` / `border-4` - Stroke thickness in dp (default: `1`)
 
 <aside>
 
-`<native:line>` always paints a centered horizontal stroke across its frame — `from`/`to` coordinates are accepted
-on the PHP element but the iOS and Android renderers don't read them. To position a line, control the parent
-container's frame or use a styled `<native:divider>`.
+On Android, `<native:line>` paints a centered horizontal stroke across the full width of its frame. On iOS the
+current renderer draws a fixed 100pt stroke pinned to the top of the frame, so it does not reliably span the
+available width — prefer `<native:divider class="border-theme-outline" />` for a full-width rule. `from`/`to`
+coordinates are accepted on the PHP element but neither renderer reads them.
 
 </aside>
 
@@ -86,19 +92,30 @@ container's frame or use a styled `<native:divider>`.
 
 ### Colored badge background
 
+Overlay the label on a filled rect with a `<native:stack>`. Give the rect an explicit frame and center the text on top:
+
 @verbatim
 ```blade
-<native:rect :padding="[4, 12]" bg="#DBEAFE" :border-radius="12">
+<native:stack class="items-center justify-center">
+    <native:rect :width="52" :height="24" bg="#DBEAFE" class="rounded-xl" />
     <native:text :font-size="12" :font-weight="5" color="#2563EB">New</native:text>
-</native:rect>
+</native:stack>
 ```
 @endverbatim
 
 ### Decorative separator
 
 @verbatim
+```blade static
+<native:line class="border border-theme-outline" />
+```
+@endverbatim
+
+For a full-width rule that renders consistently on both platforms today, use a divider instead:
+
+@verbatim
 ```blade
-<native:line :border-width="1" border-color="#E2E8F0" />
+<native:divider class="border-theme-outline" />
 ```
 @endverbatim
 

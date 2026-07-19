@@ -8,18 +8,27 @@ order: 350
 A single-choice dropdown picker over a flat list of strings. On iOS, renders as a SwiftUI `Menu` (popover); on
 Android, as an M3 `ExposedDropdownMenuBox` with an outlined trigger.
 
-Per Model 3, colors and borders come from theme tokens.
+Per Material 3, colors and borders come from theme tokens.
 
 @verbatim
 ```blade
+@php $shippingCountry = null; @endphp
+
 <native:select
     label="Country"
     :options="['United States', 'Canada', 'Mexico']"
     placeholder="Select your country"
-    native:model="country"
+    native:model="shippingCountry"
 />
 ```
 @endverbatim
+
+Here `shippingCountry` is a public string property on your component (the `@php` line stands in for
+`public ?string $shippingCountry = null;`) — while it is `null`, the placeholder shows.
+
+Options are a flat list of display strings — pass the strings you want shown, and the selected string is the
+value bound back to your component. An associative `value => label` array is flattened to its labels, so the
+displayed text is what you get.
 
 ## Props
 
@@ -35,15 +44,34 @@ Per Model 3, colors and borders come from theme tokens.
 
 - `@change` - Component method called when the selection changes. Receives the new option string
 
+<aside>
+
+Margin classes position the picker; its colors and borders come from the theme.
+
+</aside>
+
 ## Two-way Binding
 
 `native:model` binds the selected option to a string property on your component:
 
 @verbatim
 ```blade
-<native:select :options="$countries" native:model="country" />
+@php $country = 'Canada'; @endphp
+
+<native:select
+    label="Country"
+    :options="$countries"
+    native:model="country"
+/>
+
+<native:text class="text-sm text-theme-on-surface-variant">Shipping to: {{ $country }}</native:text>
 ```
 @endverbatim
+
+`country` is a public string property on your component (the `@php` line stands in for
+`public string $country = 'Canada';`), and `$countries` is an array of option strings. Picking an option
+syncs the selected string back automatically — no `@change` handler needed — so the echoed text updates
+with the selection.
 
 ## Examples
 
@@ -51,11 +79,13 @@ Per Model 3, colors and borders come from theme tokens.
 
 @verbatim
 ```blade
+@php $destination = 'Japan'; @endphp
+
 <native:select
     label="Country"
     placeholder="Select country"
     :options="['Australia', 'Brazil', 'Canada', 'Germany', 'Japan', 'United Kingdom', 'United States']"
-    native:model="country"
+    native:model="destination"
 />
 ```
 @endverbatim

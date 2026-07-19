@@ -3,10 +3,6 @@ title: Web View
 order: 460
 ---
 
-> [!IMPORTANT]
-> **Planned — not yet available.** `<native:web-view>` is documented ahead of its release and does not render
-> in the current version. Track the changelog for availability.
-
 With EDGE, native UI is the primary way to build your app — the web view is just one more component you can reach for,
 not the foundation everything sits on. You're free to compose entire screens from native EDGE components and never
 render a web view at all.
@@ -19,6 +15,100 @@ A common pattern is to embed a web view for your content-heavy or existing web U
 around it — a native [Top Bar](top-bar), [Bottom Navigation](bottom-nav) or [Bottom Sheet](bottom-sheet) — to give the
 app a truly native feel where it matters most. If you prefer, you can still let a full-screen web view drive the whole
 app and call native functions and dispatch native UI from within it.
+
+## Embedding a Web View
+
+The `<native:webview>` element embeds a web view inside a native screen, like any other EDGE component. Point it at a
+remote URL:
+
+@verbatim
+```blade
+<native:column class="w-full h-full">
+    <native:webview src="https://example.com" class="flex-1 w-full" />
+</native:column>
+```
+@endverbatim
+
+Or render an inline HTML document by placing markup in the element's slot — it's delivered to the web view verbatim,
+so you can hand it a complete document:
+
+@verbatim
+```blade
+<native:webview class="flex-1 w-full">
+    <!doctype html>
+    <html>
+        <head>
+            <meta name="viewport" content="width=device-width, initial-scale=1">
+        </head>
+        <body>
+            <h1>Hello from HTML</h1>
+        </body>
+    </html>
+</native:webview>
+```
+@endverbatim
+
+A web view doesn't size itself to its content — give it bounded dimensions, either by letting it fill a flex parent
+(`class="flex-1 w-full"`) or with an explicit height.
+
+### Props
+
+All [shared layout and style attributes](layout) are supported, plus:
+
+- `src` - URL to load (string)
+- `html` - Inline HTML document (string). Usually provided via the slot; an explicit `:html` attribute takes
+  precedence over slot content
+- `javascript` (alias `js`) - Enable JavaScript (bool, default: `false`)
+- `dom-storage` (alias `domStorage`) - Enable DOM storage — `localStorage`/`sessionStorage` (bool, default: `false`)
+
+### Events
+
+- `@navigated` - Fires once per committed top-frame navigation, with the resolved URL as the first argument:
+
+@verbatim
+```blade
+<native:webview
+    src="https://example.com"
+    javascript
+    @navigated="urlChanged"
+    class="flex-1 w-full"
+/>
+```
+@endverbatim
+
+```php
+public function urlChanged(string $url): void
+{
+    $this->lastVisited = $url;
+}
+```
+
+<aside>
+
+#### Locked down by default
+
+The embedded web view starts with a hardened posture: JavaScript **off**, DOM storage **off**, no file access, and no
+new windows. Anything richer is opt-in via the props above.
+
+Inline HTML documents load with a `null` base URL, so they run in an **opaque origin** — they cannot reach back into
+your app's local files or its running web server.
+
+</aside>
+
+### Element
+
+```php
+use Native\Mobile\UI\Elements\Webview;
+
+Webview::make('https://example.com')
+    ->onNavigated('urlChanged');
+```
+
+- `make(string $src = '')` - Create a web view pointed at a URL
+- `onNavigated(string $method)` - Component method to call on each committed top-frame navigation
+- `applyAttributes(array $attrs)` - Apply any of the attributes above (e.g. `['html' => $doc, 'javascript' => true]`)
+
+## Full-Screen Web Views
 
 When you do use a full-screen web view, it's rendered to fill the view of your application and remains visible to your
 users until another full-screen action takes place, such as accessing the camera or an in-app browser. The rest of this

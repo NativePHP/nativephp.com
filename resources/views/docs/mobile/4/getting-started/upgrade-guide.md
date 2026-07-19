@@ -15,7 +15,20 @@ now core built-ins.
 registered by core. `nativephp/mobile` v4 declares a Composer **conflict** with the four standalone plugins, so
 `composer update` will refuse to resolve until you **remove them**.
 
-Uninstall each one you have (this also unregisters it from your `NativeServiceProvider`):
+The quickest way is the `--core-v4` flag, which finds whichever of the four you have installed, unregisters
+each from your `NativeServiceProvider`, and removes them all in a single `composer remove`:
+
+```shell
+php artisan native:plugin:uninstall --core-v4
+```
+
+Add `--force` to skip the confirmation prompt — handy when sweeping across several apps:
+
+```shell
+php artisan native:plugin:uninstall --core-v4 --force
+```
+
+Or uninstall them one at a time (this also unregisters each from your `NativeServiceProvider`):
 
 ```shell
 php artisan native:plugin:uninstall nativephp/mobile-device

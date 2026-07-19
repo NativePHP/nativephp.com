@@ -20,7 +20,7 @@ Every element accepts two attributes:
 - `a11y-hint` - Supplementary usage guidance, announced after the label (e.g. "Double-tap to open settings").
 
 @verbatim
-```blade
+```blade static
 <native:button icon="gear" a11y-label="Settings" @press="openSettings" />
 <native:slider :value="$volume" a11y-label="Volume" a11y-hint="Adjusts playback volume" />
 ```
@@ -48,7 +48,7 @@ isn't descriptive enough on its own.
 mystery to screen reader users.
 
 @verbatim
-```blade
+```blade static
 {{-- Bad: VoiceOver has nothing meaningful to announce --}}
 <native:button icon="trash" variant="destructive" @press="deleteItem" />
 
@@ -63,7 +63,7 @@ Standalone `<native:icon />` elements are **decorative by default** — they are
 unless you give them an `a11y-label`. If an icon conveys meaning on its own (or is tappable), label it:
 
 @verbatim
-```blade
+```blade static
 <native:icon name="wifi_off" a11y-label="No internet connection" />
 ```
 @endverbatim
@@ -72,7 +72,7 @@ Images take an `alt` attribute, mirroring the web. With `alt`, the image is anno
 is treated as decorative and skipped:
 
 @verbatim
-```blade
+```blade static
 <native:image src="{{ $product->photo }}" alt="{{ $product->name }}" :height="200" />
 ```
 @endverbatim
@@ -82,7 +82,7 @@ is treated as decorative and skipped:
 The tappable trailing icon button on a [list item](../edge-components/list) takes its own label via `trailing-a11y-label`:
 
 @verbatim
-```blade
+```blade static
 <native:list-item
     headline="Backups"
     trailingIconButton="info"

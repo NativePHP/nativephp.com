@@ -12,7 +12,7 @@ and inline groupings.
 ```blade
 <native:row class="gap-3 items-center">
     <native:icon name="star" color="#FBBF24" />
-    <native:text class="text-lg">4.8 Rating</native:text>
+    <native:text class="text-lg text-theme-on-surface">4.8 Rating</native:text>
 </native:row>
 ```
 @endverbatim
@@ -43,9 +43,9 @@ Everything else from the shared list applies the same as on any element (`w-*`, 
 @verbatim
 ```blade
 <native:row class="w-full px-4 py-2 items-center">
-    <native:text class="text-xl font-bold">Title</native:text>
+    <native:text class="text-xl font-bold text-theme-on-surface">Title</native:text>
     <native:spacer />
-    <native:icon name="search" :size="24" />
+    <native:icon name="search" :size="24" class="text-theme-on-surface" />
 </native:row>
 ```
 @endverbatim
@@ -55,9 +55,9 @@ Everything else from the shared list applies the same as on any element (`w-*`, 
 @verbatim
 ```blade
 <native:row class="w-full justify-evenly">
-    <native:text>One</native:text>
-    <native:text>Two</native:text>
-    <native:text>Three</native:text>
+    <native:text class="text-theme-on-surface">One</native:text>
+    <native:text class="text-theme-on-surface">Two</native:text>
+    <native:text class="text-theme-on-surface">Three</native:text>
 </native:row>
 ```
 @endverbatim
