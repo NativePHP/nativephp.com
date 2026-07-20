@@ -337,6 +337,45 @@ are shown at runtime by app code, so there's no equivalent override.
 
 </aside>
 
+## Localizing iOS Permission Strings
+
+The strings in `permissions` go straight into `Info.plist`, which iOS treats as the **development region**
+fallback. Users running their device in another language see those same strings unless you ship a localized
+override.
+
+Add per-locale strings under `permission_localizations`. Each key is a BCP 47 locale code
+(e.g. `nl`, `fr`, `zh-Hans`, `pt-BR`) and its value mirrors the `permissions` shape:
+
+```php
+'permissions' => [
+    'NSCameraUsageDescription' => 'Used to take a profile photo.',
+],
+
+'permission_localizations' => [
+    'nl' => [
+        'NSCameraUsageDescription' => 'Gebruikt om een profielfoto te maken.',
+    ],
+    'fr' => [
+        'NSCameraUsageDescription' => 'Utilisé pour prendre une photo de profil.',
+    ],
+],
+```
+
+At build time NativePHP writes one `{locale}.lproj/InfoPlist.strings` file per locale inside the iOS bundle
+and registers the locale with the Xcode project so it ships with the app. iOS then picks the right string
+at runtime based on the user's preferred language, falling back to the value in `permissions`.
+
+<aside>
+
+You only need to localize the keys that change between languages. Any `NS*UsageDescription` not listed in
+a locale block automatically falls back to the value from `permissions` (`Info.plist`).
+
+</aside>
+
+Plugins can ship their own per-locale strings — see
+[Permissions & Dependencies](../plugins/permissions-dependencies#localizing-info-plist-strings) — and
+app-level entries always win on key collisions, same as the merge rules for flat `permissions`.
+
 ## App Store Connect
 
 Configure automated iOS uploads with the App Store Connect API:

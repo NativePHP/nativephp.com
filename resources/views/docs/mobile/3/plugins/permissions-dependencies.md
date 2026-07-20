@@ -82,6 +82,39 @@ rejection. Explain *why* you need the permission.
 
 </aside>
 
+### Localizing Info.plist Strings
+
+Values in `ios.info_plist` are written to the bundle's `Info.plist` and shown by iOS in whichever language
+they were authored. To translate them for users on other system languages, add a sibling
+`ios.info_plist_localizations` block. Each key is a BCP 47 locale code (e.g. `nl`, `fr`, `zh-Hans`,
+`pt-BR`) and its value mirrors the `info_plist` shape:
+
+```json
+{
+    "ios": {
+        "info_plist": {
+            "NSCameraUsageDescription": "This app uses the camera for scanning"
+        },
+        "info_plist_localizations": {
+            "nl": {
+                "NSCameraUsageDescription": "Deze app gebruikt de camera om te scannen"
+            },
+            "fr": {
+                "NSCameraUsageDescription": "Cette application utilise la caméra pour le scan"
+            }
+        }
+    }
+}
+```
+
+At build time NativePHP writes one `{locale}.lproj/InfoPlist.strings` file per locale into the host app's
+iOS project, and iOS picks the right string at runtime based on the user's preferred language. Any key not
+present in a locale block falls back to the value from `info_plist`.
+
+App-level overrides set in the host app's `config('nativephp.permission_localizations')` win over the values
+declared here — useful when an app developer needs to resolve collisions between plugins that ship
+localizations for the same key.
+
 ## Dependencies
 
 ### Android Dependencies
