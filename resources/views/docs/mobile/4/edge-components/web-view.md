@@ -60,6 +60,10 @@ All [shared layout and style attributes](layout) are supported, plus:
   precedence over slot content
 - `javascript` (alias `js`) - Enable JavaScript (bool, default: `false`)
 - `dom-storage` (alias `domStorage`) - Enable DOM storage — `localStorage`/`sessionStorage` (bool, default: `false`)
+- `php` - Serve the web view from the app's own embedded Laravel runtime instead of a sandboxed foreign page
+  (bool, default: `false`). See [PHP mode](#php-mode)
+- `fullscreen` - Fill the screen and extend behind the safe areas (bool, default: `false`). See
+  [Fullscreen](#fullscreen)
 
 ### Events
 
@@ -95,6 +99,55 @@ your app's local files or its running web server.
 
 </aside>
 
+### PHP mode
+
+The `php` attribute swaps the sandbox for the app's **own Laravel web view** — pages are served per-request by the
+embedded PHP runtime, with the full `window.Native` bridge, your asset pipeline, and the same session as the rest of
+the app (an embedded page can read and write the session your native screens use).
+
+In this mode `src` is an **app route path** rather than a URL; anything not starting with `/` (including omitting it)
+falls back to the app's configured start URL:
+
+@verbatim
+```blade
+<native:webview php src="/dashboard" class="flex-1 w-full" />
+```
+@endverbatim
+
+The sandbox opt-ins don't apply here — an enriched web view needs JavaScript and DOM storage, so the renderers force
+both on.
+
+Each php-mode web view runs on its **own dedicated PHP context** with its own thread, booted when the web view enters
+the view hierarchy and torn down when it leaves. This keeps the native screen's event loop free to keep serving the
+screen (the two never contend), and reclaims the context's resources the moment the web view unmounts. The first load
+pays the context boot; requests after that are served warm.
+
+<aside>
+
+`window.Native` is injected at document start on iOS but at page finish on Android — if a page checks for the bridge
+in an inline script during parse, poll briefly instead of sampling once.
+
+</aside>
+
+### Fullscreen
+
+The `fullscreen` attribute reproduces the classic v3 default-webview presentation: the element takes all available
+space and the renderers extend it behind the safe areas, edge to edge:
+
+@verbatim
+```blade
+<native:webview
+    src="{{ $url }}"
+    javascript
+    fullscreen
+    @navigated="onUrlChanged"
+/>
+```
+@endverbatim
+
+For a true takeover, render the web view as the screen's **only** content — any native siblings still occupy their
+own space first. Native chrome (a stack layout's top bar) remains above it, giving the user a way back.
+
 ### Element
 
 ```php
@@ -105,6 +158,8 @@ Webview::make('https://example.com')
 ```
 
 - `make(string $src = '')` - Create a web view pointed at a URL
+- `php(bool $value = true)` - Enriched mode — serve from the app's own runtime ([PHP mode](#php-mode))
+- `fullscreen(bool $value = true)` - Fill the screen and extend behind the safe areas ([Fullscreen](#fullscreen))
 - `onNavigated(string $method)` - Component method to call on each committed top-frame navigation
 - `applyAttributes(array $attrs)` - Apply any of the attributes above (e.g. `['html' => $doc, 'javascript' => true]`)
 
