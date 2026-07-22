@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class PluginPayout extends Model
 {
@@ -31,6 +32,14 @@ class PluginPayout extends Model
     public function developerAccount(): BelongsTo
     {
         return $this->belongsTo(DeveloperAccount::class);
+    }
+
+    /**
+     * @return HasMany<PluginPayoutAttempt>
+     */
+    public function attempts(): HasMany
+    {
+        return $this->hasMany(PluginPayoutAttempt::class);
     }
 
     /**
@@ -98,13 +107,15 @@ class PluginPayout extends Model
             'status' => PayoutStatus::Transferred,
             'stripe_transfer_id' => $stripeTransferId,
             'transferred_at' => now(),
+            'failure_reason' => null,
         ]);
     }
 
-    public function markAsFailed(): void
+    public function markAsFailed(?string $reason = null): void
     {
         $this->update([
             'status' => PayoutStatus::Failed,
+            'failure_reason' => $reason,
         ]);
     }
 
@@ -117,6 +128,8 @@ class PluginPayout extends Model
             'status' => PayoutStatus::class,
             'transferred_at' => 'datetime',
             'eligible_for_payout_at' => 'datetime',
+            'last_attempted_at' => 'datetime',
+            'attempt_count' => 'integer',
         ];
     }
 }

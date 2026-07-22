@@ -8,6 +8,7 @@ use App\Models\DeveloperAccount;
 use App\Models\Plugin;
 use App\Models\PluginLicense;
 use App\Models\PluginPayout;
+use App\Models\PluginPayoutAttempt;
 use App\Models\PluginPrice;
 use App\Models\User;
 use Illuminate\Support\Facades\Log;
@@ -110,6 +111,9 @@ class StripeConnectService
         // This ensures the transfer uses funds from this specific charge and waits for them to be available
         $chargeId = $this->getChargeIdFromPayout($payout);
 
+        $payout->increment('attempt_count');
+        $payout->update(['last_attempted_at' => now()]);
+
         try {
             $transferParams = [
                 'amount' => $payout->developer_amount,
@@ -130,6 +134,13 @@ class StripeConnectService
 
             $payout->markAsTransferred($transfer->id);
 
+            PluginPayoutAttempt::create([
+                'plugin_payout_id' => $payout->id,
+                'succeeded' => true,
+                'charge_id' => $chargeId,
+                'stripe_transfer_id' => $transfer->id,
+            ]);
+
             Log::info('Processed transfer for payout', [
                 'payout_id' => $payout->id,
                 'transfer_id' => $transfer->id,
@@ -145,7 +156,14 @@ class StripeConnectService
                 'error' => $e->getMessage(),
             ]);
 
-            $payout->markAsFailed();
+            $payout->markAsFailed($e->getMessage());
+
+            PluginPayoutAttempt::create([
+                'plugin_payout_id' => $payout->id,
+                'succeeded' => false,
+                'charge_id' => $chargeId,
+                'error_message' => $e->getMessage(),
+            ]);
 
             return false;
         }
