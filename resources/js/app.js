@@ -113,10 +113,28 @@ Alpine.data('countdown', (iso) => ({
     }, // tidy up
 }))
 
+// Which platform path the homepage is showing: 'mobile' | 'desktop'.
+// Shared across sections (hero, explainer) and remembered between visits.
+// Registered on alpine:init because $persist only exists once Livewire has
+// registered Alpine's plugins.
+document.addEventListener('alpine:init', () => {
+    Alpine.store('platform', {
+        current: Alpine.$persist('mobile').as('nativephpPlatform'),
+        is(name) {
+            return this.current === name
+        },
+        select(name) {
+            this.current = name
+        },
+    })
+})
+
 Livewire.start()
 
 // Docsearch
-const docsPathMatch = window.location.pathname.match(/^\/docs\/(desktop|mobile)\/(\d+)/)
+const docsPathMatch = window.location.pathname.match(
+    /^\/docs\/(desktop|mobile)\/(\d+)/,
+)
 const docsearchOptions = {
     appId: 'ZNII9QZ8WI',
     apiKey: '9be495a1aaf367b47c873d30a8e7ccf5',
@@ -146,7 +164,9 @@ docsearch({
 // pressing Cmd+K only registers one handler (avoiding duplicate modals).
 const mobileContainer = document.getElementById('docsearch-mobile')
 if (mobileContainer) {
-    const desktopButton = document.querySelector('#docsearch-desktop .DocSearch-Button')
+    const desktopButton = document.querySelector(
+        '#docsearch-desktop .DocSearch-Button',
+    )
     if (desktopButton) {
         const mobileButton = desktopButton.cloneNode(true)
         mobileContainer.appendChild(mobileButton)

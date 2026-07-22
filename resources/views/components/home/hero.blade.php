@@ -6,82 +6,6 @@
     <div
         class="relative z-0 flex flex-col overflow-hidden rounded-2xl bg-gradient-to-t from-[#E0E5EB] to-[#F9F9F9] px-5 pt-8 pb-10 ring-1 ring-zinc-200/50 lg:px-10 lg:pt-10 lg:pb-17 xl:pt-13 2xl:px-15 dark:from-slate-950 dark:to-slate-900 dark:ring-slate-800"
     >
-        {{-- Demo app --}}
-        <div
-            class="order-last mt-7 flex justify-center text-xs lg:order-first lg:mt-0 lg:-mb-20 lg:justify-end 2xl:text-sm"
-        >
-            <div
-                x-init="
-                    () => {
-                        motion.inView($el, (element) => {
-                            gsap.fromTo(
-                                Array.from($el.children),
-                                { x: -10, autoAlpha: 0 },
-                                {
-                                    x: 0,
-                                    autoAlpha: 1,
-                                    stagger: 0.1,
-                                    duration: 0.7,
-                                    ease: 'power2.out',
-                                },
-                            )
-                        })
-                    }
-                "
-                class="flex flex-wrap justify-center gap-2 lg:flex-col lg:gap-1.5 xl:gap-2"
-            >
-                <p
-                    class="w-full text-center font-light lg:w-auto dark:font-extralight"
-                >
-                    Try our
-                    <span class="font-medium">Mobile</span>
-                    app:
-                </p>
-                <div>
-                    <a
-                        href="https://play.google.com/store/apps/details?id=com.nativephp.kitchensinkapp"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        class="flex items-center gap-2.5 rounded-xl bg-white/70 px-3 py-2.5 backdrop-blur-md transition duration-200 will-change-transform hover:scale-98 hover:bg-white dark:bg-slate-500/25 dark:hover:bg-slate-500/40"
-                    >
-                        <x-icons.play-store
-                            class="h-4.5"
-                            aria-hidden="true"
-                        />
-                        <div>Play Store</div>
-                    </a>
-                </div>
-                <div>
-                    <a
-                        href="https://testflight.apple.com/join/vm9Qtshy"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        class="flex items-center gap-2.5 rounded-xl bg-white/70 px-3 py-2.5 backdrop-blur-md transition duration-200 will-change-transform hover:scale-98 hover:bg-white dark:bg-slate-500/25 dark:hover:bg-slate-500/40"
-                    >
-                        <x-icons.app-store
-                            class="h-4.5 2xl:h-5"
-                            aria-hidden="true"
-                        />
-                        <div>TestFlight</div>
-                    </a>
-                </div>
-                <div>
-                    <a
-                        href="https://github.com/nativephp/kitchen-sink-mobile"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        class="flex items-center gap-2 rounded-xl bg-white/70 px-3 py-2.5 backdrop-blur-md transition duration-200 will-change-transform hover:scale-98 hover:bg-white dark:bg-slate-500/25 dark:hover:bg-slate-500/40"
-                    >
-                        <x-icons.github
-                            class="h-4.5 2xl:h-5"
-                            aria-hidden="true"
-                        />
-                        <div>Source</div>
-                    </a>
-                </div>
-            </div>
-        </div>
-
         {{-- Mockups --}}
         <div class="relative -z-16 flex flex-col-reverse gap-7">
             <div class="flex items-end justify-center">
@@ -554,141 +478,192 @@
                         )
                     }
                 "
-                class="mt-4 flex w-full max-w-md flex-col items-center gap-3 sm:flex-row sm:justify-center"
+                class="mt-4 flex w-full max-w-md flex-col items-center gap-3"
             >
-                {{-- Mobile button --}}
-                <div class="w-full max-w-55 transition duration-300">
-                    <a
-                        href="/docs/mobile/getting-started/introduction"
-                        class="group relative isolate z-0 flex h-15 items-center justify-between gap-3 overflow-hidden rounded-3xl bg-gray-900 px-5 leading-snug text-white transition duration-200 ease-in-out will-change-transform hover:bg-gray-800 2xl:h-17 2xl:px-7 dark:bg-haiti dark:hover:bg-indigo-900/50"
-                        aria-label="Get started with NativePHP documentation for mobile apps"
-                    >
-                        {{-- Label --}}
-                        <div
-                            class="bg-gradient-to-br from-white to-cyan-300 bg-clip-text text-transparent duration-500 ease-in-out will-change-transform group-hover:translate-x-1 2xl:text-lg"
+                <p
+                    class="text-sm font-medium text-gray-600 dark:text-slate-400"
+                >
+                    I want to build a&hellip;
+                </p>
+
+                <div
+                    role="tablist"
+                    aria-label="Choose a platform"
+                    class="flex w-full flex-col items-center gap-3 sm:flex-row sm:justify-center"
+                >
+                    {{-- Mobile button --}}
+                    <div class="w-full max-w-55 transition duration-300">
+                        <button
+                            type="button"
+                            role="tab"
+                            aria-controls="platform-panel-mobile"
+                            @click="$store.platform.select('mobile')"
+                            :aria-selected="$store.platform.is('mobile') ? 'true' : 'false'"
+                            :class="
+                            $store.platform.is('mobile')
+                                ? 'opacity-100 ring-2 ring-cyan-400/70'
+                                : 'opacity-55 hover:opacity-85'
+                        "
+                            class="group relative isolate z-0 flex h-15 w-full items-center justify-between gap-3 overflow-hidden rounded-3xl bg-gray-900 px-5 leading-snug text-white transition duration-200 ease-in-out will-change-transform hover:bg-gray-800 2xl:h-17 2xl:px-7 dark:bg-haiti dark:hover:bg-indigo-900/50"
                         >
-                            Build Mobile
-                        </div>
-                        {{-- Arrow --}}
-                        <div class="flex items-center gap-1">
-                            <div class="flex flex-col gap-2">
+                            {{-- Label --}}
+                            <div
+                                class="bg-gradient-to-br from-white to-cyan-300 bg-clip-text text-transparent duration-500 ease-in-out will-change-transform group-hover:translate-x-1 2xl:text-lg"
+                            >
+                                Mobile app
+                            </div>
+                            {{-- Arrow --}}
+                            <div class="flex items-center gap-1">
+                                <div class="flex flex-col gap-2">
+                                    <div
+                                        class="size-1 rounded-full bg-current opacity-50 transition duration-500 ease-in-out will-change-transform group-hover:translate-x-2 group-hover:translate-y-1.5 group-hover:opacity-100"
+                                    ></div>
+                                    <div
+                                        class="size-1 rounded-full bg-current opacity-50 transition duration-500 ease-in-out will-change-transform group-hover:-translate-y-3"
+                                    ></div>
+                                </div>
                                 <div
-                                    class="size-1 rounded-full bg-current opacity-50 transition duration-500 ease-in-out will-change-transform group-hover:translate-x-2 group-hover:translate-y-1.5 group-hover:opacity-100"
-                                ></div>
-                                <div
-                                    class="size-1 rounded-full bg-current opacity-50 transition duration-500 ease-in-out will-change-transform group-hover:-translate-y-3"
+                                    class="size-1 rounded-full bg-current transition duration-500 ease-in-out will-change-transform group-hover:-translate-x-2 group-hover:translate-y-1.5 group-hover:opacity-50"
                                 ></div>
                             </div>
+                            {{-- Blue blur --}}
                             <div
-                                class="size-1 rounded-full bg-current transition duration-500 ease-in-out will-change-transform group-hover:-translate-x-2 group-hover:translate-y-1.5 group-hover:opacity-50"
+                                x-init="
+                                    () => {
+                                        gsap.to($el, {
+                                            duration: 10,
+                                            repeat: -1,
+                                            ease: 'power1.inOut',
+                                            keyframes: {
+                                                x: [0, 20, -100, 0],
+                                                y: [0, 5, 0],
+                                                scale: [1, 0.7, 1],
+                                                rotate: [0, 10, 0],
+                                            },
+                                        })
+                                    }
+                                "
+                                class="absolute -bottom-12 left-14 -z-10 h-20 w-44 rounded-full bg-transparent blur-xl will-change-transform dark:bg-blue-500/30"
                             ></div>
-                        </div>
-                        {{-- Blue blur --}}
-                        <div
-                            x-init="
-                                () => {
-                                    gsap.to($el, {
-                                        duration: 10,
-                                        repeat: -1,
-                                        ease: 'power1.inOut',
-                                        keyframes: {
-                                            x: [0, 20, -100, 0],
-                                            y: [0, 5, 0],
-                                            scale: [1, 0.7, 1],
-                                            rotate: [0, 10, 0],
-                                        },
-                                    })
-                                }
-                            "
-                            class="absolute -bottom-12 left-14 -z-10 h-20 w-44 rounded-full bg-transparent blur-xl will-change-transform dark:bg-blue-500/30"
-                        ></div>
-                        {{-- Cyan blur --}}
-                        <div
-                            x-init="
-                                () => {
-                                    gsap.to($el, {
-                                        duration: 5,
-                                        repeat: -1,
-                                        ease: 'power1.inOut',
-                                        keyframes: {
-                                            x: [0, -10, 0],
-                                            y: [0, 10, 0],
-                                            scale: [1, 1.2, 1],
-                                        },
-                                    })
-                                }
-                            "
-                            class="absolute -bottom-12 -left-5 -z-20 h-20 w-44 rounded-full bg-transparent blur-xl will-change-transform dark:bg-cyan-500/30"
-                        ></div>
-                    </a>
+                            {{-- Cyan blur --}}
+                            <div
+                                x-init="
+                                    () => {
+                                        gsap.to($el, {
+                                            duration: 5,
+                                            repeat: -1,
+                                            ease: 'power1.inOut',
+                                            keyframes: {
+                                                x: [0, -10, 0],
+                                                y: [0, 10, 0],
+                                                scale: [1, 1.2, 1],
+                                            },
+                                        })
+                                    }
+                                "
+                                class="absolute -bottom-12 -left-5 -z-20 h-20 w-44 rounded-full bg-transparent blur-xl will-change-transform dark:bg-cyan-500/30"
+                            ></div>
+                        </button>
+                    </div>
+
+                    {{-- Desktop button --}}
+                    <div class="w-full max-w-55 transition duration-300">
+                        <button
+                            type="button"
+                            role="tab"
+                            aria-controls="platform-panel-desktop"
+                            @click="$store.platform.select('desktop')"
+                            :aria-selected="$store.platform.is('desktop') ? 'true' : 'false'"
+                            :class="
+                            $store.platform.is('desktop')
+                                ? 'opacity-100 ring-2 ring-violet-400/70'
+                                : 'opacity-55 hover:opacity-85'
+                        "
+                            class="group relative isolate z-0 flex h-15 w-full items-center justify-between gap-3 overflow-hidden rounded-3xl bg-gray-900 px-5 leading-snug text-white transition duration-200 ease-in-out will-change-transform hover:bg-gray-800 2xl:h-17 2xl:px-7 dark:bg-haiti dark:hover:bg-indigo-900/50"
+                        >
+                            {{-- Label --}}
+                            <div
+                                class="bg-gradient-to-br from-white to-violet-300 bg-clip-text text-transparent duration-500 ease-in-out will-change-transform group-hover:translate-x-1 2xl:text-lg"
+                            >
+                                Desktop app
+                            </div>
+                            {{-- Arrow --}}
+                            <div class="flex items-center gap-1">
+                                <div class="flex flex-col gap-2">
+                                    <div
+                                        class="size-1 rounded-full bg-current opacity-50 transition duration-500 ease-in-out will-change-transform group-hover:translate-x-2 group-hover:translate-y-1.5 group-hover:opacity-100"
+                                    ></div>
+                                    <div
+                                        class="size-1 rounded-full bg-current opacity-50 transition duration-500 ease-in-out will-change-transform group-hover:-translate-y-3"
+                                    ></div>
+                                </div>
+                                <div
+                                    class="size-1 rounded-full bg-current transition duration-500 ease-in-out will-change-transform group-hover:-translate-x-2 group-hover:translate-y-1.5 group-hover:opacity-50"
+                                ></div>
+                            </div>
+                            {{-- Violet blur --}}
+                            <div
+                                x-init="
+                                    () => {
+                                        gsap.to($el, {
+                                            duration: 10,
+                                            repeat: -1,
+                                            ease: 'power1.inOut',
+                                            keyframes: {
+                                                x: [0, 20, -100, 0],
+                                                y: [0, 5, 0],
+                                                scale: [1, 0.7, 1],
+                                                rotate: [0, 10, 0],
+                                            },
+                                        })
+                                    }
+                                "
+                                class="absolute -bottom-12 left-14 -z-10 h-20 w-44 rounded-full bg-transparent blur-xl will-change-transform dark:bg-violet-500/30"
+                            ></div>
+                            {{-- Purple blur --}}
+                            <div
+                                x-init="
+                                    () => {
+                                        gsap.to($el, {
+                                            duration: 5,
+                                            repeat: -1,
+                                            ease: 'power1.inOut',
+                                            keyframes: {
+                                                x: [0, -10, 0],
+                                                y: [0, 10, 0],
+                                                scale: [1, 1.2, 1],
+                                            },
+                                        })
+                                    }
+                                "
+                                class="absolute -bottom-12 -left-5 -z-20 h-20 w-44 rounded-full bg-transparent blur-xl will-change-transform dark:bg-purple-500/30"
+                            ></div>
+                        </button>
+                    </div>
                 </div>
 
-                {{-- Desktop button --}}
-                <div class="w-full max-w-55 transition duration-300">
-                    <a
-                        href="/docs/desktop/getting-started/introduction"
-                        class="group relative isolate z-0 flex h-15 items-center justify-between gap-3 overflow-hidden rounded-3xl bg-gray-900 px-5 leading-snug text-white transition duration-200 ease-in-out will-change-transform hover:bg-gray-800 2xl:h-17 2xl:px-7 dark:bg-haiti dark:hover:bg-indigo-900/50"
-                        aria-label="Get started with NativePHP documentation for desktop apps"
+                {{-- Docs link, follows the chosen platform --}}
+                <a
+                    href="/docs/mobile/getting-started/introduction"
+                    :href="
+                        $store.platform.is('mobile')
+                            ? '/docs/mobile/getting-started/introduction'
+                            : '/docs/desktop/getting-started/introduction'
+                    "
+                    class="group inline-flex items-center gap-2 text-sm font-medium text-gray-700 transition duration-200 hover:text-gray-900 dark:text-slate-300 dark:hover:text-white"
+                >
+                    <span
+                        x-text="$store.platform.is('mobile') ? 'Read the Mobile docs' : 'Read the Desktop docs'"
                     >
-                        {{-- Label --}}
-                        <div
-                            class="bg-gradient-to-br from-white to-violet-300 bg-clip-text text-transparent duration-500 ease-in-out will-change-transform group-hover:translate-x-1 2xl:text-lg"
-                        >
-                            Build Desktop
-                        </div>
-                        {{-- Arrow --}}
-                        <div class="flex items-center gap-1">
-                            <div class="flex flex-col gap-2">
-                                <div
-                                    class="size-1 rounded-full bg-current opacity-50 transition duration-500 ease-in-out will-change-transform group-hover:translate-x-2 group-hover:translate-y-1.5 group-hover:opacity-100"
-                                ></div>
-                                <div
-                                    class="size-1 rounded-full bg-current opacity-50 transition duration-500 ease-in-out will-change-transform group-hover:-translate-y-3"
-                                ></div>
-                            </div>
-                            <div
-                                class="size-1 rounded-full bg-current transition duration-500 ease-in-out will-change-transform group-hover:-translate-x-2 group-hover:translate-y-1.5 group-hover:opacity-50"
-                            ></div>
-                        </div>
-                        {{-- Violet blur --}}
-                        <div
-                            x-init="
-                                () => {
-                                    gsap.to($el, {
-                                        duration: 10,
-                                        repeat: -1,
-                                        ease: 'power1.inOut',
-                                        keyframes: {
-                                            x: [0, 20, -100, 0],
-                                            y: [0, 5, 0],
-                                            scale: [1, 0.7, 1],
-                                            rotate: [0, 10, 0],
-                                        },
-                                    })
-                                }
-                            "
-                            class="absolute -bottom-12 left-14 -z-10 h-20 w-44 rounded-full bg-transparent blur-xl will-change-transform dark:bg-violet-500/30"
-                        ></div>
-                        {{-- Purple blur --}}
-                        <div
-                            x-init="
-                                () => {
-                                    gsap.to($el, {
-                                        duration: 5,
-                                        repeat: -1,
-                                        ease: 'power1.inOut',
-                                        keyframes: {
-                                            x: [0, -10, 0],
-                                            y: [0, 10, 0],
-                                            scale: [1, 1.2, 1],
-                                        },
-                                    })
-                                }
-                            "
-                            class="absolute -bottom-12 -left-5 -z-20 h-20 w-44 rounded-full bg-transparent blur-xl will-change-transform dark:bg-purple-500/30"
-                        ></div>
-                    </a>
-                </div>
+                        Read the Mobile docs
+                    </span>
+                    <span
+                        class="transition duration-200 will-change-transform group-hover:translate-x-1"
+                        aria-hidden="true"
+                    >
+                        &rarr;
+                    </span>
+                </a>
             </div>
 
             {{-- Introduction video for mobile viewport --}}
