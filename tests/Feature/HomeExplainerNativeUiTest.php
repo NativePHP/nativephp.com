@@ -7,12 +7,27 @@ use DOMElement;
 use DOMNodeList;
 use DOMXPath;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Http;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
+use Torchlight\Blade\BladeManager;
 
 class HomeExplainerNativeUiTest extends TestCase
 {
     use RefreshDatabase;
+
+    /**
+     * Torchlight's block registry is a static array. If a request that
+     * registered blocks throws before the RenderTorchlight middleware clears
+     * them, they leak into every later HTML response in the same PHPUnit
+     * process — 500ing unrelated tests. Clear them unconditionally.
+     */
+    protected function tearDown(): void
+    {
+        BladeManager::clearBlocks();
+
+        parent::tearDown();
+    }
 
     #[Test]
     public function the_mobile_path_leads_with_native_rendering_not_a_web_view()
@@ -200,6 +215,14 @@ class HomeExplainerNativeUiTest extends TestCase
     #[Test]
     public function the_supernative_page_the_homepage_links_to_exists()
     {
+        // The page contains fenced code blocks. Torchlight throws outside
+        // production when no token is configured (as in CI), so give it a
+        // token and fake the API to force its offline fallback.
+        config(['torchlight.token' => 'test-token']);
+        Http::fake([
+            '*' => Http::response(['blocks' => []], 200),
+        ]);
+
         $this->get('/docs/mobile/4/architecture/super-native')
             ->assertOk();
     }
