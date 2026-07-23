@@ -29,6 +29,9 @@
                     @else
                         <flux:badge variant="pill" color="violet" size="sm">Pro</flux:badge>
                     @endif
+                    @if (! $lesson->is_published)
+                        <flux:badge variant="pill" color="amber" size="sm">Draft</flux:badge>
+                    @endif
                     <flux:text class="text-xs">{{ $lesson->module->title }}</flux:text>
                 </div>
                 <flux:heading size="lg">{{ $lesson->title }}</flux:heading>
@@ -69,17 +72,16 @@
     </div>
 
     {{-- Other lessons in this module --}}
-    @php $moduleLessons = $lesson->module->lessons()->where('is_published', true)->orderBy('sort_order')->get(); @endphp
-    @if ($moduleLessons->count() > 1)
+    @if ($this->moduleLessons->count() > 1)
         <div class="mt-8 rounded-lg border border-zinc-200 bg-white dark:border-white/10 dark:bg-white/5">
             <div class="p-4 border-b border-zinc-200 dark:border-white/10">
                 <flux:heading size="sm">{{ $lesson->module->title }}</flux:heading>
             </div>
-            @foreach ($moduleLessons as $moduleLesson)
+            @foreach ($this->moduleLessons as $moduleLesson)
                 @php
                     $isCurrent = $moduleLesson->id === $lesson->id;
                     $isLessonComplete = in_array($moduleLesson->id, $this->completedLessonIds);
-                    $canAccess = $moduleLesson->is_free || $this->hasPurchased;
+                    $canAccess = $moduleLesson->is_free || $this->hasPurchased || $this->isAdmin;
                 @endphp
                 @if ($canAccess)
                     <a
@@ -96,6 +98,9 @@
                             @endif
                         </div>
                         <span class="{{ $isCurrent ? 'font-medium' : '' }}">{{ $moduleLesson->title }}</span>
+                        @if (! $moduleLesson->is_published)
+                            <flux:badge variant="pill" color="amber" size="sm">Draft</flux:badge>
+                        @endif
                         @if ($moduleLesson->duration_in_seconds)
                             <span class="ml-auto text-xs text-zinc-400 dark:text-zinc-500">{{ gmdate('i:s', $moduleLesson->duration_in_seconds) }}</span>
                         @endif

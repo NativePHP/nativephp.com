@@ -1,9 +1,8 @@
 <div>
-    @if ($this->hasPurchased)
-        {{-- Purchased: Show course content --}}
+    @if ($this->hasPurchased || $this->isAdmin)
+        {{-- Purchased (or admin preview): Show course content --}}
         <div class="mb-6">
-            <flux:heading size="xl">Course</flux:heading>
-            <flux:text>The NativePHP Masterclass</flux:text>
+            <flux:heading size="xl">The NativePHP Masterclass</flux:heading>
         </div>
 
         @if ($this->course)
@@ -55,6 +54,9 @@
                                     @else
                                         <flux:badge variant="pill" color="violet" size="sm">Pro</flux:badge>
                                     @endif
+                                    @if (! $module->is_published)
+                                        <flux:badge variant="pill" color="amber" size="sm">Draft</flux:badge>
+                                    @endif
                                 </div>
                                 @if ($module->description)
                                     <flux:text class="text-sm mt-1">{{ $module->description }}</flux:text>
@@ -79,6 +81,9 @@
                                                 {{ $lesson->title }}
                                             </a>
                                         </div>
+                                        @if (! $lesson->is_published)
+                                            <flux:badge variant="pill" color="amber" size="sm">Draft</flux:badge>
+                                        @endif
                                         @if ($lesson->duration_in_seconds)
                                             <flux:text class="text-xs shrink-0">{{ gmdate('i:s', $lesson->duration_in_seconds) }}</flux:text>
                                         @endif

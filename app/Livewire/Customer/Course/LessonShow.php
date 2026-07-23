@@ -6,6 +6,7 @@ use App\Models\Course;
 use App\Models\CourseLesson;
 use App\Models\LessonProgress;
 use App\Models\Product;
+use Illuminate\Database\Eloquent\Collection;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\Layout;
 use Livewire\Component;
@@ -19,19 +20,27 @@ class LessonShow extends Component
     {
         $this->lesson = $lesson->load('module.course');
 
-        if (! $this->lesson->is_free && ! $this->hasPurchased) {
+        abort_unless($this->lesson->is_published || $this->isAdmin, 404);
+
+        if (! $this->lesson->is_free && ! $this->hasPurchased && ! $this->isAdmin) {
             abort(403, 'You need Pro access to view this lesson.');
         }
+    }
+
+    #[Computed]
+    public function isAdmin(): bool
+    {
+        return auth()->user()?->isAdmin() ?? false;
     }
 
     #[Computed]
     public function course(): Course
     {
         return $this->lesson->module->course->load(['modules' => function ($query) {
-            $query->where('is_published', true)
+            $query->when(! $this->isAdmin, fn ($query) => $query->where('is_published', true))
                 ->orderBy('sort_order')
                 ->with(['lessons' => function ($query) {
-                    $query->where('is_published', true)->orderBy('sort_order');
+                    $query->when(! $this->isAdmin, fn ($query) => $query->where('is_published', true))->orderBy('sort_order');
                 }]);
         }]);
     }
@@ -42,6 +51,17 @@ class LessonShow extends Component
         $product = Product::where('slug', 'nativephp-masterclass')->first();
 
         return $product && $product->isOwnedBy(auth()->user());
+    }
+
+    /**
+     * @return Collection<int, CourseLesson>
+     */
+    #[Computed]
+    public function moduleLessons(): Collection
+    {
+        return $this->lesson->module->lessons()
+            ->when(! $this->isAdmin, fn ($query) => $query->where('is_published', true))
+            ->get();
     }
 
     #[Computed]

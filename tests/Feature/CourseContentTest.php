@@ -170,6 +170,7 @@ class CourseContentTest extends TestCase
 
         Livewire::actingAs($user)
             ->test(Index::class)
+            ->assertSee('The NativePHP Masterclass')
             ->assertSee('Test Module')
             ->assertSee('Test Lesson');
     }
@@ -278,6 +279,101 @@ class CourseContentTest extends TestCase
             'course_lesson_id' => $lesson->id,
             'completed_at' => null,
         ]);
+    }
+
+    #[Test]
+    public function admin_sees_unpublished_course_content_in_dashboard(): void
+    {
+        config(['filament.users' => ['admin@test.com']]);
+        $admin = User::factory()->create(['email' => 'admin@test.com']);
+
+        $course = Course::factory()->create();
+        $module = CourseModule::factory()->create([
+            'course_id' => $course->id,
+            'title' => 'Hidden Module',
+        ]);
+        CourseLesson::factory()->create([
+            'course_module_id' => $module->id,
+            'title' => 'Hidden Lesson',
+        ]);
+
+        Livewire::actingAs($admin)
+            ->test(Index::class)
+            ->assertSee('Hidden Module')
+            ->assertSee('Hidden Lesson')
+            ->assertSee('Draft');
+    }
+
+    #[Test]
+    public function non_admin_owner_does_not_see_unpublished_content_in_dashboard(): void
+    {
+        $user = User::factory()->create();
+        $product = Product::where('slug', 'nativephp-masterclass')->first();
+        ProductLicense::factory()->create([
+            'user_id' => $user->id,
+            'product_id' => $product->id,
+        ]);
+
+        $course = Course::factory()->published()->create();
+        $liveModule = CourseModule::factory()->published()->create([
+            'course_id' => $course->id,
+            'title' => 'Live Module',
+        ]);
+        CourseLesson::factory()->create([
+            'course_module_id' => $liveModule->id,
+            'title' => 'Hidden Lesson',
+        ]);
+        CourseModule::factory()->create([
+            'course_id' => $course->id,
+            'title' => 'Hidden Module',
+        ]);
+
+        Livewire::actingAs($user)
+            ->test(Index::class)
+            ->assertSee('Live Module')
+            ->assertDontSee('Hidden Lesson')
+            ->assertDontSee('Hidden Module');
+    }
+
+    #[Test]
+    public function admin_can_view_unpublished_pro_lesson_without_purchase(): void
+    {
+        config(['filament.users' => ['admin@test.com']]);
+        $admin = User::factory()->create(['email' => 'admin@test.com']);
+
+        $course = Course::factory()->create();
+        $module = CourseModule::factory()->create(['course_id' => $course->id]);
+        $lesson = CourseLesson::factory()->create([
+            'course_module_id' => $module->id,
+            'is_free' => false,
+            'title' => 'Hidden Pro Lesson',
+        ]);
+
+        Livewire::actingAs($admin)
+            ->test(LessonShow::class, ['lesson' => $lesson])
+            ->assertSee('Hidden Pro Lesson')
+            ->assertSee('Draft');
+    }
+
+    #[Test]
+    public function unpublished_lesson_is_not_accessible_to_non_admins(): void
+    {
+        $user = User::factory()->create();
+        $product = Product::where('slug', 'nativephp-masterclass')->first();
+        ProductLicense::factory()->create([
+            'user_id' => $user->id,
+            'product_id' => $product->id,
+        ]);
+
+        $course = Course::factory()->published()->create();
+        $module = CourseModule::factory()->published()->create(['course_id' => $course->id]);
+        $lesson = CourseLesson::factory()->create([
+            'course_module_id' => $module->id,
+        ]);
+
+        Livewire::actingAs($user)
+            ->test(LessonShow::class, ['lesson' => $lesson])
+            ->assertNotFound();
     }
 
     #[Test]
