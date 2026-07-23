@@ -46,6 +46,7 @@ class PluginAccessController extends Controller
         return response()->json([
             'success' => true,
             'user' => [
+                'id' => $user->id,
                 'email' => $user->email,
             ],
             'plugins' => $accessiblePlugins,

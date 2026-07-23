@@ -77,6 +77,14 @@ class User extends Authenticatable implements FilamentUser, HasName, MustVerifyE
     }
 
     /**
+     * @return HasMany<EmailChange>
+     */
+    public function emailChanges(): HasMany
+    {
+        return $this->hasMany(EmailChange::class);
+    }
+
+    /**
      * @return HasMany<WallOfLoveSubmission>
      */
     public function wallOfLoveSubmissions(): HasMany
