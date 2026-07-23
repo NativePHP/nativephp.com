@@ -1,7 +1,7 @@
 @php
     $isMobile = request()->is('docs/mobile/*');
-    $mobileHref = '/docs/mobile/3';
-    $desktopHref = '/docs/desktop/2';
+    $mobileHref = '/docs/mobile/'.config('docs.latest_versions.mobile');
+    $desktopHref = '/docs/desktop/'.config('docs.latest_versions.desktop');
 @endphp
 
 <a

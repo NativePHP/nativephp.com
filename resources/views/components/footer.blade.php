@@ -356,7 +356,7 @@
                     >
                         <li>
                             <a
-                                href="/docs/mobile/3/getting-started/introduction"
+                                href="/docs/mobile/getting-started/introduction"
                                 class="inline-block px-px py-1.5 transition duration-300 will-change-transform hover:translate-x-1 hover:text-gray-700 dark:hover:text-gray-300"
                             >
                                 Documentation
@@ -420,7 +420,7 @@
                 >
                     <li>
                         <a
-                            href="/docs/desktop/2/getting-started/introduction"
+                            href="/docs/desktop/getting-started/introduction"
                             class="inline-block px-px py-1.5 transition duration-300 will-change-transform hover:translate-x-1 hover:text-gray-700 dark:hover:text-gray-300"
                         >
                             Documentation

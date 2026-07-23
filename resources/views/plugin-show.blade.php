@@ -212,7 +212,7 @@
                                 <div class="mt-4 space-y-1.5 border-t border-indigo-200 pt-4 dark:border-indigo-800">
                                     <x-plugin-command :command="$pluginInstallCommands" />
                                     <p class="text-xs text-indigo-700 dark:text-indigo-400">
-                                        Full walkthrough in the <a href="{{ url('docs/mobile/3/plugins/using-plugins') }}" class="font-medium underline hover:no-underline">Using Plugins guide &rarr;</a>
+                                        Full walkthrough in the <a href="{{ url('docs/mobile/plugins/using-plugins') }}" class="font-medium underline hover:no-underline">Using Plugins guide &rarr;</a>
                                     </p>
                                 </div>
                             </div>

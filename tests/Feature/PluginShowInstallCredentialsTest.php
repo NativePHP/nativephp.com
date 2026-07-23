@@ -84,7 +84,7 @@ class PluginShowInstallCredentialsTest extends TestCase
 
         $this->get(route('plugins.show', $plugin->routeParams()))
             ->assertStatus(200)
-            ->assertSee(url('docs/mobile/3/plugins/using-plugins'), false)
+            ->assertSee(url('docs/mobile/plugins/using-plugins'), false)
             ->assertSee('Using Plugins guide');
     }
 }

@@ -78,7 +78,7 @@ class DocsVersionServiceTest extends TestCase
 
         $expected = route('docs.show', [
             'platform' => 'mobile',
-            'version' => '3',
+            'version' => config('docs.latest_versions.mobile'),
             'page' => 'getting-started/introduction',
         ]);
 

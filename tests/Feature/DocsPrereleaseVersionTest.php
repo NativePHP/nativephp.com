@@ -25,8 +25,23 @@ class DocsPrereleaseVersionTest extends TestCase
         ]);
     }
 
+    /**
+     * v4 is promoted to stable, so these tests pin the config back to the
+     * pre-promotion state to keep the prerelease machinery covered for the
+     * next major.
+     */
+    private function pretendVersionFourIsStillPrerelease(): void
+    {
+        config([
+            'docs.latest_versions.mobile' => 3,
+            'docs.prerelease_versions.mobile' => [4],
+        ]);
+    }
+
     public function test_prerelease_pages_show_the_beta_notice(): void
     {
+        $this->pretendVersionFourIsStillPrerelease();
+
         $response = $this->get('/docs/mobile/4/edge-components/button');
 
         $response->assertOk();
@@ -36,6 +51,8 @@ class DocsPrereleaseVersionTest extends TestCase
 
     public function test_beta_notice_links_to_the_same_page_when_it_exists_on_stable(): void
     {
+        $this->pretendVersionFourIsStillPrerelease();
+
         // top-bar exists in v3 edge-components, so the notice should deep-link to it.
         $this->get('/docs/mobile/4/edge-components/top-bar')
             ->assertOk()
@@ -49,22 +66,36 @@ class DocsPrereleaseVersionTest extends TestCase
 
     public function test_stable_pages_do_not_show_the_beta_notice(): void
     {
+        $this->get('/docs/mobile/4/getting-started/introduction')
+            ->assertOk()
+            ->assertDontSee('pre-release documentation');
+
         $this->get('/docs/mobile/3/getting-started/introduction')
             ->assertOk()
             ->assertDontSee('pre-release documentation');
     }
 
+    public function test_old_versions_point_to_the_promoted_version(): void
+    {
+        $this->get('/docs/mobile/3/getting-started/introduction')
+            ->assertOk()
+            ->assertSee('/docs/mobile/4/getting-started/introduction');
+    }
+
     public function test_unversioned_docs_urls_redirect_to_the_stable_version(): void
     {
         $this->get('/docs/mobile')
-            ->assertRedirect('/docs/mobile/3/getting-started/introduction');
+            ->assertRedirect('/docs/mobile/4/getting-started/introduction');
 
+        // the-basics/web-view became the web-view EDGE component in v4.
         $this->get('/docs/mobile/the-basics/web-view')
-            ->assertRedirect('/docs/mobile/3/the-basics/web-view');
+            ->assertRedirect('/docs/mobile/4/edge-components/web-view');
     }
 
     public function test_version_switcher_lists_newest_first_and_labels_beta(): void
     {
+        $this->pretendVersionFourIsStillPrerelease();
+
         $response = $this->get('/docs/mobile/4/getting-started/introduction');
         $content = $response->getContent();
 
@@ -76,6 +107,14 @@ class DocsPrereleaseVersionTest extends TestCase
             '#<option value="4">[^<]*</option>\s*<option value="3">#s',
             $content,
         );
+    }
+
+    public function test_version_switcher_no_longer_labels_the_promoted_version_beta(): void
+    {
+        $this->get('/docs/mobile/4/getting-started/introduction')
+            ->assertOk()
+            ->assertDontSee('Version 4.x (beta)')
+            ->assertSee('Version 4.x');
     }
 
     public function test_supernative_shield_badges_are_removed_from_navigation(): void
@@ -99,6 +138,8 @@ class DocsPrereleaseVersionTest extends TestCase
 
     public function test_beta_notice_maps_renamed_pages_to_their_stable_equivalent(): void
     {
+        $this->pretendVersionFourIsStillPrerelease();
+
         $this->get('/docs/mobile/4/the-basics/native-ui')
             ->assertOk()
             ->assertSee('/docs/mobile/3/the-basics/native-components');

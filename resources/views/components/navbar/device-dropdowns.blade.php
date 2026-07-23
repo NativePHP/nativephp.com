@@ -10,7 +10,7 @@
         id="mobile-dropdown"
     >
         <x-navbar.device-dropdown-item
-            href="/docs/mobile/3/getting-started/introduction"
+            href="/docs/mobile/getting-started/introduction"
             title="Documentation"
             subtitle="Get started with Mobile"
             icon="docs"
@@ -49,7 +49,7 @@
         align="center"
     >
         <x-navbar.device-dropdown-item
-            href="/docs/desktop/2/getting-started/introduction"
+            href="/docs/desktop/getting-started/introduction"
             title="Documentation"
             subtitle="Get started with Desktop"
             icon="docs"

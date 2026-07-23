@@ -8,6 +8,15 @@
 @source '../../storage/framework/views/*.php';
 @source '../../vendor/filament/**/*.blade.php';
 
+/*
+ * flux.css pulls in the flux-pro stubs, and the carousel slide stub declares
+ * `[snap="mandatory"_&]:snap-always` — one bracket short, so it compiles to the
+ * invalid selector `snap="mandatory" &` and Lightning CSS warns on every build.
+ * We don't use <flux:carousel>, so skip that stub. Drop this once Flux fixes it
+ * upstream; remove it first if we ever adopt the carousel.
+ */
+@source not '../../vendor/livewire/flux-pro/stubs/resources/views/flux/carousel';
+
 /* Safelist classes used in dynamic content (blog posts from database) */
 @source inline("grid-cols-1 grid-cols-2 grid-cols-3 grid-cols-4 grid-cols-5 grid-cols-6");
 

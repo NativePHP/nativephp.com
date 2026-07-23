@@ -16,7 +16,7 @@ return [
 
     'latest_versions' => [
         'desktop' => 2,
-        'mobile' => 3,
+        'mobile' => 4,
     ],
 
     /*
@@ -32,7 +32,7 @@ return [
 
     'prerelease_versions' => [
         'desktop' => [],
-        'mobile' => [4],
+        'mobile' => [],
     ],
 
     /*
@@ -53,6 +53,7 @@ return [
             4 => [
                 'the-basics/native-components' => 'the-basics/native-ui',
                 'the-basics/dialog' => 'the-basics/dialogs',
+                'the-basics/web-view' => 'edge-components/web-view',
                 'getting-started/deployment' => 'publishing/introduction',
                 'plugins/vibe' => 'digging-deeper/websockets',
 

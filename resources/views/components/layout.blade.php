@@ -118,7 +118,7 @@
         "
         class="font-poppins min-h-screen overflow-x-clip bg-white antialiased selection:bg-black selection:text-[#b4a9ff] dark:bg-[#050714] dark:text-white"
     >
-        <x-the-vibes-banner />
+        <x-supernative-banner />
 
         <x-navigation-bar />
 
