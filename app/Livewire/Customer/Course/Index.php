@@ -16,14 +16,21 @@ use Livewire\Component;
 class Index extends Component
 {
     #[Computed]
+    public function isAdmin(): bool
+    {
+        return auth()->user()?->isAdmin() ?? false;
+    }
+
+    #[Computed]
     public function course(): ?Course
     {
-        return Course::where('is_published', true)
+        return Course::query()
+            ->when(! $this->isAdmin, fn ($query) => $query->where('is_published', true))
             ->with(['modules' => function ($query) {
-                $query->where('is_published', true)
+                $query->when(! $this->isAdmin, fn ($query) => $query->where('is_published', true))
                     ->orderBy('sort_order')
                     ->with(['lessons' => function ($query) {
-                        $query->where('is_published', true)->orderBy('sort_order');
+                        $query->when(! $this->isAdmin, fn ($query) => $query->where('is_published', true))->orderBy('sort_order');
                     }]);
             }])
             ->first();
