@@ -5,7 +5,7 @@ order: 2
 
 For changes prior to v4, see the [v3 documentation](/docs/mobile/3/getting-started/changelog).
 
-@forelse (\App\Support\GitHub::mobileAir()->releasesAfter('4.0.0') as $release)
+@forelse (\App\Support\GitHub::mobileAir()->releasesFrom('4.0.0') as $release)
 ## {{ $release->name ?: $release->tag_name }}
 **Released: {{ \Carbon\Carbon::parse($release->published_at)->format('F j, Y') }}**
 

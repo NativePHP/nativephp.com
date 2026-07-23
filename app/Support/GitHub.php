@@ -79,6 +79,22 @@ class GitHub
         )->values();
     }
 
+    /**
+     * Releases for the given version and everything later, including that
+     * prefix version itself and its prereleases. releasesAfter("4.0.0")
+     * would exclude 4.0.0-rc.1 because version_compare ranks prereleases
+     * below the release; "dev" ranks below every other prerelease marker,
+     * so a "-dev" floor admits alphas, betas, RCs and the release itself.
+     */
+    public function releasesFrom(string $version): Collection
+    {
+        $floor = ltrim($version, 'v').'-dev';
+
+        return $this->releases()->filter(
+            fn (Release $release) => version_compare(ltrim((string) $release->tag_name, 'v'), $floor, '>=')
+        )->values();
+    }
+
     private function fetchLatestVersion(): ?Release
     {
         // Make a request to GitHub
