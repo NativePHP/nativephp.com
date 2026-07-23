@@ -56,7 +56,7 @@ class MaxSubscriberPayoutTest extends TestCase
     }
 
     #[Test]
-    public function max_subscriber_gets_zero_platform_fee_for_third_party_plugin(): void
+    public function max_subscriber_pays_normal_platform_fee_for_third_party_plugin(): void
     {
         $buyer = User::factory()->create(['stripe_id' => 'cus_test_buyer_'.uniqid()]);
         $this->createSubscription($buyer, self::MAX_PRICE_ID);
@@ -85,8 +85,8 @@ class MaxSubscriberPayoutTest extends TestCase
         $payout = PluginPayout::first();
         $this->assertNotNull($payout);
         $this->assertEquals(2999, $payout->gross_amount);
-        $this->assertEquals(0, $payout->platform_fee);
-        $this->assertEquals(2999, $payout->developer_amount);
+        $this->assertEquals(900, $payout->platform_fee);
+        $this->assertEquals(2099, $payout->developer_amount);
         $this->assertEquals(PayoutStatus::Pending, $payout->status);
     }
 

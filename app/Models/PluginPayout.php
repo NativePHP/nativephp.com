@@ -47,6 +47,16 @@ class PluginPayout extends Model
      * @return Builder<PluginPayout>
      */
     #[Scope]
+    protected function held(Builder $query): Builder
+    {
+        return $query->where('status', PayoutStatus::Held);
+    }
+
+    /**
+     * @param  Builder<PluginPayout>  $query
+     * @return Builder<PluginPayout>
+     */
+    #[Scope]
     protected function pending(Builder $query): Builder
     {
         return $query->where('status', PayoutStatus::Pending);
@@ -84,6 +94,11 @@ class PluginPayout extends Model
             'platform_fee' => $platformFee,
             'developer_amount' => $developerAmount,
         ];
+    }
+
+    public function isHeld(): bool
+    {
+        return $this->status === PayoutStatus::Held;
     }
 
     public function isPending(): bool

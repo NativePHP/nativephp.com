@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Enums\PayoutStatus;
 use App\Jobs\HandleInvoicePaidJob;
 use App\Models\Cart;
 use App\Models\CartItem;
@@ -87,7 +88,7 @@ class DeveloperAccountPayoutTest extends TestCase
     }
 
     #[Test]
-    public function ultra_subscriber_overrides_custom_payout_percentage_to_full(): void
+    public function ultra_subscriber_purchase_respects_custom_payout_percentage(): void
     {
         $buyer = User::factory()->create(['stripe_id' => 'cus_test_buyer_'.uniqid()]);
         Subscription::factory()->for($buyer)->active()->create(['stripe_price' => self::MAX_PRICE_ID]);
@@ -116,8 +117,42 @@ class DeveloperAccountPayoutTest extends TestCase
         $payout = PluginPayout::first();
         $this->assertNotNull($payout);
         $this->assertEquals(10000, $payout->gross_amount);
-        $this->assertEquals(0, $payout->platform_fee);
-        $this->assertEquals(10000, $payout->developer_amount);
+        $this->assertEquals(2000, $payout->platform_fee);
+        $this->assertEquals(8000, $payout->developer_amount);
+    }
+
+    #[Test]
+    public function payout_is_held_when_developer_cannot_receive_payouts(): void
+    {
+        $buyer = User::factory()->create(['stripe_id' => 'cus_test_buyer_'.uniqid()]);
+
+        $developerAccount = DeveloperAccount::factory()->pending()->create();
+        $plugin = Plugin::factory()->approved()->paid()->create([
+            'is_active' => true,
+            'is_official' => false,
+            'user_id' => $developerAccount->user_id,
+            'developer_account_id' => $developerAccount->id,
+        ]);
+        PluginPrice::factory()->regular()->amount(5000)->create(['plugin_id' => $plugin->id]);
+
+        $cart = Cart::factory()->for($buyer)->create();
+        CartItem::create([
+            'cart_id' => $cart->id,
+            'plugin_id' => $plugin->id,
+            'plugin_price_id' => $plugin->prices->first()->id,
+            'price_at_addition' => 5000,
+        ]);
+
+        $invoice = $this->createStripeInvoice($cart->id, $buyer->stripe_id);
+        $job = new HandleInvoicePaidJob($invoice);
+        $job->handle();
+
+        $payout = PluginPayout::first();
+        $this->assertNotNull($payout);
+        $this->assertEquals(PayoutStatus::Held, $payout->status);
+        $this->assertEquals(5000, $payout->gross_amount);
+        $this->assertEquals(1500, $payout->platform_fee);
+        $this->assertEquals(3500, $payout->developer_amount);
     }
 
     #[Test]
