@@ -10,11 +10,15 @@ use App\Models\CourseModule;
 use App\Models\LessonProgress;
 use App\Models\Product;
 use App\Models\ProductLicense;
+use App\Models\ProductPrice;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Carbon;
+use Laravel\Cashier\Subscription;
 use Livewire\Livewire;
 use PHPUnit\Framework\Attributes\Test;
+use Stripe\Coupon;
+use Stripe\StripeClient;
 use Tests\TestCase;
 
 class CourseContentTest extends TestCase
@@ -34,11 +38,13 @@ class CourseContentTest extends TestCase
     #[Test]
     public function course_page_shows_pricing(): void
     {
+        Product::where('slug', 'nativephp-masterclass')->first()
+            ->prices()->update(['amount' => 29900]);
+
         $this
             ->withoutVite()
             ->get(route('course'))
             ->assertStatus(200)
-            ->assertSee('$199')
             ->assertSee('$299');
     }
 
@@ -65,6 +71,11 @@ class CourseContentTest extends TestCase
     #[Test]
     public function course_dashboard_shows_purchase_page_for_non_owners(): void
     {
+        Carbon::setTestNow('2026-06-14 23:59:59');
+
+        Product::where('slug', 'nativephp-masterclass')->first()
+            ->prices()->update(['amount' => 19900]);
+
         $user = User::factory()->create();
 
         Livewire::actingAs($user)
@@ -72,12 +83,17 @@ class CourseContentTest extends TestCase
             ->assertSee('Build native apps')
             ->assertSee('Get Early Bird Access')
             ->assertSee('$199');
+
+        Carbon::setTestNow();
     }
 
     #[Test]
     public function course_dashboard_shows_299_pricing_after_deadline(): void
     {
         Carbon::setTestNow('2026-06-15 00:00:01');
+
+        Product::where('slug', 'nativephp-masterclass')->first()
+            ->prices()->update(['amount' => 29900]);
 
         $user = User::factory()->create();
 
@@ -88,6 +104,48 @@ class CourseContentTest extends TestCase
             ->assertDontSee('Get Early Bird Access');
 
         Carbon::setTestNow();
+    }
+
+    #[Test]
+    public function course_dashboard_shows_subscriber_price_with_discount(): void
+    {
+        $mockCoupons = new class
+        {
+            public function retrieve(): Coupon
+            {
+                return Coupon::constructFrom([
+                    'id' => 'coupon_test123',
+                    'valid' => true,
+                    'amount_off' => 10000,
+                    'percent_off' => null,
+                ]);
+            }
+        };
+
+        $mockStripeClient = $this->createMock(StripeClient::class);
+        $mockStripeClient->coupons = $mockCoupons;
+        $this->app->bind(StripeClient::class, fn () => $mockStripeClient);
+
+        $masterclass = Product::where('slug', 'nativephp-masterclass')->first();
+        $masterclass->prices()->update(['amount' => 29900]);
+        ProductPrice::factory()
+            ->for($masterclass)
+            ->subscriber()
+            ->amount(29900)
+            ->withCoupon('coupon_test123')
+            ->create();
+
+        $user = User::factory()->create();
+        Subscription::factory()
+            ->for($user)
+            ->active()
+            ->create(['stripe_price' => 'price_test_pro']);
+
+        Livewire::actingAs($user)
+            ->test(Index::class)
+            ->assertSee('$199')
+            ->assertSee('$299')
+            ->assertSee('Your discount is applied automatically at checkout.');
     }
 
     #[Test]

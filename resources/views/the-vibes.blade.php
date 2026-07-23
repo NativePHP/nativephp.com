@@ -75,10 +75,23 @@
                             })
                         }
                     "
-                    class="mt-5 text-4xl font-extrabold md:text-5xl lg:text-6xl"
+                    class="mt-5"
                 >
-                    The
-                    <span class="bg-gradient-to-r from-violet-500 to-indigo-500 bg-clip-text text-transparent dark:from-violet-400 dark:to-indigo-400">Vibes</span>
+                    <span class="sr-only">The Vibes, hosted by NativePHP</span>
+                    <img
+                        src="/img/the-vibes/logo.svg"
+                        alt=""
+                        width="708"
+                        height="392"
+                        class="mx-auto block h-auto w-64 dark:hidden sm:w-80 md:w-96"
+                    />
+                    <img
+                        src="/img/the-vibes/logo-dark.svg"
+                        alt=""
+                        width="708"
+                        height="392"
+                        class="mx-auto hidden h-auto w-64 dark:block sm:w-80 md:w-96"
+                    />
                 </h1>
 
                 {{-- Subtitle --}}
@@ -767,6 +780,106 @@
             </div>
         </section>
 
+        {{-- Schedule Section --}}
+        <section class="mt-20">
+            <h2
+                x-init="
+                    () => {
+                        motion.inView($el, (element) => {
+                            motion.animate(
+                                $el,
+                                {
+                                    opacity: [0, 1],
+                                    y: [-10, 0],
+                                },
+                                {
+                                    duration: 0.7,
+                                    ease: motion.easeOut,
+                                },
+                            )
+                        })
+                    }
+                "
+                class="text-center text-3xl font-semibold"
+            >
+                Schedule
+            </h2>
+
+            <p class="mx-auto mt-3 max-w-lg text-center text-gray-600 dark:text-gray-400">
+                A full day of talks, great food, and time to build together.
+            </p>
+
+            @php
+                $schedule = [
+                    ['time' => '9:00', 'title' => 'Doors open & Breakfast', 'detail' => 'Coffee and pastries in The Assembly'],
+                    ['time' => '9:30', 'title' => 'The Future is Here', 'detail' => 'Simon & Shane', 'highlight' => true],
+                    ['time' => '11:00', 'title' => 'Coffee break'],
+                    ['time' => '11:15', 'title' => 'Lightning talks', 'detail' => 'Special guests'],
+                    ['time' => '12:00', 'title' => 'Lunch', 'detail' => 'The Atrium'],
+                    ['time' => '13:00', 'title' => 'Chill, network, vibecode, hack'],
+                    ['time' => '17:00', 'title' => 'Close'],
+                ];
+            @endphp
+
+            <div
+                x-init="
+                    () => {
+                        motion.inView($el, (element) => {
+                            motion.animate(
+                                Array.from($el.children),
+                                {
+                                    y: [10, 0],
+                                    opacity: [0, 1],
+                                },
+                                {
+                                    duration: 0.7,
+                                    ease: motion.backOut,
+                                    delay: motion.stagger(0.08),
+                                },
+                            )
+                        })
+                    }
+                "
+                class="mx-auto mt-10 max-w-2xl"
+            >
+                @foreach ($schedule as $item)
+                    <div class="flex items-center gap-4 sm:gap-6">
+                        {{-- Time --}}
+                        <div class="flex-1 text-right">
+                            <time class="text-sm font-semibold tabular-nums text-violet-600 dark:text-violet-400">{{ $item['time'] }}</time>
+                        </div>
+
+                        {{-- Rail --}}
+                        <div class="flex flex-col items-center self-stretch">
+                            <span @class([
+                                'w-px flex-1',
+                                'bg-transparent' => $loop->first,
+                                'bg-gray-200 dark:bg-white/10' => ! $loop->first,
+                            ])></span>
+                            <span @class([
+                                'size-3 shrink-0 rounded-full',
+                                'bg-violet-500 ring-4 ring-violet-500/20' => $item['highlight'] ?? false,
+                                'border-2 border-violet-400 bg-white dark:border-violet-500/60 dark:bg-[#050714]' => ! ($item['highlight'] ?? false),
+                            ])></span>
+                            <span @class([
+                                'w-px flex-1',
+                                'bg-transparent' => $loop->last,
+                                'bg-gray-200 dark:bg-white/10' => ! $loop->last,
+                            ])></span>
+                        </div>
+
+                        {{-- Content --}}
+                        <div class="flex-1 py-4">
+                            <h3 class="font-semibold leading-snug">{{ $item['title'] }}</h3>
+                            @isset($item['detail'])
+                                <p class="mt-0.5 text-sm text-gray-600 dark:text-gray-400">{{ $item['detail'] }}</p>
+                            @endisset
+                        </div>
+                    </div>
+                @endforeach
+            </div>
+        </section>
+
         {{-- Sponsors Section --}}
         <section class="mt-20">
             <h2
@@ -813,111 +926,7 @@
                 "
                 class="mt-10 grid grid-cols-1 gap-5 sm:grid-cols-2 md:grid-cols-4"
             >
-                {{-- Web Mavens --}}
-                <a
-                    href="https://www.webmavens.com/?ref=nativephp"
-                    target="_blank"
-                    rel="noopener noreferrer sponsored"
-                    class="grid h-28 place-items-center rounded-2xl bg-gray-100 px-6 transition duration-200 will-change-transform hover:-translate-y-0.5 hover:bg-gray-200/80 hover:shadow-lg hover:shadow-gray-200/70 dark:bg-[#1a1a2e] dark:hover:bg-slate-800/80 dark:hover:shadow-transparent"
-                >
-                    <div class="grid h-15 w-35 place-items-center">
-                        <x-sponsors.logos.webmavens
-                            class="dark:fill-white"
-                            aria-hidden="true"
-                        />
-                    </div>
-                    <span class="sr-only">Web Mavens</span>
-                </a>
-
-                {{-- Nexcalia --}}
-                <a
-                    href="https://www.nexcalia.com/?ref=nativephp"
-                    target="_blank"
-                    rel="noopener noreferrer sponsored"
-                    class="grid h-28 place-items-center rounded-2xl bg-gray-100 px-6 transition duration-200 will-change-transform hover:-translate-y-0.5 hover:bg-gray-200/80 hover:shadow-lg hover:shadow-gray-200/70 dark:bg-[#1a1a2e] dark:hover:bg-slate-800/80 dark:hover:shadow-transparent"
-                >
-                    <div class="grid h-15 w-35 place-items-center">
-                        <x-sponsors.logos.nexcalia
-                            class="text-black dark:text-white"
-                            aria-hidden="true"
-                        />
-                    </div>
-                    <span class="sr-only">Nexcalia</span>
-                </a>
-
-                {{-- Bifrost Technology --}}
-                <a
-                    href="https://bifrost.nativephp.com/"
-                    target="_blank"
-                    rel="noopener noreferrer sponsored"
-                    class="grid h-28 place-items-center rounded-2xl bg-gray-100 px-6 transition duration-200 will-change-transform hover:-translate-y-0.5 hover:bg-gray-200/80 hover:shadow-lg hover:shadow-gray-200/70 dark:bg-[#1a1a2e] dark:hover:bg-slate-800/80 dark:hover:shadow-transparent"
-                >
-                    <div class="grid h-15 w-35 place-items-center">
-                        <x-logos.bifrost class="h-6" />
-                    </div>
-                    <span class="sr-only">Bifrost Technology</span>
-                </a>
-
-                {{-- Beyond Code --}}
-                <a
-                    href="https://beyondco.de/?utm_source=nativephp&utm_medium=logo&utm_campaign=the-vibes"
-                    target="_blank"
-                    rel="noopener noreferrer sponsored"
-                    class="grid h-28 place-items-center rounded-2xl bg-gray-100 px-6 transition duration-200 will-change-transform hover:-translate-y-0.5 hover:bg-gray-200/80 hover:shadow-lg hover:shadow-gray-200/70 dark:bg-[#1a1a2e] dark:hover:bg-slate-800/80 dark:hover:shadow-transparent"
-                >
-                    <div class="grid h-15 w-35 place-items-center">
-                        <img
-                            src="/img/sponsors/beyondcode.webp"
-                            class="block dark:hidden"
-                            loading="lazy"
-                            alt="BeyondCode logo"
-                            width="160"
-                            height="40"
-                        />
-                        <img
-                            src="/img/sponsors/beyondcode-dark.webp"
-                            class="hidden dark:block"
-                            loading="lazy"
-                            alt="BeyondCode logo"
-                            width="160"
-                            height="40"
-                        />
-                    </div>
-                    <span class="sr-only">Beyond Code</span>
-                </a>
-
-                {{-- Mostly Technical --}}
-                <a
-                    href="https://mostlytechnical.com/"
-                    target="_blank"
-                    rel="noopener noreferrer sponsored"
-                    class="grid h-28 place-items-center rounded-2xl bg-gray-100 px-6 transition duration-200 will-change-transform hover:-translate-y-0.5 hover:bg-gray-200/80 hover:shadow-lg hover:shadow-gray-200/70 dark:bg-[#1a1a2e] dark:hover:bg-slate-800/80 dark:hover:shadow-transparent"
-                >
-                    <div class="grid h-15 w-35 place-items-center">
-                        <img
-                            src="/img/sponsors/mostly-technical.webp"
-                            loading="lazy"
-                            alt="Mostly Technical logo"
-                            width="60"
-                            height="60"
-                            class="h-15 w-15 rounded"
-                        />
-                    </div>
-                    <span class="sr-only">Mostly Technical</span>
-                </a>
-
-                {{-- Geocodio --}}
-                <a
-                    href="https://www.geocod.io/?utm_source=nativephp&utm_medium=sponsorship&utm_campaign=thevibes"
-                    target="_blank"
-                    rel="noopener noreferrer sponsored"
-                    class="grid h-28 place-items-center rounded-2xl bg-gray-100 px-6 transition duration-200 will-change-transform hover:-translate-y-0.5 hover:bg-gray-200/80 hover:shadow-lg hover:shadow-gray-200/70 dark:bg-[#1a1a2e] dark:hover:bg-slate-800/80 dark:hover:shadow-transparent"
-                >
-                    <div class="grid h-15 w-35 place-items-center">
-                        <x-sponsors.logos.geocodio aria-hidden="true" />
-                    </div>
-                    <span class="sr-only">Geocodio</span>
-                </a>
+                <x-sponsors.vibes-partners />
             </div>
 
             {{-- Become a Sponsor CTA --}}
@@ -945,14 +954,17 @@
                     Interested in sponsoring The Vibes?
                 </p>
                 <a
-                    href="mailto:support@nativephp.com?subject=The%20Vibes%20-%20Sponsorship%20Inquiry"
+                    href="{{ route('the-vibes-prospectus') }}"
                     class="mt-3 inline-flex items-center justify-center gap-2.5 rounded-xl bg-zinc-800 px-6 py-3 text-white transition duration-200 hover:bg-zinc-900 dark:bg-indigo-700/80 dark:hover:bg-indigo-900"
                 >
                     <svg xmlns="http://www.w3.org/2000/svg" class="size-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
-                        <polyline points="22,6 12,13 2,6"></polyline>
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                        <polyline points="14 2 14 8 20 8"></polyline>
+                        <line x1="16" y1="13" x2="8" y2="13"></line>
+                        <line x1="16" y1="17" x2="8" y2="17"></line>
+                        <polyline points="10 9 9 9 8 9"></polyline>
                     </svg>
-                    Get in Touch
+                    View the Prospectus
                 </a>
             </div>
         </section>

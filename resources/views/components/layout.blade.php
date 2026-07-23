@@ -66,6 +66,14 @@
             type="image/svg+xml"
         />
 
+        {{-- Blog RSS feed autodiscovery --}}
+        <link
+            rel="alternate"
+            type="application/rss+xml"
+            title="NativePHP Blog"
+            href="{{ route('blog.feed') }}"
+        />
+
         {!! SEOMeta::generate() !!}
         {!! OpenGraph::generate() !!}
         {!! Twitter::generate() !!}
@@ -108,7 +116,7 @@
                 scrolled = window.scrollY > 1
             })
         "
-        class="font-poppins min-h-screen overflow-x-clip antialiased selection:bg-black selection:text-[#b4a9ff] dark:bg-[#050714] dark:text-white"
+        class="font-poppins min-h-screen overflow-x-clip bg-white antialiased selection:bg-black selection:text-[#b4a9ff] dark:bg-[#050714] dark:text-white"
     >
         <x-the-vibes-banner />
 

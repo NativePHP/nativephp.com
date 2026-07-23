@@ -16,16 +16,20 @@ use App\Models\Product;
 use App\Models\ProductLicense;
 use App\Models\User;
 use App\Notifications\PluginSaleCompleted;
+use App\Notifications\PurchaseReceipt;
+use App\Notifications\UltraSubscriptionStarted;
 use App\Support\GitHubOAuth;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\Log;
 use Laravel\Cashier\Cashier;
 use Laravel\Cashier\SubscriptionItem;
+use RuntimeException;
 use Stripe\Invoice;
 use Stripe\StripeObject;
 use UnexpectedValueException;
@@ -66,6 +70,8 @@ class HandleInvoicePaidJob implements ShouldQueue
 
     private function handleSubscriptionCreated(): void
     {
+        $this->notifyUltraSubscriber();
+
         // Get the subscription to check for renewal metadata
         $subscription = Cashier::stripe()->subscriptions->retrieve($this->invoice->subscription);
 
@@ -211,6 +217,9 @@ class HandleInvoicePaidJob implements ShouldQueue
 
         // Notify developers of their sales
         $this->sendDeveloperSaleNotifications($this->invoice->id);
+
+        // Thank the buyer for their purchase
+        $user->notify(new PurchaseReceipt);
     }
 
     private function processCartPurchase(string $cartId): void
@@ -251,14 +260,17 @@ class HandleInvoicePaidJob implements ShouldQueue
             return;
         }
 
+        $purchasedItems = $this->resolvePurchasedItems($cart);
+
         Log::info('Processing cart purchase from invoice', [
             'invoice_id' => $this->invoice->id,
             'cart_id' => $cartId,
             'user_id' => $user->id,
             'item_count' => $cart->items->count(),
+            'purchased_item_count' => $purchasedItems->count(),
         ]);
 
-        foreach ($cart->items as $item) {
+        foreach ($purchasedItems as $item) {
             if ($item->isProduct()) {
                 $this->processCartProductItem($user, $item);
             } elseif ($item->isBundle()) {
@@ -277,11 +289,42 @@ class HandleInvoicePaidJob implements ShouldQueue
         // Notify developers of their sales
         $this->sendDeveloperSaleNotifications($this->invoice->id);
 
+        // Thank the buyer for their purchase
+        $user->notify(new PurchaseReceipt);
+
         Log::info('Cart purchase completed', [
             'invoice_id' => $this->invoice->id,
             'cart_id' => $cartId,
             'user_id' => $user->id,
         ]);
+    }
+
+    /**
+     * Resolve which cart items were actually paid for in this invoice.
+     *
+     * The checkout session snapshots the purchased cart item IDs into the invoice
+     * metadata. We grant licenses only for those items so that anything else sitting
+     * in the cart at the time the payment is confirmed (e.g. items left over from an
+     * earlier browsing session or a merged guest cart) is never licensed for free.
+     */
+    private function resolvePurchasedItems(Cart $cart): Collection
+    {
+        $snapshot = (string) ($this->invoice->metadata['cart_item_ids'] ?? '');
+
+        if ($snapshot === '') {
+            // Legacy checkout sessions created before purchased items were snapshotted
+            // do not carry this metadata; fall back to the full cart for those.
+            Log::warning('Invoice has no cart_item_ids snapshot, processing entire cart', [
+                'invoice_id' => $this->invoice->id,
+                'cart_id' => $cart->id,
+            ]);
+
+            return $cart->items;
+        }
+
+        $purchasedItemIds = array_filter(array_map('intval', explode(',', $snapshot)));
+
+        return $cart->items->whereIn('id', $purchasedItemIds)->values();
     }
 
     private function processCartPluginItem(User $user, CartItem $item): void
@@ -651,6 +694,27 @@ class HandleInvoicePaidJob implements ShouldQueue
 
                 $developerAccount->user->notify(new PluginSaleCompleted($developerPayouts));
             });
+    }
+
+    private function notifyUltraSubscriber(): void
+    {
+        $line = $this->findPlanLineItem();
+
+        if (! $line || ! $line->price) {
+            return;
+        }
+
+        try {
+            $plan = Subscription::fromStripePriceId($line->price->id);
+        } catch (RuntimeException) {
+            return;
+        }
+
+        if ($plan !== Subscription::Max) {
+            return;
+        }
+
+        $this->billable()->notify(new UltraSubscriptionStarted);
     }
 
     private function billable(): User

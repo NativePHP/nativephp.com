@@ -52,7 +52,7 @@ the stores. You should consult the [App Store Connect Help](https://developer.ap
 [Play Console Help](https://support.google.com/googleplay/android-developer/?hl=en-GB#topic=3450769) documentation for
 detailed and up-to-date guidance on how to prepare your app submissions and listings.
 
-If you want more hands-on support, we happily work with our [Partners](/partners) to support them releasing their apps.
+If you want more [hands-on support](/consulting), we happily work with our [Partners](/partners) to support them releasing their apps.
 
 </aside>
 

@@ -110,7 +110,51 @@ class DocsSearchService
             usort($sections[$section], fn ($a, $b) => $a['order'] <=> $b['order']);
         }
 
-        return $sections;
+        // Order the sections themselves to match the sidebar (each section
+        // directory's `_index.md` front-matter `order` — the same source
+        // ShowDocumentationController sorts by). Nested subsections (e.g.
+        // plugins/core) rank right after their parent. JSON objects keep key
+        // order, so API consumers get the sidebar order for free. Unknown
+        // sections trail in their original grouping order (stable sort).
+        $rank = $this->sectionRanks($platform, $version);
+        $slugs = array_keys($sections);
+        usort($slugs, fn ($a, $b) => ($rank[$a] ?? PHP_INT_MAX) <=> ($rank[$b] ?? PHP_INT_MAX));
+
+        $ordered = [];
+        foreach ($slugs as $slug) {
+            $ordered[$slug] = $sections[$slug];
+        }
+
+        return $ordered;
+    }
+
+    /**
+     * Sidebar rank per section slug for one platform/version: top-level
+     * sections rank by their `_index.md` front-matter `order` (scaled so
+     * children can interleave); a nested subsection ranks just after its
+     * parent, offset by its own `order`. Sections without an `_index.md`
+     * get no rank (callers push them to the end).
+     *
+     * @return array<string, int>
+     */
+    protected function sectionRanks(string $platform, string $version): array
+    {
+        $base = "{$this->docsPath}/{$platform}/{$version}";
+        $rank = [];
+
+        foreach (glob("{$base}/*/_index.md") ?: [] as $index) {
+            $slug = basename(dirname($index));
+            $order = YamlFrontMatter::parse(file_get_contents($index))->matter('order') ?? 9999;
+            $rank[$slug] = $order * 10000;
+
+            foreach (glob("{$base}/{$slug}/*/_index.md") ?: [] as $nested) {
+                $nestedSlug = basename(dirname($nested));
+                $nestedOrder = YamlFrontMatter::parse(file_get_contents($nested))->matter('order') ?? 9999;
+                $rank[$nestedSlug] = $rank[$slug] + 1 + min($nestedOrder, 9998);
+            }
+        }
+
+        return $rank;
     }
 
     public function getPlatforms(): array
@@ -144,8 +188,8 @@ class DocsSearchService
         $versions = $this->getVersions();
 
         return [
-            'desktop' => collect($versions['desktop'] ?? [])->sort()->last() ?? '2',
-            'mobile' => collect($versions['mobile'] ?? [])->sort()->last() ?? '3',
+            'desktop' => (string) (config('docs.latest_versions.desktop') ?? collect($versions['desktop'] ?? [])->sort()->last() ?? '2'),
+            'mobile' => (string) (config('docs.latest_versions.mobile') ?? collect($versions['mobile'] ?? [])->sort()->last() ?? '3'),
         ];
     }
 
@@ -232,18 +276,30 @@ class DocsSearchService
 
     protected function stripBladeComponents(string $content): string
     {
-        // Remove <x-component>...</x-component> tags
-        $content = preg_replace('/<x-[^>]+>[\s\S]*?<\/x-[^>]+>/s', '', $content);
-        // Remove self-closing <x-component /> tags
-        $content = preg_replace('/<x-[^\/]+\/>/s', '', $content);
-        // Remove {{ }} blade echoes
-        $content = preg_replace('/\{\{.*?\}\}/s', '', $content);
-        // Remove {!! !!} unescaped echoes
-        $content = preg_replace('/\{!![\s\S]*?!!\}/s', '', $content);
-        // Remove @directives
-        $content = preg_replace('/@\w+(\([^)]*\))?/', '', $content);
+        // Fenced code blocks are preserved verbatim: they document the component
+        // API itself (<native:*> tags, @press/@change directives, {{ }} bindings),
+        // and Jump renders them as live examples. Only prose is cleaned — stripping
+        // directives from a code block turns `@press="save"` into `="save"`.
+        $segments = preg_split('/(```[\s\S]*?```)/', $content, -1, PREG_SPLIT_DELIM_CAPTURE);
 
-        return $content;
+        foreach ($segments as $i => $segment) {
+            if (str_starts_with($segment, '```')) {
+                continue; // code block — leave untouched
+            }
+            // Remove <x-component>...</x-component> tags
+            $segment = preg_replace('/<x-[^>]+>[\s\S]*?<\/x-[^>]+>/s', '', $segment);
+            // Remove self-closing <x-component /> tags
+            $segment = preg_replace('/<x-[^\/]+\/>/s', '', $segment);
+            // Remove {{ }} blade echoes
+            $segment = preg_replace('/\{\{.*?\}\}/s', '', $segment);
+            // Remove {!! !!} unescaped echoes
+            $segment = preg_replace('/\{!![\s\S]*?!!\}/s', '', $segment);
+            // Remove @directives (@verbatim wrappers, @php, etc.)
+            $segment = preg_replace('/@\w+(\([^)]*\))?/', '', $segment);
+            $segments[$i] = $segment;
+        }
+
+        return implode('', $segments);
     }
 
     protected function extractHeadings(string $content): array

@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Enums\PluginType;
+use App\Jobs\Concerns\ResolvesGitHubToken;
 use App\Models\Plugin;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Http;
@@ -10,6 +11,8 @@ use Illuminate\Support\Facades\Log;
 
 class SatisService
 {
+    use ResolvesGitHubToken;
+
     protected string $apiUrl;
 
     protected string $apiKey;
@@ -21,13 +24,60 @@ class SatisService
     }
 
     /**
-     * Trigger a full satis build with all approved plugins.
+     * Rebuild every approved paid plugin.
+     *
+     * Each plugin is built individually using its owner's GitHub token. A single
+     * satis build can only authenticate to github.com as one identity, but the
+     * plugins live in private repos across different owners/orgs — so one shared
+     * token can't clone them all and falls back to unauthenticated requests that
+     * hit the 60/hour rate limit. Per-plugin builds are partial (merging) on the
+     * satis side, so a failure never overwrites the published index with an
+     * incomplete set.
      */
-    public function buildAll(?string $githubToken = null): array
+    public function buildAll(): array
     {
-        $plugins = $this->getApprovedPlugins();
+        $plugins = Plugin::query()
+            ->approved()
+            ->where('type', PluginType::Paid)
+            ->with('user')
+            ->get();
 
-        return $this->triggerBuild($plugins, $githubToken, fullBuild: true);
+        if ($plugins->isEmpty()) {
+            return [
+                'success' => false,
+                'error' => 'No plugins to build',
+                'plugins_count' => 0,
+                'failed' => [],
+                'results' => [],
+            ];
+        }
+
+        $results = [];
+        $failed = [];
+
+        foreach ($plugins as $plugin) {
+            $result = $this->buildForPlugin($plugin);
+            $results[$plugin->name] = $result;
+
+            if (! ($result['success'] ?? false)) {
+                $failed[] = $plugin->name;
+            }
+        }
+
+        return [
+            'success' => empty($failed),
+            'plugins_count' => $plugins->count(),
+            'failed' => $failed,
+            'results' => $results,
+        ];
+    }
+
+    /**
+     * Build a single plugin using its owner's GitHub token.
+     */
+    public function buildForPlugin(Plugin $plugin): array
+    {
+        return $this->build([$plugin], $this->resolveGitHubTokenFor($plugin));
     }
 
     /**
@@ -98,26 +148,6 @@ class SatisService
                 'error' => $e->getMessage(),
             ];
         }
-    }
-
-    /**
-     * Get all approved plugins formatted for satis.
-     *
-     * @return array<int, array{name: string, repository_url: string, type: string, is_official: bool}>
-     */
-    protected function getApprovedPlugins(): array
-    {
-        return Plugin::query()
-            ->approved()
-            ->where('type', PluginType::Paid)
-            ->get()
-            ->map(fn (Plugin $plugin) => [
-                'name' => $plugin->name,
-                'repository_url' => $plugin->repository_url,
-                'is_official' => $plugin->is_official ?? false,
-            ])
-            ->values()
-            ->all();
     }
 
     /**

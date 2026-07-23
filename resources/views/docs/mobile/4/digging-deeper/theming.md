@@ -1,0 +1,194 @@
+---
+title: Theming
+order: 65
+---
+
+## Overview
+
+Every SuperNative app has one visual identity, defined in a single theme. Instead of hard-coding colors on each
+element, you name **semantic tokens** — `primary`, `surface`, `on-surface` — and reference them everywhere. Change
+a token once and it updates across every screen, in both light and dark mode.
+
+The theme is provided by the `nativephp/native-ui` plugin (which ships the components), but it governs the whole
+app, so it's the visual contract for everything you build.
+
+## Publishing the config
+
+Publish the theme file to your app to customize it:
+
+```shell
+php artisan vendor:publish --tag=native-ui-config
+```
+
+That writes `config/native-ui.php`, which holds a `theme` array of `light` and `dark` token blocks plus radii and
+font settings.
+
+## Tokens
+
+Colors come in **pairs**: a surface token and its `on-` counterpart — the color of content (text, icons) placed
+on that surface. Pairing them this way is what keeps contrast correct across light and dark.
+
+| Token | Used for |
+| --- | --- |
+| `primary` / `on-primary` | Filled buttons, active states, key accents |
+| `secondary` / `on-secondary` | Muted/secondary actions |
+| `surface` / `on-surface` | Cards, sheets, dialogs |
+| `background` / `on-background` | The page root behind everything |
+| `surface-variant` / `on-surface-variant` | Filled text fields, muted tonal surfaces / hint text |
+| `outline` | Neutral borders — fields, dividers, cards |
+| `destructive` / `on-destructive` | Destructive actions (`variant="destructive"`) |
+| `accent` / `on-accent` | Highlights, badges, emphasis outside `primary` |
+
+Plus non-color tokens: `radius-sm|md|lg|full`, `font-sm|md|lg|xl`, and `font-family` (`System` resolves to San
+Francisco on iOS / Roboto on Android; set a family name to load a custom font).
+
+Disabled controls draw from the `surface-variant` (fill) and `on-surface-variant` (label) pair on both
+platforms — tune disabled contrast by adjusting those two tokens, not per-component.
+
+## Color values
+
+Anywhere you author a color — a theme token, an element color prop (`headline-color`, badge colors, swipe-action
+tints), or an arbitrary-value class (`bg-[#…]`) — the same formats are accepted:
+
+| Format | Examples |
+| --- | --- |
+| Hex | `#B91C1C`, `#F00` |
+| Hex with alpha — CSS `#RRGGBBAA` order | `#8B5CF680` |
+| Tailwind palette name | `red-300`, `orange-800` |
+| Named | `white`, `black`, `transparent` |
+| Opacity modifier on any of the above | `red-300/20`, `#8B5CF6/50` |
+
+```php
+'light' => [
+    'primary'   => 'violet-600',      // Tailwind palette name
+    'secondary' => 'fuchsia-500/70',  // opacity modifier → tonal fill
+    'surface'   => '#F8FAFC',         // plain hex
+    'accent'    => '#00AAA680',       // hex with alpha (#RRGGBBAA)
+],
+```
+
+Alpha hex is always authored in CSS `#RRGGBBAA` order — the framework converts to what each platform expects.
+Components render color tokens **solid**; when you want a translucent or tonal fill, put the opacity on the token
+(`'secondary' => 'fuchsia-500/70'`) rather than expecting the renderer to soften it. Dark-mode auto-derivation
+preserves the alpha byte.
+
+## Using tokens in a screen
+
+Reference any token from Blade with the `theme-{token}` class suffix, on background, text, and border utilities:
+
+@verbatim
+```blade static
+<native:column class="bg-theme-surface border border-theme-outline rounded-2xl p-4">
+    <native:text class="text-theme-on-surface text-lg font-bold">Balance</native:text>
+    <native:text class="text-theme-on-surface-variant">Updated just now</native:text>
+</native:column>
+```
+@endverbatim
+
+Because the tokens carry the theme, you rarely reach for raw palette classes like `bg-slate-800` — and your UI
+stays correct when the system switches between light and dark.
+
+## Light & dark
+
+The `dark` block is **auto-derived** from `light` by luminance inversion, so a light-only theme already adapts.
+Specify any token under `dark` to override just that value:
+
+```php
+'theme' => [
+    'light' => [
+        'primary' => '#0F766E',
+        // ...
+    ],
+    'dark' => [
+        // Everything else derives from light; only override what you want to tune.
+        'primary' => '#14B8A6',
+    ],
+],
+```
+
+## Appearance in PHP
+
+The renderers switch between the `light` and `dark` token blocks automatically as the system appearance changes.
+When you need the current appearance in PHP — to pick an asset, resolve a token, or branch logic — read it from
+the `System` facade:
+
+```php
+use Native\Mobile\Facades\System;
+
+System::appearance();   // 'light' | 'dark'
+System::isDarkMode();   // bool
+System::isLightMode();  // bool
+```
+
+Global helper functions wrap the same calls for terse use in Blade and components:
+
+```php
+isDark();   // bool
+isLight();  // bool
+```
+
+### Resolving a token in PHP
+
+The `theme()` helper returns a token's value **for the current appearance** — the PHP-side counterpart to the
+`bg-theme-*` / `text-theme-*` classes, reading from the same `config/native-ui.php` theme config:
+
+```php
+theme('primary');            // config('native-ui.theme.dark.primary') in dark mode, light otherwise
+theme('primary', '#0F766E'); // fall back to a value when the token is unset
+```
+
+Pass a fallback when a setter needs a non-null string — `theme()` returns your default when the key is missing
+(or `native-ui` isn't installed).
+
+### Reacting to changes
+
+When the OS flips the theme — a Control Center toggle, or the sunset auto-switch — the `AppearanceChanged` event
+fires. React in a component with `#[On]`; `$mode` is `'light'` or `'dark'`:
+
+```php
+use Native\Mobile\Attributes\On;
+use Native\Mobile\Events\System\AppearanceChanged;
+
+#[On(AppearanceChanged::class)]
+public function appearanceChanged(string $mode): void
+{
+    // re-resolve anything appearance-dependent
+}
+```
+
+`AppearanceChanged` also dispatches globally, so code anywhere in the app can listen — not just the active
+screen:
+
+```php
+use Illuminate\Support\Facades\Event;
+use Native\Mobile\Events\System\AppearanceChanged;
+
+Event::listen(AppearanceChanged::class, function (AppearanceChanged $e) {
+    // $e->mode
+});
+```
+
+The query side (`System::appearance()` / `isDark()`) is kept in sync off this event, so reads stay fresh without
+a bridge round-trip.
+
+## Runtime theming
+
+For per-tenant or user-selectable themes, merge tokens at runtime from a service provider with `Theme::merge()`.
+It deep-merges over the config values, so you only pass what changes:
+
+```php
+use Nativephp\NativeUi\Theme;
+
+Theme::merge([
+    'light' => ['primary' => $tenant->brandColor],
+]);
+```
+
+`Theme::merge()` layers on top of `config/native-ui.php`; `Theme::reset()` returns to the config defaults.
+
+<aside>
+
+Keep every `on-*` color at **4.5:1** contrast against its surface (WCAG AA). The shipped defaults already meet it —
+if you customize, re-check the pairs you change. See [Accessibility](accessibility).
+
+</aside>

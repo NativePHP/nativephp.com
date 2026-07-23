@@ -1,0 +1,177 @@
+---
+title: Bottom Navigation
+order: 120
+---
+
+> [!IMPORTANT]
+> **Prefer the [Layout model](../the-basics/layouts).** Declare your app's bottom tabs with the `TabBar`
+> builder in a `NativeLayout` class rather than placing `<native:bottom-nav>` in a screen. This page documents the
+> inline element, which still works but is no longer the recommended approach.
+
+## Overview
+
+<div class="images-two-up not-prose">
+
+![](/img/docs/edge-bottom-nav-ios.png)
+
+![](/img/docs/edge-bottom-nav-android.png)
+
+</div>
+
+A bottom navigation bar with up to 5 items. Used for your app's primary navigation.
+
+One bar demonstrates the whole item API — an `active` tab, a `news` dot, and a `badge`:
+
+@verbatim
+```blade static
+<native:bottom-nav label-visibility="labeled">
+    <native:bottom-nav-item
+        id="home"
+        icon="home"
+        label="Home"
+        url="/home"
+        :active="true"
+    />
+    <native:bottom-nav-item
+        id="friends"
+        icon="person.3.fill"
+        label="Friends"
+        url="/friends"
+        :news="true"
+    />
+    <native:bottom-nav-item
+        id="profile"
+        icon="person"
+        label="Profile"
+        url="/profile"
+        badge="3"
+    />
+</native:bottom-nav>
+```
+@endverbatim
+
+The [Builder API](#builder-api) below produces this same bar from a layout class — the recommended home for it.
+
+## Props
+
+- `label-visibility` - `labeled`, `selected`, or `unlabeled` (optional, default: `labeled`)
+- `dark` - Force dark mode styling (optional)
+- `active-color` - Color of the active tab's icon and label. Hex string (optional)
+- `background-color` - Bar background color. Hex string. Wins over `dark`'s default (optional)
+- `text-color` - Color of inactive tab icons and labels. Hex string. Active tabs use `active-color` (optional)
+
+<aside>
+
+The bar handles its own bottom safe-area inset internally — the home-indicator zone on iOS, the gesture-bar zone on
+Android. Don't add your own padding for it. The bar's background extends to the screen edge while its content stays
+above the indicator, mirroring iOS `UITabBar`.
+
+</aside>
+
+## Children
+
+> [!IMPORTANT]
+> In the [Layout model](../the-basics/layouts#builder-reference) a bottom-nav item is a `Tab` — use that builder
+> rather than placing `<native:bottom-nav-item>` inline.
+
+A `<native:bottom-nav>` can contain up to 5 `<native:bottom-nav-item>` elements.
+
+### Props
+
+- `id` - Unique identifier (required)
+- `icon` - A named [icon](icon#icon-name-reference) (required)
+- `label` - Accessibility label (required)
+- `url` - A URL to navigate to in the web view (required)
+- `active` - Highlight this item as active (optional, default: `false`)
+- `badge` - Badge text/number, e.g. `"2"` — small red pill anchored top-right of the icon (optional)
+- `news` - Show a small red dot anchored top-right of the icon. Mutually exclusive with `badge` (optional, default: `false`)
+
+<aside>
+
+Tab taps use `replace` semantics — tapping a tab swaps the current screen rather than pushing onto the stack. The
+back chevron pops the entire tabs section in one step instead of stepping through tab history.
+
+Any `url` that doesn't match a registered native route will exit to the web view and load that URL there.
+
+</aside>
+
+Here's `badge` on a tab item:
+
+<div class="sm:w-1/2">
+
+![](/img/docs/edge-bottom-nav-item-badge.png)
+
+</div>
+
+## Builder API
+
+When a `<native:bottom-nav>` is supplied by a [layout](../the-basics/layouts), you build it fluently with the `TabBar`
+and `Tab` builders rather than writing it in Blade. This is the same bar as the [Overview](#overview) example:
+
+```php
+use Native\Mobile\Edge\Layouts\Builders\Tab;
+use Native\Mobile\Edge\Layouts\Builders\TabBar;
+
+TabBar::make()
+    ->labelVisibility('labeled')
+    ->activeColor('#0891b2')
+    ->add(Tab::link('Home',    '/home',    icon: 'home')->active())
+    ->add(Tab::link('Friends', '/friends', icon: 'person.3.fill')->news())
+    ->add(Tab::link('Profile', '/profile', icon: 'person')->badge('3'));
+```
+
+To force a dark bar regardless of the system theme, chain `->dark()` — or take full control with
+`->backgroundColor('#0F172A')->textColor('#94A3B8')`, which wins over `dark()`'s default.
+
+### `TabBar` methods
+
+- `make()` - Create a new builder
+- `dark(bool $dark = true)` - Force dark mode styling
+- `activeColor(string $color)` - Color of the active tab's icon and label
+- `backgroundColor(string $color)` - Bar background color (overrides `dark()`'s default)
+- `textColor(string $color)` - Color of inactive tab icons and labels
+- `labelVisibility(string $mode)` - `"labeled"`, `"selected"`, or `"unlabeled"`
+- `add(Tab $tab)` - Append a tab item
+
+### `Tab` methods
+
+- `link(string $label, string $url, ?string $icon = null)` - Build a tab. The id defaults to the label slugified
+- `id(string $id)` - Override the auto-generated id
+- `icon(string $icon)` - A named [icon](icon#icon-name-reference)
+- `badge(string $badge, ?string $color = null)` - Show a numeric/text badge
+- `news(bool $news = true)` - Show a red dot indicator
+- `active(bool $active = true)` - Mark this tab as active
+
+## Per-screen tab bar
+
+Screens can adjust their layout's tab bar for the current screen by overriding `tabBarOptions()`. Non-null fields
+override the layout's defaults; null fields fall through. This is the tab-bar parallel to the top bar's
+[`navigationOptions()`](top-bar#per-screen-overrides). Per-screen tab content edits (inserting or removing tabs) are
+out of scope — define your tabs once at the layout level.
+
+```php
+use Native\Mobile\Edge\Layouts\Builders\TabBarOptions;
+use Native\Mobile\Edge\NativeComponent;
+
+class ChatThread extends NativeComponent
+{
+    public function tabBarOptions(): ?TabBarOptions
+    {
+        return TabBarOptions::make()
+            ->hidden()              // hide the tab bar on this pushed detail screen
+            ->highlight('chats');   // keep the "Chats" tab lit while you're inside it
+    }
+}
+```
+
+### `TabBarOptions` methods
+
+- `make()` - Create a new builder
+- `hidden(bool $hidden = true)` - Hide the tab bar on this screen — the pushed-detail pattern
+- `highlight(string $tabId)` - Force a tab id to render as active, even when the screen's URL doesn't match any tab (e.g. a search-results screen reached from the Search tab)
+- `activeColor(string $color)` - Color of the active tab's icon and label on this screen
+- `backgroundColor(string $color)` - Bar background color on this screen
+
+For the common "hide the tab bar on this detail screen" case, the shorter `protected bool $hidesTabBar = true;`
+property on the screen is equivalent to `TabBarOptions::make()->hidden()`. Use either; if both are set, the explicit
+builder wins.
