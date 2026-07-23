@@ -9,12 +9,21 @@ use App\Models\Product;
 use Illuminate\Database\Eloquent\Collection;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\Layout;
+use Livewire\Attributes\Renderless;
 use Livewire\Component;
 
 #[Layout('components.layouts.dashboard')]
 class LessonShow extends Component
 {
+    public const INTRO_SECONDS = 9;
+
+    public const OUTRO_SECONDS = 10;
+
+    private const VIDEO_PLAYED_SESSION_KEY = 'course_video_played';
+
     public CourseLesson $lesson;
+
+    public bool $skipIntroOutro = false;
 
     public function mount(CourseLesson $lesson): void
     {
@@ -25,6 +34,14 @@ class LessonShow extends Component
         if (! $this->lesson->is_free && ! $this->hasPurchased && ! $this->isAdmin) {
             abort(403, 'You need Pro access to view this lesson.');
         }
+
+        $this->skipIntroOutro = session()->has(self::VIDEO_PLAYED_SESSION_KEY);
+    }
+
+    #[Renderless]
+    public function markVideoPlayed(): void
+    {
+        session()->put(self::VIDEO_PLAYED_SESSION_KEY, true);
     }
 
     #[Computed]
@@ -117,8 +134,10 @@ class LessonShow extends Component
 
     public function render()
     {
-        return view('livewire.customer.course.lesson-show')
-            ->title($this->lesson->title);
+        return view('livewire.customer.course.lesson-show', [
+            'introSkipSeconds' => self::INTRO_SECONDS,
+            'outroSkipSeconds' => self::OUTRO_SECONDS,
+        ])->title($this->lesson->title);
     }
 
     private function orderedLessons()

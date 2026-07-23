@@ -3,7 +3,9 @@
     <div class="w-full rounded-lg overflow-hidden bg-black aspect-video flex items-center justify-center relative">
         @if ($lesson->vimeo_id)
             <iframe
-                src="https://player.vimeo.com/video/{{ $lesson->vimeo_id }}?badge=0&autopause=0&player_id=0&app_id=58479"
+                wire:ignore
+                x-data="courseVideo({ skip: @js($skipIntroOutro), introSeconds: {{ $introSkipSeconds }}, outroSeconds: {{ $outroSkipSeconds }} })"
+                src="https://player.vimeo.com/video/{{ $lesson->vimeo_id }}?badge=0&autopause=0&player_id=0&app_id=58479{{ $skipIntroOutro ? '#t=' . $introSkipSeconds . 's' : '' }}"
                 class="absolute inset-0 w-full h-full"
                 frameborder="0"
                 allow="autoplay; fullscreen; picture-in-picture; clipboard-write; encrypted-media"

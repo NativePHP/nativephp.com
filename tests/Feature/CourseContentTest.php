@@ -393,4 +393,69 @@ class CourseContentTest extends TestCase
 
         $this->assertTrue($module->lessons->contains($lesson));
     }
+
+    #[Test]
+    public function first_video_in_a_session_plays_the_intro_in_full(): void
+    {
+        $lesson = $this->publishedVideoLesson('111111');
+
+        Livewire::actingAs(User::factory()->create())
+            ->test(LessonShow::class, ['lesson' => $lesson])
+            ->assertSet('skipIntroOutro', false)
+            ->assertDontSee('#t=9s', false);
+    }
+
+    #[Test]
+    public function playing_a_video_records_it_in_the_session(): void
+    {
+        $lesson = $this->publishedVideoLesson('222222');
+
+        Livewire::actingAs(User::factory()->create())
+            ->test(LessonShow::class, ['lesson' => $lesson])
+            ->call('markVideoPlayed');
+
+        $this->assertTrue(session()->has('course_video_played'));
+    }
+
+    #[Test]
+    public function subsequent_videos_skip_the_intro_and_outro(): void
+    {
+        session()->put('course_video_played', true);
+
+        $lesson = $this->publishedVideoLesson('333333');
+
+        Livewire::actingAs(User::factory()->create())
+            ->test(LessonShow::class, ['lesson' => $lesson])
+            ->assertSet('skipIntroOutro', true)
+            ->assertSee('#t=9s', false);
+    }
+
+    #[Test]
+    public function playing_the_first_video_makes_later_videos_in_the_session_skip(): void
+    {
+        $user = User::factory()->create();
+        $firstLesson = $this->publishedVideoLesson('444444');
+        $secondLesson = $this->publishedVideoLesson('555555');
+
+        Livewire::actingAs($user)
+            ->test(LessonShow::class, ['lesson' => $firstLesson])
+            ->assertSet('skipIntroOutro', false)
+            ->call('markVideoPlayed');
+
+        Livewire::actingAs($user)
+            ->test(LessonShow::class, ['lesson' => $secondLesson])
+            ->assertSet('skipIntroOutro', true)
+            ->assertSee('#t=9s', false);
+    }
+
+    private function publishedVideoLesson(string $vimeoId): CourseLesson
+    {
+        $course = Course::factory()->published()->create();
+        $module = CourseModule::factory()->published()->free()->create(['course_id' => $course->id]);
+
+        return CourseLesson::factory()->published()->free()->create([
+            'course_module_id' => $module->id,
+            'vimeo_id' => $vimeoId,
+        ]);
+    }
 }
