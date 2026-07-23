@@ -62,4 +62,16 @@ class HomeCourseCardTest extends TestCase
             $this->assertStringContainsString($card, $contents);
         }
     }
+
+    #[Test]
+    public function the_announcement_cards_lead_with_jump_then_masterclass_then_plugins(): void
+    {
+        $this->get('/')
+            ->assertOk()
+            ->assertSeeInOrder([
+                'Code here. Jump there.',
+                'The Masterclass',
+                'Plugins',
+            ]);
+    }
 }

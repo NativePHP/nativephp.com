@@ -70,13 +70,23 @@ class GitHub
         ) ?? collect();
     }
 
-    public function releasesAfter(string $version): Collection
+    /**
+     * Releases strictly after the given version, optionally capped below
+     * another version and its prereleases — without a cap, a versioned
+     * changelog would list the next major's releases too (4.0.0-rc.1
+     * compares greater than any 3.x tag).
+     */
+    public function releasesAfter(string $version, ?string $before = null): Collection
     {
         $version = ltrim($version, 'v');
+        $ceiling = $before === null ? null : ltrim($before, 'v').'-dev';
 
-        return $this->releases()->filter(
-            fn (Release $release) => version_compare(ltrim((string) $release->tag_name, 'v'), $version, '>')
-        )->values();
+        return $this->releases()->filter(function (Release $release) use ($version, $ceiling) {
+            $tag = ltrim((string) $release->tag_name, 'v');
+
+            return version_compare($tag, $version, '>')
+                && ($ceiling === null || version_compare($tag, $ceiling, '<'));
+        })->values();
     }
 
     /**

@@ -3,7 +3,7 @@
     href="https://bifrost.nativephp.com/jump"
     target="_blank"
     rel="noopener noreferrer"
-    class="group relative block h-full overflow-hidden rounded-2xl bg-gradient-to-br from-blue-500/20 via-cyan-500/10 to-indigo-500/20 p-0.5 ring-1 ring-zinc-200/50 transition duration-300 hover:ring-blue-400/50 dark:ring-blue-500/30"
+    class="group relative block h-full overflow-hidden rounded-2xl bg-gradient-to-br from-blue-500/20 via-cyan-500/10 to-indigo-500/20 p-0.5 ring-1 ring-zinc-200/50 transition-shadow duration-300 hover:ring-blue-400/50 dark:ring-blue-500/30"
     x-init="
         () => {
             motion.inView($el, (element) => {
@@ -14,7 +14,6 @@
                         y: 0,
                         autoAlpha: 1,
                         duration: 0.6,
-                        delay: 0.4,
                         ease: 'power2.out',
                     },
                 )
@@ -37,7 +36,7 @@
                     })
                 }
             "
-            class="pointer-events-none absolute -bottom-10 -left-10 size-32 rounded-full bg-blue-500/20 blur-[40px] transition duration-500 group-hover:bg-blue-500/30"
+            class="pointer-events-none absolute -bottom-10 -left-10 size-32 rounded-full bg-blue-500/20 blur-[40px] transition-colors duration-500 group-hover:bg-blue-500/30"
             aria-hidden="true"
         ></div>
 
@@ -80,19 +79,19 @@
                 <svg class="size-3 text-blue-500 dark:text-blue-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>
                 </svg>
-                Works offline after download
+                Test our native plugins &mdash; even the premium ones
             </li>
             <li class="flex items-center gap-2">
                 <svg class="size-3 text-blue-500 dark:text-blue-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>
                 </svg>
-                No Xcode or Android Studio
+                No Xcode or Android Studio required
             </li>
             <li class="flex items-center gap-2">
                 <svg class="size-3 text-blue-500 dark:text-blue-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>
                 </svg>
-                Free for local development
+                Completely free!
             </li>
         </ul>
 

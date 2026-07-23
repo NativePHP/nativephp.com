@@ -98,6 +98,22 @@ class GitHubTest extends TestCase
         $this->assertEquals('3.2.0', $releases->first()->tag_name);
     }
 
+    public function test_releases_after_caps_below_the_next_major_including_its_prereleases(): void
+    {
+        Http::fake([
+            'api.github.com/repos/nativephp/mobile-air/releases*' => Http::response([
+                ['id' => 1, 'tag_name' => 'v4.0.0', 'name' => 'v4.0.0', 'body' => '', 'published_at' => '2026-08-01T00:00:00Z'],
+                ['id' => 2, 'tag_name' => 'v4.0.0-rc.1', 'name' => 'v4.0.0-rc.1', 'body' => '', 'published_at' => '2026-07-01T00:00:00Z'],
+                ['id' => 3, 'tag_name' => 'v3.2.0', 'name' => 'v3.2.0', 'body' => '', 'published_at' => '2026-05-01T00:00:00Z'],
+                ['id' => 4, 'tag_name' => 'v3.1.0', 'name' => 'v3.1.0', 'body' => '', 'published_at' => '2026-04-01T00:00:00Z'],
+            ]),
+        ]);
+
+        $releases = GitHub::mobileAir()->releasesAfter('3.1.0', before: '4.0.0');
+
+        $this->assertEquals(['v3.2.0'], $releases->pluck('tag_name')->all());
+    }
+
     public function test_releases_from_includes_prereleases_of_the_boundary_version(): void
     {
         Http::fake([

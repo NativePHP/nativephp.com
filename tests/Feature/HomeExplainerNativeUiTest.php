@@ -201,8 +201,8 @@ class HomeExplainerNativeUiTest extends TestCase
     }
 
     /**
-     * v4 is a prerelease, so the unversioned URL would resolve to the latest
-     * stable docs (v3), which has no architecture section.
+     * The version is pinned deliberately — SuperNative is a v4 story, so the
+     * link should keep working even after a future major becomes the latest.
      */
     #[Test]
     public function the_under_the_hood_section_links_to_the_supernative_intro()

@@ -96,10 +96,7 @@
                     but it’s just PHP... on your user's device!
                 </p>
 
-                {{--
-                    v4 is still a prerelease, so link the version explicitly:
-                    the unversioned URL resolves to the latest stable docs.
-                --}}
+                {{-- Version pinned deliberately: SuperNative is a v4 story. --}}
                 <a
                     x-show="$store.platform.is('mobile')"
                     href="{{ route('docs.show', ['platform' => 'mobile', 'version' => 4, 'page' => 'architecture/super-native']) }}"

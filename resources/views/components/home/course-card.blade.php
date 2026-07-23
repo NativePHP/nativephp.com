@@ -1,7 +1,7 @@
 {{-- Course Card - NativePHP Masterclass --}}
 <a
     href="{{ route('course') }}"
-    class="group relative block h-full overflow-hidden rounded-2xl bg-gradient-to-br from-emerald-500/20 via-teal-500/10 to-cyan-500/20 p-0.5 ring-1 ring-zinc-200/50 transition duration-300 hover:ring-emerald-400/50 dark:ring-emerald-500/30"
+    class="group relative block h-full overflow-hidden rounded-2xl bg-gradient-to-br from-emerald-500/20 via-teal-500/10 to-cyan-500/20 p-0.5 ring-1 ring-zinc-200/50 transition-shadow duration-300 hover:ring-emerald-400/50 dark:ring-emerald-500/30"
     x-init="
         () => {
             motion.inView($el, (element) => {
@@ -12,7 +12,7 @@
                         y: 0,
                         autoAlpha: 1,
                         duration: 0.6,
-                        delay: 0.2,
+                        delay: 0.15,
                         ease: 'power2.out',
                     },
                 )
@@ -35,7 +35,7 @@
                     })
                 }
             "
-            class="pointer-events-none absolute -right-10 -top-10 size-32 rounded-full bg-emerald-500/20 blur-[40px] transition duration-500 group-hover:bg-emerald-500/30"
+            class="pointer-events-none absolute -right-10 -top-10 size-32 rounded-full bg-emerald-500/20 blur-[40px] transition-colors duration-500 group-hover:bg-emerald-500/30"
             aria-hidden="true"
         ></div>
 

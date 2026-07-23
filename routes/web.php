@@ -43,6 +43,7 @@ use App\Livewire\PluginDirectory;
 use App\Models\Course;
 use App\Models\Product;
 use App\Services\CartService;
+use App\Services\DocsVersionService;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Exceptions\UrlGenerationException;
 use Illuminate\Support\Facades\Route;
@@ -271,6 +272,11 @@ Route::get('docs/{platform}/{page?}', function (string $platform, $page = null) 
             ->sort()
             ->last()
         ?? '1';
+
+    // Map renamed pages to their slug in the latest version up front, so a
+    // stale unversioned link 301s straight to its new home instead of
+    // chaining through a second redirect.
+    $page = app(DocsVersionService::class)->resolvePageForVersion($platform, $latestVersion, $page);
 
     return redirect("/docs/{$platform}/{$latestVersion}/{$page}", 301);
 })

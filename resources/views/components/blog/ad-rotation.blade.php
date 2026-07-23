@@ -180,7 +180,7 @@
 
             {{-- Price hint --}}
             <div class="mt-2 text-xs text-sky-100">
-                Plans from $19/mo
+                Plans from $10/mo
             </div>
 
             {{-- Decorative stars --}}
