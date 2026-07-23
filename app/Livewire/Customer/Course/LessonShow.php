@@ -6,7 +6,6 @@ use App\Models\Course;
 use App\Models\CourseLesson;
 use App\Models\LessonProgress;
 use App\Models\Product;
-use Illuminate\Database\Eloquent\Collection;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Renderless;
@@ -56,9 +55,7 @@ class LessonShow extends Component
         return $this->lesson->module->course->load(['modules' => function ($query) {
             $query->when(! $this->isAdmin, fn ($query) => $query->where('is_published', true))
                 ->orderBy('sort_order')
-                ->with(['lessons' => function ($query) {
-                    $query->when(! $this->isAdmin, fn ($query) => $query->where('is_published', true))->orderBy('sort_order');
-                }]);
+                ->with(['lessons' => fn ($query) => $query->orderBy('sort_order')]);
         }]);
     }
 
@@ -68,17 +65,6 @@ class LessonShow extends Component
         $product = Product::where('slug', 'nativephp-masterclass')->first();
 
         return $product && $product->isOwnedBy(auth()->user());
-    }
-
-    /**
-     * @return Collection<int, CourseLesson>
-     */
-    #[Computed]
-    public function moduleLessons(): Collection
-    {
-        return $this->lesson->module->lessons()
-            ->when(! $this->isAdmin, fn ($query) => $query->where('is_published', true))
-            ->get();
     }
 
     #[Computed]
@@ -142,6 +128,15 @@ class LessonShow extends Component
 
     private function orderedLessons()
     {
-        return $this->course->modules->flatMap(fn ($m) => $m->lessons);
+        return $this->course->modules
+            ->flatMap(fn ($module) => $module->lessons)
+            ->filter(fn (CourseLesson $lesson) => $this->canNavigateTo($lesson))
+            ->values();
+    }
+
+    private function canNavigateTo(CourseLesson $lesson): bool
+    {
+        return ($lesson->is_published || $this->isAdmin)
+            && ($lesson->is_free || $this->hasPurchased || $this->isAdmin);
     }
 }

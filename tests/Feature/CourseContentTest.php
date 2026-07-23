@@ -301,11 +301,11 @@ class CourseContentTest extends TestCase
             ->test(Index::class)
             ->assertSee('Hidden Module')
             ->assertSee('Hidden Lesson')
-            ->assertSee('Draft');
+            ->assertSee('Coming Soon');
     }
 
     #[Test]
-    public function non_admin_owner_does_not_see_unpublished_content_in_dashboard(): void
+    public function non_admin_owner_sees_draft_lessons_as_coming_soon_but_not_unpublished_modules(): void
     {
         $user = User::factory()->create();
         $product = Product::where('slug', 'nativephp-masterclass')->first();
@@ -319,9 +319,9 @@ class CourseContentTest extends TestCase
             'course_id' => $course->id,
             'title' => 'Live Module',
         ]);
-        CourseLesson::factory()->create([
+        $draftLesson = CourseLesson::factory()->create([
             'course_module_id' => $liveModule->id,
-            'title' => 'Hidden Lesson',
+            'title' => 'Draft Lesson',
         ]);
         CourseModule::factory()->create([
             'course_id' => $course->id,
@@ -331,7 +331,9 @@ class CourseContentTest extends TestCase
         Livewire::actingAs($user)
             ->test(Index::class)
             ->assertSee('Live Module')
-            ->assertDontSee('Hidden Lesson')
+            ->assertSee('Draft Lesson')
+            ->assertSee('Coming Soon')
+            ->assertDontSee(route('customer.course.lesson', $draftLesson), false)
             ->assertDontSee('Hidden Module');
     }
 
@@ -352,7 +354,7 @@ class CourseContentTest extends TestCase
         Livewire::actingAs($admin)
             ->test(LessonShow::class, ['lesson' => $lesson])
             ->assertSee('Hidden Pro Lesson')
-            ->assertSee('Draft');
+            ->assertSee('Coming Soon');
     }
 
     #[Test]
@@ -446,6 +448,247 @@ class CourseContentTest extends TestCase
             ->test(LessonShow::class, ['lesson' => $secondLesson])
             ->assertSet('skipIntroOutro', true)
             ->assertSee('#t=9s', false);
+    }
+
+    #[Test]
+    public function lesson_page_shows_the_full_course_outline(): void
+    {
+        $user = User::factory()->create();
+        $product = Product::where('slug', 'nativephp-masterclass')->first();
+        ProductLicense::factory()->create([
+            'user_id' => $user->id,
+            'product_id' => $product->id,
+        ]);
+
+        $course = Course::factory()->published()->create();
+        $currentModule = CourseModule::factory()->published()->create([
+            'course_id' => $course->id,
+            'title' => 'Getting Started',
+            'sort_order' => 1,
+        ]);
+        $otherModule = CourseModule::factory()->published()->create([
+            'course_id' => $course->id,
+            'title' => 'Going Deeper',
+            'sort_order' => 2,
+        ]);
+        $currentLesson = CourseLesson::factory()->published()->create([
+            'course_module_id' => $currentModule->id,
+            'title' => 'Intro Lesson',
+        ]);
+        CourseLesson::factory()->published()->create([
+            'course_module_id' => $otherModule->id,
+            'title' => 'Advanced Lesson',
+        ]);
+
+        Livewire::actingAs($user)
+            ->test(LessonShow::class, ['lesson' => $currentLesson])
+            ->assertSee('Course outline')
+            ->assertSee('Getting Started')
+            ->assertSee('Going Deeper')
+            ->assertSee('Advanced Lesson');
+    }
+
+    #[Test]
+    public function coming_soon_banner_shows_when_no_lessons_have_videos(): void
+    {
+        $user = User::factory()->create();
+        $product = Product::where('slug', 'nativephp-masterclass')->first();
+        ProductLicense::factory()->create([
+            'user_id' => $user->id,
+            'product_id' => $product->id,
+        ]);
+
+        $course = Course::factory()->published()->create();
+        $module = CourseModule::factory()->published()->create(['course_id' => $course->id]);
+        CourseLesson::factory()->published()->create([
+            'course_module_id' => $module->id,
+            'vimeo_id' => null,
+        ]);
+
+        Livewire::actingAs($user)
+            ->test(Index::class)
+            ->assertSee('recording the lessons now');
+    }
+
+    #[Test]
+    public function coming_soon_banner_is_hidden_when_a_lesson_has_a_video(): void
+    {
+        $user = User::factory()->create();
+        $product = Product::where('slug', 'nativephp-masterclass')->first();
+        ProductLicense::factory()->create([
+            'user_id' => $user->id,
+            'product_id' => $product->id,
+        ]);
+
+        $course = Course::factory()->published()->create();
+        $module = CourseModule::factory()->published()->create(['course_id' => $course->id]);
+        CourseLesson::factory()->published()->create([
+            'course_module_id' => $module->id,
+            'vimeo_id' => '123456',
+        ]);
+
+        Livewire::actingAs($user)
+            ->test(Index::class)
+            ->assertDontSee('recording the lessons now');
+    }
+
+    #[Test]
+    public function course_module_list_does_not_show_free_or_pro_pills(): void
+    {
+        $user = User::factory()->create();
+        $product = Product::where('slug', 'nativephp-masterclass')->first();
+        ProductLicense::factory()->create([
+            'user_id' => $user->id,
+            'product_id' => $product->id,
+        ]);
+
+        $course = Course::factory()->published()->create();
+        CourseModule::factory()->published()->free()->create([
+            'course_id' => $course->id,
+            'title' => 'Starter Module',
+            'description' => null,
+        ]);
+        CourseModule::factory()->published()->create([
+            'course_id' => $course->id,
+            'title' => 'Advanced Module',
+            'description' => null,
+        ]);
+
+        Livewire::actingAs($user)
+            ->test(Index::class)
+            ->assertSee('Starter Module')
+            ->assertSee('Advanced Module')
+            ->assertDontSee('Free')
+            ->assertDontSee('Pro');
+    }
+
+    #[Test]
+    public function draft_lessons_show_in_the_outline_as_coming_soon_but_are_not_clickable_for_non_admins(): void
+    {
+        $user = User::factory()->create();
+        $product = Product::where('slug', 'nativephp-masterclass')->first();
+        ProductLicense::factory()->create([
+            'user_id' => $user->id,
+            'product_id' => $product->id,
+        ]);
+
+        $course = Course::factory()->published()->create();
+        $module = CourseModule::factory()->published()->create(['course_id' => $course->id]);
+        $currentLesson = CourseLesson::factory()->published()->create([
+            'course_module_id' => $module->id,
+            'title' => 'Current Lesson',
+        ]);
+        $draftLesson = CourseLesson::factory()->create([
+            'course_module_id' => $module->id,
+            'title' => 'Draft Lesson',
+        ]);
+
+        Livewire::actingAs($user)
+            ->test(LessonShow::class, ['lesson' => $currentLesson])
+            ->assertSee('Draft Lesson')
+            ->assertSee('Coming Soon')
+            ->assertDontSee(route('customer.course.lesson', $draftLesson), false);
+    }
+
+    #[Test]
+    public function draft_lessons_are_clickable_in_the_outline_for_admins(): void
+    {
+        config(['filament.users' => ['admin@test.com']]);
+        $admin = User::factory()->create(['email' => 'admin@test.com']);
+
+        $course = Course::factory()->published()->create();
+        $module = CourseModule::factory()->published()->create(['course_id' => $course->id]);
+        $currentLesson = CourseLesson::factory()->published()->create([
+            'course_module_id' => $module->id,
+            'title' => 'Current Lesson',
+        ]);
+        $draftLesson = CourseLesson::factory()->create([
+            'course_module_id' => $module->id,
+            'title' => 'Draft Lesson',
+        ]);
+
+        Livewire::actingAs($admin)
+            ->test(LessonShow::class, ['lesson' => $currentLesson])
+            ->assertSee('Draft Lesson')
+            ->assertSee('Coming Soon')
+            ->assertSee(route('customer.course.lesson', $draftLesson), false);
+    }
+
+    #[Test]
+    public function draft_video_lessons_do_not_hide_the_coming_soon_banner_for_non_admins(): void
+    {
+        $user = User::factory()->create();
+        $product = Product::where('slug', 'nativephp-masterclass')->first();
+        ProductLicense::factory()->create([
+            'user_id' => $user->id,
+            'product_id' => $product->id,
+        ]);
+
+        $course = Course::factory()->published()->create();
+        $module = CourseModule::factory()->published()->create(['course_id' => $course->id]);
+        CourseLesson::factory()->create([
+            'course_module_id' => $module->id,
+            'vimeo_id' => '123456',
+        ]);
+
+        Livewire::actingAs($user)
+            ->test(Index::class)
+            ->assertSee('recording the lessons now');
+    }
+
+    #[Test]
+    public function completed_lessons_are_struck_through_in_the_outline(): void
+    {
+        $user = User::factory()->create();
+        $product = Product::where('slug', 'nativephp-masterclass')->first();
+        ProductLicense::factory()->create([
+            'user_id' => $user->id,
+            'product_id' => $product->id,
+        ]);
+
+        $course = Course::factory()->published()->create();
+        $module = CourseModule::factory()->published()->create(['course_id' => $course->id]);
+        $currentLesson = CourseLesson::factory()->published()->create([
+            'course_module_id' => $module->id,
+            'title' => 'Current Lesson',
+        ]);
+        $doneLesson = CourseLesson::factory()->published()->create([
+            'course_module_id' => $module->id,
+            'title' => 'Done Lesson',
+        ]);
+        LessonProgress::create([
+            'user_id' => $user->id,
+            'course_lesson_id' => $doneLesson->id,
+            'completed_at' => now(),
+        ]);
+
+        Livewire::actingAs($user)
+            ->test(LessonShow::class, ['lesson' => $currentLesson])
+            ->assertSee('Done Lesson')
+            ->assertSeeHtml('line-through');
+    }
+
+    #[Test]
+    public function outline_lesson_titles_have_a_hover_title_attribute_and_are_not_struck_through_when_incomplete(): void
+    {
+        $user = User::factory()->create();
+        $product = Product::where('slug', 'nativephp-masterclass')->first();
+        ProductLicense::factory()->create([
+            'user_id' => $user->id,
+            'product_id' => $product->id,
+        ]);
+
+        $course = Course::factory()->published()->create();
+        $module = CourseModule::factory()->published()->create(['course_id' => $course->id]);
+        $lesson = CourseLesson::factory()->published()->create([
+            'course_module_id' => $module->id,
+            'title' => 'Hover For Full Title',
+        ]);
+
+        Livewire::actingAs($user)
+            ->test(LessonShow::class, ['lesson' => $lesson])
+            ->assertSeeHtml('title="Hover For Full Title"')
+            ->assertDontSeeHtml('line-through');
     }
 
     private function publishedVideoLesson(string $vimeoId): CourseLesson
