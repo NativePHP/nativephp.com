@@ -4,6 +4,7 @@ use App\Features\ShowAuthButtons;
 use App\Features\ShowPlugins;
 use App\Http\Controllers\ApplinksController;
 use App\Http\Controllers\Auth\CustomerAuthController;
+use App\Http\Controllers\Auth\EmailChangeController;
 use App\Http\Controllers\Auth\EmailVerificationController;
 use App\Http\Controllers\BundleController;
 use App\Http\Controllers\CartController;
@@ -345,6 +346,7 @@ Route::middleware('auth')->group(function (): void {
     Route::get('email/verify', [EmailVerificationController::class, 'notice'])->name('verification.notice');
     Route::get('email/verify/{id}/{hash}', [EmailVerificationController::class, 'verify'])->middleware(['signed', 'throttle:6,1'])->name('verification.verify');
     Route::post('email/verification-notification', [EmailVerificationController::class, 'resend'])->middleware('throttle:6,1')->name('verification.send');
+    Route::get('email/change/{emailChange}/confirm', [EmailChangeController::class, 'confirm'])->middleware(['signed', 'throttle:6,1'])->name('email-change.confirm');
 });
 
 Route::post('logout', [CustomerAuthController::class, 'logout'])
