@@ -81,11 +81,12 @@ Everything else from the shared list applies the same as on any element (`w-*`, 
 ```php
 use Native\Mobile\Edge\Elements\Row;
 use Native\Mobile\Edge\Elements\Text;
+use Native\Mobile\Edge\Enums\AlignItems;
 
 Row::make(
     Text::make('Left'),
     Text::make('Right'),
-)->gap(8)->alignItems(1);
+)->gap(8)->alignItems(AlignItems::Center);
 ```
 
 - `make(Element ...$children)` - Create a row with children. Layout / style fluent methods are inherited from the
