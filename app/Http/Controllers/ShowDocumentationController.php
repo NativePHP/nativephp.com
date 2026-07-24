@@ -6,6 +6,7 @@ use App\Services\DocsVersionService;
 use App\Support\CommonMark\CommonMark;
 use Artesaos\SEOTools\Facades\SEOMeta;
 use Artesaos\SEOTools\Facades\SEOTools;
+use Closure;
 use Illuminate\Contracts\View\Factory as ViewFactory;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -24,16 +25,12 @@ class ShowDocumentationController extends Controller
 {
     public function __invoke(Request $request, string $platform, string $version, ?string $page = null)
     {
-        if (config('app.env') === 'local') {
-            Cache::flush();
-        }
-
         abort_unless(is_dir(resource_path('views/docs/'.$platform.'/'.$version)), 404);
 
         session(['viewing_docs_version' => $version]);
         session(['viewing_docs_platform' => $platform]);
 
-        $navigation = Cache::remember("docs_nav_{$platform}_{$version}", now()->addDay(),
+        $navigation = $this->cacheOrCompute("docs_nav_{$platform}_{$version}",
             fn () => $this->getNavigation($platform, $version)
         );
 
@@ -42,7 +39,7 @@ class ShowDocumentationController extends Controller
         }
 
         try {
-            $pageProperties = Cache::remember("docs_{$platform}_{$version}_{$page}", now()->addDay(),
+            $pageProperties = $this->cacheOrCompute("docs_{$platform}_{$version}_{$page}",
                 fn () => $this->getPageProperties($platform, $version, $page)
             );
         } catch (InvalidArgumentException $e) {
@@ -81,6 +78,19 @@ class ShowDocumentationController extends Controller
         SEOTools::twitter()->setDescription($description);
 
         return view('docs.index')->with($pageProperties);
+    }
+
+    /**
+     * Cache the callback's result for a day, or compute it fresh in local so
+     * docs edits show up immediately without clearing (or racing on) the cache.
+     */
+    private function cacheOrCompute(string $key, Closure $callback): mixed
+    {
+        if (config('app.env') === 'local') {
+            return $callback();
+        }
+
+        return Cache::remember($key, now()->addDay(), $callback);
     }
 
     public function serveRawMarkdown(Request $request, string $platform, string $version, string $page)

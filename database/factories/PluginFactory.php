@@ -183,6 +183,13 @@ class PluginFactory extends Factory
         ]);
     }
 
+    public function worksInJump(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'works_in_jump' => true,
+        ]);
+    }
+
     public function free(): static
     {
         return $this->state(fn (array $attributes) => [
