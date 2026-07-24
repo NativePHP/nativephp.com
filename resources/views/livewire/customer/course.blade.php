@@ -52,7 +52,7 @@
                                 <div class="flex items-center gap-2">
                                     <flux:heading size="sm">{{ $module->title }}</flux:heading>
                                     @if (! $module->is_published)
-                                        <flux:badge variant="pill" color="amber" size="sm">Coming Soon</flux:badge>
+                                        <flux:badge variant="pill" color="amber" size="sm">Draft</flux:badge>
                                     @endif
                                 </div>
                                 @if ($module->description)

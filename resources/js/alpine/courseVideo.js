@@ -23,11 +23,12 @@ function loadVimeoSdk() {
 }
 
 export default (options = {}) => ({
+    videoId: options.videoId,
     skip: options.skip ?? false,
     introSeconds: options.introSeconds ?? 9,
     outroSeconds: options.outroSeconds ?? 10,
-    player: null,
     marked: false,
+    cleanup: null,
 
     init() {
         loadVimeoSdk()
@@ -36,16 +37,74 @@ export default (options = {}) => ({
     },
 
     setupPlayer() {
-        if (!window.Vimeo?.Player) {
+        if (!window.Vimeo?.Player || !this.videoId) {
             return
         }
 
-        this.player = new window.Vimeo.Player(this.$el)
+        // Keep the player in a plain closure variable, never a reactive Alpine
+        // property: the SDK keys its ready-promise and event registry off the raw
+        // instance via WeakMaps, and an Alpine proxy breaks every lookup
+        // ("Unknown player. Probably unloaded.").
+        const player = new window.Vimeo.Player(this.$el, {
+            id: Number(this.videoId),
+            autopause: false,
+            badge: false,
+        })
 
-        this.player.on('play', () => this.rememberFirstPlay())
+        player.on('play', () => this.rememberFirstPlay())
 
         if (this.skip) {
-            this.skipOutro()
+            player.on('loaded', () =>
+                player.setCurrentTime(this.introSeconds).catch(() => {}),
+            )
+            player
+                .getDuration()
+                .then((duration) => {
+                    const cutoff = duration - this.outroSeconds
+
+                    if (cutoff <= this.introSeconds) {
+                        return
+                    }
+
+                    player.on('timeupdate', ({ seconds }) => {
+                        if (seconds >= cutoff) {
+                            player.pause().catch(() => {})
+                        }
+                    })
+                })
+                .catch(() => {})
+        }
+
+        // Toggle play/pause with the space bar anywhere on the page. When the
+        // Vimeo iframe itself is focused the keydown fires inside it (and Vimeo
+        // handles space natively), so this never double-fires.
+        const onKeydown = (e) => {
+            if (e.code !== 'Space' || e.repeat) {
+                return
+            }
+
+            const tag = e.target?.tagName
+            if (
+                e.target?.isContentEditable ||
+                tag === 'INPUT' ||
+                tag === 'TEXTAREA' ||
+                tag === 'SELECT' ||
+                tag === 'BUTTON'
+            ) {
+                return
+            }
+
+            e.preventDefault()
+            player
+                .getPaused()
+                .then((paused) => (paused ? player.play() : player.pause()))
+                .catch(() => {})
+        }
+        window.addEventListener('keydown', onKeydown)
+
+        this.cleanup = () => {
+            window.removeEventListener('keydown', onKeydown)
+            player.destroy().catch(() => {})
         }
     },
 
@@ -58,26 +117,7 @@ export default (options = {}) => ({
         this.$wire.markVideoPlayed()
     },
 
-    skipOutro() {
-        this.player
-            .getDuration()
-            .then((duration) => {
-                const cutoff = duration - this.outroSeconds
-
-                if (cutoff <= this.introSeconds) {
-                    return
-                }
-
-                this.player.on('timeupdate', ({ seconds }) => {
-                    if (seconds >= cutoff) {
-                        this.player.pause().catch(() => {})
-                    }
-                })
-            })
-            .catch(() => {})
-    },
-
     destroy() {
-        this.player?.unload().catch(() => {})
+        this.cleanup?.()
     },
 })

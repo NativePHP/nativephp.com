@@ -301,7 +301,8 @@ class CourseContentTest extends TestCase
             ->test(Index::class)
             ->assertSee('Hidden Module')
             ->assertSee('Hidden Lesson')
-            ->assertSee('Coming Soon');
+            ->assertSee('Coming Soon')
+            ->assertSee('Draft');
     }
 
     #[Test]
@@ -354,7 +355,8 @@ class CourseContentTest extends TestCase
         Livewire::actingAs($admin)
             ->test(LessonShow::class, ['lesson' => $lesson])
             ->assertSee('Hidden Pro Lesson')
-            ->assertSee('Coming Soon');
+            ->assertSee('Coming Soon')
+            ->assertSee('Draft');
     }
 
     #[Test]
@@ -404,7 +406,7 @@ class CourseContentTest extends TestCase
         Livewire::actingAs(User::factory()->create())
             ->test(LessonShow::class, ['lesson' => $lesson])
             ->assertSet('skipIntroOutro', false)
-            ->assertDontSee('#t=9s', false);
+            ->assertSee('skip: false', false);
     }
 
     #[Test]
@@ -429,7 +431,7 @@ class CourseContentTest extends TestCase
         Livewire::actingAs(User::factory()->create())
             ->test(LessonShow::class, ['lesson' => $lesson])
             ->assertSet('skipIntroOutro', true)
-            ->assertSee('#t=9s', false);
+            ->assertSee('skip: true', false);
     }
 
     #[Test]
@@ -447,7 +449,7 @@ class CourseContentTest extends TestCase
         Livewire::actingAs($user)
             ->test(LessonShow::class, ['lesson' => $secondLesson])
             ->assertSet('skipIntroOutro', true)
-            ->assertSee('#t=9s', false);
+            ->assertSee('skip: true', false);
     }
 
     #[Test]
@@ -689,6 +691,64 @@ class CourseContentTest extends TestCase
             ->test(LessonShow::class, ['lesson' => $lesson])
             ->assertSeeHtml('title="Hover For Full Title"')
             ->assertDontSeeHtml('line-through');
+    }
+
+    #[Test]
+    public function lessons_in_an_unpublished_module_are_not_accessible_to_non_admins(): void
+    {
+        $user = User::factory()->create();
+        $product = Product::where('slug', 'nativephp-masterclass')->first();
+        ProductLicense::factory()->create([
+            'user_id' => $user->id,
+            'product_id' => $product->id,
+        ]);
+
+        $course = Course::factory()->published()->create();
+        $module = CourseModule::factory()->create(['course_id' => $course->id]);
+        $lesson = CourseLesson::factory()->published()->free()->create([
+            'course_module_id' => $module->id,
+        ]);
+
+        Livewire::actingAs($user)
+            ->test(LessonShow::class, ['lesson' => $lesson])
+            ->assertNotFound();
+    }
+
+    #[Test]
+    public function admins_can_access_lessons_in_unpublished_modules(): void
+    {
+        config(['filament.users' => ['admin@test.com']]);
+        $admin = User::factory()->create(['email' => 'admin@test.com']);
+
+        $course = Course::factory()->published()->create();
+        $module = CourseModule::factory()->create(['course_id' => $course->id]);
+        $lesson = CourseLesson::factory()->published()->create([
+            'course_module_id' => $module->id,
+            'title' => 'Locked Away Lesson',
+        ]);
+
+        Livewire::actingAs($admin)
+            ->test(LessonShow::class, ['lesson' => $lesson])
+            ->assertOk()
+            ->assertSee('Locked Away Lesson');
+    }
+
+    #[Test]
+    public function lesson_notes_are_rendered_as_markdown(): void
+    {
+        $user = User::factory()->create();
+
+        $course = Course::factory()->published()->create();
+        $module = CourseModule::factory()->published()->free()->create(['course_id' => $course->id]);
+        $lesson = CourseLesson::factory()->published()->free()->create([
+            'course_module_id' => $module->id,
+            'notes' => 'Run `php artisan migrate` then read [the docs](https://nativephp.com).',
+        ]);
+
+        Livewire::actingAs($user)
+            ->test(LessonShow::class, ['lesson' => $lesson])
+            ->assertSee('<code>php artisan migrate</code>', false)
+            ->assertSee('href="https://nativephp.com"', false);
     }
 
     private function publishedVideoLesson(string $vimeoId): CourseLesson

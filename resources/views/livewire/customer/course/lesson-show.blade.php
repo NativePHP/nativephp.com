@@ -4,15 +4,11 @@
         {{-- Video area --}}
         <div class="w-full rounded-lg overflow-hidden bg-black aspect-video flex items-center justify-center relative">
             @if ($lesson->vimeo_id)
-                <iframe
+                <div
                     wire:ignore
-                    x-data="courseVideo({ skip: @js($skipIntroOutro), introSeconds: {{ $introSkipSeconds }}, outroSeconds: {{ $outroSkipSeconds }} })"
-                    src="https://player.vimeo.com/video/{{ $lesson->vimeo_id }}?badge=0&autopause=0&player_id=0&app_id=58479{{ $skipIntroOutro ? '#t=' . $introSkipSeconds . 's' : '' }}"
-                    class="absolute inset-0 w-full h-full"
-                    frameborder="0"
-                    allow="autoplay; fullscreen; picture-in-picture; clipboard-write; encrypted-media"
-                    allowfullscreen
-                ></iframe>
+                    x-data="courseVideo({ videoId: '{{ $lesson->vimeo_id }}', skip: @js($skipIntroOutro), introSeconds: {{ $introSkipSeconds }}, outroSeconds: {{ $outroSkipSeconds }} })"
+                    class="absolute inset-0 [&_iframe]:absolute [&_iframe]:inset-0 [&_iframe]:h-full [&_iframe]:w-full"
+                ></div>
             @else
                 <div class="text-center">
                     <div class="mx-auto flex size-20 items-center justify-center rounded-full bg-white/5 border border-white/10 mb-4">
@@ -28,15 +24,13 @@
             <div class="flex items-start justify-between gap-4 flex-wrap">
                 <div>
                     <div class="flex items-center gap-2 mb-2">
-                        @if ($lesson->is_free)
-                            <flux:badge variant="pill" color="emerald" size="sm">Free</flux:badge>
-                        @else
-                            <flux:badge variant="pill" color="violet" size="sm">Pro</flux:badge>
-                        @endif
                         @if (! $lesson->is_published)
                             <flux:badge variant="pill" color="amber" size="sm">Coming Soon</flux:badge>
                         @endif
                         <flux:text class="text-xs">{{ $lesson->module->title }}</flux:text>
+                        @if (! $lesson->module->is_published)
+                            <flux:badge variant="pill" color="amber" size="sm">Draft</flux:badge>
+                        @endif
                     </div>
                     <flux:heading size="lg">{{ $lesson->title }}</flux:heading>
                     @if ($lesson->description)
@@ -73,6 +67,13 @@
                     </a>
                 @endif
             </div>
+
+            {{-- Lesson notes --}}
+            @if ($lesson->notes)
+                <div class="prose prose-sm mt-8 max-w-2xl dark:prose-invert">
+                    {!! App\Support\CommonMark\CommonMark::convertToHtml($lesson->notes) !!}
+                </div>
+            @endif
         </div>
     </div>
 
@@ -88,7 +89,7 @@
                         <div class="flex items-center gap-2 px-4 pt-2 pb-1">
                             <flux:text class="text-xs font-semibold uppercase tracking-wide text-zinc-500 dark:text-zinc-400">{{ $outlineModule->title }}</flux:text>
                             @if (! $outlineModule->is_published)
-                                <flux:badge variant="pill" color="amber" size="sm">Coming Soon</flux:badge>
+                                <flux:badge variant="pill" color="amber" size="sm">Draft</flux:badge>
                             @endif
                         </div>
                         @foreach ($outlineModule->lessons as $outlineLesson)

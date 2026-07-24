@@ -28,7 +28,7 @@ class LessonShow extends Component
     {
         $this->lesson = $lesson->load('module.course');
 
-        abort_unless($this->lesson->is_published || $this->isAdmin, 404);
+        abort_unless($this->isAdmin || ($this->lesson->is_published && $this->lesson->module->is_published), 404);
 
         if (! $this->lesson->is_free && ! $this->hasPurchased && ! $this->isAdmin) {
             abort(403, 'You need Pro access to view this lesson.');
