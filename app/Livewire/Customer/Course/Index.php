@@ -29,9 +29,7 @@ class Index extends Component
             ->with(['modules' => function ($query) {
                 $query->when(! $this->isAdmin, fn ($query) => $query->where('is_published', true))
                     ->orderBy('sort_order')
-                    ->with(['lessons' => function ($query) {
-                        $query->when(! $this->isAdmin, fn ($query) => $query->where('is_published', true))->orderBy('sort_order');
-                    }]);
+                    ->with(['lessons' => fn ($query) => $query->orderBy('sort_order')]);
             }])
             ->first();
     }
@@ -95,13 +93,23 @@ class Index extends Component
     }
 
     #[Computed]
+    public function hasVideoLessons(): bool
+    {
+        return (bool) $this->course?->modules
+            ->flatMap(fn ($module) => $module->lessons)
+            ->contains(fn ($lesson) => filled($lesson->vimeo_id) && ($lesson->is_published || $this->isAdmin));
+    }
+
+    #[Computed]
     public function totalLessons(): int
     {
         if (! $this->course) {
             return 0;
         }
 
-        return $this->course->modules->sum(fn ($module) => $module->lessons->count());
+        return $this->course->modules->sum(
+            fn ($module) => $module->lessons->filter(fn ($lesson) => $lesson->is_published)->count()
+        );
     }
 
     #[Computed]

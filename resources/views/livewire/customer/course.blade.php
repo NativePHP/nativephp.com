@@ -22,21 +22,23 @@
                 </div>
             @endif
 
-            <div class="mb-6 rounded-lg border border-violet-200 bg-violet-50 p-6 dark:border-violet-700/50 dark:bg-violet-900/20">
-                <div class="flex items-start gap-4">
-                    <div class="shrink-0 text-violet-600 dark:text-violet-400">
-                        <x-heroicon-s-sparkles class="size-6" />
-                    </div>
-                    <div>
-                        <h3 class="font-medium text-violet-900 dark:text-violet-100">
-                            You're in! Course content is coming soon.
-                        </h3>
-                        <p class="mt-1 text-sm text-violet-700 dark:text-violet-300">
-                            We're recording the lessons now. You'll have full access to all modules and lessons as soon as they're published.
-                        </p>
+            @unless ($this->hasVideoLessons)
+                <div class="mb-6 rounded-lg border border-violet-200 bg-violet-50 p-6 dark:border-violet-700/50 dark:bg-violet-900/20">
+                    <div class="flex items-start gap-4">
+                        <div class="shrink-0 text-violet-600 dark:text-violet-400">
+                            <x-heroicon-s-sparkles class="size-6" />
+                        </div>
+                        <div>
+                            <h3 class="font-medium text-violet-900 dark:text-violet-100">
+                                You're in! Course content is coming soon.
+                            </h3>
+                            <p class="mt-1 text-sm text-violet-700 dark:text-violet-300">
+                                We're recording the lessons now. You'll have full access to all modules and lessons as soon as they're published.
+                            </p>
+                        </div>
                     </div>
                 </div>
-            </div>
+            @endunless
 
             {{-- Modules --}}
             <div class="space-y-4">
@@ -49,11 +51,6 @@
                             <div class="flex-1 min-w-0">
                                 <div class="flex items-center gap-2">
                                     <flux:heading size="sm">{{ $module->title }}</flux:heading>
-                                    @if ($module->is_free)
-                                        <flux:badge variant="pill" color="emerald" size="sm">Free</flux:badge>
-                                    @else
-                                        <flux:badge variant="pill" color="violet" size="sm">Pro</flux:badge>
-                                    @endif
                                     @if (! $module->is_published)
                                         <flux:badge variant="pill" color="amber" size="sm">Draft</flux:badge>
                                     @endif
@@ -68,21 +65,21 @@
                             <div class="border-t border-zinc-200 dark:border-white/10">
                                 @foreach ($module->lessons as $lesson)
                                     @php
-                                        $isCompleted = in_array($lesson->id, $this->completedLessonIds);
+                                        $isDraft = ! $lesson->is_published;
+                                        $isClickable = $this->isAdmin || ! $isDraft;
                                     @endphp
                                     <div wire:key="lesson-{{ $lesson->id }}" class="flex items-center gap-3 px-4 py-3 {{ !$loop->last ? 'border-b border-zinc-100 dark:border-white/5' : '' }}">
-                                        <div class="flex size-6 shrink-0 items-center justify-center rounded-full border {{ $isCompleted ? 'bg-emerald-100 border-emerald-300 dark:bg-emerald-900/50 dark:border-emerald-600' : 'border-zinc-300 dark:border-white/10' }}">
-                                            @if ($isCompleted)
-                                                <svg class="size-3 text-emerald-600 dark:text-emerald-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+                                        <div class="flex-1 min-w-0">
+                                            @if ($isClickable)
+                                                <a href="{{ route('customer.course.lesson', $lesson) }}" wire:navigate class="text-sm font-medium hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors">
+                                                    {{ $lesson->title }}
+                                                </a>
+                                            @else
+                                                <span class="text-sm font-medium text-zinc-400 dark:text-zinc-500">{{ $lesson->title }}</span>
                                             @endif
                                         </div>
-                                        <div class="flex-1 min-w-0">
-                                            <a href="{{ route('customer.course.lesson', $lesson) }}" wire:navigate class="text-sm font-medium hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors">
-                                                {{ $lesson->title }}
-                                            </a>
-                                        </div>
-                                        @if (! $lesson->is_published)
-                                            <flux:badge variant="pill" color="amber" size="sm">Draft</flux:badge>
+                                        @if ($isDraft)
+                                            <flux:badge variant="pill" color="amber" size="sm">Coming Soon</flux:badge>
                                         @endif
                                         @if ($lesson->duration_in_seconds)
                                             <flux:text class="text-xs shrink-0">{{ gmdate('i:s', $lesson->duration_in_seconds) }}</flux:text>
