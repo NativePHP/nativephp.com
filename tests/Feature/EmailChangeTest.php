@@ -163,6 +163,22 @@ class EmailChangeTest extends TestCase
         $this->assertDatabaseMissing('email_changes', ['new_email' => 'four@example.com']);
     }
 
+    public function test_cancelling_the_form_clears_fields_and_validation_errors(): void
+    {
+        $user = User::factory()->create();
+
+        Livewire::actingAs($user)
+            ->test(Settings::class)
+            ->set('newEmail', 'not-an-email')
+            ->set('emailChangePassword', 'some-password')
+            ->call('requestEmailChange')
+            ->assertHasErrors(['newEmail'])
+            ->call('resetEmailChangeForm')
+            ->assertHasNoErrors()
+            ->assertSet('newEmail', '')
+            ->assertSet('emailChangePassword', '');
+    }
+
     public function test_user_can_cancel_a_pending_email_change(): void
     {
         $user = User::factory()->create();

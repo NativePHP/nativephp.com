@@ -129,7 +129,7 @@
 
                 <div class="mt-6 flex justify-end gap-3">
                     <flux:modal.close>
-                        <flux:button type="button" variant="ghost">Cancel</flux:button>
+                        <flux:button type="button" variant="ghost" wire:click="resetEmailChangeForm">Cancel</flux:button>
                     </flux:modal.close>
                     <flux:button type="submit" variant="primary">Send Confirmation Link</flux:button>
                 </div>

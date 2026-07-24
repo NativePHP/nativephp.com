@@ -64,6 +64,12 @@ class Settings extends Component
         return auth()->user()->emailChanges()->pending()->latest()->first();
     }
 
+    public function resetEmailChangeForm(): void
+    {
+        $this->reset('newEmail', 'emailChangePassword');
+        $this->resetValidation(['newEmail', 'emailChangePassword']);
+    }
+
     public function requestEmailChange(): void
     {
         $this->validate([
