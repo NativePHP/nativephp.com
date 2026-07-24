@@ -119,15 +119,9 @@ for "fill the remaining space along the parent's main axis."
 
 ## Alignment
 
-Alignment values are integers that map to standard flex alignment:
-
-| Value | Meaning |
-|-------|---------|
-| `0` | start |
-| `1` | center |
-| `2` | end |
-| `3` | stretch |
-| `4` | baseline |
+Alignment attributes accept a **readable label**, a backing **enum**, or the raw **integer** — all three resolve to
+the same value the native layout reads. Labels read best in Blade; enums give you autocomplete and type-safety when
+building elements fluently in PHP.
 
 @verbatim
 ```blade static
@@ -137,22 +131,49 @@ Alignment values are integers that map to standard flex alignment:
 </native:column>
 
 {{-- Cross-axis alignment (horizontal in a column) --}}
-<native:column :align-items="1">
+<native:column align-items="center">
     <native:text>Centered text</native:text>
 </native:column>
 
 {{-- Main-axis distribution --}}
-<native:row :justify-content="3">
+<native:row justify-content="space-between">
     <native:text>Left</native:text>
     <native:text>Right</native:text>
 </native:row>
 ```
 @endverbatim
 
-- `align-items` - Cross-axis alignment for children (int, 0-4)
-- `justify-content` - Main-axis distribution (int, 0=start, 1=center, 2=end, 3=space-between, 4=space-around, 5=space-evenly)
-- `align-self` - Override parent's `align-items` for this element (int, 0-4)
+- `align-items` - Cross-axis alignment for children — `start`, `center`, `end`, `stretch`
+- `justify-content` - Main-axis distribution — `start`, `center`, `end`, `space-between`, `space-around`, `space-evenly`
+- `align-self` - Override the parent's `align-items` for this element — `start`, `center`, `end`, `stretch`
 - `center` - Shorthand: sets both `align-items` and `justify-content` to center (boolean)
+
+### Underlying values
+
+Labels map to these integers, which still work if you prefer them (`align-items="1"`):
+
+| Integer | `align-items` / `align-self` | `justify-content` |
+|---------|------------------------------|-------------------|
+| `0` | start | start |
+| `1` | center | center |
+| `2` | end | end |
+| `3` | stretch | space-between |
+| `4` | — | space-around |
+| `5` | — | space-evenly |
+
+### In PHP
+
+When you build elements fluently, pass a label, an enum case, or an integer. The enums live in
+`Native\Mobile\Edge\Enums` — `AlignItems`, `AlignSelf`, `JustifyContent`, and `TextAlign`:
+
+```php
+use Native\Mobile\Edge\Elements\Column;
+use Native\Mobile\Edge\Enums\AlignItems;
+
+Column::make()
+    ->alignItems(AlignItems::Center)     // enum — autocompletes, type-checked
+    ->justifyContent('space-between');   // label string — also fine
+```
 
 <aside>
 

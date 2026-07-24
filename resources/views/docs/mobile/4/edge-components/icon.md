@@ -44,7 +44,7 @@ to work on both platforms, see the [Icon name reference](#icon-name-reference) b
 
 @verbatim
 ```blade
-<native:row :gap="16" :align-items="1">
+<native:row :gap="16" align-items="center">
     <native:icon class="text-theme-primary" name="home" :size="24" />
     <native:icon class="text-theme-primary" name="search" :size="24" />
     <native:icon class="text-theme-primary" name="settings" :size="24" />
@@ -57,7 +57,7 @@ to work on both platforms, see the [Icon name reference](#icon-name-reference) b
 
 @verbatim
 ```blade
-<native:row :gap="8" :align-items="1">
+<native:row :gap="8" align-items="center">
     <native:icon name="check" :size="20" color="#22C55E" />
     <native:text class="text-base" color="#22C55E">Verified</native:text>
 </native:row>
