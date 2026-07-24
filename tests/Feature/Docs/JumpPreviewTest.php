@@ -5,6 +5,7 @@ namespace Tests\Feature\Docs;
 use App\Features\ShowPlugins;
 use App\Support\JumpApp;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Http;
 use Laravel\Pennant\Feature;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Tests\TestCase;
@@ -18,6 +19,15 @@ class JumpPreviewTest extends TestCase
         parent::setUp();
 
         Feature::define(ShowPlugins::class, true);
+
+        // These tests render full docs pages that contain fenced code blocks.
+        // Torchlight throws outside production when no token is configured (as
+        // in CI), so give it a token and fake the API to force its offline
+        // fallback — the pages render deterministically without a real token.
+        config(['torchlight.token' => 'test-token']);
+        Http::fake([
+            '*' => Http::response(['blocks' => []], 200),
+        ]);
     }
 
     public function test_edge_component_page_shows_the_jump_qr_and_store_overlay(): void
