@@ -2,21 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Support\JumpApp;
+
 class ApplinksController extends Controller
 {
-    /**
-     * Jump's iOS app identity: <TeamID>.<BundleID>.
-     */
-    private const IOS_APP_ID = 'J68WFCX458.com.bifrosttech.jump';
-
-    /**
-     * Jump's Android package + the SHA-256 of its Play app-signing cert.
-     * These are public identifiers, not secrets.
-     */
-    private const ANDROID_PACKAGE = 'com.bifrosttech.jump';
-
-    private const ANDROID_SHA256 = 'D8:31:4E:55:E5:FF:06:17:D8:49:EA:3B:1F:BF:6C:58:B3:8D:AD:2C:30:CA:13:D2:CA:42:B0:85:B4:7D:CB:38';
-
     /**
      * URL path prefixes that open in Jump.
      *
@@ -46,9 +35,9 @@ class ApplinksController extends Controller
                 ],
                 'target' => [
                     'namespace' => 'android_app',
-                    'package_name' => self::ANDROID_PACKAGE,
+                    'package_name' => JumpApp::ANDROID_PACKAGE,
                     'sha256_cert_fingerprints' => [
-                        self::ANDROID_SHA256,
+                        JumpApp::ANDROID_SHA256,
                     ],
                 ],
             ],
@@ -76,13 +65,13 @@ class ApplinksController extends Controller
             'applinks' => [
                 'details' => [
                     [
-                        'appIDs' => [self::IOS_APP_ID],
+                        'appIDs' => [JumpApp::IOS_APP_ID],
                         'components' => $components,
                     ],
                 ],
             ],
             'webcredentials' => [
-                'apps' => [self::IOS_APP_ID],
+                'apps' => [JumpApp::IOS_APP_ID],
             ],
         ]);
     }

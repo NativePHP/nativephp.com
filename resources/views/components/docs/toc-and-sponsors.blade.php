@@ -1,6 +1,10 @@
 {{-- Copy as Markdown Button --}}
 <x-docs.copy-markdown-button />
 
+@isset($beforeAds)
+    {{ $beforeAds }}
+@endisset
+
 <div
     class="mt-3 max-w-52 border-t border-t-black/20 pt-5 dark:border-t-white/15"
 >

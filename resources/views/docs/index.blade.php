@@ -3,6 +3,13 @@
     <meta name="docsearch:version" content="{{ $version }}" />
 @endpush
 
+@php
+    // Jump previews EDGE components, which only exist in the Mobile v4 docs.
+    $showJumpPreview = $platform === 'mobile'
+        && (string) $version === '4'
+        && str_starts_with((string) request()->route('page'), 'edge-components/');
+@endphp
+
 <x-docs-layout>
     <x-slot name="sidebarLeft">
         {!! $navigation !!}
@@ -25,6 +32,13 @@
         @endif
 
         <x-docs.toc-and-sponsors :tableOfContents="$tableOfContents">
+            {{-- EDGE component pages can be previewed live in the Jump app --}}
+            @if ($showJumpPreview)
+                <x-slot:beforeAds>
+                    <x-docs.jump-preview :path="$pagePath" />
+                </x-slot:beforeAds>
+            @endif
+
             {{-- Ad rotation --}}
             <x-blog.ad-rotation
                 :ads="$platform === 'desktop' ? ['mobile', 'bifrost', 'ultra', 'vibes', 'masterclass'] : ['desktop', 'bifrost', 'devkit', 'ultra', 'vibes', 'masterclass']"
@@ -49,6 +63,12 @@
     </h1>
 
     <x-docs.separator class="mt-4" />
+
+    {{-- Prompts QR visitors who don't have Jump installed. Kept out of the
+         desktop-only sidebar, since it renders on the phone. --}}
+    @if ($showJumpPreview)
+        <x-docs.jump-app-overlay />
+    @endif
 
     {{-- Table of contents --}}
     <div class="xl:hidden pt-9 space-y-4">

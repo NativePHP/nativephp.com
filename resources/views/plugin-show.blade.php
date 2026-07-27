@@ -95,6 +95,17 @@
                             {{ $plugin->description }}
                         </p>
                     @endif
+                    @if ($plugin->worksInJump())
+                        <div class="mt-3">
+                            <span
+                                class="inline-flex items-center gap-1.5 rounded-full bg-indigo-100 px-3 py-1 text-xs font-medium text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-300"
+                                title="This plugin runs in the Jump preview app without a native build"
+                            >
+                                <x-heroicon-o-bolt class="size-3.5" aria-hidden="true" />
+                                Works in Jump
+                            </span>
+                        </div>
+                    @endif
                 </div>
             </div>
         </header>
