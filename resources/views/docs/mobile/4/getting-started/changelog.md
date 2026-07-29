@@ -34,3 +34,5 @@ For changes prior to v4, see the [v3 documentation](/docs/mobile/3/getting-start
 ### For Plugin Developers
 
 - **No breaking changes** to the plugin architecture — add the `^4.0` constraint to your plugin's `nativephp/mobile` dependency and you're done
+- **[iOS app-extension targets](../plugins/ios-app-extensions)** — plugins can declare WidgetKit extension targets with isolated sources, derived bundle identifiers, App Groups, and extension signing
+- **Safer entitlement merging** — existing host scalar values now win, list values are unioned without duplicates, and nested dictionaries merge recursively

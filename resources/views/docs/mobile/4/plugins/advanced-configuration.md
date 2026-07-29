@@ -288,6 +288,12 @@ Values can be:
 
 Entitlements are written to `NativePHP.entitlements`. If the file doesn't exist, it's created automatically.
 
+When entitlements already exist, host scalar values win, lists are unioned without duplicates, and nested dictionaries
+merge recursively. This prevents a plugin from silently replacing an application's existing signing configuration.
+
+Plugins that ship WidgetKit code should also read [iOS App Extensions](ios-app-extensions) for App Group, extension
+entitlement, and provisioning-profile requirements.
+
 <aside>
 
 Many entitlements require corresponding capabilities enabled in your Apple Developer account and Xcode project settings.
