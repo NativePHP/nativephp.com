@@ -99,7 +99,7 @@
         @endif
     @else
         {{-- Not purchased: Full-width marketing/purchase page --}}
-        <div class="course-fullbleed">
+        <div class="course-fullbleed pb-6 lg:pb-8">
             {{-- Hero --}}
             <div class="relative overflow-hidden bg-gradient-to-b from-violet-50 to-white px-6 py-16 sm:px-12 sm:py-20 dark:from-zinc-900 dark:to-zinc-950">
                 {{-- Background glow --}}
@@ -109,9 +109,9 @@
                 <div class="relative z-10 mx-auto max-w-2xl text-center">
                     <span class="inline-flex items-center gap-2 rounded-md bg-violet-500/10 px-3 py-1 text-xs font-bold uppercase tracking-widest text-violet-600 ring-1 ring-violet-500/20 dark:text-violet-400">
                         @if ($this->priceIncreased)
-                            New Course
+                            Masterclass
                         @else
-                            New Course &mdash; Early Bird
+                            Masterclass &mdash; Early Bird
                         @endif
                     </span>
 
@@ -179,7 +179,7 @@
             </div>
 
             {{-- What's Included --}}
-            <div class="mx-auto mt-8 grid max-w-7xl gap-4 px-6 pb-6 sm:grid-cols-2 lg:grid-cols-4 lg:px-8 lg:pb-8">
+            <div class="mx-auto mt-8 grid max-w-7xl gap-4 px-6 sm:grid-cols-2 lg:grid-cols-4 lg:px-8">
                 <div class="rounded-xl border border-zinc-200 bg-white p-5 dark:border-white/10 dark:bg-white/5">
                     <div class="flex size-9 items-center justify-center rounded-lg bg-violet-100 dark:bg-violet-500/15">
                         <x-heroicon-s-device-phone-mobile class="size-4 text-violet-600 dark:text-violet-400" />
@@ -212,6 +212,93 @@
                     <p class="mt-1 text-xs text-zinc-600 dark:text-zinc-400">One-time payment. All current and future content.</p>
                 </div>
             </div>
+
+            {{-- Locked lesson notice --}}
+            @if (session('message'))
+                <div class="mx-auto mt-8 max-w-7xl px-6 lg:px-8">
+                    <flux:callout variant="secondary" icon="lock-closed">
+                        <flux:callout.text>{{ session('message') }}</flux:callout.text>
+                    </flux:callout>
+                </div>
+            @endif
+
+            {{-- Course curriculum --}}
+            @if ($this->outlineModules->isNotEmpty())
+                <div class="mx-auto mt-8 max-w-7xl px-6 lg:px-8">
+                    <div class="flex items-center gap-3">
+                        <flux:heading size="lg">Course curriculum</flux:heading>
+                        @if ($this->hasFreeLessons)
+                            <flux:badge variant="pill" color="emerald" size="sm">Free lessons included</flux:badge>
+                        @endif
+                    </div>
+                    <flux:text class="mt-1 text-sm">
+                        @if ($this->hasFreeLessons)
+                            Start with the lessons you can watch right now &mdash; everything else unlocks when you get the course.
+                        @else
+                            Every lesson unlocks when you get the course.
+                        @endif
+                    </flux:text>
+
+                    <div class="mt-4 space-y-4">
+                        @foreach ($this->outlineModules as $moduleIndex => $module)
+                            @php
+                                $publishedLessons = $module->lessons->where('is_published', true);
+                                $moduleHasFreeLesson = $publishedLessons->contains(fn ($moduleLesson) => $this->isFreePreviewLesson($moduleLesson));
+                            @endphp
+                            <div wire:key="outline-module-{{ $module->id }}" class="rounded-lg border border-zinc-200 bg-white dark:border-white/10 dark:bg-white/5">
+                                <div class="flex items-center gap-4 p-4">
+                                    <div class="flex size-10 shrink-0 items-center justify-center rounded-lg text-sm font-bold {{ $moduleHasFreeLesson ? 'bg-emerald-100 text-emerald-600 dark:bg-emerald-900/50 dark:text-emerald-400' : 'bg-zinc-100 text-zinc-500 dark:bg-white/5 dark:text-zinc-500' }}">
+                                        {{ str_pad($moduleIndex + 1, 2, '0', STR_PAD_LEFT) }}
+                                    </div>
+                                    <div class="min-w-0 flex-1">
+                                        <flux:heading size="sm">{{ $module->title }}</flux:heading>
+                                        @if ($module->description)
+                                            <flux:text class="mt-1 text-sm">{{ $module->description }}</flux:text>
+                                        @endif
+                                    </div>
+                                </div>
+
+                                <div class="border-t border-zinc-200 dark:border-white/10">
+                                    @foreach ($publishedLessons as $lesson)
+                                        @php
+                                            $isPreviewable = $this->isFreePreviewLesson($lesson);
+                                        @endphp
+                                        <div wire:key="outline-lesson-{{ $lesson->id }}" class="flex items-center gap-3 px-4 py-3 {{ ! $loop->last ? 'border-b border-zinc-100 dark:border-white/5' : '' }}">
+                                            {{-- Fixed-width slot keeps titles aligned whether or not a lock is shown --}}
+                                            <div class="flex size-4 shrink-0 items-center justify-center">
+                                                @unless ($isPreviewable)
+                                                    <flux:tooltip content="Buy the course to unlock all lessons">
+                                                        <button
+                                                            type="button"
+                                                            class="cursor-help text-zinc-400 dark:text-zinc-500"
+                                                            aria-label="Buy the course to unlock all lessons"
+                                                        >
+                                                            <x-heroicon-m-lock-closed class="size-4" />
+                                                        </button>
+                                                    </flux:tooltip>
+                                                @endunless
+                                            </div>
+                                            <div class="min-w-0 flex-1">
+                                                @if ($isPreviewable)
+                                                    <a href="{{ route('customer.course.lesson', $lesson) }}" wire:navigate class="text-sm font-medium transition-colors hover:text-emerald-600 dark:hover:text-emerald-400">
+                                                        {{ $lesson->title }}
+                                                    </a>
+                                                @else
+                                                    <span class="text-sm font-medium text-zinc-400 dark:text-zinc-500">{{ $lesson->title }}</span>
+                                                @endif
+                                            </div>
+                                            @if ($lesson->duration_in_seconds)
+                                                <flux:text class="shrink-0 text-xs">{{ gmdate('i:s', $lesson->duration_in_seconds) }}</flux:text>
+                                            @endif
+                                        </div>
+                                    @endforeach
+                                </div>
+                            </div>
+                        @endforeach
+                    </div>
+                </div>
+            @endif
+
         </div>
     @endif
 </div>

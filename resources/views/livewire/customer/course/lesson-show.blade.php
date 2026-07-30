@@ -98,17 +98,21 @@
                                 $isDraft = ! $outlineLesson->is_published;
                                 $isLessonComplete = in_array($outlineLesson->id, $this->completedLessonIds);
                                 $canAccess = $outlineLesson->is_free || $this->hasPurchased || $this->isAdmin;
-                                $isClickable = $this->isAdmin || (! $isDraft && $canAccess);
-                                $isLocked = ! $isClickable && ! $isDraft;
+                                $isLocked = ! $canAccess && ! $isDraft;
+                                $isClickable = $this->isAdmin || ! $isDraft;
                             @endphp
                             @if ($isClickable)
+                                {{-- Locked lessons stay clickable: they redirect to the course page with an explanation --}}
                                 <a
                                     href="{{ route('customer.course.lesson', $outlineLesson) }}"
-                                    wire:navigate
+                                    @unless ($isLocked) wire:navigate @endunless
                                     wire:key="outline-lesson-{{ $outlineLesson->id }}"
                                     @if ($isCurrent) aria-current="page" @endif
-                                    class="flex items-center gap-3 px-4 py-2 text-sm transition-colors {{ $isCurrent ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-900/20 dark:text-emerald-300' : 'text-zinc-600 hover:bg-zinc-50 dark:text-zinc-400 dark:hover:bg-white/5' }}"
+                                    class="flex items-center gap-3 px-4 py-2 text-sm transition-colors {{ $isCurrent ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-900/20 dark:text-emerald-300' : ($isLocked ? 'text-zinc-400 hover:bg-zinc-50 dark:text-zinc-600 dark:hover:bg-white/5' : 'text-zinc-600 hover:bg-zinc-50 dark:text-zinc-400 dark:hover:bg-white/5') }}"
                                 >
+                                    @if ($isLocked)
+                                        <x-heroicon-m-lock-closed class="size-4 shrink-0" />
+                                    @endif
                                     <span class="min-w-0 flex-1 truncate {{ $isCurrent ? 'font-medium' : '' }} {{ $isLessonComplete ? 'line-through' : '' }}" title="{{ $outlineLesson->title }}">{{ $outlineLesson->title }}</span>
                                     @if ($isDraft)
                                         <flux:badge variant="pill" color="amber" size="sm">Coming Soon</flux:badge>
@@ -119,9 +123,6 @@
                                 </a>
                             @else
                                 <div wire:key="outline-lesson-{{ $outlineLesson->id }}" class="flex items-center gap-3 px-4 py-2 text-sm text-zinc-400 dark:text-zinc-600">
-                                    @if ($isLocked)
-                                        <x-heroicon-m-lock-closed class="size-4 shrink-0" />
-                                    @endif
                                     <span class="min-w-0 flex-1 truncate {{ $isLessonComplete ? 'line-through' : '' }}" title="{{ $outlineLesson->title }}">{{ $outlineLesson->title }}</span>
                                     @if ($isDraft)
                                         <flux:badge variant="pill" color="amber" size="sm">Coming Soon</flux:badge>
