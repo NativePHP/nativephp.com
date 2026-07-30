@@ -34,6 +34,11 @@ class LessonsRelationManager extends RelationManager
                 Forms\Components\Textarea::make('description')
                     ->rows(3),
 
+                Forms\Components\MarkdownEditor::make('notes')
+                    ->label('Lesson notes')
+                    ->helperText('Markdown — commands, code samples, links, etc. Shown beneath the video.')
+                    ->columnSpanFull(),
+
                 Forms\Components\TextInput::make('vimeo_id')
                     ->label('Vimeo ID')
                     ->maxLength(255),

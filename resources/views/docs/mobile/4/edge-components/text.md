@@ -31,7 +31,7 @@ All [shared layout and style attributes](layout) are supported, plus:
 
     Values outside 1-7 are clamped to the nearest supported weight.
 - `color` - Text color as hex string (optional, default: `#000000`)
-- `text-align` - Alignment: `0`=start, `1`=center, `2`=end (optional, int, default: `0`)
+- `text-align` - Alignment: `left`, `center`, or `right` — a label, a `TextAlign` case, or the integer `0`/`1`/`2` (optional, default: `left`)
 - `max-lines` - Maximum lines before truncating with ellipsis (optional, int)
 - `font-style` - `0`=normal, `1`=italic (optional, int)
 - `font-family` - Typeface: `0`=sans, `1`=serif, `2`=mono (optional, int)
@@ -306,12 +306,13 @@ to the native renderer.
 
 ```php
 use Native\Mobile\Edge\Elements\Text;
+use Native\Mobile\Edge\Enums\TextAlign;
 
 Text::make('Hello')
     ->fontSize(18)
     ->fontWeight(6)
     ->color('#1E293B')
-    ->textAlign(1)
+    ->textAlign(TextAlign::Center)
     ->maxLines(2);
 ```
 
@@ -323,6 +324,6 @@ Text::make('Hello')
 - `fontStyle(int $style)` - `0`=normal, `1`=italic
 - `italic()` - Shortcut for `fontStyle(1)`
 - `color(string $hex)` - Text color
-- `textAlign(int $align)` - `0`=start, `1`=center, `2`=end
+- `textAlign(int|string|TextAlign $align)` - `left`/`center`/`right`, a `TextAlign` case, or `0`/`1`/`2`
 - `maxLines(int $lines)` - Truncate after N lines
 - `selectable(bool $on = true)` - Make the subtree selectable (mirrors `select-text` / `select-none`)

@@ -146,4 +146,89 @@ class ProcessEligiblePayoutsTest extends TestCase
 
         Queue::assertNothingPushed();
     }
+
+    public function test_heals_held_payout_when_developer_can_now_receive_payouts(): void
+    {
+        Queue::fake();
+
+        $developerAccount = DeveloperAccount::factory()->create();
+        $plugin = Plugin::factory()->paid()->create(['user_id' => $developerAccount->user_id]);
+        $license = PluginLicense::factory()->create(['plugin_id' => $plugin->id]);
+
+        $payout = PluginPayout::create([
+            'plugin_license_id' => $license->id,
+            'developer_account_id' => $developerAccount->id,
+            'gross_amount' => 1000,
+            'platform_fee' => 300,
+            'developer_amount' => 700,
+            'status' => PayoutStatus::Held,
+            'eligible_for_payout_at' => now()->subDay(),
+        ]);
+
+        $this->artisan('payouts:process-eligible')
+            ->expectsOutputToContain('Healed 1 held payout(s)')
+            ->expectsOutputToContain('Dispatched 1 payout transfer job(s)')
+            ->assertExitCode(0);
+
+        $this->assertEquals(PayoutStatus::Pending, $payout->fresh()->status);
+
+        Queue::assertPushed(ProcessPayoutTransfer::class, function ($job) use ($payout) {
+            return $job->payout->id === $payout->id;
+        });
+    }
+
+    public function test_does_not_heal_held_payout_when_developer_still_cannot_receive_payouts(): void
+    {
+        Queue::fake();
+
+        $developerAccount = DeveloperAccount::factory()->pending()->create();
+        $plugin = Plugin::factory()->paid()->create(['user_id' => $developerAccount->user_id]);
+        $license = PluginLicense::factory()->create(['plugin_id' => $plugin->id]);
+
+        $payout = PluginPayout::create([
+            'plugin_license_id' => $license->id,
+            'developer_account_id' => $developerAccount->id,
+            'gross_amount' => 1000,
+            'platform_fee' => 300,
+            'developer_amount' => 700,
+            'status' => PayoutStatus::Held,
+            'eligible_for_payout_at' => now()->subDay(),
+        ]);
+
+        $this->artisan('payouts:process-eligible')
+            ->expectsOutputToContain('No eligible payouts')
+            ->assertExitCode(0);
+
+        $this->assertEquals(PayoutStatus::Held, $payout->fresh()->status);
+
+        Queue::assertNothingPushed();
+    }
+
+    public function test_healed_payout_within_holding_period_is_not_dispatched(): void
+    {
+        Queue::fake();
+
+        $developerAccount = DeveloperAccount::factory()->create();
+        $plugin = Plugin::factory()->paid()->create(['user_id' => $developerAccount->user_id]);
+        $license = PluginLicense::factory()->create(['plugin_id' => $plugin->id]);
+
+        $payout = PluginPayout::create([
+            'plugin_license_id' => $license->id,
+            'developer_account_id' => $developerAccount->id,
+            'gross_amount' => 1000,
+            'platform_fee' => 300,
+            'developer_amount' => 700,
+            'status' => PayoutStatus::Held,
+            'eligible_for_payout_at' => now()->addDays(10),
+        ]);
+
+        $this->artisan('payouts:process-eligible')
+            ->expectsOutputToContain('Healed 1 held payout(s)')
+            ->expectsOutputToContain('No eligible payouts')
+            ->assertExitCode(0);
+
+        $this->assertEquals(PayoutStatus::Pending, $payout->fresh()->status);
+
+        Queue::assertNothingPushed();
+    }
 }

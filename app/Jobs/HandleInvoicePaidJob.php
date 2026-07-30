@@ -562,24 +562,7 @@ class HandleInvoicePaidJob implements ShouldQueue
             'purchased_at' => now(),
         ]);
 
-        // Create payout record for developer if applicable
-        if ($plugin->developerAccount && $plugin->developerAccount->canReceivePayouts() && $amount > 0) {
-            $platformFeePercent = ($user->hasActiveUltraSubscription() && ! $plugin->isOfficial())
-                ? 0
-                : $plugin->developerAccount->platformFeePercent();
-
-            $split = PluginPayout::calculateSplit($amount, $platformFeePercent);
-
-            PluginPayout::create([
-                'plugin_license_id' => $license->id,
-                'developer_account_id' => $plugin->developerAccount->id,
-                'gross_amount' => $amount,
-                'platform_fee' => $split['platform_fee'],
-                'developer_amount' => $split['developer_amount'],
-                'status' => PayoutStatus::Pending,
-                'eligible_for_payout_at' => now()->addDays(15),
-            ]);
-        }
+        $this->createPayoutForLicense($license, $plugin, $amount);
 
         Log::info('Created plugin license from invoice', [
             'invoice_id' => $this->invoice->id,
@@ -604,24 +587,7 @@ class HandleInvoicePaidJob implements ShouldQueue
             'purchased_at' => now(),
         ]);
 
-        // Create proportional payout for developer
-        if ($plugin->developerAccount && $plugin->developerAccount->canReceivePayouts() && $allocatedAmount > 0) {
-            $platformFeePercent = ($user->hasActiveUltraSubscription() && ! $plugin->isOfficial())
-                ? 0
-                : $plugin->developerAccount->platformFeePercent();
-
-            $split = PluginPayout::calculateSplit($allocatedAmount, $platformFeePercent);
-
-            PluginPayout::create([
-                'plugin_license_id' => $license->id,
-                'developer_account_id' => $plugin->developerAccount->id,
-                'gross_amount' => $allocatedAmount,
-                'platform_fee' => $split['platform_fee'],
-                'developer_amount' => $split['developer_amount'],
-                'status' => PayoutStatus::Pending,
-                'eligible_for_payout_at' => now()->addDays(15),
-            ]);
-        }
+        $this->createPayoutForLicense($license, $plugin, $allocatedAmount);
 
         Log::info('Created bundle plugin license from invoice', [
             'invoice_id' => $this->invoice->id,
@@ -631,6 +597,44 @@ class HandleInvoicePaidJob implements ShouldQueue
         ]);
 
         return $license;
+    }
+
+    /**
+     * Payouts are 1:1 with paid sales. If the developer cannot yet receive payouts,
+     * the payout is created as Held and promoted to Pending by the daily
+     * payouts:process-eligible run once their Stripe Connect account is ready.
+     */
+    private function createPayoutForLicense(PluginLicense $license, Plugin $plugin, int $amount): void
+    {
+        if ($amount <= 0) {
+            return;
+        }
+
+        if (! $plugin->developerAccount) {
+            if (! $plugin->isOfficial()) {
+                Log::warning('Paid third-party plugin sale has no developer account; payout not created', [
+                    'invoice_id' => $this->invoice->id,
+                    'license_id' => $license->id,
+                    'plugin_id' => $plugin->id,
+                ]);
+            }
+
+            return;
+        }
+
+        $split = PluginPayout::calculateSplit($amount, $plugin->developerAccount->platformFeePercent());
+
+        PluginPayout::create([
+            'plugin_license_id' => $license->id,
+            'developer_account_id' => $plugin->developerAccount->id,
+            'gross_amount' => $amount,
+            'platform_fee' => $split['platform_fee'],
+            'developer_amount' => $split['developer_amount'],
+            'status' => $plugin->developerAccount->canReceivePayouts()
+                ? PayoutStatus::Pending
+                : PayoutStatus::Held,
+            'eligible_for_payout_at' => now()->addDays(15),
+        ]);
     }
 
     /**

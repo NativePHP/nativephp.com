@@ -295,6 +295,11 @@ class Plugin extends Model
         return $this->is_official ?? false;
     }
 
+    public function worksInJump(): bool
+    {
+        return $this->works_in_jump ?? false;
+    }
+
     public function isSatisSynced(): bool
     {
         return $this->satis_synced_at !== null;
@@ -729,6 +734,7 @@ class Plugin extends Model
             'featured' => 'boolean',
             'is_active' => 'boolean',
             'is_official' => 'boolean',
+            'works_in_jump' => 'boolean',
             'composer_data' => 'array',
             'nativephp_data' => 'array',
             'last_synced_at' => 'datetime',

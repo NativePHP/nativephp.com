@@ -6,6 +6,8 @@ use App\Features\ShowAuthButtons;
 use App\Features\ShowMasterclass;
 use App\Features\ShowPlugins;
 use App\Livewire\Customer\Dashboard;
+use App\Models\Course;
+use App\Models\CourseModule;
 use App\Models\License;
 use App\Models\Product;
 use App\Models\ProductLicense;
@@ -265,5 +267,23 @@ class DashboardLayoutTest extends TestCase
             ->test(Dashboard::class)
             ->assertOk()
             ->assertDontSee('Lock in early bird pricing');
+    }
+
+    public function test_sidebar_masterclass_group_does_not_list_module_titles(): void
+    {
+        Feature::define(ShowMasterclass::class, true);
+
+        $user = User::factory()->create();
+        $course = Course::factory()->published()->create();
+        CourseModule::factory()->published()->create([
+            'course_id' => $course->id,
+            'title' => 'Sidebar Should Not List This Module',
+        ]);
+
+        $response = $this->withoutVite()->actingAs($user)->get('/dashboard');
+
+        $response->assertOk();
+        $response->assertSee('Masterclass');
+        $response->assertDontSee('Sidebar Should Not List This Module');
     }
 }

@@ -20,19 +20,31 @@
                 <x-vaadin-plug class="size-6" />
             </div>
         @endif
-        @if ($plugin->isPaid() && $plugin->isOfficial() && auth()->user()?->hasUltraAccess())
-            <span class="inline-flex items-center rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-medium text-green-800 dark:bg-green-900/30 dark:text-green-400">
-                Included with Ultra
-            </span>
-        @elseif ($plugin->isPaid())
-            <span class="inline-flex items-center rounded-full bg-emerald-100 px-2.5 py-0.5 text-xs font-medium text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-400">
-                Premium
-            </span>
-        @else
-            <span class="inline-flex items-center rounded-full bg-gray-100 px-2.5 py-0.5 text-xs font-medium text-gray-800 dark:bg-gray-700 dark:text-gray-300">
-                Free
-            </span>
-        @endif
+        <div class="flex flex-col items-end gap-1.5">
+            @if ($plugin->isPaid() && $plugin->isOfficial() && auth()->user()?->hasUltraAccess())
+                <span class="inline-flex items-center rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-medium text-green-800 dark:bg-green-900/30 dark:text-green-400">
+                    Included with Ultra
+                </span>
+            @elseif ($plugin->isPaid())
+                <span class="inline-flex items-center rounded-full bg-emerald-100 px-2.5 py-0.5 text-xs font-medium text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-400">
+                    Premium
+                </span>
+            @else
+                <span class="inline-flex items-center rounded-full bg-gray-100 px-2.5 py-0.5 text-xs font-medium text-gray-800 dark:bg-gray-700 dark:text-gray-300">
+                    Free
+                </span>
+            @endif
+
+            @if ($plugin->worksInJump())
+                <span
+                    class="inline-flex items-center gap-1 rounded-full bg-indigo-100 px-2.5 py-0.5 text-xs font-medium text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-300"
+                    title="Runs in the Jump preview app without a native build"
+                >
+                    <x-heroicon-o-bolt class="size-3" aria-hidden="true" />
+                    Works in Jump
+                </span>
+            @endif
+        </div>
     </div>
 
     <div class="mt-4 flex-1">

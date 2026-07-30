@@ -1,9 +1,8 @@
 <div>
-    @if ($this->hasPurchased)
-        {{-- Purchased: Show course content --}}
+    @if ($this->hasPurchased || $this->isAdmin)
+        {{-- Purchased (or admin preview): Show course content --}}
         <div class="mb-6">
-            <flux:heading size="xl">Course</flux:heading>
-            <flux:text>The NativePHP Masterclass</flux:text>
+            <flux:heading size="xl">The NativePHP Masterclass</flux:heading>
         </div>
 
         @if ($this->course)
@@ -23,21 +22,23 @@
                 </div>
             @endif
 
-            <div class="mb-6 rounded-lg border border-violet-200 bg-violet-50 p-6 dark:border-violet-700/50 dark:bg-violet-900/20">
-                <div class="flex items-start gap-4">
-                    <div class="shrink-0 text-violet-600 dark:text-violet-400">
-                        <x-heroicon-s-sparkles class="size-6" />
-                    </div>
-                    <div>
-                        <h3 class="font-medium text-violet-900 dark:text-violet-100">
-                            You're in! Course content is coming soon.
-                        </h3>
-                        <p class="mt-1 text-sm text-violet-700 dark:text-violet-300">
-                            We're recording the lessons now. You'll have full access to all modules and lessons as soon as they're published.
-                        </p>
+            @unless ($this->hasVideoLessons)
+                <div class="mb-6 rounded-lg border border-violet-200 bg-violet-50 p-6 dark:border-violet-700/50 dark:bg-violet-900/20">
+                    <div class="flex items-start gap-4">
+                        <div class="shrink-0 text-violet-600 dark:text-violet-400">
+                            <x-heroicon-s-sparkles class="size-6" />
+                        </div>
+                        <div>
+                            <h3 class="font-medium text-violet-900 dark:text-violet-100">
+                                You're in! Course content is coming soon.
+                            </h3>
+                            <p class="mt-1 text-sm text-violet-700 dark:text-violet-300">
+                                We're recording the lessons now. You'll have full access to all modules and lessons as soon as they're published.
+                            </p>
+                        </div>
                     </div>
                 </div>
-            </div>
+            @endunless
 
             {{-- Modules --}}
             <div class="space-y-4">
@@ -50,10 +51,8 @@
                             <div class="flex-1 min-w-0">
                                 <div class="flex items-center gap-2">
                                     <flux:heading size="sm">{{ $module->title }}</flux:heading>
-                                    @if ($module->is_free)
-                                        <flux:badge variant="pill" color="emerald" size="sm">Free</flux:badge>
-                                    @else
-                                        <flux:badge variant="pill" color="violet" size="sm">Pro</flux:badge>
+                                    @if (! $module->is_published)
+                                        <flux:badge variant="pill" color="amber" size="sm">Draft</flux:badge>
                                     @endif
                                 </div>
                                 @if ($module->description)
@@ -66,19 +65,22 @@
                             <div class="border-t border-zinc-200 dark:border-white/10">
                                 @foreach ($module->lessons as $lesson)
                                     @php
-                                        $isCompleted = in_array($lesson->id, $this->completedLessonIds);
+                                        $isDraft = ! $lesson->is_published;
+                                        $isClickable = $this->isAdmin || ! $isDraft;
                                     @endphp
                                     <div wire:key="lesson-{{ $lesson->id }}" class="flex items-center gap-3 px-4 py-3 {{ !$loop->last ? 'border-b border-zinc-100 dark:border-white/5' : '' }}">
-                                        <div class="flex size-6 shrink-0 items-center justify-center rounded-full border {{ $isCompleted ? 'bg-emerald-100 border-emerald-300 dark:bg-emerald-900/50 dark:border-emerald-600' : 'border-zinc-300 dark:border-white/10' }}">
-                                            @if ($isCompleted)
-                                                <svg class="size-3 text-emerald-600 dark:text-emerald-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+                                        <div class="flex-1 min-w-0">
+                                            @if ($isClickable)
+                                                <a href="{{ route('customer.course.lesson', $lesson) }}" wire:navigate class="text-sm font-medium hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors">
+                                                    {{ $lesson->title }}
+                                                </a>
+                                            @else
+                                                <span class="text-sm font-medium text-zinc-400 dark:text-zinc-500">{{ $lesson->title }}</span>
                                             @endif
                                         </div>
-                                        <div class="flex-1 min-w-0">
-                                            <a href="{{ route('customer.course.lesson', $lesson) }}" wire:navigate class="text-sm font-medium hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors">
-                                                {{ $lesson->title }}
-                                            </a>
-                                        </div>
+                                        @if ($isDraft)
+                                            <flux:badge variant="pill" color="amber" size="sm">Coming Soon</flux:badge>
+                                        @endif
                                         @if ($lesson->duration_in_seconds)
                                             <flux:text class="text-xs shrink-0">{{ gmdate('i:s', $lesson->duration_in_seconds) }}</flux:text>
                                         @endif
@@ -97,7 +99,7 @@
         @endif
     @else
         {{-- Not purchased: Full-width marketing/purchase page --}}
-        <div class="course-fullbleed">
+        <div class="course-fullbleed pb-6 lg:pb-8">
             {{-- Hero --}}
             <div class="relative overflow-hidden bg-gradient-to-b from-violet-50 to-white px-6 py-16 sm:px-12 sm:py-20 dark:from-zinc-900 dark:to-zinc-950">
                 {{-- Background glow --}}
@@ -107,9 +109,9 @@
                 <div class="relative z-10 mx-auto max-w-2xl text-center">
                     <span class="inline-flex items-center gap-2 rounded-md bg-violet-500/10 px-3 py-1 text-xs font-bold uppercase tracking-widest text-violet-600 ring-1 ring-violet-500/20 dark:text-violet-400">
                         @if ($this->priceIncreased)
-                            New Course
+                            Masterclass
                         @else
-                            New Course &mdash; Early Bird
+                            Masterclass &mdash; Early Bird
                         @endif
                     </span>
 
@@ -177,7 +179,7 @@
             </div>
 
             {{-- What's Included --}}
-            <div class="mx-auto mt-8 grid max-w-7xl gap-4 px-6 pb-6 sm:grid-cols-2 lg:grid-cols-4 lg:px-8 lg:pb-8">
+            <div class="mx-auto mt-8 grid max-w-7xl gap-4 px-6 sm:grid-cols-2 lg:grid-cols-4 lg:px-8">
                 <div class="rounded-xl border border-zinc-200 bg-white p-5 dark:border-white/10 dark:bg-white/5">
                     <div class="flex size-9 items-center justify-center rounded-lg bg-violet-100 dark:bg-violet-500/15">
                         <x-heroicon-s-device-phone-mobile class="size-4 text-violet-600 dark:text-violet-400" />
@@ -210,6 +212,93 @@
                     <p class="mt-1 text-xs text-zinc-600 dark:text-zinc-400">One-time payment. All current and future content.</p>
                 </div>
             </div>
+
+            {{-- Locked lesson notice --}}
+            @if (session('message'))
+                <div class="mx-auto mt-8 max-w-7xl px-6 lg:px-8">
+                    <flux:callout variant="secondary" icon="lock-closed">
+                        <flux:callout.text>{{ session('message') }}</flux:callout.text>
+                    </flux:callout>
+                </div>
+            @endif
+
+            {{-- Course curriculum --}}
+            @if ($this->outlineModules->isNotEmpty())
+                <div class="mx-auto mt-8 max-w-7xl px-6 lg:px-8">
+                    <div class="flex items-center gap-3">
+                        <flux:heading size="lg">Course curriculum</flux:heading>
+                        @if ($this->hasFreeLessons)
+                            <flux:badge variant="pill" color="emerald" size="sm">Free lessons included</flux:badge>
+                        @endif
+                    </div>
+                    <flux:text class="mt-1 text-sm">
+                        @if ($this->hasFreeLessons)
+                            Start with the lessons you can watch right now &mdash; everything else unlocks when you get the course.
+                        @else
+                            Every lesson unlocks when you get the course.
+                        @endif
+                    </flux:text>
+
+                    <div class="mt-4 space-y-4">
+                        @foreach ($this->outlineModules as $moduleIndex => $module)
+                            @php
+                                $publishedLessons = $module->lessons->where('is_published', true);
+                                $moduleHasFreeLesson = $publishedLessons->contains(fn ($moduleLesson) => $this->isFreePreviewLesson($moduleLesson));
+                            @endphp
+                            <div wire:key="outline-module-{{ $module->id }}" class="rounded-lg border border-zinc-200 bg-white dark:border-white/10 dark:bg-white/5">
+                                <div class="flex items-center gap-4 p-4">
+                                    <div class="flex size-10 shrink-0 items-center justify-center rounded-lg text-sm font-bold {{ $moduleHasFreeLesson ? 'bg-emerald-100 text-emerald-600 dark:bg-emerald-900/50 dark:text-emerald-400' : 'bg-zinc-100 text-zinc-500 dark:bg-white/5 dark:text-zinc-500' }}">
+                                        {{ str_pad($moduleIndex + 1, 2, '0', STR_PAD_LEFT) }}
+                                    </div>
+                                    <div class="min-w-0 flex-1">
+                                        <flux:heading size="sm">{{ $module->title }}</flux:heading>
+                                        @if ($module->description)
+                                            <flux:text class="mt-1 text-sm">{{ $module->description }}</flux:text>
+                                        @endif
+                                    </div>
+                                </div>
+
+                                <div class="border-t border-zinc-200 dark:border-white/10">
+                                    @foreach ($publishedLessons as $lesson)
+                                        @php
+                                            $isPreviewable = $this->isFreePreviewLesson($lesson);
+                                        @endphp
+                                        <div wire:key="outline-lesson-{{ $lesson->id }}" class="flex items-center gap-3 px-4 py-3 {{ ! $loop->last ? 'border-b border-zinc-100 dark:border-white/5' : '' }}">
+                                            {{-- Fixed-width slot keeps titles aligned whether or not a lock is shown --}}
+                                            <div class="flex size-4 shrink-0 items-center justify-center">
+                                                @unless ($isPreviewable)
+                                                    <flux:tooltip content="Buy the course to unlock all lessons">
+                                                        <button
+                                                            type="button"
+                                                            class="cursor-help text-zinc-400 dark:text-zinc-500"
+                                                            aria-label="Buy the course to unlock all lessons"
+                                                        >
+                                                            <x-heroicon-m-lock-closed class="size-4" />
+                                                        </button>
+                                                    </flux:tooltip>
+                                                @endunless
+                                            </div>
+                                            <div class="min-w-0 flex-1">
+                                                @if ($isPreviewable)
+                                                    <a href="{{ route('customer.course.lesson', $lesson) }}" wire:navigate class="text-sm font-medium transition-colors hover:text-emerald-600 dark:hover:text-emerald-400">
+                                                        {{ $lesson->title }}
+                                                    </a>
+                                                @else
+                                                    <span class="text-sm font-medium text-zinc-400 dark:text-zinc-500">{{ $lesson->title }}</span>
+                                                @endif
+                                            </div>
+                                            @if ($lesson->duration_in_seconds)
+                                                <flux:text class="shrink-0 text-xs">{{ gmdate('i:s', $lesson->duration_in_seconds) }}</flux:text>
+                                            @endif
+                                        </div>
+                                    @endforeach
+                                </div>
+                            </div>
+                        @endforeach
+                    </div>
+                </div>
+            @endif
+
         </div>
     @endif
 </div>
