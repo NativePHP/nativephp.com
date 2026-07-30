@@ -271,7 +271,7 @@ class CourseContentTest extends TestCase
     }
 
     #[Test]
-    public function course_dashboard_excludes_unpublished_lessons_from_the_curriculum(): void
+    public function course_dashboard_lists_unpublished_lessons_as_coming_soon(): void
     {
         $user = User::factory()->create();
 
@@ -293,18 +293,22 @@ class CourseContentTest extends TestCase
             ->test(Index::class)
             ->assertSee('Partly Released Module')
             ->assertSee('Released Lesson')
-            ->assertDontSee('Unreleased Lesson');
+            ->assertSeeInOrder(['Unreleased Lesson', 'Coming Soon']);
     }
 
+    /**
+     * A published module with nothing released yet still belongs in the
+     * outline — free users should see the shape of the whole course.
+     */
     #[Test]
-    public function course_dashboard_excludes_modules_with_no_published_lessons(): void
+    public function course_dashboard_lists_modules_with_no_published_lessons_as_coming_soon(): void
     {
         $user = User::factory()->create();
 
         $course = Course::factory()->published()->create();
         $module = CourseModule::factory()->published()->free()->create([
             'course_id' => $course->id,
-            'title' => 'Empty Module',
+            'title' => 'Upcoming Module',
         ]);
         CourseLesson::factory()->free()->create([
             'course_module_id' => $module->id,
@@ -313,9 +317,95 @@ class CourseContentTest extends TestCase
 
         Livewire::actingAs($user)
             ->test(Index::class)
-            ->assertDontSee('Course curriculum')
-            ->assertDontSee('Empty Module')
-            ->assertDontSee('Unreleased Lesson');
+            ->assertSee('Course curriculum')
+            ->assertSee('Upcoming Module')
+            ->assertSee('Coming Soon')
+            ->assertSee('Unreleased Lesson');
+    }
+
+    #[Test]
+    public function modules_with_a_released_lesson_are_not_marked_coming_soon(): void
+    {
+        $user = User::factory()->create();
+
+        $course = Course::factory()->published()->create();
+        $module = CourseModule::factory()->published()->free()->create([
+            'course_id' => $course->id,
+            'title' => 'Released Module',
+        ]);
+        CourseLesson::factory()->published()->free()->create([
+            'course_module_id' => $module->id,
+            'title' => 'Released Lesson',
+        ]);
+
+        Livewire::actingAs($user)
+            ->test(Index::class)
+            ->assertSee('Released Module')
+            ->assertSee('Released Lesson')
+            ->assertDontSee('Coming Soon');
+    }
+
+    /**
+     * An unreleased lesson isn't gated by purchase, so it gets a Coming Soon
+     * badge rather than the "buy to unlock" lock.
+     */
+    #[Test]
+    public function unreleased_lessons_are_not_shown_as_locked(): void
+    {
+        $user = User::factory()->create();
+
+        $course = Course::factory()->published()->create();
+        $module = CourseModule::factory()->published()->free()->create([
+            'course_id' => $course->id,
+            'title' => 'Partly Released Module',
+        ]);
+        CourseLesson::factory()->published()->free()->create([
+            'course_module_id' => $module->id,
+            'title' => 'Released Lesson',
+        ]);
+        $unreleased = CourseLesson::factory()->free()->create([
+            'course_module_id' => $module->id,
+            'title' => 'Unreleased Lesson',
+        ]);
+
+        $html = Livewire::actingAs($user)->test(Index::class)->html();
+
+        $row = $this->outlineRowFor($html, $unreleased->id);
+
+        $this->assertStringContainsString('Coming Soon', $row);
+        $this->assertStringNotContainsString('unlock all lessons', $row);
+    }
+
+    /**
+     * The markup for a single lesson row in the pre-purchase outline.
+     */
+    private function outlineRowFor(string $html, int $lessonId): string
+    {
+        $start = strpos($html, 'wire:key="outline-lesson-'.$lessonId.'"');
+
+        $this->assertNotFalse($start, "Lesson {$lessonId} is missing from the outline.");
+
+        // Up to the next row (or the end of the module's lesson list).
+        $next = strpos($html, 'wire:key="outline-', $start + 1);
+
+        return $next === false ? substr($html, $start) : substr($html, $start, $next - $start);
+    }
+
+    #[Test]
+    public function a_module_with_no_lessons_at_all_shows_as_coming_soon(): void
+    {
+        $user = User::factory()->create();
+
+        $course = Course::factory()->published()->create();
+        CourseModule::factory()->published()->free()->create([
+            'course_id' => $course->id,
+            'title' => 'Planned Module',
+        ]);
+
+        Livewire::actingAs($user)
+            ->test(Index::class)
+            ->assertSee('Planned Module')
+            ->assertSee('Coming Soon');
     }
 
     #[Test]

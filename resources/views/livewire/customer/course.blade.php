@@ -244,6 +244,7 @@
                             @php
                                 $publishedLessons = $module->lessons->where('is_published', true);
                                 $moduleHasFreeLesson = $publishedLessons->contains(fn ($moduleLesson) => $this->isFreePreviewLesson($moduleLesson));
+                                $isComingSoon = $this->isComingSoonModule($module);
                             @endphp
                             <div wire:key="outline-module-{{ $module->id }}" class="rounded-lg border border-zinc-200 bg-white dark:border-white/10 dark:bg-white/5">
                                 <div class="flex items-center gap-4 p-4">
@@ -251,22 +252,31 @@
                                         {{ str_pad($moduleIndex + 1, 2, '0', STR_PAD_LEFT) }}
                                     </div>
                                     <div class="min-w-0 flex-1">
-                                        <flux:heading size="sm">{{ $module->title }}</flux:heading>
+                                        <div class="flex items-center gap-2">
+                                            <flux:heading size="sm">{{ $module->title }}</flux:heading>
+                                            @if ($isComingSoon)
+                                                <flux:badge variant="pill" color="amber" size="sm">Coming Soon</flux:badge>
+                                            @endif
+                                        </div>
                                         @if ($module->description)
                                             <flux:text class="mt-1 text-sm">{{ $module->description }}</flux:text>
                                         @endif
                                     </div>
                                 </div>
 
+                                @if ($module->lessons->isNotEmpty())
                                 <div class="border-t border-zinc-200 dark:border-white/10">
-                                    @foreach ($publishedLessons as $lesson)
+                                    @foreach ($module->lessons as $lesson)
                                         @php
                                             $isPreviewable = $this->isFreePreviewLesson($lesson);
+                                            $isUnreleased = ! $lesson->is_published;
                                         @endphp
                                         <div wire:key="outline-lesson-{{ $lesson->id }}" class="flex items-center gap-3 px-4 py-3 {{ ! $loop->last ? 'border-b border-zinc-100 dark:border-white/5' : '' }}">
-                                            {{-- Fixed-width slot keeps titles aligned whether or not a lock is shown --}}
+                                            {{-- Fixed-width slot keeps titles aligned whether or not a lock is shown.
+                                                 Unreleased lessons get no lock: they're not gated by purchase, they
+                                                 simply aren't out yet. --}}
                                             <div class="flex size-4 shrink-0 items-center justify-center">
-                                                @unless ($isPreviewable)
+                                                @unless ($isPreviewable || $isUnreleased)
                                                     <flux:tooltip content="Buy the course to unlock all lessons">
                                                         <button
                                                             type="button"
@@ -287,12 +297,16 @@
                                                     <span class="text-sm font-medium text-zinc-400 dark:text-zinc-500">{{ $lesson->title }}</span>
                                                 @endif
                                             </div>
+                                            @if ($isUnreleased)
+                                                <flux:badge variant="pill" color="amber" size="sm">Coming Soon</flux:badge>
+                                            @endif
                                             @if ($lesson->duration_in_seconds)
                                                 <flux:text class="shrink-0 text-xs">{{ gmdate('i:s', $lesson->duration_in_seconds) }}</flux:text>
                                             @endif
                                         </div>
                                     @endforeach
                                 </div>
+                                @endif
                             </div>
                         @endforeach
                     </div>

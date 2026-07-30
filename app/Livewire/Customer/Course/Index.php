@@ -122,10 +122,13 @@ class Index extends Component
     }
 
     /**
-     * Published modules with at least one published lesson.
+     * Every published module, including those still awaiting their first
+     * released lesson.
      *
      * Drives the pre-purchase curriculum outline, which lists every lesson —
-     * locked or not — so non-purchasers can see the whole course.
+     * locked or not — so non-purchasers can see the whole course. Modules with
+     * nothing released yet are listed as coming soon rather than hidden, so the
+     * outline reflects the full shape of the course.
      *
      * Keys are preserved so the view can number each module by its real position
      * in the course rather than its position within this filtered subset.
@@ -140,8 +143,17 @@ class Index extends Component
         }
 
         return $this->course->modules
-            ->filter(fn (CourseModule $module): bool => $module->is_published
-                && $module->lessons->contains(fn (CourseLesson $lesson): bool => $lesson->is_published));
+            ->filter(fn (CourseModule $module): bool => $module->is_published);
+    }
+
+    /**
+     * A published module whose lessons are all still unreleased.
+     */
+    public function isComingSoonModule(CourseModule $module): bool
+    {
+        return ! $module->lessons->contains(
+            fn (CourseLesson $lesson): bool => $lesson->is_published
+        );
     }
 
     #[Computed]
