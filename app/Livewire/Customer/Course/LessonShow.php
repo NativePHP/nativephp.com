@@ -31,7 +31,11 @@ class LessonShow extends Component
         abort_unless($this->isAdmin || ($this->lesson->is_published && $this->lesson->module->is_published), 404);
 
         if (! $this->lesson->is_free && ! $this->hasPurchased && ! $this->isAdmin) {
-            abort(403, 'You need Pro access to view this lesson.');
+            session()->flash('message', 'That lesson is part of the full course. Purchase the Masterclass to unlock it.');
+
+            $this->redirect(route('customer.course.index'), navigate: true);
+
+            return;
         }
 
         $this->skipIntroOutro = session()->has(self::VIDEO_PLAYED_SESSION_KEY);

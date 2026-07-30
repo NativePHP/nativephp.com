@@ -82,6 +82,8 @@ class CourseContentTest extends TestCase
             ->test(Index::class)
             ->assertSee('Build native apps')
             ->assertSee('Get Early Bird Access')
+            ->assertSee('Masterclass &mdash; Early Bird', escape: false)
+            ->assertDontSee('New Course')
             ->assertSee('$199');
 
         Carbon::setTestNow();
@@ -101,6 +103,9 @@ class CourseContentTest extends TestCase
             ->test(Index::class)
             ->assertSee('$299')
             ->assertSee('Get Access')
+            ->assertSee('Masterclass')
+            ->assertDontSee('New Course')
+            ->assertDontSee('Early Bird')
             ->assertDontSee('Get Early Bird Access');
 
         Carbon::setTestNow();
@@ -176,6 +181,233 @@ class CourseContentTest extends TestCase
     }
 
     #[Test]
+    public function course_dashboard_lists_the_curriculum_for_non_owners(): void
+    {
+        $user = User::factory()->create();
+
+        $course = Course::factory()->published()->create();
+        $module = CourseModule::factory()->published()->free()->create([
+            'course_id' => $course->id,
+            'title' => 'Getting Started',
+        ]);
+        $lesson = CourseLesson::factory()->published()->free()->create([
+            'course_module_id' => $module->id,
+            'title' => 'Installing NativePHP',
+        ]);
+
+        Livewire::actingAs($user)
+            ->test(Index::class)
+            ->assertSee('Course curriculum')
+            ->assertSee('Free lessons included')
+            ->assertSee('Getting Started')
+            ->assertSee('Installing NativePHP')
+            ->assertSee(route('customer.course.lesson', $lesson), escape: false);
+    }
+
+    #[Test]
+    public function course_dashboard_lists_paid_only_modules_for_non_owners(): void
+    {
+        $user = User::factory()->create();
+
+        $course = Course::factory()->published()->create();
+        $module = CourseModule::factory()->published()->create([
+            'course_id' => $course->id,
+            'title' => 'Paid Only Module',
+        ]);
+        $lesson = CourseLesson::factory()->published()->create([
+            'course_module_id' => $module->id,
+            'is_free' => false,
+            'title' => 'Paid Only Lesson',
+        ]);
+
+        Livewire::actingAs($user)
+            ->test(Index::class)
+            ->assertSee('Course curriculum')
+            ->assertSee('Paid Only Module')
+            ->assertSee('Paid Only Lesson')
+            ->assertSee('Every lesson unlocks when you get the course.')
+            ->assertDontSee('Free lessons included')
+            ->assertDontSee(route('customer.course.lesson', $lesson), escape: false);
+    }
+
+    #[Test]
+    public function locked_lessons_show_a_lock_with_an_unlock_prompt(): void
+    {
+        $user = User::factory()->create();
+
+        $course = Course::factory()->published()->create();
+        $module = CourseModule::factory()->published()->create(['course_id' => $course->id]);
+        CourseLesson::factory()->published()->create([
+            'course_module_id' => $module->id,
+            'is_free' => false,
+            'title' => 'Locked Lesson',
+        ]);
+
+        Livewire::actingAs($user)
+            ->test(Index::class)
+            ->assertSee('Locked Lesson')
+            ->assertSee('Buy the course to unlock all lessons')
+            ->assertSeeHtml('data-flux-tooltip');
+    }
+
+    #[Test]
+    public function free_lessons_are_not_labelled_with_a_free_pill(): void
+    {
+        $user = User::factory()->create();
+
+        $course = Course::factory()->published()->create();
+        $module = CourseModule::factory()->published()->free()->create(['course_id' => $course->id]);
+        CourseLesson::factory()->published()->free()->create([
+            'course_module_id' => $module->id,
+            'title' => 'Watchable Lesson',
+        ]);
+
+        $html = Livewire::actingAs($user)
+            ->test(Index::class)
+            ->assertSee('Watchable Lesson')
+            ->html();
+
+        $this->assertDoesNotMatchRegularExpression('/<[^>]*badge[^>]*>\s*Free\s*</i', $html);
+    }
+
+    #[Test]
+    public function course_dashboard_excludes_unpublished_lessons_from_the_curriculum(): void
+    {
+        $user = User::factory()->create();
+
+        $course = Course::factory()->published()->create();
+        $module = CourseModule::factory()->published()->free()->create([
+            'course_id' => $course->id,
+            'title' => 'Partly Released Module',
+        ]);
+        CourseLesson::factory()->published()->free()->create([
+            'course_module_id' => $module->id,
+            'title' => 'Released Lesson',
+        ]);
+        CourseLesson::factory()->free()->create([
+            'course_module_id' => $module->id,
+            'title' => 'Unreleased Lesson',
+        ]);
+
+        Livewire::actingAs($user)
+            ->test(Index::class)
+            ->assertSee('Partly Released Module')
+            ->assertSee('Released Lesson')
+            ->assertDontSee('Unreleased Lesson');
+    }
+
+    #[Test]
+    public function course_dashboard_excludes_modules_with_no_published_lessons(): void
+    {
+        $user = User::factory()->create();
+
+        $course = Course::factory()->published()->create();
+        $module = CourseModule::factory()->published()->free()->create([
+            'course_id' => $course->id,
+            'title' => 'Empty Module',
+        ]);
+        CourseLesson::factory()->free()->create([
+            'course_module_id' => $module->id,
+            'title' => 'Unreleased Lesson',
+        ]);
+
+        Livewire::actingAs($user)
+            ->test(Index::class)
+            ->assertDontSee('Course curriculum')
+            ->assertDontSee('Empty Module')
+            ->assertDontSee('Unreleased Lesson');
+    }
+
+    #[Test]
+    public function course_dashboard_excludes_unpublished_modules_from_the_curriculum(): void
+    {
+        $user = User::factory()->create();
+
+        $course = Course::factory()->published()->create();
+        $module = CourseModule::factory()->free()->create([
+            'course_id' => $course->id,
+            'title' => 'Draft Module',
+        ]);
+        CourseLesson::factory()->published()->free()->create([
+            'course_module_id' => $module->id,
+            'title' => 'Lesson In Draft Module',
+        ]);
+
+        Livewire::actingAs($user)
+            ->test(Index::class)
+            ->assertDontSee('Course curriculum')
+            ->assertDontSee('Draft Module')
+            ->assertDontSee('Lesson In Draft Module');
+    }
+
+    #[Test]
+    public function curriculum_modules_keep_their_real_position_in_the_course(): void
+    {
+        $user = User::factory()->create();
+
+        $course = Course::factory()->published()->create();
+
+        foreach ([1, 2] as $sortOrder) {
+            $paidModule = CourseModule::factory()->published()->create([
+                'course_id' => $course->id,
+                'sort_order' => $sortOrder,
+            ]);
+            CourseLesson::factory()->published()->create([
+                'course_module_id' => $paidModule->id,
+                'is_free' => false,
+            ]);
+        }
+
+        $freeModule = CourseModule::factory()->published()->free()->create([
+            'course_id' => $course->id,
+            'title' => 'Third Module Is Free',
+            'sort_order' => 3,
+        ]);
+        CourseLesson::factory()->published()->free()->create([
+            'course_module_id' => $freeModule->id,
+        ]);
+
+        $outlineModules = Livewire::actingAs($user)
+            ->test(Index::class)
+            ->assertSee('Third Module Is Free')
+            ->instance()
+            ->outlineModules();
+
+        $this->assertSame([0, 1, 2], array_keys($outlineModules->all()));
+        $this->assertSame($freeModule->id, $outlineModules->last()->id);
+    }
+
+    #[Test]
+    public function course_dashboard_locks_paid_lessons_inside_a_free_module_for_non_owners(): void
+    {
+        $user = User::factory()->create();
+
+        $course = Course::factory()->published()->create();
+        $module = CourseModule::factory()->published()->free()->create([
+            'course_id' => $course->id,
+            'title' => 'Mixed Module',
+        ]);
+        $freeLesson = CourseLesson::factory()->published()->free()->create([
+            'course_module_id' => $module->id,
+            'title' => 'Free Intro Lesson',
+            'sort_order' => 1,
+        ]);
+        $paidLesson = CourseLesson::factory()->published()->create([
+            'course_module_id' => $module->id,
+            'is_free' => false,
+            'title' => 'Paid Deep Dive Lesson',
+            'sort_order' => 2,
+        ]);
+
+        Livewire::actingAs($user)
+            ->test(Index::class)
+            ->assertSee('Free Intro Lesson')
+            ->assertSee('Paid Deep Dive Lesson')
+            ->assertSee(route('customer.course.lesson', $freeLesson), escape: false)
+            ->assertDontSee(route('customer.course.lesson', $paidLesson), escape: false);
+    }
+
+    #[Test]
     public function free_lesson_is_accessible_without_purchase(): void
     {
         $user = User::factory()->create();
@@ -192,7 +424,7 @@ class CourseContentTest extends TestCase
     }
 
     #[Test]
-    public function pro_lesson_is_blocked_without_purchase(): void
+    public function paid_lesson_redirects_to_the_course_page_without_purchase(): void
     {
         $user = User::factory()->create();
         $course = Course::factory()->published()->create();
@@ -204,7 +436,164 @@ class CourseContentTest extends TestCase
 
         Livewire::actingAs($user)
             ->test(LessonShow::class, ['lesson' => $lesson])
-            ->assertForbidden();
+            ->assertRedirect(route('customer.course.index'));
+
+        $this->assertSame(
+            'That lesson is part of the full course. Purchase the Masterclass to unlock it.',
+            session('message'),
+        );
+    }
+
+    #[Test]
+    public function paid_lesson_redirect_explains_itself_on_the_course_page(): void
+    {
+        $user = User::factory()->create();
+        $course = Course::factory()->published()->create();
+        $module = CourseModule::factory()->published()->create(['course_id' => $course->id]);
+        $lesson = CourseLesson::factory()->published()->create([
+            'course_module_id' => $module->id,
+            'is_free' => false,
+        ]);
+
+        $this->withoutVite()
+            ->actingAs($user)
+            ->get(route('customer.course.lesson', $lesson))
+            ->assertRedirect(route('customer.course.index'));
+
+        $this->withoutVite()
+            ->actingAs($user)
+            ->get(route('customer.course.index'))
+            ->assertOk()
+            ->assertSee('That lesson is part of the full course. Purchase the Masterclass to unlock it.', escape: false)
+            ->assertSee('Build native apps');
+    }
+
+    #[Test]
+    public function locked_lessons_in_the_lesson_sidebar_are_clickable(): void
+    {
+        $user = User::factory()->create();
+        $course = Course::factory()->published()->create();
+        $module = CourseModule::factory()->published()->free()->create(['course_id' => $course->id]);
+        $freeLesson = CourseLesson::factory()->published()->free()->create([
+            'course_module_id' => $module->id,
+            'title' => 'Watchable Lesson',
+            'sort_order' => 1,
+        ]);
+        $lockedLesson = CourseLesson::factory()->published()->create([
+            'course_module_id' => $module->id,
+            'is_free' => false,
+            'title' => 'Locked Sidebar Lesson',
+            'sort_order' => 2,
+        ]);
+
+        Livewire::actingAs($user)
+            ->test(LessonShow::class, ['lesson' => $freeLesson])
+            ->assertSee('Locked Sidebar Lesson')
+            ->assertSee(route('customer.course.lesson', $lockedLesson), escape: false);
+    }
+
+    #[Test]
+    public function draft_lessons_in_the_lesson_sidebar_stay_unclickable(): void
+    {
+        $user = User::factory()->create();
+        $course = Course::factory()->published()->create();
+        $module = CourseModule::factory()->published()->free()->create(['course_id' => $course->id]);
+        $freeLesson = CourseLesson::factory()->published()->free()->create([
+            'course_module_id' => $module->id,
+            'title' => 'Watchable Lesson',
+            'sort_order' => 1,
+        ]);
+        $draftLesson = CourseLesson::factory()->free()->create([
+            'course_module_id' => $module->id,
+            'title' => 'Draft Sidebar Lesson',
+            'sort_order' => 2,
+        ]);
+
+        Livewire::actingAs($user)
+            ->test(LessonShow::class, ['lesson' => $freeLesson])
+            ->assertSee('Draft Sidebar Lesson')
+            ->assertSee('Coming Soon')
+            ->assertDontSee(route('customer.course.lesson', $draftLesson), escape: false);
+    }
+
+    #[Test]
+    public function purchase_page_orders_hero_features_notice_then_curriculum(): void
+    {
+        $user = User::factory()->create();
+        $course = Course::factory()->published()->create();
+        $module = CourseModule::factory()->published()->free()->create([
+            'course_id' => $course->id,
+            'title' => 'Getting Started',
+        ]);
+        CourseLesson::factory()->published()->free()->create([
+            'course_module_id' => $module->id,
+        ]);
+        $lockedLesson = CourseLesson::factory()->published()->create([
+            'course_module_id' => $module->id,
+            'is_free' => false,
+        ]);
+
+        $this->withoutVite()
+            ->actingAs($user)
+            ->get(route('customer.course.lesson', $lockedLesson))
+            ->assertRedirect(route('customer.course.index'));
+
+        $html = $this->withoutVite()
+            ->actingAs($user)
+            ->get(route('customer.course.index'))
+            ->assertOk()
+            ->getContent();
+
+        $hero = strpos($html, 'Build native apps');
+        $features = strpos($html, 'Zero to Published');
+        $notice = strpos($html, 'Purchase the Masterclass to unlock it.');
+        $curriculum = strpos($html, 'Course curriculum');
+
+        $this->assertNotFalse($hero);
+        $this->assertNotFalse($features);
+        $this->assertNotFalse($notice);
+        $this->assertNotFalse($curriculum);
+
+        $this->assertLessThan($features, $hero, 'Hero should come before the feature cards');
+        $this->assertLessThan($notice, $features, 'Feature cards should come before the locked-lesson notice');
+        $this->assertLessThan($curriculum, $notice, 'Locked-lesson notice should come before the curriculum');
+    }
+
+    #[Test]
+    public function paid_lesson_no_longer_returns_a_dead_end_403(): void
+    {
+        config(['app.debug' => false]);
+
+        $user = User::factory()->create();
+        $course = Course::factory()->published()->create();
+        $module = CourseModule::factory()->published()->create(['course_id' => $course->id]);
+        $lesson = CourseLesson::factory()->published()->create([
+            'course_module_id' => $module->id,
+            'is_free' => false,
+        ]);
+
+        $this->withoutVite()
+            ->actingAs($user)
+            ->get(route('customer.course.lesson', $lesson))
+            ->assertStatus(302)
+            ->assertRedirect(route('customer.course.index'))
+            ->assertDontSee('You need Pro access to view this lesson.');
+    }
+
+    #[Test]
+    public function unpublished_lesson_still_returns_404_without_purchase(): void
+    {
+        $user = User::factory()->create();
+        $course = Course::factory()->published()->create();
+        $module = CourseModule::factory()->published()->create(['course_id' => $course->id]);
+        $lesson = CourseLesson::factory()->create([
+            'course_module_id' => $module->id,
+            'is_free' => false,
+        ]);
+
+        Livewire::actingAs($user)
+            ->test(LessonShow::class, ['lesson' => $lesson])
+            ->assertNotFound();
     }
 
     #[Test]

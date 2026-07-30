@@ -3,9 +3,12 @@
 namespace App\Livewire\Customer\Course;
 
 use App\Models\Course;
+use App\Models\CourseLesson;
+use App\Models\CourseModule;
 use App\Models\LessonProgress;
 use App\Models\Product;
 use App\Models\ProductPrice;
+use Illuminate\Support\Collection;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Title;
@@ -116,5 +119,41 @@ class Index extends Component
     public function completedCount(): int
     {
         return count($this->completedLessonIds);
+    }
+
+    /**
+     * Published modules with at least one published lesson.
+     *
+     * Drives the pre-purchase curriculum outline, which lists every lesson —
+     * locked or not — so non-purchasers can see the whole course.
+     *
+     * Keys are preserved so the view can number each module by its real position
+     * in the course rather than its position within this filtered subset.
+     *
+     * @return Collection<int, CourseModule>
+     */
+    #[Computed]
+    public function outlineModules(): Collection
+    {
+        if (! $this->course) {
+            return collect();
+        }
+
+        return $this->course->modules
+            ->filter(fn (CourseModule $module): bool => $module->is_published
+                && $module->lessons->contains(fn (CourseLesson $lesson): bool => $lesson->is_published));
+    }
+
+    #[Computed]
+    public function hasFreeLessons(): bool
+    {
+        return $this->outlineModules
+            ->flatMap(fn (CourseModule $module) => $module->lessons)
+            ->contains(fn (CourseLesson $lesson): bool => $this->isFreePreviewLesson($lesson));
+    }
+
+    public function isFreePreviewLesson(CourseLesson $lesson): bool
+    {
+        return $lesson->is_free && $lesson->is_published;
     }
 }
