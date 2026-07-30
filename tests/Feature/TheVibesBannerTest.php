@@ -31,23 +31,20 @@ class TheVibesBannerTest extends TestCase
             ->assertDontSee('Get your ticket');
     }
 
+    /**
+     * The site banner slot now announces Mobile v4 and SuperNative, so the
+     * Vibes banner is no longer mounted on the page — even while tickets are
+     * still on sale. Its countdown behaviour stays covered above, and the
+     * replacement is covered by SupernativeBannerTest.
+     */
     #[Test]
-    public function the_homepage_shows_the_countdown_while_tickets_are_on_sale()
+    public function the_homepage_no_longer_carries_the_vibes_banner()
     {
         $this->travelTo(Carbon::parse('2026-07-23T12:00:00-04:00'));
 
         $this->get('/')
             ->assertOk()
-            ->assertSee('2026-07-30T00:00:00-04:00', false);
-    }
-
-    #[Test]
-    public function the_homepage_hides_the_banner_once_ticket_sales_close()
-    {
-        $this->travelTo(Carbon::parse('2026-07-30T04:00:00Z'));
-
-        $this->get('/')
-            ->assertOk()
-            ->assertDontSee('2026-07-30T00:00:00-04:00', false);
+            ->assertDontSee('2026-07-30T00:00:00-04:00', false)
+            ->assertDontSee('Get your ticket');
     }
 }

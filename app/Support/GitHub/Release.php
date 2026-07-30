@@ -49,25 +49,31 @@ class Release
     {
         $body = $this->body;
 
-        // Convert any URLs to Markdown links
+        // Convert bare URLs to Markdown links. Release bodies can already
+        // contain Markdown links, so URLs preceded by "(" or "<" are left
+        // alone — wrapping those again nests link syntax and the page ends
+        // up rendering both the text and the URL. Closing ")" and "]" are
+        // excluded from the URL so a link's own delimiters are never
+        // swallowed into it.
         if ($this->convertLinks) {
             $body = preg_replace(
-                '/https?:\/\/[^\s]+\/pull\/(\d+)/',
+                '/(?<![(<])https?:\/\/[^\s)\]]+\/pull\/(\d+)/',
                 '[#$1]($0)',
                 $body
             );
 
             $body = preg_replace(
-                '/(https?:\/\/(?![^\s]+\/pull\/\d+)[^\s]+)/',
+                '/(?<![(<])(https?:\/\/(?![^\s]+\/pull\/\d+)[^\s)\]]+)/',
                 '[$1]($1)',
                 $body
             );
         }
 
-        // Change any @ tags to markdown links to GitHub
+        // Change any @ tags to markdown links to GitHub, unless they are
+        // already the text of a Markdown link or part of an email address.
         if ($this->withUserLinks) {
             $body = preg_replace(
-                '/@([a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?)/',
+                '/(?<![\w\[])@([a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?)/',
                 '[@$1](https://github.com/$1)',
                 $body
             );

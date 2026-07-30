@@ -189,7 +189,7 @@
                     Explore
                 </h3>
                 <ul
-                    class="grid sm:grid-rows-5 sm:grid-flow-col sm:auto-cols-fr gap-x-6 text-sm text-gray-500 dark:text-gray-400"
+                    class="grid gap-x-6 text-sm text-gray-500 sm:auto-cols-fr sm:grid-flow-col sm:grid-rows-5 dark:text-gray-400"
                 >
                     <li>
                         <a
@@ -207,14 +207,16 @@
                             Blog
                         </a>
                     </li>
-                    {{-- <li>
+                    {{--
+                        <li>
                         <a
-                            href="https://shop.nativephp.com/"
-                            class="inline-block px-px py-1.5 transition duration-300 will-change-transform hover:translate-x-1 hover:text-gray-700 dark:hover:text-gray-300"
+                        href="https://shop.nativephp.com/"
+                        class="inline-block px-px py-1.5 transition duration-300 will-change-transform hover:translate-x-1 hover:text-gray-700 dark:hover:text-gray-300"
                         >
-                            Swag
+                        Swag
                         </a>
-                    </li> --}}
+                        </li>
+                    --}}
                     <li>
                         <a
                             href="/partners"
@@ -238,7 +240,6 @@
                         >
                             <span class="inline-flex items-center gap-1.5">
                                 Ultra
-                                <span class="rounded-full bg-emerald-500 px-1.5 py-px text-[10px] font-bold leading-tight text-white">New</span>
                             </span>
                         </a>
                     </li>
@@ -249,7 +250,6 @@
                         >
                             <span class="inline-flex items-center gap-1.5">
                                 Consulting
-                                <span class="rounded-full bg-emerald-500 px-1.5 py-px text-[10px] font-bold leading-tight text-white">New</span>
                             </span>
                         </a>
                     </li>
@@ -260,7 +260,6 @@
                         >
                             <span class="inline-flex items-center gap-1.5">
                                 Build
-                                <span class="rounded-full bg-emerald-500 px-1.5 py-px text-[10px] font-bold leading-tight text-white">New</span>
                             </span>
                         </a>
                     </li>
@@ -271,7 +270,11 @@
                         >
                             <span class="inline-flex items-center gap-1.5">
                                 Learn
-                                <span class="rounded-full bg-emerald-500 px-1.5 py-px text-[10px] font-bold leading-tight text-white">New</span>
+                                <span
+                                    class="rounded-full bg-emerald-500 px-1.5 py-px text-[10px] leading-tight font-bold text-white"
+                                >
+                                    New
+                                </span>
                             </span>
                         </a>
                     </li>
@@ -282,7 +285,6 @@
                         >
                             <span class="inline-flex items-center gap-1.5">
                                 Support
-                                <span class="rounded-full bg-emerald-500 px-1.5 py-px text-[10px] font-bold leading-tight text-white">New</span>
                             </span>
                         </a>
                     </li>
@@ -296,14 +298,15 @@
                     </li>
                     @feature(App\Features\ShowAuthButtons::class)
                         <li>
-                                <a
-                                    href="{{ route('customer.login') }}"
-                                    class="inline-block px-px py-1.5 transition duration-300 will-change-transform hover:translate-x-1 hover:text-gray-700 dark:hover:text-gray-300"
-                                >
-                                    Dashboard
-                                </a>
+                            <a
+                                href="{{ route('customer.login') }}"
+                                class="inline-block px-px py-1.5 transition duration-300 will-change-transform hover:translate-x-1 hover:text-gray-700 dark:hover:text-gray-300"
+                            >
+                                Dashboard
+                            </a>
                         </li>
                     @endfeature
+
                     <li>
                         <a
                             href="{{ route('brand') }}"
@@ -356,7 +359,7 @@
                     >
                         <li>
                             <a
-                                href="/docs/mobile/3/getting-started/introduction"
+                                href="/docs/mobile/getting-started/introduction"
                                 class="inline-block px-px py-1.5 transition duration-300 will-change-transform hover:translate-x-1 hover:text-gray-700 dark:hover:text-gray-300"
                             >
                                 Documentation
@@ -409,40 +412,40 @@
                     class="flex flex-col items-start gap-1"
                     aria-labelledby="footer-desktop-heading"
                 >
-                <h3
-                    id="footer-desktop-heading"
-                    class="font-medium"
-                >
-                    Desktop
-                </h3>
-                <ul
-                    class="flex flex-col items-start text-sm text-gray-500 dark:text-gray-400"
-                >
-                    <li>
-                        <a
-                            href="/docs/desktop/2/getting-started/introduction"
-                            class="inline-block px-px py-1.5 transition duration-300 will-change-transform hover:translate-x-1 hover:text-gray-700 dark:hover:text-gray-300"
-                        >
-                            Documentation
-                        </a>
-                    </li>
-                    <li>
-                        <a
-                            href="{{ route('showcase', 'desktop') }}"
-                            class="inline-block px-px py-1.5 transition duration-300 will-change-transform hover:translate-x-1 hover:text-gray-700 dark:hover:text-gray-300"
-                        >
-                            Showcase
-                        </a>
-                    </li>
-                    <li>
-                        <a
-                            href="https://github.com/nativephp/desktop"
-                            class="inline-block px-px py-1.5 transition duration-300 will-change-transform hover:translate-x-1 hover:text-gray-700 dark:hover:text-gray-300"
-                        >
-                            GitHub
-                        </a>
-                    </li>
-                </ul>
+                    <h3
+                        id="footer-desktop-heading"
+                        class="font-medium"
+                    >
+                        Desktop
+                    </h3>
+                    <ul
+                        class="flex flex-col items-start text-sm text-gray-500 dark:text-gray-400"
+                    >
+                        <li>
+                            <a
+                                href="/docs/desktop/getting-started/introduction"
+                                class="inline-block px-px py-1.5 transition duration-300 will-change-transform hover:translate-x-1 hover:text-gray-700 dark:hover:text-gray-300"
+                            >
+                                Documentation
+                            </a>
+                        </li>
+                        <li>
+                            <a
+                                href="{{ route('showcase', 'desktop') }}"
+                                class="inline-block px-px py-1.5 transition duration-300 will-change-transform hover:translate-x-1 hover:text-gray-700 dark:hover:text-gray-300"
+                            >
+                                Showcase
+                            </a>
+                        </li>
+                        <li>
+                            <a
+                                href="https://github.com/nativephp/desktop"
+                                class="inline-block px-px py-1.5 transition duration-300 will-change-transform hover:translate-x-1 hover:text-gray-700 dark:hover:text-gray-300"
+                            >
+                                GitHub
+                            </a>
+                        </li>
+                    </ul>
                 </section>
             </div>
         </nav>

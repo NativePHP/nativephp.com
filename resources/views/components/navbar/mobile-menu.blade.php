@@ -2,14 +2,19 @@
     x-init="
         () => {
             const updatePopoverPosition = () => {
-                const nav = $refs.menuButton.closest('nav');
+                const nav = $refs.menuButton.closest('nav')
                 if (nav && $refs.mobilePopover.matches(':popover-open')) {
-                    $refs.mobilePopover.style.top = (nav.getBoundingClientRect().bottom + 8) + 'px';
-                    $refs.mobilePopover.style.right = window.innerWidth >= 1024
-                        ? (window.innerWidth - $refs.menuButton.getBoundingClientRect().right - 6) + 'px'
-                        : '';
+                    $refs.mobilePopover.style.top =
+                        nav.getBoundingClientRect().bottom + 8 + 'px'
+                    $refs.mobilePopover.style.right =
+                        window.innerWidth >= 1024
+                            ? window.innerWidth -
+                              $refs.menuButton.getBoundingClientRect().right -
+                              6 +
+                              'px'
+                            : ''
                 }
-            };
+            }
 
             // Sync Popover ➜ Alpine
             $refs.mobilePopover.addEventListener('toggle', (e) => {
@@ -17,7 +22,9 @@
 
                 if (e.newState === 'open') {
                     updatePopoverPosition()
-                    window.addEventListener('scroll', updatePopoverPosition, { passive: true })
+                    window.addEventListener('scroll', updatePopoverPosition, {
+                        passive: true,
+                    })
                     window.addEventListener('resize', updatePopoverPosition)
                 } else {
                     window.removeEventListener('scroll', updatePopoverPosition)
@@ -88,7 +95,7 @@
         role="dialog"
         aria-modal="true"
         aria-label="Site menu"
-        class="fixed m-0 inset-[unset] inset-x-3 bottom-3.5 w-auto -translate-y-3 overflow-y-scroll overscroll-contain rounded-2xl bg-gray-200/50 opacity-0 shadow-2xl ring-1 ring-gray-200/80 backdrop-blur-2xl transition-[opacity,transform] transition-discrete duration-300 open:translate-y-0 open:opacity-100 min-[500px]:inset-x-3.5 lg:bottom-auto lg:left-auto lg:w-md dark:bg-black/50 dark:text-white dark:shadow-black/40 dark:ring-gray-700/70 starting:open:-translate-y-3 starting:open:opacity-0"
+        class="fixed inset-[unset] inset-x-3 bottom-3.5 m-0 w-auto -translate-y-3 overflow-y-scroll overscroll-contain rounded-2xl bg-gray-200/50 opacity-0 shadow-2xl ring-1 ring-gray-200/80 backdrop-blur-2xl transition-[opacity,transform] transition-discrete duration-300 open:translate-y-0 open:opacity-100 min-[500px]:inset-x-3.5 lg:bottom-auto lg:left-auto lg:w-md dark:bg-black/50 dark:text-white dark:shadow-black/40 dark:ring-gray-700/70 starting:open:-translate-y-3 starting:open:opacity-0"
     >
         <div class="@container flex flex-col overflow-hidden px-6 pt-4 pb-6">
             <nav
@@ -150,10 +157,7 @@
                             />
                         @endif
 
-                        <div class="inline-flex items-center gap-2">
-                            Ultra
-                            <span class="rounded-full bg-emerald-500 px-1.5 py-px text-[10px] font-bold leading-tight text-white">New</span>
-                        </div>
+                        <div class="inline-flex items-center gap-2">Ultra</div>
                     </a>
                 </div>
 
@@ -181,15 +185,17 @@
                 </div>
 
                 {{-- Swag Link --}}
-                {{-- <div>
+                {{--
+                    <div>
                     <a
-                        href="https://shop.nativephp.com/"
-                        class="flex items-center gap-2 py-3 opacity-70 transition duration-200 hover:translate-x-1 hover:opacity-100 dark:opacity-50"
-                        aria-label="NativePHP Swag"
+                    href="https://shop.nativephp.com/"
+                    class="flex items-center gap-2 py-3 opacity-70 transition duration-200 hover:translate-x-1 hover:opacity-100 dark:opacity-50"
+                    aria-label="NativePHP Swag"
                     >
-                        <div>Swag</div>
+                    <div>Swag</div>
                     </a>
-                </div> --}}
+                    </div>
+                --}}
 
                 <div>
                     <a
@@ -257,7 +263,6 @@
 
                         <div class="inline-flex items-center gap-2">
                             Consulting
-                            <span class="rounded-full bg-emerald-500 px-1.5 py-px text-[10px] font-bold leading-tight text-white">New</span>
                         </div>
                     </a>
                 </div>
@@ -281,10 +286,7 @@
                             />
                         @endif
 
-                        <div class="inline-flex items-center gap-2">
-                            Build
-                            <span class="rounded-full bg-emerald-500 px-1.5 py-px text-[10px] font-bold leading-tight text-white">New</span>
-                        </div>
+                        <div class="inline-flex items-center gap-2">Build</div>
                     </a>
                 </div>
 
@@ -309,7 +311,11 @@
 
                         <div class="inline-flex items-center gap-2">
                             Learn
-                            <span class="rounded-full bg-emerald-500 px-1.5 py-px text-[10px] font-bold leading-tight text-white">New</span>
+                            <span
+                                class="rounded-full bg-emerald-500 px-1.5 py-px text-[10px] leading-tight font-bold text-white"
+                            >
+                                New
+                            </span>
                         </div>
                     </a>
                 </div>
@@ -335,7 +341,6 @@
 
                         <div class="inline-flex items-center gap-2">
                             Support
-                            <span class="rounded-full bg-emerald-500 px-1.5 py-px text-[10px] font-bold leading-tight text-white">New</span>
                         </div>
                     </a>
                 </div>
@@ -351,7 +356,9 @@
                             >
                                 <div class="flex flex-col items-start">
                                     <span>Dashboard</span>
-                                    <span class="text-xs opacity-70">{{ auth()->user()->email }}</span>
+                                    <span class="text-xs opacity-70">
+                                        {{ auth()->user()->email }}
+                                    </span>
                                 </div>
                             </a>
                         @else
@@ -378,7 +385,10 @@
                     </div>
                     @auth
                         <div>
-                            <form method="POST" action="{{ route('customer.logout') }}">
+                            <form
+                                method="POST"
+                                action="{{ route('customer.logout') }}"
+                            >
                                 @csrf
                                 <button
                                     type="submit"
@@ -399,11 +409,24 @@
                                 href="{{ route('cart.show') }}"
                                 class="flex items-center gap-2 py-3 opacity-70 transition duration-200 hover:translate-x-1 hover:opacity-100 dark:opacity-50"
                             >
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 0 0-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 0 0-16.536-1.84M7.5 14.25 5.106 5.272M6 20.25a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Zm12.75 0a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z" />
+                                <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    fill="none"
+                                    viewBox="0 0 24 24"
+                                    stroke-width="1.5"
+                                    stroke="currentColor"
+                                    class="size-5"
+                                >
+                                    <path
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                        d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 0 0-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 0 0-16.536-1.84M7.5 14.25 5.106 5.272M6 20.25a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Zm12.75 0a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z"
+                                    />
                                 </svg>
                                 <div>Cart</div>
-                                <span class="flex size-5 items-center justify-center rounded-full bg-indigo-600 text-xs font-bold text-white">
+                                <span
+                                    class="flex size-5 items-center justify-center rounded-full bg-indigo-600 text-xs font-bold text-white"
+                                >
                                     {{ $cartCount > 9 ? '9+' : $cartCount }}
                                 </span>
                             </a>
@@ -418,7 +441,7 @@
                 {{-- Doc search --}}
                 <div class="contrast-150 dark:contrast-100">
                     <div
-                        class=" -mr-0.5 transition-all duration-200 ease-in-out will-change-transform lg:block"
+                        class="-mr-0.5 transition-all duration-200 ease-in-out will-change-transform lg:block"
                     >
                         <div
                             id="docsearch-desktop"
@@ -426,14 +449,14 @@
                             aria-label="Search documentation"
                         ></div>
                     </div>
-{{--                    <div--}}
-{{--                        id="docsearch-mobile"--}}
-{{--                        x-on:click="--}}
-{{--                            window.scrollTo({ top: 0, behavior: 'instant' })--}}
-{{--                            showMobileMenu = false--}}
-{{--                        "--}}
-{{--                        aria-label="Search documentation"--}}
-{{--                    ></div>--}}
+                    {{-- <div --}}
+                    {{-- id="docsearch-mobile" --}}
+                    {{-- x-on:click=" --}}
+                    {{-- window.scrollTo({ top: 0, behavior: 'instant' }) --}}
+                    {{-- showMobileMenu = false --}}
+                    {{-- " --}}
+                    {{-- aria-label="Search documentation" --}}
+                    {{-- ></div> --}}
                 </div>
 
                 <div
@@ -488,7 +511,7 @@
                 role="presentation"
             ></div>
 
-            <div class="flex md:hidden mt-4  justify-center">
+            <div class="mt-4 flex justify-center md:hidden">
                 <x-bifrost-button />
             </div>
 

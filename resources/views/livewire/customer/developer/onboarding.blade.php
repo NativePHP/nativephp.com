@@ -211,7 +211,7 @@
                 <div>
                     <flux:heading>What do I need to get started?</flux:heading>
                     <flux:text class="mt-1">
-                        A new Stripe account will be created for you as part of the onboarding process. You'll also need a GitHub account with a private repository for your plugin. Check out the <a href="/docs/mobile/3/plugins/introduction" class="font-medium text-indigo-600 underline hover:text-indigo-500 dark:text-indigo-400" target="_blank">plugin documentation</a> to start building.
+                        A new Stripe account will be created for you as part of the onboarding process. You'll also need a GitHub account with a private repository for your plugin. Check out the <a href="/docs/mobile/plugins/introduction" class="font-medium text-indigo-600 underline hover:text-indigo-500 dark:text-indigo-400" target="_blank">plugin documentation</a> to start building.
                     </flux:text>
                 </div>
             </div>
