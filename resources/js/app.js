@@ -124,7 +124,37 @@ document.addEventListener('alpine:init', () => {
             return this.current === name
         },
         select(name) {
+            if (this.current === name) return
+
             this.current = name
+            this.revealExplainer()
+        },
+        // Switching tracks rewrites the explainer, so bring it into view.
+        // Two frames: one for Alpine to apply the change, one for the
+        // browser to lay it out, so the target offset is the final one.
+        revealExplainer() {
+            requestAnimationFrame(() =>
+                requestAnimationFrame(() => {
+                    const target = document.getElementById('platform-explainer')
+                    if (!target) return
+
+                    const nav = document.querySelector('[data-site-nav]')
+                    const offset = (nav?.offsetHeight ?? 0) + 16
+                    const top =
+                        target.getBoundingClientRect().top +
+                        window.scrollY -
+                        offset
+
+                    window.scrollTo({
+                        top: Math.max(0, top),
+                        behavior: window.matchMedia(
+                            '(prefers-reduced-motion: reduce)',
+                        ).matches
+                            ? 'auto'
+                            : 'smooth',
+                    })
+                }),
+            )
         },
     })
 })

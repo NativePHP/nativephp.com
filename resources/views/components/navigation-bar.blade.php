@@ -1,4 +1,5 @@
 <nav
+    data-site-nav
     class="sticky top-0 z-50 flex flex-col items-center justify-center border-b px-2 transition duration-200 ease-out min-[500px]:px-3"
     aria-label="Main Navigation"
     :class="{
@@ -71,12 +72,11 @@
         {{-- Right side --}}
         <div class="flex items-center gap-2.5">
             {{-- Theme toggle (visible on large screens) --}}
-{{--            <div class="hidden lg:block">--}}
-{{--                <x-navbar.theme-toggle />--}}
-{{--            </div>--}}
+            {{-- <div class="hidden lg:block"> --}}
+            {{-- <x-navbar.theme-toggle /> --}}
+            {{-- </div> --}}
 
             {{-- Doc search (visible on large screens) --}}
-
 
             {{-- Ultra link (desktop only) --}}
             <a

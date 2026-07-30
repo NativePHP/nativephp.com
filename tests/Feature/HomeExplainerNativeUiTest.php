@@ -35,8 +35,8 @@ class HomeExplainerNativeUiTest extends TestCase
         $this->blade('<x-home.explainer />')
             ->assertSee('SwiftUI')
             ->assertSee('Jetpack Compose')
-            ->assertSee('shared memory.')
-            ->assertSee('No web view. No JSON bridge.')
+            ->assertSee('real SwiftUI')
+            ->assertSee('No web view.')
             ->assertDontSee('Native WebView')
             ->assertDontSee('native web view');
     }
@@ -175,10 +175,14 @@ class HomeExplainerNativeUiTest extends TestCase
         return trim(preg_replace('/\s+/', ' ', $pill->textContent));
     }
 
+    /**
+     * The chooser drives the explainer, so it lives with it rather than in
+     * the hero — one instance on the page, directly above Under the hood.
+     */
     #[Test]
-    public function the_hero_offers_a_platform_chooser_defaulting_to_mobile()
+    public function the_explainer_owns_the_platform_chooser()
     {
-        $this->blade('<x-home.hero />')
+        $this->blade('<x-home.explainer />')
             ->assertSee('I want to build a', escape: false)
             ->assertSee('role="tablist"', escape: false)
             ->assertSee("\$store.platform.select('mobile')", escape: false)
@@ -188,6 +192,24 @@ class HomeExplainerNativeUiTest extends TestCase
             // No-JS fallback points at the Mobile docs
             ->assertSee('href="/docs/mobile/getting-started/introduction"', escape: false)
             ->assertSee('Read the Mobile docs');
+    }
+
+    #[Test]
+    public function the_hero_no_longer_holds_a_platform_chooser()
+    {
+        $this->blade('<x-home.hero />')
+            ->assertDontSee('I want to build a', escape: false)
+            ->assertDontSee('role="tablist"', escape: false)
+            ->assertDontSee('$store.platform.select(', escape: false);
+    }
+
+    #[Test]
+    public function the_homepage_renders_exactly_one_platform_chooser()
+    {
+        $html = $this->get('/')->assertOk()->getContent();
+
+        $this->assertSame(1, substr_count($html, 'I want to build a'));
+        $this->assertSame(1, substr_count($html, 'aria-label="Choose a platform"'));
     }
 
     #[Test]
@@ -232,8 +254,10 @@ class HomeExplainerNativeUiTest extends TestCase
     {
         $this->blade('<x-home.explainer />')
             ->assertSeeInOrder([
-                'No web view. No JSON bridge.',
-                'We call this',
+                'bundles PHP inside a native Swift/Kotlin shell',
+                'No web view.',
+                '240fps',
+                'We call it',
                 'SuperNative.',
             ]);
     }

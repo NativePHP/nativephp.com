@@ -1,10 +1,219 @@
 <section
-    class="mt-5"
+    id="platform-explainer"
+    class="mt-5 scroll-mt-24"
     aria-labelledby="explainer-title"
     role="region"
 >
-    {{-- Part 1 --}}
-    <div class="flex flex-col gap-5 lg:flex-row">
+    {{-- Platform chooser: picks which track the whole section shows --}}
+    <div
+        x-init="
+            () => {
+                gsap.fromTo(
+                    $el,
+                    { autoAlpha: 0, x: -10 },
+                    {
+                        autoAlpha: 1,
+                        x: 0,
+                        duration: 1,
+                        ease: 'power2.out',
+                    },
+                )
+            }
+        "
+        class="mx-auto mb-6 flex w-full max-w-md flex-col items-center gap-3"
+    >
+        <p class="text-sm font-medium text-gray-600 dark:text-slate-400">
+            I want to build a&hellip;
+        </p>
+
+        <div
+            role="tablist"
+            aria-label="Choose a platform"
+            class="flex w-full flex-col items-center gap-3 sm:flex-row sm:justify-center"
+        >
+            {{-- Mobile button --}}
+            <div class="w-full max-w-55 transition duration-300">
+                <button
+                    type="button"
+                    role="tab"
+                    aria-controls="platform-panel-mobile"
+                    @click="$store.platform.select('mobile')"
+                    :aria-selected="$store.platform.is('mobile') ? 'true' : 'false'"
+                    :class="
+            $store.platform.is('mobile')
+                ? 'opacity-100 ring-2 ring-cyan-400/70'
+                : 'opacity-55 hover:opacity-85'
+        "
+                    class="group relative isolate z-0 flex h-15 w-full items-center justify-between gap-3 overflow-hidden rounded-3xl bg-gray-900 px-5 leading-snug text-white transition duration-200 ease-in-out will-change-transform hover:bg-gray-800 2xl:h-17 2xl:px-7 dark:bg-haiti dark:hover:bg-indigo-900/50"
+                >
+                    {{-- Label --}}
+                    <div
+                        class="bg-gradient-to-br from-white to-cyan-300 bg-clip-text text-transparent duration-500 ease-in-out will-change-transform group-hover:translate-x-1 2xl:text-lg"
+                    >
+                        Mobile app
+                    </div>
+                    {{-- Arrow --}}
+                    <div class="flex items-center gap-1">
+                        <div class="flex flex-col gap-2">
+                            <div
+                                class="size-1 rounded-full bg-current opacity-50 transition duration-500 ease-in-out will-change-transform group-hover:translate-x-2 group-hover:translate-y-1.5 group-hover:opacity-100"
+                            ></div>
+                            <div
+                                class="size-1 rounded-full bg-current opacity-50 transition duration-500 ease-in-out will-change-transform group-hover:-translate-y-3"
+                            ></div>
+                        </div>
+                        <div
+                            class="size-1 rounded-full bg-current transition duration-500 ease-in-out will-change-transform group-hover:-translate-x-2 group-hover:translate-y-1.5 group-hover:opacity-50"
+                        ></div>
+                    </div>
+                    {{-- Blue blur --}}
+                    <div
+                        x-init="
+                            () => {
+                                gsap.to($el, {
+                                    duration: 10,
+                                    repeat: -1,
+                                    ease: 'power1.inOut',
+                                    keyframes: {
+                                        x: [0, 20, -100, 0],
+                                        y: [0, 5, 0],
+                                        scale: [1, 0.7, 1],
+                                        rotate: [0, 10, 0],
+                                    },
+                                })
+                            }
+                        "
+                        class="absolute -bottom-12 left-14 -z-10 h-20 w-44 rounded-full bg-transparent blur-xl will-change-transform dark:bg-blue-500/30"
+                    ></div>
+                    {{-- Cyan blur --}}
+                    <div
+                        x-init="
+                            () => {
+                                gsap.to($el, {
+                                    duration: 5,
+                                    repeat: -1,
+                                    ease: 'power1.inOut',
+                                    keyframes: {
+                                        x: [0, -10, 0],
+                                        y: [0, 10, 0],
+                                        scale: [1, 1.2, 1],
+                                    },
+                                })
+                            }
+                        "
+                        class="absolute -bottom-12 -left-5 -z-20 h-20 w-44 rounded-full bg-transparent blur-xl will-change-transform dark:bg-cyan-500/30"
+                    ></div>
+                </button>
+            </div>
+
+            {{-- Desktop button --}}
+            <div class="w-full max-w-55 transition duration-300">
+                <button
+                    type="button"
+                    role="tab"
+                    aria-controls="platform-panel-desktop"
+                    @click="$store.platform.select('desktop')"
+                    :aria-selected="$store.platform.is('desktop') ? 'true' : 'false'"
+                    :class="
+            $store.platform.is('desktop')
+                ? 'opacity-100 ring-2 ring-violet-400/70'
+                : 'opacity-55 hover:opacity-85'
+        "
+                    class="group relative isolate z-0 flex h-15 w-full items-center justify-between gap-3 overflow-hidden rounded-3xl bg-gray-900 px-5 leading-snug text-white transition duration-200 ease-in-out will-change-transform hover:bg-gray-800 2xl:h-17 2xl:px-7 dark:bg-haiti dark:hover:bg-indigo-900/50"
+                >
+                    {{-- Label --}}
+                    <div
+                        class="bg-gradient-to-br from-white to-violet-300 bg-clip-text text-transparent duration-500 ease-in-out will-change-transform group-hover:translate-x-1 2xl:text-lg"
+                    >
+                        Desktop app
+                    </div>
+                    {{-- Arrow --}}
+                    <div class="flex items-center gap-1">
+                        <div class="flex flex-col gap-2">
+                            <div
+                                class="size-1 rounded-full bg-current opacity-50 transition duration-500 ease-in-out will-change-transform group-hover:translate-x-2 group-hover:translate-y-1.5 group-hover:opacity-100"
+                            ></div>
+                            <div
+                                class="size-1 rounded-full bg-current opacity-50 transition duration-500 ease-in-out will-change-transform group-hover:-translate-y-3"
+                            ></div>
+                        </div>
+                        <div
+                            class="size-1 rounded-full bg-current transition duration-500 ease-in-out will-change-transform group-hover:-translate-x-2 group-hover:translate-y-1.5 group-hover:opacity-50"
+                        ></div>
+                    </div>
+                    {{-- Violet blur --}}
+                    <div
+                        x-init="
+                            () => {
+                                gsap.to($el, {
+                                    duration: 10,
+                                    repeat: -1,
+                                    ease: 'power1.inOut',
+                                    keyframes: {
+                                        x: [0, 20, -100, 0],
+                                        y: [0, 5, 0],
+                                        scale: [1, 0.7, 1],
+                                        rotate: [0, 10, 0],
+                                    },
+                                })
+                            }
+                        "
+                        class="absolute -bottom-12 left-14 -z-10 h-20 w-44 rounded-full bg-transparent blur-xl will-change-transform dark:bg-violet-500/30"
+                    ></div>
+                    {{-- Purple blur --}}
+                    <div
+                        x-init="
+                            () => {
+                                gsap.to($el, {
+                                    duration: 5,
+                                    repeat: -1,
+                                    ease: 'power1.inOut',
+                                    keyframes: {
+                                        x: [0, -10, 0],
+                                        y: [0, 10, 0],
+                                        scale: [1, 1.2, 1],
+                                    },
+                                })
+                            }
+                        "
+                        class="absolute -bottom-12 -left-5 -z-20 h-20 w-44 rounded-full bg-transparent blur-xl will-change-transform dark:bg-purple-500/30"
+                    ></div>
+                </button>
+            </div>
+        </div>
+
+        {{-- Docs link, follows the chosen platform --}}
+        <a
+            href="/docs/mobile/getting-started/introduction"
+            :href="
+        $store.platform.is('mobile')
+            ? '/docs/mobile/getting-started/introduction'
+            : '/docs/desktop/getting-started/introduction'
+            "
+            class="group inline-flex items-center gap-2 text-sm font-medium text-gray-700 transition duration-200 hover:text-gray-900 dark:text-slate-300 dark:hover:text-white"
+        >
+            <span
+                x-text="$store.platform.is('mobile') ? 'Read the Mobile docs' : 'Read the Desktop docs'"
+            >
+                Read the Mobile docs
+            </span>
+            <span
+                class="transition duration-200 will-change-transform group-hover:translate-x-1"
+                aria-hidden="true"
+            >
+                &rarr;
+            </span>
+        </a>
+    </div>
+
+    {{--
+        Part 1. The Desktop track stacks instead: its window diagram is
+        landscape, so it wants the full width with the text above it.
+    --}}
+    <div
+        class="flex flex-col gap-5"
+        :class="$store.platform.is('mobile') ? 'lg:flex-row' : ''"
+    >
         {{-- How does it work --}}
         <div
             x-init="
@@ -23,10 +232,18 @@
                     })
                 }
             "
-            class="relative flex flex-col items-center gap-5 overflow-hidden rounded-2xl bg-gray-200/60 p-8 sm:flex-row sm:justify-between sm:p-10 lg:max-w-165 xl:shrink-0 dark:bg-mirage"
+            class="relative flex flex-col gap-5 overflow-hidden rounded-2xl bg-gray-200/60 p-8 sm:p-10 dark:bg-mirage"
+            :class="
+                $store.platform.is('mobile')
+                    ? 'items-center sm:flex-row sm:justify-between lg:max-w-165 xl:shrink-0'
+                    : 'w-full lg:flex-row lg:items-center lg:gap-10'
+            "
         >
-            {{-- Left side --}}
-            <div class="relative z-10 flex flex-col gap-5 pl-5">
+            {{-- Text: left of the diagram once there's room for both --}}
+            <div
+                class="relative z-10 flex flex-col gap-5 pl-5"
+                :class="$store.platform.is('desktop') ? 'lg:w-1/2' : ''"
+            >
                 {{-- Header --}}
                 <div
                     class="flex flex-col items-center gap-1 text-center text-pretty 2xs:items-start 2xs:text-left"
@@ -54,46 +271,41 @@
                     <span class="font-medium text-gray-700 dark:text-zinc-300">
                         NativePHP
                     </span>
-                    bundles PHP with your app and runs it
-                    <span class="font-medium text-gray-700 dark:text-zinc-300">
-                        inside
-                    </span>
-                    the app process. No server. No network round-trip.
+                    bundles PHP inside a native Swift/Kotlin shell. No server
+                    and no network required.
 
                     <br />
                     <br />
-                    Your Blade renders straight to real
+                    It uses Blade, an approachable templating language from
                     <span class="font-medium text-gray-700 dark:text-zinc-300">
-                        SwiftUI
+                        Laravel,
+                    </span>
+                    and renders from simple markup to
+                    <span class="font-medium text-gray-700 dark:text-zinc-300">
+                        real SwiftUI
                     </span>
                     and
                     <span class="font-medium text-gray-700 dark:text-zinc-300">
                         Jetpack Compose
                     </span>
-                    views over
-                    <span class="font-medium text-gray-700 dark:text-zinc-300">
-                        shared memory.
-                    </span>
-                    No web view. No JSON bridge.
+                    views. No web view.
 
                     <br />
                     <br />
-                    We call this
+                    It's ridiculously fast, and can render screens well above
+                    240fps, leaving lots of headroom for demanding computation.
+
+                    <br />
+                    <br />
+                    You write PHP and NativePHP delivers a fully native app
+                    experience.
+
+                    <br />
+                    <br />
+                    We call it
                     <span class="font-medium text-gray-700 dark:text-zinc-300">
                         SuperNative.
                     </span>
-
-                    <br />
-                    <br />
-                    You still write PHP like you’re used to—just with a few
-                    extra tools that connect it to the device's native features.
-                    <br />
-                    <br />
-                    That’s it. It feels like
-                    <span class="font-medium text-gray-700 dark:text-zinc-300">
-                        magic,
-                    </span>
-                    but it’s just PHP... on your user's device!
                 </p>
 
                 {{-- Version pinned deliberately: SuperNative is a v4 story. --}}
@@ -118,7 +330,7 @@
                     id="platform-panel-desktop"
                     role="tabpanel"
                     aria-label="How NativePHP for Desktop works"
-                    class="text-pretty text-gray-600 sm:max-w-75 dark:text-zinc-400"
+                    class="max-w-2xl text-pretty text-gray-600 dark:text-zinc-400"
                 >
                     <span class="font-medium text-gray-700 dark:text-zinc-300">
                         NativePHP
@@ -161,8 +373,11 @@
                 </p>
             </div>
 
-            {{-- Right side --}}
-            <div class="relative z-10 pl-5 sm:pl-0">
+            {{-- Diagram: right of the text, stacking below it on narrow screens --}}
+            <div
+                class="relative z-10 pl-5 sm:pl-0"
+                :class="$store.platform.is('desktop') ? 'w-full lg:w-3/5' : ''"
+            >
                 {{-- Shared dashed frame used by both platform diagrams --}}
                 <style>
                     .php-dashed-border {
@@ -226,9 +441,26 @@
             pill list is short, so a max-content width leaves a gap on the
             right instead of lining up with the cards above.
         --}}
-        <div class="flex flex-col gap-5 lg:max-w-sm lg:grow xl:max-w-none">
-            {{-- Performance --}}
-            <div class="grid items-stretch gap-5 xs:grid-cols-2">
+        <div
+            class="flex flex-col gap-5"
+            :class="
+                $store.platform.is('mobile')
+                    ? 'lg:max-w-sm lg:grow xl:max-w-none'
+                    : 'lg:flex-row lg:items-stretch'
+            "
+        >
+            {{--
+                Performance. Stacked beside the tools card on the Desktop
+                track, which has the full width to play with.
+            --}}
+            <div
+                class="grid items-stretch gap-5 xs:grid-cols-2"
+                :class="
+                    $store.platform.is('desktop')
+                        ? 'lg:w-1/3 lg:grid-cols-1'
+                        : ''
+                "
+            >
                 <div
                     x-init="
                         () => {
@@ -340,6 +572,7 @@
                     }
                 "
                 class="flex flex-col gap-4 rounded-2xl bg-gradient-to-tl from-[#DBDCFB] to-[#F9FAFB] p-7 2xl:p-8 dark:from-mirage dark:to-mirage"
+                :class="$store.platform.is('desktop') ? 'lg:flex-1' : ''"
             >
                 <div
                     class="flex flex-col items-center gap-1.5 text-center text-pretty 2xs:items-start 2xs:text-left"
