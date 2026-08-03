@@ -31,7 +31,13 @@ Slot content is treated as plain text — nested tags are stripped and whitespac
   in `config/native-ui.php`) — see [Theming](../digging-deeper/theming)
 - `size` - `sm`, `md` (default), `lg`
 - `icon` - A leading [icon](icon#icon-name-reference) name (optional)
+- `ios-icon` / `android-icon` - Per-platform overrides for the leading icon: an [SF Symbol](icon#ios-sf-symbols)
+  name on iOS, a [Material Icon](icon#android-material-icons) name on Android. `icon` is the fallback on whichever
+  platform has no override — or skip it and declare only per-platform icons. `iosIcon` / `androidIcon` and the
+  `<native:icon>`-style `ios` / `android` are accepted as aliases
 - `icon-trailing` - A trailing [icon](icon#icon-name-reference) name (optional)
+- `ios-icon-trailing` / `android-icon-trailing` - Per-platform overrides for the trailing icon, mirroring
+  `ios-icon` / `android-icon` (camelCase aliases accepted; no `ios` / `android` shorthand for this slot)
 - `font` - Custom font for the label: a `resources/fonts/` file token or a config alias like `accent` (optional, string) — see [Text › Custom fonts](text#custom-fonts)
 - `line-height` - Label line height as a multiplier of the font size (optional, float)
 - `line-height-px` - Label line height as an absolute value in pixels (optional, float)
@@ -95,6 +101,30 @@ attributes are intentionally dropped before reaching the renderer.
 />
 ```
 @endverbatim
+
+### Platform icons
+
+When one shared name doesn't map well on both platforms, give each platform its own symbol — an
+[SF Symbol](icon#ios-sf-symbols) name on iOS, a [Material Icon](icon#android-material-icons) name on Android:
+
+@verbatim
+```blade
+<native:button
+    label="Tap to Pay"
+    ios-icon="wave.3.right"
+    android-icon="nfc"
+    @press="startPayment"
+/>
+```
+@endverbatim
+
+Resolution happens per platform: each side uses its override, falling back to `icon` where none is given. Bound
+`:ios-icon` / `:android-icon` also accept `App\Icons` enum cases, exactly like
+[`<native:icon>`'s `:ios` / `:android`](icon#typed-icon-enums). The trailing slot works the same way via
+`ios-icon-trailing` / `android-icon-trailing`.
+
+On iOS the icon's layout height is pinned to the size-driven icon size, so button height depends only on `size` —
+not on which SF Symbol the button carries. Tall glyphs like `wave.3.right` no longer stretch the button.
 
 ### Loading state
 

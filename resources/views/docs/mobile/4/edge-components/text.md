@@ -74,18 +74,47 @@ and is available fluently as `->font('Inter-Bold')`.
 
 ### Downloading from Google Fonts
 
-The `native:font` command downloads any [Google Fonts](https://fonts.google.com)
-family straight into `resources/fonts/` — no API key needed:
+The `native:font` command downloads a [Google Fonts](https://fonts.google.com)
+family into `resources/fonts/` and registers it in your config — no API key
+needed:
 
 ```bash
-php artisan native:font Lobster
-php artisan native:font "Rock Salt" Inter
-php artisan native:font Inter --weights=400,700 --italic
+php artisan native:font
+php artisan native:font "Rock Salt"
+php artisan native:font Inter --default
 ```
 
-Files are named `<Family>-<Style>.ttf` (`Inter-Bold`, `Inter-BoldItalic`, …) —
-ready to use as `font` tokens. Google Fonts are libre-licensed (OFL / Apache),
-so bundling them in your app is permitted.
+Run bare, the command opens a searchable list of the whole catalog; pass a
+family name (quoted when it contains spaces, matched case-insensitively) to
+skip the search. Either way you then pick which styles to download from a
+multiselect — Regular (400) is preselected — and the command handles one
+family per run.
+
+Files are named `<Family>-<Style>.ttf` (`Inter-Bold.ttf`, `Inter-BoldItalic.ttf`, …),
+so the basename is ready to use as a `font` token. Every downloaded style is
+also written to the `fonts` array in `config/native-ui.php` as an
+[alias](#font-aliases--the-app-wide-default) — the command suggests a key per
+style (`inter`, `inter-bold`, …) that you can rename at the prompt, and asks
+whether one style should become the app-wide `default`. Google Fonts are
+libre-licensed (OFL / Apache), so bundling them in your app is permitted.
+
+- `--default` — make the downloaded font the app-wide `default` alias without asking
+- `--force` — overwrite files that already exist in `resources/fonts/` (and skip the `--reset` confirmation)
+- `--reset` — delete every font file in `resources/fonts/` and reset the config to `'default' => 'System'` (asks first)
+- `--clear-cache` — clear the cached catalog (the family list is cached for 24 hours)
+
+Non-interactive runs (`--no-interaction`, CI) require the family argument,
+download only Regular (400) — or the first listed style for families without
+one — write the suggested alias keys as-is, and skip existing files unless
+`--force` is passed.
+
+<aside>
+
+**Upgrading**: the old `--weights=…` / `--italic` flags and multi-family
+arguments are gone. Run the command once per family and pick weights and
+italics in the style multiselect instead.
+
+</aside>
 
 ### Font aliases & the app-wide default
 
@@ -111,9 +140,11 @@ explicit `font-serif` / `font-mono` classes still win over it. Swapping a font
 app-wide becomes a one-line config change; blades keep their semantic names.
 Each alias must point directly at a file token (no alias-to-alias chaining).
 
-Prefer aliases over the older `font-family` theme token (which `fonts.default`
-supersedes when both are set). The `native:font --default` command still writes
-`font-family` and works either way.
+`native:font` maintains this array for you — every downloaded style gets an
+entry, and the `--default` flag (or the prompt) sets `default`. Prefer aliases
+over the older `font-family` theme token (which `fonts.default` supersedes when
+both are set); `native:font --default` only falls back to writing `font-family`
+when the config has no `fonts` block.
 
 <aside>
 
