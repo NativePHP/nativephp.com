@@ -143,6 +143,48 @@ class Dashboard extends NativeComponent
 Override `placeholder()` to customize the loading frame; the default is a centered activity indicator wrapped in
 the screen's layout chrome.
 
+## Observing the lifecycle from outside
+
+The hooks above are yours to override, which makes them the wrong place for anything cross-cutting. Put
+analytics, telemetry, or crash breadcrumbs in a base class's `mount()` and any screen that defines its own
+`mount()` silently replaces it — so the observer goes quiet on exactly the screens with the most logic in them.
+
+For that, the router dispatches ordinary Laravel events alongside each hook:
+
+| Event | Fires |
+|-------|-------|
+| `ScreenMounted` | after a freshly pushed screen's `mount()` |
+| `ScreenResumed` | after `onResume()`, when the user returns to a screen already on the stack |
+| `ScreenUnmounted` | after `unmount()`, as the screen leaves the stack |
+
+Each carries the component class and the screen's uri, and you listen for them anywhere you'd listen for a
+Laravel event — a service provider, an `AppServiceProvider` boot method, a dedicated subscriber:
+
+```php
+use Illuminate\Support\Facades\Event;
+use Native\Mobile\Events\Screen\ScreenMounted;
+
+Event::listen(ScreenMounted::class, function (ScreenMounted $event) {
+    Analytics::screen($event->component, $event->uri);
+});
+```
+
+These fire *around* your hooks rather than instead of them — overriding `mount()` changes nothing about when
+they arrive, which is the whole point.
+
+Two things worth knowing. A listener that throws is caught and logged rather than propagated: an observer
+should not be able to take the navigation loop down with it, so check your logs if one seems not to run. And
+restoring a preloaded stack after a hot reload stays quiet — those screens are being restored, not navigated
+to.
+
+<aside>
+
+These are app-wide Laravel events, not the component-targeted native events on the
+[Events](../the-basics/events) page. Use `#[On]` when a screen needs to react to something; use these when
+something outside the screens needs to know what the user is doing.
+
+</aside>
+
 ## Related
 
 Beyond the lifecycle, screens react to the outside world through a few attributes:

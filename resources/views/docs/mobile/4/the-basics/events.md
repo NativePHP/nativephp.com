@@ -59,6 +59,10 @@ Native events originate on the device side and are delivered to whichever screen
 events an async native call resolves with. Because delivery targets the live screen, a listener only fires while
 its screen is on the stack.
 
+That last part is also the limit of this page. If something outside your screens needs to follow what the user
+is doing — analytics, telemetry, crash breadcrumbs — listen for the app-wide
+[screen lifecycle events](../digging-deeper/lifecycle-hooks#observing-the-lifecycle-from-outside) instead.
+
 <aside>
 
 You can drive events in tests without a device — `emitNative(Event::class, [...])` delivers one straight to the
