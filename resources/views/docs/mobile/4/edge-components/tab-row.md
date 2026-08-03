@@ -68,6 +68,10 @@ Here `currentTab` stands in for `public int $currentTab = 0;` on your component.
 
 - `label` - Tab label (required, string). Can also be passed as the first argument to `make()`
 - `icon` - Optional [icon](icon#icon-name-reference) name rendered above the label
+- `ios-icon` / `android-icon` - Per-platform overrides for the tab icon: an [SF Symbol](icon#ios-sf-symbols) name
+  on iOS, a [Material Icon](icon#android-material-icons) name on Android. `icon` is the fallback on whichever
+  platform has no override. Bound `:ios-icon` / `:android-icon` also accept
+  [enum cases](icon#typed-icon-enums); `iosIcon` / `androidIcon` and `ios` / `android` are accepted as aliases
 - `a11y-label` - Accessibility label override (optional)
 
 ## Examples
@@ -116,6 +120,15 @@ typically add `fill` to the outer column and the content panes so they occupy th
     <native:tab label="Starred"  icon="star" />
     <native:tab label="Archived" icon="archive-box" />
 </native:tab-row>
+```
+@endverbatim
+
+When a shared name doesn't map well on both platforms, give a tab per-platform icons — an SF Symbol on iOS, a
+Material name on Android:
+
+@verbatim
+```blade
+<native:tab label="Tap to Pay" ios-icon="wave.3.right" android-icon="nfc" />
 ```
 @endverbatim
 

@@ -70,6 +70,9 @@ All three variants accept the same shared prop set. The bare variant adds a `col
 - `sync-mode` - How change events dispatch back to your component: `live` (default), `blur`, or `debounce`. Usually
   set via the `native:model` modifiers below, but accepted directly too
 - `debounce-ms` - Milliseconds of inactivity before a `debounce` sync fires (optional, int, default: `300`)
+- `selection-debounce-ms` - Coalescing window for `@selectionChange` events (optional, int, default: `150`). `0` or
+  less means the default; positive values are floored at one frame (16ms). See
+  [Caret and selection reporting](#caret-and-selection-reporting)
 
 ### Decorations
 
@@ -77,6 +80,9 @@ All three variants accept the same shared prop set. The bare variant adds a `col
 - `suffix` - Text rendered after the input (optional, string)
 - `leading-icon` - Icon name rendered at the start (optional, string)
 - `trailing-icon` - Icon name rendered at the end (optional, string)
+- `ios-leading-icon` / `android-leading-icon` - Per-platform overrides for `leading-icon` (optional). See
+  [Per-platform icons](#per-platform-icons)
+- `ios-trailing-icon` / `android-trailing-icon` - Per-platform overrides for `trailing-icon` (optional)
 
 ### Typography
 
@@ -94,6 +100,9 @@ All three variants accept the same shared prop set. The bare variant adds a `col
 
 - `@change` - Component method called when the text changes. Receives the new value
 - `@submit` - Component method called when the user submits (e.g. presses return). Receives the current value
+- `@selectionChange` - Component method called when the caret moves or the selection changes. Receives the full
+  current text plus the selection start and end offsets — see
+  [Caret and selection reporting](#caret-and-selection-reporting)
 
 <aside>
 
@@ -134,6 +143,122 @@ automatically, so the `@{{ $name }}` echo updates as you type.
 - `live` (default) — every keystroke fires `@change`
 - `blur` — only fires on focus loss / submit
 - `debounce` — fires after `debounce-ms` of inactivity (300ms when unset), or immediately on blur / submit
+
+## Caret and selection reporting
+
+`@selectionChange` reports caret position and text selection back to your component — for the cases where `@change`
+alone can't tell you *where* the user is typing. The handler receives the full current text plus the selection range:
+
+```php
+public function onCaretMove(string $text, int $selectionStart, int $selectionEnd)
+{
+    // $selectionStart === $selectionEnd when the caret is a plain cursor;
+    // they differ when a range of text is selected.
+}
+```
+
+Offsets are Unicode code points into the text — not UTF-16 units or bytes — so emoji count as one character and the
+values are safe to feed straight into `mb_substr()`.
+
+Events are coalesced on the native side: at most one every 150ms while the caret moves, and the trailing position
+always fires. Tune the window per input with `selection-debounce-ms` (fluent: `->selectionDebounceMs()`) — `0` or
+less means the default, positive values are floored at one frame (16ms).
+
+The classic use is a mention / typeahead trigger:
+
+@verbatim
+```blade
+@php $message = ''; @endphp
+
+<native:outlined-text-input
+    label="Message"
+    native:model="message"
+    @selectionChange="onCaretMove"
+/>
+```
+@endverbatim
+
+```php
+public array $suggestions = [];
+
+public function onCaretMove(string $text, int $start, int $end): void
+{
+    // Look backwards from the caret for an "@mention" trigger.
+    $before = mb_substr($text, 0, $start, 'UTF-8');
+
+    if (preg_match('/@(\w*)$/u', $before, $m)) {
+        $this->suggestions = $this->matchingHandles($m[1]);
+    } else {
+        $this->suggestions = [];
+    }
+}
+```
+
+The handler slices the text at the caret, so typing `@ja` in the middle of a sentence surfaces suggestions for the
+fragment under the cursor — something `@change` can't do, since it only carries the value.
+
+<aside>
+
+Every `@selectionChange` event carries the full current text and costs a full component re-render. That is
+independent of the `native:model` sync mode — pairing it with `native:model.blur` or `.debounce` still ships the
+field contents to PHP on the selection cadence, not the model cadence. If you only need the text, stick with
+`@change`; reach for `@selectionChange` only when the caret position matters.
+
+</aside>
+
+A few contract details:
+
+- `@selectionChange` is never emitted for `secure` inputs. The callback isn't even serialized when `secure` is set,
+  and both renderers additionally refuse to emit — so caret telemetry can't leak password-field context.
+- When PHP pushes a new `value` onto the input, the field is replaced wholesale and the caret drops at the end.
+  Both platforms report that immediately as a single `(text, length, length)` event, bypassing the debounce — a
+  handler that rewrites the bound model will see one follow-up event.
+- Discontiguous selections (multi-range, iOS) are reported as a single span from the lowest start to the highest
+  end, so the range can cover text the user did not select.
+- `read-only` inputs don't report on iOS, where read-only implies disabled and the field never focuses; they do on
+  Android, which keeps them focusable for copy.
+
+<aside>
+
+Caret and selection reporting requires `nativephp/mobile` 4.0+, which ships the `text_selection` callback kind.
+
+</aside>
+
+## Per-platform icons
+
+The shared `leading-icon` / `trailing-icon` names render the same icon on both platforms. When each platform should
+show its own symbol, prefix the attribute with the platform — the same convention as
+[`<native:button>`](button)'s `ios-icon`:
+
+@verbatim
+```blade
+<native:outlined-text-input
+    label="Email"
+    leading-icon="email"
+    ios-leading-icon="envelope.badge"
+/>
+```
+@endverbatim
+
+iOS renders the `envelope.badge` SF Symbol; Android falls back to the shared `email` name. The shared attribute is
+the fallback for whichever platform has no override — set only a platform-prefixed attribute and the other platform
+renders no icon at all.
+
+Bound with `:`, the icon attributes also accept the typed icon enums (`App\Icons\Ios`, `App\Icons\Android`,
+`App\Icons\AndroidOutlined`) instead of strings — see [Icon › Typed icon enums](icon#typed-icon-enums):
+
+@verbatim
+```blade
+@use('App\Icons\Ios')
+@use('App\Icons\AndroidOutlined')
+
+<native:outlined-text-input
+    label="Search"
+    :ios-leading-icon="Ios::Magnifyingglass"
+    :android-leading-icon="AndroidOutlined::Search"
+/>
+```
+@endverbatim
 
 ## Bare variant
 
@@ -306,7 +431,9 @@ All three elements share the same fluent API (defined on `BaseTextInput`):
 - `font(string $name)` - Custom font (file token or config alias)
 - `a11yLabel(string $value)`, `a11yHint(string $value)`
 - `syncMode(string $mode)`, `debounceMs(int $ms)`
-- `onChange(string $method)`, `onSubmit(string $method)`
+- `selectionDebounceMs(int $ms)` - Coalescing window for `@selectionChange` events (150ms when unset; `0` or less
+  means the default, positive values floored at 16ms)
+- `onChange(string $method)`, `onSubmit(string $method)`, `onSelectionChange(string $method)`
 
 `BareTextInput` adds one method on top of the shared API:
 

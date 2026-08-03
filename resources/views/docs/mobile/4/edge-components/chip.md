@@ -27,6 +27,10 @@ fully rounded and can be adjusted with `rounded-*` classes.
 - `label` - Chip text (optional, string). Can also be passed as the first argument to `make()`
 - `selected` / `value` - Whether the chip is active (optional, boolean, default: `false`)
 - `icon` - Leading [icon](icon#icon-name-reference) name (optional, string)
+- `ios-icon` / `android-icon` - Per-platform overrides for the leading icon: an [SF Symbol](icon#ios-sf-symbols)
+  name on iOS, a [Material Icon](icon#android-material-icons) name on Android. `icon` is the fallback on whichever
+  platform has no override. Bound `:ios-icon` / `:android-icon` also accept
+  [enum cases](icon#typed-icon-enums); `iosIcon` / `androidIcon` and `ios` / `android` are accepted as aliases
 - `disabled` - Disable the chip (optional, boolean, default: `false`)
 - `a11y-label` - Accessibility label (optional)
 - `a11y-hint` - Accessibility hint (optional)
@@ -80,6 +84,16 @@ driving `selected` from one property keeps the row single-select.
 @php $onlyVerified = false; @endphp
 
 <native:chip label="Verified" icon="check" native:model="onlyVerified" />
+```
+@endverbatim
+
+When the platforms need different symbols, override per platform — an SF Symbol on iOS, a Material name on Android:
+
+@verbatim
+```blade
+@php $tapToPay = false; @endphp
+
+<native:chip label="Tap to Pay" ios-icon="wave.3.right" android-icon="nfc" native:model="tapToPay" />
 ```
 @endverbatim
 
