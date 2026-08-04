@@ -5,12 +5,25 @@ order: 154
 
 ## Overview
 
-Layouts wrap the screens routed beneath them with shared chrome — a top nav bar, a bottom tab bar, or both — so
-individual screens stay focused on their content.
+Layouts are **optional**. They're the tool for chrome that's shared across *many* screens — a top nav bar, a bottom
+tab bar, or both — declared once so those screens stay focused on their content. When chrome belongs to a *single*
+screen, put it inline in that screen's Blade instead: a `<native:top-bar>`, `<native:bottom-nav>`, or
+[`<native:fab>`](../edge-components/fab) at the root of a screen renders the same real native chrome a layout produces,
+with no layout class required. See the [Top Bar](../edge-components/top-bar), [Bottom Navigation](../edge-components/bottom-nav),
+and [Floating Action Button](../edge-components/fab) pages for the inline elements.
 
 A `NativeLayout` class declares which chrome to render, and the framework automatically wraps every screen registered
 under that layout with the result. Push a detail screen onto a tabs section and the chrome swaps from "tabs" to "stack"
 automatically; pop back and it swaps back.
+
+<aside>
+
+**Which do I reach for?** Reuse across a set of screens → a layout. One screen with its own bar → inline chrome in
+that screen's Blade. The two compose: a screen under a layout can still place an inline bar to override *just that
+slot* for itself — see [Inline overrides](#inline-overrides). To reuse *content* (not chrome) across screens, reach
+for [nested components](nested-components) instead.
+
+</aside>
 
 ## Attaching a layout to a route
 
@@ -507,9 +520,10 @@ methods: `title`, `subtitle`, `back`, `backgroundColor`, `textColor`, `elevation
 
 ## Inline overrides
 
-A screen can put its own `<native:top-bar>` or `<native:bottom-nav>` at the root of its blade, and the framework
-will skip the layout-supplied chrome **for that slot only**. This is useful for one-off screens (e.g. a chat
-detail with a custom titled top bar) without dropping the layout entirely.
+Inline chrome and a layout compose. A screen can put its own [`<native:top-bar>`](../edge-components/top-bar) or
+[`<native:bottom-nav>`](../edge-components/bottom-nav) at the root of its Blade, and the framework skips the
+layout-supplied chrome **for that slot only** — the *other* slot still comes from the layout. This is the override
+contract for one-off screens (a chat detail with a custom titled top bar, say) without dropping the layout entirely.
 
 @verbatim
 ```blade
@@ -523,3 +537,18 @@ detail with a custom titled top bar) without dropping the layout entirely.
 </native:column>
 ```
 @endverbatim
+
+The same hoisting powers a screen with **no layout at all**: an inline bar alone still produces real native chrome
+(a `NavigationStack` / `TabView` on iOS, a `Scaffold` / `NavigationBar` on Android), with edge-swipe back, large
+titles, and Liquid Glass / Material You — identical to what the builders emit. The layout is only worth reaching for
+when several screens share the same bar. See each element's page for the full attribute surface:
+[Top Bar](../edge-components/top-bar), [Bottom Navigation](../edge-components/bottom-nav), and
+[Floating Action Button](../edge-components/fab).
+
+<aside>
+
+The `custom` attribute is the escape hatch: `<native:top-bar custom>` keeps the bar in the content tree as an
+ordinary drawn element (for a design a system bar can't express) while *still* suppressing the layout's bar for
+that slot.
+
+</aside>

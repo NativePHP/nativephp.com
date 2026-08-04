@@ -3,11 +3,6 @@ title: Bottom Navigation
 order: 120
 ---
 
-> [!IMPORTANT]
-> **Prefer the [Layout model](../the-basics/layouts).** Declare your app's bottom tabs with the `TabBar`
-> builder in a `NativeLayout` class rather than placing `<native:bottom-nav>` in a screen. This page documents the
-> inline element, which still works but is no longer the recommended approach.
-
 ## Overview
 
 <div class="images-two-up not-prose">
@@ -18,7 +13,12 @@ order: 120
 
 </div>
 
-A bottom navigation bar with up to 5 items. Used for your app's primary navigation.
+A bottom navigation bar with up to 5 items — your app's primary navigation. Placing `<native:bottom-nav>` at the
+root of a screen's Blade **hoists it onto the real native chrome root** (a `TabView` on iOS, a `NavigationBar` in a
+`Scaffold` on Android), so you get the platform tab bar with Liquid Glass / Material You for free. It renders
+identically to the [`TabBar` builder](../the-basics/layouts#tabbar--the-bottom-tabs) a layout produces — inline is
+the tool when the tabs belong to *one* screen; a [layout](../the-basics/layouts) is the tool when many screens share
+the same tabs.
 
 One bar demonstrates the whole item API — an `active` tab, a `news` dot, and a `badge`:
 
@@ -50,15 +50,23 @@ One bar demonstrates the whole item API — an `active` tab, a `news` dot, and a
 ```
 @endverbatim
 
-The [Builder API](#builder-api) below produces this same bar from a layout class — the recommended home for it.
+## The override contract
+
+An inline bottom nav **wins over the layout's tab bar for that slot** — the layout's top bar (the *other* slot)
+still renders. An inline bar on a screen with **no layout at all** still produces native chrome. Every attribute is
+a Blade expression over your screen's state, so a badge count or active tab is **reactive** and re-renders when the
+underlying property changes. See [Inline overrides](../the-basics/layouts#inline-overrides).
 
 ## Props
 
 - `label-visibility` - `labeled`, `selected`, or `unlabeled` (optional, default: `labeled`)
-- `dark` - Force dark mode styling (optional)
+- `dark` - Force dark mode styling (optional, boolean)
 - `active-color` - Color of the active tab's icon and label. Hex string (optional)
 - `background-color` - Bar background color. Hex string. Wins over `dark`'s default (optional)
 - `text-color` - Color of inactive tab icons and labels. Hex string. Active tabs use `active-color` (optional)
+- `font-name` - Custom font for tab labels: a `resources/fonts/` token or [config alias](text#font-aliases--the-app-wide-default) (optional)
+- `minimize-on-scroll` - Shrink the bar as content scrolls (optional, boolean) [iOS 26+]
+- `custom` - Keep the bar in the content tree as an ordinary drawn element instead of hoisting it (optional, boolean). Still suppresses the layout's tab bar for that slot
 
 <aside>
 
@@ -70,20 +78,19 @@ above the indicator, mirroring iOS `UITabBar`.
 
 ## Children
 
-> [!IMPORTANT]
-> In the [Layout model](../the-basics/layouts#builder-reference) a bottom-nav item is a `Tab` — use that builder
-> rather than placing `<native:bottom-nav-item>` inline.
-
 A `<native:bottom-nav>` can contain up to 5 `<native:bottom-nav-item>` elements.
 
 ### Props
 
 - `id` - Unique identifier (required)
-- `icon` - A named [icon](icon#icon-name-reference) (required)
-- `label` - Accessibility label (required)
-- `url` - A URL to navigate to in the web view (required)
-- `active` - Highlight this item as active (optional, default: `false`)
+- `icon` - A named [icon](icon#icon-name-reference) — the cross-platform fallback (optional if a platform icon is given)
+- `ios-icon` / `android-icon` - Per-platform icon overrides: an enum case (`App\Icons\Ios`, `App\Icons\Android`, `App\Icons\AndroidOutlined`) or a raw symbol string. `ios` / `android` are accepted as shorthand (optional). See [Platform icons](#platform-icons)
+- `material-variant` - Material style hint for Android, e.g. `outlined` (optional). Set automatically by an `AndroidOutlined` enum case
+- `label` - Accessibility / display label (required)
+- `url` - A URL to navigate to when tapped (required). Tab taps **replace** — see below
+- `active` - Highlight this item as active (optional, default: `false`). An explicit `active` beats the automatic longest-prefix URL highlight
 - `badge` - Badge text/number, e.g. `"2"` — small red pill anchored top-right of the icon (optional)
+- `badge-color` - Badge color. Hex string (optional)
 - `news` - Show a small red dot anchored top-right of the icon. Mutually exclusive with `badge` (optional, default: `false`)
 
 <aside>
@@ -103,44 +110,48 @@ Here's `badge` on a tab item:
 
 </div>
 
-## Builder API
+### Active tab highlighting
 
-When a `<native:bottom-nav>` is supplied by a [layout](../the-basics/layouts), you build it fluently with the `TabBar`
-and `Tab` builders rather than writing it in Blade. This is the same bar as the [Overview](#overview) example:
+If no item is marked `active`, the framework auto-highlights the tab whose `url` is the longest prefix of the
+current screen's URI — so `/friends/42` lights the `/friends` tab. Set `:active="true"` on an item to force the
+highlight explicitly (a search-results screen reached from the Search tab, say); an explicit choice always wins over
+the prefix match.
 
-```php
-use Native\Mobile\Edge\Layouts\Builders\Tab;
-use Native\Mobile\Edge\Layouts\Builders\TabBar;
+### Platform icons
 
-TabBar::make()
-    ->labelVisibility('labeled')
-    ->activeColor('#0891b2')
-    ->add(Tab::link('Home',    '/home',    icon: 'home')->active())
-    ->add(Tab::link('Friends', '/friends', icon: 'person.3.fill')->news())
-    ->add(Tab::link('Profile', '/profile', icon: 'person')->badge('3'));
+`<native:bottom-nav-item>` resolves icons through the same contract as [`<native:icon>`](icon#typed-icon-enums): a
+shared `icon` string is the cross-platform fallback, and `:ios-icon` / `:android-icon` (or the `:ios` / `:android`
+shorthand) override it per platform. Each override accepts a generated enum case or a raw symbol string; an
+`AndroidOutlined` case carries its `material_variant` automatically.
+
+@verbatim
+```blade static
+@use('App\Icons\Ios')
+@use('App\Icons\AndroidOutlined')
+
+<native:bottom-nav>
+    <native:bottom-nav-item
+        id="home"
+        label="Home"
+        url="/home"
+        :ios="Ios::House"
+        :android="AndroidOutlined::Home"
+    />
+</native:bottom-nav>
 ```
+@endverbatim
 
-To force a dark bar regardless of the system theme, chain `->dark()` — or take full control with
-`->backgroundColor('#0F172A')->textColor('#94A3B8')`, which wins over `dark()`'s default.
+### Search tab
 
-### `TabBar` methods
+Mark one item with the boolean `search` attribute to make it present a native search field instead of navigating.
+The search corpus comes from the screen's `searchItems()` or `onSearchQuery()` methods; `search-placeholder` and
+`search-debounce-ms` (default `250`) tune the field. See [Search](../digging-deeper/search) for the full flow.
 
-- `make()` - Create a new builder
-- `dark(bool $dark = true)` - Force dark mode styling
-- `activeColor(string $color)` - Color of the active tab's icon and label
-- `backgroundColor(string $color)` - Bar background color (overrides `dark()`'s default)
-- `textColor(string $color)` - Color of inactive tab icons and labels
-- `labelVisibility(string $mode)` - `"labeled"`, `"selected"`, or `"unlabeled"`
-- `add(Tab $tab)` - Append a tab item
+## Builder alternative
 
-### `Tab` methods
-
-- `link(string $label, string $url, ?string $icon = null)` - Build a tab. The id defaults to the label slugified
-- `id(string $id)` - Override the auto-generated id
-- `icon(string $icon)` - A named [icon](icon#icon-name-reference)
-- `badge(string $badge, ?string $color = null)` - Show a numeric/text badge
-- `news(bool $news = true)` - Show a red dot indicator
-- `active(bool $active = true)` - Mark this tab as active
+When many screens share the same tabs, declare them once with the `TabBar` builder in a
+[layout](../the-basics/layouts) instead of repeating the inline element. The builder produces the exact same native
+chrome — see the [Builder reference](../the-basics/layouts#tabbar--the-bottom-tabs) for `TabBar` and `Tab`.
 
 ## Per-screen tab bar
 
@@ -164,14 +175,6 @@ class ChatThread extends NativeComponent
 }
 ```
 
-### `TabBarOptions` methods
-
-- `make()` - Create a new builder
-- `hidden(bool $hidden = true)` - Hide the tab bar on this screen — the pushed-detail pattern
-- `highlight(string $tabId)` - Force a tab id to render as active, even when the screen's URL doesn't match any tab (e.g. a search-results screen reached from the Search tab)
-- `activeColor(string $color)` - Color of the active tab's icon and label on this screen
-- `backgroundColor(string $color)` - Bar background color on this screen
-
 For the common "hide the tab bar on this detail screen" case, the shorter `protected bool $hidesTabBar = true;`
 property on the screen is equivalent to `TabBarOptions::make()->hidden()`. Use either; if both are set, the explicit
-builder wins.
+builder wins. See the [`TabBarOptions` reference](../the-basics/layouts#tabbar--the-bottom-tabs) in Layouts.

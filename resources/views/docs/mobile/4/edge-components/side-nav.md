@@ -4,9 +4,11 @@ order: 370
 ---
 
 > [!IMPORTANT]
-> **Prefer the [Layout model](../the-basics/layouts#drawer-navigation).** Provide a slide-out drawer with the
-> `Drawer` builder from a `NativeLayout` rather than placing `<native:side-nav>` in a screen. This page documents
-> the inline element, which still works but is no longer the recommended approach.
+> **Use the [Drawer layout](../the-basics/layouts#drawer-navigation).** Unlike the other inline chrome elements
+> ([`top-bar`](top-bar), [`bottom-nav`](bottom-nav), [`fab`](fab)), an inline `<native:side-nav>` currently has
+> **no built-in drawer host**: the element compiles and is hoisted onto the chrome root, but nothing consumes it
+> yet, so it renders nothing on either platform. Provide drawers with the `Drawer` builder in a `NativeLayout` —
+> its contents are any Blade view. The element reference below is kept for when the inline drawer host lands.
 
 ## Overview
 
