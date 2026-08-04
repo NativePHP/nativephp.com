@@ -19,7 +19,7 @@
         "@tailwindcss/vite": "^4.1.12",
         "alpinejs": "^3.14.9",
         "atropos": "^2.0.2",
-        "axios": "^1.11.0",
+        "axios": "^1.19.0",
         "gsap": "^3.13.0",
         "laravel-vite-plugin": "^2.0.0",
         "motion": "^12.23.12",
