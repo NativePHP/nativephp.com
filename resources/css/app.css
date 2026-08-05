@@ -8,6 +8,15 @@
 @source '../../storage/framework/views/*.php';
 @source '../../vendor/filament/**/*.blade.php';
 
+/*
+ * flux.css pulls in the flux-pro stubs, and the carousel slide stub declares
+ * `[snap="mandatory"_&]:snap-always` — one bracket short, so it compiles to the
+ * invalid selector `snap="mandatory" &` and Lightning CSS warns on every build.
+ * We don't use <flux:carousel>, so skip that stub. Drop this once Flux fixes it
+ * upstream; remove it first if we ever adopt the carousel.
+ */
+@source not '../../vendor/livewire/flux-pro/stubs/resources/views/flux/carousel';
+
 /* Safelist classes used in dynamic content (blog posts from database) */
 @source inline("grid-cols-1 grid-cols-2 grid-cols-3 grid-cols-4 grid-cols-5 grid-cols-6");
 
@@ -25,6 +34,10 @@
     --color-snow-flurry-100: #d1ffae;
     --color-snow-flurry-200: #a2fd00;
     --color-snow-flurry-300: #97ed00;
+
+    /* Torchlight code surface (matches the material-theme-palenight theme) */
+    --color-torchlight-surface: #292d3e;
+    --color-torchlight-text: #a6accd;
 
     --font-poppins: 'Poppins', Verdana, sans-serif;
 }
@@ -270,11 +283,11 @@ nav.docs-navigation li:has(.third-tier .exact-active) > .subsection-header {
     @apply rounded-none shadow-none;
 }
 
-.prose p:has(img) {
+.prose-gallery p:has(img) {
     @apply grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3;
 }
 
-.prose p:has(img) img {
+.prose-gallery p:has(img) img {
     @apply inline-block max-w-full rounded-none shadow-none;
 }
 
@@ -294,6 +307,19 @@ nav.docs-navigation li:has(.third-tier .exact-active) > .subsection-header {
 */
 .prose pre code.torchlight {
     @apply block min-w-max py-4;
+}
+
+/*
+ Fallback for blocks Torchlight returns un-highlighted (e.g. a language
+ its API can't tokenise, like the Svelte snippets on some plugin pages).
+ These come back with an empty `style` attribute and no per-token color
+ spans, so without this they have no background and inherit prose's light
+ text color, rendering the block invisible. Successfully highlighted
+ blocks set `background-color` inline, so they're excluded here and keep
+ their own theme colors.
+*/
+.prose pre code.torchlight:not([style*='background-color']) {
+    @apply bg-torchlight-surface text-torchlight-text;
 }
 
 /*
@@ -517,6 +543,16 @@ nav.docs-navigation li:has(.third-tier .exact-active) > .subsection-header {
     .aspect-video iframe {
         @apply absolute inset-0 w-full h-full;
     }
+}
+
+/*
+ Let the course purchase page fill the entire main area (the gradient hero
+ should bleed edge to edge), overriding flux:main's centered max-w-7xl
+ container. Inner content re-applies its own max-width and padding.
+*/
+[data-flux-main]:has(.course-fullbleed) {
+    max-width: none;
+    padding: 0;
 }
 
 /* Snippet component with tabbed code blocks */

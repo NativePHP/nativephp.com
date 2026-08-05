@@ -4,6 +4,7 @@ use App\Features\ShowAuthButtons;
 use App\Features\ShowPlugins;
 use App\Http\Controllers\ApplinksController;
 use App\Http\Controllers\Auth\CustomerAuthController;
+use App\Http\Controllers\Auth\EmailChangeController;
 use App\Http\Controllers\Auth\EmailVerificationController;
 use App\Http\Controllers\BundleController;
 use App\Http\Controllers\CartController;
@@ -43,6 +44,7 @@ use App\Livewire\PluginDirectory;
 use App\Models\Course;
 use App\Models\Product;
 use App\Services\CartService;
+use App\Services\DocsVersionService;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Exceptions\UrlGenerationException;
 use Illuminate\Support\Facades\Route;
@@ -72,15 +74,38 @@ Route::redirect('ios', 'blog/nativephp-for-mobile-is-now-free');
 Route::redirect('t-shirt', 'blog/nativephp-for-mobile-is-now-free');
 Route::redirect('tshirt', 'blog/nativephp-for-mobile-is-now-free');
 
-// Redirect mobile v3 core plugin docs to plugin directory pages
-Route::get('docs/mobile/3/plugins/core/{page}', function (string $page) {
-    return redirect("/plugins/nativephp/mobile-{$page}", 301);
-})->where('page', '[a-z-]+');
+// v4: Device/Dialog/File/System moved from plugins into core built-ins; their docs
+// now live in The Basics (must precede the generic core-plugin redirect below).
+foreach (['device', 'file', 'system'] as $corePage) {
+    Route::redirect("docs/mobile/4/plugins/core/{$corePage}", "/docs/mobile/4/the-basics/{$corePage}", 301);
+}
 
-// Redirect old mobile v3 API docs to plugin directory pages
-Route::get('docs/mobile/3/apis/{page}', function (string $page) {
+// The Dialog docs live at the "dialogs" slug in The Basics.
+Route::redirect('docs/mobile/4/plugins/core/dialog', '/docs/mobile/4/the-basics/dialogs', 301);
+
+// Redirect mobile core plugin docs to plugin directory pages
+Route::get('docs/mobile/{version}/plugins/core/{page}', function (string $version, string $page) {
     return redirect("/plugins/nativephp/mobile-{$page}", 301);
-})->where('page', '[a-z-]+');
+})->where('version', '[0-9]+')->where('page', '[a-z-]+');
+
+// Redirect old mobile API docs to plugin directory pages
+Route::get('docs/mobile/{version}/apis/{page}', function (string $version, string $page) {
+    return redirect("/plugins/nativephp/mobile-{$page}", 301);
+})->where('version', '[0-9]+')->where('page', '[a-z-]+');
+
+// v4: the SuperNative section was flattened; its old section root now points at
+// the SuperNative overview page, which lives in the Architecture section.
+Route::redirect('docs/mobile/4/super-native', '/docs/mobile/4/architecture/super-native', 301);
+
+// v4: the Architecture Overview page was removed; the SuperNative page now leads the section.
+Route::redirect('docs/mobile/4/architecture/overview', '/docs/mobile/4/architecture/super-native', 301);
+
+// v4: the old the-basics/navigation slug is now the-basics/routing (Layouts lives at the-basics/layouts directly).
+Route::redirect('docs/mobile/4/the-basics/navigation', '/docs/mobile/4/the-basics/routing', 301);
+
+// v4: Screen & Card components were removed — theme surfaces with bg-theme-* classes instead
+Route::redirect('docs/mobile/4/edge-components/screen', '/docs/mobile/4/edge-components/layout', 301);
+Route::redirect('docs/mobile/4/edge-components/card', '/docs/mobile/4/edge-components/layout', 301);
 
 // Webhook routes (must be outside web middleware for CSRF bypass)
 Route::post('opencollective/contribution', [OpenCollectiveWebhookController::class, 'handle'])->name('opencollective.webhook');
@@ -102,9 +127,20 @@ Route::get('course', function () {
         }])
         ->first();
 
+    $priceIncreaseAt = config('services.stripe.course_price_increase_at');
+    $priceIncreased = now()->gte($priceIncreaseAt);
+
+    $bestPrice = $product?->getBestPriceForUser($user);
+    $regularPrice = $product?->getRegularPrice();
+
     return view('course', [
         'alreadyOwned' => $alreadyOwned,
         'course' => $course,
+        'priceIncreaseAt' => $priceIncreaseAt,
+        'priceIncreased' => $priceIncreased,
+        'currentPrice' => $bestPrice?->discountedDisplayAmount() ?? ($priceIncreased ? '299' : '199'),
+        'regularPrice' => $regularPrice?->display_amount,
+        'hasDiscount' => $bestPrice && $regularPrice && $bestPrice->discountedAmount() < $regularPrice->amount,
     ]);
 })->name('course');
 
@@ -124,7 +160,15 @@ Route::post('course/checkout', function (Request $request) {
         return to_route('course')->with('error', 'You already own this course.');
     }
 
-    $priceId = config('services.stripe.course_price_id');
+    $bestPrice = $product->getBestPriceForUser($user);
+
+    // Prefer the Stripe price ID configured on the resolved price in the admin,
+    // falling back to the legacy env-configured course price IDs.
+    $priceIncreased = now()->gte(config('services.stripe.course_price_increase_at'));
+    $priceId = $bestPrice?->stripe_price_id
+        ?: ($priceIncreased
+            ? config('services.stripe.course_price_id_299')
+            : config('services.stripe.course_price_id_199'));
 
     if (! $priceId) {
         return to_route('course')->with('error', 'Course checkout is not configured yet.');
@@ -138,12 +182,16 @@ Route::post('course/checkout', function (Request $request) {
 
     $metadata = ['cart_id' => (string) $cart->id];
 
-    return $user->checkout([$priceId => 1], [
+    $sessionOptions = [
         'success_url' => route('cart.success').'?session_id={CHECKOUT_SESSION_ID}',
         'cancel_url' => route('course'),
         'metadata' => $metadata,
         'allow_promotion_codes' => true,
         'billing_address_collection' => 'required',
+        'customer_update' => [
+            'name' => 'auto',
+            'address' => 'auto',
+        ],
         'tax_id_collection' => ['enabled' => true],
         'invoice_creation' => [
             'enabled' => true,
@@ -152,7 +200,17 @@ Route::post('course/checkout', function (Request $request) {
                 'metadata' => $metadata,
             ],
         ],
-    ]);
+    ];
+
+    // Stripe accepts either allow_promotion_codes or discounts on a session, never both.
+    $couponId = $bestPrice?->stripe_coupon_id;
+
+    if ($couponId) {
+        unset($sessionOptions['allow_promotion_codes']);
+        $sessionOptions['discounts'] = [['coupon' => $couponId]];
+    }
+
+    return $user->checkout([$priceId => 1], $sessionOptions);
 })->name('course.checkout');
 
 Route::view('wall-of-love', 'wall-of-love')->name('wall-of-love');
@@ -183,6 +241,7 @@ Route::view('vs-react-native-expo', 'vs-react-native-expo')->name('vs-react-nati
 Route::view('vs-flutter', 'vs-flutter')->name('vs-flutter');
 
 Route::get('blog', [ShowBlogController::class, 'index'])->name('blog');
+Route::get('blog/feed', [ShowBlogController::class, 'feed'])->name('blog.feed');
 Route::get('blog/{article}', [ShowBlogController::class, 'show'])->name('article');
 
 Route::get('docs/{platform}/{version}/{page}.md', [ShowDocumentationController::class, 'serveRawMarkdown'])
@@ -197,23 +256,28 @@ Route::get('docs/{platform}/{version}/{page?}', ShowDocumentationController::cla
     ->where('version', '[0-9]+')
     ->name('docs.show');
 
-// Forward platform requests without version to the latest version
+// Forward platform requests without version to the latest stable version
 Route::get('docs/{platform}/{page?}', function (string $platform, $page = null) {
     $page ??= 'getting-started/introduction';
 
-    // Find the latest version for this platform
     $docsPath = resource_path('views/docs/'.$platform);
 
     if (! is_dir($docsPath)) {
         abort(404);
     }
 
-    $versions = collect(scandir($docsPath))
-        ->filter(fn ($dir) => is_numeric($dir))
-        ->sort()
-        ->values();
+    $latestVersion = config("docs.latest_versions.{$platform}")
+        ?? collect(scandir($docsPath))
+            ->filter(fn ($dir) => is_numeric($dir))
+            ->reject(fn ($dir) => in_array((int) $dir, config("docs.prerelease_versions.{$platform}", [])))
+            ->sort()
+            ->last()
+        ?? '1';
 
-    $latestVersion = $versions->last() ?? '1';
+    // Map renamed pages to their slug in the latest version up front, so a
+    // stale unversioned link 301s straight to its new home instead of
+    // chaining through a second redirect.
+    $page = app(DocsVersionService::class)->resolvePageForVersion($platform, $latestVersion, $page);
 
     return redirect("/docs/{$platform}/{$latestVersion}/{$page}", 301);
 })
@@ -288,6 +352,7 @@ Route::middleware('auth')->group(function (): void {
     Route::get('email/verify', [EmailVerificationController::class, 'notice'])->name('verification.notice');
     Route::get('email/verify/{id}/{hash}', [EmailVerificationController::class, 'verify'])->middleware(['signed', 'throttle:6,1'])->name('verification.verify');
     Route::post('email/verification-notification', [EmailVerificationController::class, 'resend'])->middleware('throttle:6,1')->name('verification.send');
+    Route::get('email/change/{emailChange}/confirm', [EmailChangeController::class, 'confirm'])->middleware(['signed', 'throttle:6,1'])->name('email-change.confirm');
 });
 
 Route::post('logout', [CustomerAuthController::class, 'logout'])
@@ -421,6 +486,7 @@ Route::middleware('signed')->group(function (): void {
 });
 
 Route::get('.well-known/assetlinks.json', [ApplinksController::class, 'assetLinks']);
+Route::get('.well-known/apple-app-site-association', [ApplinksController::class, 'appSiteAssociation']);
 
 Route::post('webhooks/plugins/{secret}', PluginWebhookController::class)->name('webhooks.plugins');
 

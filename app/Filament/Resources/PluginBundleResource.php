@@ -189,10 +189,10 @@ class PluginBundleResource extends Resource
                                         ->orWhere('email', 'like', "%{$search}%")
                                         ->limit(50)
                                         ->get()
-                                        ->mapWithKeys(fn (User $user) => [$user->id => "{$user->name} ({$user->email})"])
+                                        ->mapWithKeys(fn (User $user) => [$user->id => "{$user->getFilamentName()} ({$user->email})"])
                                         ->toArray();
                                 })
-                                ->getOptionLabelUsing(fn ($value): ?string => User::find($value)?->name)
+                                ->getOptionLabelUsing(fn ($value): ?string => User::find($value)?->getFilamentName())
                                 ->required(),
                         ])
                         ->action(function (PluginBundle $record, array $data): void {

@@ -108,56 +108,6 @@
                 </x-slot>
             </x-home.featured-partner-card>
 
-            <x-home.featured-partner-card
-                partnerName="Laradevs"
-                tagline="Hire the best Laravel developers anywhere"
-                href="https://laradevs.com/?ref=nativephp"
-            >
-                <x-slot:logo>
-                    <x-sponsors.logos.laradevs
-                        class="text-black dark:text-white"
-                        aria-hidden="true"
-                    />
-                </x-slot>
-
-                <x-slot:description>
-                    Need a freelancer or engineer? Laradevs has you covered.
-                    Filter by skills, experience, location, availability,
-                    and pay.
-                </x-slot>
-            </x-home.featured-partner-card>
-
-            <x-home.featured-partner-card
-                partnerName="BeyondCode"
-                tagline="Essential tools for web developers"
-                href="https://beyondco.de/?utm_source=nativephp&utm_medium=logo&utm_campaign=nativephp"
-            >
-                <x-slot:logo>
-                    <img
-                        src="/img/sponsors/beyondcode.webp"
-                        class="block dark:hidden"
-                        loading="lazy"
-                        alt="BeyondCode logo - PHP development tools and packages"
-                        width="160"
-                        height="40"
-                    />
-                    <img
-                        src="/img/sponsors/beyondcode-dark.webp"
-                        class="hidden dark:block"
-                        loading="lazy"
-                        alt="BeyondCode logo - PHP development tools and packages"
-                        width="160"
-                        height="40"
-                    />
-                </x-slot>
-
-                <x-slot:description>
-                    From local full stack development to cutting-edge AI
-                    platforms, we provide the tools for building your next
-                    great app.
-                </x-slot>
-            </x-home.featured-partner-card>
-
             {{-- Partner CTA --}}
             <div
                 class="flex flex-col items-center gap-5 rounded-xl bg-gradient-to-tl from-[#d7ff83] to-[#ebeeb7] p-6 sm:flex-row lg:flex-col xl:flex-row dark:from-black dark:via-gray-950 dark:to-gray-800/50"

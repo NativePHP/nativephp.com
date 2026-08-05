@@ -13,6 +13,7 @@ use Filament\Schemas\Schema;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Support\HtmlString;
+use Illuminate\Support\Js;
 use Illuminate\Support\Str;
 
 class SupportTicketResource extends Resource
@@ -78,6 +79,15 @@ class SupportTicketResource extends Resource
                             ->label('Subject'),
                         Infolists\Components\TextEntry::make('message')
                             ->label('Message')
+                            ->hintAction(
+                                Actions\Action::make('copyMessageAsMarkdown')
+                                    ->label('Copy as Markdown')
+                                    ->icon('heroicon-m-clipboard-document')
+                                    ->color('gray')
+                                    ->link()
+                                    ->visible(fn (SupportTicket $record): bool => filled($record->message))
+                                    ->actionJs(fn (SupportTicket $record): string => self::copyMessageAsMarkdownJs($record))
+                            )
                             ->formatStateUsing(fn (?string $state): ?HtmlString => $state === null
                                 ? null
                                 : new HtmlString(self::renderTicketMessage($state)))
@@ -183,18 +193,45 @@ class SupportTicketResource extends Resource
         return str_replace('<p>', '<p style="margin: 0 0 1rem 0;">', $html);
     }
 
+    /**
+     * Convert a ticket message to Markdown suitable for pasting elsewhere, turning any
+     * ASCII tables it contains into Markdown tables.
+     */
+    public static function ticketMessageAsMarkdown(string $message): string
+    {
+        return trim(self::convertAsciiTables($message, self::renderAsciiTableAsMarkdown(...)));
+    }
+
+    protected static function copyMessageAsMarkdownJs(SupportTicket $record): string
+    {
+        $markdown = Js::from(self::ticketMessageAsMarkdown($record->message));
+
+        return <<<JS
+            window.navigator.clipboard.writeText({$markdown})
+            \$tooltip('Copied as Markdown', { theme: \$store.theme, timeout: 1500 })
+            JS;
+    }
+
     protected static function convertAsciiTablesToHtml(string $message): string
+    {
+        return self::convertAsciiTables($message, self::renderAsciiTable(...));
+    }
+
+    /**
+     * @param  callable(list<string>): ?string  $renderTable
+     */
+    protected static function convertAsciiTables(string $message, callable $renderTable): string
     {
         $lines = preg_split('/\R/', $message) ?: [];
         $result = [];
         $buffer = [];
 
-        $flush = function () use (&$result, &$buffer): void {
+        $flush = function () use (&$result, &$buffer, $renderTable): void {
             if ($buffer === []) {
                 return;
             }
 
-            $rendered = self::renderAsciiTable($buffer);
+            $rendered = $renderTable($buffer);
 
             if ($rendered === null) {
                 foreach ($buffer as $bufferedLine) {
@@ -225,7 +262,11 @@ class SupportTicketResource extends Resource
         return implode("\n", $result);
     }
 
-    protected static function renderAsciiTable(array $lines): ?string
+    /**
+     * @param  list<string>  $lines
+     * @return array{rows: list<list<string>>, hasHeader: bool}|null
+     */
+    protected static function parseAsciiTable(array $lines): ?array
     {
         $rows = [];
         $separatorAfterRow = [];
@@ -248,7 +289,49 @@ class SupportTicketResource extends Resource
             return null;
         }
 
-        $hasHeader = count($rows) > 1 && isset($separatorAfterRow[1]);
+        return [
+            'rows' => $rows,
+            'hasHeader' => count($rows) > 1 && isset($separatorAfterRow[1]),
+        ];
+    }
+
+    /**
+     * @param  list<string>  $lines
+     */
+    protected static function renderAsciiTableAsMarkdown(array $lines): ?string
+    {
+        $table = self::parseAsciiTable($lines);
+
+        if ($table === null) {
+            return null;
+        }
+
+        ['rows' => $rows, 'hasHeader' => $hasHeader] = $table;
+
+        $columnCount = max(array_map('count', $rows));
+        $renderRow = fn (array $cells): string => '| '.implode(' | ', array_pad($cells, $columnCount, '')).' |';
+
+        $header = $hasHeader ? array_shift($rows) : array_fill(0, $columnCount, '');
+
+        return implode("\n", [
+            $renderRow($header),
+            $renderRow(array_fill(0, $columnCount, '---')),
+            ...array_map($renderRow, $rows),
+        ]);
+    }
+
+    /**
+     * @param  list<string>  $lines
+     */
+    protected static function renderAsciiTable(array $lines): ?string
+    {
+        $table = self::parseAsciiTable($lines);
+
+        if ($table === null) {
+            return null;
+        }
+
+        ['rows' => $rows, 'hasHeader' => $hasHeader] = $table;
 
         $tableStyle = 'border-collapse: collapse; width: auto; margin: 0 0 1rem 0; border: 1px solid rgba(127, 127, 127, 0.25);';
         $cellStyle = 'padding: 0.25rem 0.75rem; border: 1px solid rgba(127, 127, 127, 0.2); text-align: left; vertical-align: top;';

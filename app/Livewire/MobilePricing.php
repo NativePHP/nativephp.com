@@ -22,7 +22,7 @@ class MobilePricing extends Component
     #[Url]
     public string $interval = 'month';
 
-    /** @var array{amount_due: string, raw_amount_due: int, new_charge: string, is_prorated: bool, credit: string|null, remaining_credit: string|null}|null */
+    /** @var array{amount_due: string|null, raw_amount_due: int|null, new_charge: string, is_prorated: bool, credit: string|null, remaining_credit: string|null, proration_pending: bool}|null */
     public ?array $upgradePreview = null;
 
     #[Locked]
@@ -113,10 +113,25 @@ class MobilePricing extends Component
             return;
         }
 
+        // Canceled-in-grace subscriptions have no upcoming invoice in Stripe,
+        // so previewInvoice() returns null. Stripe still prorates correctly on
+        // confirm via swapAndInvoice — we just show a degraded preview here.
+        if ($subscription->canceled() && $subscription->onGracePeriod()) {
+            $this->upgradePreview = $this->buildDegradedUpgradePreview($user);
+
+            return;
+        }
+
         $newPriceId = Subscription::Max->stripePriceId(forceEap: $user->isEapCustomer(), interval: $this->interval);
 
         try {
             $invoice = $subscription->previewInvoice($newPriceId);
+
+            if (! $invoice) {
+                $this->upgradePreview = null;
+
+                return;
+            }
 
             $currency = $invoice->asStripeInvoice()->currency;
             $newPlanCharge = 0;
@@ -146,11 +161,38 @@ class MobilePricing extends Component
                 'is_prorated' => $prorationCharge > 0,
                 'credit' => $prorationCredit > 0 ? Cashier::formatAmount($prorationCredit, $currency) : null,
                 'remaining_credit' => $remainingCredit > 0 ? Cashier::formatAmount($remainingCredit, $currency) : null,
+                'proration_pending' => false,
             ];
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             Log::error('Failed to preview upgrade invoice', ['error' => $e->getMessage()]);
             $this->upgradePreview = null;
         }
+    }
+
+    /**
+     * @return array{amount_due: null, raw_amount_due: null, new_charge: string, is_prorated: bool, credit: null, remaining_credit: null, proration_pending: true}
+     */
+    private function buildDegradedUpgradePreview(User $user): array
+    {
+        if ($this->interval === 'year') {
+            $newCharge = $user->isEapCustomer()
+                ? config('subscriptions.plans.max.eap_price_yearly')
+                : config('subscriptions.plans.max.price_yearly');
+        } else {
+            $newCharge = config('subscriptions.plans.max.price_monthly');
+        }
+
+        $newChargeInCents = (int) ($newCharge * 100);
+
+        return [
+            'amount_due' => null,
+            'raw_amount_due' => null,
+            'new_charge' => Cashier::formatAmount($newChargeInCents),
+            'is_prorated' => true,
+            'credit' => null,
+            'remaining_credit' => null,
+            'proration_pending' => true,
+        ];
     }
 
     public function upgradeSubscription(): mixed

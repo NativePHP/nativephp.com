@@ -483,7 +483,7 @@
         </section>
 
         {{-- Call to Action Section --}}
-        <section class="mt-16 pb-24">
+        <section class="mt-16">
             <div
                 x-init="
                     () => {
@@ -609,6 +609,126 @@
                         </a>
                     </div>
                 </div>
+            </div>
+        </section>
+
+        {{-- Our Partners Section --}}
+        <section class="mt-16 pb-24">
+            <h2
+                x-init="
+                    () => {
+                        motion.inView($el, (element) => {
+                            motion.animate(
+                                $el,
+                                {
+                                    opacity: [0, 1],
+                                    x: [-10, 0],
+                                },
+                                {
+                                    duration: 0.7,
+                                    ease: motion.easeOut,
+                                },
+                            )
+                        })
+                    }
+                "
+                class="text-center text-3xl font-semibold"
+            >
+                Meet Our Partners
+            </h2>
+            <p
+                class="mx-auto mt-4 max-w-2xl text-center text-gray-600 dark:text-zinc-400"
+            >
+                We're proud to partner with these exceptional teams who are
+                helping bring beautiful native apps to life with NativePHP.
+            </p>
+
+            <div
+                x-init="
+                    () => {
+                        motion.inView($el, (element) => {
+                            motion.animate(
+                                Array.from($el.children),
+                                {
+                                    y: [10, 0],
+                                    opacity: [0, 1],
+                                },
+                                {
+                                    duration: 0.7,
+                                    ease: motion.backOut,
+                                    delay: motion.stagger(0.1),
+                                },
+                            )
+                        })
+                    }
+                "
+                class="mt-8 grid grid-cols-1 gap-5 md:grid-cols-2"
+            >
+                <x-home.featured-partner-card
+                    partnerName="Nexcalia"
+                    tagline="Smart tools for scheduling & visitor management"
+                    href="https://www.nexcalia.com/?ref=nativephp"
+                >
+                    <x-slot:logo>
+                        <x-sponsors.logos.nexcalia
+                            class="text-black dark:text-white"
+                            aria-hidden="true"
+                        />
+                    </x-slot>
+
+                    <x-slot:description>
+                        From online booking to interactive kiosks, Nexcalia
+                        helps businesses streamline appointments and improve
+                        customer experiences.
+                    </x-slot>
+                </x-home.featured-partner-card>
+
+                <x-home.featured-partner-card
+                    partnerName="Web Mavens"
+                    tagline="Build Secure, Scalable Web Apps"
+                    href="https://www.webmavens.com/?ref=nativephp"
+                >
+                    <x-slot:logo>
+                        <x-sponsors.logos.webmavens
+                            class="dark:fill-white"
+                            aria-hidden="true"
+                        />
+                    </x-slot>
+
+                    <x-slot:description>
+                        Laravel Partners crafting secure, SOC 2–ready apps with NativePHP and modern web technologies.
+                        Trusted by healthcare and enterprise teams, and friendly to startups too.
+                    </x-slot>
+                </x-home.featured-partner-card>
+
+                <x-home.featured-partner-card
+                    partnerName="Synergi Tech"
+                    tagline="Bespoke software for complex infrastructure"
+                    href="https://synergitech.co.uk/partners/nativephp/"
+                >
+                    <x-slot:logo>
+                        <img
+                            src="/img/sponsors/synergi.svg"
+                            class="block dark:hidden"
+                            loading="lazy"
+                            alt="Synergi Tech logo"
+                            width="160"
+                            height="40"
+                        />
+                        <img
+                            src="/img/sponsors/synergi-dark.svg"
+                            class="hidden dark:block"
+                            loading="lazy"
+                            alt="Synergi Tech logo"
+                            width="160"
+                            height="40"
+                        />
+                    </x-slot>
+
+                    <x-slot:description>
+                        Synergi Tech are an established bespoke software development agency in the UK, specialising in business management and high-growth, complex infrastructure. Proud to partner with NativePHP.
+                    </x-slot>
+                </x-home.featured-partner-card>
             </div>
         </section>
     </div>

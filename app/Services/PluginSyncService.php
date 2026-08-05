@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Jobs\GeneratePluginOgImage;
 use App\Models\Plugin;
 use App\Support\CommonMark\CommonMark;
 use Illuminate\Support\Facades\Http;
@@ -64,7 +65,7 @@ class PluginSyncService
         ];
 
         if ($composerData) {
-            if (isset($composerData['name']) && ! $plugin->name) {
+            if (! empty($composerData['name']) && $composerData['name'] !== $plugin->name) {
                 $existing = Plugin::where('name', $composerData['name'])
                     ->where('id', '!=', $plugin->id)
                     ->exists();
@@ -117,6 +118,8 @@ class PluginSyncService
         ]);
 
         $plugin->update($updateData);
+
+        GeneratePluginOgImage::dispatch($plugin);
 
         Log::info('[PluginSync] Sync complete', ['plugin_id' => $plugin->id, 'name' => $plugin->name]);
 

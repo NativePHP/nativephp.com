@@ -39,13 +39,13 @@
         </flux:button>
 
         <flux:popover class="w-64">
-            <nav class="flex max-h-80 flex-col gap-0.5 overflow-y-auto">
+            <nav class="flex max-h-96 flex-col gap-0.5 overflow-y-auto">
                 <template x-for="heading in headings" :key="heading.tocKey">
                     <a
                         :href="'#' + heading.id"
                         x-on:click.prevent="document.getElementById(heading.id)?.scrollIntoView({ behavior: 'smooth', block: 'start' })"
-                        :class="heading.level === 2 ? 'pl-2' : 'pl-5'"
-                        class="rounded-md px-2 py-1.5 text-xs transition hover:bg-zinc-100 dark:text-white/80 dark:hover:bg-zinc-700"
+                        :class="heading.level === 2 ? 'pl-2 font-semibold' : 'pl-5'"
+                        class="rounded-md px-2 py-1.5 text-sm transition hover:bg-zinc-100 dark:text-white/80 dark:hover:bg-zinc-700"
                         x-text="heading.text"
                     ></a>
                 </template>

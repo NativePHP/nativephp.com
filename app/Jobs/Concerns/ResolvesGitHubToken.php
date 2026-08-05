@@ -11,6 +11,12 @@ trait ResolvesGitHubToken
     {
         /** @var Plugin $plugin */
         $plugin = $this->plugin;
+
+        return $this->resolveGitHubTokenFor($plugin);
+    }
+
+    protected function resolveGitHubTokenFor(Plugin $plugin): ?string
+    {
         $user = $plugin->user;
 
         if ($user && $user->hasGitHubToken()) {

@@ -10,7 +10,7 @@ class RemoveExpiredDiscordRoles extends Command
 {
     protected $signature = 'discord:remove-expired-roles';
 
-    protected $description = 'Remove Discord Max role for users whose Max licenses have expired';
+    protected $description = 'Remove Discord Ultra role for users whose Max licenses or Ultra subscriptions have ended';
 
     public function handle(): int
     {
@@ -23,8 +23,8 @@ class RemoveExpiredDiscordRoles extends Command
             ->get();
 
         foreach ($users as $user) {
-            if (! $user->hasMaxAccess()) {
-                $success = $discord->removeMaxRole($user->discord_id);
+            if (! $user->hasMaxAccess() && ! $user->hasUltraAccess()) {
+                $success = $discord->removeUltraRole($user->discord_id);
 
                 if ($success) {
                     $user->update([

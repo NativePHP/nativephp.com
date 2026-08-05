@@ -121,6 +121,10 @@ class PluginResource extends Resource
 
                         Forms\Components\Toggle::make('is_active')
                             ->label('Active'),
+
+                        Forms\Components\Toggle::make('works_in_jump')
+                            ->label('Works in Jump')
+                            ->helperText('Show a badge indicating this plugin runs in the Jump preview app (i.e. it ships no custom native code)'),
                     ]),
 
                 Schemas\Components\Section::make('Review Checks')
@@ -312,6 +316,10 @@ class PluginResource extends Resource
                     ->label('Active')
                     ->sortable(),
 
+                Tables\Columns\ToggleColumn::make('works_in_jump')
+                    ->label('Jump')
+                    ->sortable(),
+
                 Tables\Columns\IconColumn::make('reviewed_at')
                     ->label('Reviewed')
                     ->boolean()
@@ -346,6 +354,8 @@ class PluginResource extends Resource
                 Tables\Filters\TernaryFilter::make('featured'),
                 Tables\Filters\TernaryFilter::make('is_active')
                     ->label('Active'),
+                Tables\Filters\TernaryFilter::make('works_in_jump')
+                    ->label('Works in Jump'),
             ])
             ->actions([
                 Actions\ActionGroup::make([
@@ -385,6 +395,7 @@ class PluginResource extends Resource
                                         ->mapWithKeys(fn (User $user) => [$user->id => "{$user->name} ({$user->email})"])
                                         ->toArray();
                                 })
+                                ->getOptionLabelUsing(fn ($value): ?string => ($user = User::find($value)) ? "{$user->name} ({$user->email})" : null)
                                 ->required(),
                         ])
                         ->action(function (Plugin $record, array $data): void {

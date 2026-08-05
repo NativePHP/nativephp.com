@@ -31,4 +31,13 @@ class PluginDirectoryTest extends TestCase
                     && $plugins->lastPage() === 2;
             });
     }
+
+    public function test_paid_plugin_card_shows_premium_badge(): void
+    {
+        Plugin::factory()->approved()->paid()->create();
+
+        Livewire::test(PluginDirectory::class)
+            ->assertSee('Premium')
+            ->assertDontSee('Paid');
+    }
 }

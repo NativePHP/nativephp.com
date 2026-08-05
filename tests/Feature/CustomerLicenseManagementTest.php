@@ -106,7 +106,8 @@ class CustomerLicenseManagementTest extends TestCase
         $response->assertSee('pro');
         $response->assertSee('test-license-key-123');
         $response->assertSee('License Information');
-        $response->assertSee('Active');
+        $response->assertDontSee('Active');
+        $response->assertDontSee('Expires');
     }
 
     public function test_customer_cannot_view_other_customers_license_details(): void
@@ -124,13 +125,14 @@ class CustomerLicenseManagementTest extends TestCase
         $response->assertStatus(404);
     }
 
-    public function test_license_status_displays_correctly(): void
+    public function test_license_index_does_not_display_status_or_expiry(): void
     {
         $user = User::factory()->create();
 
         // Active license
         $activeLicense = License::factory()->create([
             'user_id' => $user->id,
+            'key' => 'license-key-one',
             'expires_at' => now()->addDays(30),
             'is_suspended' => false,
         ]);
@@ -138,6 +140,7 @@ class CustomerLicenseManagementTest extends TestCase
         // Expired license
         $expiredLicense = License::factory()->create([
             'user_id' => $user->id,
+            'key' => 'license-key-two',
             'expires_at' => now()->subDays(1),
             'is_suspended' => false,
         ]);
@@ -145,15 +148,20 @@ class CustomerLicenseManagementTest extends TestCase
         // Suspended license
         $suspendedLicense = License::factory()->create([
             'user_id' => $user->id,
+            'key' => 'license-key-three',
             'is_suspended' => true,
         ]);
 
         $response = $this->actingAs($user)->get('/dashboard/licenses');
 
         $response->assertStatus(200);
-        $response->assertSee('Active');
-        $response->assertSee('Expired');
-        $response->assertSee('Suspended');
+        $response->assertSee('license-key-one');
+        $response->assertSee('license-key-two');
+        $response->assertSee('license-key-three');
+        $response->assertDontSee('Status');
+        $response->assertDontSee('Expires');
+        $response->assertDontSee('Expired');
+        $response->assertDontSee('Suspended');
     }
 
     public function test_customer_can_update_license_name(): void

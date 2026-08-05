@@ -5,6 +5,7 @@
     $isOldVersion = $latestVersion && (int) $version < (int) $latestVersion;
 
     if ($isOldVersion) {
+        $page = app(\App\Services\DocsVersionService::class)->resolvePageForVersion($platform, $latestVersion, $page);
         $latestPagePath = resource_path("views/docs/{$platform}/{$latestVersion}/{$page}.md");
 
         // Handle renamed paths (e.g., apis/* moved to plugins/core/*)

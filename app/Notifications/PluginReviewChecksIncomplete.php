@@ -12,7 +12,7 @@ class PluginReviewChecksIncomplete extends Notification implements ShouldQueue
 {
     use Queueable;
 
-    private const DOCS_BASE = 'https://nativephp.com/docs/mobile/3/plugins';
+    private const DOCS_BASE = 'https://nativephp.com/docs/mobile/plugins';
 
     /**
      * @var array<string, array{label: string, passing_label: string, docs_url: string, docs_label: string}>

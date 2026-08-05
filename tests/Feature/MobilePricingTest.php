@@ -11,7 +11,10 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Notification;
 use Laravel\Cashier\Cashier;
 use Livewire\Livewire;
+use Mockery;
 use PHPUnit\Framework\Attributes\Test;
+use Stripe\Exception\InvalidRequestException;
+use Stripe\StripeClient;
 use Tests\TestCase;
 
 class MobilePricingTest extends TestCase
@@ -483,5 +486,147 @@ class MobilePricingTest extends TestCase
 
         Livewire::test(MobilePricing::class)
             ->assertDontSeeHtml('wire:click="previewUpgrade"');
+    }
+
+    #[Test]
+    public function preview_upgrade_for_canceled_in_grace_subscriber_shows_degraded_preview_without_calling_stripe()
+    {
+        $user = User::factory()->create(['stripe_id' => 'cus_'.uniqid()]);
+        Auth::login($user);
+
+        $subscription = Cashier::$subscriptionModel::factory()
+            ->for($user)
+            ->active()
+            ->create([
+                'stripe_price' => self::PRO_PRICE_ID,
+                'ends_at' => now()->addDays(15),
+            ]);
+
+        Cashier::$subscriptionItemModel::factory()
+            ->for($subscription, 'subscription')
+            ->create(['stripe_price' => self::PRO_PRICE_ID]);
+
+        $stripeMock = Mockery::mock(StripeClient::class);
+        $stripeMock->shouldNotReceive('subscriptions');
+        $stripeMock->shouldNotReceive('invoices');
+
+        $this->app->bind(StripeClient::class, fn () => $stripeMock);
+
+        Livewire::test(MobilePricing::class)
+            ->set('interval', 'year')
+            ->call('previewUpgrade')
+            ->assertSet('upgradePreview.proration_pending', true)
+            ->assertSet('upgradePreview.is_prorated', true)
+            ->assertSet('upgradePreview.amount_due', null)
+            ->assertSet('upgradePreview.credit', null)
+            ->assertOk();
+    }
+
+    #[Test]
+    public function degraded_preview_uses_eap_price_for_eap_customers()
+    {
+        $user = User::factory()->create(['stripe_id' => 'cus_'.uniqid()]);
+        License::factory()->eapEligible()->withoutSubscriptionItem()->for($user)->create();
+        Auth::login($user);
+
+        $subscription = Cashier::$subscriptionModel::factory()
+            ->for($user)
+            ->active()
+            ->create([
+                'stripe_price' => self::PRO_PRICE_ID,
+                'ends_at' => now()->addDays(10),
+            ]);
+
+        Cashier::$subscriptionItemModel::factory()
+            ->for($subscription, 'subscription')
+            ->create(['stripe_price' => self::PRO_PRICE_ID]);
+
+        $eapPrice = config('subscriptions.plans.max.eap_price_yearly');
+
+        Livewire::test(MobilePricing::class)
+            ->set('interval', 'year')
+            ->call('previewUpgrade')
+            ->assertSet('upgradePreview.proration_pending', true)
+            ->assertSet('upgradePreview.new_charge', '$'.number_format($eapPrice, 2));
+    }
+
+    #[Test]
+    public function degraded_preview_renders_pending_proration_copy_in_modal()
+    {
+        $user = User::factory()->create(['stripe_id' => 'cus_'.uniqid()]);
+        Auth::login($user);
+
+        $subscription = Cashier::$subscriptionModel::factory()
+            ->for($user)
+            ->active()
+            ->create(['stripe_price' => self::PRO_PRICE_ID]);
+
+        Cashier::$subscriptionItemModel::factory()
+            ->for($subscription, 'subscription')
+            ->create(['stripe_price' => self::PRO_PRICE_ID]);
+
+        Livewire::test(MobilePricing::class)
+            ->set('upgradePreview', [
+                'amount_due' => null,
+                'raw_amount_due' => null,
+                'new_charge' => '$350.00',
+                'is_prorated' => true,
+                'credit' => null,
+                'remaining_credit' => null,
+                'proration_pending' => true,
+            ])
+            ->assertSee('pro-rated')
+            ->assertSee('$350.00')
+            ->assertSee('will be credited against this charge at checkout')
+            ->assertDontSee('Due today')
+            ->assertSee('Confirm upgrade');
+    }
+
+    #[Test]
+    public function preview_upgrade_sets_preview_to_null_when_stripe_has_no_upcoming_invoice()
+    {
+        $user = User::factory()->create(['stripe_id' => 'cus_'.uniqid()]);
+        Auth::login($user);
+
+        $subscription = Cashier::$subscriptionModel::factory()
+            ->for($user)
+            ->active()
+            ->create(['stripe_price' => self::PRO_PRICE_ID]);
+
+        Cashier::$subscriptionItemModel::factory()
+            ->for($subscription, 'subscription')
+            ->create(['stripe_price' => self::PRO_PRICE_ID]);
+
+        $stripeSubscription = (object) [
+            'items' => (object) [
+                'data' => [
+                    (object) [
+                        'id' => 'si_test_'.uniqid(),
+                        'price' => (object) [
+                            'id' => self::PRO_PRICE_ID,
+                            'recurring' => (object) ['usage_type' => 'licensed'],
+                        ],
+                    ],
+                ],
+            ],
+        ];
+
+        $subscriptionsMock = Mockery::mock();
+        $subscriptionsMock->shouldReceive('retrieve')->andReturn($stripeSubscription);
+
+        $invoicesMock = Mockery::mock();
+        $invoicesMock->shouldReceive('upcoming')
+            ->andThrow(new InvalidRequestException('No upcoming invoices for customer'));
+
+        $stripeMock = Mockery::mock(StripeClient::class);
+        $stripeMock->subscriptions = $subscriptionsMock;
+        $stripeMock->invoices = $invoicesMock;
+
+        $this->app->bind(StripeClient::class, fn () => $stripeMock);
+
+        Livewire::test(MobilePricing::class)
+            ->call('previewUpgrade')
+            ->assertSet('upgradePreview', null)
+            ->assertOk();
     }
 }

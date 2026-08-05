@@ -16,7 +16,7 @@ return new class extends Migration
             'slug' => 'nativephp-masterclass',
             'description' => 'Go from zero to published app. Learn to build native mobile and desktop applications using the PHP and Laravel skills you already have.',
             'is_active' => true,
-            'published_at' => now(),
+            'published_at' => '2026-03-07 00:00:00',
         ]);
 
         ProductPrice::create([

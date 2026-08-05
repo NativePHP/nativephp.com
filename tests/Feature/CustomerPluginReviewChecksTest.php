@@ -6,6 +6,7 @@ use App\Livewire\Customer\Plugins\Create;
 use App\Livewire\Customer\Plugins\Show;
 use App\Models\DeveloperAccount;
 use App\Models\User;
+use App\Notifications\PluginPendingReview;
 use App\Notifications\PluginSubmitted;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Http;
@@ -129,6 +130,14 @@ class CustomerPluginReviewChecksTest extends TestCase
         Notification::assertSentTo($user, PluginSubmitted::class, function (PluginSubmitted $notification) use ($plugin) {
             return $notification->plugin->id === $plugin->id;
         });
+
+        Notification::assertSentOnDemand(
+            PluginPendingReview::class,
+            function (PluginPendingReview $notification, array $channels, object $notifiable) use ($plugin) {
+                return $notifiable->routes['mail'] === 'support@nativephp.com'
+                    && $notification->plugin->id === $plugin->id;
+            }
+        );
     }
 
     /** @test */

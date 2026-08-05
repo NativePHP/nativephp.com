@@ -8,6 +8,7 @@ use App\Models\DeveloperAccount;
 use App\Models\Plugin;
 use App\Models\PluginLicense;
 use App\Models\PluginPayout;
+use App\Models\PluginPayoutAttempt;
 use App\Models\PluginPrice;
 use App\Models\User;
 use Illuminate\Support\Facades\Log;
@@ -106,14 +107,21 @@ class StripeConnectService
             return false;
         }
 
-        // Get the charge ID from the payment intent to use as source_transaction
-        // This ensures the transfer uses funds from this specific charge and waits for them to be available
-        $chargeId = $this->getChargeIdFromPayout($payout);
+        // Get the charge ID and currency from the payment intent to use as source_transaction.
+        // Stripe requires the transfer currency to match the source charge currency; FX to the
+        // connected account's payout currency is handled by Stripe on the destination side.
+        $chargeDetails = $this->getChargeDetailsFromPayout($payout);
+        $chargeId = $chargeDetails['id'] ?? null;
+        $transferCurrency = $chargeDetails['currency']
+            ?? strtolower($developerAccount->payout_currency ?? 'usd');
+
+        $payout->increment('attempt_count');
+        $payout->update(['last_attempted_at' => now()]);
 
         try {
             $transferParams = [
                 'amount' => $payout->developer_amount,
-                'currency' => strtolower($developerAccount->payout_currency ?? 'usd'),
+                'currency' => $transferCurrency,
                 'destination' => $developerAccount->stripe_connect_account_id,
                 'metadata' => [
                     'payout_id' => $payout->id,
@@ -130,10 +138,18 @@ class StripeConnectService
 
             $payout->markAsTransferred($transfer->id);
 
+            PluginPayoutAttempt::create([
+                'plugin_payout_id' => $payout->id,
+                'succeeded' => true,
+                'charge_id' => $chargeId,
+                'stripe_transfer_id' => $transfer->id,
+            ]);
+
             Log::info('Processed transfer for payout', [
                 'payout_id' => $payout->id,
                 'transfer_id' => $transfer->id,
                 'amount' => $payout->developer_amount,
+                'currency' => $transferCurrency,
                 'source_transaction' => $chargeId,
             ]);
 
@@ -145,13 +161,23 @@ class StripeConnectService
                 'error' => $e->getMessage(),
             ]);
 
-            $payout->markAsFailed();
+            $payout->markAsFailed($e->getMessage());
+
+            PluginPayoutAttempt::create([
+                'plugin_payout_id' => $payout->id,
+                'succeeded' => false,
+                'charge_id' => $chargeId,
+                'error_message' => $e->getMessage(),
+            ]);
 
             return false;
         }
     }
 
-    protected function getChargeIdFromPayout(PluginPayout $payout): ?string
+    /**
+     * @return array{id: ?string, currency: ?string}|null
+     */
+    protected function getChargeDetailsFromPayout(PluginPayout $payout): ?array
     {
         $license = $payout->pluginLicense;
 
@@ -162,9 +188,12 @@ class StripeConnectService
         try {
             $paymentIntent = Cashier::stripe()->paymentIntents->retrieve($license->stripe_payment_intent_id);
 
-            return $paymentIntent->latest_charge;
+            return [
+                'id' => $paymentIntent->latest_charge,
+                'currency' => $paymentIntent->currency,
+            ];
         } catch (\Exception $e) {
-            Log::warning('Could not retrieve charge ID from payment intent', [
+            Log::warning('Could not retrieve charge details from payment intent', [
                 'payment_intent_id' => $license->stripe_payment_intent_id,
                 'error' => $e->getMessage(),
             ]);

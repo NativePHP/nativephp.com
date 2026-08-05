@@ -3,7 +3,7 @@
 namespace App\Filament\Resources\ArticleResource\Pages;
 
 use App\Filament\Resources\ArticleResource;
-use App\Services\OgImageService;
+use App\Services\ArticleImageService;
 use Filament\Actions;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\Radio;
@@ -14,16 +14,25 @@ class EditArticle extends EditRecord
 {
     protected static string $resource = ArticleResource::class;
 
+    /**
+     * When the hero image is replaced or removed, the stored crop selections
+     * relate to the old image, so reset them to the default.
+     */
+    protected function mutateFormDataBeforeSave(array $data): array
+    {
+        if (array_key_exists('hero_image', $data) && $data['hero_image'] !== $this->record->hero_image) {
+            $data['og_image_crop'] = null;
+            $data['card_image_crop'] = null;
+            $data['header_image_crop'] = null;
+        }
+
+        return $data;
+    }
+
     protected function afterSave(): void
     {
-        $service = resolve(OgImageService::class);
-
-        // Always regenerate the OG image on update to ensure it's current
-        $ogImageUrl = $service->generate($this->record);
-
-        $this->record->update([
-            'og_image' => $ogImageUrl,
-        ]);
+        // Always regenerate the OG and card images on update to ensure they're current
+        resolve(ArticleImageService::class)->refreshImages($this->record);
     }
 
     protected function getHeaderActions(): array

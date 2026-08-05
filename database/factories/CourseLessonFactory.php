@@ -23,6 +23,7 @@ class CourseLessonFactory extends Factory
             'title' => $title,
             'slug' => Str::slug($title),
             'description' => fake()->paragraph(),
+            'notes' => null,
             'vimeo_id' => null,
             'duration_in_seconds' => fake()->numberBetween(60, 1800),
             'is_free' => false,

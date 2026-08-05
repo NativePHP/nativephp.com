@@ -47,10 +47,10 @@
                     aria-hidden="true"
                 />
                 <time
-                    datetime="2026-03-20"
+                    datetime="2026-05-18"
                     class="text-sm"
                 >
-                    March 20, 2026
+                    May 18, 2026
                 </time>
             </div>
         </header>
@@ -185,6 +185,14 @@
                 Due to the nature of the Service, no returns are accepted for
                 platform subscriptions. Refunds are offered on a case-by-case
                 basis at our sole discretion.
+            </p>
+            <p>
+                Subscription renewals are non-refundable. It is Your
+                responsibility to cancel Your subscription before the start of
+                the next billing cycle if You do not wish to renew. Once a
+                renewal has been processed, You will not be entitled to a
+                refund for that billing period, in whole or in part, regardless
+                of usage.
             </p>
 
             <h3>Plugin Purchases</h3>

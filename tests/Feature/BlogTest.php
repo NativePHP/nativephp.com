@@ -49,6 +49,17 @@ class BlogTest extends TestCase
     }
 
     #[Test]
+    public function the_blog_listing_renders_a_next_pagination_button_when_there_are_more_pages()
+    {
+        Article::factory()->count(7)->published()->create();
+
+        $this->get(route('blog'))
+            ->assertOk()
+            ->assertSee('Next')
+            ->assertSee('page=2');
+    }
+
+    #[Test]
     public function scheduled_articles_are_not_shown_on_the_blog_listing()
     {
         $article = Article::factory()->scheduled()->create();
