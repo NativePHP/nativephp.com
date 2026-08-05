@@ -22,8 +22,8 @@ You can only compile iOS apps on a Mac. This is a limitation imposed by Apple. B
 
 </aside>
 
-1. macOS (required - iOS development is only possible on an Apple silicon Mac, M1+)
-2. [Xcode 16.0 or later](https://apps.apple.com/app/xcode/id497799835)
+1. macOS 15.6 or later (required - iOS development is only possible on an Apple silicon Mac, M1+)
+2. [Xcode 26 or later](https://apps.apple.com/app/xcode/id497799835)
 3. Xcode Command Line Tools
 4. Homebrew & CocoaPods
 5. _Optional_ iOS device for testing
@@ -32,7 +32,7 @@ You can only compile iOS apps on a Mac. This is a limitation imposed by Apple. B
 
 1. **Install Xcode**
    - Download from the [Mac App Store](https://apps.apple.com/app/xcode/id497799835)
-   - Minimum version: Xcode 16.0
+   - Minimum version: Xcode 26 (requires macOS 15.6 or later)
 
 2. **Install Xcode Command Line Tools**
    ```shell
