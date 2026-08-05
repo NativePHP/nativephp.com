@@ -373,7 +373,7 @@ a locale block automatically falls back to the value from `permissions` (`Info.p
 </aside>
 
 Plugins can ship their own per-locale strings — see
-[Permissions & Dependencies](../plugins/permissions-dependencies#localizing-info-plist-strings) — and
+[Permissions & Dependencies](../plugins/permissions-dependencies#localizing-infoplist-strings) — and
 app-level entries always win on key collisions, same as the merge rules for flat `permissions`.
 
 ## App Store Connect
