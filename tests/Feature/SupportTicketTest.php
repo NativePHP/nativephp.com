@@ -23,6 +23,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Js;
 use Laravel\Cashier\Subscription;
 use Livewire\Livewire;
 use PHPUnit\Framework\Attributes\Test;
@@ -1341,6 +1342,99 @@ class SupportTicketTest extends TestCase
 
         $this->assertMatchesRegularExpression('/<thead><tr><th[^>]*>Package<\/th><th[^>]*>Version<\/th><\/tr><\/thead>/', $html);
         $this->assertMatchesRegularExpression('/<tr><td[^>]*>camera<\/td><td[^>]*>1\.0\.2<\/td><\/tr>/', $html);
+    }
+
+    #[Test]
+    public function ticket_message_as_markdown_leaves_plain_markdown_untouched(): void
+    {
+        $message = "**What I was trying to do:**\nDeploy quickly\n\n**What happened instead:**\nIt crashed";
+
+        $this->assertSame($message, SupportTicketResource::ticketMessageAsMarkdown($message));
+    }
+
+    #[Test]
+    public function ticket_message_as_markdown_converts_headerless_ascii_table_to_markdown_table(): void
+    {
+        $message = "Intro line\n+--------------------+---------+\n| Package Version    | 3.3.3   |\n"
+            ."| PHP Version (Host) | 8.4.16  |\n+--------------------+---------+\nOutro line";
+
+        $markdown = SupportTicketResource::ticketMessageAsMarkdown($message);
+
+        $this->assertSame(
+            "Intro line\n\n|  |  |\n| --- | --- |\n| Package Version | 3.3.3 |\n| PHP Version (Host) | 8.4.16 |\n\nOutro line",
+            $markdown
+        );
+    }
+
+    #[Test]
+    public function ticket_message_as_markdown_uses_the_first_row_as_a_header_when_separated(): void
+    {
+        $message = "+----------+---------+\n| Package  | Version |\n+----------+---------+\n"
+            ."| camera   | 1.0.2   |\n| jump     | 2.1.0   |\n+----------+---------+";
+
+        $markdown = SupportTicketResource::ticketMessageAsMarkdown($message);
+
+        $this->assertSame(
+            "| Package | Version |\n| --- | --- |\n| camera | 1.0.2 |\n| jump | 2.1.0 |",
+            $markdown
+        );
+    }
+
+    #[Test]
+    public function ticket_message_as_markdown_pads_ragged_rows_to_the_widest_row(): void
+    {
+        $message = "+---+---+---+\n| a | b | c |\n| d | e |\n+---+---+---+";
+
+        $markdown = SupportTicketResource::ticketMessageAsMarkdown($message);
+
+        $this->assertSame(
+            "|  |  |  |\n| --- | --- | --- |\n| a | b | c |\n| d | e |  |",
+            $markdown
+        );
+    }
+
+    #[Test]
+    public function ticket_message_as_markdown_leaves_pipe_lines_that_are_not_tables_alone(): void
+    {
+        $message = "Before\n+------+\nAfter";
+
+        $this->assertSame($message, SupportTicketResource::ticketMessageAsMarkdown($message));
+    }
+
+    #[Test]
+    public function admin_view_page_offers_a_copy_as_markdown_button_for_the_initial_message(): void
+    {
+        $admin = User::factory()->create(['email' => 'admin@test.com']);
+        config(['filament.users' => ['admin@test.com']]);
+
+        $ticket = SupportTicket::factory()->create([
+            'message' => "**Environment:**\n+---------+-------+\n| Package | 3.3.3 |\n+---------+-------+",
+        ]);
+
+        $html = Livewire::actingAs($admin)
+            ->test(ViewSupportTicket::class, ['record' => $ticket->getRouteKey()])
+            ->assertOk()
+            ->assertSee('Copy as Markdown')
+            ->html();
+
+        $expectedMarkdown = (string) Js::from("**Environment:**\n\n|  |  |\n| --- | --- |\n| Package | 3.3.3 |");
+
+        $this->assertStringContainsString('window.navigator.clipboard.writeText(', $html);
+        $this->assertStringContainsString($expectedMarkdown, $html);
+    }
+
+    #[Test]
+    public function admin_view_page_hides_the_copy_as_markdown_button_when_there_is_no_message(): void
+    {
+        $admin = User::factory()->create(['email' => 'admin@test.com']);
+        config(['filament.users' => ['admin@test.com']]);
+
+        $ticket = SupportTicket::factory()->create(['message' => '']);
+
+        Livewire::actingAs($admin)
+            ->test(ViewSupportTicket::class, ['record' => $ticket->getRouteKey()])
+            ->assertOk()
+            ->assertDontSee('Copy as Markdown');
     }
 
     #[Test]
