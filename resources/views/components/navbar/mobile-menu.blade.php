@@ -107,7 +107,6 @@
                     $isUltraActive = request()->routeIs('pricing');
                     $isBlogActive = request()->routeIs('blog*');
                     $isPartnersActive = request()->routeIs('partners*');
-                    $isServicesActive = request()->routeIs('consulting');
                     $isBuildActive = request()->routeIs('build-my-app');
                     $isCourseActive = request()->routeIs('course');
                     $isSupportActive = request()->routeIs('support.*');
@@ -239,31 +238,6 @@
                         @endif
 
                         <div>Sponsor</div>
-                    </a>
-                </div>
-
-                {{-- Consulting Link (mobile only, shown in navbar on desktop) --}}
-                <div class="lg:hidden">
-                    <a
-                        href="{{ route('consulting') }}"
-                        @class([
-                            'flex items-center gap-2 py-3 transition duration-200',
-                            'font-medium' => $isServicesActive,
-                            'opacity-70 hover:translate-x-1 hover:opacity-100 dark:opacity-50' => ! $isServicesActive,
-                        ])
-                        aria-current="{{ $isServicesActive ? 'page' : 'false' }}"
-                    >
-                        @if ($isServicesActive)
-                            <x-icons.right-arrow
-                                class="size-4 shrink-0"
-                                aria-hidden="true"
-                                focusable="false"
-                            />
-                        @endif
-
-                        <div class="inline-flex items-center gap-2">
-                            Consulting
-                        </div>
                     </a>
                 </div>
 
