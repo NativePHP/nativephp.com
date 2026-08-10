@@ -13,6 +13,10 @@ php artisan native:plugin:create
 
 This walks you through naming, namespace selection, and feature options, then generates a complete plugin structure.
 
+The first prompt asks which kind of plugin you're building. A **system plugin** adds native capabilities you call from
+PHP — the rest of this page. A **UI component plugin** adds new EDGE elements rendered by your own SwiftUI and Compose
+code; see [UI Component Plugins](./ui-components) for that path.
+
 <aside>
 
 #### Build Plugins 10x Faster
