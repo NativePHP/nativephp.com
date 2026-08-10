@@ -56,6 +56,14 @@ these docs for two reasons:
 
 Drop the prefix for terser templates whenever you prefer — both forms are fully supported.
 
+## Building your own
+
+The components in this section are shipped by a plugin — `nativephp/mobile-ui` — using the same public mechanism your
+own packages can use. If you need an element EDGE doesn't have, a
+[UI component plugin](../plugins/ui-components) adds a new element type backed by your own SwiftUI view and Compose
+composable. If you only need a reusable arrangement of existing elements, reach for a
+[nested component](../the-basics/nested-components) instead — no native code required.
+
 ## Why Blade?
 
 Blade is an expressive and straightforward templating language that is very familiar to most Laravel users, and also

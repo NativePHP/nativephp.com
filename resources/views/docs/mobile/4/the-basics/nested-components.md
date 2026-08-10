@@ -87,6 +87,10 @@ called `Column`.
 
 </aside>
 
+A Composer package can register components the same way from its own service provider's `boot()` — that's the
+lightest way to distribute reusable UI. When you need a genuinely new element rather than an arrangement of existing
+ones, see [UI Component Plugins](../plugins/ui-components).
+
 ## Props
 
 Tag attributes assign to the child's matching public properties:

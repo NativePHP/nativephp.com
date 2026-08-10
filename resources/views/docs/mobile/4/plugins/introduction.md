@@ -32,6 +32,7 @@ Plugins have full access to native platform capabilities:
 
 - **Bridge functions** — Call Swift/Kotlin code from PHP and get results back
 - **Events** — Dispatch events from native code to your components
+- **UI components** — Add new EDGE elements backed by your own SwiftUI views and Compose composables
 - **Permissions** — Declare required permissions (camera, location, etc.)
 - **Dependencies** — Include native libraries via Gradle, CocoaPods, or Swift Package Manager
 - **Custom repositories** — Use private Maven repos for enterprise SDKs
@@ -63,7 +64,9 @@ components. It's the same model you're already using.
 
 ## Getting Started
 
-Ready to build your own plugin? Check out [Creating Plugins](./creating-plugins) for the full guide.
+Ready to build your own plugin? Check out [Creating Plugins](./creating-plugins) for the full guide, or
+[UI Component Plugins](./ui-components) if what you want to add is a new native element rather than a native
+capability.
 
 Or browse the [NativePHP Plugin Marketplace](https://nativephp.com/plugins) for ready-made plugins and the Dev Kit
 to build your own.
