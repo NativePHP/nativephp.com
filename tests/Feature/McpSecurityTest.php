@@ -53,6 +53,20 @@ class McpSecurityTest extends TestCase
         $response->assertStatus(404);
     }
 
+    public function test_page_api_rejects_traversal_hidden_in_a_nested_section(): void
+    {
+        $response = $this->getJson('/api/mcp/page/mobile/4/plugins/../../../../../../etc/passwd');
+
+        $response->assertStatus(404);
+    }
+
+    public function test_page_api_rejects_an_absolute_looking_section(): void
+    {
+        $response = $this->getJson('/api/mcp/page/mobile/4//etc/passwd');
+
+        $response->assertStatus(404);
+    }
+
     public function test_apis_endpoint_rejects_invalid_platform(): void
     {
         $response = $this->getJson('/api/mcp/apis/../1');

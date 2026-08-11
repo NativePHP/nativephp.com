@@ -227,6 +227,7 @@ Route::view('build-my-app', 'build-my-app')->name('build-my-app');
 Route::view('consulting', 'consulting')->name('consulting');
 Route::view('the-vibes', 'the-vibes')->name('the-vibes');
 Route::view('the-vibes-prospectus', 'the-vibes-prospectus')->name('the-vibes-prospectus');
+Route::view('mcp', 'mcp')->name('mcp');
 
 // Public plugin directory routes
 Route::middleware(EnsureFeaturesAreActive::using(ShowPlugins::class))->group(function (): void {
