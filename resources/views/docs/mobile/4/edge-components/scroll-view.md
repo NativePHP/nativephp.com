@@ -147,6 +147,40 @@ stretches across the full screen width.
 
 </aside>
 
+### Centering short content
+
+A login screen, an empty state, a confirmation — content that should sit in the middle of the page but must still
+scroll once the keyboard appears or the content grows.
+
+Give the scroll view's child `fill`. It then stretches to at least the height of the scroll view's visible area, which
+is what gives `justify-center` room to work:
+
+@verbatim
+```blade static
+<native:scroll-view fill class="bg-theme-background">
+    <native:column fill class="w-full items-center justify-center p-6 gap-4">
+        <native:column class="w-full max-w-[360px] bg-theme-surface rounded-2xl p-6 gap-4">
+            <native:text class="text-2xl font-bold">Welcome back</native:text>
+            <native:outlined-text-input native:model="email" label="Email" keyboard="email" />
+            <native:outlined-text-input native:model="password" label="Password" secure />
+            <native:button class="w-full">Sign in</native:button>
+        </native:column>
+    </native:column>
+</native:scroll-view>
+```
+@endverbatim
+
+<aside>
+
+`fill` inside a scroll view is a **minimum**, not a fixed height — the same as `min-height: 100%` on the web. Content
+taller than the visible area still grows and scrolls normally, so this is safe to use even when you're not sure how
+tall the content will end up.
+
+Without `fill` on that child, the column hugs its own content and `justify-center` has nothing to distribute, leaving
+everything pinned to the top.
+
+</aside>
+
 ## Element
 
 ```php

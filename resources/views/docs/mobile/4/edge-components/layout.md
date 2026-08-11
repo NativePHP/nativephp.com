@@ -154,12 +154,25 @@ Labels map to these integers, which still work if you prefer them (`align-items=
 
 | Integer | `align-items` / `align-self` | `justify-content` |
 |---------|------------------------------|-------------------|
-| `0` | start | start |
+| `0` | *unset* — see below | start |
 | `1` | center | center |
 | `2` | end | end |
 | `3` | stretch | space-between |
-| `4` | — | space-around |
+| `4` | start | space-around |
 | `5` | — | space-evenly |
+
+<aside>
+
+For `align-items` and `align-self`, `0` means **unset** — not `start`. Start is `4`.
+
+The renderers have to tell an element that explicitly asked for `items-start` apart from one that never specified
+an alignment at all, because the two mean different things. Sharing a value made the first impossible to fix
+without changing the second for every element in every app.
+
+Passing `align-items="0"` therefore resolves to nothing and leaves the platform default in place. Use the label
+(`align-items="start"`) or the enum rather than the integer — they are unambiguous.
+
+</aside>
 
 ### In PHP
 
@@ -202,7 +215,8 @@ Visual styling attributes that apply to any element.
 @endverbatim
 
 - `bg` - Background color as hex string (e.g. `"#FF0000"`, `"#80FF000080"` for alpha)
-- `border-radius` - Corner rounding in dp (float)
+- `border-radius` - Corner rounding in dp (float). Applies to all four corners — for per-side or per-corner
+  rounding, use the `rounded-*` classes below
 - `border-width` - Border width in dp (float). Must be used together with `border-color`
 - `border-color` - Border color as hex string. Must be used together with `border-width`
 - `opacity` - Element opacity from 0.0 to 1.0 (float)
@@ -299,6 +313,7 @@ The parser recognizes the classes listed below.
 |----------|---------|
 | Width | `w-full`, `w-N`, fractional (`w-1/2`, `w-1/3`, `w-2/3`, `w-1/4`, `w-3/4`, `w-1/5`…), arbitrary `w-[N]` |
 | Height | `h-full`, `h-N`, arbitrary `h-[N]` |
+| Min / max size | `min-w-N`, `max-w-N`, `min-h-N`, `max-h-N`, `max-w-none`, the container scale on `max-w` (`max-w-xs` … `max-w-7xl`), arbitrary `max-w-[N]` etc. |
 | Aspect ratio | `aspect-square`, `aspect-video`, arbitrary `aspect-[N]` |
 | Object fit (images) | `object-contain`, `object-cover`, `object-fill`, `object-none`, `object-scale-down` |
 | Padding | `p-N`, `px-N`, `py-N`, `pt-N`, `pr-N`, `pb-N`, `pl-N`, arbitrary `p-[N]` etc. |
@@ -314,6 +329,8 @@ The parser recognizes the classes listed below.
 | Border color | `border-{palette}-{shade}`, `border-white`, `border-black`, `border-transparent`, `border-[#hex]`, `border-theme-{token}` |
 | Border width | `border` (1dp), `border-2`, `border-4`, `border-8` |
 | Rounded | `rounded` (4dp), `rounded-sm`, `rounded-md`, `rounded-lg`, `rounded-xl`, `rounded-2xl`, `rounded-3xl`, `rounded-full`, `rounded-[N]` |
+| Rounded (per side) | `rounded-t-*`, `rounded-r-*`, `rounded-b-*`, `rounded-l-*` — each rounds that side's two corners. A bare side (`rounded-b`) uses the same 4dp default as `rounded` |
+| Rounded (per corner) | `rounded-tl-*`, `rounded-tr-*`, `rounded-br-*`, `rounded-bl-*`, including arbitrary values (`rounded-br-[4]`) |
 | Shadow | `shadow`, `shadow-sm`, `shadow-md`, `shadow-lg`, `shadow-xl`, `shadow-2xl`, `shadow-inner`, `shadow-none` |
 | Opacity | `opacity-{0..100}`, arbitrary `opacity-[0.5]` |
 | Text size | `text-xs`, `text-sm`, `text-base`, `text-lg`, `text-xl`, `text-2xl`, `text-3xl`, `text-4xl`, `text-5xl`, `text-6xl`, arbitrary `text-[N]` |
@@ -346,9 +363,32 @@ bg-purple-500/40      bg-[#FF0000]/60      text-white/80
 border-theme-outline/50
 ```
 
-**Arbitrary values** — `prefix-[value]` for the prefixes shown above: `w`, `h`, `p`/`px`/`py`/`pt`/`pr`/`pb`/`pl`,
-`m`/`mx`/`my`/`mt`/`mr`/`mb`/`ml`, `gap`, `bg`, `text`, `border`, `rounded`, `opacity`, `leading`, `aspect`, `top`,
+**Arbitrary values** — `prefix-[value]` for the prefixes shown above: `w`, `h`, `min-w`/`max-w`/`min-h`/`max-h`,
+`p`/`px`/`py`/`pt`/`pr`/`pb`/`pl`, `m`/`mx`/`my`/`mt`/`mr`/`mb`/`ml`, `gap`, `bg`, `text`, `border`, `rounded`
+(and its per-side / per-corner forms — `rounded-t`, `rounded-br`, …), `opacity`, `leading`, `aspect`, `top`,
 `right`, `bottom`, `left`.
+
+Per-corner rounding composes with the uniform class rather than replacing it — set the shape once, then override the
+corners you want different. Class order doesn't matter; the more specific class always wins, as it does in Tailwind:
+
+@verbatim
+```blade static
+{{-- A chat bubble with its tail corner squared off toward its sender --}}
+<native:column class="rounded-2xl rounded-br-none bg-theme-primary px-4 py-2">
+    <native:text class="text-theme-on-primary">Yep — 7pm works</native:text>
+</native:column>
+```
+@endverbatim
+
+### Deliberately unsupported
+
+A handful of Tailwind classes are recognised as real Tailwind but left unparsed on purpose, rather than mapped to
+something approximate. They are reported in the dropped-class log in debug builds:
+
+| Class | Why | Use instead |
+|-------|-----|-------------|
+| `max-w-full`, `max-w-screen`, `min-w-full` | Min and max ride the wire as plain numbers with no accompanying size mode, so "100% of the parent" has nowhere to go | `w-full` |
+| `rounded-s-*`, `rounded-e-*`, `rounded-ss-*`, `rounded-se-*`, `rounded-es-*`, `rounded-ee-*` | These are *logical* corners that flip with writing direction, and the renderers do not mirror layout for RTL — accepting them would silently draw left-to-right geometry in a right-to-left layout | the physical `rounded-l-*` / `rounded-tl-*` forms |
 
 <aside>
 

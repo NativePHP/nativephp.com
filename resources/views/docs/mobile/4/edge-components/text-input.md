@@ -59,7 +59,10 @@ All three variants accept the same shared prop set. The bare variant adds a `col
 ### Behavior
 
 - `keyboard` - Keyboard hint string: `text` (default), `number`, `email`, `phone`, `url`, `decimal`, `password`,
-  `numberPassword`. On iOS `password` uses the standard keyboard; `secure` is the masking mechanism
+  `numberPassword`. On iOS `password` uses the standard keyboard; `secure` is the masking mechanism. The keyboard
+  type also decides capitalization and autocorrect — see [Capitalization](#capitalization)
+- `autocapitalize` - Override that capitalization: `none`, `sentences`, `words`, or `characters` (HTML's
+  vocabulary). Leave it unset to let `keyboard` decide (optional, string)
 - `secure` - Mask input for passwords (optional, boolean, default: `false`)
 - `multiline` - Allow multiple lines (optional, boolean, default: `false`)
 - `max-length` - Maximum character count (optional, int)
@@ -95,6 +98,43 @@ All three variants accept the same shared prop set. The bare variant adds a `col
 - `size` - `sm | md (default) | lg`
 - `a11y-label` - Accessibility label (optional)
 - `a11y-hint` - Accessibility hint (optional)
+
+## Capitalization
+
+Declaring a `keyboard` type carries its typing behaviour with it, not just the key layout. Fields whose content is
+case-sensitive or non-alphabetic never capitalize, and never autocorrect:
+
+| `keyboard` | Capitalization | Autocorrect |
+|------------|----------------|-------------|
+| `text` (default) | sentences on iOS, none on Android | on |
+| `email`, `url` | none | off |
+| `number`, `decimal`, `phone`, `password`, `numberPassword` | none | off |
+
+@verbatim
+```blade static
+{{-- Email keyboard AND no capitalized first letter — no extra attribute needed --}}
+<native:outlined-text-input native:model="email" label="Email" keyboard="email" />
+```
+@endverbatim
+
+Use `autocapitalize` for the cases a keyboard type can't imply:
+
+@verbatim
+```blade static
+<native:outlined-text-input native:model="name" label="Full name" autocapitalize="words" />
+<native:outlined-text-input native:model="code" label="Booking reference" autocapitalize="characters" />
+```
+@endverbatim
+
+`autocapitalize` always wins over the derived value, and an unrecognised value falls back to the derived behaviour
+rather than erroring.
+
+<aside>
+
+A plain text field with neither attribute set capitalizes sentences on iOS and nothing on Android — each platform's
+own default, left as-is. Set `autocapitalize` explicitly when you need the two to match.
+
+</aside>
 
 ## Events
 
