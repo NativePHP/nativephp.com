@@ -6,61 +6,12 @@ use App\Http\Requests\McpSearchRequest;
 use App\Services\DocsSearchService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Sleep;
-use Illuminate\Support\Str;
-use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class McpController extends Controller
 {
     public function __construct(
         protected DocsSearchService $docsSearch
     ) {}
-
-    /**
-     * SSE endpoint for MCP clients
-     */
-    public function sse(Request $request): StreamedResponse
-    {
-        $sessionId = Str::uuid()->toString();
-
-        return response()->stream(function () use ($sessionId): void {
-            // Send session info
-            $this->sendSseEvent([
-                'type' => 'session',
-                'sessionId' => $sessionId,
-            ]);
-
-            // Send server info
-            $this->sendSseEvent([
-                'type' => 'serverInfo',
-                'name' => 'nativephp-docs',
-                'version' => '1.0.0',
-                'capabilities' => ['tools' => new \stdClass],
-            ]);
-
-            // Send available tools
-            $this->sendSseEvent([
-                'type' => 'tools',
-                'tools' => $this->getToolDefinitions(),
-            ]);
-
-            // Keep connection alive
-            while (true) {
-                if (connection_aborted()) {
-                    break;
-                }
-                echo ": keepalive\n\n";
-                ob_flush();
-                flush();
-                Sleep::sleep(30);
-            }
-        }, 200, [
-            'Content-Type' => 'text/event-stream',
-            'Cache-Control' => 'no-cache',
-            'Connection' => 'keep-alive',
-            'X-Accel-Buffering' => 'no',
-        ]);
-    }
 
     /**
      * JSON-RPC message endpoint for tool calls
@@ -129,9 +80,9 @@ class McpController extends Controller
         return response()->json(['results' => $results]);
     }
 
-    public function pageApi(string $platform, string $version, string $section, string $slug): JsonResponse
+    public function pageApi(string $platform, string $version, string $path): JsonResponse
     {
-        $page = $this->docsSearch->getPage($platform, $version, $section, $slug);
+        $page = $this->docsSearch->getPageByPath("{$platform}/{$version}/{$path}");
 
         if (! $page) {
             return response()->json(['error' => 'Page not found'], 404);
@@ -188,7 +139,7 @@ class McpController extends Controller
             ],
             [
                 'name' => 'get_page',
-                'description' => 'Get full content of a documentation page by path (e.g., "mobile/3/apis/camera")',
+                'description' => 'Get full content of a documentation page by path (e.g., "mobile/4/plugins/core/camera")',
                 'inputSchema' => [
                     'type' => 'object',
                     'properties' => [
@@ -369,12 +320,5 @@ class McpController extends Controller
         return [
             'content' => [['type' => 'text', 'text' => "# {$platform} v{$version} Navigation\n\n{$formatted}"]],
         ];
-    }
-
-    protected function sendSseEvent(array $data): void
-    {
-        echo 'data: '.json_encode($data)."\n\n";
-        ob_flush();
-        flush();
     }
 }

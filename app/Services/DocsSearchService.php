@@ -49,7 +49,7 @@ class DocsSearchService
     {
         $platform = $this->sanitizePlatform($platform);
         $version = $this->sanitizeVersion($version);
-        $section = $this->sanitizePathSegment($section);
+        $section = $this->sanitizeSectionPath($section);
         $slug = $this->sanitizePathSegment($slug);
 
         if (! $platform || ! $version || ! $section || ! $slug) {
@@ -65,6 +65,11 @@ class DocsSearchService
         return $this->parsePage($filePath, $platform, $version, $section);
     }
 
+    /**
+     * Resolve a page from a `platform/version/section/slug` path. The section
+     * may itself be nested (e.g. `mobile/4/plugins/core/camera`), so anything
+     * between the version and the slug is treated as the section path.
+     */
     public function getPageByPath(string $path): ?array
     {
         $parts = explode('/', $path);
@@ -73,7 +78,11 @@ class DocsSearchService
             return null;
         }
 
-        return $this->getPage($parts[0], $parts[1], $parts[2], $parts[3]);
+        $platform = array_shift($parts);
+        $version = array_shift($parts);
+        $slug = array_pop($parts);
+
+        return $this->getPage($platform, $version, implode('/', $parts), $slug);
     }
 
     public function listApis(string $platform, string $version): array
@@ -150,7 +159,7 @@ class DocsSearchService
             foreach (glob("{$base}/{$slug}/*/_index.md") ?: [] as $nested) {
                 $nestedSlug = basename(dirname($nested));
                 $nestedOrder = YamlFrontMatter::parse(file_get_contents($nested))->matter('order') ?? 9999;
-                $rank[$nestedSlug] = $rank[$slug] + 1 + min($nestedOrder, 9998);
+                $rank["{$slug}/{$nestedSlug}"] = $rank[$slug] + 1 + min($nestedOrder, 9998);
             }
         }
 
@@ -202,7 +211,9 @@ class DocsSearchService
             return [];
         }
 
-        $cacheKey = 'mcp_docs_pages_'.($platform ?? 'all').'_'.($version ?? 'all');
+        // v2 keys: page ids now carry the full section path, so entries cached
+        // under the old shape must not be reused after a deploy.
+        $cacheKey = 'mcp_docs_pages_v2_'.($platform ?? 'all').'_'.($version ?? 'all');
 
         if (config('app.env') !== 'local') {
             $cached = Cache::get($cacheKey);
@@ -232,7 +243,10 @@ class DocsSearchService
                     ->in($versionPath);
 
                 foreach ($finder as $file) {
-                    $section = basename(dirname($file->getPathname()));
+                    // Relative to the version directory, so a page nested in a
+                    // subsection keeps its full section path (`plugins/core`)
+                    // and the ids we hand out stay resolvable by getPage().
+                    $section = $file->getRelativePath();
                     $page = $this->parsePage($file->getPathname(), $plat, $ver, $section);
                     if ($page) {
                         $pages[] = $page;
@@ -391,6 +405,27 @@ class DocsSearchService
         }
 
         return preg_match('/^[0-9]+$/', $version) ? $version : null;
+    }
+
+    /**
+     * Validate a section path, which may nest (e.g. `plugins/core`). Every
+     * segment is checked on its own so traversal can't hide behind a separator.
+     */
+    protected function sanitizeSectionPath(?string $section): ?string
+    {
+        if ($section === null || $section === '') {
+            return null;
+        }
+
+        $segments = explode('/', $section);
+
+        foreach ($segments as $segment) {
+            if (! $this->sanitizePathSegment($segment)) {
+                return null;
+            }
+        }
+
+        return implode('/', $segments);
     }
 
     protected function sanitizePathSegment(?string $segment): ?string
