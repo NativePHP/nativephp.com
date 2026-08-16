@@ -46,7 +46,7 @@ rather than receiving it from a client, and the difference is observable.
 | Authenticated user | The launch request's user resolver, so `auth()->user()` is the real user |
 | Cookies | Copied from the launch request |
 | Server bag | Copied from the launch request |
-| Route | Bound via `setRouteResolver()`, so `$request->route()` works |
+| Route | Bound to the request, so `$request->route()`, its parameters, and route-model binding all resolve |
 
 **Not carried:**
 
@@ -74,6 +74,11 @@ response that is never sent anywhere:
 - `ShareErrorsFromSession`
 
 Everything else runs, including anything in your `web` group that isn't on that list.
+
+That last point is easy to miss: registering your native routes with `withRouting(web: __DIR__.'/../routes/mobile.php')`
+— the usual setup — puts **every** native route in the `web` group. So `SubstituteBindings` runs on every
+navigation, which is why route-model binding resolves on the synthesized request. If you have added your own
+middleware to the `web` group, it runs on every navigation too.
 
 ## Opting your own middleware out
 
