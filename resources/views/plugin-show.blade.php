@@ -246,7 +246,7 @@
                         aria-labelledby="plugin-title"
                     >
                         @if ($plugin->readme_html)
-                            {!! $plugin->readme_html !!}
+                            {!! $plugin->rendered_readme_html !!}
                         @else
                             <div class="rounded-xl border border-gray-200 bg-gray-50 p-8 text-center dark:border-gray-700 dark:bg-slate-800/50">
                                 <p class="text-gray-500 dark:text-gray-400">
@@ -403,7 +403,7 @@
                             <dt class="text-xs font-medium text-gray-500 dark:text-gray-400">License</dt>
                             <dd class="mt-1">
                                 @if ($plugin->getLicense())
-                                    @if ($plugin->isPaid() && $plugin->license_html)
+                                    @if ($plugin->hasLicensePage())
                                         <a
                                             href="{{ route('plugins.license', $plugin->routeParams()) }}"
                                             class="inline-flex items-center gap-1 text-sm font-medium text-indigo-600 hover:text-indigo-700 dark:text-indigo-400 dark:hover:text-indigo-300"
@@ -473,13 +473,14 @@
                                     @elseif (filter_var($plugin->support_channel, FILTER_VALIDATE_EMAIL))
                                         <a
                                             href="mailto:{{ $plugin->support_channel }}"
-                                            class="inline-flex items-center gap-1 text-sm font-medium text-indigo-600 hover:text-indigo-700 dark:text-indigo-400 dark:hover:text-indigo-300"
+                                            title="{{ $plugin->support_channel }}"
+                                            class="inline-flex max-w-full items-center gap-1 text-sm font-medium text-indigo-600 hover:text-indigo-700 dark:text-indigo-400 dark:hover:text-indigo-300"
                                         >
-                                            {{ $plugin->support_channel }}
-                                            <x-heroicon-o-envelope class="size-3" />
+                                            <span class="truncate">{{ $plugin->support_channel }}</span>
+                                            <x-heroicon-o-envelope class="size-3 shrink-0" />
                                         </a>
                                     @else
-                                        <span class="text-sm font-medium text-gray-900 dark:text-white">{{ $plugin->support_channel }}</span>
+                                        <span class="block truncate text-sm font-medium text-gray-900 dark:text-white" title="{{ $plugin->support_channel }}">{{ $plugin->support_channel }}</span>
                                     @endif
                                 </dd>
                             </div>
