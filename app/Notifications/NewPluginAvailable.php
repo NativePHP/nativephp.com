@@ -19,6 +19,9 @@ class NewPluginAvailable extends Notification implements ShouldQueue
     ) {}
 
     /**
+     * New plugins are announced in-app only. Emailing every opted-in user on
+     * every approval was far too much mail for something that isn't urgent.
+     *
      * @return array<int, string>
      */
     public function via(object $notifiable): array
@@ -27,7 +30,7 @@ class NewPluginAvailable extends Notification implements ShouldQueue
             return [];
         }
 
-        return ['mail', 'database'];
+        return ['database'];
     }
 
     public function toMail(object $notifiable): MailMessage

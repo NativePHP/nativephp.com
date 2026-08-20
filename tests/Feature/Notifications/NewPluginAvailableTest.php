@@ -64,14 +64,26 @@ class NewPluginAvailableTest extends TestCase
         $this->assertEmpty($notification->via($user));
     }
 
-    public function test_via_returns_mail_and_database_when_user_opted_in(): void
+    public function test_via_returns_database_only_when_user_opted_in(): void
     {
         $user = User::factory()->create(['receives_new_plugin_notifications' => true]);
         $plugin = Plugin::factory()->for($user)->create();
 
         $notification = new NewPluginAvailable($plugin);
 
-        $this->assertEquals(['mail', 'database'], $notification->via($user));
+        $this->assertEquals(['database'], $notification->via($user));
+    }
+
+    public function test_via_never_includes_the_mail_channel(): void
+    {
+        $optedIn = User::factory()->create(['receives_new_plugin_notifications' => true]);
+        $optedOut = User::factory()->create(['receives_new_plugin_notifications' => false]);
+        $plugin = Plugin::factory()->create();
+
+        $notification = new NewPluginAvailable($plugin);
+
+        $this->assertNotContains('mail', $notification->via($optedIn));
+        $this->assertNotContains('mail', $notification->via($optedOut));
     }
 
     public function test_mail_contains_plugin_name(): void

@@ -4,6 +4,7 @@ namespace Tests\Feature\Filament;
 
 use App\Filament\Resources\PluginResource;
 use App\Filament\Resources\PluginResource\Pages\EditPlugin;
+use App\Filament\Resources\PluginResource\Pages\ListPlugins;
 use App\Filament\Resources\UserResource;
 use App\Models\Plugin;
 use App\Models\User;
@@ -127,6 +128,21 @@ class PluginResourceTest extends TestCase
 
         $response->assertOk();
         $response->assertSee('https://github.com/acme/free-license-222/blob/main/LICENSE');
+    }
+
+    public function test_plugins_table_can_be_sorted_by_approved_at(): void
+    {
+        $oldest = Plugin::factory()->approved()->create(['approved_at' => now()->subDays(10)]);
+        $newest = Plugin::factory()->approved()->create(['approved_at' => now()->subDay()]);
+        $middle = Plugin::factory()->approved()->create(['approved_at' => now()->subDays(5)]);
+
+        Livewire::actingAs($this->admin)
+            ->test(ListPlugins::class)
+            ->assertCanRenderTableColumn('approved_at')
+            ->sortTable('approved_at', 'desc')
+            ->assertCanSeeTableRecords([$newest, $middle, $oldest], inOrder: true)
+            ->sortTable('approved_at', 'asc')
+            ->assertCanSeeTableRecords([$oldest, $middle, $newest], inOrder: true);
     }
 
     public function test_submission_info_shows_go_to_user_action(): void

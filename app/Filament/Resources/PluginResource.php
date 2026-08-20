@@ -339,6 +339,12 @@ class PluginResource extends Resource
                     ->label('Submitted')
                     ->dateTime()
                     ->sortable(),
+
+                Tables\Columns\TextColumn::make('approved_at')
+                    ->label('Approved')
+                    ->dateTime()
+                    ->placeholder('-')
+                    ->sortable(),
             ])
             ->filters([
                 Tables\Filters\SelectFilter::make('status')
