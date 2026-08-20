@@ -24,7 +24,7 @@ class NewPluginAvailableTest extends TestCase
         });
     }
 
-    public function test_notification_job_is_dispatched_on_first_approval(): void
+    public function test_notification_job_is_not_dispatched_on_first_approval(): void
     {
         Bus::fake(SendNewPluginNotifications::class);
 
@@ -34,9 +34,7 @@ class NewPluginAvailableTest extends TestCase
 
         $plugin->approve($admin->id);
 
-        Bus::assertDispatched(SendNewPluginNotifications::class, function ($job) use ($plugin) {
-            return $job->plugin->id === $plugin->id;
-        });
+        Bus::assertNotDispatched(SendNewPluginNotifications::class);
     }
 
     public function test_notification_job_is_not_dispatched_on_re_approval(): void
