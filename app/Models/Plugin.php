@@ -7,6 +7,7 @@ use App\Enums\PluginStatus;
 use App\Enums\PluginTier;
 use App\Enums\PluginType;
 use App\Enums\PriceTier;
+use App\Jobs\SendNewPluginNotifications;
 use App\Notifications\PluginApproved;
 use App\Notifications\PluginRejected;
 use App\Services\OgImageService;
@@ -554,6 +555,7 @@ class Plugin extends Model
     public function approve(int $approvedById): void
     {
         $previousStatus = $this->status;
+        $isFirstApproval = $this->approved_at === null;
 
         $this->update([
             'status' => PluginStatus::Approved,
@@ -571,6 +573,10 @@ class Plugin extends Model
         );
 
         $this->user->notify(new PluginApproved($this));
+
+        if ($isFirstApproval) {
+            SendNewPluginNotifications::dispatch($this);
+        }
 
         resolve(PluginSyncService::class)->sync($this);
     }
