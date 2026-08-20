@@ -13,8 +13,10 @@ use App\Notifications\PluginRejected;
 use App\Services\OgImageService;
 use App\Services\PluginSyncService;
 use App\Services\SatisService;
+use App\Support\PluginReadme;
 use Illuminate\Database\Eloquent\Attributes\Scope;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -515,13 +517,39 @@ class Plugin extends Model
 
     public function getLicenseUrl(): ?string
     {
+        return $this->getRepositoryFileUrl('LICENSE');
+    }
+
+    /**
+     * Whether we host the license agreement for this plugin ourselves.
+     */
+    public function hasLicensePage(): bool
+    {
+        return $this->isPaid() && filled($this->license_html);
+    }
+
+    /**
+     * Build a URL to a file at the root of the plugin's repository.
+     */
+    public function getRepositoryFileUrl(string $path): ?string
+    {
         $repoInfo = $this->getRepositoryOwnerAndName();
 
         if (! $repoInfo) {
             return null;
         }
 
-        return "https://github.com/{$repoInfo['owner']}/{$repoInfo['repo']}/blob/main/LICENSE";
+        return "https://github.com/{$repoInfo['owner']}/{$repoInfo['repo']}/blob/main/".ltrim($path, '/');
+    }
+
+    /**
+     * The README, with links to the plugin's license file pointed at our license page.
+     */
+    protected function renderedReadmeHtml(): Attribute
+    {
+        return Attribute::make(get: fn () => $this->readme_html
+            ? PluginReadme::rewriteLicenseLinks($this->readme_html, $this)
+            : $this->readme_html);
     }
 
     public function generateWebhookSecret(): string

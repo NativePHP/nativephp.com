@@ -54,4 +54,19 @@ class PluginShowSupportChannelTest extends TestCase
         $response->assertStatus(200);
         $response->assertSee('support@example.com', false);
     }
+
+    public function test_long_support_email_is_clipped_to_its_container(): void
+    {
+        $email = 'nativecodeforge.contented345@passinbox.com';
+
+        $plugin = Plugin::factory()->approved()->create([
+            'support_channel' => $email,
+        ]);
+
+        $response = $this->get(route('plugins.show', $plugin->routeParams()));
+
+        $response->assertStatus(200);
+        $response->assertSee('title="'.$email.'"', false);
+        $response->assertSee('<span class="truncate">'.$email.'</span>', false);
+    }
 }
