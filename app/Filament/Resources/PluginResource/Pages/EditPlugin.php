@@ -76,6 +76,40 @@ class EditPlugin extends EditRecord
                 ->modalHeading('Reject Plugin')
                 ->modalDescription(fn () => "Are you sure you want to reject '{$this->record->name}'?"),
 
+            Actions\Action::make('messageDeveloper')
+                ->label('Message Developer')
+                ->icon('heroicon-o-chat-bubble-left-right')
+                ->color('info')
+                ->form([
+                    Forms\Components\Textarea::make('message')
+                        ->label('Message')
+                        ->required()
+                        ->rows(5)
+                        ->maxLength(5000)
+                        ->helperText('The developer is emailed a notification without the message contents; they must sign in to read and reply.')
+                        ->placeholder('Ask a question or share feedback about this plugin...'),
+                ])
+                ->action(function (array $data): void {
+                    $this->record->messageDeveloper($data['message'], auth()->id());
+
+                    Notification::make()
+                        ->title('Message sent')
+                        ->body("{$this->record->user->email} has been notified that a message is waiting.")
+                        ->success()
+                        ->send();
+                })
+                ->modalHeading('Message Developer')
+                ->modalDescription(fn () => "Send a message to {$this->record->user->email} about '{$this->record->name}'. It will appear in the Activity History and they can reply from their dashboard.")
+                ->modalSubmitActionLabel('Send Message'),
+
+            Actions\Action::make('viewListing')
+                ->label('View Listing Page')
+                ->icon('heroicon-o-eye')
+                ->color('gray')
+                ->url(fn () => route('plugins.show', $this->record->routeParams()))
+                ->openUrlInNewTab()
+                ->visible(fn () => $this->record->isApproved() || $this->record->isPending()),
+
             Actions\ActionGroup::make([
                 Actions\Action::make('convertToPaid')
                     ->label('Convert to Paid')
@@ -262,14 +296,6 @@ class EditPlugin extends EditRecord
                             ->success()
                             ->send();
                     }),
-
-                Actions\Action::make('viewListing')
-                    ->label('View Listing Page')
-                    ->icon('heroicon-o-eye')
-                    ->color('gray')
-                    ->url(fn () => route('plugins.show', $this->record->routeParams()))
-                    ->openUrlInNewTab()
-                    ->visible(fn () => $this->record->isApproved() || $this->record->isPending()),
             ])
                 ->icon('heroicon-m-ellipsis-vertical'),
         ];

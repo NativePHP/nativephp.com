@@ -9,6 +9,8 @@ use App\Enums\PluginType;
 use App\Enums\PriceTier;
 use App\Jobs\SendNewPluginNotifications;
 use App\Notifications\PluginApproved;
+use App\Notifications\PluginDeveloperReplied;
+use App\Notifications\PluginMessageReceived;
 use App\Notifications\PluginRejected;
 use App\Services\OgImageService;
 use App\Services\PluginSyncService;
@@ -24,6 +26,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Support\Facades\Notification;
 
 class Plugin extends Model
 {
@@ -135,6 +138,18 @@ class Plugin extends Model
     public function activities(): HasMany
     {
         return $this->hasMany(PluginActivity::class)->latest();
+    }
+
+    /**
+     * The admin <-> developer conversation, oldest message first.
+     *
+     * @return HasMany<PluginActivity>
+     */
+    public function messages(): HasMany
+    {
+        return $this->hasMany(PluginActivity::class)
+            ->messages()
+            ->oldest();
     }
 
     /**
@@ -717,6 +732,46 @@ class Plugin extends Model
             null,
             $this->user_id
         );
+    }
+
+    /**
+     * Send an ad-hoc message from the Marketplace admins to the plugin's developer.
+     *
+     * The message body is only ever surfaced in-app; the developer is emailed a
+     * content-free nudge to log in and read it.
+     */
+    public function messageDeveloper(string $message, ?int $causerId = null): PluginActivity
+    {
+        $activity = $this->activities()->create([
+            'type' => PluginActivityType::MessageToDeveloper,
+            'from_status' => null,
+            'to_status' => $this->status->value,
+            'note' => $message,
+            'causer_id' => $causerId,
+        ]);
+
+        $this->user->notify(new PluginMessageReceived($this));
+
+        return $activity;
+    }
+
+    /**
+     * Record a developer's reply to the Marketplace admins and notify them by email.
+     */
+    public function messageAdmins(string $message, ?int $causerId = null): PluginActivity
+    {
+        $activity = $this->activities()->create([
+            'type' => PluginActivityType::MessageFromDeveloper,
+            'from_status' => null,
+            'to_status' => $this->status->value,
+            'note' => $message,
+            'causer_id' => $causerId ?? $this->user_id,
+        ]);
+
+        Notification::route('mail', 'support@nativephp.com')
+            ->notify(new PluginDeveloperReplied($this, $activity));
+
+        return $activity;
     }
 
     public function updateDescription(string $description, int $updatedById): void
