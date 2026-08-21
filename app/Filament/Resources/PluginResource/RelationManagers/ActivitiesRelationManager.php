@@ -35,8 +35,9 @@ class ActivitiesRelationManager extends RelationManager
                     ->color('gray'),
 
                 Tables\Columns\TextColumn::make('note')
-                    ->label('Note/Reason')
-                    ->limit(50)
+                    ->label('Note/Message')
+                    ->limit(120)
+                    ->wrap()
                     ->tooltip(fn ($record) => $record->note)
                     ->placeholder('-'),
 

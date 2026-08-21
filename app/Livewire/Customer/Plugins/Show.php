@@ -2,20 +2,25 @@
 
 namespace App\Livewire\Customer\Plugins;
 
+use App\Enums\PluginActivityType;
 use App\Enums\PluginTier;
 use App\Enums\PluginType;
 use App\Jobs\ReviewPluginRepository;
 use App\Models\Plugin;
+use App\Models\PluginActivity;
 use App\Notifications\PluginPendingReview;
 use App\Notifications\PluginSubmitted;
 use App\Services\GitHubUserService;
 use Flux\Flux;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Notification;
+use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\ValidationException;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Title;
+use Livewire\Attributes\Url;
 use Livewire\Attributes\Validate;
 use Livewire\Component;
 use Livewire\WithFileUploads;
@@ -47,16 +52,49 @@ class Show extends Component
 
     public string $notes = '';
 
+    #[Url(as: 'tab')]
     public string $activeTab = 'details';
 
     public string $pluginType = 'free';
 
     public ?string $tier = null;
 
+    public string $replyMessage = '';
+
     #[Computed]
     public function hasCompletedDeveloperOnboarding(): bool
     {
         return auth()->user()->developerAccount?->hasCompletedOnboarding() ?? false;
+    }
+
+    /**
+     * The full activity history, newest first.
+     *
+     * @return Collection<int, PluginActivity>
+     */
+    #[Computed]
+    public function activities(): Collection
+    {
+        return $this->plugin->activities()
+            ->with('causer')
+            ->orderByDesc('id')
+            ->get();
+    }
+
+    /**
+     * Developers join a conversation the admins started; they can't open one.
+     * Drafts haven't been submitted yet, so there's nothing to discuss.
+     */
+    #[Computed]
+    public function canMessageAdmins(): bool
+    {
+        if ($this->plugin->isDraft()) {
+            return false;
+        }
+
+        return $this->activities->contains(
+            fn (PluginActivity $activity): bool => $activity->type === PluginActivityType::MessageToDeveloper
+        );
     }
 
     public function mount(string $vendor, string $package): void
@@ -232,6 +270,38 @@ class Show extends Component
         $this->plugin->refresh();
 
         Flux::toast(variant: 'success', text: 'Your plugin has been withdrawn from review and returned to draft.');
+    }
+
+    public function sendMessage(): void
+    {
+        if (! $this->canMessageAdmins) {
+            Flux::toast(variant: 'danger', text: 'You can only reply once the Marketplace admins have messaged you about this plugin.');
+
+            return;
+        }
+
+        $key = 'plugin-message-reply:'.auth()->id();
+
+        if (RateLimiter::tooManyAttempts($key, 10)) {
+            $seconds = RateLimiter::availableIn($key);
+
+            $this->addError('replyMessage', "You're sending messages too quickly. Please wait {$seconds} seconds.");
+
+            return;
+        }
+
+        $this->validate([
+            'replyMessage' => ['required', 'string', 'max:5000'],
+        ]);
+
+        RateLimiter::hit($key, 60);
+
+        $this->plugin->messageAdmins($this->replyMessage, auth()->id());
+
+        $this->replyMessage = '';
+        unset($this->activities, $this->canMessageAdmins);
+
+        Flux::toast(variant: 'success', text: 'Your message has been sent to the Marketplace admins.');
     }
 
     public function returnToDraft(): void
