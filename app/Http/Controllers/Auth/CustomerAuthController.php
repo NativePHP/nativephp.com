@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Auth;
 use App\Enums\TeamUserStatus;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\LoginRequest;
+use App\Http\Requests\Auth\RegisterRequest;
 use App\Models\Plugin;
 use App\Models\TeamUser;
 use App\Models\User;
@@ -32,14 +33,8 @@ class CustomerAuthController extends Controller
         return view('auth.register');
     }
 
-    public function register(Request $request): RedirectResponse
+    public function register(RegisterRequest $request): RedirectResponse
     {
-        $request->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'email:rfc,dns', 'max:255', 'unique:users'],
-            'password' => ['required', 'string', 'min:8', 'confirmed'],
-        ]);
-
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
