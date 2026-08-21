@@ -14,6 +14,8 @@ class DiscordAccessBanner extends Component
 
     public bool $hasEarlyAdopterRole = false;
 
+    public bool $hasMasterRole = false;
+
     public bool $isGuildMember = false;
 
     public function mount(bool $inline = false): void
@@ -29,6 +31,7 @@ class DiscordAccessBanner extends Component
         if (! $user || ! $user->discord_id) {
             $this->hasUltraRole = false;
             $this->hasEarlyAdopterRole = false;
+            $this->hasMasterRole = false;
             $this->isGuildMember = false;
 
             return;
@@ -43,12 +46,14 @@ class DiscordAccessBanner extends Component
                 'isGuildMember' => $discord->isGuildMember($user->discord_id),
                 'hasUltraRole' => $discord->hasUltraRole($user->discord_id),
                 'hasEarlyAdopterRole' => $discord->hasEarlyAdopterRole($user->discord_id),
+                'hasMasterRole' => $discord->hasMasterRole($user->discord_id),
             ];
         });
 
         $this->isGuildMember = $status['isGuildMember'];
         $this->hasUltraRole = $status['hasUltraRole'];
         $this->hasEarlyAdopterRole = $status['hasEarlyAdopterRole'];
+        $this->hasMasterRole = $status['hasMasterRole'] ?? false;
 
         if ($this->hasUltraRole && ! $user->discord_role_granted_at) {
             $user->update(['discord_role_granted_at' => now()]);
@@ -56,6 +61,10 @@ class DiscordAccessBanner extends Component
 
         if ($this->hasEarlyAdopterRole && ! $user->discord_early_adopter_role_granted_at) {
             $user->update(['discord_early_adopter_role_granted_at' => now()]);
+        }
+
+        if ($this->hasMasterRole && ! $user->discord_master_role_granted_at) {
+            $user->update(['discord_master_role_granted_at' => now()]);
         }
     }
 
@@ -139,6 +148,42 @@ class DiscordAccessBanner extends Component
             session()->flash('success', 'Early Adopter role assigned successfully!');
         } else {
             session()->flash('error', 'Failed to assign Early Adopter role. Please try again later.');
+        }
+    }
+
+    public function requestMasterRole(): void
+    {
+        $user = auth()->user();
+
+        if (! $user || ! $user->discord_id) {
+            session()->flash('error', 'Please connect your Discord account first.');
+
+            return;
+        }
+
+        if (! $user->hasPurchasedMasterclass()) {
+            session()->flash('error', 'The Master role is for Masterclass students.');
+
+            return;
+        }
+
+        $discord = DiscordApi::make();
+
+        if (! $discord->isGuildMember($user->discord_id)) {
+            session()->flash('error', 'Please join the NativePHP Discord server first.');
+
+            return;
+        }
+
+        $success = $discord->assignMasterRole($user->discord_id);
+
+        if ($success) {
+            $user->update(['discord_master_role_granted_at' => now()]);
+            Cache::forget("discord_role_status_{$user->id}");
+            $this->checkRoleStatus();
+            session()->flash('success', 'Master role assigned successfully!');
+        } else {
+            session()->flash('error', 'Failed to assign Master role. Please try again later.');
         }
     }
 

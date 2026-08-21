@@ -4,6 +4,8 @@ namespace Tests\Feature\Livewire;
 
 use App\Livewire\DiscordAccessBanner;
 use App\Models\License;
+use App\Models\Product;
+use App\Models\ProductLicense;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Cache;
@@ -25,6 +27,7 @@ class DiscordAccessBannerTest extends TestCase
             'services.discord.guild_id' => 'test-guild-id',
             'services.discord.ultra_role_id' => 'ultra-role-id',
             'services.discord.early_adopter_role_id' => 'early-adopter-role-id',
+            'services.discord.master_role_id' => 'master-role-id',
         ]);
     }
 
@@ -230,6 +233,140 @@ class DiscordAccessBannerTest extends TestCase
             ->test(DiscordAccessBanner::class)
             ->assertSee('Ultra Role Active')
             ->assertSee('Early Adopter Active');
+    }
+
+    #[Test]
+    public function it_shows_master_role_active_when_user_has_master_role(): void
+    {
+        $user = User::factory()->create([
+            'discord_id' => '123456789',
+            'discord_username' => 'testuser',
+        ]);
+
+        $this->fakeDiscordApi(isGuildMember: true, roles: ['master-role-id']);
+
+        Livewire::actingAs($user)
+            ->test(DiscordAccessBanner::class)
+            ->assertSee('Master Role Active');
+
+        $this->assertNotNull($user->fresh()->discord_master_role_granted_at);
+    }
+
+    #[Test]
+    public function it_shows_master_eligible_for_masterclass_owner_without_role(): void
+    {
+        $user = User::factory()->create([
+            'discord_id' => '123456789',
+            'discord_username' => 'testuser',
+        ]);
+
+        $this->grantMasterclass($user);
+
+        $this->fakeDiscordApi(isGuildMember: true);
+
+        Livewire::actingAs($user)
+            ->test(DiscordAccessBanner::class)
+            ->assertSee('Master Eligible');
+    }
+
+    #[Test]
+    public function it_shows_request_master_role_button_for_masterclass_owner(): void
+    {
+        $user = User::factory()->create([
+            'discord_id' => '123456789',
+            'discord_username' => 'testuser',
+        ]);
+
+        $this->grantMasterclass($user);
+
+        $this->fakeDiscordApi(isGuildMember: true);
+
+        Livewire::actingAs($user)
+            ->test(DiscordAccessBanner::class)
+            ->assertSee('Request Master Role');
+    }
+
+    #[Test]
+    public function it_does_not_show_request_master_role_button_without_the_masterclass(): void
+    {
+        $user = User::factory()->create([
+            'discord_id' => '123456789',
+            'discord_username' => 'testuser',
+        ]);
+
+        $this->fakeDiscordApi(isGuildMember: true);
+
+        Livewire::actingAs($user)
+            ->test(DiscordAccessBanner::class)
+            ->assertDontSee('Request Master Role')
+            ->assertDontSee('Master Eligible');
+    }
+
+    #[Test]
+    public function it_assigns_master_role_on_request(): void
+    {
+        $user = User::factory()->create([
+            'discord_id' => '123456789',
+            'discord_username' => 'testuser',
+        ]);
+
+        $this->grantMasterclass($user);
+
+        $this->fakeDiscordApi(isGuildMember: true);
+
+        Livewire::actingAs($user)
+            ->test(DiscordAccessBanner::class)
+            ->call('requestMasterRole')
+            ->assertHasNoErrors();
+
+        $this->assertNotNull($user->fresh()->discord_master_role_granted_at);
+
+        Http::assertSent(fn ($request) => $request->method() === 'PUT'
+            && str_contains($request->url(), '/members/123456789/roles/master-role-id'));
+    }
+
+    #[Test]
+    public function it_does_not_assign_master_role_without_the_masterclass(): void
+    {
+        $user = User::factory()->create([
+            'discord_id' => '123456789',
+            'discord_username' => 'testuser',
+        ]);
+
+        $this->fakeDiscordApi(isGuildMember: true);
+
+        Livewire::actingAs($user)
+            ->test(DiscordAccessBanner::class)
+            ->call('requestMasterRole');
+
+        $this->assertNull($user->fresh()->discord_master_role_granted_at);
+    }
+
+    #[Test]
+    public function it_does_not_assign_master_role_when_not_guild_member(): void
+    {
+        $user = User::factory()->create([
+            'discord_id' => '123456789',
+            'discord_username' => 'testuser',
+        ]);
+
+        $this->grantMasterclass($user);
+
+        $this->fakeDiscordApi(isGuildMember: false);
+
+        Livewire::actingAs($user)
+            ->test(DiscordAccessBanner::class)
+            ->call('requestMasterRole');
+
+        $this->assertNull($user->fresh()->discord_master_role_granted_at);
+    }
+
+    private function grantMasterclass(User $user): void
+    {
+        ProductLicense::factory()->create([
+            'user_id' => $user->id,
+            'product_id' => Product::where('slug', 'nativephp-masterclass')->firstOrFail()->id,
+        ]);
     }
 
     /**

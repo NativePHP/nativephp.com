@@ -9,6 +9,7 @@ use Filament\Models\Contracts\FilamentUser;
 use Filament\Models\Contracts\HasName;
 use Filament\Panel;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -126,6 +127,19 @@ class User extends Authenticatable implements FilamentUser, HasName, MustVerifyE
         }
 
         return $this->hasProductAccessViaTeam($product);
+    }
+
+    /**
+     * Check if user has purchased The NativePHP Masterclass.
+     *
+     * Mirrors the direct-ownership check used to gate the course itself, so the
+     * Discord Master role tracks course access rather than team membership.
+     */
+    public function hasPurchasedMasterclass(): bool
+    {
+        return $this->productLicenses()
+            ->whereHas('product', fn (Builder $query) => $query->where('slug', 'nativephp-masterclass'))
+            ->exists();
     }
 
     /**
@@ -579,6 +593,7 @@ class User extends Authenticatable implements FilamentUser, HasName, MustVerifyE
             'claude_plugins_repo_access_granted_at' => 'datetime',
             'discord_role_granted_at' => 'datetime',
             'discord_early_adopter_role_granted_at' => 'datetime',
+            'discord_master_role_granted_at' => 'datetime',
         ];
     }
 }
