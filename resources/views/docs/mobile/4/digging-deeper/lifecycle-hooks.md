@@ -145,6 +145,8 @@ the screen's layout chrome.
 
 ## Observing the lifecycle from outside
 
+<x-docs.version-badge since="4.1" />
+
 The hooks above are yours to override, which makes them the wrong place for anything cross-cutting. Put
 analytics, telemetry, or crash breadcrumbs in a base class's `mount()` and any screen that defines its own
 `mount()` silently replaces it — so the observer goes quiet on exactly the screens with the most logic in them.

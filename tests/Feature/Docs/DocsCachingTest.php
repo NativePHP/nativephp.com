@@ -54,6 +54,10 @@ class DocsCachingTest extends TestCase
 
         $this->get('/docs/mobile/4/edge-components/stack')->assertStatus(200);
 
-        $this->assertTrue(Cache::has('docs_mobile_4_edge-components/stack'));
+        // The key is suffixed with a hash of config('docs') so a Jump version
+        // bump invalidates rendered pages instead of trailing by up to a day.
+        $key = 'docs_mobile_4_edge-components/stack_'.substr(md5(serialize(config('docs'))), 0, 8);
+
+        $this->assertTrue(Cache::has($key));
     }
 }

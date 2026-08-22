@@ -37,6 +37,52 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Released Minor Versions
+    |--------------------------------------------------------------------------
+    |
+    | Every minor release that exists, keyed by platform and then by major.
+    | The version labels rendered by <x-docs.version-badge> are checked against
+    | this list in the test suite, so a label can't quietly point at a version
+    | that was never released — or at one belonging to a different major after
+    | a page has been copied forward into a new version's tree.
+    |
+    | Add the new entry here as part of shipping a release.
+    |
+    */
+
+    'released_versions' => [
+        'desktop' => [
+            1 => ['1.0'],
+            2 => ['2.0'],
+        ],
+        'mobile' => [
+            1 => ['1.0', '1.1'],
+            2 => ['2.0'],
+            3 => ['3.0', '3.1', '3.2', '3.3'],
+            4 => ['4.0', '4.1', '4.2'],
+        ],
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Jump
+    |--------------------------------------------------------------------------
+    |
+    | Jump ships on its own cadence, so a feature can be released in NativePHP
+    | and still not render when someone scans the QR code on a docs page.
+    |
+    | Pages and sections declare the Jump version they need; this value records
+    | what Jump currently ships. Bump it when Jump catches up and every label it
+    | now satisfies disappears on its own — no docs edits required.
+    |
+    */
+
+    'jump' => [
+        'current_version' => '2.0',
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
     | Renamed Documentation Pages
     |--------------------------------------------------------------------------
     |

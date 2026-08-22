@@ -4,10 +4,16 @@
 @endpush
 
 @php
-    // Jump previews EDGE components, which only exist in the Mobile v4 docs.
+    // Front matter `jump`: a version string, or false if no Jump build has it.
+    $jumpRequirement = $jump ?? null;
+
+    // Jump previews EDGE components (Mobile v4 only), and only where the
+    // shipping Jump can render the page — a QR to a blank screen is worse
+    // than no QR.
     $showJumpPreview = $platform === 'mobile'
         && (string) $version === '4'
-        && str_starts_with((string) request()->route('page'), 'edge-components/');
+        && str_starts_with((string) request()->route('page'), 'edge-components/')
+        && \App\Support\JumpApp::supports($jumpRequirement);
 @endphp
 
 <x-docs-layout>
@@ -58,9 +64,23 @@
         :page="request()->route('page')"
     />
 
-    <h1 class="text-4xl font-semibold">
-        {{ $title }}
-    </h1>
+    <div class="flex flex-wrap items-center gap-x-3 gap-y-2">
+        <h1 class="text-4xl font-semibold">
+            {{ $title }}
+        </h1>
+
+        <x-docs.version-badge
+            :since="$since ?? null"
+            :changed="$changed ?? null"
+            :deprecated="$deprecated ?? null"
+            :removed="$removed ?? null"
+        />
+
+        <x-docs.jump-badge
+            :since="is_string($jumpRequirement) ? $jumpRequirement : null"
+            :unavailable="$jumpRequirement === false"
+        />
+    </div>
 
     <x-docs.separator class="mt-4" />
 
