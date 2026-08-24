@@ -22,6 +22,13 @@
             'component' => 'sponsors.logos.laradevs',
             'class' => 'w-full text-black dark:text-white',
         ],
+        [
+            'url' => 'https://statamic.com/?utm_source=nativephp&utm_medium=logo&utm_campaign=nativephp',
+            'name' => 'Statamic',
+            'image' => '/img/sponsors/statamic.svg',
+            'imageDark' => '/img/sponsors/statamic-dark.svg',
+            'class' => 'w-full',
+        ],
     ];
 @endphp
 

@@ -49,6 +49,27 @@ class SponsorsAndPartnersPlacementTest extends TestCase
     }
 
     #[Test]
+    public function the_home_page_sponsor_strip_includes_statamic()
+    {
+        $this->get(route('welcome'))
+            ->assertOk()
+            ->assertSee('https://statamic.com/?utm_source=nativephp&utm_medium=logo&utm_campaign=nativephp')
+            ->assertSee('/img/sponsors/statamic.svg')
+            ->assertSee('/img/sponsors/statamic-dark.svg');
+    }
+
+    #[Test]
+    public function the_sidebar_sponsors_list_includes_statamic_in_its_rotation()
+    {
+        $this->blade('<x-sponsors.lists.docs.sponsors />')
+            ->assertSee('https://statamic.com/?utm_source=nativephp&utm_medium=logo&utm_campaign=nativephp')
+            ->assertSee('/img/sponsors/statamic.svg')
+            ->assertSee('/img/sponsors/statamic-dark.svg')
+            ->assertSee('x-show="sponsor === 3"', false)
+            ->assertSee('Math.random() * 4', false);
+    }
+
+    #[Test]
     public function the_sidebar_sponsors_list_rotates_through_every_entry_it_is_given()
     {
         $sponsors = [
