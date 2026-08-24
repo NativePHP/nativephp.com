@@ -18,6 +18,12 @@
             'component' => 'sponsors.logos.laradevs',
             'class' => 'h-6 w-auto text-black dark:text-white',
         ],
+        [
+            'url' => 'https://statamic.com/?utm_source=nativephp&utm_medium=logo&utm_campaign=nativephp',
+            'name' => 'Statamic',
+            'image' => '/img/sponsors/statamic.svg',
+            'imageDark' => '/img/sponsors/statamic-dark.svg',
+        ],
     ];
 @endphp
 
