@@ -4,6 +4,7 @@ namespace Tests\Feature\Docs;
 
 use App\Features\ShowPlugins;
 use App\Support\JumpApp;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 use Laravel\Pennant\Feature;
@@ -11,6 +12,8 @@ use Tests\TestCase;
 
 class JumpBadgeTest extends TestCase
 {
+    use RefreshDatabase;
+
     protected string $fixturesDir;
 
     protected function setUp(): void

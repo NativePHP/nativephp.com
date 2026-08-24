@@ -21,23 +21,22 @@
         'ring-1 ring-inset transition',
         $palettes[$variant] ?? $palettes['neutral'],
     ]);
-@endphp
 
-@if (filled($href))
-    <a
-        href="{{ $href }}"
-        class="{{ $classes }} hover:ring-2"
-        @if (filled($tooltip))
-            title="{{ $tooltip }}"
-            aria-label="{{ $tooltip }}"
-        @endif
-    >{{ $label }}</a>
-@else
-    <span
-        class="{{ $classes }}"
-        @if (filled($tooltip))
-            title="{{ $tooltip }}"
-            aria-label="{{ $tooltip }}"
-        @endif
-    >{{ $label }}</span>
-@endif
+    $tag = filled($href) ? 'a' : 'span';
+
+    $htmlAttributes = collect([
+        'href' => filled($href) ? $href : null,
+        'class' => filled($href) ? $classes.' hover:ring-2' : $classes,
+        'title' => $tooltip,
+        'aria-label' => $tooltip,
+    ])
+        ->filter(fn (?string $value): bool => filled($value))
+        ->map(fn (string $value, string $name): string => $name.'="'.e($value).'"')
+        ->implode(' ');
+
+    // Built and echoed from PHP, rather than written as Blade markup, so the
+    // pill is guaranteed to render as a single line with no surrounding
+    // whitespace: badges sit inline in markdown, and one newline inside a
+    // table cell ends the row and collapses the rest of the table.
+    echo '<'.$tag.' '.$htmlAttributes.'>'.e($label).'</'.$tag.'>';
+@endphp

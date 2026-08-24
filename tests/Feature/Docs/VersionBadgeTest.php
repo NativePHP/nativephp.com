@@ -4,6 +4,7 @@ namespace Tests\Feature\Docs;
 
 use App\Services\DocsSearchService;
 use App\Support\CommonMark\CommonMark;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Http;
 use Spatie\YamlFrontMatter\YamlFrontMatter;
 use Symfony\Component\Finder\Finder;
@@ -11,6 +12,8 @@ use Tests\TestCase;
 
 class VersionBadgeTest extends TestCase
 {
+    use RefreshDatabase;
+
     protected function setUp(): void
     {
         parent::setUp();
@@ -53,6 +56,35 @@ class VersionBadgeTest extends TestCase
     {
         $this->blade('<x-docs.version-badge removed="4.1" />')
             ->assertSee('Removed 4.1');
+    }
+
+    public function test_a_badge_renders_on_one_line(): void
+    {
+        // Labels sit inline in markdown, including inside table cells, where a
+        // single newline in the rendered HTML ends the row and collapses the
+        // rest of the table into paragraph text.
+        $linked = (string) $this->blade('<x-docs.badge label="4.2" tooltip="Added in NativePHP 4.2" href="/docs" />');
+        $bare = (string) $this->blade('<x-docs.version-badge since="4.2" />');
+
+        foreach ([$linked, $bare] as $badge) {
+            $this->assertStringNotContainsString("\n", $badge);
+            $this->assertSame(trim($badge), $badge);
+        }
+    }
+
+    public function test_an_inline_label_leaves_its_table_row_intact(): void
+    {
+        $html = CommonMark::convertToHtml(
+            "| Utility | Classes |\n| --- | --- |\n| Rounded <x-docs.version-badge since=\"4.2\" /> | `rounded-full` |\n"
+        );
+
+        $this->assertSame(2, substr_count($html, '<td>'));
+        $this->assertStringContainsString('<code>rounded-full</code></td>', $html);
+
+        preg_match('/<td>(.*?)<\/td>/s', $html, $firstCell);
+
+        $this->assertStringContainsString('4.2', $firstCell[1]);
+        $this->assertStringNotContainsString("\n", $firstCell[1]);
     }
 
     public function test_layout_page_contains_the_4_2_pill(): void
