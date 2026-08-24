@@ -83,6 +83,8 @@ class ShowDocumentationController extends Controller
     /**
      * Cache the callback's result for a day, or compute it fresh in local so
      * docs edits show up immediately without clearing (or racing on) the cache.
+     * The key folds in `config('docs')` so a Jump version bump invalidates
+     * rendered pages instead of trailing by up to a day.
      */
     private function cacheOrCompute(string $key, Closure $callback): mixed
     {
@@ -90,7 +92,11 @@ class ShowDocumentationController extends Controller
             return $callback();
         }
 
-        return Cache::remember($key, now()->addDay(), $callback);
+        return Cache::remember(
+            $key.'_'.substr(md5(serialize(config('docs'))), 0, 8),
+            now()->addDay(),
+            $callback
+        );
     }
 
     public function serveRawMarkdown(Request $request, string $platform, string $version, string $page)

@@ -51,4 +51,26 @@ final class JumpApp
     {
         return self::CANONICAL_DOMAIN.'/'.ltrim($path, '/').'?'.self::QR_PARAM;
     }
+
+    public static function currentVersion(): string
+    {
+        return (string) config('docs.jump.current_version');
+    }
+
+    /**
+     * `null`/`true` = no requirement, `false` = no Jump build has it, a
+     * version string = the minimum Jump version needed.
+     */
+    public static function supports(string|bool|null $requirement): bool
+    {
+        if ($requirement === null || $requirement === true) {
+            return true;
+        }
+
+        if ($requirement === false) {
+            return false;
+        }
+
+        return version_compare(self::currentVersion(), $requirement, '>=');
+    }
 }

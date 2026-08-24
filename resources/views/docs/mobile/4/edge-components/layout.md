@@ -329,8 +329,8 @@ The parser recognizes the classes listed below.
 | Border color | `border-{palette}-{shade}`, `border-white`, `border-black`, `border-transparent`, `border-[#hex]`, `border-theme-{token}` |
 | Border width | `border` (1dp), `border-2`, `border-4`, `border-8` |
 | Rounded | `rounded` (4dp), `rounded-sm`, `rounded-md`, `rounded-lg`, `rounded-xl`, `rounded-2xl`, `rounded-3xl`, `rounded-full`, `rounded-[N]` |
-| Rounded (per side) | `rounded-t-*`, `rounded-r-*`, `rounded-b-*`, `rounded-l-*` — each rounds that side's two corners. A bare side (`rounded-b`) uses the same 4dp default as `rounded` |
-| Rounded (per corner) | `rounded-tl-*`, `rounded-tr-*`, `rounded-br-*`, `rounded-bl-*`, including arbitrary values (`rounded-br-[4]`) |
+| Rounded (per side) <x-docs.version-badge since="4.2" /> | `rounded-t-*`, `rounded-r-*`, `rounded-b-*`, `rounded-l-*` — each rounds that side's two corners. A bare side (`rounded-b`) uses the same 4dp default as `rounded` |
+| Rounded (per corner) <x-docs.version-badge since="4.2" /> | `rounded-tl-*`, `rounded-tr-*`, `rounded-br-*`, `rounded-bl-*`, including arbitrary values (`rounded-br-[4]`) |
 | Shadow | `shadow`, `shadow-sm`, `shadow-md`, `shadow-lg`, `shadow-xl`, `shadow-2xl`, `shadow-inner`, `shadow-none` |
 | Opacity | `opacity-{0..100}`, arbitrary `opacity-[0.5]` |
 | Text size | `text-xs`, `text-sm`, `text-base`, `text-lg`, `text-xl`, `text-2xl`, `text-3xl`, `text-4xl`, `text-5xl`, `text-6xl`, arbitrary `text-[N]` |

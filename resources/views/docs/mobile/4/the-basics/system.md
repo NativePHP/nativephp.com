@@ -73,6 +73,7 @@ Reading the current appearance and reacting to theme changes lives with the rest
 
 <aside>
 
-`System::flashlight()` is **deprecated** — use [`Device::flashlight()`](device#flashlight) instead.
+`System::flashlight()` <x-docs.version-badge removed="4.1" /> has been removed — use
+[`Device::flashlight()`](device#flashlight) instead.
 
 </aside>
