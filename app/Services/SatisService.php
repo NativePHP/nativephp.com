@@ -77,7 +77,13 @@ class SatisService
      */
     public function buildForPlugin(Plugin $plugin): array
     {
-        return $this->build([$plugin], $this->resolveGitHubTokenFor($plugin));
+        $result = $this->build([$plugin], $this->resolveGitHubTokenFor($plugin));
+
+        if ($result['success'] ?? false) {
+            $plugin->update(['satis_synced_at' => now()]);
+        }
+
+        return $result;
     }
 
     /**
