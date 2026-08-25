@@ -159,7 +159,7 @@ class SyncPluginReleases implements ShouldQueue
             'rate_limit_remaining' => $response->header('X-RateLimit-Remaining'),
         ]);
 
-        return $response->json();
+        return $response->json() ?? [];
     }
 
     protected function processRelease(array $release): bool

@@ -7,14 +7,15 @@ use App\Enums\PluginStatus;
 use App\Enums\PluginTier;
 use App\Enums\PluginType;
 use App\Enums\PriceTier;
+use App\Jobs\RemovePluginFromSatis;
 use App\Jobs\SendNewPluginNotifications;
+use App\Jobs\SyncPluginReleases;
 use App\Notifications\PluginApproved;
 use App\Notifications\PluginDeveloperReplied;
 use App\Notifications\PluginMessageReceived;
 use App\Notifications\PluginRejected;
 use App\Services\OgImageService;
 use App\Services\PluginSyncService;
-use App\Services\SatisService;
 use App\Support\PluginReadme;
 use Illuminate\Database\Eloquent\Attributes\Scope;
 use Illuminate\Database\Eloquent\Builder;
@@ -81,13 +82,20 @@ class Plugin extends Model
             if ($plugin->wasChanged('tier') && $plugin->tier !== null) {
                 $plugin->syncPricesFromTier();
             }
+
+            // Satis membership follows the plugin's type, whichever route changed it
+            if ($plugin->wasChanged('type')) {
+                if ($plugin->isPaid()) {
+                    $plugin->syncToSatis();
+                } else {
+                    $plugin->removeFromSatis();
+                    $plugin->updateQuietly(['satis_synced_at' => null]);
+                }
+            }
         });
 
         static::deleting(function (Plugin $plugin): void {
-            // Remove from Satis when plugin is deleted
-            if ($plugin->name) {
-                resolve(SatisService::class)->removePackage($plugin->name);
-            }
+            $plugin->removeFromSatis();
 
             resolve(OgImageService::class)->deleteForPlugin($plugin);
         });
@@ -320,6 +328,37 @@ class Plugin extends Model
     public function isSatisSynced(): bool
     {
         return $this->satis_synced_at !== null;
+    }
+
+    /**
+     * Queue a satis build so the plugin is installable via Composer.
+     *
+     * Paid plugins are ingested from submission onwards, not from approval, so
+     * that reviewers can install and test them while the plugin is pending.
+     */
+    public function syncToSatis(): void
+    {
+        if (! $this->isPaid()) {
+            return;
+        }
+
+        SyncPluginReleases::dispatch($this);
+    }
+
+    /**
+     * Queue the plugin's removal from satis.
+     *
+     * Composer gives a custom repository precedence over Packagist, so a plugin
+     * left in satis after it stops being paid would keep shadowing the public
+     * package metadata.
+     */
+    public function removeFromSatis(): void
+    {
+        if (! $this->name) {
+            return;
+        }
+
+        RemovePluginFromSatis::dispatch($this->name);
     }
 
     /**
@@ -622,6 +661,8 @@ class Plugin extends Model
         }
 
         resolve(PluginSyncService::class)->sync($this);
+
+        $this->syncToSatis();
     }
 
     public function reject(string $reason, int $rejectedById): void
@@ -692,6 +733,8 @@ class Plugin extends Model
             null,
             $this->user_id
         );
+
+        $this->syncToSatis();
     }
 
     /**

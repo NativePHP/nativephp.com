@@ -9,7 +9,6 @@ use App\Filament\Resources\PluginResource;
 use App\Jobs\GeneratePluginOgImage;
 use App\Jobs\ReviewPluginRepository;
 use App\Jobs\SyncPlugin;
-use App\Jobs\SyncPluginReleases;
 use App\Models\PluginLicense;
 use App\Models\User;
 use App\Notifications\PluginGranted;
@@ -129,8 +128,6 @@ class EditPlugin extends EditRecord
                             'tier' => $data['tier'],
                         ]);
 
-                        SyncPluginReleases::dispatch($this->record);
-
                         Notification::make()
                             ->title("Converted '{$this->record->name}' to paid")
                             ->body('Plugin type updated, prices synced, and Satis ingestion queued.')
@@ -152,7 +149,7 @@ class EditPlugin extends EditRecord
                         ? "Last synced: {$this->record->satis_synced_at->diffForHumans()}. This will trigger a new Satis build for '{$this->record->name}'."
                         : "This will trigger a Satis build for '{$this->record->name}' so it's available via Composer.")
                     ->action(function (): void {
-                        SyncPluginReleases::dispatch($this->record);
+                        $this->record->syncToSatis();
 
                         Notification::make()
                             ->title('Satis sync queued')

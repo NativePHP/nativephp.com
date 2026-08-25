@@ -13,9 +13,13 @@ class SatisService
 {
     use ResolvesGitHubToken;
 
-    protected string $apiUrl;
+    /**
+     * Nullable because SATIS_API_KEY has no default: every caller already
+     * degrades to a "Satis API not configured" result rather than failing.
+     */
+    protected ?string $apiUrl;
 
-    protected string $apiKey;
+    protected ?string $apiKey;
 
     public function __construct()
     {
@@ -77,7 +81,13 @@ class SatisService
      */
     public function buildForPlugin(Plugin $plugin): array
     {
-        return $this->build([$plugin], $this->resolveGitHubTokenFor($plugin));
+        $result = $this->build([$plugin], $this->resolveGitHubTokenFor($plugin));
+
+        if ($result['success'] ?? false) {
+            $plugin->update(['satis_synced_at' => now()]);
+        }
+
+        return $result;
     }
 
     /**
