@@ -363,11 +363,18 @@ class PluginResource extends Resource
             ])
             ->reorderableColumns()
             ->filters([
-                Tables\Filters\SelectFilter::make('status')
-                    ->options(PluginStatus::class)
-                    ->query(fn (Builder $query, array $data): Builder => filled($data['value'])
-                        ? $query->where('status', $data['value'])
+                Tables\Filters\Filter::make('drafts')
+                    ->schema([
+                        Forms\Components\Checkbox::make('show_drafts')
+                            ->label('Show drafts'),
+                    ])
+                    ->query(fn (Builder $query, array $data): Builder => ($data['show_drafts'] ?? false)
+                        ? $query
                         : $query->where('status', '!=', PluginStatus::Draft)
+                    )
+                    ->indicateUsing(fn (array $data): array => ($data['show_drafts'] ?? false)
+                        ? ['show_drafts' => 'Showing drafts']
+                        : []
                     ),
                 Tables\Filters\SelectFilter::make('type')
                     ->options(PluginType::class),
