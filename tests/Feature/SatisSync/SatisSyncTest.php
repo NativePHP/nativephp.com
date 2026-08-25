@@ -135,6 +135,29 @@ class SatisSyncTest extends TestCase
         });
     }
 
+    public function test_type_changes_survive_satis_being_unconfigured(): void
+    {
+        Http::fake();
+        config(['services.satis.url' => null, 'services.satis.api_key' => null]);
+
+        $plugin = Plugin::factory()->free()->approved()->create();
+
+        $plugin->update(['type' => PluginType::Paid]);
+        $plugin->update(['type' => PluginType::Free]);
+
+        $this->assertTrue($plugin->fresh()->isFree());
+    }
+
+    public function test_satis_service_reports_missing_configuration_rather_than_failing(): void
+    {
+        config(['services.satis.url' => null, 'services.satis.api_key' => null]);
+
+        $service = new SatisService;
+
+        $this->assertFalse($service->removePackage('acme/widget')['success']);
+        $this->assertFalse($service->build([Plugin::factory()->paid()->approved()->create()])['success']);
+    }
+
     public function test_remove_plugin_from_satis_job_calls_the_satis_api(): void
     {
         $satisService = $this->mock(SatisService::class);
