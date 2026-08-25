@@ -31,6 +31,7 @@ class PluginListDraftFilterTest extends TestCase
 
         Livewire::actingAs($this->admin)
             ->test(ListPlugins::class)
+            ->set('activeTab', 'all')
             ->assertCanNotSeeTableRecords([$draft])
             ->assertCanSeeTableRecords([$approved]);
     }
@@ -42,6 +43,7 @@ class PluginListDraftFilterTest extends TestCase
 
         Livewire::actingAs($this->admin)
             ->test(ListPlugins::class)
+            ->set('activeTab', 'all')
             ->filterTable('status', PluginStatus::Draft->value)
             ->assertCanSeeTableRecords([$draft])
             ->assertCanNotSeeTableRecords([$approved]);
