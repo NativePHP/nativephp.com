@@ -159,7 +159,7 @@ class Plugin extends Model
     {
         return $this->hasMany(PluginActivity::class)
             ->messages()
-            ->oldest();
+            ->oldest('id');
     }
 
     /**
