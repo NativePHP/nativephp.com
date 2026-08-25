@@ -22,6 +22,7 @@ use Filament\Resources\Resource;
 use Filament\Schemas;
 use Filament\Schemas\Schema;
 use Filament\Tables;
+use Filament\Tables\Contracts\HasTable;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\HtmlString;
@@ -259,17 +260,19 @@ class PluginResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\ImageColumn::make('logo_path')
-                    ->label('')
+                    ->label('Logo')
                     ->disk('public')
                     ->circular()
                     ->defaultImageUrl(fn () => 'https://ui-avatars.com/api/?name=P&color=7C3AED&background=EDE9FE')
-                    ->size(40),
+                    ->size(40)
+                    ->toggleable(),
 
                 Tables\Columns\TextColumn::make('name')
                     ->label('Package Name')
                     ->searchable()
                     ->sortable()
-                    ->fontFamily('mono'),
+                    ->fontFamily('mono')
+                    ->toggleable(),
 
                 Tables\Columns\TextColumn::make('type')
                     ->badge()
@@ -277,18 +280,21 @@ class PluginResource extends Resource
                         PluginType::Free => 'gray',
                         PluginType::Paid => 'success',
                     })
-                    ->sortable(),
+                    ->sortable()
+                    ->toggleable(),
 
                 Tables\Columns\TextColumn::make('tier')
                     ->badge()
                     ->color(fn (?PluginTier $state): string => $state?->color() ?? 'gray')
                     ->sortable()
-                    ->placeholder('-'),
+                    ->placeholder('-')
+                    ->toggleable(),
 
                 Tables\Columns\TextColumn::make('user.email')
                     ->label('Submitted By')
                     ->searchable()
-                    ->sortable(),
+                    ->sortable()
+                    ->toggleable(),
 
                 Tables\Columns\TextColumn::make('status')
                     ->badge()
@@ -298,7 +304,8 @@ class PluginResource extends Resource
                         PluginStatus::Approved => 'success',
                         PluginStatus::Rejected => 'danger',
                     })
-                    ->sortable(),
+                    ->sortable()
+                    ->toggleable(),
 
                 Tables\Columns\TextColumn::make('mobile_min_version')
                     ->label('Mobile SDK')
@@ -307,25 +314,30 @@ class PluginResource extends Resource
 
                 Tables\Columns\ToggleColumn::make('is_official')
                     ->label('Official')
-                    ->sortable(),
+                    ->sortable()
+                    ->toggleable(),
 
                 Tables\Columns\ToggleColumn::make('featured')
-                    ->sortable(),
+                    ->sortable()
+                    ->toggleable(),
 
                 Tables\Columns\ToggleColumn::make('is_active')
                     ->label('Active')
-                    ->sortable(),
+                    ->sortable()
+                    ->toggleable(),
 
                 Tables\Columns\ToggleColumn::make('works_in_jump')
                     ->label('Jump')
-                    ->sortable(),
+                    ->sortable()
+                    ->toggleable(),
 
                 Tables\Columns\IconColumn::make('reviewed_at')
                     ->label('Reviewed')
                     ->boolean()
                     ->getStateUsing(fn (Plugin $record): bool => $record->reviewed_at !== null)
                     ->tooltip(fn (Plugin $record): ?string => $record->reviewed_at?->diffForHumans())
-                    ->sortable(),
+                    ->sortable()
+                    ->toggleable(),
 
                 Tables\Columns\IconColumn::make('satis_synced_at')
                     ->label('Satis')
@@ -333,25 +345,36 @@ class PluginResource extends Resource
                     ->getStateUsing(fn (Plugin $record): bool => $record->isSatisSynced())
                     ->tooltip(fn (Plugin $record): ?string => $record->satis_synced_at?->diffForHumans())
                     ->visible(fn (): bool => true)
-                    ->sortable(),
+                    ->sortable()
+                    ->toggleable(),
 
                 Tables\Columns\TextColumn::make('created_at')
                     ->label('Submitted')
                     ->dateTime()
-                    ->sortable(),
+                    ->sortable()
+                    ->toggleable(),
 
                 Tables\Columns\TextColumn::make('approved_at')
                     ->label('Approved')
                     ->dateTime()
                     ->placeholder('-')
-                    ->sortable(),
+                    ->sortable()
+                    ->toggleable(),
             ])
+            ->reorderableColumns()
             ->filters([
-                Tables\Filters\SelectFilter::make('status')
-                    ->options(PluginStatus::class)
-                    ->query(fn (Builder $query, array $data): Builder => filled($data['value'])
-                        ? $query->where('status', $data['value'])
+                Tables\Filters\Filter::make('drafts')
+                    ->schema([
+                        Forms\Components\Checkbox::make('show_drafts')
+                            ->label('Show drafts'),
+                    ])
+                    ->query(fn (Builder $query, array $data): Builder => ($data['show_drafts'] ?? false)
+                        ? $query
                         : $query->where('status', '!=', PluginStatus::Draft)
+                    )
+                    ->indicateUsing(fn (array $data): array => ($data['show_drafts'] ?? false)
+                        ? ['show_drafts' => 'Showing drafts']
+                        : []
                     ),
                 Tables\Filters\SelectFilter::make('type')
                     ->options(PluginType::class),
@@ -507,7 +530,12 @@ class PluginResource extends Resource
             ->bulkActions([
 
             ])
-            ->defaultSort('created_at', 'desc');
+            ->defaultSort(
+                fn (HasTable $livewire): string => ($livewire instanceof Pages\ListPlugins && $livewire->getActiveTabStatus() === PluginStatus::Approved)
+                    ? 'approved_at'
+                    : 'created_at',
+                'desc',
+            );
     }
 
     public static function getRelations(): array

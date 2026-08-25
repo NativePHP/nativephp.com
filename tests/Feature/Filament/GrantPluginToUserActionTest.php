@@ -31,6 +31,7 @@ class GrantPluginToUserActionTest extends TestCase
 
         Livewire::actingAs($this->admin)
             ->test(ListPlugins::class)
+            ->set('activeTab', 'approved')
             ->assertTableActionHidden('grantToUser', $plugin);
     }
 
@@ -40,6 +41,7 @@ class GrantPluginToUserActionTest extends TestCase
 
         Livewire::actingAs($this->admin)
             ->test(ListPlugins::class)
+            ->set('activeTab', 'approved')
             ->assertTableActionVisible('grantToUser', $plugin);
     }
 
@@ -68,6 +70,7 @@ class GrantPluginToUserActionTest extends TestCase
 
         Livewire::actingAs($this->admin)
             ->test(ListPlugins::class)
+            ->set('activeTab', 'approved')
             ->callAction(
                 TestAction::make('grantToUser')->table($plugin),
                 data: ['user_id' => $recipient->id],
