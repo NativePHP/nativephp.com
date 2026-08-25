@@ -390,7 +390,17 @@ class Show extends Component
 
         $this->validate([
             'iconGradient' => ['required', 'string', 'in:'.implode(',', array_keys(Plugin::gradientPresets()))],
-            'iconName' => ['required', 'string', 'max:100', 'regex:/^[a-z0-9-]+$/'],
+            'iconName' => [
+                'required',
+                'string',
+                'max:100',
+                'regex:/^[a-z0-9-]+$/',
+                function (string $attribute, mixed $value, \Closure $fail) {
+                    if (is_string($value) && ! Plugin::isValidIconName($value)) {
+                        $fail('That isn\'t a Heroicon outline name. Browse the available icons at heroicons.com and use the name shown there, e.g. photo, map-pin, cube.');
+                    }
+                },
+            ],
         ]);
 
         if ($this->plugin->logo_path) {
