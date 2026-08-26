@@ -47,7 +47,7 @@
 
             {{-- Ad rotation --}}
             <x-blog.ad-rotation
-                :ads="$platform === 'desktop' ? ['mobile', 'bifrost', 'ultra', 'vibes', 'masterclass'] : ['desktop', 'bifrost', 'devkit', 'ultra', 'vibes', 'masterclass']"
+                :ads="$platform === 'desktop' ? ['mobile', 'bifrost', 'ultra', 'masterclass'] : ['desktop', 'bifrost', 'devkit', 'ultra', 'masterclass']"
             />
         </x-docs.toc-and-sponsors>
     </x-slot>
@@ -204,6 +204,6 @@
     {{-- Mobile ad rotation --}}
     <x-blog.ad-rotation
         class="mx-auto mt-5 max-w-52 xl:hidden"
-        :ads="$platform === 'desktop' ? ['mobile', 'bifrost', 'ultra', 'vibes', 'masterclass'] : ['desktop', 'bifrost', 'devkit', 'ultra', 'vibes', 'masterclass']"
+        :ads="$platform === 'desktop' ? ['mobile', 'bifrost', 'ultra', 'masterclass'] : ['desktop', 'bifrost', 'devkit', 'ultra', 'masterclass']"
     />
 </x-docs-layout>
