@@ -221,13 +221,19 @@ class PluginMessagesTest extends TestCase
 
         Notification::fake();
 
+        // Land the reply in a later second than the admin's message, so the
+        // thread ordering is exercised rather than hidden by equal timestamps.
+        $this->travel(1)->second();
+
         $this->testable($plugin)
             ->set('replyMessage', 'Sure — added in v1.2.0.')
             ->call('sendMessage')
             ->assertHasNoErrors()
             ->assertSet('replyMessage', '');
 
-        $reply = $plugin->messages()->latest('id')->first();
+        // reorder() clears the relation's own "oldest first" sort; without it
+        // this only sorts by id within a single second of created_at.
+        $reply = $plugin->messages()->reorder()->latest('id')->first();
 
         $this->assertSame(PluginActivityType::MessageFromDeveloper, $reply->type);
         $this->assertSame('Sure — added in v1.2.0.', $reply->note);

@@ -17,6 +17,8 @@ use App\Notifications\PluginRejected;
 use App\Services\OgImageService;
 use App\Services\PluginSyncService;
 use App\Support\PluginReadme;
+use BladeUI\Icons\Exceptions\SvgNotFound;
+use BladeUI\Icons\Factory as IconFactory;
 use Illuminate\Database\Eloquent\Attributes\Scope;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
@@ -157,7 +159,7 @@ class Plugin extends Model
     {
         return $this->hasMany(PluginActivity::class)
             ->messages()
-            ->oldest();
+            ->oldest('id');
     }
 
     /**
@@ -473,6 +475,47 @@ class Plugin extends Model
     public function hasCustomIcon(): bool
     {
         return $this->hasLogo() || $this->hasGradientIcon();
+    }
+
+    /**
+     * The Heroicon used when a plugin has no icon, or an unrecognised one.
+     */
+    public const DEFAULT_ICON_NAME = 'cube';
+
+    /**
+     * Whether the given name matches an outline Heroicon we can actually render.
+     *
+     * Icon names are free text typed in by developers, so they regularly don't
+     * exist (e.g. "image" instead of "photo", or "location" instead of "map-pin").
+     */
+    public static function isValidIconName(?string $iconName): bool
+    {
+        if ($iconName === null || preg_match('/^[a-z0-9-]+$/', $iconName) !== 1) {
+            return false;
+        }
+
+        try {
+            app(IconFactory::class)->svg('heroicon-o-'.$iconName);
+        } catch (SvgNotFound) {
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * The Blade component name for this plugin's gradient icon.
+     *
+     * Always resolvable: an unknown icon name would otherwise throw out of
+     * `<x-dynamic-component>` and take down the whole page.
+     */
+    public function getIconComponent(): string
+    {
+        $iconName = self::isValidIconName($this->icon_name)
+            ? $this->icon_name
+            : self::DEFAULT_ICON_NAME;
+
+        return 'heroicon-o-'.$iconName;
     }
 
     /**

@@ -387,7 +387,7 @@
                                             <img src="{{ $plugin->getLogoUrl() }}" alt="{{ $plugin->name }} logo" class="size-16 rounded-lg object-cover shadow-sm" />
                                         @elseif ($plugin->hasGradientIcon())
                                             <div class="grid size-16 place-items-center rounded-lg bg-gradient-to-br {{ $plugin->getGradientClasses() }} text-white shadow-sm">
-                                                <x-dynamic-component :component="'heroicon-o-' . $plugin->icon_name" class="size-8" />
+                                                <x-dynamic-component :component="$plugin->getIconComponent()" class="size-8" />
                                             </div>
                                         @endif
                                         <flux:button size="sm" variant="danger" icon="trash" wire:click="deleteIcon" type="button">Remove icon</flux:button>
@@ -421,7 +421,7 @@
                                             wire:model="iconName"
                                             label="Heroicon name"
                                             placeholder="cube"
-                                            description="Enter a Heroicon outline name, e.g., cube, sparkles, bolt."
+                                            description="Enter an outline icon name exactly as it appears on heroicons.com, e.g., cube, sparkles, bolt, photo, map-pin."
                                         />
                                         @error('iconName')
                                             <flux:text class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</flux:text>
@@ -567,7 +567,7 @@
                                             <img src="{{ $plugin->getLogoUrl() }}" alt="{{ $plugin->name }} logo" class="size-16 rounded-lg object-cover shadow-sm" />
                                         @elseif ($plugin->hasGradientIcon())
                                             <div class="grid size-16 place-items-center rounded-lg bg-gradient-to-br {{ $plugin->getGradientClasses() }} text-white shadow-sm">
-                                                <x-dynamic-component :component="'heroicon-o-' . $plugin->icon_name" class="size-8" />
+                                                <x-dynamic-component :component="$plugin->getIconComponent()" class="size-8" />
                                             </div>
                                         @endif
                                         <flux:button size="sm" variant="danger" icon="trash" wire:click="deleteIcon" type="button">Remove icon</flux:button>
@@ -601,7 +601,7 @@
                                             wire:model="iconName"
                                             label="Heroicon name"
                                             placeholder="cube"
-                                            description="Enter a Heroicon outline name, e.g., cube, sparkles, bolt."
+                                            description="Enter an outline icon name exactly as it appears on heroicons.com, e.g., cube, sparkles, bolt, photo, map-pin."
                                         />
                                         @error('iconName')
                                             <flux:text class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</flux:text>
@@ -675,7 +675,7 @@
                                     <img src="{{ $plugin->getLogoUrl() }}" alt="{{ $plugin->name }} logo" class="size-16 shrink-0 rounded-lg object-cover shadow-sm" />
                                 @elseif ($plugin->hasGradientIcon())
                                     <div class="grid size-16 shrink-0 place-items-center rounded-lg bg-gradient-to-br {{ $plugin->getGradientClasses() }} text-white shadow-sm">
-                                        <x-dynamic-component :component="'heroicon-o-' . $plugin->icon_name" class="size-8" />
+                                        <x-dynamic-component :component="$plugin->getIconComponent()" class="size-8" />
                                     </div>
                                 @else
                                     <div class="grid size-16 shrink-0 place-items-center rounded-lg bg-gradient-to-br from-indigo-500 to-purple-600 text-white shadow-sm">
@@ -825,7 +825,7 @@
                                         <img src="{{ $plugin->getLogoUrl() }}" alt="{{ $plugin->name }} logo" class="size-16 shrink-0 rounded-lg object-cover shadow-sm" />
                                     @elseif ($plugin->hasGradientIcon())
                                         <div class="grid size-16 shrink-0 place-items-center rounded-lg bg-gradient-to-br {{ $plugin->getGradientClasses() }} text-white shadow-sm">
-                                            <x-dynamic-component :component="'heroicon-o-' . $plugin->icon_name" class="size-8" />
+                                            <x-dynamic-component :component="$plugin->getIconComponent()" class="size-8" />
                                         </div>
                                     @else
                                         <div class="grid size-16 shrink-0 place-items-center rounded-lg bg-gradient-to-br from-indigo-500 to-purple-600 text-white shadow-sm">
