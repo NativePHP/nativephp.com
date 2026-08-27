@@ -104,7 +104,7 @@ Programmatically setting `visible` to `false` from PHP does not fire the callbac
 ## Element
 
 ```php
-use Nativephp\NativeUi\Elements\Modal;
+use Native\Mobile\UI\Elements\Modal;
 
 Modal::make()
     ->visible($showDetails)
