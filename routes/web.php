@@ -62,7 +62,8 @@ use Laravel\Pennant\Middleware\EnsureFeaturesAreActive;
 |
 */
 
-Route::redirect('newsletter', 'https://simonhamp.mailcoach.app/nativephp');
+// The shortlink lands on the homepage and pops the signup modal open.
+Route::redirect('newsletter', '/?newsletter=1');
 Route::redirect('phpverse-2025', 'https://lp.jetbrains.com/phpverse-2025');
 Route::redirect('docs/1/getting-started/sponsoring', '/sponsor');
 Route::redirect('docs/desktop/1/getting-started/sponsoring', '/sponsor');

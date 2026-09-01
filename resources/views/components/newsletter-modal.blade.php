@@ -1,15 +1,23 @@
 {{--
     Newsletter signup modal. Opened from anywhere on the site by dispatching an
     `open-newsletter-modal` window event, so triggers don't have to be nested
-    inside it. The form posts straight to Mailcoach, which then redirects to one
-    of our own `newsletter.*` pages depending on the outcome.
+    inside it. It also opens itself when the page is loaded with `?newsletter` in
+    the URL, which is where the `/newsletter` shortlink sends people. The form
+    posts straight to Mailcoach, which then redirects to one of our own
+    `newsletter.*` pages depending on the outcome.
 --}}
 <div
-    x-data="{ open: false }"
-    @open-newsletter-modal.window="
-        open = true
-        $nextTick(() => $refs.email?.focus())
-    "
+    x-data="{
+        open: false,
+        show() {
+            this.open = true
+            this.$nextTick(() => this.$refs.email?.focus())
+        },
+    }"
+    @if (request()->has('newsletter'))
+        x-init="show()"
+    @endif
+    @open-newsletter-modal.window="show()"
     @keydown.escape.window="open = false"
 >
     {{-- Backdrop --}}
