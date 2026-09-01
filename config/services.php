@@ -35,6 +35,23 @@ return [
         'key' => env('ANYSTACK_API_KEY'),
     ],
 
+    'mailcoach' => [
+        /*
+         * The public subscribe endpoint for the NativePHP newsletter list. Forms post
+         * straight to Mailcoach, which redirects back to the pages configured on the
+         * list (see the `newsletter.*` routes).
+         */
+        'newsletter_subscribe_url' => env(
+            'MAILCOACH_NEWSLETTER_SUBSCRIBE_URL',
+            'https://simonhamp.mailcoach.app/subscribe/79a8941f-a008-4a6a-b81e-e4bb54d66755',
+        ),
+
+        /*
+         * The honeypot field name configured on the list. It must be submitted empty.
+         */
+        'honeypot_field' => env('MAILCOACH_HONEYPOT_FIELD', 'pet'),
+    ],
+
     'bifrost' => [
         'api_key' => env('BIFROST_API_KEY'),
     ],
