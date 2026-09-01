@@ -74,6 +74,29 @@ class NewsletterSignupTest extends TestCase
     }
 
     #[Test]
+    public function the_newsletter_shortlink_sends_people_to_the_homepage_with_the_modal_open()
+    {
+        $this->get('/newsletter')
+            ->assertRedirect('/?newsletter=1');
+    }
+
+    #[Test]
+    public function the_modal_opens_itself_when_the_url_asks_for_it()
+    {
+        $this->get('/?newsletter=1')
+            ->assertOk()
+            ->assertSee('x-init="show()"', escape: false);
+    }
+
+    #[Test]
+    public function the_modal_stays_closed_on_a_normal_page_load()
+    {
+        $this->get('/')
+            ->assertOk()
+            ->assertDontSee('x-init="show()"', escape: false);
+    }
+
+    #[Test]
     public function the_confirmation_page_tells_people_to_check_their_inbox()
     {
         $this->get(route('newsletter.confirm'))
