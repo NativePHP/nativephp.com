@@ -213,6 +213,13 @@ Route::post('course/checkout', function (Request $request) {
     return $user->checkout([$priceId => 1], $sessionOptions);
 })->name('course.checkout');
 
+// Mailcoach redirects here once it has handled a signup, a confirmation click
+// or an unsubscribe. The matching URLs are configured on the newsletter list.
+Route::view('newsletter/confirm', 'newsletter.confirm')->name('newsletter.confirm');
+Route::view('newsletter/subscribed', 'newsletter.subscribed')->name('newsletter.subscribed');
+Route::view('newsletter/already-subscribed', 'newsletter.already-subscribed')->name('newsletter.already-subscribed');
+Route::view('newsletter/unsubscribed', 'newsletter.unsubscribed')->name('newsletter.unsubscribed');
+
 Route::view('wall-of-love', 'wall-of-love')->name('wall-of-love');
 Route::view('brand', 'brand')->name('brand');
 Route::get('showcase/{platform?}', [ShowcaseController::class, 'index'])

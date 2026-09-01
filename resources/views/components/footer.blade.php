@@ -92,9 +92,13 @@
                     }
                 "
             >
-                <a
-                    href="/newsletter"
-                    class="group relative z-0 flex max-w-105 items-center gap-6 overflow-hidden rounded-2xl bg-cyan-50/50 py-5 pr-7 pl-6 ring-1 ring-black/5 transition duration-300 ease-in-out hover:bg-cyan-50 hover:ring-black/10 dark:bg-mirage dark:hover:bg-haiti dark:hover:ring-cloud"
+                <button
+                    type="button"
+                    x-on:click="
+                        $dispatch('open-newsletter-modal')
+                        window.fathom?.trackEvent('newsletter_footer_click')
+                    "
+                    class="group relative z-0 flex max-w-105 items-center gap-6 overflow-hidden rounded-2xl bg-cyan-50/50 py-5 pr-7 pl-6 text-left ring-1 ring-black/5 transition duration-300 ease-in-out hover:bg-cyan-50 hover:ring-black/10 dark:bg-mirage dark:hover:bg-haiti dark:hover:ring-cloud"
                 >
                     {{-- Decorative circle --}}
                     <div
@@ -123,7 +127,9 @@
                         <p
                             class="leading-relaxed opacity-70 transition duration-300 will-change-transform group-hover:translate-x-0.5"
                         >
-                            Get the latest NativePHP updates and news delivered
+                            Get a
+                            <b class="font-semibold">10% discount code</b>
+                            plus the latest NativePHP updates and news delivered
                             to your inbox.
                         </p>
                     </div>
@@ -150,7 +156,7 @@
                         aria-hidden="true"
                         class="size-4 shrink-0"
                     />
-                </a>
+                </button>
             </div>
         </div>
 

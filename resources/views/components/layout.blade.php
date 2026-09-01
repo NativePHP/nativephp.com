@@ -116,9 +116,9 @@
                 scrolled = window.scrollY > 1
             })
         "
-        class="font-poppins min-h-screen overflow-x-clip bg-white antialiased selection:bg-black selection:text-[#b4a9ff] dark:bg-[#050714] dark:text-white"
+        class="min-h-screen overflow-x-clip bg-white font-poppins antialiased selection:bg-black selection:text-[#b4a9ff] dark:bg-[#050714] dark:text-white"
     >
-        <x-supernative-banner />
+        <x-newsletter-banner />
 
         <x-navigation-bar />
 
@@ -130,7 +130,9 @@
 
         <x-footer />
 
-        <x-impersonate::banner/>
+        <x-newsletter-modal />
+
+        <x-impersonate::banner />
 
         @livewireScriptConfig
         @fluxScripts
