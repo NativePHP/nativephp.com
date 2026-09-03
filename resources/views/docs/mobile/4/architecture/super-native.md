@@ -12,7 +12,7 @@ your PHP code.
 The syntax looks like HTML, but **there is no web view**. Each screen is a real, platform-native view.
 Same Laravel app, same Blade templates, two native UIs.
 
-You write EDGE components once. There is no separate syntax for Android and iOS.
+You write [EDGE components](../edge-components/introduction) once. There is no separate syntax for Android and iOS.
 
 SuperNative is **the default**. New apps render native screens from the very first route, with no
 configuration required.
