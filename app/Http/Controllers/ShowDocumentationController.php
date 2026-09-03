@@ -30,7 +30,9 @@ class ShowDocumentationController extends Controller
         session(['viewing_docs_version' => $version]);
         session(['viewing_docs_platform' => $platform]);
 
-        $navigation = $this->cacheOrCompute("docs_nav_{$platform}_{$version}",
+        $fingerprint = $this->fingerprint($platform, $version);
+
+        $navigation = $this->cacheOrCompute("docs_nav_{$platform}_{$version}", $fingerprint,
             fn () => $this->getNavigation($platform, $version)
         );
 
@@ -39,7 +41,7 @@ class ShowDocumentationController extends Controller
         }
 
         try {
-            $pageProperties = $this->cacheOrCompute("docs_{$platform}_{$version}_{$page}",
+            $pageProperties = $this->cacheOrCompute("docs_{$platform}_{$version}_{$page}", $fingerprint,
                 fn () => $this->getPageProperties($platform, $version, $page)
             );
         } catch (InvalidArgumentException $e) {
@@ -85,18 +87,50 @@ class ShowDocumentationController extends Controller
      * docs edits show up immediately without clearing (or racing on) the cache.
      * The key folds in `config('docs')` so a Jump version bump invalidates
      * rendered pages instead of trailing by up to a day.
+     *
+     * The entry also carries a fingerprint of the markdown it was built from
+     * and is rebuilt as soon as that stops matching. Deploys ship new docs
+     * without clearing the application cache, so the TTL alone leaves an
+     * edited page — and the sidebar rendered alongside it — up to a day behind
+     * the files. Entries written before the fingerprint existed have none, so
+     * they miss and rebuild on the first request.
      */
-    private function cacheOrCompute(string $key, Closure $callback): mixed
+    private function cacheOrCompute(string $key, string $fingerprint, Closure $callback): mixed
     {
         if (config('app.env') === 'local') {
             return $callback();
         }
 
-        return Cache::remember(
-            $key.'_'.substr(md5(serialize(config('docs'))), 0, 8),
-            now()->addDay(),
-            $callback
-        );
+        $key = $key.'_'.substr(md5(serialize(config('docs'))), 0, 8);
+
+        $cached = Cache::get($key);
+
+        if (Arr::get($cached, 'fingerprint') === $fingerprint) {
+            return $cached['value'];
+        }
+
+        $value = $callback();
+
+        Cache::put($key, ['fingerprint' => $fingerprint, 'value' => $value], now()->addDay());
+
+        return $value;
+    }
+
+    /**
+     * A signature of every markdown file behind a platform's version — names
+     * and modification times, without reading any content.
+     */
+    private function fingerprint(string $platform, string $version): string
+    {
+        $files = (new Finder)
+            ->files()
+            ->name('*.md')
+            ->in(resource_path("views/docs/{$platform}/{$version}"));
+
+        return md5(collect($files)
+            ->map(fn (SplFileInfo $file): string => $file->getRelativePathname().'@'.$file->getMTime())
+            ->sort()
+            ->implode('|'));
     }
 
     public function serveRawMarkdown(Request $request, string $platform, string $version, string $page)
