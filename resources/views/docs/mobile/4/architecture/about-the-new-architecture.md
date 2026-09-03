@@ -67,8 +67,7 @@ app faster. If your app is happy in the web view, it will keep working exactly a
 
 ## Should you use it today?
 
-SuperNative is **the default**. New apps render native screens from the very first route. It's in beta, so expect
-rapid iteration. If you'd rather wait,
-[opting out](../architecture/super-native#is-the-web-view-still-an-option) is one route and one component.
+SuperNative is **the default**. New apps render native screens from the very first route. If you'd rather keep the
+web view, [opting out](../architecture/super-native#is-the-web-view-still-an-option) is one route and one component.
 
 Ready to go deeper? Start with [The Renderer](renderer).
