@@ -60,4 +60,85 @@ class DocsCachingTest extends TestCase
 
         $this->assertTrue(Cache::has($key));
     }
+
+    public function test_page_cache_is_reused_while_the_markdown_is_unchanged(): void
+    {
+        config(['app.env' => 'production']);
+
+        $this->get('/docs/mobile/4/edge-components/stack')->assertStatus(200);
+
+        $entry = Cache::get($this->pageCacheKey());
+        $entry['value']['content'] = '<p>Served from the cache</p>';
+        Cache::put($this->pageCacheKey(), $entry, now()->addDay());
+
+        $this->get('/docs/mobile/4/edge-components/stack')
+            ->assertStatus(200)
+            ->assertSee('Served from the cache', false);
+    }
+
+    public function test_page_cache_is_rebuilt_once_the_markdown_changes(): void
+    {
+        config(['app.env' => 'production']);
+
+        Cache::put($this->pageCacheKey(), [
+            'fingerprint' => 'built-from-older-markdown',
+            'value' => $this->stalePageProperties(),
+        ], now()->addDay());
+
+        $this->get('/docs/mobile/4/edge-components/stack')
+            ->assertStatus(200)
+            ->assertDontSee('Stale content');
+    }
+
+    public function test_page_cached_before_fingerprinting_is_rebuilt(): void
+    {
+        config(['app.env' => 'production']);
+
+        Cache::put($this->pageCacheKey(), $this->stalePageProperties(), now()->addDay());
+
+        $this->get('/docs/mobile/4/edge-components/stack')
+            ->assertStatus(200)
+            ->assertDontSee('Stale content');
+    }
+
+    public function test_navigation_cached_before_fingerprinting_is_rebuilt(): void
+    {
+        config(['app.env' => 'production']);
+
+        $key = 'docs_nav_mobile_4_'.substr(md5(serialize(config('docs'))), 0, 8);
+        Cache::put($key, [['path' => '/docs/mobile/4/removed-page', 'title' => 'Removed', 'order' => 0]], now()->addDay());
+
+        $response = $this->get('/docs/mobile/4');
+
+        $response->assertStatus(301);
+        $this->assertStringNotContainsString('removed-page', (string) $response->headers->get('Location'));
+    }
+
+    private function pageCacheKey(): string
+    {
+        return 'docs_mobile_4_edge-components/stack_'.substr(md5(serialize(config('docs'))), 0, 8);
+    }
+
+    /**
+     * Page properties in the shape the view expects, so a cache entry that is
+     * wrongly trusted renders rather than erroring — the assertion, not an
+     * exception, is what reports the failure.
+     *
+     * @return array<string, mixed>
+     */
+    private function stalePageProperties(): array
+    {
+        return [
+            'platform' => 'mobile',
+            'version' => '4',
+            'pagePath' => 'docs/mobile/4/edge-components/stack',
+            'title' => 'Stale',
+            'content' => '<p>Stale content</p>',
+            'tableOfContents' => [],
+            'navigation' => '',
+            'editUrl' => '',
+            'nextPage' => null,
+            'previousPage' => null,
+        ];
+    }
 }
