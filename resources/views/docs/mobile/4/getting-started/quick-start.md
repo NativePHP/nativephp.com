@@ -16,7 +16,7 @@ Don't waste hours downloading, installing, and configuring Xcode and Android Stu
 If you are creating new Laravel app, you can build using our starter kit:
 
 ```bash
-laravel new my-app --using=nativephp/mobile-starter
+laravel new my-app --using=nativephp/mobile-starter --no-node
 
 cd my-app
 
