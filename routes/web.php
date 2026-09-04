@@ -18,6 +18,8 @@ use App\Http\Controllers\LicenseRenewalController;
 use App\Http\Controllers\NotificationUnsubscribeController;
 use App\Http\Controllers\OpenCollectiveWebhookController;
 use App\Http\Controllers\PluginDirectoryController;
+use App\Http\Controllers\PluginRatingController;
+use App\Http\Controllers\PluginReportController;
 use App\Http\Controllers\PluginWebhookController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ShowBlogController;
@@ -243,6 +245,12 @@ Route::middleware(EnsureFeaturesAreActive::using(ShowPlugins::class))->group(fun
     Route::get('plugins/marketplace', PluginDirectory::class)->name('plugins.marketplace');
     Route::get('plugins/{vendor}/{package}', [PluginDirectoryController::class, 'show'])->name('plugins.show');
     Route::get('plugins/{vendor}/{package}/license', [PluginDirectoryController::class, 'license'])->name('plugins.license');
+
+    Route::middleware('auth')->group(function (): void {
+        Route::post('plugins/{vendor}/{package}/rating', [PluginRatingController::class, 'store'])->name('plugins.rating.store');
+        Route::delete('plugins/{vendor}/{package}/rating', [PluginRatingController::class, 'destroy'])->name('plugins.rating.destroy');
+        Route::post('plugins/{vendor}/{package}/report', [PluginReportController::class, 'store'])->name('plugins.report.store');
+    });
 });
 
 Route::view('sponsor', 'sponsoring')->name('sponsoring');

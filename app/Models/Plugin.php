@@ -242,6 +242,22 @@ class Plugin extends Model
     }
 
     /**
+     * @return HasMany<PluginRating>
+     */
+    public function ratings(): HasMany
+    {
+        return $this->hasMany(PluginRating::class);
+    }
+
+    /**
+     * @return HasMany<PluginReport>
+     */
+    public function reports(): HasMany
+    {
+        return $this->hasMany(PluginReport::class);
+    }
+
+    /**
      * @return BelongsToMany<PluginBundle>
      */
     public function bundles(): BelongsToMany
@@ -677,6 +693,21 @@ class Plugin extends Model
         ];
     }
 
+    public function getIssuesUrl(): ?string
+    {
+        if (! $this->repository_url || ! str_contains($this->repository_url, 'github.com')) {
+            return null;
+        }
+
+        $repoInfo = $this->getRepositoryOwnerAndName();
+
+        if (! $repoInfo) {
+            return null;
+        }
+
+        return "https://github.com/{$repoInfo['owner']}/{$repoInfo['repo']}/issues";
+    }
+
     public function approve(int $approvedById): void
     {
         $previousStatus = $this->status;
@@ -854,10 +885,18 @@ class Plugin extends Model
             'causer_id' => $causerId ?? $this->user_id,
         ]);
 
-        Notification::route('mail', 'support@nativephp.com')
+        Notification::route('mail', config('mail.support_address'))
             ->notify(new PluginDeveloperReplied($this, $activity));
 
         return $activity;
+    }
+
+    public function recalculateRating(): void
+    {
+        $this->update([
+            'rating_count' => $this->ratings()->count(),
+            'rating_average' => $this->ratings()->avg('rating'),
+        ]);
     }
 
     public function updateDescription(string $description, int $updatedById): void
@@ -911,6 +950,8 @@ class Plugin extends Model
             'webhook_installed' => 'boolean',
             'review_checks' => 'array',
             'reviewed_at' => 'datetime',
+            'rating_average' => 'decimal:2',
+            'rating_count' => 'integer',
         ];
     }
 }

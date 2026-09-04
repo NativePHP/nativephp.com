@@ -169,7 +169,7 @@ class ShowcaseSubmissionForm extends Component
                     'approved_by' => null,
                 ]);
 
-                Notification::route('mail', 'support@nativephp.com')
+                Notification::route('mail', config('mail.support_address'))
                     ->notify(new ShowcaseSubmitted($this->showcase, resubmitted: true));
 
                 return to_route('customer.showcase.index')
@@ -185,7 +185,7 @@ class ShowcaseSubmissionForm extends Component
             ...$data,
         ]);
 
-        Notification::route('mail', 'support@nativephp.com')
+        Notification::route('mail', config('mail.support_address'))
             ->notify(new ShowcaseSubmitted($showcase));
 
         return to_route('customer.showcase.index')
