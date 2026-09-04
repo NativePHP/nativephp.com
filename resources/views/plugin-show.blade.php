@@ -575,6 +575,90 @@
                     </div>
                 @endif
 
+                {{-- What this plugin can access --}}
+                @if ($currentManifest && array_filter($currentManifest))
+                    <div class="mt-4 rounded-2xl border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-slate-800/50">
+                        <h2 class="flex items-center gap-2 text-sm font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">
+                            <x-heroicon-o-shield-check class="size-4 shrink-0" aria-hidden="true" />
+                            What This Plugin Can Access
+                        </h2>
+                        <ul class="mt-3 space-y-1.5">
+                            @foreach ($currentManifest['android_permissions'] ?? [] as $permission)
+                                <li class="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
+                                    <span class="size-1.5 shrink-0 rounded-full bg-indigo-400"></span>
+                                    {{ \App\Support\PluginPermissionLabels::androidPermission($permission) }}
+                                </li>
+                            @endforeach
+
+                            @foreach ($currentManifest['ios_background_modes'] ?? [] as $mode)
+                                <li class="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
+                                    <span class="size-1.5 shrink-0 rounded-full bg-indigo-400"></span>
+                                    {{ \App\Support\PluginPermissionLabels::iosBackgroundMode($mode) }}
+                                </li>
+                            @endforeach
+
+                            @foreach ($currentManifest['ios_capabilities'] ?? [] as $capability)
+                                <li class="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
+                                    <span class="size-1.5 shrink-0 rounded-full bg-indigo-400"></span>
+                                    {{ \App\Support\PluginPermissionLabels::iosCapability($capability) }}
+                                </li>
+                            @endforeach
+                        </ul>
+                        <p class="mt-3 text-xs text-gray-500 dark:text-gray-400">
+                            Declared by the plugin author and applied to your app at build time.
+                        </p>
+                    </div>
+                @endif
+
+                {{-- Version history --}}
+                @if ($versionHistory->isNotEmpty())
+                    <div
+                        x-data="{ open: false }"
+                        class="mt-4 rounded-2xl border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-slate-800/50"
+                    >
+                        <button
+                            type="button"
+                            x-on:click="open = !open"
+                            :aria-expanded="open"
+                            class="flex w-full items-center justify-between gap-2 text-left"
+                        >
+                            <span class="text-sm font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">
+                                Version History
+                            </span>
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                stroke-width="2"
+                                stroke="currentColor"
+                                class="size-4 shrink-0 text-gray-400 transition-transform duration-200"
+                                :class="{ 'rotate-180': open }"
+                                aria-hidden="true"
+                            >
+                                <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
+                            </svg>
+                        </button>
+
+                        <div x-show="open" x-collapse x-cloak class="mt-4 space-y-4">
+                            @foreach ($versionHistory as $version)
+                                <div class="border-l-2 border-gray-200 pl-3 dark:border-gray-700">
+                                    <div class="flex items-baseline gap-2">
+                                        <span class="text-sm font-semibold text-gray-900 dark:text-white">{{ $version->version }}</span>
+                                        @if ($version->published_at)
+                                            <span class="text-xs text-gray-500 dark:text-gray-400">{{ $version->published_at->format('M j, Y') }}</span>
+                                        @endif
+                                    </div>
+                                    @if ($version->release_notes_html)
+                                        <div class="prose prose-sm prose-gallery mt-1 max-w-none text-gray-600 dark:text-gray-400">
+                                            {!! $version->release_notes_html !!}
+                                        </div>
+                                    @endif
+                                </div>
+                            @endforeach
+                        </div>
+                    </div>
+                @endif
+
             </aside>
         </div>
     </section>
