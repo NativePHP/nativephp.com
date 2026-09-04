@@ -76,7 +76,11 @@ Route::redirect('t-shirt', 'blog/nativephp-for-mobile-is-now-free');
 Route::redirect('tshirt', 'blog/nativephp-for-mobile-is-now-free');
 
 // v4: Device/Dialog/File/System moved from plugins into core built-ins; their docs
-// now live in The Basics (must precede the generic core-plugin redirect below).
+// now live in The Basics. These can't be folded into config('docs.renamed_pages')
+// like the other v4 renames below — they must be registered (and win route-matching
+// precedence) *before* the generic core-plugin redirect immediately after, otherwise
+// that catch-all intercepts the URL before docs.show (and its config-driven
+// resolution) ever runs.
 foreach (['device', 'file', 'system'] as $corePage) {
     Route::redirect("docs/mobile/4/plugins/core/{$corePage}", "/docs/mobile/4/the-basics/{$corePage}", 301);
 }
@@ -94,17 +98,24 @@ Route::get('docs/mobile/{version}/apis/{page}', function (string $version, strin
     return redirect("/plugins/nativephp/mobile-{$page}", 301);
 })->where('version', '[0-9]+')->where('page', '[a-z-]+');
 
-// v4: the SuperNative section was flattened; its old section root now points at
-// the SuperNative overview page, which lives in the Architecture section.
+// None of these can move into config('docs.renamed_pages') like the other v4
+// renames above: each would make an *existing* config entry's reverse
+// (older-version) lookup collide, since DocsVersionService::resolvePageForVersion()
+// builds that reverse map with array_flip(), which silently keeps only the last
+// of several old paths mapping to the same new one.
+//
+// - 'super-native' and 'architecture/overview' were never real pages (a bare
+//   section-root URL, and a page removed without a v3 equivalent) — both would
+//   collide with 'super-native/introduction', which already redirects here.
 Route::redirect('docs/mobile/4/super-native', '/docs/mobile/4/architecture/super-native', 301);
-
-// v4: the Architecture Overview page was removed; the SuperNative page now leads the section.
 Route::redirect('docs/mobile/4/architecture/overview', '/docs/mobile/4/architecture/super-native', 301);
 
-// v4: the old the-basics/navigation slug is now the-basics/routing (Layouts lives at the-basics/layouts directly).
+// - 'the-basics/navigation' would collide with the existing
+//   'super-native/navigation' => 'the-basics/routing' entry above.
 Route::redirect('docs/mobile/4/the-basics/navigation', '/docs/mobile/4/the-basics/routing', 301);
 
-// v4: Screen & Card components were removed — theme surfaces with bg-theme-* classes instead
+// - 'edge-components/screen' and 'edge-components/card' would collide with
+//   each other (both target 'edge-components/layout').
 Route::redirect('docs/mobile/4/edge-components/screen', '/docs/mobile/4/edge-components/layout', 301);
 Route::redirect('docs/mobile/4/edge-components/card', '/docs/mobile/4/edge-components/layout', 301);
 
