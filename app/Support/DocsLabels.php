@@ -2,6 +2,8 @@
 
 namespace App\Support;
 
+use App\Enums\DocsPlatform;
+
 /**
  * Platform/version come from the route rather than being passed in, since
  * BladeMarkdownPreprocessor hands page markdown to Blade with no view data
@@ -11,11 +13,7 @@ final class DocsLabels
 {
     public static function productName(): string
     {
-        return match (request()->route('platform')) {
-            'mobile' => 'NativePHP for Mobile',
-            'desktop' => 'NativePHP for Desktop',
-            default => 'NativePHP',
-        };
+        return DocsPlatform::tryFromRoute()?->label() ?? 'NativePHP';
     }
 
     /**

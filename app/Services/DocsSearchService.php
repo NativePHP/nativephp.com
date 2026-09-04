@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Enums\DocsPlatform;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Str;
 use Spatie\YamlFrontMatter\YamlFrontMatter;
@@ -168,7 +169,7 @@ class DocsSearchService
 
     public function getPlatforms(): array
     {
-        return ['desktop', 'mobile'];
+        return array_map(fn (DocsPlatform $platform): string => $platform->value, DocsPlatform::cases());
     }
 
     public function getVersions(?string $platform = null): array
@@ -196,10 +197,15 @@ class DocsSearchService
     {
         $versions = $this->getVersions();
 
-        return [
-            'desktop' => (string) (config('docs.latest_versions.desktop') ?? collect($versions['desktop'] ?? [])->sort()->last() ?? '2'),
-            'mobile' => (string) (config('docs.latest_versions.mobile') ?? collect($versions['mobile'] ?? [])->sort()->last() ?? '3'),
-        ];
+        return collect(DocsPlatform::cases())
+            ->mapWithKeys(function (DocsPlatform $platform) use ($versions): array {
+                $fallback = $platform === DocsPlatform::Mobile ? '3' : '2';
+                $configured = config("docs.latest_versions.{$platform->value}");
+                $detected = collect($versions[$platform->value] ?? [])->sort()->last();
+
+                return [$platform->value => (string) ($configured ?? $detected ?? $fallback)];
+            })
+            ->all();
     }
 
     protected function getAllPages(?string $platform = null, ?string $version = null): array
@@ -393,9 +399,7 @@ class DocsSearchService
             return null;
         }
 
-        $allowed = ['desktop', 'mobile'];
-
-        return in_array($platform, $allowed, true) ? $platform : null;
+        return DocsPlatform::tryFrom($platform)?->value;
     }
 
     protected function sanitizeVersion(?string $version): ?string

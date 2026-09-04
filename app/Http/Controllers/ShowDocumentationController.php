@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\DocsPlatform;
+use App\Services\DocsVersionRegistry;
 use App\Services\DocsVersionService;
 use App\Support\CommonMark\CommonMark;
 use Artesaos\SEOTools\Facades\SEOMeta;
@@ -169,6 +171,11 @@ class ShowDocumentationController extends Controller
         $pageProperties['platform'] = $platform;
         $pageProperties['version'] = $version;
         $pageProperties['pagePath'] = request()->path();
+
+        $platformEnum = DocsPlatform::tryFrom($platform);
+        $pageProperties['docsVersionLabels'] = $platformEnum
+            ? app(DocsVersionRegistry::class)->switcherLabels($platformEnum)
+            : [];
 
         $pageProperties['content'] = CommonMark::convertToHtml($document->body(), [
             'user' => auth()->user(),
