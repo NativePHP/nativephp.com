@@ -12,6 +12,7 @@ use App\Http\Controllers\CustomerLicenseController;
 use App\Http\Controllers\CustomerSubLicenseController;
 use App\Http\Controllers\DeveloperOnboardingController;
 use App\Http\Controllers\DiscordIntegrationController;
+use App\Http\Controllers\DocsWhatsNewController;
 use App\Http\Controllers\GitHubAuthController;
 use App\Http\Controllers\GitHubIntegrationController;
 use App\Http\Controllers\LicenseRenewalController;
@@ -269,6 +270,13 @@ Route::get('docs/{platform}/{version}/{page}.md', [ShowDocumentationController::
     ->where('platform', '[a-z]+')
     ->where('version', '[0-9]+')
     ->name('docs.raw');
+
+// Must precede docs.show below, which would otherwise treat "whats-new" as a
+// literal page slug and 404.
+Route::get('docs/{platform}/{version}/whats-new', DocsWhatsNewController::class)
+    ->where('platform', '[a-z]+')
+    ->where('version', '[0-9]+')
+    ->name('docs.whats-new');
 
 Route::get('docs/{platform}/{version}/{page?}', ShowDocumentationController::class)
     ->where('page', '(.*)')
