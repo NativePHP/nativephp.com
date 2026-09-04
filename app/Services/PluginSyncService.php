@@ -10,6 +10,10 @@ use Illuminate\Support\Facades\Log;
 
 class PluginSyncService
 {
+    public function __construct(
+        protected PluginManifestParser $manifestParser
+    ) {}
+
     public function sync(Plugin $plugin): bool
     {
         Log::info('[PluginSync] Starting sync', ['plugin_id' => $plugin->id, 'name' => $plugin->name]);
@@ -86,12 +90,12 @@ class PluginSyncService
         }
 
         if ($nativephpData) {
-            $updateData['ios_version'] = $this->extractIosVersion($nativephpData);
-            $updateData['android_version'] = $this->extractAndroidVersion($nativephpData);
+            $updateData['ios_version'] = $this->manifestParser->iosMinVersion($nativephpData);
+            $updateData['android_version'] = $this->manifestParser->androidMinVersion($nativephpData);
         }
 
         if ($composerData) {
-            $updateData['mobile_min_version'] = $composerData['require']['nativephp/mobile'] ?? null;
+            $updateData['mobile_min_version'] = $this->manifestParser->sdkConstraint($composerData);
         }
 
         if ($readme) {
@@ -200,16 +204,6 @@ class PluginSyncService
         }
 
         return config('services.github.token');
-    }
-
-    protected function extractIosVersion(array $nativephpData): ?string
-    {
-        return $nativephpData['ios']['min_version'] ?? null;
-    }
-
-    protected function extractAndroidVersion(array $nativephpData): ?string
-    {
-        return $nativephpData['android']['min_version'] ?? null;
     }
 
     protected function fetchLicenseFile(string $owner, string $repo, ?string $token): ?string

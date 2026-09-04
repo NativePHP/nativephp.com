@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Jobs\GeneratePluginOgImage;
 use App\Models\Plugin;
+use App\Services\PluginManifestParser;
 use App\Services\PluginOgLayout;
 use App\Services\PluginSyncService;
 use App\Services\SatisService;
@@ -58,7 +59,7 @@ class PluginOgImageTest extends TestCase
             'repository_url' => 'https://github.com/acme/test-plugin',
         ]);
 
-        (new PluginSyncService)->sync($plugin);
+        (new PluginSyncService(new PluginManifestParser))->sync($plugin);
 
         Queue::assertPushed(GeneratePluginOgImage::class, fn (GeneratePluginOgImage $job) => $job->plugin->is($plugin));
     }

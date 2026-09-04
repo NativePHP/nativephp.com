@@ -3,6 +3,7 @@
 namespace App\Jobs;
 
 use App\Models\Plugin;
+use App\Services\PluginManifestParser;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -21,7 +22,7 @@ class ReviewPluginRepository implements ShouldQueue
 
     public function __construct(public Plugin $plugin) {}
 
-    public function handle(): array
+    public function handle(PluginManifestParser $manifestParser): array
     {
         $repo = $this->plugin->getRepositoryOwnerAndName();
 
@@ -38,6 +39,8 @@ class ReviewPluginRepository implements ShouldQueue
             'ios_min_version' => null,
             'has_android_min_version' => false,
             'android_min_version' => null,
+            'permission_parity_complete' => true,
+            'missing_permission_parity' => [],
         ];
 
         if (! $repo) {
@@ -70,11 +73,13 @@ class ReviewPluginRepository implements ShouldQueue
         $composerJson = $this->fetchComposerJson($owner, $repoName, $token);
         $nativephpJson = $this->fetchNativephpJson($owner, $repoName, $token);
 
+        $supportsIos = $this->checkDirectoryHasFiles($tree, 'resources/ios/');
+
         $checks = [
             'has_license_file' => $this->checkHasLicenseFile($tree),
             'has_release_version' => false,
             'release_version' => null,
-            'supports_ios' => $this->checkDirectoryHasFiles($tree, 'resources/ios/'),
+            'supports_ios' => $supportsIos,
             'supports_android' => $this->checkDirectoryHasFiles($tree, 'resources/android/'),
             'supports_js' => $this->checkDirectoryHasFiles($tree, 'resources/js/'),
             'requires_mobile_sdk' => false,
@@ -83,6 +88,8 @@ class ReviewPluginRepository implements ShouldQueue
             'ios_min_version' => null,
             'has_android_min_version' => false,
             'android_min_version' => null,
+            'permission_parity_complete' => true,
+            'missing_permission_parity' => [],
         ];
 
         $latestTag = $this->fetchLatestTag($owner, $repoName, $token);
@@ -91,21 +98,24 @@ class ReviewPluginRepository implements ShouldQueue
             $checks['release_version'] = $latestTag;
         }
 
-        if ($composerJson) {
-            $mobileConstraint = $composerJson['require']['nativephp/mobile'] ?? null;
-            $checks['requires_mobile_sdk'] = $mobileConstraint !== null;
-            $checks['mobile_sdk_constraint'] = $mobileConstraint;
-        }
+        $mobileConstraint = $manifestParser->sdkConstraint($composerJson);
+        $checks['requires_mobile_sdk'] = $mobileConstraint !== null;
+        $checks['mobile_sdk_constraint'] = $mobileConstraint;
 
-        if ($nativephpJson) {
-            $iosMinVersion = $nativephpJson['ios']['min_version'] ?? null;
-            $checks['has_ios_min_version'] = $iosMinVersion !== null;
-            $checks['ios_min_version'] = $iosMinVersion;
+        $iosMinVersion = $manifestParser->iosMinVersion($nativephpJson);
+        $checks['has_ios_min_version'] = $iosMinVersion !== null;
+        $checks['ios_min_version'] = $iosMinVersion;
 
-            $androidMinVersion = $nativephpJson['android']['min_version'] ?? null;
-            $checks['has_android_min_version'] = $androidMinVersion !== null;
-            $checks['android_min_version'] = $androidMinVersion;
-        }
+        $androidMinVersion = $manifestParser->androidMinVersion($nativephpJson);
+        $checks['has_android_min_version'] = $androidMinVersion !== null;
+        $checks['android_min_version'] = $androidMinVersion;
+
+        $missingParity = $manifestParser->missingUsageDescriptions(
+            $manifestParser->permissionManifest($nativephpJson),
+            $supportsIos
+        );
+        $checks['permission_parity_complete'] = $missingParity === [];
+        $checks['missing_permission_parity'] = $missingParity;
 
         $this->plugin->update([
             'review_checks' => $checks,

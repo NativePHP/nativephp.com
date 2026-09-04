@@ -277,6 +277,14 @@ class Plugin extends Model
         return $this->hasOne(PluginVersion::class)->where('is_packaged', true)->latest('published_at');
     }
 
+    /**
+     * @return HasOne<PluginVersion>
+     */
+    public function latestVisibleVersion(): HasOne
+    {
+        return $this->hasOne(PluginVersion::class)->visible()->latest('published_at');
+    }
+
     public function isPending(): bool
     {
         return $this->status === PluginStatus::Pending;
