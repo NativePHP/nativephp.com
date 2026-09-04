@@ -179,6 +179,20 @@ class PluginResource extends Resource
                             ->content(fn (?Plugin $record) => ($record?->review_checks['has_android_min_version'] ?? false)
                                 ? '✅ '.($record->review_checks['android_min_version'] ?? '')
                                 : '❌ Missing'),
+
+                        Forms\Components\Placeholder::make('review_permission_parity')
+                            ->label('App Store Permission Parity')
+                            ->content(function (?Plugin $record) {
+                                $missing = $record?->review_checks['missing_permission_parity'] ?? [];
+
+                                if (empty($missing)) {
+                                    return '✅ All Android permissions have a matching iOS usage description';
+                                }
+
+                                return '❌ Missing: '.collect($missing)
+                                    ->map(fn (array $issue) => "{$issue['permission']} → {$issue['expected_key']}")
+                                    ->implode(', ');
+                            }),
                     ])
                     ->headerActions([
                         Action::make('emailReviewChecks')
@@ -544,6 +558,7 @@ class PluginResource extends Resource
             RelationManagers\PricesRelationManager::class,
             RelationManagers\LicensesRelationManager::class,
             RelationManagers\ActivitiesRelationManager::class,
+            RelationManagers\VersionsRelationManager::class,
         ];
     }
 
