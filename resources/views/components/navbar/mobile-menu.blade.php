@@ -423,6 +423,26 @@
                             aria-label="Search documentation"
                         ></div>
                     </div>
+
+                    @if ($docsPlatform = request()->route('platform'))
+                        {{-- Search is scoped to the current platform/version by app.js's
+                             transformItems; this makes that scoping visible instead of
+                             silently hiding results from the other platform/version. --}}
+                        <p
+                            id="docsearch-scope-label"
+                            class="mt-1 text-xs text-gray-500 dark:text-gray-400"
+                        >
+                            Searching {{ ucfirst($docsPlatform) }} v{{ request()->route('version') }} docs
+                            &middot;
+                            <button
+                                type="button"
+                                id="docsearch-broaden"
+                                class="underline hover:text-gray-800 dark:hover:text-gray-100"
+                            >
+                                Search everywhere
+                            </button>
+                        </p>
+                    @endif
                     {{-- <div --}}
                     {{-- id="docsearch-mobile" --}}
                     {{-- x-on:click=" --}}

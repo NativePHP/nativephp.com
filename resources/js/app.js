@@ -164,44 +164,75 @@ document.addEventListener('alpine:init', () => {
 Livewire.start()
 
 // Docsearch
+const docsearchContainerSelector = '#docsearch-desktop'
 const docsPathMatch = window.location.pathname.match(
     /^\/docs\/(desktop|mobile)\/(\d+)/,
 )
-const docsearchOptions = {
-    appId: 'ZNII9QZ8WI',
-    apiKey: '9be495a1aaf367b47c873d30a8e7ccf5',
-    indexName: 'nativephp',
-    insights: true,
-    debug: false,
-    ...(docsPathMatch && {
-        transformItems(items) {
-            const prefix = `/docs/${docsPathMatch[1]}/${docsPathMatch[2]}/`
-            return items.filter((item) => {
-                try {
-                    return new URL(item.url).pathname.startsWith(prefix)
-                } catch {
-                    return item.url.includes(prefix)
-                }
-            })
-        },
-    }),
+
+function scopedTransformItems(items) {
+    const prefix = `/docs/${docsPathMatch[1]}/${docsPathMatch[2]}/`
+    return items.filter((item) => {
+        try {
+            return new URL(item.url).pathname.startsWith(prefix)
+        } catch {
+            return item.url.includes(prefix)
+        }
+    })
 }
 
-docsearch({
-    ...docsearchOptions,
-    container: '#docsearch-desktop',
-})
+function getDesktopSearchButton() {
+    return document.querySelector(
+        `${docsearchContainerSelector} .DocSearch-Button`,
+    )
+}
+
+// Re-created on demand when "Search everywhere" is clicked, since docsearch()
+// has no API to update an already-initialized instance's transformItems —
+// only to destroy() and re-initialize it (see docsearch()'s DocSearchInstance
+// return value in the @docsearch/js API reference).
+function initDocsearch(broadenScope, initialQuery) {
+    return docsearch({
+        appId: 'ZNII9QZ8WI',
+        apiKey: '9be495a1aaf367b47c873d30a8e7ccf5',
+        indexName: 'nativephp',
+        insights: true,
+        debug: false,
+        container: docsearchContainerSelector,
+        initialQuery,
+        ...(docsPathMatch && ! broadenScope && { transformItems: scopedTransformItems }),
+    })
+}
+
+let docsearchInstance = initDocsearch(false)
+
+const broadenButton = document.getElementById('docsearch-broaden')
+if (broadenButton && docsPathMatch) {
+    broadenButton.addEventListener('click', () => {
+        const query =
+            document.querySelector(
+                `${docsearchContainerSelector} .DocSearch-Input`,
+            )?.value ?? ''
+
+        docsearchInstance.destroy()
+        docsearchInstance = initDocsearch(true, query)
+        docsearchInstance.open()
+
+        document.getElementById('docsearch-scope-label')?.remove()
+    })
+}
 
 // Mirror the desktop DocSearch button into the mobile container so that
 // pressing Cmd+K only registers one handler (avoiding duplicate modals).
+// Looks the button up fresh on click rather than caching a reference, since
+// initDocsearch() re-renders it whenever the search scope is broadened.
 const mobileContainer = document.getElementById('docsearch-mobile')
 if (mobileContainer) {
-    const desktopButton = document.querySelector(
-        '#docsearch-desktop .DocSearch-Button',
-    )
+    const desktopButton = getDesktopSearchButton()
     if (desktopButton) {
         const mobileButton = desktopButton.cloneNode(true)
         mobileContainer.appendChild(mobileButton)
-        mobileButton.addEventListener('click', () => desktopButton.click())
+        mobileButton.addEventListener('click', () =>
+            getDesktopSearchButton()?.click(),
+        )
     }
 }
