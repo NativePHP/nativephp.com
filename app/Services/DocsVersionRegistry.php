@@ -27,9 +27,7 @@ final class DocsVersionRegistry
     }
 
     /**
-     * Version-switcher labels for every released major, e.g. [1 => '1.x', 2 => '2.x'].
-     *
-     * @return array<int, string>
+     * @return array<int, string> version-switcher labels, e.g. [1 => '1.x', 2 => '2.x']
      */
     public function switcherLabels(DocsPlatform $platform): array
     {
