@@ -126,6 +126,12 @@
         {!! $content !!}
     </div>
 
+    <livewire:docs-feedback-widget
+        :platform="$platform"
+        :version="(string) $version"
+        :page="$pagePath"
+    />
+
     <x-docs.separator class="mt-8" />
 
     @php
