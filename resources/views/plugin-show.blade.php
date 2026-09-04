@@ -95,8 +95,22 @@
                             {{ $plugin->description }}
                         </p>
                     @endif
-                    @if ($plugin->worksInJump())
-                        <div class="mt-3">
+                    <div class="mt-3 flex flex-wrap items-center gap-3">
+                        @if ($plugin->rating_count > 0)
+                            <span class="inline-flex items-center gap-1 text-sm" title="{{ number_format($plugin->rating_average, 1) }} out of 5 stars">
+                                <span class="flex text-amber-400" aria-hidden="true">
+                                    @for ($i = 1; $i <= 5; $i++)
+                                        <x-heroicon-s-star class="size-4 {{ $i > round($plugin->rating_average) ? 'text-gray-300 dark:text-gray-600' : '' }}" />
+                                    @endfor
+                                </span>
+                                <span class="font-medium text-gray-900 dark:text-white">{{ number_format($plugin->rating_average, 1) }}</span>
+                                <span class="text-gray-500 dark:text-gray-400">({{ $plugin->rating_count }} {{ Str::plural('rating', $plugin->rating_count) }})</span>
+                            </span>
+                        @else
+                            <span class="text-sm text-gray-500 dark:text-gray-400">No ratings yet</span>
+                        @endif
+
+                        @if ($plugin->worksInJump())
                             <span
                                 class="inline-flex items-center gap-1.5 rounded-full bg-indigo-100 px-3 py-1 text-xs font-medium text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-300"
                                 title="This plugin runs in the Jump preview app without a native build"
@@ -104,14 +118,27 @@
                                 <x-heroicon-o-bolt class="size-3.5" aria-hidden="true" />
                                 Works in Jump
                             </span>
-                        </div>
-                    @endif
+                        @endif
+                    </div>
                 </div>
             </div>
         </header>
 
         {{-- Divider --}}
         <x-divider />
+
+        {{-- Session Messages --}}
+        @if (session('error'))
+            <div class="mb-6 rounded-lg border border-red-200 bg-red-50 p-4 dark:border-red-800 dark:bg-red-900/20">
+                <p class="text-sm text-red-800 dark:text-red-200">{{ session('error') }}</p>
+            </div>
+        @endif
+
+        @if (session('success'))
+            <div class="mb-6 rounded-lg border border-green-200 bg-green-50 p-4 dark:border-green-800 dark:bg-green-900/20">
+                <p class="text-sm text-green-800 dark:text-green-200">{{ session('success') }}</p>
+            </div>
+        @endif
 
         <div class="mt-2 flex flex-col-reverse gap-8 lg:flex-row lg:items-start">
                 {{-- Main content - README --}}
@@ -572,6 +599,155 @@
                                 </li>
                             @endforeach
                         </ul>
+                    </div>
+                @endif
+
+                {{-- Rate this plugin --}}
+                @auth
+                    @if (auth()->user()->canRatePlugin($plugin))
+                        @php $myRating = \App\Models\PluginRating::findFor($plugin, auth()->user()); @endphp
+                        <div
+                            x-data="{ hover: 0, selected: {{ $myRating?->rating ?? 0 }} }"
+                            class="mt-4 rounded-2xl border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-slate-800/50"
+                        >
+                            <h2 class="text-sm font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">
+                                {{ $myRating ? 'Your Rating' : 'Rate this Plugin' }}
+                            </h2>
+                            <form method="POST" action="{{ route('plugins.rating.store', $plugin->routeParams()) }}" class="mt-3">
+                                @csrf
+                                <input type="hidden" name="rating" x-model="selected" />
+                                <div class="flex items-center gap-1" x-on:mouseleave="hover = 0">
+                                    @for ($i = 1; $i <= 5; $i++)
+                                        <button
+                                            type="submit"
+                                            x-on:mouseenter="hover = {{ $i }}"
+                                            x-on:click="selected = {{ $i }}"
+                                            class="p-0.5"
+                                            aria-label="Rate {{ $i }} out of 5 stars"
+                                        >
+                                            <x-heroicon-s-star
+                                                class="size-7 transition"
+                                                x-bind:class="(hover || selected) >= {{ $i }} ? 'text-amber-400' : 'text-gray-300 dark:text-gray-600'"
+                                            />
+                                        </button>
+                                    @endfor
+                                </div>
+                                @error('rating')
+                                    <p class="mt-2 text-xs text-red-600 dark:text-red-400">{{ $message }}</p>
+                                @enderror
+                            </form>
+                            @if ($myRating)
+                                <form method="POST" action="{{ route('plugins.rating.destroy', $plugin->routeParams()) }}" class="mt-3">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="text-xs font-medium text-gray-500 underline hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
+                                        Remove my rating
+                                    </button>
+                                </form>
+                            @endif
+                        </div>
+                    @endif
+                @else
+                    <div class="mt-4 rounded-2xl border border-gray-200 bg-white p-6 text-center dark:border-gray-700 dark:bg-slate-800/50">
+                        <p class="text-sm text-gray-600 dark:text-gray-400">
+                            <a href="{{ route('customer.login') }}" class="font-medium text-indigo-600 underline hover:text-indigo-700 dark:text-indigo-400">Log in</a>
+                            to rate this plugin.
+                        </p>
+                    </div>
+                @endauth
+
+                {{-- Report this plugin --}}
+                @if (auth()->check() && auth()->user()->canReportPlugin($plugin))
+                    <div
+                        x-data="{ open: {{ $errors->has('category') || $errors->has('message') ? 'true' : 'false' }} }"
+                        class="mt-4 rounded-2xl border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-slate-800/50"
+                    >
+                        <button
+                            type="button"
+                            x-on:click="open = !open"
+                            :aria-expanded="open"
+                            title="Not for bugs — for reporting malicious code or an unresponsive author"
+                            class="flex w-full items-center justify-between gap-2 text-left"
+                        >
+                            <span class="inline-flex items-center gap-2 text-sm font-medium text-gray-600 dark:text-gray-400">
+                                <x-heroicon-o-flag class="size-4 shrink-0" aria-hidden="true" />
+                                Report this plugin
+                            </span>
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                stroke-width="2"
+                                stroke="currentColor"
+                                class="size-4 shrink-0 text-gray-400 transition-transform duration-200"
+                                :class="{ 'rotate-180': open }"
+                                aria-hidden="true"
+                            >
+                                <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
+                            </svg>
+                        </button>
+
+                        <div x-show="open" x-collapse x-cloak class="mt-4 space-y-4">
+                            <div class="rounded-xl border border-amber-200 bg-amber-50 p-3 dark:border-amber-800 dark:bg-amber-950/30">
+                                <p class="text-xs text-amber-800 dark:text-amber-300">
+                                    This isn't for bugs or support requests &mdash; it's only for reporting a plugin that's
+                                    <strong>malicious</strong> or whose author is <strong>unresponsive</strong> to the NativePHP team.
+                                </p>
+                                @if ($plugin->getIssuesUrl())
+                                    <p class="mt-2 text-xs text-amber-800 dark:text-amber-300">
+                                        Found a bug instead?
+                                        <a href="{{ $plugin->getIssuesUrl() }}" target="_blank" class="font-medium underline hover:no-underline">
+                                            Report it on GitHub &rarr;
+                                        </a>
+                                    </p>
+                                @elseif ($plugin->support_channel)
+                                    <p class="mt-2 text-xs text-amber-800 dark:text-amber-300">
+                                        Found a bug instead? Use the Support link above to contact the plugin's author.
+                                    </p>
+                                @endif
+                            </div>
+
+                            <form method="POST" action="{{ route('plugins.report.store', $plugin->routeParams()) }}" class="space-y-3">
+                                @csrf
+                                <div>
+                                    <label for="report-category" class="block text-xs font-medium text-gray-700 dark:text-gray-300">Reason</label>
+                                    <select
+                                        id="report-category"
+                                        name="category"
+                                        required
+                                        class="mt-1 block w-full rounded-lg border-gray-300 text-sm focus:border-indigo-500 focus:ring-indigo-500 dark:border-gray-600 dark:bg-slate-900 dark:text-white"
+                                    >
+                                        @foreach (\App\Enums\PluginReportCategory::cases() as $category)
+                                            <option value="{{ $category->value }}" @selected(old('category') === $category->value)>{{ $category->label() }}</option>
+                                        @endforeach
+                                    </select>
+                                    @error('category')
+                                        <p class="mt-1 text-xs text-red-600 dark:text-red-400">{{ $message }}</p>
+                                    @enderror
+                                </div>
+                                <div>
+                                    <label for="report-message" class="block text-xs font-medium text-gray-700 dark:text-gray-300">Details</label>
+                                    <textarea
+                                        id="report-message"
+                                        name="message"
+                                        rows="3"
+                                        required
+                                        maxlength="5000"
+                                        placeholder="What's going on?"
+                                        class="mt-1 block w-full rounded-lg border-gray-300 text-sm focus:border-indigo-500 focus:ring-indigo-500 dark:border-gray-600 dark:bg-slate-900 dark:text-white"
+                                    >{{ old('message') }}</textarea>
+                                    @error('message')
+                                        <p class="mt-1 text-xs text-red-600 dark:text-red-400">{{ $message }}</p>
+                                    @enderror
+                                </div>
+                                <button
+                                    type="submit"
+                                    class="w-full rounded-lg bg-gray-900 px-4 py-2 text-sm font-medium text-white transition hover:bg-gray-800 dark:bg-white dark:text-gray-900 dark:hover:bg-gray-200"
+                                >
+                                    Send Report to NativePHP
+                                </button>
+                            </form>
+                        </div>
                     </div>
                 @endif
 
