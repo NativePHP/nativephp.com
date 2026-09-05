@@ -106,8 +106,6 @@
                                 <span class="font-medium text-gray-900 dark:text-white">{{ number_format($plugin->rating_average, 1) }}</span>
                                 <span class="text-gray-500 dark:text-gray-400">({{ $plugin->rating_count }} {{ Str::plural('rating', $plugin->rating_count) }})</span>
                             </span>
-                        @else
-                            <span class="text-sm text-gray-500 dark:text-gray-400">No ratings yet</span>
                         @endif
 
                         @if ($plugin->worksInJump())
@@ -650,7 +648,7 @@
                 @else
                     <div class="mt-4 rounded-2xl border border-gray-200 bg-white p-6 text-center dark:border-gray-700 dark:bg-slate-800/50">
                         <p class="text-sm text-gray-600 dark:text-gray-400">
-                            <a href="{{ route('customer.login') }}" class="font-medium text-indigo-600 underline hover:text-indigo-700 dark:text-indigo-400">Log in</a>
+                            <a href="{{ route('customer.login', ['redirect' => route('plugins.show', $plugin->routeParams(), false)]) }}" class="font-medium text-indigo-600 underline hover:text-indigo-700 dark:text-indigo-400">Log in</a>
                             to rate this plugin.
                         </p>
                     </div>
