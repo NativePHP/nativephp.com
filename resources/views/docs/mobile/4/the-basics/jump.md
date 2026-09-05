@@ -106,7 +106,7 @@ The dev server is configured under the `server` key in your `config/nativephp.ph
     'http_port' => env('NATIVEPHP_HTTP_PORT', 3000),
     'ws_port' => env('NATIVEPHP_WS_PORT', 8081),
     'service_name' => env('NATIVEPHP_SERVICE_NAME', 'NativePHP Server'),
-    'open_browser' => env('NATIVEPHP_OPEN_BROWSER', true),
+    'open_browser' => env('NATIVEPHP_OPEN_BROWSER', false),
 ],
 ```
 
