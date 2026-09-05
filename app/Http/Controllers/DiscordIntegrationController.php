@@ -89,6 +89,13 @@ class DiscordIntegrationController extends Controller
                 }
             }
 
+            if ($user->hasPurchasedMasterclass()) {
+                if ($discord->assignMasterRole($discordUser['id'])) {
+                    $user->update(['discord_master_role_granted_at' => now()]);
+                    $rolesAssigned[] = 'Master';
+                }
+            }
+
             if (count($rolesAssigned) > 0) {
                 $roleNames = implode(' and ', $rolesAssigned);
 
@@ -123,6 +130,10 @@ class DiscordIntegrationController extends Controller
             if ($user->discord_early_adopter_role_granted_at) {
                 $discord->removeEarlyAdopterRole($user->discord_id);
             }
+
+            if ($user->discord_master_role_granted_at) {
+                $discord->removeMasterRole($user->discord_id);
+            }
         }
 
         $user->update([
@@ -130,6 +141,7 @@ class DiscordIntegrationController extends Controller
             'discord_username' => null,
             'discord_role_granted_at' => null,
             'discord_early_adopter_role_granted_at' => null,
+            'discord_master_role_granted_at' => null,
         ]);
 
         return back()->with('success', 'Discord account disconnected successfully.');
