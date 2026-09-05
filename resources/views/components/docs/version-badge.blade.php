@@ -29,6 +29,6 @@
         :label="$state['prefix'].$state['version']"
         :variant="$state['variant']"
         :tooltip="$state['verb'].' '.\App\Support\DocsLabels::productName().' '.$state['version']"
-        :href="\App\Support\DocsLabels::versioningPolicyUrl()"
+        :href="\App\Support\DocsLabels::whatsNewUrl()"
     />
 @endif

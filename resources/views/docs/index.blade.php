@@ -23,19 +23,7 @@
 
     <x-slot name="sidebarRight">
         {{-- Version switcher --}}
-        @if($platform === 'desktop')
-            <livewire:version-switcher :versions="[
-                1 => '1.x',
-                2 => '2.x'
-            ]" />
-        @elseif($platform === 'mobile')
-            <livewire:version-switcher :versions="[
-                1 => '1.x',
-                2 => '2.x',
-                3 => '3.x',
-                4 => '4.x'
-            ]" />
-        @endif
+        <livewire:version-switcher :versions="$docsVersionLabels" />
 
         <x-docs.toc-and-sponsors :tableOfContents="$tableOfContents">
             {{-- EDGE component pages can be previewed live in the Jump app --}}
@@ -94,19 +82,7 @@
     <div class="xl:hidden pt-9 space-y-4">
 
         {{-- Version switcher --}}
-        @if($platform === 'desktop')
-            <livewire:version-switcher :versions="[
-                1 => '1.x',
-                2 => '2.x'
-            ]" />
-        @elseif($platform === 'mobile')
-            <livewire:version-switcher :versions="[
-                1 => '1.x',
-                2 => '2.x',
-                3 => '3.x',
-                4 => '4.x'
-            ]" />
-        @endif
+        <livewire:version-switcher :versions="$docsVersionLabels" />
 
         {{-- Copy as Markdown Button --}}
         <x-docs.copy-markdown-button />
@@ -149,6 +125,12 @@
     >
         {!! $content !!}
     </div>
+
+    <livewire:docs-feedback-widget
+        :platform="$platform"
+        :version="(string) $version"
+        :page="$pagePath"
+    />
 
     <x-docs.separator class="mt-8" />
 
