@@ -252,11 +252,11 @@ Control the color of the status bar and navigation bar icons:
 
 ```php
 'android' => [
-    'status_bar_style' => env('NATIVEPHP_ANDROID_STATUS_BAR_STYLE', 'auto'),
+    'status_bar_style' => 'auto',
 ],
 ```
 
-Options: `auto` (detect from system theme), `light` (white icons), or `dark` (dark icons).
+Options: `auto` (detect from system theme), `light` (white icons), or `dark` (dark icons). This isn't wrapped in an `env()` call — change the value directly in the published config to override it.
 
 ## Development Server
 
@@ -267,14 +267,14 @@ Configure the development server used by `native:jump` and `native:watch`:
     'http_port' => env('NATIVEPHP_HTTP_PORT', 3000),
     'ws_port' => env('NATIVEPHP_WS_PORT', 8081),
     'service_name' => env('NATIVEPHP_SERVICE_NAME', 'NativePHP Server'),
-    'open_browser' => env('NATIVEPHP_OPEN_BROWSER', true),
+    'open_browser' => env('NATIVEPHP_OPEN_BROWSER', false),
 ],
 ```
 
 - `http_port` — The port for serving your app during development. (default: `3000`)
 - `ws_port` — The WebSocket port for hot reload communication. (default: `8081`)
 - `service_name` — The mDNS service name advertised on your network. (default: `NativePHP Server`)
-- `open_browser` — Automatically open a browser with a QR code when the server starts. (default: `true`)
+- `open_browser` — Automatically open a browser with a QR code when the server starts. (default: `false` — the terminal already renders a scannable QR code; pass `--browser` to `native:jump`, or set `NATIVEPHP_OPEN_BROWSER=true`, to opt in)
 
 ## Hot Reload
 

@@ -18,11 +18,10 @@ php artisan native:install {platform?}
 | Option | Description |
 |--------|-------------|
 | `platform` | Target platform: `android`, `ios`, or `both` |
-| `--force` | Overwrite existing files |
-| `--fresh` | Alias for `--force` |
+| `--no-force` | Keep existing files instead of overwriting them (overwriting is the default) |
 | `--with-icu` | Include ICU support for Android (adds ~30MB) |
-| `--without-icu` | Exclude ICU support for Android |
-| `--skip-php` | Do not download PHP binaries |
+| `--skip-php` | Do not download the PHP binaries |
+| `-F`, `--force` | Force re-download of the PHP binaries by clearing the cache |
 
 ### native:run
 
@@ -36,7 +35,7 @@ php artisan native:run {os?} {udid?}
 |--------|---------------------------------------------------|
 | `os` | Target platform: `ios/i` or `android/a`           |
 | `udid` | Specific device/simulator UDID                    |
-| `--build=debug` | Build type: `debug`, `release`, or `bundle`       |
+| `--build=debug` | Build type: `debug`, `release`, `bundle`, or `profileable` |
 | `--watch` | Enable hot reloading during development           |
 | `--vite` | Start the Vite dev server for JS/CSS HMR (opt-in; off by default) |
 | `--start-url=` | Initial URL/path to load (e.g., `/dashboard`)     |
@@ -90,6 +89,7 @@ php artisan native:jump
 | `--no-serve` <span class="ml-1 inline-flex items-center rounded bg-indigo-100 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-indigo-700 dark:bg-indigo-900/40 dark:text-indigo-300">v3.3+</span> | Do not start `artisan serve` automatically (use if running your own server) |
 | `--laravel-port=` | Laravel dev server port (defaults to `8000`; auto-detected when `artisan serve` is managed) |
 | `--no-mdns` | Disable mDNS service advertisement |
+| `--browser` | Open the QR code page in the default browser (useful when terminal rendering is unreliable) |
 
 ### native:open
 
@@ -229,9 +229,11 @@ php artisan native:package {platform}
 | Option | Description                                       |
 |--------|---------------------------------------------------|
 | `platform` | Target platform: `android/a` or `ios/i`           |
+| `--ios` | Target iOS platform (shorthand for `platform=ios`) |
+| `--android` | Target Android platform (shorthand for `platform=android`) |
 | `--build-type=release` | Build type: `release` or `bundle`                 |
 | `--output=` | Output directory for signed artifacts             |
-| `--jump-by=` | Skip ahead in version numbering                   |
+| `--jump-by=` | Add extra number to the suggested version, e.g. `--jump-by=10` to skip ahead |
 | `--no-tty` | Disable TTY mode for non-interactive environments |
 
 **Android Options:**
