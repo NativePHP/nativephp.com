@@ -21,7 +21,7 @@
         "atropos": "^2.0.2",
         "axios": "^1.19.0",
         "gsap": "^3.13.0",
-        "laravel-vite-plugin": "^2.0.0",
+        "laravel-vite-plugin": "^3.2.0",
         "motion": "^12.23.12",
         "number-flow": "^0.6.2",
         "postcss": "^8.5.6",

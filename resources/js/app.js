@@ -15,7 +15,7 @@ import Atropos from 'atropos'
 import '@docsearch/css'
 import 'atropos/css'
 
-import.meta.glob(['../images/**', '../svg/**'])
+import.meta.glob(['../images/**', '../svg/**'], { eager: true })
 import {
     animate,
     hover,
