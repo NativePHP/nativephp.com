@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\PluginActivityType;
+use App\Enums\PluginCategory;
 use App\Enums\PluginStatus;
 use App\Enums\PluginTier;
 use App\Enums\PluginType;
@@ -899,6 +900,7 @@ class Plugin extends Model
             'status' => PluginStatus::class,
             'type' => PluginType::class,
             'tier' => PluginTier::class,
+            'category' => PluginCategory::class,
             'approved_at' => 'datetime',
             'featured' => 'boolean',
             'is_active' => 'boolean',

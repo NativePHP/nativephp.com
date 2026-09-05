@@ -64,8 +64,45 @@
             </div>
         </div>
 
+        {{-- Filters --}}
+        @if ($view === 'plugins')
+            <div class="mt-4 flex flex-wrap items-center justify-center gap-2">
+                <select
+                    wire:model.live="type"
+                    class="rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-700 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 dark:border-gray-600 dark:bg-slate-800 dark:text-gray-200 dark:focus:border-indigo-400 dark:focus:ring-indigo-400"
+                >
+                    <option value="">All Types</option>
+                    @foreach ($typeOptions as $option)
+                        <option value="{{ $option->value }}">{{ $option->label() }}</option>
+                    @endforeach
+                </select>
+
+                <select
+                    wire:model.live="category"
+                    class="rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-700 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 dark:border-gray-600 dark:bg-slate-800 dark:text-gray-200 dark:focus:border-indigo-400 dark:focus:ring-indigo-400"
+                >
+                    <option value="">All Categories</option>
+                    @foreach ($categoryOptions as $option)
+                        <option value="{{ $option->value }}">{{ $option->label() }}</option>
+                    @endforeach
+                    <option value="{{ $categoryUncategorizedValue }}">Uncategorized</option>
+                </select>
+
+                <select
+                    wire:model.live="mobileVersion"
+                    class="rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-700 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 dark:border-gray-600 dark:bg-slate-800 dark:text-gray-200 dark:focus:border-indigo-400 dark:focus:ring-indigo-400"
+                >
+                    <option value="">All NativePHP Versions</option>
+                    @foreach ($mobileVersionOptions as $majorVersion)
+                        <option value="{{ $majorVersion }}">v{{ $majorVersion }}.x and up</option>
+                    @endforeach
+                    <option value="{{ $mobileVersionUnspecifiedValue }}">Version Unspecified</option>
+                </select>
+            </div>
+        @endif
+
         {{-- Active Filters --}}
-        @if ($search || $authorUser)
+        @if ($search || $authorUser || ($view === 'plugins' && ($type || $category || $mobileVersion)))
             <div class="mt-4 flex flex-wrap items-center justify-center gap-2">
                 @if ($authorUser)
                     <span class="inline-flex items-center gap-1.5 rounded-full bg-indigo-100 py-1 pl-3 pr-1.5 text-sm font-medium text-indigo-800 dark:bg-indigo-900/30 dark:text-indigo-300">
@@ -93,6 +130,48 @@
                         <button
                             type="button"
                             wire:click="clearSearch"
+                            class="ml-0.5 rounded-full p-0.5 hover:bg-gray-200 dark:hover:bg-gray-600"
+                        >
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="size-3.5">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
+                            </svg>
+                        </button>
+                    </span>
+                @endif
+                @if ($view === 'plugins' && $type)
+                    <span class="inline-flex items-center gap-1.5 rounded-full bg-gray-100 py-1 pl-3 pr-1.5 text-sm font-medium text-gray-800 dark:bg-gray-700 dark:text-gray-300">
+                        {{ $typeLabel }}
+                        <button
+                            type="button"
+                            wire:click="clearType"
+                            class="ml-0.5 rounded-full p-0.5 hover:bg-gray-200 dark:hover:bg-gray-600"
+                        >
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="size-3.5">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
+                            </svg>
+                        </button>
+                    </span>
+                @endif
+                @if ($view === 'plugins' && $category)
+                    <span class="inline-flex items-center gap-1.5 rounded-full bg-gray-100 py-1 pl-3 pr-1.5 text-sm font-medium text-gray-800 dark:bg-gray-700 dark:text-gray-300">
+                        {{ $categoryLabel }}
+                        <button
+                            type="button"
+                            wire:click="clearCategory"
+                            class="ml-0.5 rounded-full p-0.5 hover:bg-gray-200 dark:hover:bg-gray-600"
+                        >
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="size-3.5">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
+                            </svg>
+                        </button>
+                    </span>
+                @endif
+                @if ($view === 'plugins' && $mobileVersion)
+                    <span class="inline-flex items-center gap-1.5 rounded-full bg-gray-100 py-1 pl-3 pr-1.5 text-sm font-medium text-gray-800 dark:bg-gray-700 dark:text-gray-300">
+                        {{ $mobileVersionLabel }}
+                        <button
+                            type="button"
+                            wire:click="clearMobileVersion"
                             class="ml-0.5 rounded-full p-0.5 hover:bg-gray-200 dark:hover:bg-gray-600"
                         >
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="size-3.5">
@@ -161,14 +240,19 @@
                 <div class="flex flex-col items-center justify-center rounded-2xl border-2 border-dashed border-gray-300 bg-gray-50 p-12 text-center dark:border-gray-700 dark:bg-slate-800/50">
                     <x-vaadin-plug class="size-12 text-gray-400 dark:text-gray-500" />
                     <h3 class="mt-4 text-lg font-medium text-gray-900 dark:text-white">No plugins found</h3>
-                    @if ($search || $authorUser)
+                    @php
+                        $hasFilters = $type || $category || $mobileVersion;
+                    @endphp
+                    @if ($search || $authorUser || $hasFilters)
                         <p class="mt-2 text-gray-600 dark:text-gray-400">
                             @if ($authorUser && $search)
                                 No plugins by {{ $authorUser->display_name }} match your search.
                             @elseif ($authorUser)
                                 {{ $authorUser->display_name }} hasn't published any plugins yet.
-                            @else
+                            @elseif ($search)
                                 No plugins match your search. Try a different term.
+                            @else
+                                No plugins match the selected filters. Try different options.
                             @endif
                         </p>
                         <div class="mt-4 flex items-center gap-2">
@@ -179,6 +263,15 @@
                                     class="inline-flex items-center gap-2 rounded-lg bg-gray-200 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600"
                                 >
                                     Clear search
+                                </button>
+                            @endif
+                            @if ($hasFilters)
+                                <button
+                                    type="button"
+                                    wire:click="clearFilters"
+                                    class="inline-flex items-center gap-2 rounded-lg bg-gray-200 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600"
+                                >
+                                    Clear filters
                                 </button>
                             @endif
                             @if ($authorUser)
