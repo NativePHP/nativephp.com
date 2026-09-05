@@ -69,7 +69,7 @@
             <div class="mt-4 flex flex-wrap items-center justify-center gap-2">
                 <select
                     wire:model.live="type"
-                    class="rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-700 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 dark:border-gray-600 dark:bg-slate-800 dark:text-gray-200 dark:focus:border-indigo-400 dark:focus:ring-indigo-400"
+                    class="rounded-lg border border-gray-300 bg-white py-2 pl-3 pr-9 text-sm text-gray-700 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 dark:border-gray-600 dark:bg-slate-800 dark:text-gray-200 dark:focus:border-indigo-400 dark:focus:ring-indigo-400"
                 >
                     <option value="">All Types</option>
                     @foreach ($typeOptions as $option)
@@ -79,7 +79,7 @@
 
                 <select
                     wire:model.live="category"
-                    class="rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-700 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 dark:border-gray-600 dark:bg-slate-800 dark:text-gray-200 dark:focus:border-indigo-400 dark:focus:ring-indigo-400"
+                    class="rounded-lg border border-gray-300 bg-white py-2 pl-3 pr-9 text-sm text-gray-700 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 dark:border-gray-600 dark:bg-slate-800 dark:text-gray-200 dark:focus:border-indigo-400 dark:focus:ring-indigo-400"
                 >
                     <option value="">All Categories</option>
                     @foreach ($categoryOptions as $option)
@@ -90,7 +90,7 @@
 
                 <select
                     wire:model.live="mobileVersion"
-                    class="rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-700 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 dark:border-gray-600 dark:bg-slate-800 dark:text-gray-200 dark:focus:border-indigo-400 dark:focus:ring-indigo-400"
+                    class="rounded-lg border border-gray-300 bg-white py-2 pl-3 pr-9 text-sm text-gray-700 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 dark:border-gray-600 dark:bg-slate-800 dark:text-gray-200 dark:focus:border-indigo-400 dark:focus:ring-indigo-400"
                 >
                     <option value="">All NativePHP Versions</option>
                     @foreach ($mobileVersionOptions as $majorVersion)
