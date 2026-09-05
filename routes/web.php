@@ -226,7 +226,7 @@ Route::view('newsletter/unsubscribed', 'newsletter.unsubscribed')->name('newslet
 Route::view('wall-of-love', 'wall-of-love')->name('wall-of-love');
 Route::view('brand', 'brand')->name('brand');
 Route::get('showcase/{platform?}', [ShowcaseController::class, 'index'])
-    ->where('platform', 'mobile|desktop')
+    ->where('platform', 'mobile|desktop|both')
     ->name('showcase');
 Route::view('laracon-us-2025-giveaway', 'laracon-us-2025-giveaway')->name('laracon-us-2025-giveaway');
 Route::view('privacy-policy', 'privacy-policy')->name('privacy-policy');
