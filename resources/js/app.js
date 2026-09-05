@@ -186,36 +186,51 @@ function getDesktopSearchButton() {
     )
 }
 
-// Re-created on demand when "Search everywhere" is clicked, since docsearch()
-// has no API to update an already-initialized instance's transformItems —
-// only to destroy() and re-initialize it (see docsearch()'s DocSearchInstance
-// return value in the @docsearch/js API reference).
-function initDocsearch(broadenScope, initialQuery) {
-    return docsearch({
+// docsearch() doesn't return a controllable instance (its @docsearch/js
+// wrapper just renders into the container and returns undefined) — there's
+// no destroy()/open() to call. Re-initializing means calling it again with
+// new options: it re-renders into the same container, which preact reconciles
+// against the previous tree in place rather than remounting it, so an
+// already-open modal stays open across the props change.
+function initDocsearch(broadenScope) {
+    docsearch({
         appId: 'ZNII9QZ8WI',
         apiKey: '9be495a1aaf367b47c873d30a8e7ccf5',
         indexName: 'nativephp',
         insights: true,
         debug: false,
         container: docsearchContainerSelector,
-        initialQuery,
         ...(docsPathMatch && ! broadenScope && { transformItems: scopedTransformItems }),
     })
 }
 
-let docsearchInstance = initDocsearch(false)
+initDocsearch(false)
 
 const broadenButton = document.getElementById('docsearch-broaden')
 if (broadenButton && docsPathMatch) {
     broadenButton.addEventListener('click', () => {
-        const query =
-            document.querySelector(
-                `${docsearchContainerSelector} .DocSearch-Input`,
-            )?.value ?? ''
+        // DocSearch portals its modal onto <body> rather than nesting it
+        // under the container it was initialized with, so the input can't
+        // be found by scoping the selector to docsearchContainerSelector.
+        const query = document.querySelector('.DocSearch-Input')?.value ?? ''
+        const wasOpen = document.querySelector('.DocSearch-Modal') !== null
 
-        docsearchInstance.destroy()
-        docsearchInstance = initDocsearch(true, query)
-        docsearchInstance.open()
+        // initialQuery only seeds DocSearch's internal state on first mount —
+        // passing it again here would be silently ignored, since re-render
+        // reconciles the existing instance rather than remounting it. Restore
+        // the query by writing straight to the live (same, reused) input and
+        // dispatching the event its controlled input listens for instead.
+        initDocsearch(true)
+
+        if (! wasOpen) {
+            getDesktopSearchButton()?.click()
+        } else if (query) {
+            const input = document.querySelector('.DocSearch-Input')
+            if (input) {
+                input.value = query
+                input.dispatchEvent(new Event('input', { bubbles: true }))
+            }
+        }
 
         document.getElementById('docsearch-scope-label')?.remove()
     })
