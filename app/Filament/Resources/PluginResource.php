@@ -272,6 +272,9 @@ class PluginResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->modifyQueryUsing(fn (Builder $query): Builder => $query->withCount([
+                'reports as open_reports_count' => fn (Builder $query): Builder => $query->open(),
+            ]))
             ->columns([
                 Tables\Columns\ImageColumn::make('logo_path')
                     ->label('Logo')
@@ -320,6 +323,12 @@ class PluginResource extends Resource
                     })
                     ->sortable()
                     ->toggleable(),
+
+                Tables\Columns\TextColumn::make('open_reports_count')
+                    ->label('Reports')
+                    ->badge()
+                    ->color(fn (int $state): string => $state > 0 ? 'danger' : 'gray')
+                    ->sortable(),
 
                 Tables\Columns\TextColumn::make('mobile_min_version')
                     ->label('Mobile SDK')
@@ -559,6 +568,7 @@ class PluginResource extends Resource
             RelationManagers\LicensesRelationManager::class,
             RelationManagers\ActivitiesRelationManager::class,
             RelationManagers\VersionsRelationManager::class,
+            RelationManagers\RatingsRelationManager::class,
         ];
     }
 

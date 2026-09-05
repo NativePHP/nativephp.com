@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Storage;
 use Livewire\Attributes\Validate;
 use Livewire\Component;
+use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
 use Livewire\WithFileUploads;
 
 class ShowcaseSubmissionForm extends Component
@@ -33,6 +34,16 @@ class ShowcaseSubmissionForm extends Component
     public array $screenshots = [];
 
     public array $existingScreenshots = [];
+
+    #[Validate('nullable|array|max:5')]
+    public array $mobileScreenshots = [];
+
+    public array $existingMobileScreenshots = [];
+
+    #[Validate('nullable|array|max:5')]
+    public array $desktopScreenshots = [];
+
+    public array $existingDesktopScreenshots = [];
 
     #[Validate('boolean')]
     public bool $hasMobile = false;
@@ -67,6 +78,8 @@ class ShowcaseSubmissionForm extends Component
             $this->description = $showcase->description;
             $this->existingImage = $showcase->image;
             $this->existingScreenshots = $showcase->screenshots ?? [];
+            $this->existingMobileScreenshots = $showcase->mobile_screenshots ?? [];
+            $this->existingDesktopScreenshots = $showcase->desktop_screenshots ?? [];
             $this->hasMobile = $showcase->has_mobile;
             $this->hasDesktop = $showcase->has_desktop;
             $this->playStoreUrl = $showcase->play_store_url ?? '';
@@ -85,6 +98,8 @@ class ShowcaseSubmissionForm extends Component
             'description' => 'required|string|max:2000',
             'image' => 'nullable|image|max:2048',
             'screenshots.*' => 'nullable|image|max:2048',
+            'mobileScreenshots.*' => 'nullable|image|max:2048',
+            'desktopScreenshots.*' => 'nullable|image|max:2048',
             'hasMobile' => 'boolean',
             'hasDesktop' => 'boolean',
             'playStoreUrl' => 'nullable|url|max:255',
@@ -115,9 +130,44 @@ class ShowcaseSubmissionForm extends Component
         }
     }
 
+    public function removeExistingMobileScreenshot(int $index): void
+    {
+        if (isset($this->existingMobileScreenshots[$index])) {
+            unset($this->existingMobileScreenshots[$index]);
+            $this->existingMobileScreenshots = array_values($this->existingMobileScreenshots);
+        }
+    }
+
+    public function removeExistingDesktopScreenshot(int $index): void
+    {
+        if (isset($this->existingDesktopScreenshots[$index])) {
+            unset($this->existingDesktopScreenshots[$index]);
+            $this->existingDesktopScreenshots = array_values($this->existingDesktopScreenshots);
+        }
+    }
+
     public function removeExistingImage(): void
     {
         $this->existingImage = null;
+    }
+
+    /**
+     * @param  array<int, string>  $existing
+     * @param  array<int, TemporaryUploadedFile>  $uploads
+     * @return array<int, string>
+     */
+    protected function storeScreenshots(array $existing, array $uploads): array
+    {
+        $paths = $existing;
+
+        foreach ($uploads as $upload) {
+            if (count($paths) >= 5) {
+                break;
+            }
+            $paths[] = $upload->store('showcase-screenshots', 'public');
+        }
+
+        return $paths;
     }
 
     public function submit(): mixed
@@ -135,19 +185,19 @@ class ShowcaseSubmissionForm extends Component
             $imagePath = $this->image->store('showcase-images', 'public');
         }
 
-        $screenshotPaths = $this->existingScreenshots;
-        foreach ($this->screenshots as $screenshot) {
-            if (count($screenshotPaths) >= 5) {
-                break;
-            }
-            $screenshotPaths[] = $screenshot->store('showcase-screenshots', 'public');
-        }
+        $bothPlatforms = $this->hasMobile && $this->hasDesktop;
+
+        $screenshotPaths = $this->storeScreenshots($this->existingScreenshots, $this->screenshots);
+        $mobileScreenshotPaths = $bothPlatforms ? $this->storeScreenshots($this->existingMobileScreenshots, $this->mobileScreenshots) : [];
+        $desktopScreenshotPaths = $bothPlatforms ? $this->storeScreenshots($this->existingDesktopScreenshots, $this->desktopScreenshots) : [];
 
         $data = [
             'title' => $this->title,
             'description' => $this->description,
             'image' => $imagePath,
             'screenshots' => $screenshotPaths ?: null,
+            'mobile_screenshots' => $mobileScreenshotPaths ?: null,
+            'desktop_screenshots' => $desktopScreenshotPaths ?: null,
             'has_mobile' => $this->hasMobile,
             'has_desktop' => $this->hasDesktop,
             'play_store_url' => $this->hasMobile ? ($this->playStoreUrl ?: null) : null,
@@ -169,7 +219,7 @@ class ShowcaseSubmissionForm extends Component
                     'approved_by' => null,
                 ]);
 
-                Notification::route('mail', 'support@nativephp.com')
+                Notification::route('mail', config('mail.support_address'))
                     ->notify(new ShowcaseSubmitted($this->showcase, resubmitted: true));
 
                 return to_route('customer.showcase.index')
@@ -185,7 +235,7 @@ class ShowcaseSubmissionForm extends Component
             ...$data,
         ]);
 
-        Notification::route('mail', 'support@nativephp.com')
+        Notification::route('mail', config('mail.support_address'))
             ->notify(new ShowcaseSubmitted($showcase));
 
         return to_route('customer.showcase.index')
@@ -199,8 +249,8 @@ class ShowcaseSubmissionForm extends Component
                 Storage::disk('public')->delete($this->showcase->image);
             }
 
-            if ($this->showcase->screenshots) {
-                foreach ($this->showcase->screenshots as $screenshot) {
+            foreach ([$this->showcase->screenshots, $this->showcase->mobile_screenshots, $this->showcase->desktop_screenshots] as $screenshots) {
+                foreach ($screenshots ?? [] as $screenshot) {
                     Storage::disk('public')->delete($screenshot);
                 }
             }

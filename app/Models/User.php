@@ -476,6 +476,16 @@ class User extends Authenticatable implements FilamentUser, HasName, MustVerifyE
         return false;
     }
 
+    public function canRatePlugin(Plugin $plugin): bool
+    {
+        return $plugin->user_id !== $this->id && $this->hasPluginAccess($plugin);
+    }
+
+    public function canReportPlugin(Plugin $plugin): bool
+    {
+        return $plugin->user_id !== $this->id;
+    }
+
     public function getGitHubToken(): ?string
     {
         if (! $this->github_token) {
