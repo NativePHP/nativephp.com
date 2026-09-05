@@ -17,7 +17,18 @@
             <div class="space-y-12">
                 @foreach ($badges as $minor => $types)
                     <div>
-                        <h2 class="text-2xl font-semibold dark:text-white/90">{{ $minor }}</h2>
+                        <div class="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
+                            <h2 class="text-2xl font-semibold dark:text-white/90">{{ $minor }}</h2>
+
+                            @if ($link = $changelogLinks[$minor] ?? null)
+                                <a
+                                    href="{{ $link['url'] }}"
+                                    class="text-sm text-gray-500 underline underline-offset-4 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200"
+                                >
+                                    {{ $link['version'] }} in the {{ $link['label'] }}
+                                </a>
+                            @endif
+                        </div>
 
                         <div class="mt-4 space-y-6">
                             @foreach (\App\Services\DocsChangelogService::TYPE_LABELS as $type => $label)

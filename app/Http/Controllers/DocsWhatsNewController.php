@@ -17,10 +17,19 @@ final class DocsWhatsNewController extends Controller
         abort_unless(is_dir(resource_path("views/docs/{$platform}/{$version}")), 404);
         abort_unless(DocsPlatform::tryFrom($platform) !== null, 404);
 
+        $badges = $this->badges($platform, (int) $version);
+
         return view('docs.whats-new', [
             'platform' => $platform,
             'version' => $version,
-            'badges' => $this->badges($platform, (int) $version),
+            'badges' => $badges,
+            // Not folded into the day-long badge cache: releases move faster
+            // than docs pages, and GitHub::releases() already caches hourly.
+            'changelogLinks' => app(DocsChangelogService::class)->changelogLinks(
+                DocsPlatform::from($platform),
+                (int) $version,
+                array_keys($badges),
+            ),
         ]);
     }
 

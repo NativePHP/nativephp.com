@@ -4,7 +4,9 @@ namespace Tests\Unit;
 
 use App\Enums\DocsPlatform;
 use App\Services\DocsChangelogService;
+use App\Support\GitHub\Release;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Cache;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
@@ -73,5 +75,57 @@ class DocsChangelogServiceTest extends TestCase
         $badges = $this->service->badgesForVersion(DocsPlatform::Desktop, 1);
 
         $this->assertSame([], $badges);
+    }
+
+    #[Test]
+    public function it_links_a_minor_version_at_its_latest_patch_release(): void
+    {
+        $this->seedReleases(['4.2.0', '4.2.10', '4.2.9', '4.1.0']);
+
+        $links = $this->service->changelogLinks(DocsPlatform::Mobile, 4, ['4.2', '4.1']);
+
+        $this->assertSame('4.2.10', $links['4.2']['version']);
+        $this->assertSame(
+            route('docs.show', ['platform' => 'mobile', 'version' => 4, 'page' => 'getting-started/changelog']).'#4210',
+            $links['4.2']['url'],
+        );
+        $this->assertSame('4.1.0', $links['4.1']['version']);
+    }
+
+    #[Test]
+    public function it_anchors_on_the_release_name_as_the_changelog_prints_it(): void
+    {
+        $this->seedReleases(['v4.2.1']);
+
+        $links = $this->service->changelogLinks(DocsPlatform::Mobile, 4, ['4.2']);
+
+        $this->assertStringEndsWith('#v421', $links['4.2']['url']);
+        $this->assertSame('v4.2.1', $links['4.2']['version']);
+    }
+
+    #[Test]
+    public function it_skips_minor_versions_with_no_release_to_point_at(): void
+    {
+        $this->seedReleases(['4.1.0']);
+
+        $this->assertSame([], $this->service->changelogLinks(DocsPlatform::Mobile, 4, ['4.9']));
+    }
+
+    #[Test]
+    public function it_returns_no_links_for_a_major_whose_changelog_is_hand_written(): void
+    {
+        $this->seedReleases(['2.1.0']);
+
+        $this->assertSame([], $this->service->changelogLinks(DocsPlatform::Mobile, 2, ['2.1']));
+    }
+
+    /**
+     * @param  array<int, string>  $names
+     */
+    private function seedReleases(array $names, string $repository = 'nativephp/mobile-air'): void
+    {
+        Cache::put("{$repository}-releases", collect($names)->map(
+            fn (string $name) => new Release(['tag_name' => $name, 'name' => $name]),
+        ));
     }
 }

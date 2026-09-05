@@ -5,6 +5,10 @@ declare(strict_types=1);
 namespace App\Services;
 
 use App\Enums\DocsPlatform;
+use App\Support\GitHub;
+use App\Support\GitHub\Release;
+use Illuminate\Support\Collection;
+use Illuminate\Support\Str;
 use Spatie\YamlFrontMatter\YamlFrontMatter;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Finder\SplFileInfo;
@@ -71,6 +75,70 @@ final class DocsChangelogService
         }
 
         return $entries;
+    }
+
+    /**
+     * Links each minor version to the latest patch release listed for it on the
+     * platform's changelog, so "4.2" on the What's New page lands on 4.2.3's
+     * entry rather than the top of a long page.
+     *
+     * Majors whose changelog isn't built from a GitHub release feed, and minors
+     * with no release to point at, get no link — the heading stands on its own.
+     *
+     * @param  array<int, string>  $minors
+     * @return array<string, array{version: string, url: string, label: string}>
+     */
+    public function changelogLinks(DocsPlatform $platform, int $major, array $minors): array
+    {
+        $changelog = config("docs.changelog.{$platform->value}.{$major}");
+
+        if ($changelog === null || ! file_exists(resource_path("views/docs/{$platform->value}/{$major}/{$changelog['page']}.md"))) {
+            return [];
+        }
+
+        $releases = $this->releaseNames($changelog['repository']);
+
+        $changelogUrl = route('docs.show', [
+            'platform' => $platform->value,
+            'version' => $major,
+            'page' => $changelog['page'],
+        ]);
+
+        $links = [];
+
+        foreach ($minors as $minor) {
+            $latest = $releases
+                ->filter(fn (string $name) => str_starts_with(ltrim($name, 'v'), "{$minor}."))
+                ->sort(fn (string $a, string $b) => version_compare(ltrim($a, 'v'), ltrim($b, 'v')))
+                ->last();
+
+            if ($latest === null) {
+                continue;
+            }
+
+            $links[$minor] = [
+                'version' => $latest,
+                'url' => $changelogUrl.'#'.Str::slug($latest),
+                'label' => $changelog['label'],
+            ];
+        }
+
+        return $links;
+    }
+
+    /**
+     * The release names as the changelog page prints them in its headings —
+     * HeadingRenderer slugs that heading text into the anchor, so the link has
+     * to be built from the name rather than the tag.
+     *
+     * @return Collection<int, string>
+     */
+    private function releaseNames(string $repository): Collection
+    {
+        return (new GitHub($repository))->releases()
+            ->map(fn (Release $release) => (string) ($release->name ?: $release->tag_name))
+            ->filter()
+            ->values();
     }
 
     /**
