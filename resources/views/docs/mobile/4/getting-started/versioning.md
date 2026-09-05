@@ -57,6 +57,22 @@ with a full minimum patch release defined in your `composer.json`:
 
 This automatically receives patch updates while giving you control over minor releases.
 
+## Detecting an app update
+
+When a user's app store update finishes installing, NativePHP dispatches `Native\Mobile\Events\App\UpdateInstalled`
+with the new `version` and a `timestamp`. Listen for it to show a "what's new" screen or re-sync anything that
+depends on the app version:
+
+```php
+use Native\Mobile\Events\App\UpdateInstalled;
+
+#[On(UpdateInstalled::class)]
+public function onUpdateInstalled(string $version, int $timestamp): void
+{
+    $this->showWhatsNew = true;
+}
+```
+
 ## Version labels
 
 Anything documented in this version of the docs has been here since 4.0 unless it carries a label. Labels appear next
