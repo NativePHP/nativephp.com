@@ -320,6 +320,7 @@ The parser recognizes the classes listed below.
 | Margin | `m-N`, `mx-N`, `my-N`, `mt-N`, `mr-N`, `mb-N`, `ml-N`, arbitrary `m-[N]` etc. |
 | Gap | `gap-N`, `gap-[N]` (uniform — no `gap-x-*` or `gap-y-*`) |
 | Position | `absolute`, `relative`, `top-N`, `right-N`, `bottom-N`, `left-N`, arbitrary `top-[N]` etc. |
+| Anchor / origin | `anchor-{point}`, `origin-{point}` — where `{point}` is `center`, an edge (`top`/`right`/`bottom`/`left`) or a corner (`top-left`…`bottom-right`). See [Positioning](../the-basics/positioning#anchor-amp-origin) |
 | Flex | `flex-1`, `flex-grow`, `flex-grow-0`, `flex-shrink`, `flex-shrink-0`, `flex-wrap`, `flex-nowrap`, `flex-wrap-reverse` |
 | Items (cross-axis) | `items-start`, `items-center`, `items-end`, `items-stretch` |
 | Justify (main-axis) | `justify-start`, `justify-center`, `justify-end`, `justify-between`, `justify-around`, `justify-evenly` |
