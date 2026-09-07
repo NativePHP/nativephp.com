@@ -5,7 +5,7 @@ order: 100
 
 ## Requirements
 
-1. PHP 8.3+
+1. PHP 8.4+
 2. Laravel 11+
 
 If you don't already have PHP installed on your machine, the most painless way to get PHP up and running on Mac and
