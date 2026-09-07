@@ -79,11 +79,13 @@ class ThirdPartySaleResource extends Resource
                 Tables\Columns\TextColumn::make('price_paid')
                     ->label('Paid')
                     ->formatStateUsing(fn (int $state): string => '$'.number_format($state / 100, 2))
+                    ->summarize(Tables\Columns\Summarizers\Sum::make('sum')->money('USD', divideBy: 100))
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('payout.developer_amount')
                     ->label('Due to Seller')
                     ->formatStateUsing(fn (?int $state): string => $state === null ? '—' : '$'.number_format($state / 100, 2))
+                    ->summarize(Tables\Columns\Summarizers\Sum::make('sum')->money('USD', divideBy: 100))
                     ->placeholder('—'),
 
                 Tables\Columns\TextColumn::make('payout_status')

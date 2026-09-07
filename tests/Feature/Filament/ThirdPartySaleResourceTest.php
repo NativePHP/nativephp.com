@@ -122,6 +122,43 @@ class ThirdPartySaleResourceTest extends TestCase
             ->assertCanNotSeeTableRecords([$granted]);
     }
 
+    public function test_totals_paid_and_due_to_seller(): void
+    {
+        $plugin = $this->createThirdPartyPlugin();
+
+        $first = PluginLicense::factory()->create([
+            'plugin_id' => $plugin->id,
+            'price_paid' => 2000,
+        ]);
+        PluginPayout::factory()->create([
+            'plugin_license_id' => $first->id,
+            'developer_account_id' => $plugin->developer_account_id,
+            'gross_amount' => 2000,
+            'platform_fee' => 600,
+            'developer_amount' => 1400,
+        ]);
+
+        $second = PluginLicense::factory()->create([
+            'plugin_id' => $plugin->id,
+            'price_paid' => 5000,
+        ]);
+        PluginPayout::factory()->create([
+            'plugin_license_id' => $second->id,
+            'developer_account_id' => $plugin->developer_account_id,
+            'gross_amount' => 5000,
+            'platform_fee' => 1500,
+            'developer_amount' => 3500,
+        ]);
+
+        Livewire::actingAs($this->admin)
+            ->test(ListThirdPartySales::class)
+            ->assertSuccessful()
+            ->assertTableColumnSummarySet('price_paid', 'sum', 7000)
+            ->assertTableColumnSummarySet('payout.developer_amount', 'sum', 4900)
+            ->assertSee('$70.00')
+            ->assertSee('$49.00');
+    }
+
     public function test_filters_sales_missing_payouts(): void
     {
         $plugin = $this->createThirdPartyPlugin();
