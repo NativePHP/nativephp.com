@@ -6,8 +6,14 @@ order: 3
 ## Upgrading To 4.0 From 3.x
 
 v4's headline is [SuperNative](../architecture/super-native) — fully native UI. Most of the release is additive,
-but there is **one breaking change to your dependencies**: a handful of APIs that used to be separate plugins are
-now core built-ins.
+but there are **two breaking changes to your dependencies**: the minimum PHP version has gone up, and a handful of
+APIs that used to be separate plugins are now core built-ins.
+
+### PHP 8.4 is now the minimum
+
+v3 ran on PHP 8.3. `nativephp/mobile` v4 requires **PHP 8.4 or later**, so upgrade your CLI PHP before running
+`composer update` or Composer will refuse to resolve. See [Environment Setup](environment-setup) for the full
+list of requirements.
 
 ### Device, Dialog, File and System are now built in
 
