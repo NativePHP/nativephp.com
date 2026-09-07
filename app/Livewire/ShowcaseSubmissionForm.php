@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Storage;
 use Livewire\Attributes\Validate;
 use Livewire\Component;
+use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
 use Livewire\WithFileUploads;
 
 class ShowcaseSubmissionForm extends Component
@@ -152,7 +153,7 @@ class ShowcaseSubmissionForm extends Component
 
     /**
      * @param  array<int, string>  $existing
-     * @param  array<int, \Livewire\Features\SupportFileUploads\TemporaryUploadedFile>  $uploads
+     * @param  array<int, TemporaryUploadedFile>  $uploads
      * @return array<int, string>
      */
     protected function storeScreenshots(array $existing, array $uploads): array
