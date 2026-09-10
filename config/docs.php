@@ -65,6 +65,30 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Screenshot Capture
+    |--------------------------------------------------------------------------
+    |
+    | Where `docs:capture-screenshots` writes captured screenshots. Every run
+    | writes to staging_path; `--publish` additionally copies them into
+    | publish_path, overwriting the tracked images the docs pages reference.
+    |
+    | staging_path deliberately sits outside storage/app (the `local`
+    | filesystem disk's root) — these are scratch files from a local dev
+    | tool, not app-managed disk content.
+    |
+    | process_timeout bounds each `native:run` / `native:screenshot` call
+    | (seconds) — a real simulator/emulator boot and build can take a while.
+    |
+    */
+
+    'screenshots' => [
+        'staging_path' => storage_path('docs-screenshots'),
+        'publish_path' => public_path('img/docs'),
+        'process_timeout' => 300,
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
     | Jump
     |--------------------------------------------------------------------------
     |
