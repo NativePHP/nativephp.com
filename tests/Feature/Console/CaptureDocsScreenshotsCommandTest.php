@@ -346,7 +346,7 @@ class CaptureDocsScreenshotsCommandTest extends TestCase
             'php', 'artisan', 'native:screenshot', 'android',
             '--output='.$outputPath,
             '--crop=bottom',
-            '--crop-percent=0.25',
+            '--crop-percent=0.15',
         ]);
     }
 

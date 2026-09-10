@@ -92,7 +92,7 @@ return [
         'staging_path' => storage_path('docs-screenshots'),
         'publish_path' => public_path('img/docs'),
         'process_timeout' => 300,
-        'crop_percent' => 0.25,
+        'crop_percent' => 0.15,
     ],
 
     /*
