@@ -170,9 +170,8 @@ const docsPathMatch = window.location.pathname.match(
 const docsearchOptions = {
     appId: 'ZNII9QZ8WI',
     apiKey: '9be495a1aaf367b47c873d30a8e7ccf5',
-    indexName: 'nativephp',
+    indices: ['nativephp'],
     insights: true,
-    debug: false,
     ...(docsPathMatch && {
         transformItems(items) {
             const prefix = `/docs/${docsPathMatch[1]}/${docsPathMatch[2]}/`
