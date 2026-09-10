@@ -4,12 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\McpPluginSearchRequest;
 use App\Http\Requests\McpSearchRequest;
-use App\Models\User;
 use App\Services\DocsSearchService;
 use App\Services\PluginSearchService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Validation\ValidationException;
 
 class McpController extends Controller
 {
@@ -36,7 +34,6 @@ class McpController extends Controller
                 'tools/call' => $this->handleToolCall(
                     $params['name'] ?? '',
                     $params['arguments'] ?? [],
-                    $request,
                 ),
                 default => throw new \InvalidArgumentException("Unknown method: {$method}"),
             };
@@ -116,39 +113,20 @@ class McpController extends Controller
 
     public function pluginsSearchApi(McpPluginSearchRequest $request): JsonResponse
     {
-        try {
-            $user = $this->resolvePluginUser($request);
-        } catch (ValidationException $e) {
-            return response()->json([
-                'error' => 'Invalid credentials',
-                'message' => collect($e->errors())->flatten()->first(),
-            ], 401);
-        }
-
         $validated = $request->validated();
 
         $results = $this->pluginSearch->search(
             $validated['q'],
             $validated['type'] ?? null,
             $validated['limit'] ?? PluginSearchService::DEFAULT_LIMIT,
-            $user,
         );
 
         return response()->json(['plugins' => $results]);
     }
 
-    public function pluginShowApi(Request $request, string $vendor, string $package): JsonResponse
+    public function pluginShowApi(string $vendor, string $package): JsonResponse
     {
-        try {
-            $user = $this->resolvePluginUser($request);
-        } catch (ValidationException $e) {
-            return response()->json([
-                'error' => 'Invalid credentials',
-                'message' => collect($e->errors())->flatten()->first(),
-            ], 401);
-        }
-
-        $plugin = $this->pluginSearch->getByVendorPackage($vendor, $package, $user);
+        $plugin = $this->pluginSearch->getByVendorPackage($vendor, $package);
 
         if (! $plugin) {
             return response()->json(['error' => 'Plugin not found'], 404);
@@ -161,16 +139,6 @@ class McpController extends Controller
     {
         $latestVersions = $this->docsSearch->getLatestVersions();
 
-        $identityProperties = [
-            'email' => [
-                'type' => 'string',
-                'description' => 'Optional NativePHP account email (same as Composer HTTP Basic username). Prefer HTTP Basic Auth when your client supports it.',
-            ],
-            'plugin_license_key' => [
-                'type' => 'string',
-                'description' => 'Optional plugin license key (same as Composer HTTP Basic password). Required with email when authenticating via tool args.',
-            ],
-        ];
 
         return [
             [
@@ -254,7 +222,7 @@ class McpController extends Controller
             ],
             [
                 'name' => 'search_plugins',
-                'description' => 'Search the NativePHP plugin marketplace for approved, publicly listed plugins. Returns composer package names, free/paid type, price, marketplace URLs, and optional has_access when authenticated with email + plugin license key (or HTTP Basic Auth).',
+                'description' => 'Search the NativePHP plugin marketplace for approved, publicly listed plugins. Returns composer package names, free/paid type, price, and marketplace URLs.',
                 'inputSchema' => [
                     'type' => 'object',
                     'properties' => [
@@ -271,14 +239,13 @@ class McpController extends Controller
                             'type' => 'number',
                             'description' => 'Max results to return (default: 10, max: 25)',
                         ],
-                        ...$identityProperties,
                     ],
                     'required' => ['query'],
                 ],
             ],
             [
                 'name' => 'get_plugin',
-                'description' => 'Get details for one marketplace plugin by composer name (vendor/package) or vendor + package path args. When authenticated, includes whether you already have access.',
+                'description' => 'Get details for one marketplace plugin by composer name (vendor/package) or vendor + package path args.',
                 'inputSchema' => [
                     'type' => 'object',
                     'properties' => [
@@ -294,7 +261,6 @@ class McpController extends Controller
                             'type' => 'string',
                             'description' => 'Composer package segment (use with vendor)',
                         ],
-                        ...$identityProperties,
                     ],
                 ],
             ],
@@ -315,15 +281,15 @@ class McpController extends Controller
         ];
     }
 
-    protected function handleToolCall(string $name, array $args, Request $request): array
+    protected function handleToolCall(string $name, array $args): array
     {
         return match ($name) {
             'search_docs' => $this->toolSearchDocs($args),
             'get_page' => $this->toolGetPage($args),
             'list_apis' => $this->toolListApis($args),
             'get_navigation' => $this->toolGetNavigation($args),
-            'search_plugins' => $this->toolSearchPlugins($args, $request),
-            'get_plugin' => $this->toolGetPlugin($args, $request),
+            'search_plugins' => $this->toolSearchPlugins($args),
+            'get_plugin' => $this->toolGetPlugin($args),
             default => [
                 'content' => [['type' => 'text', 'text' => "Unknown tool: {$name}"]],
                 'isError' => true,
@@ -433,17 +399,8 @@ class McpController extends Controller
         ];
     }
 
-    protected function toolSearchPlugins(array $args, Request $request): array
+    protected function toolSearchPlugins(array $args): array
     {
-        try {
-            $user = $this->resolvePluginUser($request, $args);
-        } catch (ValidationException $e) {
-            return [
-                'content' => [['type' => 'text', 'text' => collect($e->errors())->flatten()->first()]],
-                'isError' => true,
-            ];
-        }
-
         $query = (string) ($args['query'] ?? '');
         $type = isset($args['type']) ? (string) $args['type'] : null;
         $limit = isset($args['limit']) ? (int) $args['limit'] : PluginSearchService::DEFAULT_LIMIT;
@@ -455,7 +412,7 @@ class McpController extends Controller
             ];
         }
 
-        $results = $this->pluginSearch->search($query, $type, $limit, $user);
+        $results = $this->pluginSearch->search($query, $type, $limit);
 
         if (empty($results)) {
             $filterDesc = $type ? " (type: {$type})" : '';
@@ -474,17 +431,8 @@ class McpController extends Controller
         ];
     }
 
-    protected function toolGetPlugin(array $args, Request $request): array
+    protected function toolGetPlugin(array $args): array
     {
-        try {
-            $user = $this->resolvePluginUser($request, $args);
-        } catch (ValidationException $e) {
-            return [
-                'content' => [['type' => 'text', 'text' => collect($e->errors())->flatten()->first()]],
-                'isError' => true,
-            ];
-        }
-
         $name = isset($args['name']) ? (string) $args['name'] : '';
         $vendor = isset($args['vendor']) ? (string) $args['vendor'] : '';
         $package = isset($args['package']) ? (string) $args['package'] : '';
@@ -492,10 +440,10 @@ class McpController extends Controller
         $plugin = null;
 
         if ($name !== '') {
-            $plugin = $this->pluginSearch->getByName($name, $user);
+            $plugin = $this->pluginSearch->getByName($name);
             $lookup = $name;
         } elseif ($vendor !== '' && $package !== '') {
-            $plugin = $this->pluginSearch->getByVendorPackage($vendor, $package, $user);
+            $plugin = $this->pluginSearch->getByVendorPackage($vendor, $package);
             $lookup = "{$vendor}/{$package}";
         } else {
             return [
@@ -533,24 +481,12 @@ class McpController extends Controller
             $lines[] = "**{$plugin['name']}**";
         }
 
-        if ($plugin['has_access'] === true && $plugin['type'] === 'paid') {
-            $lines[] = 'Access: You already have access';
+        if ($plugin['type'] === 'paid') {
             $lines[] = 'Type: paid';
-            if ($plugin['price']) {
-                $lines[] = "Regular price: {$plugin['price']}";
-            }
-            $lines[] = "Marketplace: {$plugin['marketplace_url']}";
-        } elseif ($plugin['type'] === 'paid') {
-            $price = $plugin['your_price'] ?? $plugin['price'];
-            $lines[] = 'Type: paid';
-            $lines[] = 'Access: '.($plugin['has_access'] === false ? 'Purchase required' : 'Not authenticated');
-            $lines[] = 'Price: '.($price ?: 'paid (price not listed)');
+            $lines[] = 'Price: '.($plugin['price'] ?: 'paid (price not listed)');
             $lines[] = "Marketplace: {$plugin['marketplace_url']}";
         } else {
             $lines[] = 'Type: free';
-            if ($plugin['has_access'] === true) {
-                $lines[] = 'Access: Free — available to install';
-            }
             $lines[] = "Marketplace: {$plugin['marketplace_url']}";
         }
 
@@ -590,25 +526,5 @@ class McpController extends Controller
         }
 
         return implode("\n   ", $lines);
-    }
-
-    /**
-     * Resolve optional marketplace identity from Basic Auth and/or explicit credentials.
-     *
-     * @param  array<string, mixed>  $args
-     *
-     * @throws ValidationException
-     */
-    protected function resolvePluginUser(Request $request, array $args = []): ?User
-    {
-        $email = $request->getUser()
-            ?: ($args['email'] ?? $request->input('email'));
-        $licenseKey = $request->getPassword()
-            ?: ($args['plugin_license_key'] ?? $request->input('plugin_license_key'));
-
-        return $this->pluginSearch->resolveUser(
-            is_string($email) ? $email : null,
-            is_string($licenseKey) ? $licenseKey : null,
-        );
     }
 }
