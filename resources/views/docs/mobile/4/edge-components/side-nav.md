@@ -5,13 +5,13 @@ order: 370
 
 ## Overview
 
-<div class="images-two-up not-prose">
-
-![](/img/docs/edge-side-nav-ios.png)
-
-![](/img/docs/edge-side-nav-android.png)
-
-</div>
+<x-docs.edge-preview
+    ios="edge-side-nav-ios.png"
+    android="edge-side-nav-android.png"
+    source="resources/views/native/edge-components/side-nav-drawer.blade.php"
+    alt="Side navigation drawer"
+    :chrome="false"
+/>
 
 A slide-out navigation drawer with support for groups, headers, and dividers. Side navigation is hosted by the
 [`Drawer` layout](../the-basics/layouts#drawer-navigation) — its content is a plain Blade view, so you build it from
