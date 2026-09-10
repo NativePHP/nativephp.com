@@ -335,5 +335,4 @@ class PluginMcpToolsTest extends TestCase
             ->assertNotFound()
             ->assertJsonPath('error', 'Plugin not found');
     }
-
 }

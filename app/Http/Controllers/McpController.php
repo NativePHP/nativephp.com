@@ -139,7 +139,6 @@ class McpController extends Controller
     {
         $latestVersions = $this->docsSearch->getLatestVersions();
 
-
         return [
             [
                 'name' => 'search_docs',
