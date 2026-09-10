@@ -18,6 +18,8 @@ use Illuminate\Support\Facades\Process;
  */
 final class ScreenshotCapturer
 {
+    private const MICROSECONDS_PER_MILLISECOND = 1_000;
+
     public function __construct(
         private readonly string $superNativePath,
         private readonly int $timeout,
@@ -72,7 +74,7 @@ final class ScreenshotCapturer
             ));
         }
 
-        usleep(max(0, $settleMs) * 1000);
+        usleep(max(0, $settleMs) * self::MICROSECONDS_PER_MILLISECOND);
 
         $screenshotCommand = $this->buildArgv([
             'php', 'artisan', 'native:screenshot', $platform->value, $udid,

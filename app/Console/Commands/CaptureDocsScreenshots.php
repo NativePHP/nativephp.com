@@ -14,6 +14,9 @@ use Illuminate\Support\Facades\File;
 
 final class CaptureDocsScreenshots extends Command
 {
+    /** Exclusive ceiling for `--crop-percent` — matches `native:screenshot`'s own single-edge ceiling. */
+    private const CROP_PERCENT_CEILING = 1.0;
+
     protected $signature = 'docs:capture-screenshots
         {--platform=both : ios, android, or both}
         {--super-native-path= : Local checkout of NativePHP/super-native}
@@ -137,8 +140,12 @@ final class CaptureDocsScreenshots extends Command
         $given = (string) $this->option('crop-percent');
         $percent = $given === '' ? (float) config('docs.screenshots.crop_percent') : (float) $given;
 
-        if ($percent <= 0 || $percent >= 1) {
-            $this->error(sprintf('--crop-percent must be between 0 and 1 (exclusive), got %s.', $given));
+        if ($percent <= 0 || $percent >= self::CROP_PERCENT_CEILING) {
+            $this->error(sprintf(
+                '--crop-percent must be between 0 and %s (exclusive), got %s.',
+                self::CROP_PERCENT_CEILING,
+                $given
+            ));
 
             return null;
         }
