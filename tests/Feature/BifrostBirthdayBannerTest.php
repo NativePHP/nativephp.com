@@ -25,7 +25,7 @@ class BifrostBirthdayBannerTest extends TestCase
     #[Test]
     public function the_homepage_carries_the_birthday_banner_instead_of_the_newsletter_offer_during_the_sale(): void
     {
-        $this->travelTo(Carbon::parse('2026-09-30T23:59:59Z'));
+        $this->travelTo(Carbon::parse('2026-12-31T23:59:59Z'));
 
         $this->get('/')
             ->assertOk()
@@ -36,7 +36,7 @@ class BifrostBirthdayBannerTest extends TestCase
     #[Test]
     public function the_newsletter_offer_takes_the_banner_slot_back_once_the_sale_ends(): void
     {
-        $this->travelTo(Carbon::parse('2026-10-01T00:00:00Z'));
+        $this->travelTo(Carbon::parse('2027-01-01T00:00:00Z'));
 
         $this->get('/')
             ->assertOk()
