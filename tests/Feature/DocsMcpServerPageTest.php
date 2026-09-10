@@ -75,7 +75,7 @@ class DocsMcpServerPageTest extends TestCase
         $tools = collect($response->json('result.tools'))->pluck('name')->all();
 
         $this->assertEqualsCanonicalizing(
-            ['search_docs', 'get_page', 'list_apis', 'get_navigation'],
+            ['search_docs', 'get_page', 'list_apis', 'get_navigation', 'search_plugins', 'get_plugin'],
             $tools,
         );
     }

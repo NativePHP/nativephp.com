@@ -32,6 +32,11 @@ Route::prefix('mcp')->group(function (): void {
         ->name('mcp.api.page');
     Route::get('apis/{platform}/{version}', [McpController::class, 'apisApi'])->name('mcp.api.apis');
     Route::get('navigation/{platform}/{version}', [McpController::class, 'navigationApi'])->name('mcp.api.navigation');
+
+    Route::get('plugins', [McpController::class, 'pluginsSearchApi'])->name('mcp.api.plugins.search');
+    Route::get('plugins/{vendor}/{package}', [McpController::class, 'pluginShowApi'])
+        ->where(['vendor' => '[A-Za-z0-9_.-]+', 'package' => '[A-Za-z0-9_.-]+'])
+        ->name('mcp.api.plugins.show');
 });
 
 Route::middleware('auth.api_key')->group(function (): void {

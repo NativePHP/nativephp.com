@@ -125,6 +125,35 @@ Mobile v1 and v2 docs — from v3 onwards the native APIs are documented under
 Plugins, and the Desktop docs have no `apis` section at all. For anything
 current, use `get_navigation` or `search_docs` instead.
 
+### `search_plugins`
+
+Search the public plugin marketplace the same way the directory does: approved,
+active plugins only. Takes a required `query` matched against package name and
+description, plus optional `type` (`free` or `paid`) and `limit` (10 by default,
+25 max). Results include the composer name, short description, free/paid type,
+regular price when listed, useful flags (featured / official / works in Jump),
+latest version when known, and a **Marketplace:** URL you can open.
+
+Optional identity: send HTTP Basic Auth with your NativePHP account email and
+plugin license key (the same credentials Composer uses for paid plugins), or
+pass `email` + `plugin_license_key` tool args. When authenticated, each result
+includes whether you already have access. Invalid credentials return a clear
+auth error instead of silent anonymous results.
+
+Use this before inventing a capability — if a camera, biometrics, or payments
+plugin already exists, your agent should find it here. For paid plugins you
+don't own yet, the marketplace URL is always included so a human can decide
+whether to buy.
+
+### `get_plugin`
+
+Fetch one marketplace plugin by composer `name` (`vendor/package`), or by
+`vendor` + `package` path args. Returns richer detail than search: description,
+type, price, repository URL when public, Packagist URL for free plugins,
+marketplace URL, latest version, and flags. Unapproved, inactive, or unknown
+packages come back as a not-found error. Supports the same optional identity as
+`search_plugins` — when you already have access, the response leads with that.
+
 ## Reading pages without MCP
 
 Every docs page is served as raw markdown by adding `.md` to its URL, which is
@@ -141,6 +170,8 @@ MCP client:
 - `/api/mcp/page/{platform}/{version}/{section}/{slug}` — a single page
 - `/api/mcp/navigation/{platform}/{version}` — the docs navigation tree
 - `/api/mcp/apis/{platform}/{version}` — the `apis` section listing
+- `/api/mcp/plugins?q=camera&type=free&limit=10` — marketplace plugin search
+- `/api/mcp/plugins/{vendor}/{package}` — one marketplace plugin
 - `/api/mcp/health` — liveness check, and the versions currently published
 
 Both the MCP and REST endpoints are rate limited to 60 requests per minute per
