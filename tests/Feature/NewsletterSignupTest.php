@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Carbon;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
@@ -10,9 +11,16 @@ class NewsletterSignupTest extends TestCase
 {
     use RefreshDatabase;
 
+    /**
+     * Bifrost's birthday sale borrows the site banner slot until the end of
+     * September 2026, so this checks the newsletter offer once the slot has
+     * been handed back. The swap is covered by BifrostBirthdayBannerTest.
+     */
     #[Test]
     public function the_site_banner_offers_the_discount_and_opens_the_signup_modal()
     {
+        $this->travelTo(Carbon::parse('2026-10-01T00:00:00Z'));
+
         $this->get('/')
             ->assertOk()
             ->assertSee('Celebrate')
