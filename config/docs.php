@@ -79,12 +79,20 @@ return [
     | process_timeout bounds each `native:run` / `native:screenshot` call
     | (seconds) — a real simulator/emulator boot and build can take a while.
     |
+    | crop_percent is how much of the image height a top/bottom-cropped
+    | screenshot keeps (matches every existing top-bar/bottom-nav image in
+    | public/img/docs, which are cropped tight rather than full-screen).
+    | It's an approximation, not a per-device measurement — review a staged
+    | screenshot before publishing and adjust here if a component's bar is
+    | taller or shorter than this assumes. --full skips cropping entirely.
+    |
     */
 
     'screenshots' => [
         'staging_path' => storage_path('docs-screenshots'),
         'publish_path' => public_path('img/docs'),
         'process_timeout' => 300,
+        'crop_percent' => 0.25,
     ],
 
     /*

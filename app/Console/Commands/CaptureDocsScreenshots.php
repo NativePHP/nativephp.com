@@ -4,12 +4,13 @@ declare(strict_types=1);
 
 namespace App\Console\Commands;
 
+use App\Enums\DocsScreenshotCrop;
 use App\Enums\DocsScreenshotPlatform;
+use App\Services\DocsScreenshots\ScreenshotCapturer;
+use App\Services\DocsScreenshots\ScreenshotPublisher;
 use App\Support\DocsScreenshotManifest;
 use Illuminate\Console\Command;
-use Illuminate\Process\Exceptions\ProcessTimedOutException;
 use Illuminate\Support\Facades\File;
-use Illuminate\Support\Facades\Process;
 
 final class CaptureDocsScreenshots extends Command
 {
@@ -19,6 +20,9 @@ final class CaptureDocsScreenshots extends Command
         {--udid= : Specific simulator/emulator UDID — required whenever native:run would otherwise have more than one device to pick from}
         {--only= : Comma-separated screen keys to limit to, e.g. top-bar,bottom-nav}
         {--settle-ms=2000 : Milliseconds to wait after launch before capturing}
+        {--full : Keep the full, uncropped screenshot instead of the tight top/bottom crop most screens use}
+        {--crop-percent= : Override the configured crop_percent for this run (0-1)}
+        {--dry-run : Print what would be captured without running anything}
         {--publish : Copy every staged screenshot into public/img/docs}';
 
     protected $description = "Regenerate the mobile docs' Edge Component screenshots from a running super-native checkout";
@@ -45,15 +49,27 @@ final class CaptureDocsScreenshots extends Command
             return self::FAILURE;
         }
 
+        $cropPercent = $this->resolveCropPercent();
+
+        if ($cropPercent === null) {
+            return self::FAILURE;
+        }
+
+        if ($this->option('dry-run')) {
+            $this->printDryRun($superNativePath, $keys, $platforms, $cropPercent);
+
+            return self::SUCCESS;
+        }
+
         $stagingPath = (string) config('docs.screenshots.staging_path');
         File::ensureDirectoryExists($stagingPath);
 
-        $timeout = (int) config('docs.screenshots.process_timeout');
+        $capturer = new ScreenshotCapturer($superNativePath, (int) config('docs.screenshots.process_timeout'));
         $failures = [];
 
         foreach ($keys as $key) {
             foreach ($platforms as $platform) {
-                if (! $this->captureScreen($superNativePath, $stagingPath, $key, $platform, $timeout)) {
+                if (! $this->captureScreen($capturer, $stagingPath, $key, $platform, $cropPercent)) {
                     $failures[] = sprintf('%s (%s)', $key, $platform->value);
                 }
             }
@@ -116,95 +132,84 @@ final class CaptureDocsScreenshots extends Command
         return array_values($keys);
     }
 
-    private function captureScreen(string $superNativePath, string $stagingPath, string $key, DocsScreenshotPlatform $platform, int $timeout): bool
+    private function resolveCropPercent(): ?float
     {
-        $screen = DocsScreenshotManifest::get($key);
-        $udid = (string) $this->option('udid');
+        $given = (string) $this->option('crop-percent');
+        $percent = $given === '' ? (float) config('docs.screenshots.crop_percent') : (float) $given;
 
-        $runCommand = $this->buildArgv([
-            'php', 'artisan', 'native:run', $platform->value, $udid,
-            '--build=debug',
-            '--start-url='.$screen['route'],
-            '--no-tty',
-        ]);
+        if ($percent <= 0 || $percent >= 1) {
+            $this->error(sprintf('--crop-percent must be between 0 and 1 (exclusive), got %s.', $given));
 
-        $this->info(sprintf('Launching %s on %s...', $key, $platform->value));
-
-        if (! $this->runProcess($superNativePath, $runCommand, $timeout)) {
-            $this->error(sprintf(
-                'native:run failed for %s (%s). If it has more than one device to pick from, pass --udid explicitly.',
-                $key,
-                $platform->value
-            ));
-
-            return false;
+            return null;
         }
 
-        if ($screen['requires_drawer_open']) {
-            if (! $this->input->isInteractive()) {
-                $this->error(sprintf(
-                    'Skipping %s (%s): opening its drawer needs a manual step, so it can only be captured interactively.',
+        return $percent;
+    }
+
+    /**
+     * @param  list<string>  $keys
+     * @param  list<DocsScreenshotPlatform>  $platforms
+     */
+    private function printDryRun(string $superNativePath, array $keys, array $platforms, float $cropPercent): void
+    {
+        $this->info(sprintf('Would use super-native checkout: %s', $superNativePath));
+
+        foreach ($keys as $key) {
+            $screen = DocsScreenshotManifest::get($key);
+
+            foreach ($platforms as $platform) {
+                $crop = $this->option('full') || $screen['crop'] === DocsScreenshotCrop::Full
+                    ? 'full'
+                    : sprintf('%s %d%%', $screen['crop']->value, (int) round($cropPercent * 100));
+
+                $this->line(sprintf(
+                    '  %s (%s) — route %s — %s%s',
                     $key,
-                    $platform->value
+                    $platform->value,
+                    $screen['route'],
+                    $crop,
+                    $screen['requires_drawer_open'] ? ' — needs a manual drawer-open step' : ''
                 ));
-
-                return false;
             }
-
-            $this->ask(sprintf(
-                'Manually open the side drawer for "%s" in the %s simulator/emulator now, then press Enter to continue',
-                $key,
-                $platform->value
-            ));
         }
+    }
 
-        usleep(max(0, (int) $this->option('settle-ms')) * 1000);
-
+    private function captureScreen(
+        ScreenshotCapturer $capturer,
+        string $stagingPath,
+        string $key,
+        DocsScreenshotPlatform $platform,
+        float $cropPercent,
+    ): bool {
+        $screen = DocsScreenshotManifest::get($key);
         $outputPath = sprintf('%s/%s', $stagingPath, $screen[$platform->value]);
+        $crop = $this->option('full') ? DocsScreenshotCrop::Full : $screen['crop'];
 
-        $screenshotCommand = $this->buildArgv([
-            'php', 'artisan', 'native:screenshot', $platform->value, $udid,
-            '--output='.$outputPath,
-        ]);
+        $failure = $capturer->capture(
+            key: $key,
+            platform: $platform,
+            route: $screen['route'],
+            requiresDrawerOpen: $screen['requires_drawer_open'],
+            udid: (string) $this->option('udid'),
+            settleMs: (int) $this->option('settle-ms'),
+            outputPath: $outputPath,
+            crop: $crop,
+            cropPercent: $cropPercent,
+            isInteractive: $this->input->isInteractive(),
+            confirmDrawerOpen: fn (string $message) => $this->ask($message),
+        );
 
-        if (! $this->runProcess($superNativePath, $screenshotCommand, $timeout)) {
-            $this->error(sprintf('native:screenshot failed for %s (%s).', $key, $platform->value));
+        if ($failure !== null) {
+            $this->error($failure);
 
             return false;
         }
 
-        $this->info(sprintf('Captured %s.', $outputPath));
+        $this->info($crop === DocsScreenshotCrop::Full
+            ? sprintf('Captured %s (full, uncropped).', $outputPath)
+            : sprintf('Captured %s (cropped to %s).', $outputPath, $crop->value));
 
         return true;
-    }
-
-    /**
-     * Runs an artisan command in the super-native checkout. `native:run`
-     * prompts interactively when `--udid` is ambiguous and no real terminal
-     * is attached to this subprocess, which can time out rather than fail
-     * fast — caught here and reported as an ordinary failure.
-     *
-     * @param  list<string>  $command
-     */
-    private function runProcess(string $superNativePath, array $command, int $timeout): bool
-    {
-        try {
-            return Process::path($superNativePath)->timeout($timeout)->run($command)->successful();
-        } catch (ProcessTimedOutException) {
-            return false;
-        }
-    }
-
-    /**
-     * Drop empty arguments (an omitted `--udid`) so the target command sees
-     * a clean argv instead of a blank positional argument.
-     *
-     * @param  list<string>  $argv
-     * @return list<string>
-     */
-    private function buildArgv(array $argv): array
-    {
-        return array_values(array_filter($argv, fn (string $argument): bool => $argument !== ''));
     }
 
     /**
@@ -214,20 +219,16 @@ final class CaptureDocsScreenshots extends Command
     private function publish(string $stagingPath, array $keys, array $platforms): bool
     {
         $publishPath = (string) config('docs.screenshots.publish_path');
-        File::ensureDirectoryExists($publishPath);
 
-        $failures = [];
+        $filenames = [];
 
         foreach ($keys as $key) {
             foreach ($platforms as $platform) {
-                $filename = DocsScreenshotManifest::get($key)[$platform->value];
-                $source = sprintf('%s/%s', $stagingPath, $filename);
-
-                if (! File::exists($source) || ! File::copy($source, sprintf('%s/%s', $publishPath, $filename))) {
-                    $failures[] = $filename;
-                }
+                $filenames[] = DocsScreenshotManifest::get($key)[$platform->value];
             }
         }
+
+        $failures = (new ScreenshotPublisher)->publish($stagingPath, $publishPath, $filenames);
 
         if ($failures !== []) {
             $this->error(sprintf('Failed to publish: %s', implode(', ', $failures)));
