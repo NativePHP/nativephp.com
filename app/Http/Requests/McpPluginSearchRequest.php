@@ -19,8 +19,6 @@ class McpPluginSearchRequest extends FormRequest
             'q' => ['required', 'string', 'max:500'],
             'type' => ['nullable', 'string', Rule::in(['free', 'paid'])],
             'limit' => ['nullable', 'integer', 'min:1', 'max:'.PluginSearchService::MAX_LIMIT],
-            'email' => ['nullable', 'string', 'email', 'max:255'],
-            'plugin_license_key' => ['nullable', 'string', 'max:255'],
         ];
     }
 

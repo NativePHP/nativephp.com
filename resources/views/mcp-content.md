@@ -134,16 +134,9 @@ description, plus optional `type` (`free` or `paid`) and `limit` (10 by default,
 regular price when listed, useful flags (featured / official / works in Jump),
 latest version when known, and a **Marketplace:** URL you can open.
 
-Optional identity: send HTTP Basic Auth with your NativePHP account email and
-plugin license key (the same credentials Composer uses for paid plugins), or
-pass `email` + `plugin_license_key` tool args. When authenticated, each result
-includes whether you already have access. Invalid credentials return a clear
-auth error instead of silent anonymous results.
-
 Use this before inventing a capability — if a camera, biometrics, or payments
-plugin already exists, your agent should find it here. For paid plugins you
-don't own yet, the marketplace URL is always included so a human can decide
-whether to buy.
+plugin already exists, your agent should find it here. For paid plugins, the
+marketplace URL is always included so a human can decide whether to buy.
 
 ### `get_plugin`
 
@@ -151,8 +144,7 @@ Fetch one marketplace plugin by composer `name` (`vendor/package`), or by
 `vendor` + `package` path args. Returns richer detail than search: description,
 type, price, repository URL when public, Packagist URL for free plugins,
 marketplace URL, latest version, and flags. Unapproved, inactive, or unknown
-packages come back as a not-found error. Supports the same optional identity as
-`search_plugins` — when you already have access, the response leads with that.
+packages come back as a not-found error.
 
 ## Reading pages without MCP
 

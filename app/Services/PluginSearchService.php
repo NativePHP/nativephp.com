@@ -5,9 +5,7 @@ namespace App\Services;
 use App\Enums\PluginType;
 use App\Enums\PriceTier;
 use App\Models\Plugin;
-use App\Models\User;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Validation\ValidationException;
 
 class PluginSearchService
 {
@@ -16,48 +14,11 @@ class PluginSearchService
     public const int MAX_LIMIT = 25;
 
     /**
-     * Resolve a marketplace user from Basic Auth or explicit credentials.
-     *
-     * @throws ValidationException when credentials are partially provided or invalid
-     */
-    public function resolveUser(?string $email, ?string $licenseKey): ?User
-    {
-        $email = is_string($email) ? trim($email) : null;
-        $licenseKey = is_string($licenseKey) ? trim($licenseKey) : null;
-
-        $email = $email === '' ? null : $email;
-        $licenseKey = $licenseKey === '' ? null : $licenseKey;
-
-        if ($email === null && $licenseKey === null) {
-            return null;
-        }
-
-        if ($email === null || $licenseKey === null) {
-            throw ValidationException::withMessages([
-                'credentials' => 'Both email and plugin_license_key are required when authenticating.',
-            ]);
-        }
-
-        $user = User::query()
-            ->where('email', $email)
-            ->where('plugin_license_key', $licenseKey)
-            ->first();
-
-        if (! $user) {
-            throw ValidationException::withMessages([
-                'credentials' => 'Invalid credentials. The provided email or plugin license key is incorrect.',
-            ]);
-        }
-
-        return $user;
-    }
-
-    /**
      * Search approved, active marketplace plugins.
      *
      * @return list<array<string, mixed>>
      */
-    public function search(string $query, ?string $type = null, int $limit = self::DEFAULT_LIMIT, ?User $user = null): array
+    public function search(string $query, ?string $type = null, int $limit = self::DEFAULT_LIMIT): array
     {
         $limit = min(max(1, $limit), self::MAX_LIMIT);
         $type = $this->sanitizeType($type);
@@ -95,7 +56,7 @@ class PluginSearchService
             })
             ->take($limit)
             ->values()
-            ->map(fn (Plugin $plugin) => $this->toSummary($plugin, $user))
+            ->map(fn (Plugin $plugin) => $this->toSummary($plugin))
             ->all();
     }
 
@@ -104,7 +65,7 @@ class PluginSearchService
      *
      * @return array<string, mixed>|null
      */
-    public function getByName(string $name, ?User $user = null): ?array
+    public function getByName(string $name): ?array
     {
         $name = trim($name);
 
@@ -114,7 +75,7 @@ class PluginSearchService
 
         [$vendor, $package] = array_pad(explode('/', $name, 2), 2, '');
 
-        return $this->getByVendorPackage($vendor, $package, $user);
+        return $this->getByVendorPackage($vendor, $package);
     }
 
     /**
@@ -122,7 +83,7 @@ class PluginSearchService
      *
      * @return array<string, mixed>|null
      */
-    public function getByVendorPackage(string $vendor, string $package, ?User $user = null): ?array
+    public function getByVendorPackage(string $vendor, string $package): ?array
     {
         $vendor = $this->sanitizePathSegment($vendor);
         $package = $this->sanitizePathSegment($package);
@@ -140,7 +101,7 @@ class PluginSearchService
             return null;
         }
 
-        return $this->toDetail($plugin, $user);
+        return $this->toDetail($plugin);
     }
 
     /**
@@ -156,18 +117,13 @@ class PluginSearchService
     /**
      * @return array<string, mixed>
      */
-    protected function toSummary(Plugin $plugin, ?User $user = null): array
+    protected function toSummary(Plugin $plugin): array
     {
-        $hasAccess = $user ? $user->hasPluginAccess($plugin) : null;
-
         return [
             'name' => $plugin->name,
             'description' => $plugin->description,
             'type' => $plugin->type?->value ?? (string) $plugin->type,
             'price' => $this->formatPublicPrice($plugin),
-            'your_price' => $user ? $this->formatBestPriceForUser($plugin, $user) : null,
-            'has_access' => $hasAccess,
-            'access_label' => $this->accessLabel($plugin, $hasAccess),
             'featured' => (bool) $plugin->featured,
             'is_official' => $plugin->isOfficial(),
             'works_in_jump' => $plugin->worksInJump(),
@@ -179,29 +135,12 @@ class PluginSearchService
     /**
      * @return array<string, mixed>
      */
-    protected function toDetail(Plugin $plugin, ?User $user = null): array
+    protected function toDetail(Plugin $plugin): array
     {
-        return array_merge($this->toSummary($plugin, $user), [
+        return array_merge($this->toSummary($plugin), [
             'repository_url' => $plugin->getGithubUrl(),
             'packagist_url' => $plugin->isFree() ? $plugin->getPackagistUrl() : null,
         ]);
-    }
-
-    protected function accessLabel(Plugin $plugin, ?bool $hasAccess): ?string
-    {
-        if ($hasAccess === null) {
-            return null;
-        }
-
-        if ($plugin->isFree()) {
-            return $hasAccess ? 'Free — available to install' : null;
-        }
-
-        if ($hasAccess) {
-            return 'You already have access';
-        }
-
-        return 'Purchase required';
     }
 
     protected function formatPublicPrice(Plugin $plugin): ?string
@@ -218,26 +157,6 @@ class PluginSearchService
         }
 
         return '$'.$regular->formatted_amount;
-    }
-
-    protected function formatBestPriceForUser(Plugin $plugin, User $user): ?string
-    {
-        if ($plugin->isFree() || $user->hasPluginAccess($plugin)) {
-            return null;
-        }
-
-        $best = $plugin->getBestPriceForUser($user);
-        $regular = $plugin->getRegularPrice();
-
-        if (! $best) {
-            return null;
-        }
-
-        if ($regular && $best->id !== $regular->id) {
-            return '$'.$best->formatted_amount.' (subscriber)';
-        }
-
-        return '$'.$best->formatted_amount;
     }
 
     protected function matchScore(Plugin $plugin, string $query): int

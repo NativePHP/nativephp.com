@@ -3,9 +3,7 @@
 namespace Tests\Feature;
 
 use App\Models\Plugin;
-use App\Models\PluginLicense;
 use App\Models\PluginPrice;
-use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
@@ -224,8 +222,9 @@ class PluginMcpToolsTest extends TestCase
         $this->assertStringContainsString('Marketplace:', $text);
         $this->assertStringContainsString($marketplaceUrl, $text);
         $this->assertStringNotContainsString('Packagist:', $text);
-        $this->assertNull(
-            collect($this->getJson('/api/mcp/plugins/acme/paid-detail')->json('plugin'))->get('has_access')
+        $this->assertArrayNotHasKey(
+            'has_access',
+            $this->getJson('/api/mcp/plugins/acme/paid-detail')->json('plugin')
         );
     }
 
@@ -264,104 +263,7 @@ class PluginMcpToolsTest extends TestCase
     }
 
     #[Test]
-    public function licensed_user_sees_has_access_true_for_paid_plugin(): void
-    {
-        $user = User::factory()->create([
-            'email' => 'owner@example.com',
-            'plugin_license_key' => 'valid-license-key',
-        ]);
-
-        $plugin = Plugin::factory()->approved()->paid()->create([
-            'name' => 'acme/licensed-plugin',
-            'description' => 'A paid plugin the user owns.',
-        ]);
-
-        PluginPrice::factory()->regular()->amount(4900)->create([
-            'plugin_id' => $plugin->id,
-        ]);
-
-        PluginLicense::factory()->create([
-            'user_id' => $user->id,
-            'plugin_id' => $plugin->id,
-            'expires_at' => null,
-        ]);
-
-        $response = $this->postJson('/api/mcp/message', [
-            'jsonrpc' => '2.0',
-            'id' => 1,
-            'method' => 'tools/call',
-            'params' => [
-                'name' => 'get_plugin',
-                'arguments' => [
-                    'name' => 'acme/licensed-plugin',
-                    'email' => 'owner@example.com',
-                    'plugin_license_key' => 'valid-license-key',
-                ],
-            ],
-        ]);
-
-        $response->assertOk();
-        $this->assertArrayNotHasKey('isError', $response->json('result') ?? []);
-
-        $text = $response->json('result.content.0.text');
-        $this->assertStringContainsString('You already have access', $text);
-        $this->assertStringContainsString('Marketplace:', $text);
-        $this->assertStringContainsString(route('plugins.show', $plugin->routeParams()), $text);
-
-        $this->asBasicAuth('owner@example.com', 'valid-license-key')
-            ->getJson('/api/mcp/plugins/acme/licensed-plugin')
-            ->assertOk()
-            ->assertJsonPath('plugin.has_access', true)
-            ->assertJsonPath('plugin.marketplace_url', route('plugins.show', $plugin->routeParams()));
-    }
-
-    #[Test]
-    public function authenticated_user_without_entitlement_gets_false_and_marketplace_url(): void
-    {
-        $user = User::factory()->create([
-            'email' => 'buyer@example.com',
-            'plugin_license_key' => 'buyer-license-key',
-        ]);
-
-        $plugin = Plugin::factory()->approved()->paid()->create([
-            'name' => 'acme/unowned-plugin',
-            'description' => 'A paid plugin the user does not own.',
-        ]);
-
-        PluginPrice::factory()->regular()->amount(1999)->create([
-            'plugin_id' => $plugin->id,
-        ]);
-
-        $response = $this->postJson('/api/mcp/message', [
-            'jsonrpc' => '2.0',
-            'id' => 1,
-            'method' => 'tools/call',
-            'params' => [
-                'name' => 'search_plugins',
-                'arguments' => [
-                    'query' => 'unowned-plugin',
-                    'email' => $user->email,
-                    'plugin_license_key' => 'buyer-license-key',
-                ],
-            ],
-        ]);
-
-        $text = $response->json('result.content.0.text');
-        $this->assertStringContainsString('Purchase required', $text);
-        $this->assertStringContainsString('$19.99', $text);
-        $this->assertStringContainsString('Marketplace:', $text);
-        $this->assertStringContainsString(route('plugins.show', $plugin->routeParams()), $text);
-        $this->assertStringNotContainsString('You already have access', $text);
-
-        $this->asBasicAuth('buyer@example.com', 'buyer-license-key')
-            ->getJson('/api/mcp/plugins?q=unowned-plugin')
-            ->assertOk()
-            ->assertJsonPath('plugins.0.has_access', false)
-            ->assertJsonPath('plugins.0.marketplace_url', route('plugins.show', $plugin->routeParams()));
-    }
-
-    #[Test]
-    public function anonymous_results_omit_access_claim(): void
+    public function public_results_include_marketplace_fields_without_access_claims(): void
     {
         $plugin = Plugin::factory()->approved()->paid()->create([
             'name' => 'acme/anon-plugin',
@@ -372,56 +274,15 @@ class PluginMcpToolsTest extends TestCase
             'plugin_id' => $plugin->id,
         ]);
 
-        $this->getJson('/api/mcp/plugins?q=anon-plugin')
+        $response = $this->getJson('/api/mcp/plugins?q=anon-plugin')
             ->assertOk()
             ->assertJsonPath('plugins.0.name', 'acme/anon-plugin')
-            ->assertJsonPath('plugins.0.has_access', null)
+            ->assertJsonPath('plugins.0.price', '$15.00')
             ->assertJsonPath('plugins.0.marketplace_url', route('plugins.show', $plugin->routeParams()));
-    }
 
-    #[Test]
-    public function invalid_credentials_fail_clearly(): void
-    {
-        Plugin::factory()->approved()->paid()->create([
-            'name' => 'acme/auth-plugin',
-            'description' => 'Needs valid credentials to check access.',
-        ]);
-
-        $tool = $this->postJson('/api/mcp/message', [
-            'jsonrpc' => '2.0',
-            'id' => 1,
-            'method' => 'tools/call',
-            'params' => [
-                'name' => 'search_plugins',
-                'arguments' => [
-                    'query' => 'auth-plugin',
-                    'email' => 'nobody@example.com',
-                    'plugin_license_key' => 'wrong-key',
-                ],
-            ],
-        ]);
-
-        $this->assertTrue($tool->json('result.isError'));
-        $this->assertStringContainsString('Invalid credentials', $tool->json('result.content.0.text'));
-
-        $this->asBasicAuth('nobody@example.com', 'wrong-key')
-            ->getJson('/api/mcp/plugins?q=auth-plugin')
-            ->assertStatus(401)
-            ->assertJsonPath('error', 'Invalid credentials');
-
-        $this->postJson('/api/mcp/message', [
-            'jsonrpc' => '2.0',
-            'id' => 2,
-            'method' => 'tools/call',
-            'params' => [
-                'name' => 'get_plugin',
-                'arguments' => [
-                    'name' => 'acme/auth-plugin',
-                    'email' => 'only-email@example.com',
-                ],
-            ],
-        ])->assertOk()
-            ->assertJsonPath('result.isError', true);
+        $this->assertArrayNotHasKey('has_access', $response->json('plugins.0'));
+        $this->assertArrayNotHasKey('your_price', $response->json('plugins.0'));
+        $this->assertArrayNotHasKey('access_label', $response->json('plugins.0'));
     }
 
     #[Test]
@@ -446,10 +307,11 @@ class PluginMcpToolsTest extends TestCase
             ->assertJsonPath('plugins.0.price', '$99.00')
             ->assertJsonPath('plugins.0.featured', true)
             ->assertJsonPath('plugins.0.latest_version', '2.0.0')
-            ->assertJsonPath('plugins.0.marketplace_url', route('plugins.show', $plugin->routeParams()))
-            ->assertJsonPath('plugins.0.has_access', null);
+            ->assertJsonPath('plugins.0.marketplace_url', route('plugins.show', $plugin->routeParams()));
 
         $this->assertNotEmpty($response->json('plugins.0.marketplace_url'));
+        $this->assertArrayNotHasKey('has_access', $response->json('plugins.0'));
+        $this->assertArrayNotHasKey('your_price', $response->json('plugins.0'));
     }
 
     #[Test]
@@ -474,10 +336,4 @@ class PluginMcpToolsTest extends TestCase
             ->assertJsonPath('error', 'Plugin not found');
     }
 
-    protected function asBasicAuth(string $username, string $password): static
-    {
-        return $this->withHeaders([
-            'Authorization' => 'Basic '.base64_encode("{$username}:{$password}"),
-        ]);
-    }
 }
