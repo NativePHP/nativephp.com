@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Enums\DocsPlatform;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Str;
 use Spatie\YamlFrontMatter\YamlFrontMatter;
@@ -119,13 +120,12 @@ class DocsSearchService
             usort($sections[$section], fn ($a, $b) => $a['order'] <=> $b['order']);
         }
 
-        // Order the sections themselves to match the sidebar (each section
-        // directory's `_index.md` front-matter `order` — the same source
-        // ShowDocumentationController sorts by). Nested subsections (e.g.
-        // plugins/core) rank right after their parent. JSON objects keep key
-        // order, so API consumers get the sidebar order for free. Unknown
-        // sections trail in their original grouping order (stable sort).
-        $rank = $this->sectionRanks($platform, $version);
+        // Order the sections themselves to match the sidebar — same tree
+        // DocsNavigationService gives ShowDocumentationController. JSON
+        // objects keep key order, so API consumers get the sidebar order for
+        // free. Unknown sections trail in their original grouping order
+        // (stable sort).
+        $rank = app(DocsNavigationService::class)->sectionRanks(DocsPlatform::from($platform), (int) $version);
         $slugs = array_keys($sections);
         usort($slugs, fn ($a, $b) => ($rank[$a] ?? PHP_INT_MAX) <=> ($rank[$b] ?? PHP_INT_MAX));
 
@@ -137,38 +137,9 @@ class DocsSearchService
         return $ordered;
     }
 
-    /**
-     * Sidebar rank per section slug for one platform/version: top-level
-     * sections rank by their `_index.md` front-matter `order` (scaled so
-     * children can interleave); a nested subsection ranks just after its
-     * parent, offset by its own `order`. Sections without an `_index.md`
-     * get no rank (callers push them to the end).
-     *
-     * @return array<string, int>
-     */
-    protected function sectionRanks(string $platform, string $version): array
-    {
-        $base = "{$this->docsPath}/{$platform}/{$version}";
-        $rank = [];
-
-        foreach (glob("{$base}/*/_index.md") ?: [] as $index) {
-            $slug = basename(dirname($index));
-            $order = YamlFrontMatter::parse(file_get_contents($index))->matter('order') ?? 9999;
-            $rank[$slug] = $order * 10000;
-
-            foreach (glob("{$base}/{$slug}/*/_index.md") ?: [] as $nested) {
-                $nestedSlug = basename(dirname($nested));
-                $nestedOrder = YamlFrontMatter::parse(file_get_contents($nested))->matter('order') ?? 9999;
-                $rank["{$slug}/{$nestedSlug}"] = $rank[$slug] + 1 + min($nestedOrder, 9998);
-            }
-        }
-
-        return $rank;
-    }
-
     public function getPlatforms(): array
     {
-        return ['desktop', 'mobile'];
+        return array_map(fn (DocsPlatform $platform): string => $platform->value, DocsPlatform::cases());
     }
 
     public function getVersions(?string $platform = null): array
@@ -196,10 +167,15 @@ class DocsSearchService
     {
         $versions = $this->getVersions();
 
-        return [
-            'desktop' => (string) (config('docs.latest_versions.desktop') ?? collect($versions['desktop'] ?? [])->sort()->last() ?? '2'),
-            'mobile' => (string) (config('docs.latest_versions.mobile') ?? collect($versions['mobile'] ?? [])->sort()->last() ?? '3'),
-        ];
+        return collect(DocsPlatform::cases())
+            ->mapWithKeys(function (DocsPlatform $platform) use ($versions): array {
+                $fallback = $platform === DocsPlatform::Mobile ? '3' : '2';
+                $configured = config("docs.latest_versions.{$platform->value}");
+                $detected = collect($versions[$platform->value] ?? [])->sort()->last();
+
+                return [$platform->value => (string) ($configured ?? $detected ?? $fallback)];
+            })
+            ->all();
     }
 
     protected function getAllPages(?string $platform = null, ?string $version = null): array
@@ -393,9 +369,7 @@ class DocsSearchService
             return null;
         }
 
-        $allowed = ['desktop', 'mobile'];
-
-        return in_array($platform, $allowed, true) ? $platform : null;
+        return DocsPlatform::tryFrom($platform)?->value;
     }
 
     protected function sanitizeVersion(?string $version): ?string

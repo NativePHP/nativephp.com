@@ -164,44 +164,90 @@ document.addEventListener('alpine:init', () => {
 Livewire.start()
 
 // Docsearch
+const docsearchContainerSelector = '#docsearch-desktop'
 const docsPathMatch = window.location.pathname.match(
     /^\/docs\/(desktop|mobile)\/(\d+)/,
 )
-const docsearchOptions = {
-    appId: 'ZNII9QZ8WI',
-    apiKey: '9be495a1aaf367b47c873d30a8e7ccf5',
-    indexName: 'nativephp',
-    insights: true,
-    debug: false,
-    ...(docsPathMatch && {
-        transformItems(items) {
-            const prefix = `/docs/${docsPathMatch[1]}/${docsPathMatch[2]}/`
-            return items.filter((item) => {
-                try {
-                    return new URL(item.url).pathname.startsWith(prefix)
-                } catch {
-                    return item.url.includes(prefix)
-                }
-            })
-        },
-    }),
+
+function scopedTransformItems(items) {
+    const prefix = `/docs/${docsPathMatch[1]}/${docsPathMatch[2]}/`
+    return items.filter((item) => {
+        try {
+            return new URL(item.url).pathname.startsWith(prefix)
+        } catch {
+            return item.url.includes(prefix)
+        }
+    })
 }
 
-docsearch({
-    ...docsearchOptions,
-    container: '#docsearch-desktop',
-})
+function getDesktopSearchButton() {
+    return document.querySelector(
+        `${docsearchContainerSelector} .DocSearch-Button`,
+    )
+}
+
+// docsearch() doesn't return a controllable instance (its @docsearch/js
+// wrapper just renders into the container and returns undefined) — there's
+// no destroy()/open() to call. Re-initializing means calling it again with
+// new options: it re-renders into the same container, which preact reconciles
+// against the previous tree in place rather than remounting it, so an
+// already-open modal stays open across the props change.
+function initDocsearch(broadenScope) {
+    docsearch({
+        appId: 'ZNII9QZ8WI',
+        apiKey: '9be495a1aaf367b47c873d30a8e7ccf5',
+        indexName: 'nativephp',
+        insights: true,
+        debug: false,
+        container: docsearchContainerSelector,
+        ...(docsPathMatch && ! broadenScope && { transformItems: scopedTransformItems }),
+    })
+}
+
+initDocsearch(false)
+
+const broadenButton = document.getElementById('docsearch-broaden')
+if (broadenButton && docsPathMatch) {
+    broadenButton.addEventListener('click', () => {
+        // DocSearch portals its modal onto <body> rather than nesting it
+        // under the container it was initialized with, so the input can't
+        // be found by scoping the selector to docsearchContainerSelector.
+        const query = document.querySelector('.DocSearch-Input')?.value ?? ''
+        const wasOpen = document.querySelector('.DocSearch-Modal') !== null
+
+        // initialQuery only seeds DocSearch's internal state on first mount —
+        // passing it again here would be silently ignored, since re-render
+        // reconciles the existing instance rather than remounting it. Restore
+        // the query by writing straight to the live (same, reused) input and
+        // dispatching the event its controlled input listens for instead.
+        initDocsearch(true)
+
+        if (! wasOpen) {
+            getDesktopSearchButton()?.click()
+        } else if (query) {
+            const input = document.querySelector('.DocSearch-Input')
+            if (input) {
+                input.value = query
+                input.dispatchEvent(new Event('input', { bubbles: true }))
+            }
+        }
+
+        document.getElementById('docsearch-scope-label')?.remove()
+    })
+}
 
 // Mirror the desktop DocSearch button into the mobile container so that
 // pressing Cmd+K only registers one handler (avoiding duplicate modals).
+// Looks the button up fresh on click rather than caching a reference, since
+// initDocsearch() re-renders it whenever the search scope is broadened.
 const mobileContainer = document.getElementById('docsearch-mobile')
 if (mobileContainer) {
-    const desktopButton = document.querySelector(
-        '#docsearch-desktop .DocSearch-Button',
-    )
+    const desktopButton = getDesktopSearchButton()
     if (desktopButton) {
         const mobileButton = desktopButton.cloneNode(true)
         mobileContainer.appendChild(mobileButton)
-        mobileButton.addEventListener('click', () => desktopButton.click())
+        mobileButton.addEventListener('click', () =>
+            getDesktopSearchButton()?.click(),
+        )
     }
 }

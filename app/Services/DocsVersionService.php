@@ -2,11 +2,15 @@
 
 namespace App\Services;
 
+use App\Enums\DocsPlatform;
+
 class DocsVersionService
 {
+    public function __construct(private DocsVersionRegistry $registry) {}
+
     public function determineCanonicalUrl(string $platform, string $page): string
     {
-        $latestVersion = $platform === 'mobile' ? config('docs.latest_versions.mobile') : config('docs.latest_versions.desktop');
+        $latestVersion = (string) $this->registry->latest(DocsPlatform::from($platform));
 
         $page = $this->resolveOldVersionApisWithPluginsCorePage($platform, $latestVersion, $page);
         $page = $this->resolvePageForVersion($platform, $latestVersion, $page);
@@ -30,7 +34,7 @@ class DocsVersionService
      */
     public function resolvePageForVersion(string $platform, int|string $targetVersion, string $page): string
     {
-        $renames = config("docs.renamed_pages.{$platform}", []);
+        $renames = $this->registry->renames(DocsPlatform::from($platform));
 
         ksort($renames);
 

@@ -72,6 +72,8 @@ to a page title, under a section heading, or beside the individual prop or class
 Remember that a minor release [may contain native code changes](#minor-releases), so picking up a labelled feature
 means rebuilding with `php artisan native:install --force` rather than a `composer update` alone.
 
+See everything labelled across these docs, grouped by release, on the [What's New]({{ \App\Support\DocsLabels::whatsNewUrl() }}) page.
+
 ### Jump labels
 
 [Jump](../the-basics/jump) ships on its own release cadence, so a feature can be released in NativePHP and still not
