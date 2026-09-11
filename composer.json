@@ -19,7 +19,9 @@
         "laravel/cashier": "^15.6",
         "laravel/framework": "^12.0",
         "laravel/horizon": "^5.44",
+        "laravel/mcp": "^0.9.1",
         "laravel/nightwatch": "^1.21",
+        "laravel/passport": "^13.0",
         "laravel/pennant": "^1.18",
         "laravel/sanctum": "^4.0",
         "laravel/socialite": "^5.24",
@@ -43,7 +45,7 @@
     "require-dev": {
         "driftingly/rector-laravel": "^2.1",
         "fakerphp/faker": "^1.9.1",
-        "laravel/boost": "^1.0",
+        "laravel/boost": "^2.0",
         "laravel/pint": "^1.0",
         "laravel/sail": "^1.18",
         "mockery/mockery": "^1.4.4",
