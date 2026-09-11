@@ -14,6 +14,7 @@ use App\Mcp\Tools\Admin\AdminSalesSummary;
 use App\Mcp\Tools\Admin\AdminSearchPlugins;
 use App\Mcp\Tools\Admin\AdminSearchSupportTickets;
 use App\Mcp\Tools\Admin\AdminSearchUsers;
+use App\Mcp\Tools\Admin\AdminUpdateBlogPost;
 use Laravel\Mcp\Server;
 use Laravel\Mcp\Server\Tool;
 
@@ -28,16 +29,17 @@ class AdminNativePhpServer extends Server
 
         Rules:
         - Never return passwords, remember tokens, GitHub tokens, license keys, Stripe secrets, or raw API credentials.
-        - Blog: create unpublished drafts only in v1 (no publish tool).
+        - Blog: create/update unpublished drafts in v1 (no publish tool; slug changes refused once published).
         - Other tools are read-only ops helpers (signups, users, companies, plugins, sales summaries, support).
 
         Tools:
         1. admin-create-blog-post — create an unpublished article.
-        2. admin-get-blog-post / admin-list-blog-posts — inspect drafts and published posts.
-        3. admin-list-signups / admin-search-users / admin-get-user — user support lookups.
-        4. admin-list-companies / admin-get-company — email-domain company rollups.
-        5. admin-search-plugins / admin-sales-summary — marketplace/plugin ops (no secrets).
-        6. admin-search-support-tickets / admin-get-support-ticket — support summaries.
+        2. admin-update-blog-post — patch title/content/excerpt/slug (no publish/unpublish).
+        3. admin-get-blog-post / admin-list-blog-posts — inspect drafts and published posts.
+        4. admin-list-signups / admin-search-users / admin-get-user — user support lookups.
+        5. admin-list-companies / admin-get-company — email-domain company rollups.
+        6. admin-search-plugins / admin-sales-summary — marketplace/plugin ops (no secrets).
+        7. admin-search-support-tickets / admin-get-support-ticket — support summaries.
     MARKDOWN;
 
     /**
@@ -45,6 +47,7 @@ class AdminNativePhpServer extends Server
      */
     protected array $tools = [
         AdminCreateBlogPost::class,
+        AdminUpdateBlogPost::class,
         AdminGetBlogPost::class,
         AdminListBlogPosts::class,
         AdminListSignups::class,

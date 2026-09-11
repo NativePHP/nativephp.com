@@ -83,6 +83,7 @@ class AdminMcpOAuthTest extends TestCase
         $names = collect($tools->json('result.tools'))->pluck('name')->all();
 
         $this->assertContains('admin-create-blog-post', $names);
+        $this->assertContains('admin-update-blog-post', $names);
         $this->assertContains('admin-list-signups', $names);
         $this->assertContains('admin-list-companies', $names);
         $this->assertContains('admin-search-plugins', $names);
@@ -259,5 +260,154 @@ class AdminMcpOAuthTest extends TestCase
 
         $this->assertGreaterThanOrEqual(1, $payload['count']);
         $this->assertSame($ticket->mask, $payload['tickets'][0]['mask']);
+    }
+
+    public function test_update_blog_post_patches_title_and_content_on_draft(): void
+    {
+        $article = Article::factory()->create([
+            'author_id' => $this->admin->id,
+            'slug' => 'draft-to-update',
+            'title' => 'Old Title',
+            'content' => 'Old content',
+            'excerpt' => 'Old excerpt',
+            'published_at' => null,
+        ]);
+
+        $tokens = $this->issueMcpOAuthTokens($this->admin);
+        $response = $this->callMcpTool($tokens['access_token'], 'admin-update-blog-post', [
+            'id' => $article->id,
+            'title' => 'Updated Title',
+            'content' => "# Updated\n\nNew body.",
+        ])->assertOk();
+
+        $this->assertFalse($response->json('result.isError'));
+        $payload = json_decode((string) data_get($response->json(), 'result.content.0.text'), true);
+
+        $this->assertSame('Updated Title', $payload['title']);
+        $this->assertSame("# Updated\n\nNew body.", $payload['content']);
+        $this->assertSame('Old excerpt', $payload['excerpt']);
+        $this->assertSame('draft-to-update', $payload['slug']);
+        $this->assertFalse($payload['published']);
+        $this->assertNull($payload['published_at']);
+
+        $article->refresh();
+        $this->assertSame('Updated Title', $article->title);
+        $this->assertSame("# Updated\n\nNew body.", $article->content);
+        $this->assertNull($article->published_at);
+    }
+
+    public function test_update_blog_post_by_slug_lookup(): void
+    {
+        $article = Article::factory()->create([
+            'author_id' => $this->admin->id,
+            'slug' => 'lookup-by-slug',
+            'title' => 'Before',
+            'published_at' => null,
+        ]);
+
+        $tokens = $this->issueMcpOAuthTokens($this->admin);
+        $response = $this->callMcpTool($tokens['access_token'], 'admin-update-blog-post', [
+            'slug' => 'lookup-by-slug',
+            'excerpt' => 'Patched excerpt only',
+        ])->assertOk();
+
+        $payload = json_decode((string) data_get($response->json(), 'result.content.0.text'), true);
+        $this->assertSame('Patched excerpt only', $payload['excerpt']);
+        $this->assertSame('Before', $payload['title']);
+        $this->assertSame($article->id, $payload['id']);
+    }
+
+    public function test_update_blog_post_rejects_empty_update(): void
+    {
+        $article = Article::factory()->create([
+            'author_id' => $this->admin->id,
+            'published_at' => null,
+        ]);
+
+        $tokens = $this->issueMcpOAuthTokens($this->admin);
+        $response = $this->callMcpTool($tokens['access_token'], 'admin-update-blog-post', [
+            'id' => $article->id,
+        ])->assertOk();
+
+        $this->assertTrue($response->json('result.isError'));
+        $text = (string) data_get($response->json(), 'result.content.0.text');
+        $this->assertStringContainsString('Provide at least one field to update', $text);
+    }
+
+    public function test_update_blog_post_not_found(): void
+    {
+        $tokens = $this->issueMcpOAuthTokens($this->admin);
+        $response = $this->callMcpTool($tokens['access_token'], 'admin-update-blog-post', [
+            'id' => 999999,
+            'title' => 'Nope',
+        ])->assertOk();
+
+        $this->assertTrue($response->json('result.isError'));
+        $text = (string) data_get($response->json(), 'result.content.0.text');
+        $this->assertStringContainsString('Article not found', $text);
+    }
+
+    public function test_update_blog_post_rejects_slug_change_when_published(): void
+    {
+        $article = Article::factory()->published()->create([
+            'author_id' => $this->admin->id,
+            'slug' => 'published-slug',
+        ]);
+
+        $tokens = $this->issueMcpOAuthTokens($this->admin);
+        $response = $this->callMcpTool($tokens['access_token'], 'admin-update-blog-post', [
+            'id' => $article->id,
+            'slug' => 'new-published-slug',
+        ])->assertOk();
+
+        $this->assertTrue($response->json('result.isError'));
+        $text = (string) data_get($response->json(), 'result.content.0.text');
+        $this->assertStringContainsString('cannot be changed after the article is published', $text);
+        $this->assertSame('published-slug', $article->fresh()->slug);
+    }
+
+    public function test_update_blog_post_rejects_slug_conflict(): void
+    {
+        Article::factory()->create([
+            'author_id' => $this->admin->id,
+            'slug' => 'taken-slug',
+            'published_at' => null,
+        ]);
+        $article = Article::factory()->create([
+            'author_id' => $this->admin->id,
+            'slug' => 'editable-slug',
+            'published_at' => null,
+        ]);
+
+        $tokens = $this->issueMcpOAuthTokens($this->admin);
+        $response = $this->callMcpTool($tokens['access_token'], 'admin-update-blog-post', [
+            'id' => $article->id,
+            'slug' => 'taken-slug',
+        ])->assertOk();
+
+        $this->assertTrue($response->json('result.isError'));
+        $text = (string) data_get($response->json(), 'result.content.0.text');
+        $this->assertStringContainsString('already taken', $text);
+        $this->assertSame('editable-slug', $article->fresh()->slug);
+    }
+
+    public function test_update_blog_post_can_rename_draft_slug(): void
+    {
+        $article = Article::factory()->create([
+            'author_id' => $this->admin->id,
+            'slug' => 'old-draft-slug',
+            'published_at' => null,
+        ]);
+
+        $tokens = $this->issueMcpOAuthTokens($this->admin);
+        $response = $this->callMcpTool($tokens['access_token'], 'admin-update-blog-post', [
+            'id' => $article->id,
+            'slug' => 'new-draft-slug',
+        ])->assertOk();
+
+        $this->assertFalse($response->json('result.isError'));
+        $payload = json_decode((string) data_get($response->json(), 'result.content.0.text'), true);
+        $this->assertSame('new-draft-slug', $payload['slug']);
+        $this->assertSame('new-draft-slug', $article->fresh()->slug);
     }
 }
