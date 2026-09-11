@@ -24,6 +24,8 @@ Route::get('/.well-known/oauth-protected-resource/mcp/oauth/admin', [McpOAuthCon
     ->name('mcp.oauth.admin.protected-resource');
 Route::get('/.well-known/oauth-authorization-server', [McpOAuthController::class, 'authorizationServer']);
 
+Route::redirect('/oauth/login', '/admin/login')->name('login');
+
 Route::prefix('oauth')->group(function (): void {
     Route::post('/register', RegisterClientController::class)->middleware('throttle:20,1');
     Route::post('/token', [AccessTokenController::class, 'issueToken'])
