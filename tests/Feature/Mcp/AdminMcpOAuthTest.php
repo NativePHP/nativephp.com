@@ -89,6 +89,23 @@ class AdminMcpOAuthTest extends TestCase
         $this->assertContains('admin-search-support-tickets', $names);
     }
 
+    public function test_guest_authorize_redirects_to_admin_login_instead_of_500(): void
+    {
+        $client = $this->createMcpOAuthClient();
+        $parameters = $this->mcpOAuthAuthorizationParameters(
+            $client,
+            str_repeat('a', 64),
+            'mcp:admin',
+            $this->mcpAdminOAuthResource(),
+        );
+
+        $this->get('/oauth/authorize?'.http_build_query($parameters))
+            ->assertRedirect(route('filament.admin.auth.login'));
+
+        $this->assertSame(url('/oauth/login'), route('login'));
+        $this->get(route('login'))->assertRedirect('/admin/login');
+    }
+
     public function test_non_admins_cannot_approve_admin_mcp_scope(): void
     {
         $user = User::factory()->create();
