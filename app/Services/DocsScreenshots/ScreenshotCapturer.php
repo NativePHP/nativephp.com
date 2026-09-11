@@ -13,8 +13,8 @@ use Illuminate\Support\Facades\Process;
  * Drives one screen/platform capture in a super-native checkout: launches
  * the screen with `native:run`, optionally waits for a manually-confirmed
  * drawer-open step, then captures it with `native:screenshot` — which owns
- * cropping itself (`--crop`/`--crop-percent`), so every NativePHP developer
- * gets it too, not just this docs pipeline.
+ * cropping itself (`--crop`/`--crop-percent`/`--crop-offset`), so every
+ * NativePHP developer gets it too, not just this docs pipeline.
  */
 final class ScreenshotCapturer
 {
@@ -40,6 +40,7 @@ final class ScreenshotCapturer
         string $outputPath,
         DocsScreenshotCrop $crop,
         float $cropPercent,
+        float $cropOffset,
         bool $isInteractive,
         callable $confirmDrawerOpen,
     ): ?string {
@@ -81,6 +82,7 @@ final class ScreenshotCapturer
             '--output='.$outputPath,
             $crop === DocsScreenshotCrop::Full ? '' : '--crop='.$crop->value,
             $crop === DocsScreenshotCrop::Full ? '' : '--crop-percent='.$cropPercent,
+            $crop === DocsScreenshotCrop::Full ? '' : '--crop-offset='.$cropOffset,
         ]);
 
         if (! $this->runProcess($screenshotCommand)) {

@@ -325,6 +325,48 @@ class CaptureDocsScreenshotsCommandTest extends TestCase
             '--output='.$outputPath,
             '--crop=top',
             '--crop-percent=0.3',
+            '--crop-offset=0.05',
+        ]);
+    }
+
+    #[Test]
+    public function it_fails_for_a_crop_offset_that_leaves_no_room_for_crop_percent(): void
+    {
+        Process::fake();
+
+        $this->artisan('docs:capture-screenshots', [
+            '--super-native-path' => $this->superNativePath,
+            '--platform' => 'ios',
+            '--only' => 'top-bar',
+            '--crop-percent' => '0.5',
+            '--crop-offset' => '0.5',
+        ])->assertFailed();
+
+        Process::assertNothingRan();
+    }
+
+    #[Test]
+    public function it_passes_a_custom_crop_offset_to_native_screenshot(): void
+    {
+        Process::fake();
+
+        $this->artisan('docs:capture-screenshots', [
+            '--super-native-path' => $this->superNativePath,
+            '--platform' => 'ios',
+            '--only' => 'top-bar',
+            '--settle-ms' => 0,
+            '--crop-percent' => '0.3',
+            '--crop-offset' => '0.1',
+        ])->assertSuccessful();
+
+        $outputPath = $this->stagingPath.'/edge-top-bar-ios.png';
+
+        Process::assertRan(fn ($process): bool => $process->command === [
+            'php', 'artisan', 'native:screenshot', 'ios',
+            '--output='.$outputPath,
+            '--crop=top',
+            '--crop-percent=0.3',
+            '--crop-offset=0.1',
         ]);
     }
 
@@ -347,6 +389,7 @@ class CaptureDocsScreenshotsCommandTest extends TestCase
             '--output='.$outputPath,
             '--crop=bottom',
             '--crop-percent=0.15',
+            '--crop-offset=0.05',
         ]);
     }
 

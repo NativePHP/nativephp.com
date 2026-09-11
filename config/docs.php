@@ -86,6 +86,12 @@ return [
     | screenshot before publishing and adjust here if a component's bar is
     | taller or shorter than this assumes. --full skips cropping entirely.
     |
+    | crop_offset is how much of the image height to skip from the crop edge
+    | before measuring crop_percent, so the OS status bar (top crop) or OS
+    | nav bar/home indicator (bottom crop) is excluded from the captured
+    | strip. Like crop_percent, it's an approximation tuned against real
+    | device captures — review a staged screenshot before publishing.
+    |
     */
 
     'screenshots' => [
@@ -93,6 +99,7 @@ return [
         'publish_path' => public_path('img/docs'),
         'process_timeout' => 300,
         'crop_percent' => 0.15,
+        'crop_offset' => 0.05,
     ],
 
     /*

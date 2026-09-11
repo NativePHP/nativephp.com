@@ -25,6 +25,7 @@ final class CaptureDocsScreenshots extends Command
         {--settle-ms=2000 : Milliseconds to wait after launch before capturing}
         {--full : Keep the full, uncropped screenshot instead of the tight top/bottom crop most screens use}
         {--crop-percent= : Override the configured crop_percent for this run (0-1)}
+        {--crop-offset= : Override the configured crop_offset for this run (0-1) — skips the OS status bar/nav bar before measuring crop-percent}
         {--dry-run : Print what would be captured without running anything}
         {--publish : Copy every staged screenshot into public/img/docs}';
 
@@ -58,8 +59,14 @@ final class CaptureDocsScreenshots extends Command
             return self::FAILURE;
         }
 
+        $cropOffset = $this->resolveCropOffset($cropPercent);
+
+        if ($cropOffset === null) {
+            return self::FAILURE;
+        }
+
         if ($this->option('dry-run')) {
-            $this->printDryRun($superNativePath, $keys, $platforms, $cropPercent);
+            $this->printDryRun($superNativePath, $keys, $platforms, $cropPercent, $cropOffset);
 
             return self::SUCCESS;
         }
@@ -72,7 +79,7 @@ final class CaptureDocsScreenshots extends Command
 
         foreach ($keys as $key) {
             foreach ($platforms as $platform) {
-                if (! $this->captureScreen($capturer, $stagingPath, $key, $platform, $cropPercent)) {
+                if (! $this->captureScreen($capturer, $stagingPath, $key, $platform, $cropPercent, $cropOffset)) {
                     $failures[] = sprintf('%s (%s)', $key, $platform->value);
                 }
             }
@@ -153,11 +160,30 @@ final class CaptureDocsScreenshots extends Command
         return $percent;
     }
 
+    private function resolveCropOffset(float $cropPercent): ?float
+    {
+        $given = (string) $this->option('crop-offset');
+        $offset = $given === '' ? (float) config('docs.screenshots.crop_offset') : (float) $given;
+
+        if ($offset < 0 || $offset + $cropPercent >= self::CROP_PERCENT_CEILING) {
+            $this->error(sprintf(
+                '--crop-offset (%s) plus --crop-percent (%s) must be less than %s.',
+                $given === '' ? $offset : $given,
+                $cropPercent,
+                self::CROP_PERCENT_CEILING
+            ));
+
+            return null;
+        }
+
+        return $offset;
+    }
+
     /**
      * @param  list<string>  $keys
      * @param  list<DocsScreenshotPlatform>  $platforms
      */
-    private function printDryRun(string $superNativePath, array $keys, array $platforms, float $cropPercent): void
+    private function printDryRun(string $superNativePath, array $keys, array $platforms, float $cropPercent, float $cropOffset): void
     {
         $this->info(sprintf('Would use super-native checkout: %s', $superNativePath));
 
@@ -167,7 +193,7 @@ final class CaptureDocsScreenshots extends Command
             foreach ($platforms as $platform) {
                 $crop = $this->option('full') || $screen['crop'] === DocsScreenshotCrop::Full
                     ? 'full'
-                    : sprintf('%s %d%%', $screen['crop']->value, (int) round($cropPercent * 100));
+                    : sprintf('%s %d%% (offset %d%%)', $screen['crop']->value, (int) round($cropPercent * 100), (int) round($cropOffset * 100));
 
                 $this->line(sprintf(
                     '  %s (%s) — route %s — %s%s',
@@ -187,6 +213,7 @@ final class CaptureDocsScreenshots extends Command
         string $key,
         DocsScreenshotPlatform $platform,
         float $cropPercent,
+        float $cropOffset,
     ): bool {
         $screen = DocsScreenshotManifest::get($key);
         $outputPath = sprintf('%s/%s', $stagingPath, $screen[$platform->value]);
@@ -202,6 +229,7 @@ final class CaptureDocsScreenshots extends Command
             outputPath: $outputPath,
             crop: $crop,
             cropPercent: $cropPercent,
+            cropOffset: $cropOffset,
             isInteractive: $this->input->isInteractive(),
             confirmDrawerOpen: fn (string $message) => $this->ask($message),
         );
