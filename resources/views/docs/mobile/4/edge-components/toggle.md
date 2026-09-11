@@ -5,6 +5,14 @@ order: 440
 
 ## Overview
 
+<x-docs.edge-preview
+    ios="edge-toggle-ios.png"
+    android="edge-toggle-android.png"
+    source="resources/views/native/explore/forms.blade.php"
+    alt="Toggle"
+    edge="both"
+/>
+
 A native on/off switch. Renders as a SwiftUI `Toggle` on iOS and a Material3 `Switch` on Android.
 
 Per Material 3, the active track / thumb colors come from `theme.primary` / `theme.onPrimary`. There are no per-instance

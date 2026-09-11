@@ -10,6 +10,7 @@ order: 450
     android="edge-top-bar-android.png"
     source="resources/views/native/edge-components/top-bar.blade.php"
     alt="Top bar"
+    edge="top"
 />
 
 A top bar with title, subtitle, and action buttons. Placing `<native:top-bar>` at the root of a screen's Blade is a

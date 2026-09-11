@@ -5,6 +5,14 @@ order: 225
 
 ## Overview
 
+<x-docs.edge-preview
+    ios="edge-gesture-area-ios.png"
+    android="edge-gesture-area-android.png"
+    source="resources/views/native/animate.blade.php"
+    alt="Gesture area"
+    edge="both"
+/>
+
 Captures a vertical pan/drag gesture over its content and writes the translation to a bound
 [shared value](../digging-deeper/gestures), so the drag can drive animation on the UI thread with no PHP round-trip.
 Children render normally — gesture detection wraps the whole content frame.

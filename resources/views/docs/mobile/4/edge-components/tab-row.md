@@ -5,6 +5,14 @@ order: 410
 
 ## Overview
 
+<x-docs.edge-preview
+    ios="edge-tab-row-ios.png"
+    android="edge-tab-row-android.png"
+    source="resources/views/native/twitter-profile.blade.php"
+    alt="Tab row"
+    edge="both"
+/>
+
 A horizontal tab strip with an underline indicator on the selected tab. Scrollable when tabs overflow. The row
 owns the selected-index state.
 

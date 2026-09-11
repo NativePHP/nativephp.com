@@ -10,7 +10,9 @@ order: 370
     android="edge-side-nav-android.png"
     source="resources/views/native/edge-components/side-nav-drawer.blade.php"
     alt="Side navigation drawer"
-    :chrome="false"
+    edge="both"
+    :sidebar-width-ios="85"
+    :sidebar-width-android="87"
 />
 
 A slide-out navigation drawer with support for groups, headers, and dividers. Side navigation is hosted by the

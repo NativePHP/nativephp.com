@@ -5,6 +5,14 @@ order: 310
 
 ## Overview
 
+<x-docs.edge-preview
+    ios="edge-radio-group-ios.png"
+    android="edge-radio-group-android.png"
+    source="resources/views/native/explore/forms.blade.php"
+    alt="Radio group"
+    edge="both"
+/>
+
 A single-choice container holding `<native:radio>` children. The group owns the selection; each child declares its
 own `value` and label.
 

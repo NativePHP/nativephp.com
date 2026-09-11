@@ -10,6 +10,7 @@ order: 120
     android="edge-bottom-nav-android.png"
     source="resources/views/native/edge-components/bottom-nav.blade.php"
     alt="Bottom navigation"
+    edge="bottom"
 />
 
 A bottom navigation bar with up to 5 items — your app's primary navigation. Placing `<native:bottom-nav>` at the
