@@ -43,7 +43,7 @@ class AdminNativePhpServer extends Server
         5. admin-get-blog-post / admin-list-blog-posts — inspect drafts and published posts.
         6. admin-list-signups / admin-search-users / admin-get-user — user support lookups.
         7. admin-list-companies / admin-get-company — email-domain company rollups.
-        8. admin-search-plugins / admin-sales-summary — marketplace/plugin ops (no secrets).
+        8. admin-search-plugins / admin-sales-summary — marketplace ops + attributable revenue (plugins, products, Ultra Cashier; no secrets).
         9. admin-search-support-tickets / admin-get-support-ticket — support summaries.
     MARKDOWN;
 
