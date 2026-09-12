@@ -451,6 +451,19 @@ class Plugin extends Model
         return $query->where('featured', true);
     }
 
+    /**
+     * Approved plugins that have not yet been included in an emailed "new plugins" digest.
+     *
+     * @param  Builder<Plugin>  $query
+     * @return Builder<Plugin>
+     */
+    #[Scope]
+    protected function pendingNewPluginNotification(Builder $query): Builder
+    {
+        return $query->where('status', PluginStatus::Approved)
+            ->whereNull('new_plugin_notified_at');
+    }
+
     public function getPackagistUrl(): string
     {
         return "https://packagist.org/packages/{$this->name}";
@@ -941,6 +954,7 @@ class Plugin extends Model
             'tier' => PluginTier::class,
             'category' => PluginCategory::class,
             'approved_at' => 'datetime',
+            'new_plugin_notified_at' => 'datetime',
             'featured' => 'boolean',
             'is_active' => 'boolean',
             'is_official' => 'boolean',
