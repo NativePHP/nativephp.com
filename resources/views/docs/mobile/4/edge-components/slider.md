@@ -5,6 +5,14 @@ order: 380
 
 ## Overview
 
+<x-docs.edge-preview
+    ios="edge-slider-ios.png"
+    android="edge-slider-android.png"
+    source="resources/views/native/explore/forms.blade.php"
+    alt="Slider"
+    edge="both"
+/>
+
 A continuous (or stepped) value selector. The active track and thumb use `theme.primary` — there are no
 per-instance color overrides.
 

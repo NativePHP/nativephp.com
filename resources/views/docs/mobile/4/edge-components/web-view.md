@@ -3,6 +3,14 @@ title: Web View
 order: 460
 ---
 
+<x-docs.edge-preview
+    ios="edge-web-view-ios.png"
+    android="edge-web-view-android.png"
+    source="resources/views/native/webview-demo.blade.php"
+    alt="Web view"
+    edge="both"
+/>
+
 With EDGE, native UI is the primary way to build your app — the web view is just one more component you can reach for,
 not the foundation everything sits on. You're free to compose entire screens from native EDGE components and never
 render a web view at all.

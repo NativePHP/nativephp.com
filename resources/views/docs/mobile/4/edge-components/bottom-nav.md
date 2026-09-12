@@ -5,13 +5,13 @@ order: 120
 
 ## Overview
 
-<div class="images-two-up not-prose">
-
-![](/img/docs/edge-bottom-nav-ios.png)
-
-![](/img/docs/edge-bottom-nav-android.png)
-
-</div>
+<x-docs.edge-preview
+    ios="edge-bottom-nav-ios.png"
+    android="edge-bottom-nav-android.png"
+    source="resources/views/native/edge-components/bottom-nav.blade.php"
+    alt="Bottom navigation"
+    edge="bottom"
+/>
 
 A bottom navigation bar with up to 5 items — your app's primary navigation. Placing `<native:bottom-nav>` at the
 root of a screen's Blade **hoists it onto the real native chrome root** (a `TabView` on iOS, a `NavigationBar` in a

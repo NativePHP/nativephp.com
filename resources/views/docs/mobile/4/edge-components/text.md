@@ -5,6 +5,14 @@ order: 420
 
 ## Overview
 
+<x-docs.edge-preview
+    ios="edge-text-ios.png"
+    android="edge-text-android.png"
+    source="resources/views/native/explore/typography.blade.php"
+    alt="Text"
+    edge="both"
+/>
+
 Displays text content using platform-native typography. Text content goes between the opening and closing tags.
 
 @verbatim

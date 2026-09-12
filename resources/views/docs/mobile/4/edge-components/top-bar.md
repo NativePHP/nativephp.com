@@ -4,13 +4,14 @@ order: 450
 ---
 
 ## Overview
-<div class="images-two-up not-prose">
 
-![](/img/docs/edge-top-bar-ios.png)
-
-![](/img/docs/edge-top-bar-android.png)
-
-</div>
+<x-docs.edge-preview
+    ios="edge-top-bar-ios.png"
+    android="edge-top-bar-android.png"
+    source="resources/views/native/edge-components/top-bar.blade.php"
+    alt="Top bar"
+    edge="top"
+/>
 
 A top bar with title, subtitle, and action buttons. Placing `<native:top-bar>` at the root of a screen's Blade is a
 first-class way to give that screen its own bar — the element **hoists onto the real native chrome root** (a
