@@ -141,7 +141,76 @@ class AdminUploadMediaTest extends TestCase
             'content' => '%%%not-base64%%%',
         ])->assertOk();
         $this->assertTrue($bad->json('result.isError'));
-        $this->assertStringContainsString('base64', (string) data_get($bad->json(), 'result.content.0.text'));
+        $message = (string) data_get($bad->json(), 'result.content.0.text');
+        $this->assertStringContainsString('base64', $message);
+        $this->assertStringContainsString('mangled', $message);
+    }
+
+    public function test_upload_media_recovers_space_substituted_pluses(): void
+    {
+        $payload = $this->makeHeroPayload();
+        $tokens = $this->issueMcpOAuthTokens($this->admin);
+
+        // Simulate form/transport layers turning '+' into spaces.
+        $this->assertStringContainsString('+', $payload['base64'], 'Fixture base64 must include + so space recovery is exercised.');
+        $mangled = str_replace('+', ' ', $payload['base64']);
+        $this->assertNotSame($payload['base64'], $mangled);
+        $this->assertFalse(base64_decode($mangled, true));
+
+        $response = $this->callMcpTool($tokens['access_token'], 'admin-upload-media', [
+            'filename' => 'hero.jpg',
+            'contentType' => 'image/jpeg',
+            'content' => $mangled,
+        ])->assertOk();
+
+        $this->assertFalse($response->json('result.isError'));
+        $result = json_decode((string) data_get($response->json(), 'result.content.0.text'), true);
+        $this->assertSame('image/webp', $result['content_type']);
+        Storage::disk('public')->assertExists($result['path']);
+    }
+
+    public function test_upload_media_accepts_base64url(): void
+    {
+        $payload = $this->makeHeroPayload();
+        $tokens = $this->issueMcpOAuthTokens($this->admin);
+
+        $this->assertTrue(
+            str_contains($payload['base64'], '+') || str_contains($payload['base64'], '/'),
+            'Fixture base64 must include + or / so base64url mapping is exercised.'
+        );
+
+        $base64url = strtr($payload['base64'], '+/', '-_');
+        $this->assertTrue(str_contains($base64url, '-') || str_contains($base64url, '_'));
+        $this->assertFalse(base64_decode($base64url, true));
+
+        $response = $this->callMcpTool($tokens['access_token'], 'admin-upload-media', [
+            'filename' => 'hero.jpg',
+            'contentType' => 'image/jpeg',
+            'content' => $base64url,
+        ])->assertOk();
+
+        $this->assertFalse($response->json('result.isError'));
+        $result = json_decode((string) data_get($response->json(), 'result.content.0.text'), true);
+        Storage::disk('public')->assertExists($result['path']);
+    }
+
+    public function test_upload_media_strips_whitespace_from_base64(): void
+    {
+        $payload = $this->makeHeroPayload();
+        $tokens = $this->issueMcpOAuthTokens($this->admin);
+
+        $wrapped = implode("\n", str_split($payload['base64'], 76));
+        $this->assertStringContainsString("\n", $wrapped);
+
+        $response = $this->callMcpTool($tokens['access_token'], 'admin-upload-media', [
+            'filename' => 'hero.jpg',
+            'contentType' => 'image/jpeg',
+            'content' => $wrapped,
+        ])->assertOk();
+
+        $this->assertFalse($response->json('result.isError'));
+        $result = json_decode((string) data_get($response->json(), 'result.content.0.text'), true);
+        Storage::disk('public')->assertExists($result['path']);
     }
 
     public function test_upload_media_rejects_oversized_decoded_payload(): void

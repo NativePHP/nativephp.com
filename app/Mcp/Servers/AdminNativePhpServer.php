@@ -32,12 +32,12 @@ class AdminNativePhpServer extends Server
         Rules:
         - Never return passwords, remember tokens, GitHub tokens, license keys, Stripe secrets, or raw API credentials.
         - Blog: create/update drafts; publish via admin-publish-blog-post (sets published_at like Filament; idempotent if already live). Slug changes refused once published. No unpublish tool yet.
-        - Media: upload via admin-upload-media to the public disk (default directory website-images; pass directory: "blog/heroes" for Filament article heroes). Optionally attach in one shot with article_id/slug only when directory is blog/heroes; or set hero on admin-update-blog-post via media_id/path or URL.
+        - Media: upload via admin-upload-media to the public disk. Pass `content` as a JSON string arg (raw base64, no data: prefix). Prefer image/webp. Default directory is website-images; pass directory: "blog/heroes" for Filament article heroes. Optionally attach in one shot with article_id/slug only when directory is blog/heroes. Do not put base64 in freeform prose (transport may mangle + into spaces; on invalid base64 the tool notes this). Or set hero on admin-update-blog-post via media_id/path or URL.
         - Other tools are read-only ops helpers (signups, users, companies, plugins, sales summaries, support).
 
         Tools:
         1. admin-create-blog-post — create an unpublished article.
-        2. admin-upload-media — upload an image (base64 → public disk WebP); optional directory (default website-images); for heroes pass directory: "blog/heroes" and optional article_id/slug attach.
+        2. admin-upload-media — upload an image (JSON-arg raw base64 → public disk WebP; prefer image/webp; no data: prefix; do not put base64 in prose); optional directory (default website-images); for heroes pass directory: "blog/heroes" with slug/article_id in the same call to attach.
         3. admin-update-blog-post — patch title/content/excerpt/slug/hero (no publish/unpublish).
         4. admin-publish-blog-post — publish by id/slug (optional published_at; default now; idempotent).
         5. admin-get-blog-post / admin-list-blog-posts — inspect drafts and published posts.
