@@ -85,6 +85,7 @@ class AdminMcpOAuthTest extends TestCase
         $this->assertContains('admin-create-blog-post', $names);
         $this->assertContains('admin-upload-media', $names);
         $this->assertContains('admin-update-blog-post', $names);
+        $this->assertContains('admin-publish-blog-post', $names);
         $this->assertContains('admin-list-signups', $names);
         $this->assertContains('admin-list-companies', $names);
         $this->assertContains('admin-search-plugins', $names);
@@ -410,5 +411,106 @@ class AdminMcpOAuthTest extends TestCase
         $payload = json_decode((string) data_get($response->json(), 'result.content.0.text'), true);
         $this->assertSame('new-draft-slug', $payload['slug']);
         $this->assertSame('new-draft-slug', $article->fresh()->slug);
+    }
+
+    public function test_publish_blog_post_publishes_draft_by_id(): void
+    {
+        $article = Article::factory()->create([
+            'author_id' => $this->admin->id,
+            'slug' => 'draft-to-publish',
+            'title' => 'Ready to Ship',
+            'published_at' => null,
+        ]);
+
+        $tokens = $this->issueMcpOAuthTokens($this->admin);
+        $response = $this->callMcpTool($tokens['access_token'], 'admin-publish-blog-post', [
+            'id' => $article->id,
+        ])->assertOk();
+
+        $this->assertFalse($response->json('result.isError'));
+        $payload = json_decode((string) data_get($response->json(), 'result.content.0.text'), true);
+
+        $this->assertSame($article->id, $payload['id']);
+        $this->assertSame('draft-to-publish', $payload['slug']);
+        $this->assertSame('Ready to Ship', $payload['title']);
+        $this->assertTrue($payload['published']);
+        $this->assertNotNull($payload['published_at']);
+        $this->assertNotEmpty($payload['admin_edit_url']);
+        $this->assertNotEmpty($payload['public_url']);
+        $this->assertStringContainsString('draft-to-publish', $payload['public_url']);
+
+        $article->refresh();
+        $this->assertNotNull($article->published_at);
+        $this->assertTrue($article->isPublished());
+    }
+
+    public function test_publish_blog_post_by_slug_with_custom_published_at(): void
+    {
+        $article = Article::factory()->create([
+            'author_id' => $this->admin->id,
+            'slug' => 'schedule-via-mcp',
+            'published_at' => null,
+        ]);
+
+        $tokens = $this->issueMcpOAuthTokens($this->admin);
+        $when = now()->subDay()->startOfSecond();
+        $response = $this->callMcpTool($tokens['access_token'], 'admin-publish-blog-post', [
+            'slug' => 'schedule-via-mcp',
+            'published_at' => $when->toIso8601String(),
+        ])->assertOk();
+
+        $this->assertFalse($response->json('result.isError'));
+        $payload = json_decode((string) data_get($response->json(), 'result.content.0.text'), true);
+
+        $this->assertTrue($payload['published']);
+        $article->refresh();
+        $this->assertTrue($article->published_at->equalTo($when));
+    }
+
+    public function test_publish_blog_post_is_idempotent_when_already_published(): void
+    {
+        $original = now()->subDays(3)->startOfSecond();
+        $article = Article::factory()->create([
+            'author_id' => $this->admin->id,
+            'slug' => 'already-live',
+            'title' => 'Already Live',
+            'published_at' => $original,
+        ]);
+
+        $tokens = $this->issueMcpOAuthTokens($this->admin);
+        $response = $this->callMcpTool($tokens['access_token'], 'admin-publish-blog-post', [
+            'id' => $article->id,
+            'published_at' => now()->toIso8601String(),
+        ])->assertOk();
+
+        $this->assertFalse($response->json('result.isError'));
+        $payload = json_decode((string) data_get($response->json(), 'result.content.0.text'), true);
+
+        $this->assertTrue($payload['published']);
+        $this->assertSame('Already Live', $payload['title']);
+        $article->refresh();
+        $this->assertTrue($article->published_at->equalTo($original));
+    }
+
+    public function test_publish_blog_post_missing_article(): void
+    {
+        $tokens = $this->issueMcpOAuthTokens($this->admin);
+        $response = $this->callMcpTool($tokens['access_token'], 'admin-publish-blog-post', [
+            'id' => 999999,
+        ])->assertOk();
+
+        $this->assertTrue($response->json('result.isError'));
+        $text = (string) data_get($response->json(), 'result.content.0.text');
+        $this->assertStringContainsString('Article not found', $text);
+    }
+
+    public function test_publish_blog_post_requires_id_or_slug(): void
+    {
+        $tokens = $this->issueMcpOAuthTokens($this->admin);
+        $response = $this->callMcpTool($tokens['access_token'], 'admin-publish-blog-post', [])->assertOk();
+
+        $this->assertTrue($response->json('result.isError'));
+        $text = (string) data_get($response->json(), 'result.content.0.text');
+        $this->assertStringContainsString('Provide id or slug', $text);
     }
 }
