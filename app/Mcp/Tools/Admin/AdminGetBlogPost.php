@@ -60,6 +60,8 @@ class AdminGetBlogPost extends Tool
             'title' => $article->title,
             'excerpt' => $article->excerpt,
             'content' => $article->content,
+            'hero_image' => $article->hero_image,
+            'hero_image_url' => $article->getHeroImageUrl(),
             'published' => $article->isPublished(),
             'published_at' => optional($article->published_at)?->toIso8601String(),
             'author' => [
