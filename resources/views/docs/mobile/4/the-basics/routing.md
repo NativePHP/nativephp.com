@@ -27,7 +27,8 @@ You can put these routes anywhere that makes sense for your application, but you
 Route parameters work just like Laravel web routes — `{id}` matches a path segment and is exposed to the screen
 through `$this->param('id')`.
 
-See [Layouts](layouts) for how to attach shared chrome to a route or group of routes.
+See [Layouts](layouts) for how to attach shared chrome to a route or group of routes, and
+[Middleware](middleware) for guarding screens with `->middleware()`.
 
 ## Pushing a new screen
 
