@@ -83,6 +83,7 @@ class AdminMcpOAuthTest extends TestCase
         $names = collect($tools->json('result.tools'))->pluck('name')->all();
 
         $this->assertContains('admin-create-blog-post', $names);
+        $this->assertContains('admin-upload-media', $names);
         $this->assertContains('admin-update-blog-post', $names);
         $this->assertContains('admin-list-signups', $names);
         $this->assertContains('admin-list-companies', $names);

@@ -5,6 +5,7 @@ namespace App\Mcp\Tools\Admin;
 use App\Filament\Resources\ArticleResource;
 use App\Mcp\Tools\Concerns\RequiresAdmin;
 use App\Models\Article;
+use App\Services\AdminArticleMediaService;
 use Illuminate\Contracts\JsonSchema\JsonSchema;
 use Illuminate\JsonSchema\Types\Type;
 use Illuminate\Support\Str;
@@ -13,12 +14,15 @@ use Laravel\Mcp\Response;
 use Laravel\Mcp\Server\Attributes\Description;
 use Laravel\Mcp\Server\Attributes\Name;
 use Laravel\Mcp\Server\Tool;
+use RuntimeException;
 
 #[Name('admin-update-blog-post')]
-#[Description('Update an existing blog article by id or slug. Patches only provided fields (title, content, excerpt, slug). Does not publish or unpublish. When id is provided, slug is treated as the new slug (drafts only; refused if published). When only slug is provided, it identifies the article.')]
+#[Description('Update an existing blog article by id or slug. Patches only provided fields (title, content, excerpt, slug, hero image). Hero can be set via media_id/hero_image_path (from admin-upload-media) or hero_image_url. Does not publish or unpublish. When id is provided, slug is treated as the new slug (drafts only; refused if published). When only slug is provided, it identifies the article.')]
 class AdminUpdateBlogPost extends Tool
 {
     use RequiresAdmin;
+
+    public function __construct(protected AdminArticleMediaService $media) {}
 
     public function handle(Request $request): Response
     {
@@ -32,6 +36,9 @@ class AdminUpdateBlogPost extends Tool
             'title' => ['nullable', 'string', 'max:255'],
             'content' => ['nullable', 'string'],
             'excerpt' => ['nullable', 'string', 'max:5000'],
+            'media_id' => ['nullable', 'string', 'max:500'],
+            'hero_image_path' => ['nullable', 'string', 'max:500'],
+            'hero_image_url' => ['nullable', 'string', 'max:2000'],
         ]);
 
         if (empty($validated['id']) && empty($validated['slug'])) {
@@ -44,9 +51,12 @@ class AdminUpdateBlogPost extends Tool
         $updatingExcerpt = array_key_exists('excerpt', $input);
         // Slug is an update field only when identifying by id (same arg name as create).
         $updatingSlug = ! empty($validated['id']) && array_key_exists('slug', $input);
+        $updatingHero = array_key_exists('media_id', $input)
+            || array_key_exists('hero_image_path', $input)
+            || array_key_exists('hero_image_url', $input);
 
-        if (! $updatingTitle && ! $updatingContent && ! $updatingExcerpt && ! $updatingSlug) {
-            return Response::error('Provide at least one field to update: title, content, excerpt, or slug.');
+        if (! $updatingTitle && ! $updatingContent && ! $updatingExcerpt && ! $updatingSlug && ! $updatingHero) {
+            return Response::error('Provide at least one field to update: title, content, excerpt, slug, media_id, hero_image_path, or hero_image_url.');
         }
 
         $article = Article::query()
@@ -105,8 +115,38 @@ class AdminUpdateBlogPost extends Tool
             $updates['slug'] = $slug;
         }
 
-        $article->fill($updates);
-        $article->save();
+        if ($updates !== []) {
+            $article->fill($updates);
+            $article->save();
+        }
+
+        $heroMeta = null;
+
+        if ($updatingHero) {
+            $mediaId = $validated['media_id'] ?? $validated['hero_image_path'] ?? null;
+            $heroUrl = $validated['hero_image_url'] ?? null;
+
+            if (filled($mediaId) && filled($heroUrl)) {
+                return Response::error('Provide only one of media_id/hero_image_path or hero_image_url.');
+            }
+
+            if (! filled($mediaId) && ! filled($heroUrl)) {
+                return Response::error('media_id, hero_image_path, or hero_image_url cannot be empty.');
+            }
+
+            try {
+                $stored = filled($mediaId)
+                    ? $this->media->resolveExistingMedia((string) $mediaId)
+                    : $this->media->storeHeroFromUrl((string) $heroUrl);
+
+                $article = $this->media->attachHeroToArticle($article->fresh(), $stored['path']);
+                $heroMeta = $stored;
+            } catch (RuntimeException $e) {
+                return Response::error($e->getMessage());
+            }
+        }
+
+        $article = $article->fresh();
 
         $editUrl = null;
 
@@ -122,6 +162,9 @@ class AdminUpdateBlogPost extends Tool
             'title' => $article->title,
             'excerpt' => $article->excerpt,
             'content' => $article->content,
+            'hero_image' => $article->hero_image,
+            'hero_image_url' => $article->getHeroImageUrl(),
+            'media' => $heroMeta,
             'published' => $article->isPublished(),
             'published_at' => optional($article->published_at)?->toIso8601String(),
             'author_id' => $article->author_id,
@@ -144,6 +187,9 @@ class AdminUpdateBlogPost extends Tool
             'title' => $schema->string()->description('Optional new title.'),
             'content' => $schema->string()->description('Optional new Markdown body.'),
             'excerpt' => $schema->string()->description('Optional new excerpt.'),
+            'media_id' => $schema->string()->description('Optional media_id/path from admin-upload-media (under blog/heroes) to set as the hero image.'),
+            'hero_image_path' => $schema->string()->description('Alias for media_id: public-disk relative path under blog/heroes.'),
+            'hero_image_url' => $schema->string()->description('Optional http(s) URL to download and set as the hero image (re-encoded to WebP on the public disk).'),
         ];
     }
 }
