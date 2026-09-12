@@ -16,7 +16,7 @@ use Laravel\Mcp\Server\Tool;
 use RuntimeException;
 
 #[Name('admin-upload-media')]
-#[Description('Upload an image to the public media disk (WebP re-encode). Optional directory is a relative path under the public disk (no "..", no absolute paths); nested paths like blog/heroes are allowed. Default directory is website-images. Attaching via article_id/slug does NOT force blog/heroes — pass directory: "blog/heroes" when uploading a blog hero/featured image. Prefer image/webp; jpeg/png allowed. Does not publish.')]
+#[Description('Upload an image to the public media disk (WebP re-encode). Pass content as a JSON string argument: raw base64 only (no data: URI prefix). Prefer image/webp; jpeg/png allowed. Do not put base64 in freeform prose — transport may turn + into spaces (server recovers spaces→+ and accepts base64url). Optional directory is a relative path under the public disk (no "..", no absolute paths); nested paths like blog/heroes are allowed. Default directory is website-images. For blog heroes pass directory: "blog/heroes" and optional article_id/slug in the same call to attach; attach does NOT force that folder. Does not publish.')]
 class AdminUploadMedia extends Tool
 {
     use RequiresAdmin;
@@ -123,7 +123,7 @@ class AdminUploadMedia extends Tool
         return [
             'filename' => $schema->string()->description('Original filename (used for logging; stored name is a UUID .webp).')->required(),
             'contentType' => $schema->string()->description('MIME type: image/webp (preferred), image/jpeg, or image/png.')->required(),
-            'content' => $schema->string()->description('Base64-encoded image bytes with no data: URI prefix. Decoded size hard-capped at a few MB; re-encoded to WebP.')->required(),
+            'content' => $schema->string()->description('Raw base64 image bytes as a JSON string argument (no data: URI prefix). Prefer image/webp. Do not paste base64 into freeform prose — + may become spaces. Server strips whitespace, recovers space→+, and accepts base64url (-_). Decoded size hard-capped at a few MB; re-encoded to WebP.')->required(),
             'directory' => $schema->string()->description('Optional relative path under the public media disk (no "..", no absolute paths). Nested paths allowed (e.g. blog/heroes). Defaults to website-images. When attaching as an article hero via article_id/slug, pass directory: "blog/heroes" — attach does not force that folder.'),
             'article_id' => $schema->integer()->description('Optional article id to attach this upload as the hero/featured image. Requires directory "blog/heroes" (or a path already under it).'),
             'slug' => $schema->string()->description('Optional article slug to attach as hero when article_id is omitted. Requires directory "blog/heroes".'),

@@ -144,6 +144,17 @@ class AdminArticleMediaService
             throw new RuntimeException('content must be raw base64 without a data: URI prefix.');
         }
 
+        // Normalize before strict decode:
+        // 1) strip whitespace (newlines/tabs/wrapping), 2) recover '+' mangled to spaces,
+        // 3) if -/_ present, accept base64url via strtr to the standard alphabet.
+        // Spaces are preserved through the whitespace strip so they can be restored to '+'.
+        $base64 = preg_replace('/[\t\n\r\f\v]+/', '', $base64) ?? $base64;
+        $base64 = str_replace(' ', '+', $base64);
+
+        if (str_contains($base64, '-') || str_contains($base64, '_')) {
+            $base64 = strtr($base64, '-_', '+/');
+        }
+
         // Reject before decode so oversized payloads cannot exhaust memory.
         // Base64 expands 3 bytes → 4 chars; floor(len*3/4) is a safe decoded upper bound.
         if ((int) floor(strlen($base64) * 3 / 4) > self::MAX_DECODED_BYTES) {
@@ -153,7 +164,7 @@ class AdminArticleMediaService
         $binary = base64_decode($base64, true);
 
         if ($binary === false) {
-            throw new RuntimeException('content is not valid base64.');
+            throw new RuntimeException('content is not valid base64. Transport may have mangled + into spaces — pass content as a JSON string argument (raw base64, no data: prefix), not freeform prose.');
         }
 
         return $this->storeHeroFromBinary($binary, $contentType, $filename, $directory);
