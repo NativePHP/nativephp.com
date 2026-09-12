@@ -51,7 +51,7 @@ class AdminUploadMediaTest extends TestCase
         ];
     }
 
-    public function test_upload_media_stores_webp_on_public_blog_heroes_disk(): void
+    public function test_upload_media_defaults_to_website_images_directory(): void
     {
         $payload = $this->makeHeroPayload();
         $tokens = $this->issueMcpOAuthTokens($this->admin);
@@ -67,8 +67,8 @@ class AdminUploadMediaTest extends TestCase
 
         $this->assertSame('image/webp', $result['content_type']);
         $this->assertSame('public', $result['disk']);
-        $this->assertSame('blog/heroes', $result['directory']);
-        $this->assertStringStartsWith('blog/heroes/', $result['path']);
+        $this->assertSame('website-images', $result['directory']);
+        $this->assertStringStartsWith('website-images/', $result['path']);
         $this->assertSame($result['path'], $result['media_id']);
         $this->assertFalse($result['attached']);
         $this->assertNull($result['article']);
@@ -78,6 +78,48 @@ class AdminUploadMediaTest extends TestCase
 
         Storage::disk('public')->assertExists($result['path']);
         $this->assertStringEndsWith('.webp', $result['path']);
+    }
+
+    public function test_upload_media_respects_explicit_directory(): void
+    {
+        $payload = $this->makeHeroPayload();
+        $tokens = $this->issueMcpOAuthTokens($this->admin);
+
+        $response = $this->callMcpTool($tokens['access_token'], 'admin-upload-media', [
+            'filename' => 'hero-source.jpg',
+            'contentType' => 'image/jpeg',
+            'content' => $payload['base64'],
+            'directory' => 'blog/heroes',
+        ])->assertOk();
+
+        $this->assertFalse($response->json('result.isError'));
+        $result = json_decode((string) data_get($response->json(), 'result.content.0.text'), true);
+
+        $this->assertSame('blog/heroes', $result['directory']);
+        $this->assertStringStartsWith('blog/heroes/', $result['path']);
+        Storage::disk('public')->assertExists($result['path']);
+    }
+
+    public function test_upload_media_rejects_unsafe_directories(): void
+    {
+        $payload = $this->makeHeroPayload();
+        $tokens = $this->issueMcpOAuthTokens($this->admin);
+
+        foreach (['../etc', '/absolute', 'blog/../../secrets'] as $directory) {
+            $response = $this->callMcpTool($tokens['access_token'], 'admin-upload-media', [
+                'filename' => 'hero.jpg',
+                'contentType' => 'image/jpeg',
+                'content' => $payload['base64'],
+                'directory' => $directory,
+            ])->assertOk();
+
+            $this->assertTrue($response->json('result.isError'), 'Expected rejection for directory '.$directory);
+            $message = (string) data_get($response->json(), 'result.content.0.text');
+            $this->assertTrue(
+                str_contains($message, '..') || str_contains($message, 'absolute') || str_contains($message, 'directory'),
+                'Unexpected message for '.$directory.': '.$message
+            );
+        }
     }
 
     public function test_upload_media_rejects_data_uri_prefix_and_invalid_base64(): void
@@ -106,13 +148,13 @@ class AdminUploadMediaTest extends TestCase
     {
         $tokens = $this->issueMcpOAuthTokens($this->admin);
 
-        // Build a binary larger than the hard cap without needing a huge real image.
-        $oversized = str_repeat('A', AdminArticleMediaService::MAX_DECODED_BYTES + 1);
+        // Oversized base64 (valid alphabet) without allocating a huge decoded binary first.
+        $oversizedBase64 = str_repeat('A', (int) ceil(AdminArticleMediaService::MAX_DECODED_BYTES * 4 / 3) + 16);
 
         $response = $this->callMcpTool($tokens['access_token'], 'admin-upload-media', [
             'filename' => 'huge.jpg',
             'contentType' => 'image/jpeg',
-            'content' => base64_encode($oversized),
+            'content' => $oversizedBase64,
         ])->assertOk();
 
         $this->assertTrue($response->json('result.isError'));
@@ -150,6 +192,7 @@ class AdminUploadMediaTest extends TestCase
             'filename' => 'hero.jpg',
             'contentType' => 'image/jpeg',
             'content' => $payload['base64'],
+            'directory' => 'blog/heroes',
             'article_id' => $article->id,
         ])->assertOk();
 
@@ -157,6 +200,7 @@ class AdminUploadMediaTest extends TestCase
         $result = json_decode((string) data_get($response->json(), 'result.content.0.text'), true);
 
         $this->assertTrue($result['attached']);
+        $this->assertSame('blog/heroes', $result['directory']);
         $this->assertSame($article->id, $result['article']['id']);
         $this->assertSame($result['path'], $article->fresh()->hero_image);
 
@@ -164,6 +208,38 @@ class AdminUploadMediaTest extends TestCase
         Storage::disk('public')->assertExists('og-images/'.$article->slug.'.png');
         Storage::disk('public')->assertExists('blog/cards/'.$article->slug.'.jpg');
         Storage::disk('public')->assertExists('blog/headers/'.$article->slug.'.jpg');
+    }
+
+    public function test_upload_media_attach_does_not_force_blog_heroes_directory(): void
+    {
+        $article = Article::factory()->create([
+            'author_id' => $this->admin->id,
+            'slug' => 'no-force-heroes',
+            'published_at' => null,
+            'hero_image' => null,
+        ]);
+
+        $payload = $this->makeHeroPayload();
+        $tokens = $this->issueMcpOAuthTokens($this->admin);
+
+        // article_id alone must not silently rewrite directory to blog/heroes.
+        $response = $this->callMcpTool($tokens['access_token'], 'admin-upload-media', [
+            'filename' => 'hero.jpg',
+            'contentType' => 'image/jpeg',
+            'content' => $payload['base64'],
+            'article_id' => $article->id,
+        ])->assertOk();
+
+        $this->assertTrue($response->json('result.isError'));
+        $message = (string) data_get($response->json(), 'result.content.0.text');
+        $this->assertStringContainsString('attach failed', $message);
+        $this->assertStringContainsString('blog/heroes', $message);
+        $this->assertNull($article->fresh()->hero_image);
+
+        // Confirm the upload itself landed in the default generic directory.
+        $this->assertMatchesRegularExpression('#media_id=website-images/[^\s]+#', $message);
+        preg_match('#media_id=(website-images/\S+)#', $message, $matches);
+        Storage::disk('public')->assertExists($matches[1]);
     }
 
     public function test_upload_media_can_attach_to_article_by_slug(): void
@@ -181,6 +257,7 @@ class AdminUploadMediaTest extends TestCase
             'filename' => 'hero.png',
             'contentType' => 'image/png',
             'content' => $payload['base64'],
+            'directory' => 'blog/heroes',
             'slug' => 'attach-by-slug',
         ])->assertOk();
 
@@ -205,6 +282,7 @@ class AdminUploadMediaTest extends TestCase
             'filename' => 'hero.jpg',
             'contentType' => 'image/jpeg',
             'content' => $payload['base64'],
+            'directory' => 'blog/heroes',
         ])->assertOk();
         $uploaded = json_decode((string) data_get($upload->json(), 'result.content.0.text'), true);
 

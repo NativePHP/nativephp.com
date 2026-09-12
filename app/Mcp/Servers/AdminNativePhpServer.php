@@ -31,12 +31,12 @@ class AdminNativePhpServer extends Server
         Rules:
         - Never return passwords, remember tokens, GitHub tokens, license keys, Stripe secrets, or raw API credentials.
         - Blog: create/update unpublished drafts in v1 (no publish tool; slug changes refused once published).
-        - Hero images: upload via admin-upload-media (same public disk / blog/heroes as Filament), optionally attach in one shot; or set hero on admin-update-blog-post via media_id/path or URL.
+        - Media: upload via admin-upload-media to the public disk (default directory website-images; pass directory: "blog/heroes" for Filament article heroes). Optionally attach in one shot with article_id/slug only when directory is blog/heroes; or set hero on admin-update-blog-post via media_id/path or URL.
         - Other tools are read-only ops helpers (signups, users, companies, plugins, sales summaries, support).
 
         Tools:
         1. admin-create-blog-post — create an unpublished article.
-        2. admin-upload-media — upload a blog hero image (base64 → public disk blog/heroes WebP); optional article_id/slug attach.
+        2. admin-upload-media — upload an image (base64 → public disk WebP); optional directory (default website-images); for heroes pass directory: "blog/heroes" and optional article_id/slug attach.
         3. admin-update-blog-post — patch title/content/excerpt/slug/hero (no publish/unpublish).
         4. admin-get-blog-post / admin-list-blog-posts — inspect drafts and published posts.
         5. admin-list-signups / admin-search-users / admin-get-user — user support lookups.

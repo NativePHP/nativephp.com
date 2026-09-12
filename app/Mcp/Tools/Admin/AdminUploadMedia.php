@@ -16,7 +16,7 @@ use Laravel\Mcp\Server\Tool;
 use RuntimeException;
 
 #[Name('admin-upload-media')]
-#[Description('Upload a blog hero/featured image to the same public disk path Filament uses (blog/heroes). Accepts base64 content (no data: prefix). Prefer image/webp; jpeg/png allowed. Optionally attach to an article via article_id and/or slug in one shot. Does not publish.')]
+#[Description('Upload an image to the public media disk (WebP re-encode). Optional directory is a relative path under the public disk (no "..", no absolute paths); nested paths like blog/heroes are allowed. Default directory is website-images. Attaching via article_id/slug does NOT force blog/heroes — pass directory: "blog/heroes" when uploading a blog hero/featured image. Prefer image/webp; jpeg/png allowed. Does not publish.')]
 class AdminUploadMedia extends Tool
 {
     use RequiresAdmin;
@@ -33,6 +33,7 @@ class AdminUploadMedia extends Tool
             'filename' => ['required', 'string', 'max:255'],
             'contentType' => ['required', 'string', 'max:100'],
             'content' => ['required', 'string'],
+            'directory' => ['nullable', 'string', 'max:255'],
             'article_id' => ['nullable', 'integer', 'min:1'],
             'slug' => ['nullable', 'string', 'max:255'],
         ]);
@@ -42,6 +43,7 @@ class AdminUploadMedia extends Tool
                 $validated['content'],
                 $validated['contentType'],
                 $validated['filename'],
+                $validated['directory'] ?? null,
             );
         } catch (RuntimeException $e) {
             return Response::error($e->getMessage());
@@ -57,7 +59,7 @@ class AdminUploadMedia extends Tool
             'height' => $stored['height'],
             'original_filename' => $stored['original_filename'],
             'disk' => AdminArticleMediaService::DISK,
-            'directory' => AdminArticleMediaService::HERO_DIRECTORY,
+            'directory' => $stored['directory'],
             'attached' => false,
             'article' => null,
         ];
@@ -122,8 +124,9 @@ class AdminUploadMedia extends Tool
             'filename' => $schema->string()->description('Original filename (used for logging; stored name is a UUID .webp).')->required(),
             'contentType' => $schema->string()->description('MIME type: image/webp (preferred), image/jpeg, or image/png.')->required(),
             'content' => $schema->string()->description('Base64-encoded image bytes with no data: URI prefix. Decoded size hard-capped at a few MB; re-encoded to WebP.')->required(),
-            'article_id' => $schema->integer()->description('Optional article id to attach this upload as the hero/featured image.'),
-            'slug' => $schema->string()->description('Optional article slug to attach as hero when article_id is omitted.'),
+            'directory' => $schema->string()->description('Optional relative path under the public media disk (no "..", no absolute paths). Nested paths allowed (e.g. blog/heroes). Defaults to website-images. When attaching as an article hero via article_id/slug, pass directory: "blog/heroes" — attach does not force that folder.'),
+            'article_id' => $schema->integer()->description('Optional article id to attach this upload as the hero/featured image. Requires directory "blog/heroes" (or a path already under it).'),
+            'slug' => $schema->string()->description('Optional article slug to attach as hero when article_id is omitted. Requires directory "blog/heroes".'),
         ];
     }
 }

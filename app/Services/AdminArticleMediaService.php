@@ -13,7 +13,11 @@ class AdminArticleMediaService
 {
     public const DISK = 'public';
 
+    /** Filament article hero/featured uploads. */
     public const HERO_DIRECTORY = 'blog/heroes';
+
+    /** Default directory for generic MCP media uploads when none is provided. */
+    public const DEFAULT_DIRECTORY = 'website-images';
 
     /** Hard cap on decoded upload bytes (a few MB). */
     public const MAX_DECODED_BYTES = 5 * 1024 * 1024;
@@ -34,7 +38,7 @@ class AdminArticleMediaService
     public function __construct(protected ArticleImageService $articleImageService) {}
 
     /**
-     * Store a hero image from raw binary onto the same disk/path Filament uses.
+     * Store an image from raw binary onto the public disk under a sanitized directory.
      *
      * @return array{
      *     path: string,
@@ -44,12 +48,14 @@ class AdminArticleMediaService
      *     bytes: int,
      *     width: int,
      *     height: int,
-     *     original_filename: string|null
+     *     original_filename: string|null,
+     *     directory: string
      * }
      */
-    public function storeHeroFromBinary(string $binary, string $contentType, ?string $filename = null): array
+    public function storeHeroFromBinary(string $binary, string $contentType, ?string $filename = null, ?string $directory = null): array
     {
         $contentType = $this->normalizeContentType($contentType);
+        $directory = $this->sanitizeDirectory($directory);
 
         if (! in_array($contentType, self::ALLOWED_CONTENT_TYPES, true)) {
             throw new RuntimeException('contentType must be image/webp, image/jpeg, or image/png.');
@@ -86,7 +92,7 @@ class AdminArticleMediaService
             $height = $image->height();
         }
 
-        // Prefer WebP for MCP-uploaded heroes (smaller for CDN).
+        // Prefer WebP for MCP uploads (smaller for CDN).
         $encoded = $image->toWebp(self::WEBP_QUALITY);
         $encodedBinary = $encoded->toString();
 
@@ -95,10 +101,10 @@ class AdminArticleMediaService
         }
 
         $disk = Storage::disk(self::DISK);
-        $disk->makeDirectory(self::HERO_DIRECTORY);
+        $disk->makeDirectory($directory);
 
         $basename = Str::uuid()->toString().'.webp';
-        $path = self::HERO_DIRECTORY.'/'.$basename;
+        $path = $directory.'/'.$basename;
 
         $disk->put($path, $encodedBinary, 'public');
 
@@ -111,11 +117,12 @@ class AdminArticleMediaService
             'width' => $width,
             'height' => $height,
             'original_filename' => $filename,
+            'directory' => $directory,
         ];
     }
 
     /**
-     * Decode base64 (no data: prefix) and store as a hero image.
+     * Decode base64 (no data: prefix) and store under the given public-disk directory.
      *
      * @return array{
      *     path: string,
@@ -125,15 +132,22 @@ class AdminArticleMediaService
      *     bytes: int,
      *     width: int,
      *     height: int,
-     *     original_filename: string|null
+     *     original_filename: string|null,
+     *     directory: string
      * }
      */
-    public function storeHeroFromBase64(string $base64, string $contentType, ?string $filename = null): array
+    public function storeHeroFromBase64(string $base64, string $contentType, ?string $filename = null, ?string $directory = null): array
     {
         $base64 = trim($base64);
 
         if (str_starts_with($base64, 'data:')) {
             throw new RuntimeException('content must be raw base64 without a data: URI prefix.');
+        }
+
+        // Reject before decode so oversized payloads cannot exhaust memory.
+        // Base64 expands 3 bytes → 4 chars; floor(len*3/4) is a safe decoded upper bound.
+        if ((int) floor(strlen($base64) * 3 / 4) > self::MAX_DECODED_BYTES) {
+            throw new RuntimeException('Image exceeds the '.self::MAX_DECODED_BYTES.' byte decoded size limit.');
         }
 
         $binary = base64_decode($base64, true);
@@ -142,7 +156,7 @@ class AdminArticleMediaService
             throw new RuntimeException('content is not valid base64.');
         }
 
-        return $this->storeHeroFromBinary($binary, $contentType, $filename);
+        return $this->storeHeroFromBinary($binary, $contentType, $filename, $directory);
     }
 
     /**
@@ -195,7 +209,7 @@ class AdminArticleMediaService
 
         $filename = basename(parse_url($url, PHP_URL_PATH) ?: 'hero');
 
-        return $this->storeHeroFromBinary($binary, $contentType, $filename);
+        return $this->storeHeroFromBinary($binary, $contentType, $filename, self::HERO_DIRECTORY);
     }
 
     /**
@@ -296,6 +310,41 @@ class AdminArticleMediaService
             'height' => $image->height(),
             'original_filename' => basename($path),
         ];
+    }
+
+    /**
+     * Sanitize a relative public-disk directory path.
+     *
+     * Rejects absolute paths and ".." segments. Nested paths like blog/heroes are allowed.
+     * When null/blank, returns DEFAULT_DIRECTORY (website-images).
+     */
+    public function sanitizeDirectory(?string $directory): string
+    {
+        if ($directory === null || trim($directory) === '') {
+            return self::DEFAULT_DIRECTORY;
+        }
+
+        $directory = str_replace('\\', '/', trim($directory));
+
+        if (str_starts_with($directory, '/') || preg_match('#^[A-Za-z]:/#', $directory)) {
+            throw new RuntimeException('directory must be a relative path under the public media disk (no absolute paths).');
+        }
+
+        if (str_contains($directory, '..')) {
+            throw new RuntimeException('directory must not contain "..".');
+        }
+
+        $directory = trim(preg_replace('#/+#', '/', $directory) ?? $directory, '/');
+
+        if ($directory === '') {
+            return self::DEFAULT_DIRECTORY;
+        }
+
+        if (! preg_match('#^[A-Za-z0-9][A-Za-z0-9/_-]*$#', $directory)) {
+            throw new RuntimeException('directory may only contain letters, numbers, hyphens, underscores, and slashes.');
+        }
+
+        return $directory;
     }
 
     protected function normalizeContentType(string $contentType): string
