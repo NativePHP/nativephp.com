@@ -285,6 +285,12 @@ Here's a complete manifest for an ML plugin that uses Mapbox maps:
 }
 ```
 
+## Making Dependencies Optional
+
+Everything above is compiled into every app that installs your plugin. When a dependency only serves part of what your
+plugin does — a crash reporter, an analytics SDK, a maps renderer — declare it in a
+[feature bundle](/docs/mobile/4/plugins/feature-bundles) instead, so apps link it only when they opt in.
+
 ## Official Plugins & Dev Kit
 
 Skip the configuration complexity — browse ready-made plugins or get the Dev Kit to build your own.
