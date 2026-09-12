@@ -37,8 +37,8 @@ class McpOAuthServiceProvider extends ServiceProvider
             TokenAbility::AdminMcpServer->value => 'NativePHP site-admin MCP access (blog drafts, signups, support, plugins — no secrets)',
         ]);
         Passport::setDefaultScope([TokenAbility::AdminMcpServer->value]);
-        Passport::tokensExpireIn(CarbonInterval::hour());
-        Passport::refreshTokensExpireIn(CarbonInterval::days(30));
+        Passport::tokensExpireIn(CarbonInterval::days(30));
+        Passport::refreshTokensExpireIn(CarbonInterval::days(90));
         Passport::useAccessTokenEntity(McpAccessToken::class);
         Passport::authorizationView('mcp.authorize');
     }
