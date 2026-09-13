@@ -52,11 +52,11 @@ Create `.cursor/mcp.json` in your project, or `~/.cursor/mcp.json` to enable it 
 Once connected, your agent gets these tools:
 
 - **`search_docs`** — full-text search across every platform and version (use this for current Mobile v4 docs)
-- **`get_page`** — fetch a full page by path (e.g. `mobile/4/plugins/core/camera`)
+- **`get_page`** — fetch a full page by path (e.g. `mobile/4/plugins/core/camera` or `mobile/4/edge-components/button`)
 - **`get_navigation`** — the sidebar for a platform and version
+- **`list_edge_components`** — list EDGE / SuperNative UI components for a platform (defaults to latest mobile) so agents build native UI via Blade EDGE components
 - **`search_plugins`** — search the public plugin marketplace (where Mobile v3+ native APIs live)
 - **`get_plugin`** — fetch one marketplace plugin by composer name
-- **`list_apis`** — list pages in a version's legacy `apis` section (**Mobile v1/v2 only**). From Mobile v3 onward there is no `apis` section — native capabilities are documented under [Plugins](/docs/mobile/4/plugins/introduction). Prefer `search_docs`, `get_navigation`, or `search_plugins` for the latest docs.
 
 ## Pair it with Laravel Boost
 

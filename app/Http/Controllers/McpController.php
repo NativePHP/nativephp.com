@@ -97,11 +97,11 @@ class McpController extends Controller
         return response()->json(['page' => $page]);
     }
 
-    public function apisApi(string $platform, string $version): JsonResponse
+    public function edgeComponentsApi(string $platform, string $version): JsonResponse
     {
-        $apis = $this->docsSearch->listApis($platform, $version);
+        $components = $this->docsSearch->listEdgeComponents($platform, $version);
 
-        return response()->json(['apis' => $apis]);
+        return response()->json(['edge_components' => $components]);
     }
 
     public function navigationApi(string $platform, string $version): JsonResponse
@@ -182,22 +182,22 @@ class McpController extends Controller
                 ],
             ],
             [
-                'name' => 'list_apis',
-                'description' => 'List all native APIs for a platform/version',
+                'name' => 'list_edge_components',
+                'description' => 'List EDGE / SuperNative UI components documented for a platform/version so agents build the NativePHP way (native UI via Blade EDGE components). Defaults to the latest version for the platform when version is omitted.',
                 'inputSchema' => [
                     'type' => 'object',
                     'properties' => [
                         'platform' => [
                             'type' => 'string',
                             'enum' => ['desktop', 'mobile'],
-                            'description' => 'Platform to list APIs for',
+                            'description' => 'Platform to list EDGE components for (default: mobile)',
+                            'default' => 'mobile',
                         ],
                         'version' => [
                             'type' => 'string',
-                            'description' => 'Version number',
+                            'description' => 'Version number (optional; defaults to the latest for the platform)',
                         ],
                     ],
-                    'required' => ['platform', 'version'],
                 ],
             ],
             [
@@ -285,7 +285,7 @@ class McpController extends Controller
         return match ($name) {
             'search_docs' => $this->toolSearchDocs($args),
             'get_page' => $this->toolGetPage($args),
-            'list_apis' => $this->toolListApis($args),
+            'list_edge_components' => $this->toolListEdgeComponents($args),
             'get_navigation' => $this->toolGetNavigation($args),
             'search_plugins' => $this->toolSearchPlugins($args),
             'get_plugin' => $this->toolGetPlugin($args),
@@ -350,27 +350,29 @@ class McpController extends Controller
         ];
     }
 
-    protected function toolListApis(array $args): array
+    protected function toolListEdgeComponents(array $args): array
     {
-        $platform = $args['platform'] ?? '';
-        $version = $args['version'] ?? '';
+        $platform = $args['platform'] ?? 'mobile';
+        $latestVersions = $this->docsSearch->getLatestVersions();
+        $version = $args['version'] ?? ($latestVersions[$platform] ?? '');
 
-        $apis = $this->docsSearch->listApis($platform, $version);
+        $components = $this->docsSearch->listEdgeComponents($platform, $version);
 
-        if (empty($apis)) {
+        if (empty($components)) {
             return [
-                'content' => [['type' => 'text', 'text' => "No APIs found for {$platform} v{$version}"]],
+                'content' => [['type' => 'text', 'text' => "No EDGE components found for {$platform} v{$version}"]],
             ];
         }
 
-        $formatted = collect($apis)->map(function ($api) {
-            $desc = $api['description'] ?: 'No description';
+        $formatted = collect($components)->map(function ($component) {
+            $desc = $component['description'] ?: 'No description';
+            $path = $component['id'];
 
-            return "- **{$api['title']}** ({$api['slug']})\n  {$desc}";
+            return "- **{$component['title']}** ({$component['slug']})\n  Path: {$path}\n  {$desc}";
         })->join("\n");
 
         return [
-            'content' => [['type' => 'text', 'text' => "# {$platform} v{$version} APIs\n\n{$formatted}"]],
+            'content' => [['type' => 'text', 'text' => "# {$platform} v{$version} EDGE components\n\n{$formatted}"]],
         ];
     }
 

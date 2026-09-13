@@ -70,12 +70,12 @@ class McpSecurityTest extends TestCase
         $response->assertStatus(404);
     }
 
-    public function test_apis_endpoint_rejects_invalid_platform(): void
+    public function test_edge_components_endpoint_rejects_invalid_platform(): void
     {
-        $response = $this->getJson('/api/mcp/apis/../1');
+        $response = $this->getJson('/api/mcp/edge-components/../1');
 
         $response->assertStatus(200);
-        $response->assertJson(['apis' => []]);
+        $response->assertJson(['edge_components' => []]);
     }
 
     public function test_navigation_endpoint_rejects_invalid_version(): void

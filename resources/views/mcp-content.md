@@ -118,12 +118,15 @@ Returns the whole sidebar for a `platform` and `version`, grouped by section and
 in the order you see it on the site. Useful when an agent wants to orient itself
 before searching, or to check whether a topic is documented at all.
 
-### `list_apis`
+### `list_edge_components`
 
-Lists the pages in a version's `apis` section. That section only exists in the
-Mobile v1 and v2 docs — from v3 onwards the native APIs are documented under
-Plugins, and the Desktop docs have no `apis` section at all. For anything
-current, use `get_navigation` or `search_docs` instead.
+Lists the EDGE / SuperNative UI components documented for a `platform` and
+optional `version` — the Blade components agents should use to build native
+UI the NativePHP way. Defaults to `mobile` and the latest published version for
+that platform when those args are omitted. Each result includes a path you can
+hand straight to `get_page` (for example `mobile/4/edge-components/button`).
+Mobile v2+ ships an `edge-components` section; Desktop currently has none, so
+the list is empty there.
 
 ### `search_plugins`
 
@@ -161,7 +164,7 @@ MCP client:
 - `/api/mcp/search?q=camera&platform=mobile` — search results as JSON
 - `/api/mcp/page/{platform}/{version}/{section}/{slug}` — a single page
 - `/api/mcp/navigation/{platform}/{version}` — the docs navigation tree
-- `/api/mcp/apis/{platform}/{version}` — the `apis` section listing
+- `/api/mcp/edge-components/{platform}/{version}` — EDGE / SuperNative component listing
 - `/api/mcp/plugins?q=camera&type=free&limit=10` — marketplace plugin search
 - `/api/mcp/plugins/{vendor}/{package}` — one marketplace plugin
 - `/api/mcp/health` — liveness check, and the versions currently published
