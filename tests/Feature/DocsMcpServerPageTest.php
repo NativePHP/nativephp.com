@@ -137,4 +137,14 @@ class DocsMcpServerPageTest extends TestCase
             'The MCP server is documented once, at '.route('mcp').'.',
         );
     }
+
+    #[Test]
+    public function mobile_v4_getting_started_documents_the_public_mcp_endpoint(): void
+    {
+        $this->withoutVite()
+            ->get('/docs/mobile/4/getting-started/mcp')
+            ->assertOk()
+            ->assertSee('MCP Docs Server')
+            ->assertSee('https://nativephp.com/api/mcp/message');
+    }
 }
