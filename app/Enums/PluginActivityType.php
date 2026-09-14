@@ -15,6 +15,7 @@ enum PluginActivityType: string
     case ReturnedToDraft = 'returned_to_draft';
     case MessageToDeveloper = 'message_to_developer';
     case MessageFromDeveloper = 'message_from_developer';
+    case PermissionsExpanded = 'permissions_expanded';
 
     /**
      * Types that represent a message in the admin <-> developer conversation.
@@ -38,6 +39,7 @@ enum PluginActivityType: string
             self::ReturnedToDraft => 'Returned to Draft',
             self::MessageToDeveloper => 'Message Sent',
             self::MessageFromDeveloper => 'Developer Reply',
+            self::PermissionsExpanded => 'Permissions Expanded',
         };
     }
 
@@ -65,6 +67,7 @@ enum PluginActivityType: string
             self::ReturnedToDraft => 'warning',
             self::MessageToDeveloper => 'primary',
             self::MessageFromDeveloper => 'info',
+            self::PermissionsExpanded => 'warning',
         };
     }
 
@@ -79,6 +82,7 @@ enum PluginActivityType: string
             self::Rejected => 'red',
             self::MessageToDeveloper => 'purple',
             self::MessageFromDeveloper => 'sky',
+            self::PermissionsExpanded => 'amber',
             default => 'zinc',
         };
     }
@@ -95,6 +99,7 @@ enum PluginActivityType: string
             self::ReturnedToDraft => 'heroicon-o-arrow-uturn-left',
             self::MessageToDeveloper => 'heroicon-o-chat-bubble-left-right',
             self::MessageFromDeveloper => 'heroicon-o-chat-bubble-left-ellipsis',
+            self::PermissionsExpanded => 'heroicon-o-shield-exclamation',
         };
     }
 

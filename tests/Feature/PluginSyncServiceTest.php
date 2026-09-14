@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Models\Plugin;
+use App\Services\PluginManifestParser;
 use App\Services\PluginSyncService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Http;
@@ -46,7 +47,7 @@ class PluginSyncServiceTest extends TestCase
             'mobile_min_version' => null,
         ]);
 
-        $service = new PluginSyncService;
+        $service = new PluginSyncService(new PluginManifestParser);
         $result = $service->sync($plugin);
 
         $this->assertTrue($result);
@@ -75,7 +76,7 @@ class PluginSyncServiceTest extends TestCase
             'repository_url' => 'https://github.com/acme/test-plugin',
         ]);
 
-        $service = new PluginSyncService;
+        $service = new PluginSyncService(new PluginManifestParser);
         $result = $service->sync($plugin);
 
         $this->assertTrue($result);
@@ -104,7 +105,7 @@ class PluginSyncServiceTest extends TestCase
             'repository_url' => 'https://github.com/acme/test-plugin',
         ]);
 
-        $service = new PluginSyncService;
+        $service = new PluginSyncService(new PluginManifestParser);
         $result = $service->sync($plugin);
 
         $this->assertTrue($result);
@@ -135,7 +136,7 @@ class PluginSyncServiceTest extends TestCase
             'repository_url' => 'https://github.com/acme/test-plugin',
         ]);
 
-        $service = new PluginSyncService;
+        $service = new PluginSyncService(new PluginManifestParser);
         $result = $service->sync($plugin);
 
         $this->assertTrue($result);
@@ -168,7 +169,7 @@ class PluginSyncServiceTest extends TestCase
             'mobile_min_version' => '^2.0.0',
         ]);
 
-        $service = new PluginSyncService;
+        $service = new PluginSyncService(new PluginManifestParser);
         $result = $service->sync($plugin);
 
         $this->assertTrue($result);
