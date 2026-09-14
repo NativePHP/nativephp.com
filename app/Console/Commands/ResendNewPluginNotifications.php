@@ -4,7 +4,7 @@ namespace App\Console\Commands;
 
 use App\Models\Plugin;
 use App\Models\User;
-use App\Notifications\NewPluginAvailable;
+use App\Notifications\NewPluginsAvailable;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Notification;
 
@@ -14,7 +14,7 @@ class ResendNewPluginNotifications extends Command
         {plugins* : Plugin names (vendor/package) to resend notifications for}
         {--dry-run : Preview what would happen without sending notifications}';
 
-    protected $description = 'Resend NewPluginAvailable notifications to opted-in users for specified plugins';
+    protected $description = 'Email opted-in users a single combined digest for the specified plugins';
 
     public function handle(): int
     {
@@ -57,13 +57,11 @@ class ResendNewPluginNotifications extends Command
             return Command::SUCCESS;
         }
 
-        foreach ($plugins as $plugin) {
-            $pluginRecipients = $recipients->where('id', '!=', $plugin->user_id);
+        Notification::send($recipients, new NewPluginsAvailable($plugins));
 
-            Notification::send($pluginRecipients, new NewPluginAvailable($plugin));
+        $plugins->each->update(['new_plugin_notified_at' => now()]);
 
-            $this->info("Sent NewPluginAvailable for {$plugin->name} to {$pluginRecipients->count()} users.");
-        }
+        $this->info("Sent a single digest covering {$plugins->count()} plugin(s) to {$recipients->count()} users.");
 
         $this->newLine();
         $this->info('Done. All notifications queued.');
