@@ -5,6 +5,14 @@ order: 455
 
 ## Overview
 
+<x-docs.edge-preview
+    ios="edge-virtual-list-ios.png"
+    android="edge-virtual-list-android.png"
+    source="resources/views/native/explore-icons.blade.php"
+    alt="Virtual list"
+    edge="both"
+/>
+
 Renders only the visible slice of a large collection. Where [`<native:list>`](list) builds every row, a virtual
 list emits just the rows inside the current window — so a 10,000-item list paints instantly and stays smooth,
 because PHP only ever builds ~80 rows at a time. The native side fires a window-change callback as the user

@@ -5,6 +5,14 @@ order: 350
 
 ## Overview
 
+<x-docs.edge-preview
+    ios="edge-select-ios.png"
+    android="edge-select-android.png"
+    source="resources/views/native/explore/forms.blade.php"
+    alt="Select"
+    edge="both"
+/>
+
 A single-choice dropdown picker over a flat list of strings. On iOS, renders as a SwiftUI `Menu` (popover); on
 Android, as an M3 `ExposedDropdownMenuBox` with an outlined trigger.
 

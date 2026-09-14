@@ -14,8 +14,7 @@ the platform separator color (`UIColor.separator` on iOS, Material `outlineVaria
 ```
 @endverbatim
 
-`<native:horizontal-divider />` is an equivalent divider component exposed for use inside [side navigation](side-nav). It
-emits its own `horizontal_divider` element but renders the same visual rule as `<native:divider />`.
+`<native:divider />` also works as a separator between items inside [side navigation](side-nav).
 
 <aside>
 

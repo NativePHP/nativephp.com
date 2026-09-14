@@ -5,6 +5,14 @@ order: 275
 
 ## Overview
 
+<x-docs.edge-preview
+    ios="edge-menus-ios.png"
+    android="edge-menus-android.png"
+    source="resources/views/native/explore/menus.blade.php"
+    alt="Menu"
+    edge="both"
+/>
+
 A menu is a tap-to-open dropdown (SwiftUI `Menu` / Compose `DropdownMenu`) attached to a component. It isn't a
 standalone element — you build a list of actions and attach it with an attribute:
 
