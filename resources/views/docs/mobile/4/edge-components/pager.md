@@ -5,8 +5,9 @@ order: 312
 
 ## Overview
 
-A full-screen snap pager: the TikTok / Reels / Shorts feed. Each page is sized to the pager's own frame, and a swipe
-settles on exactly one page. Paging is vertical by default; pass `horizontal` for a stories-style strip.
+A full-screen snap pager, the kind TikTok, Reels and Shorts are built on. Each page is the size of the pager's own
+frame and a swipe settles on exactly one of them. Paging is vertical by default. Pass `horizontal` for a
+stories-style strip.
 
 `<native:pager>` is a paired tag and its children are the pages. For a fixed set of pages that is all you need:
 
@@ -22,8 +23,8 @@ settles on exactly one page. Paging is vertical by default; pass `horizontal` fo
 ```
 @endverbatim
 
-A feed is different: it has no total and you do not want every page in the tree. Ship a window of pages and tell the
-pager where that window sits. See [Windowed feeds](#windowed-feeds).
+A feed is different. It has no total, and you do not want every page in the tree. Ship a window of pages and tell
+the pager where that window sits. See [Windowed feeds](#windowed-feeds).
 
 ## Props
 
@@ -33,8 +34,7 @@ pager where that window sits. See [Windowed feeds](#windowed-feeds).
 - `page` - Page the pager should show (optional, int, default: `0`). See [Pager position](#pager-position).
 - `from` - Absolute index of the first page emitted as a child (optional, int, default: `0`).
 - `to` - Absolute index of the last page emitted, inclusive (optional, int). Native lays the children out from `from`
-  upwards, so `from` is the value that has to agree with your loop; `to` travels with it to keep the two readable
-  together.
+  upwards, so `from` is the value that has to agree with your loop. `to` is there so the pair reads as one range.
 - `has-more` - Append a loading page after the last loaded item (optional, boolean, default: `false`). The user can
   pull into it while the next batch is fetched, instead of hitting a wall at the end of the window. Settling on it
   reports `index === count`.
@@ -70,9 +70,9 @@ A bare `key` attribute is not the same thing and is silently ignored. It has to 
 
 ## Pager position
 
-Native owns the scroll position and keeps it across re-renders, so a render that lands mid-swipe never drags the
-pager back. The `page` prop only moves the pager when PHP sends an index native never reported, which is how you jump
-programmatically; an echo of native's own report is ignored.
+Native owns the scroll position and keeps it across re-renders. A render that lands mid-swipe never drags the pager
+back. The `page` prop only moves the pager when PHP sends an index native never reported. That is how you jump
+programmatically, and an echo of native's own report is ignored.
 
 `on-page-change` fires as soon as a page becomes the nearest one during a swipe, not when the scroll comes to rest,
 so PHP's round trip overlaps the swipe animation. The handler takes a single int, the absolute page index:
@@ -86,9 +86,9 @@ public function onPagerPage(int $index): void
 
 ## Placeholders
 
-`placeholders` is an image URL per loaded page index, covering every loaded item and not just the shipped window. A
-page PHP has not shipped yet draws its image instead of nothing, so scrolling faster than the round trip lands on a
-still rather than a blank. Twenty URLs is a trivial payload, and the images are fetched and cached natively.
+`placeholders` is an image URL per loaded page index, for every loaded item and not just the shipped window. A page
+PHP has not shipped yet shows its image, so flicking faster than the round trip lands on a still instead of a blank.
+Twenty URLs is a trivial payload, and the images are fetched and cached natively.
 
 Pages past `count` (the `has-more` tail) show a loading indicator instead of a placeholder. A loaded page with no
 placeholder URL is transparent, so the pager's own `bg-*` shows through.
@@ -222,12 +222,12 @@ And the page itself, keyed by its absolute index:
 ## Pairing with video
 
 A [`<native:video-player>`](../plugins/core/media-player) on a pager page needs no coordination with the pager. With
-`autoplay` the surface plays while it is at least 45% on screen and pauses below that, so the page you are watching
-plays and its shipped neighbours sit loaded and silent. Nothing in the pager renderer knows about playback.
+`autoplay` the surface plays while it is at least 45% on screen and pauses below that. Only the page you are on
+plays; the neighbours PHP shipped sit loaded and silent. Nothing in the pager renderer knows about playback.
 
-Give each page `:controls="false"` for a bare surface you can overlay your own EDGE elements on, and a `poster` so
-the page shows a still the instant it exists rather than black. The playing surface is the one the `MediaPlayer`
-facade drives, so `MediaPlayer::pause()` from a tap handler pauses the page on screen without passing a page id.
+Give each page `:controls="false"` for a bare surface you can overlay your own EDGE elements on, and a `poster` so a
+page shows a still from its first frame instead of black. The playing surface is the one the `MediaPlayer` facade
+drives, so `MediaPlayer::pause()` from a tap handler pauses the page on screen without passing a page id.
 
 ## Element
 
