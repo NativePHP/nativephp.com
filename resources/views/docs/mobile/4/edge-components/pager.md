@@ -1,29 +1,29 @@
 ---
-title: Reel
+title: Pager
 order: 312
 ---
 
 ## Overview
 
-A full-screen snap pager: the TikTok / Reels / Shorts feed. Each page is sized to the reel's own frame, and a swipe
+A full-screen snap pager: the TikTok / Reels / Shorts feed. Each page is sized to the pager's own frame, and a swipe
 settles on exactly one page. Paging is vertical by default; pass `horizontal` for a stories-style strip.
 
-`<native:reel>` is a paired tag and its children are the pages. For a fixed set of pages that is all you need:
+`<native:pager>` is a paired tag and its children are the pages. For a fixed set of pages that is all you need:
 
 @verbatim
 ```blade
-<native:reel class="w-full h-full">
+<native:pager class="w-full h-full">
     @foreach ($slides as $slide)
         <native:column :native:key="'slide-'.$slide->id" class="w-full h-full items-center justify-center bg-black">
             <native:text class="text-2xl font-bold text-white">{{ $slide->title }}</native:text>
         </native:column>
     @endforeach
-</native:reel>
+</native:pager>
 ```
 @endverbatim
 
 A feed is different: it has no total and you do not want every page in the tree. Ship a window of pages and tell the
-reel where that window sits. See [Windowed feeds](#windowed-feeds).
+pager where that window sits. See [Windowed feeds](#windowed-feeds).
 
 ## Props
 
@@ -52,7 +52,7 @@ shipped window:
 
 @verbatim
 ```blade
-<native:stack :native:key="'reel-'.$index" class="w-full h-full bg-black">
+<native:stack :native:key="'pager-'.$index" class="w-full h-full bg-black">
 ```
 @endverbatim
 
@@ -78,9 +78,9 @@ programmatically; an echo of native's own report is ignored.
 so PHP's round trip overlaps the swipe animation. The handler takes a single int, the absolute page index:
 
 ```php
-public function onReelPage(int $index): void
+public function onPagerPage(int $index): void
 {
-    $this->setReelPage($index);
+    $this->setPagerPage($index);
 }
 ```
 
@@ -91,22 +91,22 @@ page PHP has not shipped yet draws its image instead of nothing, so scrolling fa
 still rather than a blank. Twenty URLs is a trivial payload, and the images are fetched and cached natively.
 
 Pages past `count` (the `has-more` tail) show a loading indicator instead of a placeholder. A loaded page with no
-placeholder URL is transparent, so the reel's own `bg-*` shows through.
+placeholder URL is transparent, so the pager's own `bg-*` shows through.
 
 ## Windowed feeds
 
-The `HasReelPage` trait holds the windowing state and leaves you the fetch. Native reports each page change, your
+The `HasPagerWindow` trait holds the windowing state and leaves you the fetch. Native reports each page change, your
 handler records it, and the next render emits the pages around it.
 
 ```php
 use App\Services\Feed;
 use Illuminate\View\View;
 use Native\Mobile\Edge\NativeComponent;
-use Native\Mobile\UI\Concerns\HasReelPage;
+use Native\Mobile\UI\Concerns\HasPagerWindow;
 
 class ReelFeed extends NativeComponent
 {
-    use HasReelPage;
+    use HasPagerWindow;
 
     /** Clips loaded so far, in feed order. */
     public array $items = [];
@@ -119,11 +119,11 @@ class ReelFeed extends NativeComponent
         $this->loadMore();
     }
 
-    public function onReelPage(int $index): void
+    public function onPagerPage(int $index): void
     {
-        $this->setReelPage($index);
+        $this->setPagerPage($index);
 
-        if ($this->reelNeedsMore()) {
+        if ($this->pagerNeedsMore()) {
             $this->loadMore();
         }
     }
@@ -134,19 +134,19 @@ class ReelFeed extends NativeComponent
 
         $this->items = [...$this->items, ...$batch->clips];
         $this->cursor = $batch->nextCursor;
-        $this->extendReel(count($batch->clips), hasMore: $batch->nextCursor !== null);
+        $this->extendPager(count($batch->clips), hasMore: $batch->nextCursor !== null);
     }
 
     public function render(): View
     {
-        return view('native.reel-feed', [
+        return view('native.pager-feed', [
             'items' => $this->items,
             'placeholders' => array_map(fn ($clip) => $clip['poster'] ?? '', $this->items),
-            'loaded' => $this->reelLoaded,
-            'hasMore' => $this->reelHasMore,
-            'page' => $this->reelPage,
-            'from' => $this->reelWindowFrom(),
-            'to' => $this->reelWindowTo(),
+            'loaded' => $this->pagerLoaded,
+            'hasMore' => $this->pagerHasMore,
+            'page' => $this->pagerPage,
+            'from' => $this->pagerWindowFrom(),
+            'to' => $this->pagerWindowTo(),
         ]);
     }
 }
@@ -156,7 +156,7 @@ The view emits only the window, so the loop runs over indexes rather than the co
 
 @verbatim
 ```blade
-<native:reel
+<native:pager
     class="w-full h-full"
     :count="$loaded"
     :page="$page"
@@ -164,13 +164,13 @@ The view emits only the window, so the loop runs over indexes rather than the co
     :to="$to"
     :has-more="$hasMore"
     :placeholders="$placeholders"
-    on-page-change="onReelPage"
+    on-page-change="onPagerPage"
     a11y-label="Video feed"
 >
     @for ($index = $from; $index <= $to; $index++)
-        @include('native.reel-feed-page', ['index' => $index])
+        @include('native.pager-feed-page', ['index' => $index])
     @endfor
-</native:reel>
+</native:pager>
 ```
 @endverbatim
 
@@ -178,10 +178,10 @@ And the page itself, keyed by its absolute index:
 
 @verbatim
 ```blade static
-{{-- resources/views/native/reel-feed-page.blade.php --}}
+{{-- resources/views/native/pager-feed-page.blade.php --}}
 @php $clip = $items[$index]; @endphp
 
-<native:stack :native:key="'reel-'.$index" class="w-full h-full bg-black">
+<native:stack :native:key="'pager-'.$index" class="w-full h-full bg-black">
     <native:video-player
         src="{{ $clip['src'] }}"
         poster="{{ $clip['poster'] ?? '' }}"
@@ -199,31 +199,31 @@ And the page itself, keyed by its absolute index:
 ```
 @endverbatim
 
-### `HasReelPage` state
+### `HasPagerWindow` state
 
-- `$reelPage` - Absolute index of the page currently on screen (int, default: `0`)
-- `$reelWindow` - Pages shipped either side of the current one (int, default: `2`). Two keeps a fast second swipe on
+- `$pagerPage` - Absolute index of the page currently on screen (int, default: `0`)
+- `$pagerWindow` - Pages shipped either side of the current one (int, default: `2`). Two keeps a fast second swipe on
   device: the page after next is already there while the round trip for the settle is still in flight. Each shipped
   page is rendered Blade plus a buffering video, so keep it small.
-- `$reelLoaded` - Items fetched so far, which is the reel's `count` (int, default: `0`)
-- `$reelHasMore` - Whether another batch can be fetched, which drives the trailing loading page (bool, default:
+- `$pagerLoaded` - Items fetched so far, which is the pager's `count` (int, default: `0`)
+- `$pagerHasMore` - Whether another batch can be fetched, which drives the trailing loading page (bool, default:
   `true`)
 
-### `HasReelPage` methods
+### `HasPagerWindow` methods
 
-- `setReelPage(int $index)` - Record the page native reported
-- `extendReel(int $added, bool $hasMore = true)` - Record a fetched batch: grows the pager and updates the tail state
-- `reelNeedsMore(int $threshold = 3)` - True when the current page is within `$threshold` items of the end of what is
+- `setPagerPage(int $index)` - Record the page native reported
+- `extendPager(int $added, bool $hasMore = true)` - Record a fetched batch: grows the pager and updates the tail state
+- `pagerNeedsMore(int $threshold = 3)` - True when the current page is within `$threshold` items of the end of what is
   loaded, or on the loading page itself, and more can be fetched. Three is the usual feed default: the PHP round trip
   plus the API call has to land before the user swipes there.
-- `reelWindowFrom()` - First page index to emit
-- `reelWindowTo()` - Last page index to emit, inclusive, clamped to what is loaded
+- `pagerWindowFrom()` - First page index to emit
+- `pagerWindowTo()` - Last page index to emit, inclusive, clamped to what is loaded
 
 ## Pairing with video
 
-A [`<native:video-player>`](../plugins/core/media-player) on a reel page needs no coordination with the pager. With
+A [`<native:video-player>`](../plugins/core/media-player) on a pager page needs no coordination with the pager. With
 `autoplay` the surface plays while it is at least 45% on screen and pauses below that, so the page you are watching
-plays and its shipped neighbours sit loaded and silent. Nothing in the reel renderer knows about playback.
+plays and its shipped neighbours sit loaded and silent. Nothing in the pager renderer knows about playback.
 
 Give each page `:controls="false"` for a bare surface you can overlay your own EDGE elements on, and a `poster` so
 the page shows a still the instant it exists rather than black. The playing surface is the one the `MediaPlayer`
@@ -232,17 +232,17 @@ facade drives, so `MediaPlayer::pause()` from a tap handler pauses the page on s
 ## Element
 
 ```php
-use Native\Mobile\UI\Elements\Reel;
+use Native\Mobile\UI\Elements\Pager;
 
-Reel::make($page1, $page2, $page3)
+Pager::make($page1, $page2, $page3)
     ->count($loaded)
     ->page($current)
     ->hasMore()
     ->placeholders($posters)
-    ->onPageChange('onReelPage');
+    ->onPageChange('onPagerPage');
 ```
 
-- `make(Element ...$children)` - Create a reel whose children are the pages
+- `make(Element ...$children)` - Create a pager whose children are the pages
 - `count(int $count)` - Items loaded so far
 - `page(int $index)` - Page the pager should show
 - `horizontal(bool $value = true)` - Page sideways
@@ -254,7 +254,7 @@ Reel::make($page1, $page2, $page3)
 
 <aside>
 
-One reel per screen for now. The page index rides the tab-change transport, so a single screen's feed is capped at
+One pager per screen for now. The page index rides the tab-change transport, so a single screen's feed is capped at
 32,767 pages.
 
 </aside>
