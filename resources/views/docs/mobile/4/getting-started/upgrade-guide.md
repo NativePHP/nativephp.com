@@ -3,6 +3,18 @@ title: Upgrade Guide
 order: 3
 ---
 
+## Upgrading To 4.5 From 4.4
+
+### Public releases need `APP_ENV=production`
+
+From 4.5, only a build packaged with `APP_ENV=production` can be released to the public. Any other `APP_ENV` makes a
+testing build: Google Play holds it to the internal and closed testing tracks, and the App Store limits it to
+TestFlight's internal testers.
+
+If you've been packaging store releases with Laravel's default `APP_ENV=local`, set `APP_ENV=production` in your
+`.env` before you package your next release. See
+[Production and testing builds](../publishing/introduction#production-and-testing-builds).
+
 ## Upgrading To 4.0 From 3.x
 
 v4's headline is [SuperNative](../architecture/super-native) — fully native UI. Most of the release is additive,

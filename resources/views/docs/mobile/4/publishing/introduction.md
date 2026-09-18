@@ -102,6 +102,38 @@ submit it to the stores for approval and distribution.
 - [Google Play Store submission guidelines](https://support.google.com/googleplay/android-developer/answer/9859152?hl=en-GB#zippy=%2Cmaximum-size-limit)
 - [Apple App Store submission guidelines](https://developer.apple.com/ios/submit/)
 
+## Production and testing builds
+
+<x-docs.version-badge since="4.5" />
+
+The `APP_ENV` in your `.env` when you package your app decides how far that build can be released. Only a build
+packaged with `APP_ENV=production` can be released to the public. Any other value, such as `local` or `staging`, makes
+it a testing build, and NativePHP tells both stores so:
+
+- **Play Store:** the build declares closed testing as the largest audience it may reach. It can go to the internal and
+  closed testing tracks, but Google Play won't release it on the open testing or production tracks.
+- **App Store:** the build is marked for TestFlight internal testing only. Your internal testers can install it, but it
+  can't be sent to external testers or submitted for App Store review.
+
+This is written into the build itself, so a testing build can't be promoted to a public release later.
+
+New Laravel apps start with `APP_ENV=local`, so set it before you package a release:
+
+```env
+APP_ENV=production
+```
+
+Your `.env` is bundled into the app, so it runs in the same environment on the device.
+
+<aside>
+
+#### Share builds with testers safely
+
+Package with `APP_ENV=staging` when you want to hand a build to testers. It can reach your internal TestFlight testers
+and the Play Store's internal and closed testing tracks, and it can never be released to the public by mistake.
+
+</aside>
+
 ## Packaging Your App
 
 The `native:package` command creates signed, production-ready apps for distribution to the App Store and Play Store.
@@ -118,3 +150,4 @@ Before you can package your app for distribution, ensure:
 3. For Android: You have a signing keystore with a valid key alias
 4. For iOS: You have the necessary signing certificates and provisioning profiles from Apple Developer
 5. All configuration is complete (see the [configuration guide](../getting-started/configuration))
+6. For a public release, your `.env` has `APP_ENV=production` (see [Production and testing builds](#production-and-testing-builds))
