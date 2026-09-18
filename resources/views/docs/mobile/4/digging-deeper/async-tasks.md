@@ -6,8 +6,8 @@ order: 240
 ## Overview
 
 Some work is too slow to do while the user waits — building a report, resizing an image, hitting a slow API.
-Run it inline in an event handler and the screen freezes: your component's runloop is busy, so nothing
-re-renders until the work finishes.
+If you run it inline and it takes too long, your user's screen freezes because the UI thread is busy, so
+nothing re-renders until the work finishes and the user can't do anything about it.
 
 Async tasks move that work onto a **separate PHP thread** and hand you the result back on the UI thread, where
 you can update state and let the screen re-render:
@@ -35,15 +35,15 @@ updates.
 
 <aside>
 
-Async tasks are **not** queued jobs. They start immediately, run concurrently, and never touch your database or
-the queue. If you want durable, retryable background work that survives an app restart, use [Queues](queues)
-instead.
+Async tasks are **not** queued jobs. They **start immediately**, run concurrently, and never touch your database or
+the queue (unless you tell them to). If you want durable, retryable background work that survives an app restart,
+use [Queues](queues) instead.
 
 </aside>
 
 ## The work closure must be static
 
-The work runs in a **different PHP interpreter** with its own memory. It cannot see `$this`, your component's
+The work runs in a **different PHP thread** with its own memory. It cannot see `$this`, your component's
 properties, or anything else from the dispatching thread — so the closure must be declared `static`:
 
 ```php
@@ -57,7 +57,7 @@ AsyncTask::dispatch(fn () => Report::build($this->month));
 A non-static closure throws immediately, in your handler, where you can see it — not silently in a background
 log.
 
-Pass data in by capturing plain serializable values with `use`:
+Pass data in by capturing plain serializable values with `use` or a shorthand closure:
 
 ```php
 $month = $this->month;
@@ -70,9 +70,9 @@ cross the thread boundary and will throw.
 
 ## Handling results
 
-### finished()
+### `finished()`
 
-Fires with whatever the work returned:
+When the background thread is done, the `finished` callback fires:
 
 ```php
 AsyncTask::dispatch(static fn () => Http::get('https://api.example.com/stats')->json())
@@ -93,9 +93,9 @@ AsyncTask::dispatch(static function () {
 })->finished(fn (string $path) => $this->reportPath = $path);
 ```
 
-### failed()
+### `failed()`
 
-If the task throws, `failed()` receives an `AsyncTaskException` carrying the original message and class:
+If the task throws and exception, `failed()` receives an `AsyncTaskException` carrying the original message and class:
 
 ```php
 AsyncTask::dispatch(static fn () => Http::get($url)->json())
@@ -114,20 +114,21 @@ message; `originalClass()` gives you the class name it was thrown as.
 
 <aside>
 
-Async tasks run **once**. There's no automatic retry — silently re-running a button press is rarely what you
-want. If a task should retry, handle it in `failed()` or reach for a queued job.
+Async tasks run **once**. There's no automatic retry. If a task should retry, handle it in `failed()` or reach
+for a queued job.
 
 </aside>
 
 ## Callbacks are scoped to the screen
 
-By default, a `finished()` / `failed()` callback only fires if the screen that dispatched it is **still the one
+By default, `finished()` and `failed()` callbacks only fire if the screen that dispatched them is **still the one
 on top**. If the user navigated away before the task completed, the callback is dropped.
 
 That's deliberate: the callback is bound to a live component instance so it can mutate state, and firing it
-against a screen the user has left would update something nobody is looking at — or worse, the wrong screen.
+against a screen the user has left would update something nobody is looking at, or worse, something in a
+completely different component.
 
-For a fire-and-forget task whose result matters regardless of where the user is — a background upload feeding a
+For tasks whose results matter regardless of where the user is — e.g. a background upload feeding a
 status bar, a sync that refreshes a badge — use `shared()`:
 
 ```php
@@ -167,7 +168,8 @@ public function loadDashboard(): void
 ```
 
 Each callback fires as its own task completes — there's no ordering guarantee between them. When more tasks are
-dispatched than the pool has slots, the extras queue up and run as slots free.
+dispatched than the pool has slots for, the extras queue up and run as slots free up. This helps to limit
+overall memory consumption.
 
 ## Task classes
 
@@ -196,8 +198,7 @@ BuildReport::dispatch($this->month)
     ->finished(fn (array $report) => $this->report = $report);
 ```
 
-The arguments must be serializable, same as a closure's captures. This form reads like a Laravel job, but it's
-still an async task — no queue, no database, no retries.
+The arguments must be serializable, same as a closure's captures.
 
 ## Testing
 
@@ -237,18 +238,19 @@ interpreter on its own thread, with its own memory, booted once and reused. Your
 the screen re-renders.
 
 When the task finishes, the background context sends the result through the same native event channel that
-delivers camera results and push notifications. That wakes your screen's runloop, which resolves the matching
-callback, binds it to the live component, and runs it — then re-renders.
+that NativePHP uses to wakes your screen's runloop, which then resolves the matching callback, binds it
+to the live component, and runs it. And then your component re-renders.
 
 This is why the work closure is isolated but the callbacks aren't: the work runs on the background thread, and
 the callbacks run on your UI thread, in your component.
 
-## Things to Note
+## Remember!
 
 - The work closure must be `static` and everything it captures must be serializable.
 - Results round-trip as JSON — return scalars and arrays; pass large data by file path or cache key.
 - Tasks run once, with no automatic retry.
-- Scoped callbacks are dropped if the user navigates away; use `shared()` when the result matters regardless.
+- Scoped callbacks are dropped if the user navigates away from the screen that started the work;
+  use `shared()` when the result matters regardless of what screen the user moves to.
 - Async tasks don't survive the app being killed. For durable background work, use [Queues](queues).
-- Device APIs that need the UI (camera, dialogs, biometrics) don't belong inside a task — the work runs off the
-  UI thread with no screen attached. Fetch and compute in the task; drive UI from the callback.
+- Device APIs that need the UI (camera, dialogs, biometrics) don't belong inside async tasks. Fetch and compute
+  in the task; drive UI from the callbacks.
