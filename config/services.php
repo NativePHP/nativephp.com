@@ -83,6 +83,12 @@ return [
         'hostnames' => env('TURNSTILE_HOSTNAMES'),
     ],
 
+    'youtube' => [
+        'api_key' => env('YOUTUBE_API_KEY'),
+        // @NativePHPOfficial
+        'channel_id' => env('YOUTUBE_CHANNEL_ID', 'UCbkAE6vLlR6lOy_nxd--22g'),
+    ],
+
     'satis' => [
         'url' => env('SATIS_API_URL', 'https://plugins.nativephp.com'),
         'api_key' => env('SATIS_API_KEY'),
