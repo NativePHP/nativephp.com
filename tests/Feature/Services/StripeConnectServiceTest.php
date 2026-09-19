@@ -195,6 +195,32 @@ class StripeConnectServiceTest extends TestCase
         $this->assertSame('MXN', $developerAccount->payout_currency);
     }
 
+    #[Test]
+    public function refresh_account_status_keeps_the_date_onboarding_was_first_completed(): void
+    {
+        $onboardedAt = now()->subMonths(3)->startOfSecond();
+        $developerAccount = DeveloperAccount::factory()->create(['onboarding_completed_at' => $onboardedAt]);
+        $this->fakeStripeAccounts();
+
+        app(StripeConnectService::class)->refreshAccountStatus($developerAccount);
+
+        $this->assertTrue($developerAccount->fresh()->onboarding_completed_at->equalTo($onboardedAt));
+    }
+
+    #[Test]
+    public function refresh_account_status_marks_a_developer_who_finished_onboarding_as_active(): void
+    {
+        $developerAccount = DeveloperAccount::factory()->pending()->create();
+        $this->fakeStripeAccounts();
+
+        app(StripeConnectService::class)->refreshAccountStatus($developerAccount);
+
+        $developerAccount->refresh();
+
+        $this->assertTrue($developerAccount->canReceivePayouts());
+        $this->assertTrue($developerAccount->hasCompletedOnboarding());
+    }
+
     private function fakeStripeAccounts(): object
     {
         $accounts = new class
@@ -206,6 +232,17 @@ class StripeConnectServiceTest extends TestCase
                 $this->createdWith = $params;
 
                 return Account::constructFrom(['id' => 'acct_test_new']);
+            }
+
+            public function retrieve(string $id): Account
+            {
+                return Account::constructFrom([
+                    'id' => $id,
+                    'payouts_enabled' => true,
+                    'charges_enabled' => true,
+                    'details_submitted' => true,
+                    'requirements' => ['disabled_reason' => null],
+                ]);
             }
         };
 

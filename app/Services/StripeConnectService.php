@@ -83,7 +83,9 @@ class StripeConnectService
             'payouts_enabled' => $stripeAccount->payouts_enabled,
             'charges_enabled' => $stripeAccount->charges_enabled,
             'stripe_connect_status' => $this->determineStatus($stripeAccount),
-            'onboarding_completed_at' => $stripeAccount->details_submitted ? now() : null,
+            'onboarding_completed_at' => $stripeAccount->details_submitted
+                ? ($account->onboarding_completed_at ?? now())
+                : null,
         ]);
 
         Log::info('Refreshed developer account status', [
