@@ -137,4 +137,102 @@ class DocsMcpServerPageTest extends TestCase
             'The MCP server is documented once, at '.route('mcp').'.',
         );
     }
+
+    /**
+     * Jump and MCP clients read page content with Blade components stripped.
+     * A tag that survives shows up as a stray paragraph of attributes.
+     */
+    #[Test]
+    public function a_multi_line_self_closing_component_is_stripped_whole(): void
+    {
+        $markdown = <<<'MD'
+            Before.
+
+            <x-docs.edge-preview
+                ios="edge-slider-ios.png"
+                android="edge-slider-android.png"
+                source="resources/views/native/explore/forms.blade.php"
+                alt="Slider"
+                edge="both"
+            />
+
+            After.
+            MD;
+
+        $this->assertSame("Before.\n\n\n\nAfter.", $this->stripBladeComponents($markdown));
+    }
+
+    #[Test]
+    public function a_self_closing_component_with_bound_attributes_is_stripped(): void
+    {
+        $markdown = "Before.\n\n<x-docs.edge-preview ios=\"a.png\" :sidebar-width-ios=\"85\" :show=\"\$count > 0\" />\n\nAfter.";
+
+        $this->assertSame("Before.\n\n\n\nAfter.", $this->stripBladeComponents($markdown));
+    }
+
+    #[Test]
+    public function a_self_closing_component_does_not_swallow_prose_up_to_a_later_closing_tag(): void
+    {
+        $markdown = <<<'MD'
+            Intro.
+
+            <x-docs.version-badge since="4.2" />
+
+            This paragraph must survive.
+
+            <x-foo title="Bar">Hidden body</x-foo>
+
+            Outro.
+            MD;
+
+        $content = $this->stripBladeComponents($markdown);
+
+        $this->assertStringContainsString('Intro.', $content);
+        $this->assertStringContainsString('This paragraph must survive.', $content);
+        $this->assertStringContainsString('Outro.', $content);
+        $this->assertStringNotContainsString('<x-', $content);
+        $this->assertStringNotContainsString('Hidden body', $content);
+        $this->assertStringNotContainsString('</x-foo>', $content);
+    }
+
+    #[Test]
+    public function fenced_blade_examples_are_left_byte_for_byte(): void
+    {
+        $code = <<<'MD'
+            ```blade
+            <native:column class="gap-4">
+                <native:text>{{ $count }}</native:text>
+                <native:button label="Save" @press="save" />
+                <x-docs.edge-preview ios="a.png" source="resources/views/a.blade.php" />
+            </native:column>
+            ```
+            MD;
+
+        $content = $this->stripBladeComponents("<x-docs.version-badge since=\"4.2\" />\n\n{$code}\n\nAfter.");
+
+        $this->assertStringContainsString($code, $content);
+        $this->assertStringStartsWith("\n\n```blade", $content);
+    }
+
+    #[Test]
+    public function edge_component_pages_serve_no_screenshot_markup(): void
+    {
+        $pages = collect($this->getJson('/api/mcp/navigation/mobile/4')->assertOk()->json('navigation.edge-components'));
+
+        $this->assertNotEmpty($pages);
+
+        foreach ($pages as $page) {
+            $prose = preg_replace('/```[\s\S]*?```/', '', $page['content']);
+
+            $this->assertStringNotContainsString('edge-preview', $prose, "{$page['id']} leaks its screenshot tag.");
+            $this->assertStringNotContainsString('source="resources/', $prose, "{$page['id']} leaks its screenshot tag.");
+        }
+    }
+
+    private function stripBladeComponents(string $markdown): string
+    {
+        $service = app(DocsSearchService::class);
+
+        return (new \ReflectionMethod($service, 'stripBladeComponents'))->invoke($service, $markdown);
+    }
 }
