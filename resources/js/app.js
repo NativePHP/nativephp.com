@@ -189,6 +189,9 @@ const docsearchOptions = {
 docsearch({
     ...docsearchOptions,
     container: '#docsearch-desktop',
+    // The site menu is a popover, so it renders above the search modal. Tell it
+    // to close when a keyboard shortcut opens search while the menu is open.
+    onOpen: () => window.dispatchEvent(new CustomEvent('docsearch:open')),
 })
 
 // Mirror the desktop DocSearch button into the mobile container so that

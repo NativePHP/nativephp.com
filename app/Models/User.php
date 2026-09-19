@@ -17,11 +17,32 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Collection;
 use Laravel\Cashier\Billable;
+use Laravel\Passport\Contracts\ScopeAuthorizable;
+use Laravel\Sanctum\Contracts\HasAbilities;
 use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable implements FilamentUser, HasName, MustVerifyEmail
 {
     use Billable, HasApiTokens, HasFactory, Notifiable;
+
+    /** @var HasAbilities|ScopeAuthorizable|null */
+    protected $accessToken;
+
+    /**
+     * Both the Sanctum and Passport guards attach a request token; token
+     * creation and the tokens() relationship continue to belong to Sanctum.
+     */
+    public function currentAccessToken(): HasAbilities|ScopeAuthorizable|null
+    {
+        return $this->accessToken;
+    }
+
+    public function withAccessToken(HasAbilities|ScopeAuthorizable|null $accessToken): static
+    {
+        $this->accessToken = $accessToken;
+
+        return $this;
+    }
 
     protected $guarded = [];
 

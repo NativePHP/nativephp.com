@@ -75,7 +75,7 @@ class DocsMcpServerPageTest extends TestCase
         $tools = collect($response->json('result.tools'))->pluck('name')->all();
 
         $this->assertEqualsCanonicalizing(
-            ['search_docs', 'get_page', 'list_apis', 'get_navigation'],
+            ['search_docs', 'get_page', 'list_edge_components', 'get_navigation', 'search_plugins', 'get_plugin'],
             $tools,
         );
     }
@@ -136,6 +136,113 @@ class DocsMcpServerPageTest extends TestCase
             glob(resource_path('views/docs/*/*/**/mcp-server.md')) ?: [],
             'The MCP server is documented once, at '.route('mcp').'.',
         );
+    }
+
+    #[Test]
+    public function mobile_v4_getting_started_documents_the_public_mcp_endpoint(): void
+    {
+        $this->withoutVite()
+            ->get('/docs/mobile/4/getting-started/mcp')
+            ->assertOk()
+            ->assertSee('MCP Docs Server')
+            ->assertSee('https://nativephp.com/api/mcp/message');
+    }
+
+    #[Test]
+    public function list_edge_components_returns_mobile_v4_components(): void
+    {
+        $response = $this->postJson('/api/mcp/message', [
+            'jsonrpc' => '2.0',
+            'id' => 1,
+            'method' => 'tools/call',
+            'params' => [
+                'name' => 'list_edge_components',
+                'arguments' => ['platform' => 'mobile', 'version' => '4'],
+            ],
+        ]);
+
+        $response->assertOk();
+
+        $text = $response->json('result.content.0.text');
+
+        $this->assertStringContainsString('mobile v4 EDGE components', $text);
+        $this->assertStringContainsString('button', $text);
+        $this->assertStringContainsString('text', $text);
+        $this->assertStringContainsString('Path: mobile/4/edge-components/button', $text);
+        $this->assertStringNotContainsString('Unknown tool', $text);
+    }
+
+    #[Test]
+    public function list_edge_components_defaults_version_to_latest_mobile(): void
+    {
+        $latest = app(DocsSearchService::class)->getLatestVersions()['mobile'];
+
+        $response = $this->postJson('/api/mcp/message', [
+            'jsonrpc' => '2.0',
+            'id' => 1,
+            'method' => 'tools/call',
+            'params' => [
+                'name' => 'list_edge_components',
+                'arguments' => ['platform' => 'mobile'],
+            ],
+        ]);
+
+        $response->assertOk();
+
+        $text = $response->json('result.content.0.text');
+
+        $this->assertStringContainsString("mobile v{$latest} EDGE components", $text);
+        $this->assertStringContainsString("Path: mobile/{$latest}/edge-components/", $text);
+    }
+
+    #[Test]
+    public function list_apis_is_no_longer_registered(): void
+    {
+        $list = $this->postJson('/api/mcp/message', [
+            'jsonrpc' => '2.0',
+            'id' => 1,
+            'method' => 'tools/list',
+        ]);
+
+        $tools = collect($list->json('result.tools'))->pluck('name')->all();
+        $this->assertNotContains('list_apis', $tools);
+
+        $call = $this->postJson('/api/mcp/message', [
+            'jsonrpc' => '2.0',
+            'id' => 2,
+            'method' => 'tools/call',
+            'params' => [
+                'name' => 'list_apis',
+                'arguments' => ['platform' => 'mobile', 'version' => '2'],
+            ],
+        ]);
+
+        $this->assertTrue($call->json('result.isError'));
+        $this->assertStringContainsString('Unknown tool: list_apis', $call->json('result.content.0.text'));
+    }
+
+    #[Test]
+    public function the_edge_components_rest_endpoint_lists_mobile_v4_components(): void
+    {
+        $response = $this->getJson('/api/mcp/edge-components/mobile/4');
+
+        $response->assertOk()
+            ->assertJsonStructure(['edge_components' => [['title', 'slug', 'description', 'section', 'id']]]);
+
+        $slugs = collect($response->json('edge_components'))->pluck('slug');
+
+        $this->assertTrue($slugs->contains('button'));
+        $this->assertTrue($slugs->contains('text'));
+        $this->assertTrue(
+            collect($response->json('edge_components'))->every(fn ($c) => $c['section'] === 'edge-components'
+                || str_starts_with($c['section'], 'edge-components/')),
+        );
+    }
+
+    #[Test]
+    public function the_legacy_apis_rest_endpoint_is_gone(): void
+    {
+        $this->getJson('/api/mcp/apis/mobile/2')->assertNotFound();
     }
 
     /**
