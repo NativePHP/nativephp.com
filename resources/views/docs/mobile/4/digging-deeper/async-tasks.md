@@ -143,14 +143,22 @@ up with `#[On]`:
 use Native\Mobile\Attributes\On;
 
 #[On('sync-complete')]
-public function syncComplete($event): void
+public function syncComplete(mixed $result = null, string $status = 'finished'): void
 {
-    $this->lastSync = $event->result;
+    $this->lastSync = $result;
 }
 ```
 
-The event payload carries `id`, a `status` of `finished` or `failed`, and either `result` or the failure
-details.
+The payload carries `id`, a `status` of `finished` or `failed`, and then either `result` (on success) or
+`exceptionClass`, `message` and `trace` (on failure).
+
+<aside>
+
+`#[On]` binds payload keys to your method's **parameter names**, so a parameter called `$result` receives the
+payload's `result` key. Give every parameter a default. Success and failure payloads carry different keys, and a
+required parameter that isn't in the payload can't be resolved, so the call fails.
+
+</aside>
 
 ## Running several at once
 
