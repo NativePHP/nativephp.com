@@ -106,8 +106,8 @@ your component, receiving the new value as its parameter:
 ## Element
 
 ```php
-use Nativephp\NativeUi\Elements\RadioGroup;
-use Nativephp\NativeUi\Elements\Radio;
+use Native\Mobile\UI\Elements\RadioGroup;
+use Native\Mobile\UI\Elements\Radio;
 
 RadioGroup::make(
     Radio::make('free')->label('Free'),

@@ -146,7 +146,7 @@ of sync with the actual sheet state after the user dismisses it by gesture.
 ## Element
 
 ```php
-use Nativephp\NativeUi\Elements\BottomSheet;
+use Native\Mobile\UI\Elements\BottomSheet;
 
 BottomSheet::make()
     ->visible($showSheet)

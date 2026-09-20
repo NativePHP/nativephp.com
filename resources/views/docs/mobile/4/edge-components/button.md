@@ -147,7 +147,7 @@ not on which SF Symbol the button carries. Tall glyphs like `wave.3.right` no lo
 ## Element
 
 ```php
-use Nativephp\NativeUi\Elements\Button;
+use Native\Mobile\UI\Elements\Button;
 
 Button::make('Save')
     ->variant('primary')
