@@ -18,6 +18,7 @@ class ShowcaseSeeder extends Seeder
         Showcase::factory(2)->approved()->desktop()->withWideScreenshots(3)->create();
         Showcase::factory(2)->approved()->desktop()->create();
         Showcase::factory(2)->approved()->both()->withTallScreenshots(2)->create();
+        Showcase::factory(1)->approved()->both()->withMobileScreenshots(2)->withDesktopScreenshots(2)->create();
 
         // Recently approved (will show as "new") with screenshots
         Showcase::factory(2)->recentlyApproved()->mobile()->withTallScreenshots(4)->create();

@@ -261,17 +261,34 @@ chrome already handles safe-area insets for you.
 
 ## Visibility
 
-Hide elements without removing them from the tree.
+Hide elements without removing them from the tree. A hidden element takes up no space in its parent's layout.
 
 @verbatim
 ```blade static
 <native:column hidden>
     {{-- This element is not displayed --}}
 </native:column>
+
+{{-- Bind it to component state --}}
+<native:column :hidden="$collapsed">
+    ...
+</native:column>
 ```
 @endverbatim
 
-- `hidden` - Hide this element (boolean)
+- `hidden` - Hide this element (boolean). Takes precedence over any display class
+
+The `hidden` class does the same job, and `flex` (or `block`) shows the element again. Pair them with a
+[breakpoint](#responsive-breakpoints) to show something only on wider windows:
+
+@verbatim
+```blade static
+{{-- A sidebar that only appears from tablet width up --}}
+<native:column class="hidden md:flex w-[280] p-4 bg-theme-surface">
+    ...
+</native:column>
+```
+@endverbatim
 
 ## Dark Mode
 
@@ -289,6 +306,77 @@ Override styles for dark mode using the `dark:` prefix with Tailwind classes, or
 @endverbatim
 
 Dark mode overrides currently support `bg`, `color`, `border-color`, `opacity`, and `font-size`.
+
+## Responsive Breakpoints
+
+<x-docs.version-badge since="4.5" />
+
+Prefix a class with a breakpoint to apply it only when the window is at least that wide. Breakpoints are
+mobile-first, exactly as in Tailwind: an unprefixed class applies at every width, and `md:flex-row` takes over from
+768 up.
+
+@verbatim
+```blade static
+{{-- Stacked on a phone, side by side on a tablet --}}
+<native:column class="w-full gap-6 p-4 md:flex-row md:gap-8 lg:p-8">
+    <native:column class="md:flex-1">
+        <native:text class="text-3xl md:text-5xl font-bold">Your jobs</native:text>
+    </native:column>
+    <native:column class="md:flex-1">
+        ...
+    </native:column>
+</native:column>
+```
+@endverbatim
+
+| Prefix | Applies from |
+|--------|--------------|
+| `sm:` | 640 |
+| `medium:` | 600 |
+| `md:` | 768 |
+| `expanded:` | 840 |
+| `lg:` | 1024 |
+| `xl:` | 1280 |
+| `2xl:` | 1536 |
+
+Widths are points on iOS and dp on Android. `sm:` to `2xl:` are Tailwind's breakpoints; `medium:` and `expanded:`
+follow the medium and expanded window size classes in Material Design, if you'd rather design to those.
+
+Breakpoints are measured against the app's **window**, not the device's screen, and resolved on the device. The same
+screen re-flows as soon as the window changes width, whether the device rotates or the app is resized in Split View,
+without a round trip to PHP. An iPad in portrait and in landscape can land on different breakpoints.
+
+Each breakpoint builds on everything narrower. Only the classes you prefix change, so `p-4 md:px-8` keeps its
+vertical padding at `md`, and `rounded-xl md:rounded-t-3xl` keeps its rounded bottom corners.
+
+Any class from the [supported classes](#supported-tailwind-classes) can take a breakpoint prefix, except
+`whitespace-*`, which is applied to text content before it reaches the device. Breakpoints combine with the other
+variants in either order, so `md:dark:bg-zinc-900`, `dark:md:bg-zinc-900` and `ios:md:p-6` all work.
+
+### Customizing breakpoints
+
+The thresholds live in `config/nativephp.php`. Change a width, remove the breakpoints you don't use, or add your
+own names:
+
+```php
+'breakpoints' => [
+    'sm' => 640,
+    'md' => 768,
+    'tablet' => 700, // enables `tablet:` classes
+    'lg' => 1024,
+],
+```
+
+The table replaces the defaults entirely, so keep every name you still use in your views. If the key is missing or
+empty, the defaults above apply.
+
+<aside>
+
+Breakpoints are min-width only. Tailwind's `max-*:` range variants (`max-md:hidden`) and arbitrary breakpoints
+(`min-[900px]:`) are not supported and are dropped. Write the mobile-first form instead: `flex md:hidden` rather
+than `max-md:flex`.
+
+</aside>
 
 ## Tailwind Classes
 
@@ -321,6 +409,8 @@ The parser recognizes the classes listed below.
 | Gap | `gap-N`, `gap-[N]` (uniform — no `gap-x-*` or `gap-y-*`) |
 | Position | `absolute`, `relative`, `top-N`, `right-N`, `bottom-N`, `left-N`, arbitrary `top-[N]` etc. |
 | Flex | `flex-1`, `flex-grow`, `flex-grow-0`, `flex-shrink`, `flex-shrink-0`, `flex-wrap`, `flex-nowrap`, `flex-wrap-reverse` |
+| Display <x-docs.version-badge since="4.5" /> | `hidden`; `flex`, `inline-flex`, `block`, `inline-block` and `grid` show the element again (for `hidden md:flex`) |
+| Grid columns <x-docs.version-badge since="4.5" /> | `grid-cols-N` — sets the column count of a [lazy grid](lazy-grid) |
 | Items (cross-axis) | `items-start`, `items-center`, `items-end`, `items-stretch` |
 | Justify (main-axis) | `justify-start`, `justify-center`, `justify-end`, `justify-between`, `justify-around`, `justify-evenly` |
 | Self | `self-start`, `self-center`, `self-end`, `self-stretch` |
@@ -333,7 +423,7 @@ The parser recognizes the classes listed below.
 | Rounded (per corner) <x-docs.version-badge since="4.2" /> | `rounded-tl-*`, `rounded-tr-*`, `rounded-br-*`, `rounded-bl-*`, including arbitrary values (`rounded-br-[4]`) |
 | Shadow | `shadow`, `shadow-sm`, `shadow-md`, `shadow-lg`, `shadow-xl`, `shadow-2xl`, `shadow-inner`, `shadow-none` |
 | Opacity | `opacity-{0..100}`, arbitrary `opacity-[0.5]` |
-| Text size | `text-xs`, `text-sm`, `text-base`, `text-lg`, `text-xl`, `text-2xl`, `text-3xl`, `text-4xl`, `text-5xl`, `text-6xl`, arbitrary `text-[N]` |
+| Text size | `text-xs`, `text-sm`, `text-base`, `text-lg`, `text-xl`, `text-2xl`, `text-3xl`, `text-4xl`, `text-5xl`, `text-6xl`, `text-7xl`, `text-8xl`, `text-9xl`, arbitrary `text-[N]` |
 | Font weight | `font-thin`, `font-extralight`, `font-light`, `font-normal`, `font-medium`, `font-semibold`, `font-bold`, `font-extrabold`, `font-black` |
 | Font family | `font-sans`, `font-serif`, `font-mono` |
 | Font style | `italic`, `not-italic` |
@@ -353,8 +443,10 @@ The parser recognizes the classes listed below.
 | `dark:` | Applies in dark mode (e.g. `dark:bg-zinc-900`) |
 | `ios:` | Applies on iOS only — drops silently on Android |
 | `android:` | Applies on Android only — drops silently on iOS |
+| `sm:` `md:` `lg:` `xl:` `2xl:` | Applies from that window width up — see [Responsive Breakpoints](#responsive-breakpoints) |
 
-Variants compose freely: `ios:dark:bg-zinc-800`, `dark:ios:bg-zinc-800` — both work.
+Variants compose freely, in either order: `ios:dark:bg-zinc-800`, `dark:ios:bg-zinc-800` and `md:dark:bg-zinc-800`
+all work.
 
 **Alpha suffix** — append `/N` to any color class for opacity (Tailwind v3+ syntax):
 

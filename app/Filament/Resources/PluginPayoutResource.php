@@ -132,11 +132,13 @@ class PluginPayoutResource extends Resource
                 Tables\Columns\TextColumn::make('gross_amount')
                     ->label('Paid')
                     ->formatStateUsing(fn (int $state): string => '$'.number_format($state / 100, 2))
+                    ->summarize(Tables\Columns\Summarizers\Sum::make('sum')->money('USD', divideBy: 100))
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('developer_amount')
                     ->label('Due to Seller')
                     ->formatStateUsing(fn (int $state): string => '$'.number_format($state / 100, 2))
+                    ->summarize(Tables\Columns\Summarizers\Sum::make('sum')->money('USD', divideBy: 100))
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('status')

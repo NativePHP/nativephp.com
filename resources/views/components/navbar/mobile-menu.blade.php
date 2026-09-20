@@ -42,6 +42,7 @@
             })
         }
     "
+    x-on:docsearch:open.window="showMobileMenu = false"
     class="relative z-40"
 >
     <button
@@ -419,7 +420,10 @@
                     >
                         <div
                             id="docsearch-desktop"
-                            x-on:click="if (window.innerWidth < 640) window.scrollTo({ top: 0, behavior: 'instant' })"
+                            x-on:click="
+                                showMobileMenu = false
+                                if (window.innerWidth < 640) window.scrollTo({ top: 0, behavior: 'instant' })
+                            "
                             aria-label="Search documentation"
                         ></div>
                     </div>

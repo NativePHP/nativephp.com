@@ -66,6 +66,29 @@ class PluginPayoutResourceTest extends TestCase
             ->assertSee('$14.00');
     }
 
+    public function test_list_page_totals_paid_and_due_to_seller(): void
+    {
+        PluginPayout::factory()->create([
+            'gross_amount' => 2000,
+            'platform_fee' => 600,
+            'developer_amount' => 1400,
+        ]);
+
+        PluginPayout::factory()->create([
+            'gross_amount' => 5000,
+            'platform_fee' => 1500,
+            'developer_amount' => 3500,
+        ]);
+
+        Livewire::actingAs($this->admin)
+            ->test(ListPluginPayouts::class)
+            ->assertSuccessful()
+            ->assertTableColumnSummarySet('gross_amount', 'sum', 7000)
+            ->assertTableColumnSummarySet('developer_amount', 'sum', 4900)
+            ->assertSee('$70.00')
+            ->assertSee('$49.00');
+    }
+
     public function test_view_page_renders_successfully(): void
     {
         $payout = PluginPayout::factory()->failed()->create();

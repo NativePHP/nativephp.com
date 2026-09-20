@@ -11,6 +11,7 @@ use App\Models\PluginPayout;
 use App\Models\PluginPayoutAttempt;
 use App\Models\PluginPrice;
 use App\Models\User;
+use App\Support\StripeConnectCountries;
 use Illuminate\Support\Facades\Log;
 use Laravel\Cashier\Cashier;
 use Stripe\Account;
@@ -22,18 +23,7 @@ class StripeConnectService
 {
     public function createConnectAccount(User $user, string $country, string $payoutCurrency): DeveloperAccount
     {
-        $account = Cashier::stripe()->accounts->create([
-            'type' => 'express',
-            'country' => $country,
-            'email' => $user->email,
-            'metadata' => [
-                'user_id' => $user->id,
-            ],
-            'capabilities' => [
-                'card_payments' => ['requested' => true],
-                'transfers' => ['requested' => true],
-            ],
-        ]);
+        $account = $this->createStripeAccount($user, $country);
 
         return DeveloperAccount::create([
             'user_id' => $user->id,
@@ -43,6 +33,33 @@ class StripeConnectService
             'charges_enabled' => false,
             'country' => $country,
             'payout_currency' => $payoutCurrency,
+        ]);
+    }
+
+    /**
+     * Point the developer at a brand new Stripe account, created with the service agreement
+     * their country needs. Stripe won't change the agreement on an account that has already
+     * accepted one, so the developer has to go through onboarding again.
+     */
+    public function replaceConnectAccount(DeveloperAccount $developerAccount, string $country): void
+    {
+        $previousAccountId = $developerAccount->stripe_connect_account_id;
+
+        $account = $this->createStripeAccount($developerAccount->user, $country);
+
+        $developerAccount->update([
+            'stripe_connect_account_id' => $account->id,
+            'stripe_connect_status' => StripeConnectStatus::Pending,
+            'payouts_enabled' => false,
+            'charges_enabled' => false,
+            'onboarding_completed_at' => null,
+            'country' => $country,
+        ]);
+
+        Log::info('Replaced developer Stripe Connect account', [
+            'developer_account_id' => $developerAccount->id,
+            'previous_stripe_account_id' => $previousAccountId,
+            'stripe_account_id' => $account->id,
         ]);
     }
 
@@ -66,7 +83,9 @@ class StripeConnectService
             'payouts_enabled' => $stripeAccount->payouts_enabled,
             'charges_enabled' => $stripeAccount->charges_enabled,
             'stripe_connect_status' => $this->determineStatus($stripeAccount),
-            'onboarding_completed_at' => $stripeAccount->details_submitted ? now() : null,
+            'onboarding_completed_at' => $stripeAccount->details_submitted
+                ? ($account->onboarding_completed_at ?? now())
+                : null,
         ]);
 
         Log::info('Refreshed developer account status', [
@@ -200,6 +219,37 @@ class StripeConnectService
 
             return null;
         }
+    }
+
+    /**
+     * Developers outside the countries we can pay on the `full` service agreement get a
+     * `recipient` account, which can only receive transfers and can't take payments.
+     */
+    protected function createStripeAccount(User $user, string $country): Account
+    {
+        $params = [
+            'type' => 'express',
+            'country' => $country,
+            'email' => $user->email,
+            'metadata' => [
+                'user_id' => $user->id,
+            ],
+            'capabilities' => [
+                'card_payments' => ['requested' => true],
+                'transfers' => ['requested' => true],
+            ],
+        ];
+
+        if (StripeConnectCountries::requiresRecipientServiceAgreement($country)) {
+            $params['capabilities'] = [
+                'transfers' => ['requested' => true],
+            ];
+            $params['tos_acceptance'] = [
+                'service_agreement' => 'recipient',
+            ];
+        }
+
+        return Cashier::stripe()->accounts->create($params);
     }
 
     protected function determineStatus(Account $account): StripeConnectStatus

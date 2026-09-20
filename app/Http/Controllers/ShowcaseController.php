@@ -16,6 +16,8 @@ class ShowcaseController extends Controller
             $query->withMobile();
         } elseif ($platform === 'desktop') {
             $query->withDesktop();
+        } elseif ($platform === 'both') {
+            $query->withMobile()->withDesktop();
         }
 
         $showcases = $query->paginate(10);

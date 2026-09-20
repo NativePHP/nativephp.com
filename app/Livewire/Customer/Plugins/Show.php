@@ -204,7 +204,7 @@ class Show extends Component
         // Notify
         $user->notify(new PluginSubmitted($this->plugin));
 
-        Notification::route('mail', 'support@nativephp.com')
+        Notification::route('mail', config('mail.support_address'))
             ->notify(new PluginPendingReview($this->plugin));
 
         Flux::toast(variant: 'success', text: 'Your plugin has been submitted for review!');

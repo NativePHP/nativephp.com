@@ -98,9 +98,18 @@ php artisan native:package android \
 The `--play-store-track` option controls where the build is released:
 
 - `internal` - Internal testing (default, fastest review)
-- `alpha` - Closed alpha testing
-- `beta` - Closed beta testing
+- `alpha` - Closed testing
+- `beta` - Open testing
 - `production` - Production release
+
+### Releasing to production
+
+<x-docs.version-badge since="4.5" />
+
+Only a build packaged with `APP_ENV=production` can be released on the `beta` or `production` tracks. A build packaged
+with any other `APP_ENV` is a [testing build](introduction#production-and-testing-builds), which Google Play holds to
+the `internal` and `alpha` tracks. If you ask for the `production` track, `native:package` stops before uploading and
+tells you which `APP_ENV` the build was made with.
 
 ## Testing Play Store Uploads
 
@@ -209,6 +218,7 @@ php artisan native:package android \
 - Verify the Google Service Account has access to your app in Play Console
 - Ensure the service account key file is valid and readable
 - Check that your bundle ID matches your Play Console app ID
+- For the `beta` or `production` tracks, package with `APP_ENV=production` (see [Releasing to production](#releasing-to-production))
 
 ## Artifact Locations
 

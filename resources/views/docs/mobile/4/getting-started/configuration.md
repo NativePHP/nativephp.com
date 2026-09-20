@@ -165,6 +165,10 @@ With NativePHP, your app can work on iPad too! If you wish to support iPad, simp
 
 Using standard CSS responsive design principles, you can make your app work beautifully across all screen sizes. 
 
+For EDGE screens, use breakpoint prefixes like `md:` and `lg:` on your classes. They follow the app's window width,
+including rotation and Split View, and their thresholds live in the `breakpoints` config option. See
+[Responsive Breakpoints](../edge-components/layout#responsive-breakpoints).
+
 <aside>
 
 #### Once iPad, Always iPad

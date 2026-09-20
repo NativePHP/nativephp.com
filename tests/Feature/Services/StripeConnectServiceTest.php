@@ -3,13 +3,16 @@
 namespace Tests\Feature\Services;
 
 use App\Enums\PayoutStatus;
+use App\Enums\StripeConnectStatus;
 use App\Models\DeveloperAccount;
 use App\Models\Plugin;
 use App\Models\PluginLicense;
 use App\Models\PluginPayout;
+use App\Models\User;
 use App\Services\StripeConnectService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use PHPUnit\Framework\Attributes\Test;
+use Stripe\Account;
 use Stripe\PaymentIntent;
 use Stripe\StripeClient;
 use Stripe\Transfer;
@@ -135,5 +138,119 @@ class StripeConnectServiceTest extends TestCase
         $this->assertNotNull($capturedTransferParams);
         $this->assertSame('eur', $capturedTransferParams['currency']);
         $this->assertArrayNotHasKey('source_transaction', $capturedTransferParams);
+    }
+
+    #[Test]
+    public function create_connect_account_uses_the_recipient_service_agreement_where_full_accounts_cannot_be_paid(): void
+    {
+        $user = User::factory()->create();
+        $accounts = $this->fakeStripeAccounts();
+
+        $developerAccount = app(StripeConnectService::class)->createConnectAccount($user, 'MX', 'MXN');
+
+        $this->assertSame(['transfers' => ['requested' => true]], $accounts->createdWith['capabilities']);
+        $this->assertSame(['service_agreement' => 'recipient'], $accounts->createdWith['tos_acceptance']);
+        $this->assertSame('MX', $accounts->createdWith['country']);
+        $this->assertSame('acct_test_new', $developerAccount->stripe_connect_account_id);
+        $this->assertSame('MX', $developerAccount->country);
+    }
+
+    #[Test]
+    public function create_connect_account_uses_the_full_service_agreement_where_full_accounts_can_be_paid(): void
+    {
+        $user = User::factory()->create();
+        $accounts = $this->fakeStripeAccounts();
+
+        app(StripeConnectService::class)->createConnectAccount($user, 'GB', 'GBP');
+
+        $this->assertSame([
+            'card_payments' => ['requested' => true],
+            'transfers' => ['requested' => true],
+        ], $accounts->createdWith['capabilities']);
+        $this->assertArrayNotHasKey('tos_acceptance', $accounts->createdWith);
+    }
+
+    #[Test]
+    public function replace_connect_account_moves_the_developer_to_a_new_account_that_needs_onboarding(): void
+    {
+        $developerAccount = DeveloperAccount::factory()->create([
+            'stripe_connect_account_id' => 'acct_test_full',
+            'country' => 'MX',
+            'payout_currency' => 'MXN',
+        ]);
+        $accounts = $this->fakeStripeAccounts();
+
+        app(StripeConnectService::class)->replaceConnectAccount($developerAccount, 'MX');
+
+        $this->assertSame(['service_agreement' => 'recipient'], $accounts->createdWith['tos_acceptance']);
+        $this->assertSame($developerAccount->user->email, $accounts->createdWith['email']);
+
+        $developerAccount->refresh();
+
+        $this->assertSame('acct_test_new', $developerAccount->stripe_connect_account_id);
+        $this->assertSame(StripeConnectStatus::Pending, $developerAccount->stripe_connect_status);
+        $this->assertFalse($developerAccount->payouts_enabled);
+        $this->assertFalse($developerAccount->hasCompletedOnboarding());
+        $this->assertFalse($developerAccount->canReceivePayouts());
+        $this->assertSame('MXN', $developerAccount->payout_currency);
+    }
+
+    #[Test]
+    public function refresh_account_status_keeps_the_date_onboarding_was_first_completed(): void
+    {
+        $onboardedAt = now()->subMonths(3)->startOfSecond();
+        $developerAccount = DeveloperAccount::factory()->create(['onboarding_completed_at' => $onboardedAt]);
+        $this->fakeStripeAccounts();
+
+        app(StripeConnectService::class)->refreshAccountStatus($developerAccount);
+
+        $this->assertTrue($developerAccount->fresh()->onboarding_completed_at->equalTo($onboardedAt));
+    }
+
+    #[Test]
+    public function refresh_account_status_marks_a_developer_who_finished_onboarding_as_active(): void
+    {
+        $developerAccount = DeveloperAccount::factory()->pending()->create();
+        $this->fakeStripeAccounts();
+
+        app(StripeConnectService::class)->refreshAccountStatus($developerAccount);
+
+        $developerAccount->refresh();
+
+        $this->assertTrue($developerAccount->canReceivePayouts());
+        $this->assertTrue($developerAccount->hasCompletedOnboarding());
+    }
+
+    private function fakeStripeAccounts(): object
+    {
+        $accounts = new class
+        {
+            public ?array $createdWith = null;
+
+            public function create(array $params): Account
+            {
+                $this->createdWith = $params;
+
+                return Account::constructFrom(['id' => 'acct_test_new']);
+            }
+
+            public function retrieve(string $id): Account
+            {
+                return Account::constructFrom([
+                    'id' => $id,
+                    'payouts_enabled' => true,
+                    'charges_enabled' => true,
+                    'details_submitted' => true,
+                    'requirements' => ['disabled_reason' => null],
+                ]);
+            }
+        };
+
+        $mockStripeClient = $this->createMock(StripeClient::class);
+        $mockStripeClient->accounts = $accounts;
+
+        $this->app->bind(StripeClient::class, fn () => $mockStripeClient);
+
+        return $accounts;
     }
 }

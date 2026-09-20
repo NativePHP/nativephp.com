@@ -28,6 +28,11 @@ class Kernel extends ConsoleKernel
         $schedule->command('payouts:process-eligible')
             ->dailyAt('11:00')
             ->onOneServer();
+
+        // Email a summary of the day's payouts, once the queued transfers have run
+        $schedule->command('payouts:send-daily-summary')
+            ->dailyAt('12:00')
+            ->onOneServer();
     }
 
     /**

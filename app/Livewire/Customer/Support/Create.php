@@ -164,7 +164,7 @@ class Create extends Component
             $ticket->update(['attachments' => $attachments]);
         }
 
-        Notification::route('mail', 'support@nativephp.com')
+        Notification::route('mail', config('mail.support_address'))
             ->notify(new SupportTicketSubmitted($ticket));
 
         $this->redirect(route('customer.support.tickets.show', $ticket), navigate: false);

@@ -103,7 +103,7 @@ class WallOfLoveSubmissionForm extends Component
             'testimonial' => $this->testimonial ?: null,
         ]);
 
-        Notification::route('mail', 'support@nativephp.com')
+        Notification::route('mail', config('mail.support_address'))
             ->notify(new WallOfLoveSubmitted($submission));
 
         return to_route('dashboard')->with('success', 'Thank you! Your submission has been received and is awaiting review.');

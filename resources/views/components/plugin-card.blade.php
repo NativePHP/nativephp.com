@@ -61,10 +61,23 @@
         @endif
     </div>
 
-    <div class="mt-4 flex items-center gap-1.5 text-sm font-medium text-indigo-600 dark:text-indigo-400">
-        View details
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-4">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
-        </svg>
+    <div class="mt-4 flex items-center justify-between gap-3">
+        <span class="flex items-center gap-1.5 text-sm font-medium text-indigo-600 dark:text-indigo-400">
+            View details
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-4">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
+            </svg>
+        </span>
+
+        @if ($plugin->rating_count > 0)
+            <span
+                class="inline-flex items-center gap-1 text-xs"
+                title="{{ number_format($plugin->rating_average, 1) }} out of 5 stars from {{ $plugin->rating_count }} {{ Str::plural('rating', $plugin->rating_count) }}"
+            >
+                <x-heroicon-s-star class="size-3.5 text-amber-400" aria-hidden="true" />
+                <span class="font-medium text-gray-900 dark:text-white">{{ number_format($plugin->rating_average, 1) }}</span>
+                <span class="text-gray-500 dark:text-gray-400">({{ $plugin->rating_count }})</span>
+            </span>
+        @endif
     </div>
 </a>

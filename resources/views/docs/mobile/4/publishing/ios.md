@@ -55,6 +55,17 @@ php artisan native:package ios \
   --team-id=ABC1234567
 ```
 
+### Testing builds
+
+<x-docs.version-badge since="4.5" />
+
+An `app-store` build packaged with any `APP_ENV` other than `production` is a
+[testing build](introduction#production-and-testing-builds), marked for TestFlight internal testing only. It uploads to
+App Store Connect as usual and your internal testers can install it, but it can't be sent to external testers or
+submitted for App Store review. Package it again with `APP_ENV=production` when you're ready to release.
+
+Ad-hoc, enterprise and development builds don't go through TestFlight, so `APP_ENV` doesn't limit them.
+
 ## Building for Ad-Hoc Distribution
 
 For distributing to specific devices without going through the App Store:
