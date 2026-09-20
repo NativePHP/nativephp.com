@@ -81,6 +81,16 @@ NativePHP manages the worker lifecycle natively on both platforms.
 
 </aside>
 
+### Background launches
+
+The worker starts when your app is **on screen**. When iOS cold-launches your app in the background to run
+scheduled work, that second PHP runtime is deliberately not started — it's memory a background wake didn't ask
+for, and paying for it there risks the system killing the process mid-task.
+
+Jobs you dispatch from background work are still written to the queue as normal; they're picked up the next time
+the app is opened. If a background window needs work *finished* rather than queued, do it inline in the command.
+See [Execution Context](execution-context) for how to tell which situation you're in.
+
 ## Things to Note
 
 - The queue worker requires ZTS (Thread-Safe) PHP, which NativePHP includes by default.
