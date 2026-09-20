@@ -107,11 +107,3 @@ php artisan native:publish {os?} {arch?}
 |--------|-------------|
 | `os` | Operating system to build for: `all`, `linux`, `mac`, or `win` |
 | `arch` | Processor architecture to build for: `x64` or `arm64` |
-
-<aside>
-
-Managing signing certificates and provisioning profiles locally is tedious and error-prone.
-[Bifrost](https://bifrost.nativephp.com) can build and sign for you in the cloud instead of running these commands
-locally.
-
-</aside>
