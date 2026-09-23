@@ -2,13 +2,14 @@
 
 namespace App\Notifications;
 
+use App\Contracts\TransactionalNotification;
 use App\Enums\Subscription;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
-class LicenseKeyGenerated extends Notification implements ShouldQueue
+class LicenseKeyGenerated extends Notification implements ShouldQueue, TransactionalNotification
 {
     use Queueable;
 

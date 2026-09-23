@@ -31,7 +31,7 @@ class SatisBuild extends Command
         $pluginName = $this->option('plugin');
 
         if ($pluginName) {
-            $plugin = Plugin::where('name', $pluginName)->first();
+            $plugin = Plugin::with('user')->where('name', $pluginName)->first();
 
             if (! $plugin) {
                 $this->error("Plugin '{$pluginName}' not found.");
@@ -46,32 +46,49 @@ class SatisBuild extends Command
             }
 
             $this->info("Triggering Satis build for: {$pluginName}");
-            $result = $satisService->build([$plugin]);
-        } else {
-            $this->info('Triggering Satis build for all approved plugins...');
-            $result = $satisService->buildAll();
+            $result = $satisService->buildForPlugin($plugin);
+
+            if ($result['success'] ?? false) {
+                $this->info('Build triggered successfully!');
+                $this->line("Job ID: {$result['job_id']}");
+
+                return self::SUCCESS;
+            }
+
+            $this->error('Build trigger failed: '.($result['error'] ?? 'Unknown error'));
+
+            if (isset($result['status'])) {
+                $this->line("HTTP Status: {$result['status']}");
+            }
+
+            $this->line('API URL: '.config('services.satis.url'));
+            $this->line('API Key configured: '.(config('services.satis.api_key') ? 'Yes' : 'No'));
+
+            return self::FAILURE;
         }
 
-        if ($result['success']) {
-            $this->info('Build triggered successfully!');
-            $this->line("Job ID: {$result['job_id']}");
+        $this->info('Triggering individual Satis builds for all approved paid plugins...');
+        $result = $satisService->buildAll();
 
-            if (isset($result['plugins_count'])) {
-                $this->line("Plugins: {$result['plugins_count']}");
-            }
+        $count = $result['plugins_count'] ?? 0;
+        $failed = $result['failed'] ?? [];
+
+        if ($count === 0) {
+            $this->warn($result['error'] ?? 'No plugins to build.');
 
             return self::SUCCESS;
         }
 
-        $this->error('Build trigger failed: '.$result['error']);
+        $this->line('Dispatched '.($count - count($failed))."/{$count} plugin build(s).");
 
-        if (isset($result['status'])) {
-            $this->line("HTTP Status: {$result['status']}");
+        if (! empty($failed)) {
+            $this->error('Failed to dispatch: '.implode(', ', $failed));
+
+            return self::FAILURE;
         }
 
-        $this->line('API URL: '.config('services.satis.url'));
-        $this->line('API Key configured: '.(config('services.satis.api_key') ? 'Yes' : 'No'));
+        $this->info('All builds triggered successfully!');
 
-        return self::FAILURE;
+        return self::SUCCESS;
     }
 }

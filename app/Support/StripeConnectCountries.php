@@ -116,6 +116,21 @@ class StripeConnectCountries
     ];
 
     /**
+     * Countries our US platform can transfer to on Stripe's `full` service agreement.
+     * Everywhere else needs the `recipient` service agreement, otherwise Stripe rejects
+     * transfers to the account (or refuses to create it at all).
+     *
+     * @see https://docs.stripe.com/connect/service-agreement-types
+     * @see https://docs.stripe.com/connect/account-capabilities#transfers-cross-border
+     *
+     * @var list<string>
+     */
+    public const FULL_SERVICE_AGREEMENT_COUNTRIES = [
+        'AT', 'BE', 'BG', 'CA', 'CH', 'CY', 'CZ', 'DE', 'DK', 'EE', 'ES', 'FI', 'FR', 'GB', 'GR', 'HR', 'HU',
+        'IE', 'IT', 'LI', 'LT', 'LU', 'LV', 'MT', 'NL', 'NO', 'PL', 'PT', 'RO', 'SE', 'SI', 'SK', 'US',
+    ];
+
+    /**
      * @var array<string, string>
      */
     public const CURRENCY_NAMES = [
@@ -229,6 +244,11 @@ class StripeConnectCountries
     public static function isValidCurrencyForCountry(string $countryCode, string $currencyCode): bool
     {
         return in_array(strtoupper($currencyCode), self::availableCurrencies($countryCode), true);
+    }
+
+    public static function requiresRecipientServiceAgreement(string $countryCode): bool
+    {
+        return ! in_array(strtoupper($countryCode), self::FULL_SERVICE_AGREEMENT_COUNTRIES, true);
     }
 
     /**

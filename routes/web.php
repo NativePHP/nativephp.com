@@ -4,6 +4,8 @@ use App\Features\ShowAuthButtons;
 use App\Features\ShowPlugins;
 use App\Http\Controllers\ApplinksController;
 use App\Http\Controllers\Auth\CustomerAuthController;
+use App\Http\Controllers\Auth\EmailChangeController;
+use App\Http\Controllers\Auth\EmailVerificationController;
 use App\Http\Controllers\BundleController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\CustomerLicenseController;
@@ -14,17 +16,22 @@ use App\Http\Controllers\GitHubAppWebhookController;
 use App\Http\Controllers\GitHubAuthController;
 use App\Http\Controllers\GitHubIntegrationController;
 use App\Http\Controllers\LicenseRenewalController;
+use App\Http\Controllers\NotificationUnsubscribeController;
 use App\Http\Controllers\OpenCollectiveWebhookController;
 use App\Http\Controllers\PluginDirectoryController;
+use App\Http\Controllers\PluginRatingController;
+use App\Http\Controllers\PluginReportController;
 use App\Http\Controllers\PluginWebhookController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ShowBlogController;
 use App\Http\Controllers\ShowcaseController;
 use App\Http\Controllers\ShowDocumentationController;
+use App\Http\Controllers\SupportTicketAttachmentController;
 use App\Http\Controllers\TeamController;
 use App\Http\Controllers\TeamUserController;
 use App\Http\Controllers\UltraController;
 use App\Livewire\ClaimDonationLicense;
+use App\Livewire\Customer\Course\LessonShow;
 use App\Livewire\Customer\Dashboard;
 use App\Livewire\Customer\Developer\Onboarding;
 use App\Livewire\Customer\Integrations;
@@ -37,13 +44,14 @@ use App\Livewire\Customer\WallOfLove\Create;
 use App\Livewire\LicenseRenewalSuccess;
 use App\Livewire\OrderSuccess;
 use App\Livewire\PluginDirectory;
+use App\Models\Course;
 use App\Models\Product;
 use App\Services\CartService;
+use App\Services\DocsVersionService;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Exceptions\UrlGenerationException;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Str;
-use Laravel\Cashier\Cashier;
 use Laravel\Pennant\Middleware\EnsureFeaturesAreActive;
 
 /*
@@ -57,26 +65,51 @@ use Laravel\Pennant\Middleware\EnsureFeaturesAreActive;
 |
 */
 
-Route::redirect('newsletter', 'https://simonhamp.mailcoach.app/nativephp');
+// The shortlink lands on the homepage and pops the signup modal open.
+Route::redirect('newsletter', '/?newsletter=1');
 Route::redirect('phpverse-2025', 'https://lp.jetbrains.com/phpverse-2025');
 Route::redirect('docs/1/getting-started/sponsoring', '/sponsor');
 Route::redirect('docs/desktop/1/getting-started/sponsoring', '/sponsor');
 Route::redirect('discord', 'https://discord.gg/nativephp');
 Route::redirect('bifrost', 'https://bifrost.nativephp.com');
+Route::redirect('jump', '/docs/mobile/the-basics/jump');
 Route::redirect('mobile', 'blog/nativephp-for-mobile-is-now-free');
 Route::redirect('ios', 'blog/nativephp-for-mobile-is-now-free');
 Route::redirect('t-shirt', 'blog/nativephp-for-mobile-is-now-free');
 Route::redirect('tshirt', 'blog/nativephp-for-mobile-is-now-free');
 
-// Redirect mobile v3 core plugin docs to plugin directory pages
-Route::get('docs/mobile/3/plugins/core/{page}', function (string $page) {
-    return redirect("/plugins/nativephp/mobile-{$page}", 301);
-})->where('page', '[a-z-]+');
+// v4: Device/Dialog/File/System moved from plugins into core built-ins; their docs
+// now live in The Basics (must precede the generic core-plugin redirect below).
+foreach (['device', 'file', 'system'] as $corePage) {
+    Route::redirect("docs/mobile/4/plugins/core/{$corePage}", "/docs/mobile/4/the-basics/{$corePage}", 301);
+}
 
-// Redirect old mobile v3 API docs to plugin directory pages
-Route::get('docs/mobile/3/apis/{page}', function (string $page) {
+// The Dialog docs live at the "dialogs" slug in The Basics.
+Route::redirect('docs/mobile/4/plugins/core/dialog', '/docs/mobile/4/the-basics/dialogs', 301);
+
+// Redirect mobile core plugin docs to plugin directory pages
+Route::get('docs/mobile/{version}/plugins/core/{page}', function (string $version, string $page) {
     return redirect("/plugins/nativephp/mobile-{$page}", 301);
-})->where('page', '[a-z-]+');
+})->where('version', '[0-9]+')->where('page', '[a-z-]+');
+
+// Redirect old mobile API docs to plugin directory pages
+Route::get('docs/mobile/{version}/apis/{page}', function (string $version, string $page) {
+    return redirect("/plugins/nativephp/mobile-{$page}", 301);
+})->where('version', '[0-9]+')->where('page', '[a-z-]+');
+
+// v4: the SuperNative section was flattened; its old section root now points at
+// the SuperNative overview page, which lives in the Architecture section.
+Route::redirect('docs/mobile/4/super-native', '/docs/mobile/4/architecture/super-native', 301);
+
+// v4: the Architecture Overview page was removed; the SuperNative page now leads the section.
+Route::redirect('docs/mobile/4/architecture/overview', '/docs/mobile/4/architecture/super-native', 301);
+
+// v4: the old the-basics/navigation slug is now the-basics/routing (Layouts lives at the-basics/layouts directly).
+Route::redirect('docs/mobile/4/the-basics/navigation', '/docs/mobile/4/the-basics/routing', 301);
+
+// v4: Screen & Card components were removed — theme surfaces with bg-theme-* classes instead
+Route::redirect('docs/mobile/4/edge-components/screen', '/docs/mobile/4/edge-components/layout', 301);
+Route::redirect('docs/mobile/4/edge-components/card', '/docs/mobile/4/edge-components/layout', 301);
 
 // Webhook routes (must be outside web middleware for CSRF bypass)
 Route::post('opencollective/contribution', [OpenCollectiveWebhookController::class, 'handle'])->name('opencollective.webhook');
@@ -92,8 +125,26 @@ Route::get('course', function () {
     $product = Product::where('slug', 'nativephp-masterclass')->first();
     $alreadyOwned = $user && $product && $product->isOwnedBy($user);
 
+    $course = Course::where('is_published', true)
+        ->with(['modules' => function ($query) {
+            $query->where('is_published', true)->orderBy('sort_order')->withCount('lessons');
+        }])
+        ->first();
+
+    $priceIncreaseAt = config('services.stripe.course_price_increase_at');
+    $priceIncreased = now()->gte($priceIncreaseAt);
+
+    $bestPrice = $product?->getBestPriceForUser($user);
+    $regularPrice = $product?->getRegularPrice();
+
     return view('course', [
         'alreadyOwned' => $alreadyOwned,
+        'course' => $course,
+        'priceIncreaseAt' => $priceIncreaseAt,
+        'priceIncreased' => $priceIncreased,
+        'currentPrice' => $bestPrice?->discountedDisplayAmount() ?? ($priceIncreased ? '299' : '199'),
+        'regularPrice' => $regularPrice?->display_amount,
+        'hasDiscount' => $bestPrice && $regularPrice && $bestPrice->discountedAmount() < $regularPrice->amount,
     ]);
 })->name('course');
 
@@ -113,40 +164,38 @@ Route::post('course/checkout', function (Request $request) {
         return to_route('course')->with('error', 'You already own this course.');
     }
 
+    $bestPrice = $product->getBestPriceForUser($user);
+
+    // Prefer the Stripe price ID configured on the resolved price in the admin,
+    // falling back to the legacy env-configured course price IDs.
+    $priceIncreased = now()->gte(config('services.stripe.course_price_increase_at'));
+    $priceId = $bestPrice?->stripe_price_id
+        ?: ($priceIncreased
+            ? config('services.stripe.course_price_id_299')
+            : config('services.stripe.course_price_id_199'));
+
+    if (! $priceId) {
+        return to_route('course')->with('error', 'Course checkout is not configured yet.');
+    }
+
+    $user->createOrGetStripeCustomer();
+
     $cartService = resolve(CartService::class);
     $cart = $cartService->getCart($user);
     $cartService->addProduct($cart, $product);
 
-    $cart->load('items.product');
-    $item = $cart->items->where('product_id', $product->id)->first();
-
-    $user->createOrGetStripeCustomer();
-
     $metadata = ['cart_id' => (string) $cart->id];
 
-    $session = Cashier::stripe()->checkout->sessions->create([
-        'mode' => 'payment',
-        'line_items' => [[
-            'price_data' => [
-                'currency' => strtolower($item->currency),
-                'unit_amount' => $item->product_price_at_addition,
-                'product_data' => [
-                    'name' => $product->name,
-                    'description' => $product->description,
-                ],
-            ],
-            'quantity' => 1,
-        ]],
+    $sessionOptions = [
         'success_url' => route('cart.success').'?session_id={CHECKOUT_SESSION_ID}',
         'cancel_url' => route('course'),
-        'customer' => $user->stripe_id,
+        'metadata' => $metadata,
+        'allow_promotion_codes' => true,
+        'billing_address_collection' => 'required',
         'customer_update' => [
             'name' => 'auto',
             'address' => 'auto',
         ],
-        'metadata' => $metadata,
-        'allow_promotion_codes' => true,
-        'billing_address_collection' => 'required',
         'tax_id_collection' => ['enabled' => true],
         'invoice_creation' => [
             'enabled' => true,
@@ -155,17 +204,30 @@ Route::post('course/checkout', function (Request $request) {
                 'metadata' => $metadata,
             ],
         ],
-    ]);
+    ];
 
-    $cart->update(['stripe_checkout_session_id' => $session->id]);
+    // Stripe accepts either allow_promotion_codes or discounts on a session, never both.
+    $couponId = $bestPrice?->stripe_coupon_id;
 
-    return redirect($session->url);
+    if ($couponId) {
+        unset($sessionOptions['allow_promotion_codes']);
+        $sessionOptions['discounts'] = [['coupon' => $couponId]];
+    }
+
+    return $user->checkout([$priceId => 1], $sessionOptions);
 })->name('course.checkout');
+
+// Mailcoach redirects here once it has handled a signup, a confirmation click
+// or an unsubscribe. The matching URLs are configured on the newsletter list.
+Route::view('newsletter/confirm', 'newsletter.confirm')->name('newsletter.confirm');
+Route::view('newsletter/subscribed', 'newsletter.subscribed')->name('newsletter.subscribed');
+Route::view('newsletter/already-subscribed', 'newsletter.already-subscribed')->name('newsletter.already-subscribed');
+Route::view('newsletter/unsubscribed', 'newsletter.unsubscribed')->name('newsletter.unsubscribed');
 
 Route::view('wall-of-love', 'wall-of-love')->name('wall-of-love');
 Route::view('brand', 'brand')->name('brand');
 Route::get('showcase/{platform?}', [ShowcaseController::class, 'index'])
-    ->where('platform', 'mobile|desktop')
+    ->where('platform', 'mobile|desktop|both')
     ->name('showcase');
 Route::view('laracon-us-2025-giveaway', 'laracon-us-2025-giveaway')->name('laracon-us-2025-giveaway');
 Route::view('privacy-policy', 'privacy-policy')->name('privacy-policy');
@@ -173,7 +235,10 @@ Route::view('terms-of-service', 'terms-of-service')->name('terms-of-service');
 Route::view('developer-terms', 'developer-terms')->name('developer-terms');
 Route::view('partners', 'partners')->name('partners');
 Route::view('build-my-app', 'build-my-app')->name('build-my-app');
+Route::view('consulting', 'consulting')->name('consulting');
 Route::view('the-vibes', 'the-vibes')->name('the-vibes');
+Route::view('the-vibes-prospectus', 'the-vibes-prospectus')->name('the-vibes-prospectus');
+Route::view('mcp', 'mcp')->name('mcp');
 
 // Public plugin directory routes
 Route::middleware(EnsureFeaturesAreActive::using(ShowPlugins::class))->group(function (): void {
@@ -181,6 +246,12 @@ Route::middleware(EnsureFeaturesAreActive::using(ShowPlugins::class))->group(fun
     Route::get('plugins/marketplace', PluginDirectory::class)->name('plugins.marketplace');
     Route::get('plugins/{vendor}/{package}', [PluginDirectoryController::class, 'show'])->name('plugins.show');
     Route::get('plugins/{vendor}/{package}/license', [PluginDirectoryController::class, 'license'])->name('plugins.license');
+
+    Route::middleware('auth')->group(function (): void {
+        Route::post('plugins/{vendor}/{package}/rating', [PluginRatingController::class, 'store'])->name('plugins.rating.store');
+        Route::delete('plugins/{vendor}/{package}/rating', [PluginRatingController::class, 'destroy'])->name('plugins.rating.destroy');
+        Route::post('plugins/{vendor}/{package}/report', [PluginReportController::class, 'store'])->name('plugins.report.store');
+    });
 });
 
 Route::view('sponsor', 'sponsoring')->name('sponsoring');
@@ -188,6 +259,7 @@ Route::view('vs-react-native-expo', 'vs-react-native-expo')->name('vs-react-nati
 Route::view('vs-flutter', 'vs-flutter')->name('vs-flutter');
 
 Route::get('blog', [ShowBlogController::class, 'index'])->name('blog');
+Route::get('blog/feed', [ShowBlogController::class, 'feed'])->name('blog.feed');
 Route::get('blog/{article}', [ShowBlogController::class, 'show'])->name('article');
 
 Route::get('docs/{platform}/{version}/{page}.md', [ShowDocumentationController::class, 'serveRawMarkdown'])
@@ -202,23 +274,28 @@ Route::get('docs/{platform}/{version}/{page?}', ShowDocumentationController::cla
     ->where('version', '[0-9]+')
     ->name('docs.show');
 
-// Forward platform requests without version to the latest version
+// Forward platform requests without version to the latest stable version
 Route::get('docs/{platform}/{page?}', function (string $platform, $page = null) {
     $page ??= 'getting-started/introduction';
 
-    // Find the latest version for this platform
     $docsPath = resource_path('views/docs/'.$platform);
 
     if (! is_dir($docsPath)) {
         abort(404);
     }
 
-    $versions = collect(scandir($docsPath))
-        ->filter(fn ($dir) => is_numeric($dir))
-        ->sort()
-        ->values();
+    $latestVersion = config("docs.latest_versions.{$platform}")
+        ?? collect(scandir($docsPath))
+            ->filter(fn ($dir) => is_numeric($dir))
+            ->reject(fn ($dir) => in_array((int) $dir, config("docs.prerelease_versions.{$platform}", [])))
+            ->sort()
+            ->last()
+        ?? '1';
 
-    $latestVersion = $versions->last() ?? '1';
+    // Map renamed pages to their slug in the latest version up front, so a
+    // stale unversioned link 301s straight to its new home instead of
+    // chaining through a second redirect.
+    $page = app(DocsVersionService::class)->resolvePageForVersion($platform, $latestVersion, $page);
 
     return redirect("/docs/{$platform}/{$latestVersion}/{$page}", 301);
 })
@@ -286,6 +363,14 @@ Route::middleware(['guest'])->group(function (): void {
     Route::post('reset-password', [CustomerAuthController::class, 'resetPassword'])->name('password.update');
 
     Route::get('auth/github/login', [GitHubAuthController::class, 'redirect'])->name('login.github');
+});
+
+// Email verification routes
+Route::middleware('auth')->group(function (): void {
+    Route::get('email/verify', [EmailVerificationController::class, 'notice'])->name('verification.notice');
+    Route::get('email/verify/{id}/{hash}', [EmailVerificationController::class, 'verify'])->middleware(['signed', 'throttle:6,1'])->name('verification.verify');
+    Route::post('email/verification-notification', [EmailVerificationController::class, 'resend'])->middleware('throttle:6,1')->name('verification.send');
+    Route::get('email/change/{emailChange}/confirm', [EmailChangeController::class, 'confirm'])->middleware(['signed', 'throttle:6,1'])->name('email-change.confirm');
 });
 
 Route::post('logout', [CustomerAuthController::class, 'logout'])
@@ -363,11 +448,17 @@ Route::middleware(['auth', EnsureFeaturesAreActive::using(ShowAuthButtons::class
     Route::livewire('support/tickets', App\Livewire\Customer\Support\Index::class)->name('support.tickets');
     Route::livewire('support/tickets/create', App\Livewire\Customer\Support\Create::class)->name('support.tickets.create');
     Route::livewire('support/tickets/{supportTicket}', App\Livewire\Customer\Support\Show::class)->name('support.tickets.show');
+    Route::get('support/tickets/{supportTicket}/attachments/{index}', [SupportTicketAttachmentController::class, 'downloadTicketAttachment'])->name('support.tickets.attachment');
+    Route::get('support/tickets/{supportTicket}/replies/{reply}/attachments/{index}', [SupportTicketAttachmentController::class, 'downloadReplyAttachment'])->name('support.tickets.reply.attachment');
 
     Route::livewire('licenses/{licenseKey}', Show::class)->name('licenses.show');
     Route::patch('licenses/{licenseKey}', [CustomerLicenseController::class, 'update'])->name('licenses.update');
     Route::post('plugin-license-key/rotate', [CustomerLicenseController::class, 'rotatePluginLicenseKey'])->name('plugin-license-key.rotate');
     Route::post('claim-free-plugins', [CustomerLicenseController::class, 'claimFreePlugins'])->name('claim-free-plugins');
+
+    // Course
+    Route::livewire('course', App\Livewire\Customer\Course\Index::class)->name('course.index');
+    Route::livewire('course/lessons/{lesson:slug}', LessonShow::class)->name('course.lesson');
 
     // Wall of Love submission
     Route::livewire('wall-of-love/create', Create::class)->name('wall-of-love.create');
@@ -410,7 +501,14 @@ Route::middleware(['auth', EnsureFeaturesAreActive::using(ShowAuthButtons::class
     Route::post('licenses/{licenseKey}/sub-licenses/{subLicense}/send-email', [CustomerSubLicenseController::class, 'sendEmail'])->name('licenses.sub-licenses.send-email');
 });
 
+// Notification unsubscribe/resubscribe (signed URLs, no auth required)
+Route::middleware('signed')->group(function (): void {
+    Route::get('notifications/unsubscribe/{user}', [NotificationUnsubscribeController::class, 'unsubscribe'])->name('notifications.unsubscribe');
+    Route::get('notifications/resubscribe/{user}', [NotificationUnsubscribeController::class, 'resubscribe'])->name('notifications.resubscribe');
+});
+
 Route::get('.well-known/assetlinks.json', [ApplinksController::class, 'assetLinks']);
+Route::get('.well-known/apple-app-site-association', [ApplinksController::class, 'appSiteAssociation']);
 
 Route::post('webhooks/plugins/{secret}', PluginWebhookController::class)->name('webhooks.plugins');
 

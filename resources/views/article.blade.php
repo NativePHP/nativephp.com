@@ -78,6 +78,26 @@
         {{-- Divider --}}
         <x-divider />
 
+        {{-- Header image --}}
+        @if ($article->header_image)
+            <img
+                x-init="
+                    () => {
+                        motion.inView($el, () => {
+                            gsap.fromTo(
+                                $el,
+                                { autoAlpha: 0, y: 5 },
+                                { autoAlpha: 1, y: 0, duration: 0.7, ease: 'power1.out' },
+                            )
+                        })
+                    }
+                "
+                src="{{ $article->header_image }}"
+                alt=""
+                class="mt-2 max-h-[500px] w-full rounded-2xl object-cover"
+            />
+        @endif
+
         <div class="mt-2 flex items-start gap-5">
             {{-- Content --}}
             <article
@@ -108,6 +128,11 @@
             <div>
                 <x-sponsors.lists.docs.featured-sponsors />
                 <a href="/partners" class="mt-3 block text-center text-xs text-gray-500 transition hover:text-gray-800 dark:text-gray-400 dark:hover:text-white">Become a Partner</a>
+
+                <div class="mt-5 border-t border-t-black/20 pt-5 dark:border-t-white/15">
+                    <x-sponsors.lists.docs.sponsors />
+                    <a href="/sponsor" class="mt-3 block text-center text-xs text-gray-500 transition hover:text-gray-800 dark:text-gray-400 dark:hover:text-white">Become a sponsor</a>
+                </div>
             </div>
         </div>
     </section>

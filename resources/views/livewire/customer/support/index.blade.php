@@ -13,6 +13,18 @@
         </flux:callout>
     @endif
 
+    <flux:callout icon="calendar-days" class="mb-6">
+        <flux:callout.heading>Need help even more quickly?</flux:callout.heading>
+        <flux:callout.text>
+            Book a session with the NativePHP core team &mdash; available as soon as two hours from now. Discounted for Ultra subscribers.
+        </flux:callout.text>
+        <x-slot name="actions">
+            <flux:button href="https://cal.com/team/nativephp/consult-ultra" target="_blank" rel="noopener" icon-trailing="arrow-up-right">
+                Book a session
+            </flux:button>
+        </x-slot>
+    </flux:callout>
+
     @if($this->supportTickets->count() > 0)
         <flux:table>
             <flux:table.columns>

@@ -31,7 +31,7 @@ to the v3.1 versions.
 </aside>
 
 
-## Android 8+ Support
+### Android 8+ Support
 
 In order to support Android API 26 add the following to your `config/nativephp.php`:
 
@@ -45,7 +45,7 @@ In order to support Android API 26 add the following to your `config/nativephp.p
 
 No code changes are required — this is handled entirely at the build level.
 
-## ICU/Intl Support on iOS
+### ICU/Intl Support on iOS
 
 iOS builds now include full **ICU support**, which means the PHP `intl` extension works on both platforms.
 This was previously only available on Android.
@@ -62,7 +62,7 @@ NativePHP for Mobile v3 introduces a plugin-based architecture that makes the en
 All core functionality continues to work as before, but the underlying system is now modular and open to
 third-party plugins.
 
-## Remove the NativePHP Composer Repository
+### Remove the NativePHP Composer Repository
 
 v3 no longer requires the private Composer repository or license authentication. Remove the `nativephp.composer.sh`
 repository from your `composer.json`:
@@ -89,12 +89,12 @@ Then update your version constraint and run the upgrade:
 }
 ```
 
-```sh
+```shell
 composer update
 php artisan native:install --force
 ```
 
-## Plugin Architecture
+### Plugin Architecture
 
 v3 introduces a comprehensive plugin system. Native functionality is now delivered through plugins — including all
 the official core APIs you already use (Camera, Biometrics, Scanner, etc.). These continue to work exactly as before;
@@ -107,7 +107,7 @@ PHP interface.
 Read more about the plugin system in the [Plugins documentation](../plugins/introduction), or browse
 ready-made plugins on the [NativePHP Plugin Marketplace](https://nativephp.com/plugins).
 
-## NativeServiceProvider
+### NativeServiceProvider
 
 v3 introduces a `NativeServiceProvider` for registering third-party plugins. Publish it with:
 
@@ -127,14 +127,14 @@ Core APIs provided by `nativephp/mobile` do not need to be registered manually �
 
 Read more about [Using Plugins](../plugins/using-plugins).
 
-## Core APIs Are Now Plugins
+### Core APIs Are Now Plugins
 
 All core APIs (Camera, Biometrics, Dialog, Scanner, Geolocation, etc.) are now implemented as plugins internally.
 The PHP facades and events you use remain the same — no changes to your application code are needed.
 
 Browse the full list of available core plugins in the [Plugins documentation](../plugins/introduction).
 
-## Plugin Management Commands
+### Plugin Management Commands
 
 v3 adds several new Artisan commands for working with plugins:
 
@@ -147,7 +147,7 @@ v3 adds several new Artisan commands for working with plugins:
 | `native:plugin:validate` | Validate plugin structure |
 | `native:plugin:make-hook` | Create a lifecycle hook |
 
-## Bridge Functions
+### Bridge Functions
 
 Plugins communicate with native code through **bridge functions** — a standardized pattern for calling
 Swift and Kotlin code from PHP via `nativephp_call()`. Each plugin declares its bridge functions in a
@@ -158,17 +158,17 @@ relevant if you're building your own plugins.
 
 Read more in the [Bridge Functions documentation](../plugins/bridge-functions).
 
-## Plugin Marketplace
+### Plugin Marketplace
 
 Find ready-made plugins for common use cases, or get the Dev Kit to build your own.
 [Visit the NativePHP Plugin Marketplace](https://nativephp.com/plugins).
 
-## Command Reference
+### Command Reference
 
 v3 includes a comprehensive [Command Reference](commands) documenting all `native:*` Artisan commands
 with their options and usage.
 
-## Rebuild Required
+### Rebuild Required
 
 After upgrading, you must rebuild your native application:
 

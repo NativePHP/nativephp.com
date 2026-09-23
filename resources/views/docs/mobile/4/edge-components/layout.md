@@ -1,0 +1,492 @@
+---
+title: Layout & Styling
+order: 260
+---
+
+## Overview
+
+Every EDGE element shares a common set of layout, styling, and event attributes. These are inherited from the base
+`Element` class and can be applied to any native component -- containers, text, buttons, images, and more.
+
+This page documents the shared attribute system that powers the layout engine across all EDGE elements.
+
+## Sizing
+
+Control element dimensions with width, height, and fill attributes.
+
+@verbatim
+```blade static
+{{-- Fixed dimensions (in dp) --}}
+<native:column :width="200" :height="100">
+    ...
+</native:column>
+
+{{-- Fill available space --}}
+<native:column fill-width>
+    ...
+</native:column>
+
+{{-- Fill both axes --}}
+<native:column fill>
+    ...
+</native:column>
+
+{{-- Percentage width --}}
+<native:column width="50%">
+    ...
+</native:column>
+```
+@endverbatim
+
+- `width` - Width in dp (float) or percentage string (e.g. `"50%"`)
+- `height` - Height in dp (float) or percentage string
+- `fill` - Fill both width and height of parent (boolean)
+- `fill-width` - Fill parent width (boolean)
+- `fill-height` - Fill parent height (boolean)
+- `min-width` - Minimum width in dp (float)
+- `max-width` - Maximum width in dp (float)
+- `min-height` - Minimum height in dp (float)
+- `max-height` - Maximum height in dp (float)
+- `aspect-ratio` - Width-to-height ratio (float, e.g. `1.0` for square)
+
+## Spacing
+
+Padding and margin follow CSS shorthand conventions. Pass a single value for uniform spacing, or an array for
+per-side control.
+
+@verbatim
+```blade static
+{{-- Uniform padding --}}
+<native:column :padding="16">
+    ...
+</native:column>
+
+{{-- Vertical | Horizontal --}}
+<native:column :padding="[12, 16]">
+    ...
+</native:column>
+
+{{-- Top | Right | Bottom | Left --}}
+<native:column :padding="[8, 16, 24, 16]">
+    ...
+</native:column>
+
+{{-- Uniform margin --}}
+<native:column :margin="8">
+    ...
+</native:column>
+
+{{-- Gap between children --}}
+<native:column :gap="12">
+    ...
+</native:column>
+```
+@endverbatim
+
+- `padding` - Inner spacing. Single value (float) or array of 2-4 values
+- `margin` - Outer spacing. Single value (float) or array of 2-4 values
+- `gap` - Space between children in dp (float)
+
+## Flex Layout
+
+The layout engine uses a Flexbox-based system. Containers (column, row) arrange children along a main axis, and flex
+properties control how children grow, shrink, and align.
+
+@verbatim
+```blade static
+{{-- Grow to fill remaining space --}}
+<native:column :flex-grow="1">
+    ...
+</native:column>
+
+{{-- Prevent shrinking --}}
+<native:row :flex-shrink="0">
+    ...
+</native:row>
+```
+@endverbatim
+
+- `flex-grow` - How much this element grows relative to siblings (float, default: `0`)
+- `flex-shrink` - How much this element shrinks when space is limited (float)
+- `flex-basis` - Initial size before flex distribution (float or string)
+
+<aside>
+
+The Tailwind `flex-1` class is shorthand for `flex-grow: 1; flex-shrink: 1; flex-basis: 0` — the most common pattern
+for "fill the remaining space along the parent's main axis."
+
+</aside>
+
+## Alignment
+
+Alignment attributes accept a **readable label**, a backing **enum**, or the raw **integer** — all three resolve to
+the same value the native layout reads. Labels read best in Blade; enums give you autocomplete and type-safety when
+building elements fluently in PHP.
+
+@verbatim
+```blade static
+{{-- Center children on both axes --}}
+<native:column center>
+    ...
+</native:column>
+
+{{-- Cross-axis alignment (horizontal in a column) --}}
+<native:column align-items="center">
+    <native:text>Centered text</native:text>
+</native:column>
+
+{{-- Main-axis distribution --}}
+<native:row justify-content="space-between">
+    <native:text>Left</native:text>
+    <native:text>Right</native:text>
+</native:row>
+```
+@endverbatim
+
+- `align-items` - Cross-axis alignment for children — `start`, `center`, `end`, `stretch`
+- `justify-content` - Main-axis distribution — `start`, `center`, `end`, `space-between`, `space-around`, `space-evenly`
+- `align-self` - Override the parent's `align-items` for this element — `start`, `center`, `end`, `stretch`
+- `center` - Shorthand: sets both `align-items` and `justify-content` to center (boolean)
+
+### Underlying values
+
+Labels map to these integers, which still work if you prefer them (`align-items="1"`):
+
+| Integer | `align-items` / `align-self` | `justify-content` |
+|---------|------------------------------|-------------------|
+| `0` | *unset* — see below | start |
+| `1` | center | center |
+| `2` | end | end |
+| `3` | stretch | space-between |
+| `4` | start | space-around |
+| `5` | — | space-evenly |
+
+<aside>
+
+For `align-items` and `align-self`, `0` means **unset** — not `start`. Start is `4`.
+
+The renderers have to tell an element that explicitly asked for `items-start` apart from one that never specified
+an alignment at all, because the two mean different things. Sharing a value made the first impossible to fix
+without changing the second for every element in every app.
+
+Passing `align-items="0"` therefore resolves to nothing and leaves the platform default in place. Use the label
+(`align-items="start"`) or the enum rather than the integer — they are unambiguous.
+
+</aside>
+
+### In PHP
+
+When you build elements fluently, pass a label, an enum case, or an integer. The enums live in
+`Native\Mobile\Edge\Enums` — `AlignItems`, `AlignSelf`, `JustifyContent`, and `TextAlign`:
+
+```php
+use Native\Mobile\Edge\Elements\Column;
+use Native\Mobile\Edge\Enums\AlignItems;
+
+Column::make()
+    ->alignItems(AlignItems::Center)     // enum — autocompletes, type-checked
+    ->justifyContent('space-between');   // label string — also fine
+```
+
+<aside>
+
+A child with `w-full` (or `h-full`) overrides its parent's `items-center` along that axis — same semantics as CSS
+`align-self: stretch`. This is the easiest way to make one row in a centered column span the full width.
+
+</aside>
+
+## Style
+
+Visual styling attributes that apply to any element.
+
+@verbatim
+```blade static
+<native:column
+    bg="#F0F0FF"
+    :border-radius="12"
+    :border-width="1"
+    border-color="#E2E8F0"
+    :opacity="0.9"
+    :elevation="4"
+>
+    ...
+</native:column>
+```
+@endverbatim
+
+- `bg` - Background color as hex string (e.g. `"#FF0000"`, `"#80FF000080"` for alpha)
+- `border-radius` - Corner rounding in dp (float). Applies to all four corners — for per-side or per-corner
+  rounding, use the `rounded-*` classes below
+- `border-width` - Border width in dp (float). Must be used together with `border-color`
+- `border-color` - Border color as hex string. Must be used together with `border-width`
+- `opacity` - Element opacity from 0.0 to 1.0 (float)
+- `elevation` - Shadow depth (float). Maps to platform shadow/elevation
+
+## Events
+
+Any element can respond to tap, double-tap, and long-press gestures. Use `@press`, `@doubleTap`, and `@longPress`
+directives to bind methods on the route's PHP component class.
+
+@verbatim
+```blade static
+<native:column @press="handleTap" @doubleTap="handleDoubleTap" @longPress="handleLongPress">
+    <native:text>Tap, double tap, or long press me</native:text>
+</native:column>
+```
+@endverbatim
+
+- `@press` - PHP method to call on tap
+- `@doubleTap` - PHP method to call on double tap
+- `@longPress` - PHP method to call on long press
+
+## Safe Area
+
+Respect the device's safe area insets (notch, home indicator, status bar) by adding the `safe-area` attribute. This is
+typically applied to your outermost column.
+
+@verbatim
+```blade static
+<native:column fill safe-area>
+    {{-- Content will not overlap the notch or home indicator --}}
+</native:column>
+```
+@endverbatim
+
+- `safe-area` - Inset content on both top and bottom edges (boolean)
+- `safe-area-top` - Inset only the top edge (status bar / notch)
+- `safe-area-bottom` - Inset only the bottom edge (home indicator)
+
+See [Safe Area](../the-basics/safe-area) for the full picture, including how the framework's [layout](../the-basics/layouts)
+chrome already handles safe-area insets for you.
+
+## Visibility
+
+Hide elements without removing them from the tree. A hidden element takes up no space in its parent's layout.
+
+@verbatim
+```blade static
+<native:column hidden>
+    {{-- This element is not displayed --}}
+</native:column>
+
+{{-- Bind it to component state --}}
+<native:column :hidden="$collapsed">
+    ...
+</native:column>
+```
+@endverbatim
+
+- `hidden` - Hide this element (boolean). Takes precedence over any display class
+
+The `hidden` class does the same job, and `flex` (or `block`) shows the element again. Pair them with a
+[breakpoint](#responsive-breakpoints) to show something only on wider windows:
+
+@verbatim
+```blade static
+{{-- A sidebar that only appears from tablet width up --}}
+<native:column class="hidden md:flex w-[280] p-4 bg-theme-surface">
+    ...
+</native:column>
+```
+@endverbatim
+
+## Dark Mode
+
+Override styles for dark mode using the `dark:` prefix with Tailwind classes, or pass a `dark` attribute array.
+
+@verbatim
+```blade static
+{{-- Tailwind dark mode --}}
+<native:column class="bg-white dark:bg-slate-900">
+    <native:text class="text-black dark:text-white">
+        Adapts to dark mode
+    </native:text>
+</native:column>
+```
+@endverbatim
+
+Dark mode overrides currently support `bg`, `color`, `border-color`, `opacity`, and `font-size`.
+
+## Responsive Breakpoints
+
+<x-docs.version-badge since="4.5" />
+
+Prefix a class with a breakpoint to apply it only when the window is at least that wide. Breakpoints are
+mobile-first, exactly as in Tailwind: an unprefixed class applies at every width, and `md:flex-row` takes over from
+768 up.
+
+@verbatim
+```blade static
+{{-- Stacked on a phone, side by side on a tablet --}}
+<native:column class="w-full gap-6 p-4 md:flex-row md:gap-8 lg:p-8">
+    <native:column class="md:flex-1">
+        <native:text class="text-3xl md:text-5xl font-bold">Your jobs</native:text>
+    </native:column>
+    <native:column class="md:flex-1">
+        ...
+    </native:column>
+</native:column>
+```
+@endverbatim
+
+| Prefix | Applies from |
+|--------|--------------|
+| `sm:` | 640 |
+| `medium:` | 600 |
+| `md:` | 768 |
+| `expanded:` | 840 |
+| `lg:` | 1024 |
+| `xl:` | 1280 |
+| `2xl:` | 1536 |
+
+Widths are points on iOS and dp on Android. `sm:` to `2xl:` are Tailwind's breakpoints; `medium:` and `expanded:`
+follow the medium and expanded window size classes in Material Design, if you'd rather design to those.
+
+Breakpoints are measured against the app's **window**, not the device's screen, and resolved on the device. The same
+screen re-flows as soon as the window changes width, whether the device rotates or the app is resized in Split View,
+without a round trip to PHP. An iPad in portrait and in landscape can land on different breakpoints.
+
+Each breakpoint builds on everything narrower. Only the classes you prefix change, so `p-4 md:px-8` keeps its
+vertical padding at `md`, and `rounded-xl md:rounded-t-3xl` keeps its rounded bottom corners.
+
+Any class from the [supported classes](#supported-tailwind-classes) can take a breakpoint prefix, except
+`whitespace-*`, which is applied to text content before it reaches the device. Breakpoints combine with the other
+variants in either order, so `md:dark:bg-zinc-900`, `dark:md:bg-zinc-900` and `ios:md:p-6` all work.
+
+### Customizing breakpoints
+
+The thresholds live in `config/nativephp.php`. Change a width, remove the breakpoints you don't use, or add your
+own names:
+
+```php
+'breakpoints' => [
+    'sm' => 640,
+    'md' => 768,
+    'tablet' => 700, // enables `tablet:` classes
+    'lg' => 1024,
+],
+```
+
+The table replaces the defaults entirely, so keep every name you still use in your views. If the key is missing or
+empty, the defaults above apply.
+
+<aside>
+
+Breakpoints are min-width only. Tailwind's `max-*:` range variants (`max-md:hidden`) and arbitrary breakpoints
+(`min-[900px]:`) are not supported and are dropped. Write the mobile-first form instead: `flex md:hidden` rather
+than `max-md:flex`.
+
+</aside>
+
+## Tailwind Classes
+
+EDGE includes a built-in Tailwind CSS parser that converts familiar utility classes into native layout attributes. Use
+the `class` attribute on any element.
+
+@verbatim
+```blade static
+<native:column class="w-full p-4 gap-3 bg-white rounded-xl shadow-md items-center">
+    <native:text class="text-2xl font-bold text-slate-900">
+        Styled with Tailwind
+    </native:text>
+</native:column>
+```
+@endverbatim
+
+### Supported Tailwind classes
+
+The parser recognizes the classes listed below.
+
+| Category | Classes |
+|----------|---------|
+| Width | `w-full`, `w-N`, fractional (`w-1/2`, `w-1/3`, `w-2/3`, `w-1/4`, `w-3/4`, `w-1/5`…), arbitrary `w-[N]` |
+| Height | `h-full`, `h-N`, arbitrary `h-[N]` |
+| Min / max size | `min-w-N`, `max-w-N`, `min-h-N`, `max-h-N`, `max-w-none`, the container scale on `max-w` (`max-w-xs` … `max-w-7xl`), arbitrary `max-w-[N]` etc. |
+| Aspect ratio | `aspect-square`, `aspect-video`, arbitrary `aspect-[N]` |
+| Object fit (images) | `object-contain`, `object-cover`, `object-fill`, `object-none`, `object-scale-down` |
+| Padding | `p-N`, `px-N`, `py-N`, `pt-N`, `pr-N`, `pb-N`, `pl-N`, arbitrary `p-[N]` etc. |
+| Margin | `m-N`, `mx-N`, `my-N`, `mt-N`, `mr-N`, `mb-N`, `ml-N`, arbitrary `m-[N]` etc. |
+| Gap | `gap-N`, `gap-[N]` (uniform — no `gap-x-*` or `gap-y-*`) |
+| Position | `absolute`, `relative`, `top-N`, `right-N`, `bottom-N`, `left-N`, arbitrary `top-[N]` etc. |
+| Flex | `flex-1`, `flex-grow`, `flex-grow-0`, `flex-shrink`, `flex-shrink-0`, `flex-wrap`, `flex-nowrap`, `flex-wrap-reverse` |
+| Display <x-docs.version-badge since="4.5" /> | `hidden`; `flex`, `inline-flex`, `block`, `inline-block` and `grid` show the element again (for `hidden md:flex`) |
+| Grid columns <x-docs.version-badge since="4.5" /> | `grid-cols-N` — sets the column count of a [lazy grid](lazy-grid) |
+| Items (cross-axis) | `items-start`, `items-center`, `items-end`, `items-stretch` |
+| Justify (main-axis) | `justify-start`, `justify-center`, `justify-end`, `justify-between`, `justify-around`, `justify-evenly` |
+| Self | `self-start`, `self-center`, `self-end`, `self-stretch` |
+| Background | `bg-{palette}-{shade}` (e.g. `bg-red-500`), `bg-white`, `bg-black`, `bg-transparent`, `bg-[#hex]`, `bg-theme-{token}` |
+| Text color | `text-{palette}-{shade}`, `text-white`, `text-black`, `text-transparent`, `text-[#hex]`, `text-theme-{token}` |
+| Border color | `border-{palette}-{shade}`, `border-white`, `border-black`, `border-transparent`, `border-[#hex]`, `border-theme-{token}` |
+| Border width | `border` (1dp), `border-2`, `border-4`, `border-8` |
+| Rounded | `rounded` (4dp), `rounded-sm`, `rounded-md`, `rounded-lg`, `rounded-xl`, `rounded-2xl`, `rounded-3xl`, `rounded-full`, `rounded-[N]` |
+| Rounded (per side) <x-docs.version-badge since="4.2" /> | `rounded-t-*`, `rounded-r-*`, `rounded-b-*`, `rounded-l-*` — each rounds that side's two corners. A bare side (`rounded-b`) uses the same 4dp default as `rounded` |
+| Rounded (per corner) <x-docs.version-badge since="4.2" /> | `rounded-tl-*`, `rounded-tr-*`, `rounded-br-*`, `rounded-bl-*`, including arbitrary values (`rounded-br-[4]`) |
+| Shadow | `shadow`, `shadow-sm`, `shadow-md`, `shadow-lg`, `shadow-xl`, `shadow-2xl`, `shadow-inner`, `shadow-none` |
+| Opacity | `opacity-{0..100}`, arbitrary `opacity-[0.5]` |
+| Text size | `text-xs`, `text-sm`, `text-base`, `text-lg`, `text-xl`, `text-2xl`, `text-3xl`, `text-4xl`, `text-5xl`, `text-6xl`, `text-7xl`, `text-8xl`, `text-9xl`, arbitrary `text-[N]` |
+| Font weight | `font-thin`, `font-extralight`, `font-light`, `font-normal`, `font-medium`, `font-semibold`, `font-bold`, `font-extrabold`, `font-black` |
+| Font family | `font-sans`, `font-serif`, `font-mono` |
+| Font style | `italic`, `not-italic` |
+| Text decoration | `underline`, `line-through`, `no-underline` |
+| Text transform | `uppercase`, `lowercase`, `capitalize`, `normal-case` |
+| Letter spacing | `tracking-tighter`, `tracking-tight`, `tracking-normal`, `tracking-wide`, `tracking-wider`, `tracking-widest` |
+| Line height | `leading-none`, `leading-tight`, `leading-snug`, `leading-normal`, `leading-relaxed`, `leading-loose`, arbitrary `leading-[1.4]` / `leading-[24px]` |
+| Text align | `text-left`, `text-center`, `text-right` |
+| Text selection | `select-text`, `select-none` (container-scoped; descendants inherit) |
+| Safe area | `safe-area` (top + bottom), `safe-area-top`, `safe-area-bottom` |
+| Liquid Glass | `glass`, `glass:prominent`, `glass:interactive`, `glass:clear` (compose: `glass:clear:interactive`) |
+
+**Variants** — prepend any class:
+
+| Prefix | Effect |
+|----------|---------|
+| `dark:` | Applies in dark mode (e.g. `dark:bg-zinc-900`) |
+| `ios:` | Applies on iOS only — drops silently on Android |
+| `android:` | Applies on Android only — drops silently on iOS |
+| `sm:` `md:` `lg:` `xl:` `2xl:` | Applies from that window width up — see [Responsive Breakpoints](#responsive-breakpoints) |
+
+Variants compose freely, in either order: `ios:dark:bg-zinc-800`, `dark:ios:bg-zinc-800` and `md:dark:bg-zinc-800`
+all work.
+
+**Alpha suffix** — append `/N` to any color class for opacity (Tailwind v3+ syntax):
+
+```
+bg-purple-500/40      bg-[#FF0000]/60      text-white/80
+border-theme-outline/50
+```
+
+**Arbitrary values** — `prefix-[value]` for the prefixes shown above: `w`, `h`, `min-w`/`max-w`/`min-h`/`max-h`,
+`p`/`px`/`py`/`pt`/`pr`/`pb`/`pl`, `m`/`mx`/`my`/`mt`/`mr`/`mb`/`ml`, `gap`, `bg`, `text`, `border`, `rounded`
+(and its per-side / per-corner forms — `rounded-t`, `rounded-br`, …), `opacity`, `leading`, `aspect`, `top`,
+`right`, `bottom`, `left`.
+
+Per-corner rounding composes with the uniform class rather than replacing it — set the shape once, then override the
+corners you want different. Class order doesn't matter; the more specific class always wins, as it does in Tailwind:
+
+@verbatim
+```blade static
+{{-- A chat bubble with its tail corner squared off toward its sender --}}
+<native:column class="rounded-2xl rounded-br-none bg-theme-primary px-4 py-2">
+    <native:text class="text-theme-on-primary">Yep — 7pm works</native:text>
+</native:column>
+```
+@endverbatim
+
+### Deliberately unsupported
+
+A handful of Tailwind classes are recognised as real Tailwind but left unparsed on purpose, rather than mapped to
+something approximate. They are reported in the dropped-class log in debug builds:
+
+| Class | Why | Use instead |
+|-------|-----|-------------|
+| `max-w-full`, `max-w-screen`, `min-w-full` | Min and max ride the wire as plain numbers with no accompanying size mode, so "100% of the parent" has nowhere to go | `w-full` |
+| `rounded-s-*`, `rounded-e-*`, `rounded-ss-*`, `rounded-se-*`, `rounded-es-*`, `rounded-ee-*` | These are *logical* corners that flip with writing direction, and the renderers do not mirror layout for RTL — accepting them would silently draw left-to-right geometry in a right-to-left layout | the physical `rounded-l-*` / `rounded-tl-*` forms |
+
+<aside>
+
+Tailwind classes are the canonical styling API. The element-level attributes documented above (`bg`, `border-radius`,
+`align-items`, etc.) exist as the underlying primitives — use them when building elements fluently in PHP. In Blade,
+prefer classes.
+
+</aside>
+

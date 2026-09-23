@@ -34,6 +34,14 @@ class LeadSubmissionTest extends TestCase
     }
 
     #[Test]
+    public function consulting_page_is_accessible(): void
+    {
+        $this->get(route('consulting'))
+            ->assertOk()
+            ->assertSee('cal.com/team/nativephp/consult', false);
+    }
+
+    #[Test]
     public function lead_can_be_submitted_successfully(): void
     {
         Notification::fake();
@@ -43,7 +51,7 @@ class LeadSubmissionTest extends TestCase
             ->set('email', 'john@example.com')
             ->set('company', 'Acme Corp')
             ->set('description', 'I need a mobile app for my business.')
-            ->set('budget', 'less_than_5k')
+            ->set('budget', '10k_to_25k')
             ->set('turnstileToken', 'test-token')
             ->call('submit')
             ->assertSet('submitted', true)
@@ -54,7 +62,7 @@ class LeadSubmissionTest extends TestCase
             'email' => 'john@example.com',
             'company' => 'Acme Corp',
             'description' => 'I need a mobile app for my business.',
-            'budget' => 'less_than_5k',
+            'budget' => '10k_to_25k',
         ]);
 
         Notification::assertSentTo(
@@ -92,7 +100,7 @@ class LeadSubmissionTest extends TestCase
             ->set('email', 'not-an-email')
             ->set('company', 'Acme Corp')
             ->set('description', 'I need a mobile app.')
-            ->set('budget', 'less_than_5k')
+            ->set('budget', '10k_to_25k')
             ->set('turnstileToken', 'test-token')
             ->call('submit')
             ->assertHasErrors(['email']);
@@ -106,7 +114,7 @@ class LeadSubmissionTest extends TestCase
             ->set('email', 'john@example.com')
             ->set('company', 'Acme Corp')
             ->set('description', 'I need a mobile app.')
-            ->set('budget', 'invalid-budget')
+            ->set('budget', 'not-a-real-budget')
             ->set('turnstileToken', 'test-token')
             ->call('submit')
             ->assertHasErrors(['budget']);
@@ -123,7 +131,7 @@ class LeadSubmissionTest extends TestCase
                 ->set('email', "john{$i}@example.com")
                 ->set('company', 'Acme Corp')
                 ->set('description', 'I need a mobile app.')
-                ->set('budget', 'less_than_5k')
+                ->set('budget', '10k_to_25k')
                 ->set('turnstileToken', 'test-token')
                 ->call('submit')
                 ->assertSet('submitted', true);
@@ -136,7 +144,7 @@ class LeadSubmissionTest extends TestCase
             ->set('email', 'limited@example.com')
             ->set('company', 'Acme Corp')
             ->set('description', 'I need a mobile app.')
-            ->set('budget', 'less_than_5k')
+            ->set('budget', '10k_to_25k')
             ->set('turnstileToken', 'test-token')
             ->call('submit')
             ->assertHasErrors(['form']);
@@ -156,7 +164,7 @@ class LeadSubmissionTest extends TestCase
             ->set('email', 'john@example.com')
             ->set('company', 'Acme Corp')
             ->set('description', 'I need a mobile app.')
-            ->set('budget', 'less_than_5k')
+            ->set('budget', '10k_to_25k')
             ->set('turnstileToken', '')
             ->call('submit')
             ->assertSet('submitted', true);
@@ -180,7 +188,7 @@ class LeadSubmissionTest extends TestCase
             ->set('email', 'john@example.com')
             ->set('company', 'Acme Corp')
             ->set('description', 'I need a mobile app.')
-            ->set('budget', 'less_than_5k')
+            ->set('budget', '10k_to_25k')
             ->set('turnstileToken', 'invalid-token')
             ->call('submit')
             ->assertHasErrors(['turnstileToken']);
@@ -206,19 +214,12 @@ class LeadSubmissionTest extends TestCase
             ->set('email', 'john@example.com')
             ->set('company', 'Acme Corp')
             ->set('description', 'I need a mobile app.')
-            ->set('budget', 'less_than_5k')
+            ->set('budget', '10k_to_25k')
             ->set('turnstileToken', 'valid-token')
             ->call('submit')
             ->assertSet('submitted', true);
 
         $this->assertDatabaseCount('leads', 1);
-    }
-
-    #[Test]
-    public function budgets_are_passed_to_the_view(): void
-    {
-        Livewire::test(LeadSubmissionForm::class)
-            ->assertViewHas('budgets', Lead::BUDGETS);
     }
 
     #[Test]
@@ -231,7 +232,7 @@ class LeadSubmissionTest extends TestCase
             ->set('email', 'john@example.com')
             ->set('company', 'Acme Corp')
             ->set('description', 'I need a mobile app.')
-            ->set('budget', 'less_than_5k')
+            ->set('budget', '10k_to_25k')
             ->set('turnstileToken', 'test-token')
             ->call('submit');
 

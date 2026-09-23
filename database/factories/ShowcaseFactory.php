@@ -33,6 +33,8 @@ class ShowcaseFactory extends Factory
             'description' => fake()->paragraph(3),
             'image' => null,
             'screenshots' => null,
+            'mobile_screenshots' => null,
+            'desktop_screenshots' => null,
             'has_mobile' => $hasMobile,
             'has_desktop' => $hasDesktop,
             'play_store_url' => $hasMobile ? fake()->optional(0.7)->url() : null,
@@ -130,6 +132,20 @@ class ShowcaseFactory extends Factory
     public function withWideScreenshots(int $count = 3): static
     {
         return $this->withScreenshots($count, tall: false);
+    }
+
+    public function withMobileScreenshots(int $count = 3): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'mobile_screenshots' => array_map(fn () => $this->generatePlaceholderScreenshot(tall: true), range(1, $count)),
+        ]);
+    }
+
+    public function withDesktopScreenshots(int $count = 3): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'desktop_screenshots' => array_map(fn () => $this->generatePlaceholderScreenshot(tall: false), range(1, $count)),
+        ]);
     }
 
     protected function generatePlaceholderScreenshot(bool $tall = false): string

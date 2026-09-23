@@ -164,6 +164,40 @@ class StripeConnectCountriesTest extends TestCase
     }
 
     /** @test */
+    public function countries_we_cannot_pay_on_the_full_agreement_require_the_recipient_service_agreement(): void
+    {
+        $this->assertTrue(StripeConnectCountries::requiresRecipientServiceAgreement('MX'));
+        $this->assertTrue(StripeConnectCountries::requiresRecipientServiceAgreement('AU'));
+        $this->assertTrue(StripeConnectCountries::requiresRecipientServiceAgreement('JP'));
+        $this->assertTrue(StripeConnectCountries::requiresRecipientServiceAgreement('AL'));
+        $this->assertTrue(StripeConnectCountries::requiresRecipientServiceAgreement('mx'));
+        $this->assertTrue(
+            StripeConnectCountries::requiresRecipientServiceAgreement('IS'),
+            'Iceland is in the EEA, but Stripe only offers it the recipient service agreement'
+        );
+    }
+
+    /** @test */
+    public function us_canada_uk_switzerland_and_eea_countries_use_the_full_service_agreement(): void
+    {
+        $this->assertFalse(StripeConnectCountries::requiresRecipientServiceAgreement('US'));
+        $this->assertFalse(StripeConnectCountries::requiresRecipientServiceAgreement('CA'));
+        $this->assertFalse(StripeConnectCountries::requiresRecipientServiceAgreement('GB'));
+        $this->assertFalse(StripeConnectCountries::requiresRecipientServiceAgreement('CH'));
+        $this->assertFalse(StripeConnectCountries::requiresRecipientServiceAgreement('DE'));
+        $this->assertFalse(StripeConnectCountries::requiresRecipientServiceAgreement('NO'));
+        $this->assertFalse(StripeConnectCountries::requiresRecipientServiceAgreement('us'));
+    }
+
+    /** @test */
+    public function every_full_service_agreement_country_is_supported(): void
+    {
+        foreach (StripeConnectCountries::FULL_SERVICE_AGREEMENT_COUNTRIES as $code) {
+            $this->assertTrue(StripeConnectCountries::isSupported($code), "Full service agreement country {$code} is not a supported country");
+        }
+    }
+
+    /** @test */
     public function each_country_has_required_keys(): void
     {
         foreach (StripeConnectCountries::all() as $code => $details) {

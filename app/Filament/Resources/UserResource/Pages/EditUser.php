@@ -19,6 +19,26 @@ class EditUser extends EditRecord
 {
     protected static string $resource = UserResource::class;
 
+    protected function mutateFormDataBeforeFill(array $data): array
+    {
+        $data['developerAccount']['payout_percentage'] = $this->getRecord()->developerAccount?->payout_percentage;
+
+        return $data;
+    }
+
+    protected function mutateFormDataBeforeSave(array $data): array
+    {
+        if (isset($data['developerAccount']['payout_percentage']) && $this->getRecord()->developerAccount) {
+            $this->getRecord()->developerAccount->update([
+                'payout_percentage' => $data['developerAccount']['payout_percentage'],
+            ]);
+        }
+
+        unset($data['developerAccount']);
+
+        return $data;
+    }
+
     protected function getHeaderActions(): array
     {
         return [

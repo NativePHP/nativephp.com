@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Listeners\NotifyAccountsOfNewCompanyDomain;
 use App\Listeners\StripeWebhookHandledListener;
 use App\Listeners\StripeWebhookReceivedListener;
 use App\Listeners\SuppressMailNotificationListener;
@@ -23,6 +24,7 @@ class EventServiceProvider extends ServiceProvider
     protected $listen = [
         Registered::class => [
             SendEmailVerificationNotification::class,
+            NotifyAccountsOfNewCompanyDomain::class,
         ],
         WebhookReceived::class => [
             StripeWebhookReceivedListener::class,

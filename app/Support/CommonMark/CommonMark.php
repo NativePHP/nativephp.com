@@ -5,6 +5,7 @@ namespace App\Support\CommonMark;
 use App\Extensions\TorchlightWithCopyExtension;
 use League\CommonMark\Environment\Environment;
 use League\CommonMark\Extension\CommonMark\CommonMarkCoreExtension;
+use League\CommonMark\Extension\CommonMark\Node\Block\BlockQuote;
 use League\CommonMark\Extension\CommonMark\Node\Block\Heading;
 use League\CommonMark\Extension\Embed\Bridge\OscaroteroEmbedAdapter;
 use League\CommonMark\Extension\Embed\Embed as EmbedNode;
@@ -20,12 +21,18 @@ class CommonMark
 {
     protected static ?MarkdownConverter $converter = null;
 
+    protected static ?HeadingRenderer $headingRenderer = null;
+
     public static function convertToHtml(string $markdown, array $data = []): string
     {
         // Pre-process to render any Blade components in the markdown
         $markdown = BladeMarkdownPreprocessor::process($markdown, $data);
 
-        return static::getConverter()->convert($markdown)->getContent();
+        // Reset heading ID tracking to ensure unique IDs per conversion
+        static::getConverter();
+        static::$headingRenderer->resetIds();
+
+        return static::$converter->convert($markdown)->getContent();
     }
 
     protected static function getConverter(): MarkdownConverter
@@ -45,7 +52,9 @@ class CommonMark
 
             $environment->addExtension(new CommonMarkCoreExtension);
             $environment->addExtension(new GithubFlavoredMarkdownExtension);
-            $environment->addRenderer(Heading::class, new HeadingRenderer);
+            static::$headingRenderer = new HeadingRenderer;
+            $environment->addRenderer(Heading::class, static::$headingRenderer);
+            $environment->addRenderer(BlockQuote::class, new AlertBlockQuoteRenderer, 10);
             $environment->addExtension(new TableExtension);
 
             $environment->addExtension(new EmbedExtension);

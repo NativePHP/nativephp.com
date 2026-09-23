@@ -25,19 +25,6 @@
     </div>
 
     <div class="mx-auto max-w-3xl">
-        {{-- Success/Error Messages --}}
-        @if (session('success'))
-            <flux:callout variant="success" icon="check-circle" class="mb-6">
-                <flux:callout.text>{{ session('success') }}</flux:callout.text>
-            </flux:callout>
-        @endif
-
-        @if (session('error'))
-            <flux:callout variant="danger" icon="x-circle" class="mb-6">
-                <flux:callout.text>{{ session('error') }}</flux:callout.text>
-            </flux:callout>
-        @endif
-
         {{-- Status-specific banners --}}
         @if ($plugin->isDraft())
             <flux:callout variant="info" icon="information-circle" class="mb-6">
@@ -49,9 +36,30 @@
                 <flux:callout.heading>Under Review</flux:callout.heading>
                 <flux:callout.text>Your plugin is currently being reviewed. You can withdraw it to make changes.</flux:callout.text>
                 <x-slot name="actions">
-                    <flux:button variant="ghost" wire:click="withdrawFromReview" wire:confirm="Are you sure you want to withdraw this plugin from review? It will return to draft status.">Withdraw from Review</flux:button>
+                    <flux:modal.trigger name="withdraw-from-review">
+                        <flux:button variant="ghost">Withdraw from Review</flux:button>
+                    </flux:modal.trigger>
                 </x-slot>
             </flux:callout>
+
+            <flux:modal name="withdraw-from-review" class="md:w-96">
+                <div class="space-y-6">
+                    <div>
+                        <flux:heading size="lg">Withdraw from Review</flux:heading>
+                        <flux:text class="mt-2">
+                            Are you sure you want to withdraw this plugin from review? It will return to draft status.
+                        </flux:text>
+                    </div>
+
+                    <div class="flex gap-2">
+                        <flux:spacer />
+                        <flux:modal.close>
+                            <flux:button variant="ghost">Cancel</flux:button>
+                        </flux:modal.close>
+                        <flux:button variant="danger" wire:click="withdrawFromReview">Withdraw</flux:button>
+                    </div>
+                </div>
+            </flux:modal>
         @elseif ($plugin->isRejected() && $plugin->rejection_reason)
             <flux:callout variant="danger" icon="x-circle" class="mb-6">
                 <flux:callout.heading>Rejection Reason</flux:callout.heading>
@@ -78,8 +86,8 @@
             </flux:card>
         @endif
 
-        {{-- Review Checks (show for Pending, Rejected, Approved — not Draft) --}}
-        @if (! $plugin->isDraft() && $plugin->review_checks)
+        {{-- Review Checks (show when review checks have been run) --}}
+        @if ($plugin->review_checks)
             <flux:card class="mb-6">
                 <flux:heading size="lg">Review Checks</flux:heading>
                 <flux:text class="mt-1">Automated checks run against your repository.</flux:text>
@@ -122,29 +130,68 @@
                                 @endif
                             </div>
 
-                            @if ($check['key'] === 'webhook_configured' && ! $isPassing && $plugin->webhook_secret)
-                                <div class="ml-7 mt-2 rounded-md border border-amber-200 bg-amber-50 p-4 dark:border-amber-900/50 dark:bg-amber-900/20">
-                                    <p class="text-sm text-amber-800 dark:text-amber-200">
-                                        We couldn't automatically install the webhook. Please set it up manually:
-                                    </p>
-                                    <div class="mt-2">
-                                        <label class="text-xs font-medium text-amber-900 dark:text-amber-100">Webhook URL</label>
-                                        <div class="mt-1 flex items-center gap-2">
-                                            <code class="block flex-1 overflow-x-auto rounded-md bg-white px-3 py-2 font-mono text-xs dark:bg-gray-800">{{ $plugin->getWebhookUrl() }}</code>
-                                            <flux:button size="xs" variant="ghost" x-on:click="navigator.clipboard.writeText('{{ $plugin->getWebhookUrl() }}')">
-                                                <x-heroicon-o-clipboard class="size-3" />
+                            @if ($check['key'] === 'webhook_configured')
+                                @if (! $isPassing)
+                                    <div wire:key="webhook-status-failing" class="ml-7 mt-2 rounded-md border border-amber-200 bg-amber-50 p-4 dark:border-amber-900/50 dark:bg-amber-900/20">
+                                        <p class="text-sm text-amber-800 dark:text-amber-200">
+                                            We couldn't automatically install the webhook. Please set it up manually:
+                                        </p>
+                                        <div class="mt-2">
+                                            <label class="text-xs font-medium text-amber-900 dark:text-amber-100">Webhook URL</label>
+                                            <div class="mt-1 flex items-center gap-2">
+                                                <code class="block flex-1 overflow-x-auto rounded-md bg-white px-3 py-2 font-mono text-xs dark:bg-gray-800">{{ $plugin->getWebhookUrl() }}</code>
+                                                <flux:button size="xs" variant="ghost" x-on:click="navigator.clipboard.writeText('{{ $plugin->getWebhookUrl() }}')">
+                                                    <x-heroicon-o-clipboard class="size-3" />
+                                                </flux:button>
+                                            </div>
+                                        </div>
+                                        <ol class="mt-3 list-inside list-decimal space-y-1 text-xs text-amber-700 dark:text-amber-300">
+                                            <li>Go to your repository's <a href="{{ $plugin->repository_url }}/settings/hooks" target="_blank" rel="noopener noreferrer" class="font-medium underline hover:no-underline"><strong>Settings &rarr; Webhooks</strong></a></li>
+                                            <li>Click <strong>Add webhook</strong></li>
+                                            <li>Paste the URL above into the <strong>Payload URL</strong> field</li>
+                                            <li>Set <strong>Content type</strong> to <code class="rounded bg-amber-100 px-1 dark:bg-amber-800">application/json</code></li>
+                                            <li>Select events: <strong>Pushes</strong> and <strong>Releases</strong></li>
+                                            <li>Click <strong>Add webhook</strong></li>
+                                        </ol>
+
+                                        <div class="mt-3 flex items-center gap-2">
+                                            <flux:button size="sm" wire:click="retryWebhook">
+                                                Retry automatic setup
                                             </flux:button>
+                                            <flux:modal.trigger name="certify-webhook">
+                                                <flux:button size="sm" variant="ghost">
+                                                    I've installed it manually
+                                                </flux:button>
+                                            </flux:modal.trigger>
                                         </div>
                                     </div>
-                                    <ol class="mt-3 list-inside list-decimal space-y-1 text-xs text-amber-700 dark:text-amber-300">
-                                        <li>Go to your repository's <strong>Settings &rarr; Webhooks</strong></li>
-                                        <li>Click <strong>Add webhook</strong></li>
-                                        <li>Paste the URL above into the <strong>Payload URL</strong> field</li>
-                                        <li>Set <strong>Content type</strong> to <code class="rounded bg-amber-100 px-1 dark:bg-amber-800">application/json</code></li>
-                                        <li>Select events: <strong>Pushes</strong> and <strong>Releases</strong></li>
-                                        <li>Click <strong>Add webhook</strong></li>
-                                    </ol>
-                                </div>
+                                @elseif ($plugin->webhook_secret)
+                                    <div wire:key="webhook-status-passing" class="ml-7 mt-1" x-data="{ open: false }">
+                                        <button type="button" x-on:click="open = !open" class="inline-flex items-center gap-1 text-xs text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300">
+                                            <x-heroicon-o-chevron-right class="size-3 transition-transform" x-bind:class="open && 'rotate-90'" />
+                                            View setup instructions
+                                        </button>
+                                        <div x-show="open" x-cloak class="mt-2 rounded-md border border-gray-200 bg-gray-50 p-4 dark:border-gray-700 dark:bg-gray-800/50">
+                                            <div>
+                                                <label class="text-xs font-medium text-gray-700 dark:text-gray-300">Webhook URL</label>
+                                                <div class="mt-1 flex items-center gap-2">
+                                                    <code class="block flex-1 overflow-x-auto rounded-md bg-white px-3 py-2 font-mono text-xs dark:bg-gray-800">{{ $plugin->getWebhookUrl() }}</code>
+                                                    <flux:button size="xs" variant="ghost" x-on:click="navigator.clipboard.writeText('{{ $plugin->getWebhookUrl() }}')">
+                                                        <x-heroicon-o-clipboard class="size-3" />
+                                                    </flux:button>
+                                                </div>
+                                            </div>
+                                            <ol class="mt-3 list-inside list-decimal space-y-1 text-xs text-gray-600 dark:text-gray-400">
+                                                <li>Go to your repository's <a href="{{ $plugin->repository_url }}/settings/hooks" target="_blank" rel="noopener noreferrer" class="font-medium underline hover:no-underline"><strong>Settings &rarr; Webhooks</strong></a></li>
+                                                <li>Click <strong>Add webhook</strong></li>
+                                                <li>Paste the URL above into the <strong>Payload URL</strong> field</li>
+                                                <li>Set <strong>Content type</strong> to <code class="rounded bg-gray-200 px-1 dark:bg-gray-700">application/json</code></li>
+                                                <li>Select events: <strong>Pushes</strong> and <strong>Releases</strong></li>
+                                                <li>Click <strong>Add webhook</strong></li>
+                                            </ol>
+                                        </div>
+                                    </div>
+                                @endif
                             @endif
                         </li>
                     @endforeach
@@ -175,18 +222,46 @@
                         Last checked {{ $plugin->reviewed_at->diffForHumans() }}
                     </flux:text>
                 @endif
+
+                <flux:modal name="certify-webhook" class="md:w-96">
+                    <div class="space-y-6">
+                        <div>
+                            <flux:heading size="lg">Confirm Webhook Installation</flux:heading>
+                            <flux:text class="mt-2">
+                                Please confirm that you have manually installed the webhook on your GitHub repository.
+                            </flux:text>
+                        </div>
+
+                        <flux:callout variant="warning" icon="exclamation-triangle">
+                            <flux:callout.text>
+                                If the webhook is not correctly installed, we won't be able to sync your plugin's releases and metadata automatically.
+                            </flux:callout.text>
+                        </flux:callout>
+
+                        <div class="flex gap-2">
+                            <flux:spacer />
+                            <flux:modal.close>
+                                <flux:button variant="ghost">Cancel</flux:button>
+                            </flux:modal.close>
+                            <flux:button variant="primary" wire:click="certifyWebhook">Confirm</flux:button>
+                        </div>
+                    </div>
+                </flux:modal>
             </flux:card>
         @endif
 
-        {{-- Editable fields for Draft plugins (with tabs) --}}
-        @if ($plugin->isDraft())
-            <flux:tab.group>
-                <flux:tabs wire:model="activeTab">
-                    <flux:tab name="details">Details</flux:tab>
+        {{-- Plugin details, submission and activity --}}
+        <flux:tab.group>
+            <flux:tabs wire:model.live="activeTab">
+                <flux:tab name="details">Details</flux:tab>
+                @if ($plugin->isDraft())
                     <flux:tab name="submit">Submit for Review</flux:tab>
-                </flux:tabs>
+                @endif
+                <flux:tab name="activity">Activity</flux:tab>
+            </flux:tabs>
 
-                <flux:tab.panel name="details">
+            <flux:tab.panel name="details">
+                @if ($plugin->isDraft())
                     {{-- GitHub Repo --}}
                     <a href="{{ $plugin->repository_url }}" target="_blank" rel="noopener noreferrer" class="block">
                         <flux:card class="mb-6 transition hover:bg-gray-50 dark:hover:bg-gray-700/50">
@@ -312,7 +387,7 @@
                                             <img src="{{ $plugin->getLogoUrl() }}" alt="{{ $plugin->name }} logo" class="size-16 rounded-lg object-cover shadow-sm" />
                                         @elseif ($plugin->hasGradientIcon())
                                             <div class="grid size-16 place-items-center rounded-lg bg-gradient-to-br {{ $plugin->getGradientClasses() }} text-white shadow-sm">
-                                                <x-dynamic-component :component="'heroicon-o-' . $plugin->icon_name" class="size-8" />
+                                                <x-dynamic-component :component="$plugin->getIconComponent()" class="size-8" />
                                             </div>
                                         @endif
                                         <flux:button size="sm" variant="danger" icon="trash" wire:click="deleteIcon" type="button">Remove icon</flux:button>
@@ -346,7 +421,7 @@
                                             wire:model="iconName"
                                             label="Heroicon name"
                                             placeholder="cube"
-                                            description="Enter a Heroicon outline name, e.g., cube, sparkles, bolt."
+                                            description="Enter an outline icon name exactly as it appears on heroicons.com, e.g., cube, sparkles, bolt, photo, map-pin."
                                         />
                                         @error('iconName')
                                             <flux:text class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</flux:text>
@@ -411,8 +486,335 @@
                             <flux:button type="submit" variant="primary">Save Changes</flux:button>
                         </div>
                     </form>
-                </flux:tab.panel>
+                @elseif ($plugin->isApproved())
+                    {{-- Editable fields for Approved plugins (no tabs) --}}
 
+                    {{-- GitHub Repo --}}
+                    <a href="{{ $plugin->repository_url }}" target="_blank" rel="noopener noreferrer" class="block">
+                        <flux:card class="mb-6 transition hover:bg-gray-50 dark:hover:bg-gray-700/50">
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center gap-3">
+                                    <x-icons.github class="size-5 text-gray-400 dark:text-gray-500" />
+                                    <span class="font-mono text-sm font-medium text-gray-900 dark:text-white">{{ $plugin->name }}</span>
+                                </div>
+                                <x-heroicon-o-arrow-top-right-on-square class="size-4 text-gray-400 dark:text-gray-500" />
+                            </div>
+                        </flux:card>
+                    </a>
+
+                    {{-- Read-only Type & Tier --}}
+                    <flux:card class="mb-6">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <flux:heading size="lg">Type</flux:heading>
+                                <flux:text class="mt-1">
+                                    @if ($plugin->isPaid() && $plugin->tier)
+                                        Paid &mdash; {{ $plugin->tier->label() }}
+                                    @elseif ($plugin->isPaid())
+                                        Paid
+                                    @else
+                                        Free
+                                    @endif
+                                </flux:text>
+                            </div>
+                        </div>
+                    </flux:card>
+
+                    <form wire:submit="save" class="space-y-6">
+                        {{-- Display Name --}}
+                        <flux:card>
+                            <flux:heading size="lg">Name <span class="text-sm font-normal text-gray-400 dark:text-gray-500">(optional)</span></flux:heading>
+                            <flux:text class="mt-1">A display name for your plugin. If not set, your Composer package name will be used.</flux:text>
+
+                            <div class="mt-4">
+                                <flux:input
+                                    wire:model="displayName"
+                                    placeholder="{{ $plugin->name }}"
+                                    maxlength="250"
+                                />
+                                <flux:text class="mt-2 text-xs">Maximum 250 characters</flux:text>
+                            </div>
+                        </flux:card>
+
+                        {{-- Description --}}
+                        <flux:card>
+                            <flux:heading size="lg">Description</flux:heading>
+                            <flux:text class="mt-1">Describe what your plugin does. This will be displayed in the plugin directory.</flux:text>
+
+                            <div class="mt-4">
+                                <flux:textarea
+                                    wire:model="description"
+                                    rows="5"
+                                    placeholder="Describe what your plugin does, its key features, and how developers can use it..."
+                                />
+                                @error('description')
+                                    <flux:text class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</flux:text>
+                                @enderror
+                                <flux:text class="mt-2 text-xs">Maximum 1000 characters</flux:text>
+                            </div>
+                        </flux:card>
+
+                        {{-- Icon --}}
+                        <flux:card x-data="{ mode: @entangle('iconMode') }">
+                            <flux:heading size="lg">Icon</flux:heading>
+                            <flux:text class="mt-1">Choose a gradient and icon, or upload your own logo.</flux:text>
+
+                            <div class="mt-4">
+                                {{-- Current Icon Preview --}}
+                                @if ($plugin->hasCustomIcon())
+                                    <div class="mb-4 flex items-center gap-4">
+                                        @if ($plugin->hasLogo())
+                                            <img src="{{ $plugin->getLogoUrl() }}" alt="{{ $plugin->name }} logo" class="size-16 rounded-lg object-cover shadow-sm" />
+                                        @elseif ($plugin->hasGradientIcon())
+                                            <div class="grid size-16 place-items-center rounded-lg bg-gradient-to-br {{ $plugin->getGradientClasses() }} text-white shadow-sm">
+                                                <x-dynamic-component :component="$plugin->getIconComponent()" class="size-8" />
+                                            </div>
+                                        @endif
+                                        <flux:button size="sm" variant="danger" icon="trash" wire:click="deleteIcon" type="button">Remove icon</flux:button>
+                                    </div>
+                                @endif
+
+                                {{-- Gradient Icon Picker --}}
+                                <div x-show="mode === 'gradient'" x-cloak>
+                                    <div class="space-y-4">
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Choose a gradient</label>
+                                            <div class="mt-2 grid grid-cols-4 gap-3 sm:grid-cols-8">
+                                                @foreach (\App\Models\Plugin::gradientPresets() as $key => $classes)
+                                                    <label class="relative cursor-pointer">
+                                                        <input
+                                                            type="radio"
+                                                            wire:model="iconGradient"
+                                                            value="{{ $key }}"
+                                                            class="peer sr-only"
+                                                        />
+                                                        <div class="size-12 rounded-lg bg-gradient-to-br {{ $classes }} ring-2 ring-transparent ring-offset-2 transition-all peer-checked:ring-indigo-500 peer-focus:ring-indigo-500 hover:scale-105 dark:ring-offset-gray-800"></div>
+                                                    </label>
+                                                @endforeach
+                                            </div>
+                                            @error('iconGradient')
+                                                <flux:text class="mt-2 text-sm text-red-600 dark:text-red-400">{{ $message }}</flux:text>
+                                            @enderror
+                                        </div>
+
+                                        <flux:input
+                                            wire:model="iconName"
+                                            label="Heroicon name"
+                                            placeholder="cube"
+                                            description="Enter an outline icon name exactly as it appears on heroicons.com, e.g., cube, sparkles, bolt, photo, map-pin."
+                                        />
+                                        @error('iconName')
+                                            <flux:text class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</flux:text>
+                                        @enderror
+
+                                        <flux:button wire:click="updateIcon" variant="filled" type="button">Save Icon</flux:button>
+                                    </div>
+
+                                    <flux:separator class="my-4" />
+                                    <button type="button" @click="mode = 'upload'" class="text-sm font-medium text-indigo-600 hover:text-indigo-500 dark:text-indigo-400">
+                                        Or upload your own logo instead
+                                    </button>
+                                </div>
+
+                                {{-- Custom Logo Upload --}}
+                                <div x-show="mode === 'upload'" x-cloak>
+                                    <div class="space-y-4">
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Upload a logo</label>
+                                            <div class="mt-2 flex items-center gap-4">
+                                                <input
+                                                    type="file"
+                                                    wire:model="logo"
+                                                    accept="image/png,image/jpeg,image/jpg,image/svg+xml,image/webp"
+                                                    class="block text-sm text-gray-500 file:mr-4 file:rounded-md file:border-0 file:bg-indigo-50 file:px-4 file:py-2 file:text-sm file:font-medium file:text-indigo-700 hover:file:bg-indigo-100 dark:text-gray-400 dark:file:bg-indigo-900/50 dark:file:text-indigo-300 dark:hover:file:bg-indigo-900/70"
+                                                />
+                                                <flux:button wire:click="uploadLogo" variant="filled" type="button">Upload</flux:button>
+                                            </div>
+                                            @error('logo')
+                                                <flux:text class="mt-2 text-sm text-red-600 dark:text-red-400">{{ $message }}</flux:text>
+                                            @enderror
+                                            <flux:text class="mt-2 text-xs">PNG, JPG, SVG, or WebP. Max 1MB. Recommended: 256x256 pixels, square.</flux:text>
+                                        </div>
+                                    </div>
+
+                                    <flux:separator class="my-4" />
+                                    <button type="button" @click="mode = 'gradient'" class="text-sm font-medium text-indigo-600 hover:text-indigo-500 dark:text-indigo-400">
+                                        Or choose a gradient icon instead
+                                    </button>
+                                </div>
+                            </div>
+                        </flux:card>
+
+                        {{-- Support Channel --}}
+                        <flux:card>
+                            <flux:heading size="lg">Support</flux:heading>
+                            <flux:text class="mt-1">How can users get support for your plugin? Provide an email address or a URL.</flux:text>
+
+                            <div class="mt-4">
+                                <flux:input
+                                    wire:model="supportChannel"
+                                    placeholder="support@example.com or https://..."
+                                />
+                                @error('supportChannel')
+                                    <flux:text class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</flux:text>
+                                @enderror
+                            </div>
+                        </flux:card>
+
+                        {{-- Save Button --}}
+                        <div class="flex items-center justify-end">
+                            <flux:button type="submit" variant="primary">Save Changes</flux:button>
+                        </div>
+                    </form>
+                @else
+                    {{-- Read-only display for Pending/Rejected --}}
+                    <flux:card class="mb-6">
+                        <div class="flex items-start justify-between">
+                            <div class="flex items-start gap-4">
+                                @if ($plugin->hasLogo())
+                                    <img src="{{ $plugin->getLogoUrl() }}" alt="{{ $plugin->name }} logo" class="size-16 shrink-0 rounded-lg object-cover shadow-sm" />
+                                @elseif ($plugin->hasGradientIcon())
+                                    <div class="grid size-16 shrink-0 place-items-center rounded-lg bg-gradient-to-br {{ $plugin->getGradientClasses() }} text-white shadow-sm">
+                                        <x-dynamic-component :component="$plugin->getIconComponent()" class="size-8" />
+                                    </div>
+                                @else
+                                    <div class="grid size-16 shrink-0 place-items-center rounded-lg bg-gradient-to-br from-indigo-500 to-purple-600 text-white shadow-sm">
+                                        <x-vaadin-plug class="size-8" />
+                                    </div>
+                                @endif
+                                <div>
+                                    <flux:heading size="lg">{{ $plugin->display_name ?? $plugin->name }}</flux:heading>
+                                    @if ($plugin->description)
+                                        <flux:text class="mt-2">{{ $plugin->description }}</flux:text>
+                                    @else
+                                        <flux:text class="mt-2 text-gray-400 dark:text-gray-500">No description provided</flux:text>
+                                    @endif
+                                </div>
+                            </div>
+                            @if ($plugin->isPaid() && $plugin->tier)
+                                <span class="inline-flex shrink-0 items-center text-center rounded-full bg-emerald-100 px-2.5 py-0.5 text-xs font-medium text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-400">
+                                    {{ $plugin->tier->label() }}
+                                </span>
+                            @elseif ($plugin->isPaid())
+                                <span class="inline-flex shrink-0 items-center text-center rounded-full bg-emerald-100 px-2.5 py-0.5 text-xs font-medium text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-400">
+                                    Paid
+                                </span>
+                            @else
+                                <span class="inline-flex shrink-0 items-center text-center rounded-full bg-gray-100 px-2.5 py-0.5 text-xs font-medium text-gray-800 dark:bg-gray-700 dark:text-gray-300">
+                                    Free
+                                </span>
+                            @endif
+                        </div>
+
+                        <flux:separator class="my-4" />
+
+                        <dl class="grid grid-cols-2 gap-3">
+                            {{-- Author --}}
+                            <div class="col-span-2">
+                                <dt class="text-xs font-medium text-gray-500 dark:text-gray-400">Author</dt>
+                                <dd class="mt-1 text-sm font-medium text-gray-900 dark:text-white">
+                                    {{ $plugin->user->display_name }}
+                                </dd>
+                            </div>
+
+                            {{-- Version --}}
+                            <div>
+                                <dt class="text-xs font-medium text-gray-500 dark:text-gray-400">Version</dt>
+                                <dd class="mt-1">
+                                    @if ($plugin->latest_version)
+                                        <a href="{{ $plugin->repository_url }}/releases" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 text-sm font-medium text-indigo-600 hover:text-indigo-500 dark:text-indigo-400 dark:hover:text-indigo-300">
+                                            {{ $plugin->latest_version }}
+                                            <x-heroicon-o-arrow-top-right-on-square class="size-3" />
+                                        </a>
+                                    @elseif ($plugin->review_checks['release_version'] ?? null)
+                                        <a href="{{ $plugin->repository_url }}/releases" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 text-sm font-medium text-indigo-600 hover:text-indigo-500 dark:text-indigo-400 dark:hover:text-indigo-300">
+                                            {{ $plugin->review_checks['release_version'] }}
+                                            <x-heroicon-o-arrow-top-right-on-square class="size-3" />
+                                        </a>
+                                    @else
+                                        <span class="text-sm text-gray-400 dark:text-gray-500">&mdash;</span>
+                                    @endif
+                                </dd>
+                            </div>
+
+                            {{-- License --}}
+                            <div>
+                                <dt class="text-xs font-medium text-gray-500 dark:text-gray-400">License</dt>
+                                <dd class="mt-1">
+                                    @if ($plugin->getLicense())
+                                        <a href="{{ $plugin->getLicenseUrl() }}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 text-sm font-medium text-indigo-600 hover:text-indigo-500 dark:text-indigo-400 dark:hover:text-indigo-300">
+                                            {{ $plugin->getLicense() }}
+                                            <x-heroicon-o-arrow-top-right-on-square class="size-3" />
+                                        </a>
+                                    @else
+                                        <span class="text-sm text-gray-400 dark:text-gray-500">&mdash;</span>
+                                    @endif
+                                </dd>
+                            </div>
+
+                            {{-- iOS Version --}}
+                            <div>
+                                <dt class="text-xs font-medium text-gray-500 dark:text-gray-400">Min iOS</dt>
+                                <dd class="mt-1 text-sm font-medium text-gray-900 dark:text-white">
+                                    {{ $plugin->ios_version ?? ($plugin->review_checks['ios_min_version'] ?? '—') }}
+                                </dd>
+                            </div>
+
+                            {{-- Android Version --}}
+                            <div>
+                                <dt class="text-xs font-medium text-gray-500 dark:text-gray-400">Min Android</dt>
+                                <dd class="mt-1 text-sm font-medium text-gray-900 dark:text-white">
+                                    {{ $plugin->android_version ?? ($plugin->review_checks['android_min_version'] ?? '—') }}
+                                </dd>
+                            </div>
+
+                            {{-- Support Channel --}}
+                            <div class="col-span-2">
+                                <dt class="text-xs font-medium text-gray-500 dark:text-gray-400">Support Channel</dt>
+                                <dd class="mt-1">
+                                    @if ($plugin->support_channel)
+                                        @if (filter_var($plugin->support_channel, FILTER_VALIDATE_URL))
+                                            <a href="{{ $plugin->support_channel }}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 text-sm font-medium text-indigo-600 hover:text-indigo-500 dark:text-indigo-400 dark:hover:text-indigo-300">
+                                                {{ $plugin->support_channel }}
+                                                <x-heroicon-o-arrow-top-right-on-square class="size-3" />
+                                            </a>
+                                        @elseif (filter_var($plugin->support_channel, FILTER_VALIDATE_EMAIL))
+                                            <a href="mailto:{{ $plugin->support_channel }}" class="inline-flex items-center gap-1 text-sm font-medium text-indigo-600 hover:text-indigo-500 dark:text-indigo-400 dark:hover:text-indigo-300">
+                                                {{ $plugin->support_channel }}
+                                                <x-heroicon-o-envelope class="size-3" />
+                                            </a>
+                                        @else
+                                            <span class="text-sm font-medium text-gray-900 dark:text-white">{{ $plugin->support_channel }}</span>
+                                        @endif
+                                    @else
+                                        <span class="text-sm text-gray-400 dark:text-gray-500">Not set</span>
+                                    @endif
+                                </dd>
+                            </div>
+
+                            {{-- Repository --}}
+                            <div class="col-span-2">
+                                <dt class="text-xs font-medium text-gray-500 dark:text-gray-400">Repository</dt>
+                                <dd class="mt-1">
+                                    <a href="{{ $plugin->repository_url }}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 text-sm text-indigo-600 hover:text-indigo-500 dark:text-indigo-400 dark:hover:text-indigo-300">
+                                        {{ $plugin->repository_url }}
+                                        <x-heroicon-o-arrow-top-right-on-square class="size-3.5" />
+                                    </a>
+                                </dd>
+                            </div>
+                        </dl>
+                    </flux:card>
+
+                    @if ($plugin->notes)
+                        <flux:card class="mb-6">
+                            <flux:heading size="lg">Submission Notes</flux:heading>
+                            <flux:text class="mt-2">{{ $plugin->notes }}</flux:text>
+                        </flux:card>
+                    @endif
+                @endif
+            </flux:tab.panel>
+
+            @if ($plugin->isDraft())
                 <flux:tab.panel name="submit">
                     <div class="space-y-6">
                         {{-- Plugin Summary --}}
@@ -423,7 +825,7 @@
                                         <img src="{{ $plugin->getLogoUrl() }}" alt="{{ $plugin->name }} logo" class="size-16 shrink-0 rounded-lg object-cover shadow-sm" />
                                     @elseif ($plugin->hasGradientIcon())
                                         <div class="grid size-16 shrink-0 place-items-center rounded-lg bg-gradient-to-br {{ $plugin->getGradientClasses() }} text-white shadow-sm">
-                                            <x-dynamic-component :component="'heroicon-o-' . $plugin->icon_name" class="size-8" />
+                                            <x-dynamic-component :component="$plugin->getIconComponent()" class="size-8" />
                                         </div>
                                     @else
                                         <div class="grid size-16 shrink-0 place-items-center rounded-lg bg-gradient-to-br from-indigo-500 to-purple-600 text-white shadow-sm">
@@ -459,30 +861,110 @@
 
                             <flux:separator class="my-4" />
 
-                            <div class="space-y-3">
-                                <div>
-                                    <flux:heading size="sm">Support Channel</flux:heading>
-                                    @if ($plugin->support_channel)
-                                        <flux:text class="mt-1">{{ $plugin->support_channel }}</flux:text>
-                                    @else
-                                        <flux:text class="mt-1 text-gray-400 dark:text-gray-500">No support channel set</flux:text>
-                                    @endif
+                            <dl class="grid grid-cols-2 gap-3">
+                                {{-- Author --}}
+                                <div class="col-span-2">
+                                    <dt class="text-xs font-medium text-gray-500 dark:text-gray-400">Author</dt>
+                                    <dd class="mt-1">
+                                        <a href="{{ route('customer.developer.settings') }}" class="inline-flex items-center gap-1 text-sm font-medium text-indigo-600 hover:text-indigo-500 dark:text-indigo-400 dark:hover:text-indigo-300">
+                                            {{ $plugin->user->display_name }}
+                                            <x-heroicon-o-pencil-square class="size-3" />
+                                        </a>
+                                    </dd>
                                 </div>
 
+                                {{-- Version --}}
                                 <div>
-                                    <flux:heading size="sm">Repository</flux:heading>
-                                    <a href="{{ $plugin->repository_url }}" target="_blank" rel="noopener noreferrer" class="mt-1 inline-flex items-center gap-1 text-sm text-indigo-600 hover:text-indigo-500 dark:text-indigo-400 dark:hover:text-indigo-300">
-                                        {{ $plugin->repository_url }}
-                                        <x-heroicon-o-arrow-top-right-on-square class="size-3.5" />
-                                    </a>
+                                    <dt class="text-xs font-medium text-gray-500 dark:text-gray-400">Version</dt>
+                                    <dd class="mt-1">
+                                        @if ($plugin->latest_version)
+                                            <a href="{{ $plugin->repository_url }}/releases" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 text-sm font-medium text-indigo-600 hover:text-indigo-500 dark:text-indigo-400 dark:hover:text-indigo-300">
+                                                {{ $plugin->latest_version }}
+                                                <x-heroicon-o-arrow-top-right-on-square class="size-3" />
+                                            </a>
+                                        @elseif ($plugin->review_checks['release_version'] ?? null)
+                                            <a href="{{ $plugin->repository_url }}/releases" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 text-sm font-medium text-indigo-600 hover:text-indigo-500 dark:text-indigo-400 dark:hover:text-indigo-300">
+                                                {{ $plugin->review_checks['release_version'] }}
+                                                <x-heroicon-o-arrow-top-right-on-square class="size-3" />
+                                            </a>
+                                        @else
+                                            <span class="text-sm text-gray-400 dark:text-gray-500">&mdash;</span>
+                                        @endif
+                                    </dd>
                                 </div>
-                            </div>
+
+                                {{-- License --}}
+                                <div>
+                                    <dt class="text-xs font-medium text-gray-500 dark:text-gray-400">License</dt>
+                                    <dd class="mt-1">
+                                        @if ($plugin->getLicense())
+                                            <a href="{{ $plugin->getLicenseUrl() }}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 text-sm font-medium text-indigo-600 hover:text-indigo-500 dark:text-indigo-400 dark:hover:text-indigo-300">
+                                                {{ $plugin->getLicense() }}
+                                                <x-heroicon-o-arrow-top-right-on-square class="size-3" />
+                                            </a>
+                                        @else
+                                            <span class="text-sm text-gray-400 dark:text-gray-500">&mdash;</span>
+                                        @endif
+                                    </dd>
+                                </div>
+
+                                {{-- iOS Version --}}
+                                <div>
+                                    <dt class="text-xs font-medium text-gray-500 dark:text-gray-400">Min iOS</dt>
+                                    <dd class="mt-1 text-sm font-medium text-gray-900 dark:text-white">
+                                        {{ $plugin->ios_version ?? ($plugin->review_checks['ios_min_version'] ?? '—') }}
+                                    </dd>
+                                </div>
+
+                                {{-- Android Version --}}
+                                <div>
+                                    <dt class="text-xs font-medium text-gray-500 dark:text-gray-400">Min Android</dt>
+                                    <dd class="mt-1 text-sm font-medium text-gray-900 dark:text-white">
+                                        {{ $plugin->android_version ?? ($plugin->review_checks['android_min_version'] ?? '—') }}
+                                    </dd>
+                                </div>
+
+                                {{-- Support Channel --}}
+                                <div class="col-span-2">
+                                    <dt class="text-xs font-medium text-gray-500 dark:text-gray-400">Support Channel</dt>
+                                    <dd class="mt-1">
+                                        @if ($plugin->support_channel)
+                                            @if (filter_var($plugin->support_channel, FILTER_VALIDATE_URL))
+                                                <a href="{{ $plugin->support_channel }}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 text-sm font-medium text-indigo-600 hover:text-indigo-500 dark:text-indigo-400 dark:hover:text-indigo-300">
+                                                    {{ $plugin->support_channel }}
+                                                    <x-heroicon-o-arrow-top-right-on-square class="size-3" />
+                                                </a>
+                                            @elseif (filter_var($plugin->support_channel, FILTER_VALIDATE_EMAIL))
+                                                <a href="mailto:{{ $plugin->support_channel }}" class="inline-flex items-center gap-1 text-sm font-medium text-indigo-600 hover:text-indigo-500 dark:text-indigo-400 dark:hover:text-indigo-300">
+                                                    {{ $plugin->support_channel }}
+                                                    <x-heroicon-o-envelope class="size-3" />
+                                                </a>
+                                            @else
+                                                <span class="text-sm font-medium text-gray-900 dark:text-white">{{ $plugin->support_channel }}</span>
+                                            @endif
+                                        @else
+                                            <span class="text-sm text-gray-400 dark:text-gray-500">Not set</span>
+                                        @endif
+                                    </dd>
+                                </div>
+
+                                {{-- Repository --}}
+                                <div class="col-span-2">
+                                    <dt class="text-xs font-medium text-gray-500 dark:text-gray-400">Repository</dt>
+                                    <dd class="mt-1">
+                                        <a href="{{ $plugin->repository_url }}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 text-sm text-indigo-600 hover:text-indigo-500 dark:text-indigo-400 dark:hover:text-indigo-300">
+                                            {{ $plugin->repository_url }}
+                                            <x-heroicon-o-arrow-top-right-on-square class="size-3.5" />
+                                        </a>
+                                    </dd>
+                                </div>
+                            </dl>
                         </flux:card>
 
                         {{-- Notes --}}
                         <flux:card>
                             <flux:heading size="lg">Notes</flux:heading>
-                            <flux:text class="mt-1">Any notes for the review team? These won't be displayed on your plugin listing.</flux:text>
+                            <flux:text class="mt-1">Share links to videos demonstrating the plugin in use or applications already available on the app stores using this plugin. Provide as much extra context for the review team so they can review your plugin more easily. <em>These notes will not be displayed on your plugin listing.</em></flux:text>
 
                             <div class="mt-4">
                                 <flux:textarea
@@ -493,262 +975,81 @@
                             </div>
                         </flux:card>
 
-                        {{-- Submit Button --}}
-                        <div class="flex items-center justify-end">
-                            <flux:button variant="primary" wire:click="submitForReview">Submit for Review</flux:button>
+                        {{-- Preflight Checks & Submit --}}
+                        <div class="flex items-center justify-end gap-3">
+                            @if ($plugin->review_checks)
+                                <flux:button variant="ghost" wire:click="runPreflightChecks">Re-run Checks</flux:button>
+                            @endif
+                            <flux:button variant="primary" wire:click="submitForReview">{{ $plugin->review_checks ? 'Submit for Review' : 'Submit' }}</flux:button>
                         </div>
                     </div>
                 </flux:tab.panel>
-            </flux:tab.group>
-        @elseif ($plugin->isApproved())
-            {{-- Editable fields for Approved plugins (no tabs) --}}
-
-            {{-- GitHub Repo --}}
-            <a href="{{ $plugin->repository_url }}" target="_blank" rel="noopener noreferrer" class="block">
-                <flux:card class="mb-6 transition hover:bg-gray-50 dark:hover:bg-gray-700/50">
-                    <div class="flex items-center justify-between">
-                        <div class="flex items-center gap-3">
-                            <x-icons.github class="size-5 text-gray-400 dark:text-gray-500" />
-                            <span class="font-mono text-sm font-medium text-gray-900 dark:text-white">{{ $plugin->name }}</span>
-                        </div>
-                        <x-heroicon-o-arrow-top-right-on-square class="size-4 text-gray-400 dark:text-gray-500" />
-                    </div>
-                </flux:card>
-            </a>
-
-            {{-- Read-only Type & Tier --}}
-            <flux:card class="mb-6">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <flux:heading size="lg">Type</flux:heading>
-                        <flux:text class="mt-1">
-                            @if ($plugin->isPaid() && $plugin->tier)
-                                Paid &mdash; {{ $plugin->tier->label() }}
-                            @elseif ($plugin->isPaid())
-                                Paid
-                            @else
-                                Free
-                            @endif
-                        </flux:text>
-                    </div>
-                </div>
-            </flux:card>
-
-            <form wire:submit="save" class="space-y-6">
-                {{-- Display Name --}}
-                <flux:card>
-                    <flux:heading size="lg">Name <span class="text-sm font-normal text-gray-400 dark:text-gray-500">(optional)</span></flux:heading>
-                    <flux:text class="mt-1">A display name for your plugin. If not set, your Composer package name will be used.</flux:text>
-
-                    <div class="mt-4">
-                        <flux:input
-                            wire:model="displayName"
-                            placeholder="{{ $plugin->name }}"
-                            maxlength="250"
-                        />
-                        <flux:text class="mt-2 text-xs">Maximum 250 characters</flux:text>
-                    </div>
-                </flux:card>
-
-                {{-- Description --}}
-                <flux:card>
-                    <flux:heading size="lg">Description</flux:heading>
-                    <flux:text class="mt-1">Describe what your plugin does. This will be displayed in the plugin directory.</flux:text>
-
-                    <div class="mt-4">
-                        <flux:textarea
-                            wire:model="description"
-                            rows="5"
-                            placeholder="Describe what your plugin does, its key features, and how developers can use it..."
-                        />
-                        @error('description')
-                            <flux:text class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</flux:text>
-                        @enderror
-                        <flux:text class="mt-2 text-xs">Maximum 1000 characters</flux:text>
-                    </div>
-                </flux:card>
-
-                {{-- Icon --}}
-                <flux:card x-data="{ mode: @entangle('iconMode') }">
-                    <flux:heading size="lg">Icon</flux:heading>
-                    <flux:text class="mt-1">Choose a gradient and icon, or upload your own logo.</flux:text>
-
-                    <div class="mt-4">
-                        {{-- Current Icon Preview --}}
-                        @if ($plugin->hasCustomIcon())
-                            <div class="mb-4 flex items-center gap-4">
-                                @if ($plugin->hasLogo())
-                                    <img src="{{ $plugin->getLogoUrl() }}" alt="{{ $plugin->name }} logo" class="size-16 rounded-lg object-cover shadow-sm" />
-                                @elseif ($plugin->hasGradientIcon())
-                                    <div class="grid size-16 place-items-center rounded-lg bg-gradient-to-br {{ $plugin->getGradientClasses() }} text-white shadow-sm">
-                                        <x-dynamic-component :component="'heroicon-o-' . $plugin->icon_name" class="size-8" />
-                                    </div>
-                                @endif
-                                <flux:button size="sm" variant="danger" icon="trash" wire:click="deleteIcon" type="button">Remove icon</flux:button>
-                            </div>
-                        @endif
-
-                        {{-- Gradient Icon Picker --}}
-                        <div x-show="mode === 'gradient'" x-cloak>
-                            <div class="space-y-4">
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Choose a gradient</label>
-                                    <div class="mt-2 grid grid-cols-4 gap-3 sm:grid-cols-8">
-                                        @foreach (\App\Models\Plugin::gradientPresets() as $key => $classes)
-                                            <label class="relative cursor-pointer">
-                                                <input
-                                                    type="radio"
-                                                    wire:model="iconGradient"
-                                                    value="{{ $key }}"
-                                                    class="peer sr-only"
-                                                />
-                                                <div class="size-12 rounded-lg bg-gradient-to-br {{ $classes }} ring-2 ring-transparent ring-offset-2 transition-all peer-checked:ring-indigo-500 peer-focus:ring-indigo-500 hover:scale-105 dark:ring-offset-gray-800"></div>
-                                            </label>
-                                        @endforeach
-                                    </div>
-                                    @error('iconGradient')
-                                        <flux:text class="mt-2 text-sm text-red-600 dark:text-red-400">{{ $message }}</flux:text>
-                                    @enderror
-                                </div>
-
-                                <flux:input
-                                    wire:model="iconName"
-                                    label="Heroicon name"
-                                    placeholder="cube"
-                                    description="Enter a Heroicon outline name, e.g., cube, sparkles, bolt."
-                                />
-                                @error('iconName')
-                                    <flux:text class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</flux:text>
-                                @enderror
-
-                                <flux:button wire:click="updateIcon" variant="filled" type="button">Save Icon</flux:button>
-                            </div>
-
-                            <flux:separator class="my-4" />
-                            <button type="button" @click="mode = 'upload'" class="text-sm font-medium text-indigo-600 hover:text-indigo-500 dark:text-indigo-400">
-                                Or upload your own logo instead
-                            </button>
-                        </div>
-
-                        {{-- Custom Logo Upload --}}
-                        <div x-show="mode === 'upload'" x-cloak>
-                            <div class="space-y-4">
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Upload a logo</label>
-                                    <div class="mt-2 flex items-center gap-4">
-                                        <input
-                                            type="file"
-                                            wire:model="logo"
-                                            accept="image/png,image/jpeg,image/jpg,image/svg+xml,image/webp"
-                                            class="block text-sm text-gray-500 file:mr-4 file:rounded-md file:border-0 file:bg-indigo-50 file:px-4 file:py-2 file:text-sm file:font-medium file:text-indigo-700 hover:file:bg-indigo-100 dark:text-gray-400 dark:file:bg-indigo-900/50 dark:file:text-indigo-300 dark:hover:file:bg-indigo-900/70"
-                                        />
-                                        <flux:button wire:click="uploadLogo" variant="filled" type="button">Upload</flux:button>
-                                    </div>
-                                    @error('logo')
-                                        <flux:text class="mt-2 text-sm text-red-600 dark:text-red-400">{{ $message }}</flux:text>
-                                    @enderror
-                                    <flux:text class="mt-2 text-xs">PNG, JPG, SVG, or WebP. Max 1MB. Recommended: 256x256 pixels, square.</flux:text>
-                                </div>
-                            </div>
-
-                            <flux:separator class="my-4" />
-                            <button type="button" @click="mode = 'gradient'" class="text-sm font-medium text-indigo-600 hover:text-indigo-500 dark:text-indigo-400">
-                                Or choose a gradient icon instead
-                            </button>
-                        </div>
-                    </div>
-                </flux:card>
-
-                {{-- Support Channel --}}
-                <flux:card>
-                    <flux:heading size="lg">Support</flux:heading>
-                    <flux:text class="mt-1">How can users get support for your plugin? Provide an email address or a URL.</flux:text>
-
-                    <div class="mt-4">
-                        <flux:input
-                            wire:model="supportChannel"
-                            placeholder="support@example.com or https://..."
-                        />
-                        @error('supportChannel')
-                            <flux:text class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</flux:text>
-                        @enderror
-                    </div>
-                </flux:card>
-
-                {{-- Save Button --}}
-                <div class="flex items-center justify-end">
-                    <flux:button type="submit" variant="primary">Save Changes</flux:button>
-                </div>
-            </form>
-        @else
-            {{-- Read-only display for Pending/Rejected --}}
-            <flux:card class="mb-6">
-                <div class="flex items-start justify-between">
-                    <div class="flex items-start gap-4">
-                        @if ($plugin->hasLogo())
-                            <img src="{{ $plugin->getLogoUrl() }}" alt="{{ $plugin->name }} logo" class="size-16 shrink-0 rounded-lg object-cover shadow-sm" />
-                        @elseif ($plugin->hasGradientIcon())
-                            <div class="grid size-16 shrink-0 place-items-center rounded-lg bg-gradient-to-br {{ $plugin->getGradientClasses() }} text-white shadow-sm">
-                                <x-dynamic-component :component="'heroicon-o-' . $plugin->icon_name" class="size-8" />
-                            </div>
-                        @else
-                            <div class="grid size-16 shrink-0 place-items-center rounded-lg bg-gradient-to-br from-indigo-500 to-purple-600 text-white shadow-sm">
-                                <x-vaadin-plug class="size-8" />
-                            </div>
-                        @endif
-                        <div>
-                            <flux:heading size="lg">{{ $plugin->display_name ?? $plugin->name }}</flux:heading>
-                            @if ($plugin->description)
-                                <flux:text class="mt-2">{{ $plugin->description }}</flux:text>
-                            @else
-                                <flux:text class="mt-2 text-gray-400 dark:text-gray-500">No description provided</flux:text>
-                            @endif
-                        </div>
-                    </div>
-                    @if ($plugin->isPaid() && $plugin->tier)
-                        <span class="inline-flex shrink-0 items-center text-center rounded-full bg-emerald-100 px-2.5 py-0.5 text-xs font-medium text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-400">
-                            {{ $plugin->tier->label() }}
-                        </span>
-                    @elseif ($plugin->isPaid())
-                        <span class="inline-flex shrink-0 items-center text-center rounded-full bg-emerald-100 px-2.5 py-0.5 text-xs font-medium text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-400">
-                            Paid
-                        </span>
-                    @else
-                        <span class="inline-flex shrink-0 items-center text-center rounded-full bg-gray-100 px-2.5 py-0.5 text-xs font-medium text-gray-800 dark:bg-gray-700 dark:text-gray-300">
-                            Free
-                        </span>
-                    @endif
-                </div>
-
-                <flux:separator class="my-4" />
-
-                <div class="space-y-3">
-                    <div>
-                        <flux:heading size="sm">Support Channel</flux:heading>
-                        @if ($plugin->support_channel)
-                            <flux:text class="mt-1">{{ $plugin->support_channel }}</flux:text>
-                        @else
-                            <flux:text class="mt-1 text-gray-400 dark:text-gray-500">No support channel set</flux:text>
-                        @endif
-                    </div>
-
-                    <div>
-                        <flux:heading size="sm">Repository</flux:heading>
-                        <a href="{{ $plugin->repository_url }}" target="_blank" rel="noopener noreferrer" class="mt-1 inline-flex items-center gap-1 text-sm text-indigo-600 hover:text-indigo-500 dark:text-indigo-400 dark:hover:text-indigo-300">
-                            {{ $plugin->repository_url }}
-                            <x-heroicon-o-arrow-top-right-on-square class="size-3.5" />
-                        </a>
-                    </div>
-                </div>
-            </flux:card>
-
-            @if ($plugin->notes)
-                <flux:card class="mb-6">
-                    <flux:heading size="lg">Submission Notes</flux:heading>
-                    <flux:text class="mt-2">{{ $plugin->notes }}</flux:text>
-                </flux:card>
             @endif
-        @endif
+
+            <flux:tab.panel name="activity">
+                @if ($this->canMessageAdmins)
+                    <form wire:submit="sendMessage" class="mb-8">
+                        <flux:textarea
+                            wire:model="replyMessage"
+                            label="Send a message to Marketplace admins"
+                            rows="3"
+                            placeholder="Type your message here..."
+                            @keydown.meta.enter="$wire.sendMessage()"
+                            @keydown.ctrl.enter="$wire.sendMessage()"
+                        />
+                        @error('replyMessage')
+                            <flux:text class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</flux:text>
+                        @enderror
+
+                        <div class="mt-3 flex items-center justify-end gap-3">
+                            <flux:text class="text-xs">&#8984;/Ctrl + Enter to send</flux:text>
+                            <flux:button type="submit" variant="primary" icon="paper-airplane">Send Message</flux:button>
+                        </div>
+                    </form>
+                @endif
+
+                <ul class="space-y-5">
+                    @foreach ($this->activities as $activity)
+                        <li class="flex flex-col gap-1.5 sm:flex-row sm:gap-3" wire:key="activity-{{ $activity->id }}">
+                            <div class="shrink-0 sm:w-52 sm:pt-px">
+                                <flux:badge :color="$activity->type->badgeColor()" :icon="$activity->type->iconName()" size="sm">
+                                    {{ $activity->type->developerLabel() }}
+                                </flux:badge>
+                            </div>
+
+                            <div class="min-w-0 flex-1">
+                                @if ($activity->from_status && $activity->from_status !== $activity->to_status)
+                                    <p class="text-sm text-zinc-800 dark:text-zinc-200">
+                                        {{ $activity->from_status->label() }} &rarr; {{ $activity->to_status->label() }}
+                                    </p>
+                                @endif
+
+                                @if ($activity->note)
+                                    <p class="whitespace-pre-line text-sm text-zinc-800 dark:text-zinc-200">{{ $activity->note }}</p>
+                                @endif
+
+                                <p class="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
+                                    {{ $activity->created_at->format('d M Y, H:i') }} &middot; by {{ $activity->causerNameFor($plugin->user_id) }}
+                                </p>
+                            </div>
+                        </li>
+                    @endforeach
+                </ul>
+            </flux:tab.panel>
+        </flux:tab.group>
 
     </div>
+
+    @script
+    <script>
+        $wire.on('scroll-to-first-error', () => {
+            setTimeout(() => {
+                const firstError = document.querySelector('.text-red-600, .text-red-500, [data-flux-error]:not(.hidden)');
+                if (firstError) {
+                    firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+            }, 100);
+        });
+    </script>
+    @endscript
 </div>

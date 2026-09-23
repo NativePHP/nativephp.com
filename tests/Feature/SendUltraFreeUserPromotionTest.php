@@ -186,4 +186,17 @@ class SendUltraFreeUserPromotionTest extends TestCase
         $this->assertStringContainsString('free and open source', $rendered);
         $this->assertStringContainsString('no license required', $rendered);
     }
+
+    public function test_skips_unverified_users(): void
+    {
+        Notification::fake();
+
+        $unverified = User::factory()->unverified()->create();
+
+        $this->artisan('ultra:send-free-user-promo')
+            ->expectsOutputToContain('Found 0 eligible user(s)')
+            ->assertSuccessful();
+
+        Notification::assertNotSentTo($unverified, UltraFreeUserPromotion::class);
+    }
 }

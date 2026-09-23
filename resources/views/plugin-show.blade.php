@@ -73,7 +73,7 @@
                     />
                 @elseif ($plugin->hasGradientIcon())
                     <div class="grid size-16 shrink-0 place-items-center rounded-2xl bg-gradient-to-br {{ $plugin->getGradientClasses() }} text-white">
-                        <x-dynamic-component :component="'heroicon-o-' . $plugin->icon_name" class="size-8" />
+                        <x-dynamic-component :component="$plugin->getIconComponent()" class="size-8" />
                     </div>
                 @else
                     <div class="grid size-16 shrink-0 place-items-center rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-600 text-white">
@@ -95,6 +95,29 @@
                             {{ $plugin->description }}
                         </p>
                     @endif
+                    <div class="mt-3 flex flex-wrap items-center gap-3">
+                        @if ($plugin->rating_count > 0)
+                            <span class="inline-flex items-center gap-1 text-sm" title="{{ number_format($plugin->rating_average, 1) }} out of 5 stars">
+                                <span class="flex text-amber-400" aria-hidden="true">
+                                    @for ($i = 1; $i <= 5; $i++)
+                                        <x-heroicon-s-star class="size-4 {{ $i > round($plugin->rating_average) ? 'text-gray-300 dark:text-gray-600' : '' }}" />
+                                    @endfor
+                                </span>
+                                <span class="font-medium text-gray-900 dark:text-white">{{ number_format($plugin->rating_average, 1) }}</span>
+                                <span class="text-gray-500 dark:text-gray-400">({{ $plugin->rating_count }} {{ Str::plural('rating', $plugin->rating_count) }})</span>
+                            </span>
+                        @endif
+
+                        @if ($plugin->worksInJump())
+                            <span
+                                class="inline-flex items-center gap-1.5 rounded-full bg-indigo-100 px-3 py-1 text-xs font-medium text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-300"
+                                title="This plugin runs in the Jump preview app without a native build"
+                            >
+                                <x-heroicon-o-bolt class="size-3.5" aria-hidden="true" />
+                                Works in Jump
+                            </span>
+                        @endif
+                    </div>
                 </div>
             </div>
         </header>
@@ -102,81 +125,133 @@
         {{-- Divider --}}
         <x-divider />
 
+        {{-- Session Messages --}}
+        @if (session('error'))
+            <div class="mb-6 rounded-lg border border-red-200 bg-red-50 p-4 dark:border-red-800 dark:bg-red-900/20">
+                <p class="text-sm text-red-800 dark:text-red-200">{{ session('error') }}</p>
+            </div>
+        @endif
+
+        @if (session('success'))
+            <div class="mb-6 rounded-lg border border-green-200 bg-green-50 p-4 dark:border-green-800 dark:bg-green-900/20">
+                <p class="text-sm text-green-800 dark:text-green-200">{{ session('success') }}</p>
+            </div>
+        @endif
+
         <div class="mt-2 flex flex-col-reverse gap-8 lg:flex-row lg:items-start">
                 {{-- Main content - README --}}
                 <div class="min-w-0 grow">
                     @if ($plugin->readme_html)
                         <div class="sticky top-20 z-10 mb-4 flex justify-end">
-                            <div class="rounded-full bg-white shadow-sm dark:bg-zinc-800">
+                            <div class="mr-2 rounded-full bg-white shadow-sm dark:bg-zinc-800">
                                 <x-plugin-toc />
                             </div>
                         </div>
                     @endif
 
                     @if ($plugin->isPaid())
-                        <aside class="mb-6 rounded-2xl border border-indigo-200 bg-indigo-50 p-5 dark:border-indigo-800 dark:bg-indigo-950/30">
-                            <h3 class="text-sm font-semibold text-indigo-900 dark:text-indigo-200">Installing this plugin</h3>
-                            <p class="mt-1 text-sm text-indigo-800 dark:text-indigo-300">
-                                Premium plugins require Composer to be configured with the NativePHP plugin repository and your credentials.
-                            </p>
-                            <div class="mt-3 space-y-2">
-                                <div class="flex items-center gap-2 rounded-lg bg-zinc-900 dark:bg-zinc-800">
-                                    <div class="min-w-0 flex-1 overflow-x-auto p-3">
-                                        <code class="block whitespace-pre font-mono text-xs text-zinc-100">composer config repositories.nativephp-plugins composer https://plugins.nativephp.com</code>
-                                    </div>
+                        <aside
+                            x-data="{ open: false }"
+                            class="mb-6 rounded-2xl border border-indigo-200 bg-indigo-50 p-5 dark:border-indigo-800 dark:bg-indigo-950/30"
+                        >
+                            <h3 class="text-sm font-semibold text-indigo-900 dark:text-indigo-200">
+                                <button
+                                    type="button"
+                                    x-on:click="open = !open"
+                                    :aria-expanded="open"
+                                    class="flex w-full items-center justify-between gap-2 text-left"
+                                >
+                                    Installation Instructions
+                                    <svg
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        fill="none"
+                                        viewBox="0 0 24 24"
+                                        stroke-width="2"
+                                        stroke="currentColor"
+                                        class="size-4 shrink-0 text-indigo-500 transition-transform duration-200 dark:text-indigo-400"
+                                        :class="{ 'rotate-180': open }"
+                                        aria-hidden="true"
+                                    >
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
+                                    </svg>
+                                </button>
+                            </h3>
+
+                            <div x-show="open" x-collapse x-cloak>
+                                <p class="mt-3 text-sm text-indigo-800 dark:text-indigo-300">
+                                    Premium plugins are served from the NativePHP plugins repository. Configure Composer with your credentials, then install and register the plugin.
+                                </p>
+
+                                <div
+                                    x-data="{ open: false }"
+                                    class="mt-4"
+                                >
                                     <button
                                         type="button"
-                                        x-data="{ copied: false }"
-                                        x-on:click="navigator.clipboard.writeText('composer config repositories.nativephp-plugins composer https://plugins.nativephp.com').then(() => { copied = true; setTimeout(() => copied = false, 2000) })"
-                                        class="shrink-0 self-stretch px-3 text-zinc-400 hover:text-zinc-200"
-                                        title="Copy command"
+                                        x-on:click="open = !open"
+                                        :aria-expanded="open"
+                                        class="flex w-full items-center justify-between gap-2 text-left"
                                     >
-                                        <x-heroicon-o-clipboard x-show="!copied" class="size-4" />
-                                        <x-heroicon-o-check-circle x-show="copied" x-cloak class="size-4 text-green-400" />
+                                        <span class="text-xs font-semibold text-indigo-900 dark:text-indigo-200">Configure Composer</span>
+                                        <svg
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            fill="none"
+                                            viewBox="0 0 24 24"
+                                            stroke-width="2"
+                                            stroke="currentColor"
+                                            class="size-4 shrink-0 text-indigo-500 transition-transform duration-200 dark:text-indigo-400"
+                                            :class="{ 'rotate-180': open }"
+                                            aria-hidden="true"
+                                        >
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
+                                        </svg>
                                     </button>
+
+                                    <div x-show="open" x-collapse x-cloak class="mt-3 space-y-2">
+                                        <p class="text-xs text-indigo-800 dark:text-indigo-300">
+                                            A one-time Composer setup so you can install premium plugins.
+                                        </p>
+                                        @auth
+                                            @php
+                                                $pluginCredentialUser = auth()->user();
+                                                $pluginCredentialEmail = $pluginCredentialUser->email;
+                                                $pluginCredentialKey = $pluginCredentialUser->getPluginLicenseKey();
+                                                [$pluginCredentialEmailLocal, $pluginCredentialEmailDomain] = array_pad(explode('@', $pluginCredentialEmail, 2), 2, '');
+                                                $maskedPluginCredentialEmail = mb_substr($pluginCredentialEmailLocal, 0, 1).str_repeat('•', 6).($pluginCredentialEmailDomain !== '' ? '@'.$pluginCredentialEmailDomain : '');
+                                                $maskedPluginCredentialKey = str_repeat('•', 16);
+                                                $pluginRepositoryCommand = 'composer config repositories.nativephp-plugins composer https://plugins.nativephp.com';
+                                                $pluginConfigCommand = $pluginRepositoryCommand."\n".'composer config http-basic.plugins.nativephp.com '.$pluginCredentialEmail.' '.$pluginCredentialKey;
+                                                $pluginConfigDisplay = e($pluginRepositoryCommand)."\n".'composer config http-basic.plugins.nativephp.com '.e($maskedPluginCredentialEmail).' '.e($maskedPluginCredentialKey);
+                                            @endphp
+                                            <x-plugin-command :command="$pluginConfigCommand">{!! $pluginConfigDisplay !!}</x-plugin-command>
+                                        @else
+                                            @php
+                                                $pluginRepositoryCommand = 'composer config repositories.nativephp-plugins composer https://plugins.nativephp.com';
+                                                $pluginConfigCommand = $pluginRepositoryCommand."\n".'composer config http-basic.plugins.nativephp.com your-email@example.com your-license-key';
+                                                $pluginConfigDisplay = e($pluginRepositoryCommand)."\n".'composer config http-basic.plugins.nativephp.com <span class="text-zinc-400">your-email@example.com</span> <span class="text-zinc-400">your-license-key</span>';
+                                            @endphp
+                                            <x-plugin-command :command="$pluginConfigCommand">{!! $pluginConfigDisplay !!}</x-plugin-command>
+                                        @endauth
+                                        <p class="text-xs text-indigo-700 dark:text-indigo-400">
+                                            @auth
+                                                Manage your credentials on your <a href="{{ route('customer.purchased-plugins.index') }}" class="font-medium underline hover:no-underline">Purchased Plugins</a> dashboard.
+                                            @else
+                                                <a href="{{ route('customer.login') }}" class="font-medium underline hover:no-underline">Log in</a> to see your credentials, or find them on your <a href="{{ route('customer.purchased-plugins.index') }}" class="font-medium underline hover:no-underline">Purchased Plugins</a> dashboard.
+                                            @endauth
+                                        </p>
+                                    </div>
                                 </div>
-                                @auth
-                                    <div class="flex items-center gap-2 rounded-lg bg-zinc-900 dark:bg-zinc-800">
-                                        <div class="min-w-0 flex-1 overflow-x-auto p-3">
-                                            <code class="block whitespace-pre font-mono text-xs text-zinc-100">composer config http-basic.plugins.nativephp.com {{ auth()->user()->email }} {{ auth()->user()->getPluginLicenseKey() }}</code>
-                                        </div>
-                                        <button
-                                            type="button"
-                                            x-data="{ copied: false }"
-                                            x-on:click="navigator.clipboard.writeText('composer config http-basic.plugins.nativephp.com {{ auth()->user()->email }} {{ auth()->user()->getPluginLicenseKey() }}').then(() => { copied = true; setTimeout(() => copied = false, 2000) })"
-                                            class="shrink-0 self-stretch px-3 text-zinc-400 hover:text-zinc-200"
-                                            title="Copy command"
-                                        >
-                                            <x-heroicon-o-clipboard x-show="!copied" class="size-4" />
-                                            <x-heroicon-o-check-circle x-show="copied" x-cloak class="size-4 text-green-400" />
-                                        </button>
-                                    </div>
-                                @else
-                                    <div class="flex items-center gap-2 rounded-lg bg-zinc-900 dark:bg-zinc-800">
-                                        <div class="min-w-0 flex-1 overflow-x-auto p-3">
-                                            <code class="block whitespace-pre font-mono text-xs text-zinc-100">composer config http-basic.plugins.nativephp.com <span class="text-zinc-400">your-email@example.com</span> <span class="text-zinc-400">your-license-key</span></code>
-                                        </div>
-                                        <button
-                                            type="button"
-                                            x-data="{ copied: false }"
-                                            x-on:click="navigator.clipboard.writeText('composer config http-basic.plugins.nativephp.com your-email@example.com your-license-key').then(() => { copied = true; setTimeout(() => copied = false, 2000) })"
-                                            class="shrink-0 self-stretch px-3 text-zinc-400 hover:text-zinc-200"
-                                            title="Copy command"
-                                        >
-                                            <x-heroicon-o-clipboard x-show="!copied" class="size-4" />
-                                            <x-heroicon-o-check-circle x-show="copied" x-cloak class="size-4 text-green-400" />
-                                        </button>
-                                    </div>
-                                @endauth
+
+                                @php
+                                    $pluginInstallCommands = "php artisan vendor:publish --tag=nativephp-plugins-provider\ncomposer require {$plugin->name}\nphp artisan native:plugin:register {$plugin->name}";
+                                @endphp
+                                <div class="mt-4 space-y-1.5 border-t border-indigo-200 pt-4 dark:border-indigo-800">
+                                    <x-plugin-command :command="$pluginInstallCommands" />
+                                    <p class="text-xs text-indigo-700 dark:text-indigo-400">
+                                        Full walkthrough in the <a href="{{ url('docs/mobile/plugins/using-plugins') }}" class="font-medium underline hover:no-underline">Using Plugins guide &rarr;</a>
+                                    </p>
+                                </div>
                             </div>
-                            <p class="mt-3 text-xs text-indigo-700 dark:text-indigo-400">
-                                @auth
-                                    Manage your credentials on your <a href="{{ route('customer.purchased-plugins.index') }}" class="font-medium underline hover:no-underline">Purchased Plugins</a> dashboard.
-                                @else
-                                    <a href="{{ route('customer.login') }}" class="font-medium underline hover:no-underline">Log in</a> to see your credentials, or find them on your <a href="{{ route('customer.purchased-plugins.index') }}" class="font-medium underline hover:no-underline">Purchased Plugins</a> dashboard.
-                                @endauth
-                                <a href="{{ url('docs/mobile/3/plugins/using-plugins') }}" class="font-medium underline hover:no-underline">Learn more &rarr;</a>
-                            </p>
                         </aside>
                     @endif
 
@@ -192,11 +267,11 @@
                                 })
                             }
                         "
-                        class="prose min-w-0 max-w-none grow text-gray-600 prose-headings:scroll-mt-20 dark:text-gray-400 dark:prose-headings:text-white"
+                        class="prose prose-gallery min-w-0 max-w-none grow text-gray-600 prose-headings:scroll-mt-20 dark:text-gray-400 dark:prose-headings:text-white"
                         aria-labelledby="plugin-title"
                     >
                         @if ($plugin->readme_html)
-                            {!! $plugin->readme_html !!}
+                            {!! $plugin->rendered_readme_html !!}
                         @else
                             <div class="rounded-xl border border-gray-200 bg-gray-50 p-8 text-center dark:border-gray-700 dark:bg-slate-800/50">
                                 <p class="text-gray-500 dark:text-gray-400">
@@ -227,20 +302,20 @@
                     <div class="mb-4 rounded-2xl border-2 border-indigo-500 bg-gradient-to-br from-indigo-50 to-purple-50 p-6 dark:border-indigo-400 dark:from-indigo-950/50 dark:to-purple-950/50">
                         <div class="text-center">
                             @if ($hasDiscount && $regularPrice)
-                                <p class="text-sm font-medium text-gray-600 dark:text-gray-400">Price</p>
-                                <p class="mt-1 text-lg text-gray-400 line-through dark:text-gray-500">
-                                    ${{ number_format($regularPrice->amount / 100) }}
-                                </p>
-                                <p class="text-4xl font-bold text-gray-900 dark:text-white">
-                                    ${{ number_format($bestPrice->amount / 100) }}
+                                <p class="flex items-baseline justify-center gap-2">
+                                    <span class="text-lg text-gray-400 line-through dark:text-gray-500">
+                                        ${{ number_format($regularPrice->amount / 100) }}
+                                    </span>
+                                    <span class="text-4xl font-bold text-gray-900 dark:text-white">
+                                        ${{ number_format($bestPrice->amount / 100) }}
+                                    </span>
                                 </p>
                                 <p class="mt-1 text-xs font-medium text-green-600 dark:text-green-400">
                                     {{ $bestPrice->tier->label() }} pricing applied
                                 </p>
                                 <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">One-time purchase</p>
                             @else
-                                <p class="text-sm font-medium text-gray-600 dark:text-gray-400">Price</p>
-                                <p class="mt-1 text-4xl font-bold text-gray-900 dark:text-white">
+                                <p class="text-4xl font-bold text-gray-900 dark:text-white">
                                     ${{ number_format($bestPrice->amount / 100) }}
                                 </p>
                                 <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">One-time purchase</p>
@@ -261,11 +336,71 @@
                     </div>
                 @endif
 
-                <div class="rounded-2xl border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-slate-800/50">
-                    <h2 class="text-sm font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">
-                        Plugin Details
-                    </h2>
+                {{-- Included with Ultra --}}
+                @if ($plugin->isPaid() && $plugin->isOfficial())
+                    @php
+                        $hasUltraSubscription = auth()->user()?->hasActiveUltraSubscription() ?? false;
+                    @endphp
+                    <div class="mb-4 rounded-2xl border border-zinc-300 bg-gradient-to-br from-zinc-100 to-zinc-200 p-6 dark:border-zinc-600 dark:from-zinc-800 dark:to-zinc-900">
+                        <div class="flex items-start gap-3">
+                            <div class="shrink-0 text-zinc-700 dark:text-zinc-300">
+                                <x-heroicon-s-bolt class="size-6" />
+                            </div>
+                            <div>
+                                <p class="font-medium text-zinc-900 dark:text-zinc-100">Included with Ultra</p>
+                                <p class="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
+                                    @if ($hasUltraSubscription)
+                                        This plugin is included with your Ultra subscription &mdash; for you and your team.
+                                    @else
+                                        You don't need to purchase any first-party NativePHP plugins with Ultra &mdash; they're all included for you and your team from just ${{ config('subscriptions.plans.max.price_monthly') }}/month.
+                                    @endif
+                                </p>
+                                @if (! $hasUltraSubscription)
+                                    @auth
+                                        <p class="mt-2 text-xs text-zinc-500 dark:text-zinc-500">
+                                            You can still purchase this plugin to keep access even if you cancel your subscription.
+                                        </p>
+                                    @endauth
+                                @endif
+                                <a
+                                    href="{{ $hasUltraSubscription ? route('customer.ultra.index') : route('pricing') }}"
+                                    class="mt-4 inline-flex items-center rounded-md bg-black px-4 py-2 text-sm font-medium text-white transition hover:bg-zinc-800 dark:bg-white dark:text-black dark:hover:bg-zinc-200"
+                                >
+                                    {{ $hasUltraSubscription ? 'Go to your dashboard' : 'Learn more' }}
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                @endif
 
+                <div
+                    x-data="{ open: false }"
+                    class="rounded-2xl border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-slate-800/50"
+                >
+                    <button
+                        type="button"
+                        x-on:click="open = !open"
+                        :aria-expanded="open"
+                        class="flex w-full items-center justify-between gap-2"
+                    >
+                        <h2 class="text-sm font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">
+                            Plugin Details
+                        </h2>
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke-width="2"
+                            stroke="currentColor"
+                            class="size-4 shrink-0 text-gray-400 transition-transform duration-200"
+                            :class="{ 'rotate-180': open }"
+                            aria-hidden="true"
+                        >
+                            <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
+                        </svg>
+                    </button>
+
+                    <div x-show="open" x-collapse x-cloak>
                     <dl class="mt-4 grid grid-cols-2 gap-3">
                         {{-- Author --}}
                         <div class="col-span-2 rounded-xl bg-gray-50 p-3 dark:bg-slate-700/30">
@@ -293,7 +428,7 @@
                             <dt class="text-xs font-medium text-gray-500 dark:text-gray-400">License</dt>
                             <dd class="mt-1">
                                 @if ($plugin->getLicense())
-                                    @if ($plugin->isPaid() && $plugin->license_html)
+                                    @if ($plugin->hasLicensePage())
                                         <a
                                             href="{{ route('plugins.license', $plugin->routeParams()) }}"
                                             class="inline-flex items-center gap-1 text-sm font-medium text-indigo-600 hover:text-indigo-700 dark:text-indigo-400 dark:hover:text-indigo-300"
@@ -354,21 +489,23 @@
                                         <a
                                             href="{{ $plugin->support_channel }}"
                                             target="_blank"
+                                            title="{{ $plugin->support_channel }}"
                                             class="inline-flex items-center gap-1 text-sm font-medium text-indigo-600 hover:text-indigo-700 dark:text-indigo-400 dark:hover:text-indigo-300"
                                         >
-                                            {{ $plugin->support_channel }}
-                                            <x-heroicon-o-arrow-top-right-on-square class="size-3" />
+                                            {{ Str::limit(preg_replace('#^https?://#', '', $plugin->support_channel), 25) }}
+                                            <x-heroicon-o-arrow-top-right-on-square class="size-3 shrink-0" />
                                         </a>
                                     @elseif (filter_var($plugin->support_channel, FILTER_VALIDATE_EMAIL))
                                         <a
                                             href="mailto:{{ $plugin->support_channel }}"
-                                            class="inline-flex items-center gap-1 text-sm font-medium text-indigo-600 hover:text-indigo-700 dark:text-indigo-400 dark:hover:text-indigo-300"
+                                            title="{{ $plugin->support_channel }}"
+                                            class="inline-flex max-w-full items-center gap-1 text-sm font-medium text-indigo-600 hover:text-indigo-700 dark:text-indigo-400 dark:hover:text-indigo-300"
                                         >
-                                            {{ $plugin->support_channel }}
-                                            <x-heroicon-o-envelope class="size-3" />
+                                            <span class="truncate">{{ $plugin->support_channel }}</span>
+                                            <x-heroicon-o-envelope class="size-3 shrink-0" />
                                         </a>
                                     @else
-                                        <span class="text-sm font-medium text-gray-900 dark:text-white">{{ $plugin->support_channel }}</span>
+                                        <span class="block truncate text-sm font-medium text-gray-900 dark:text-white" title="{{ $plugin->support_channel }}">{{ $plugin->support_channel }}</span>
                                     @endif
                                 </dd>
                             </div>
@@ -410,6 +547,7 @@
                             </p>
                         </div>
                     @endif
+                    </div>
                 </div>
 
                 {{-- Bundles containing this plugin --}}
@@ -462,30 +600,151 @@
                     </div>
                 @endif
 
-                {{-- Included with Ultra --}}
-                @if ($plugin->isPaid() && $plugin->isOfficial())
-                    <div class="mt-4 rounded-2xl border border-zinc-300 bg-gradient-to-br from-zinc-100 to-zinc-200 p-6 dark:border-zinc-600 dark:from-zinc-800 dark:to-zinc-900">
-                        <div class="flex items-start gap-3">
-                            <div class="shrink-0 text-zinc-700 dark:text-zinc-300">
-                                <x-heroicon-s-bolt class="size-6" />
-                            </div>
-                            <div>
-                                <p class="font-medium text-zinc-900 dark:text-zinc-100">Included with Ultra</p>
-                                <p class="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
-                                    You don't need to purchase any first-party NativePHP plugins with Ultra &mdash; they're all included for you and your team from just ${{ config('subscriptions.plans.max.price_monthly') }}/month.
+                {{-- Rate this plugin --}}
+                @auth
+                    @if (auth()->user()->canRatePlugin($plugin))
+                        @php $myRating = \App\Models\PluginRating::findFor($plugin, auth()->user()); @endphp
+                        <div
+                            x-data="{ hover: 0, selected: {{ $myRating?->rating ?? 0 }} }"
+                            class="mt-4 rounded-2xl border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-slate-800/50"
+                        >
+                            <h2 class="text-sm font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">
+                                {{ $myRating ? 'Your Rating' : 'Rate this Plugin' }}
+                            </h2>
+                            <form method="POST" action="{{ route('plugins.rating.store', $plugin->routeParams()) }}" class="mt-3">
+                                @csrf
+                                <input type="hidden" name="rating" x-model="selected" />
+                                <div class="flex items-center gap-1" x-on:mouseleave="hover = 0">
+                                    @for ($i = 1; $i <= 5; $i++)
+                                        <button
+                                            type="submit"
+                                            x-on:mouseenter="hover = {{ $i }}"
+                                            x-on:click="selected = {{ $i }}"
+                                            class="p-0.5"
+                                            aria-label="Rate {{ $i }} out of 5 stars"
+                                        >
+                                            <x-heroicon-s-star
+                                                class="size-7 transition"
+                                                x-bind:class="(hover || selected) >= {{ $i }} ? 'text-amber-400' : 'text-gray-300 dark:text-gray-600'"
+                                            />
+                                        </button>
+                                    @endfor
+                                </div>
+                                @error('rating')
+                                    <p class="mt-2 text-xs text-red-600 dark:text-red-400">{{ $message }}</p>
+                                @enderror
+                            </form>
+                            @if ($myRating)
+                                <form method="POST" action="{{ route('plugins.rating.destroy', $plugin->routeParams()) }}" class="mt-3">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="text-xs font-medium text-gray-500 underline hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
+                                        Remove my rating
+                                    </button>
+                                </form>
+                            @endif
+                        </div>
+                    @endif
+                @else
+                    <div class="mt-4 rounded-2xl border border-gray-200 bg-white p-6 text-center dark:border-gray-700 dark:bg-slate-800/50">
+                        <p class="text-sm text-gray-600 dark:text-gray-400">
+                            <a href="{{ route('customer.login', ['redirect' => route('plugins.show', $plugin->routeParams(), false)]) }}" class="font-medium text-indigo-600 underline hover:text-indigo-700 dark:text-indigo-400">Log in</a>
+                            to rate this plugin.
+                        </p>
+                    </div>
+                @endauth
+
+                {{-- Report this plugin --}}
+                @if (auth()->check() && auth()->user()->canReportPlugin($plugin))
+                    <div
+                        x-data="{ open: {{ $errors->has('category') || $errors->has('message') ? 'true' : 'false' }} }"
+                        class="mt-4 rounded-2xl border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-slate-800/50"
+                    >
+                        <button
+                            type="button"
+                            x-on:click="open = !open"
+                            :aria-expanded="open"
+                            title="Not for bugs — for reporting malicious code or an unresponsive author"
+                            class="flex w-full items-center justify-between gap-2 text-left"
+                        >
+                            <span class="inline-flex items-center gap-2 text-sm font-medium text-gray-600 dark:text-gray-400">
+                                <x-heroicon-o-flag class="size-4 shrink-0" aria-hidden="true" />
+                                Report this plugin
+                            </span>
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                stroke-width="2"
+                                stroke="currentColor"
+                                class="size-4 shrink-0 text-gray-400 transition-transform duration-200"
+                                :class="{ 'rotate-180': open }"
+                                aria-hidden="true"
+                            >
+                                <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
+                            </svg>
+                        </button>
+
+                        <div x-show="open" x-collapse x-cloak class="mt-4 space-y-4">
+                            <div class="rounded-xl border border-amber-200 bg-amber-50 p-3 dark:border-amber-800 dark:bg-amber-950/30">
+                                <p class="text-xs text-amber-800 dark:text-amber-300">
+                                    This isn't for bugs or support requests &mdash; it's only for reporting a plugin that's
+                                    <strong>malicious</strong> or whose author is <strong>unresponsive</strong> to the NativePHP team.
                                 </p>
-                                @auth
-                                    <p class="mt-2 text-xs text-zinc-500 dark:text-zinc-500">
-                                        You can still purchase this plugin to keep access even if you cancel your subscription.
+                                @if ($plugin->getIssuesUrl())
+                                    <p class="mt-2 text-xs text-amber-800 dark:text-amber-300">
+                                        Found a bug instead?
+                                        <a href="{{ $plugin->getIssuesUrl() }}" target="_blank" class="font-medium underline hover:no-underline">
+                                            Report it on GitHub &rarr;
+                                        </a>
                                     </p>
-                                @endauth
-                                <a
-                                    href="{{ route('pricing') }}"
-                                    class="mt-4 inline-flex items-center rounded-md bg-black px-4 py-2 text-sm font-medium text-white transition hover:bg-zinc-800 dark:bg-white dark:text-black dark:hover:bg-zinc-200"
-                                >
-                                    Learn more
-                                </a>
+                                @elseif ($plugin->support_channel)
+                                    <p class="mt-2 text-xs text-amber-800 dark:text-amber-300">
+                                        Found a bug instead? Use the Support link above to contact the plugin's author.
+                                    </p>
+                                @endif
                             </div>
+
+                            <form method="POST" action="{{ route('plugins.report.store', $plugin->routeParams()) }}" class="space-y-3">
+                                @csrf
+                                <div>
+                                    <label for="report-category" class="block text-xs font-medium text-gray-700 dark:text-gray-300">Reason</label>
+                                    <select
+                                        id="report-category"
+                                        name="category"
+                                        required
+                                        class="mt-1 block w-full rounded-lg border-gray-300 text-sm focus:border-indigo-500 focus:ring-indigo-500 dark:border-gray-600 dark:bg-slate-900 dark:text-white"
+                                    >
+                                        @foreach (\App\Enums\PluginReportCategory::cases() as $category)
+                                            <option value="{{ $category->value }}" @selected(old('category') === $category->value)>{{ $category->label() }}</option>
+                                        @endforeach
+                                    </select>
+                                    @error('category')
+                                        <p class="mt-1 text-xs text-red-600 dark:text-red-400">{{ $message }}</p>
+                                    @enderror
+                                </div>
+                                <div>
+                                    <label for="report-message" class="block text-xs font-medium text-gray-700 dark:text-gray-300">Details</label>
+                                    <textarea
+                                        id="report-message"
+                                        name="message"
+                                        rows="3"
+                                        required
+                                        maxlength="5000"
+                                        placeholder="What's going on?"
+                                        class="mt-1 block w-full rounded-lg border-gray-300 text-sm focus:border-indigo-500 focus:ring-indigo-500 dark:border-gray-600 dark:bg-slate-900 dark:text-white"
+                                    >{{ old('message') }}</textarea>
+                                    @error('message')
+                                        <p class="mt-1 text-xs text-red-600 dark:text-red-400">{{ $message }}</p>
+                                    @enderror
+                                </div>
+                                <button
+                                    type="submit"
+                                    class="w-full rounded-lg bg-gray-900 px-4 py-2 text-sm font-medium text-white transition hover:bg-gray-800 dark:bg-white dark:text-gray-900 dark:hover:bg-gray-200"
+                                >
+                                    Send Report to NativePHP
+                                </button>
+                            </form>
                         </div>
                     </div>
                 @endif

@@ -24,8 +24,8 @@ class PluginWebhookController extends Controller
             return response()->json(['success' => true, 'message' => 'pong']);
         }
 
-        if (! $plugin->isApproved()) {
-            return response()->json(['error' => 'Plugin is not approved'], 403);
+        if (! $plugin->isActive()) {
+            return response()->json(['error' => 'Plugin is not active'], 403);
         }
 
         if ($event === 'release') {

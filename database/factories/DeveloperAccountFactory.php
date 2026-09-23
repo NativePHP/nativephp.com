@@ -28,6 +28,7 @@ class DeveloperAccountFactory extends Factory
             'onboarding_completed_at' => now(),
             'country' => 'US',
             'payout_currency' => 'USD',
+            'payout_percentage' => 70,
         ];
     }
 

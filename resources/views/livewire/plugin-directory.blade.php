@@ -64,8 +64,45 @@
             </div>
         </div>
 
+        {{-- Filters --}}
+        @if ($view === 'plugins')
+            <div class="mt-4 flex flex-wrap items-center justify-center gap-2">
+                <select
+                    wire:model.live="type"
+                    class="rounded-lg border border-gray-300 bg-white py-2 pl-3 pr-9 text-sm text-gray-700 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 dark:border-gray-600 dark:bg-slate-800 dark:text-gray-200 dark:focus:border-indigo-400 dark:focus:ring-indigo-400"
+                >
+                    <option value="">All Types</option>
+                    @foreach ($typeOptions as $option)
+                        <option value="{{ $option->value }}">{{ $option->label() }}</option>
+                    @endforeach
+                </select>
+
+                <select
+                    wire:model.live="category"
+                    class="rounded-lg border border-gray-300 bg-white py-2 pl-3 pr-9 text-sm text-gray-700 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 dark:border-gray-600 dark:bg-slate-800 dark:text-gray-200 dark:focus:border-indigo-400 dark:focus:ring-indigo-400"
+                >
+                    <option value="">All Categories</option>
+                    @foreach ($categoryOptions as $option)
+                        <option value="{{ $option->value }}">{{ $option->label() }}</option>
+                    @endforeach
+                    <option value="{{ $categoryUncategorizedValue }}">Uncategorized</option>
+                </select>
+
+                <select
+                    wire:model.live="mobileVersion"
+                    class="rounded-lg border border-gray-300 bg-white py-2 pl-3 pr-9 text-sm text-gray-700 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 dark:border-gray-600 dark:bg-slate-800 dark:text-gray-200 dark:focus:border-indigo-400 dark:focus:ring-indigo-400"
+                >
+                    <option value="">All NativePHP Versions</option>
+                    @foreach ($mobileVersionOptions as $majorVersion)
+                        <option value="{{ $majorVersion }}">v{{ $majorVersion }}.x and up</option>
+                    @endforeach
+                    <option value="{{ $mobileVersionUnspecifiedValue }}">Version Unspecified</option>
+                </select>
+            </div>
+        @endif
+
         {{-- Active Filters --}}
-        @if ($search || $authorUser)
+        @if ($search || $authorUser || ($view === 'plugins' && ($type || $category || $mobileVersion)))
             <div class="mt-4 flex flex-wrap items-center justify-center gap-2">
                 @if ($authorUser)
                     <span class="inline-flex items-center gap-1.5 rounded-full bg-indigo-100 py-1 pl-3 pr-1.5 text-sm font-medium text-indigo-800 dark:bg-indigo-900/30 dark:text-indigo-300">
@@ -93,6 +130,48 @@
                         <button
                             type="button"
                             wire:click="clearSearch"
+                            class="ml-0.5 rounded-full p-0.5 hover:bg-gray-200 dark:hover:bg-gray-600"
+                        >
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="size-3.5">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
+                            </svg>
+                        </button>
+                    </span>
+                @endif
+                @if ($view === 'plugins' && $type)
+                    <span class="inline-flex items-center gap-1.5 rounded-full bg-gray-100 py-1 pl-3 pr-1.5 text-sm font-medium text-gray-800 dark:bg-gray-700 dark:text-gray-300">
+                        {{ $typeLabel }}
+                        <button
+                            type="button"
+                            wire:click="clearType"
+                            class="ml-0.5 rounded-full p-0.5 hover:bg-gray-200 dark:hover:bg-gray-600"
+                        >
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="size-3.5">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
+                            </svg>
+                        </button>
+                    </span>
+                @endif
+                @if ($view === 'plugins' && $category)
+                    <span class="inline-flex items-center gap-1.5 rounded-full bg-gray-100 py-1 pl-3 pr-1.5 text-sm font-medium text-gray-800 dark:bg-gray-700 dark:text-gray-300">
+                        {{ $categoryLabel }}
+                        <button
+                            type="button"
+                            wire:click="clearCategory"
+                            class="ml-0.5 rounded-full p-0.5 hover:bg-gray-200 dark:hover:bg-gray-600"
+                        >
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="size-3.5">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
+                            </svg>
+                        </button>
+                    </span>
+                @endif
+                @if ($view === 'plugins' && $mobileVersion)
+                    <span class="inline-flex items-center gap-1.5 rounded-full bg-gray-100 py-1 pl-3 pr-1.5 text-sm font-medium text-gray-800 dark:bg-gray-700 dark:text-gray-300">
+                        {{ $mobileVersionLabel }}
+                        <button
+                            type="button"
+                            wire:click="clearMobileVersion"
                             class="ml-0.5 rounded-full p-0.5 hover:bg-gray-200 dark:hover:bg-gray-600"
                         >
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="size-3.5">
@@ -161,14 +240,19 @@
                 <div class="flex flex-col items-center justify-center rounded-2xl border-2 border-dashed border-gray-300 bg-gray-50 p-12 text-center dark:border-gray-700 dark:bg-slate-800/50">
                     <x-vaadin-plug class="size-12 text-gray-400 dark:text-gray-500" />
                     <h3 class="mt-4 text-lg font-medium text-gray-900 dark:text-white">No plugins found</h3>
-                    @if ($search || $authorUser)
+                    @php
+                        $hasFilters = $type || $category || $mobileVersion;
+                    @endphp
+                    @if ($search || $authorUser || $hasFilters)
                         <p class="mt-2 text-gray-600 dark:text-gray-400">
                             @if ($authorUser && $search)
                                 No plugins by {{ $authorUser->display_name }} match your search.
                             @elseif ($authorUser)
                                 {{ $authorUser->display_name }} hasn't published any plugins yet.
-                            @else
+                            @elseif ($search)
                                 No plugins match your search. Try a different term.
+                            @else
+                                No plugins match the selected filters. Try different options.
                             @endif
                         </p>
                         <div class="mt-4 flex items-center gap-2">
@@ -179,6 +263,15 @@
                                     class="inline-flex items-center gap-2 rounded-lg bg-gray-200 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600"
                                 >
                                     Clear search
+                                </button>
+                            @endif
+                            @if ($hasFilters)
+                                <button
+                                    type="button"
+                                    wire:click="clearFilters"
+                                    class="inline-flex items-center gap-2 rounded-lg bg-gray-200 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600"
+                                >
+                                    Clear filters
                                 </button>
                             @endif
                             @if ($authorUser)
@@ -231,10 +324,11 @@
         </div>
     </section>
 
-    {{-- Plugin Dev Kit Banner --}}
+    {{-- Plugin Dev Kit + Packagist Banners --}}
     <section class="pb-16">
-        <a href="{{ route('products.show', 'plugin-dev-kit') }}" class="group block overflow-hidden rounded-2xl bg-gradient-to-r from-purple-600 via-indigo-600 to-purple-700 p-6 shadow-lg transition hover:shadow-xl sm:p-8">
-            <div class="flex flex-col items-center justify-between gap-6 sm:flex-row">
+        <div class="grid gap-6 lg:grid-cols-2">
+            {{-- Plugin Dev Kit Banner --}}
+            <a href="{{ route('products.show', 'plugin-dev-kit') }}" class="group flex flex-col overflow-hidden rounded-2xl bg-gradient-to-r from-purple-600 via-indigo-600 to-purple-700 p-6 shadow-lg transition hover:shadow-xl sm:p-8">
                 <div class="flex items-center gap-4 text-white">
                     <div class="grid size-14 shrink-0 place-items-center rounded-xl bg-white/20 backdrop-blur-sm">
                         <x-heroicon-s-cube class="size-8" />
@@ -244,13 +338,41 @@
                         <p class="mt-1 text-purple-100">Build native plugins with Claude Code. Skip the Kotlin & Swift learning curve.</p>
                     </div>
                 </div>
-                <div class="inline-flex shrink-0 items-center gap-2 rounded-lg bg-white px-5 py-2.5 font-semibold text-purple-700 transition group-hover:bg-purple-50">
+                <div class="mt-6 inline-flex w-fit shrink-0 items-center gap-2 self-start rounded-lg bg-white px-5 py-2.5 font-semibold text-purple-700 transition group-hover:bg-purple-50">
                     Learn More
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="size-4 transition group-hover:translate-x-0.5">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
                     </svg>
                 </div>
-            </div>
-        </a>
+            </a>
+
+            {{-- Open Source Plugins on Packagist --}}
+            <a
+                href="https://packagist.org/search/?type=nativephp-plugin"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="group flex flex-col overflow-hidden rounded-2xl bg-gradient-to-r from-orange-500 via-red-500 to-rose-600 p-6 shadow-lg transition hover:shadow-xl sm:p-8"
+            >
+                <div class="flex items-center gap-4 text-white">
+                    <div class="grid size-14 shrink-0 place-items-center rounded-xl bg-white/20 backdrop-blur-sm">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-8">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M21 7.5l-9-5.25L3 7.5m18 0l-9 5.25m9-5.25v9l-9 5.25M3 7.5l9 5.25M3 7.5v9l9 5.25m0-9v9" />
+                        </svg>
+                    </div>
+                    <div>
+                        <h2 class="text-xl font-bold sm:text-2xl">Looking for more?</h2>
+                        <p class="mt-1 text-orange-50">
+                            We can't list every plugin here. Find more free &amp; open source NativePHP Plugins on Packagist.
+                        </p>
+                    </div>
+                </div>
+                <div class="mt-6 inline-flex w-fit shrink-0 items-center gap-2 self-start rounded-lg bg-white px-5 py-2.5 font-semibold text-rose-700 transition group-hover:bg-orange-50">
+                    Browse on Packagist
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="size-4 transition group-hover:translate-x-0.5">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
+                    </svg>
+                </div>
+            </a>
+        </div>
     </section>
 </div>

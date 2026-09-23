@@ -105,6 +105,19 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Support Address
+    |--------------------------------------------------------------------------
+    |
+    | The mailbox that admin-facing notifications (support tickets, plugin
+    | messages, plugin reports, showcase/wall-of-love submissions, etc.) are
+    | routed to via Notification::route('mail', ...).
+    |
+    */
+
+    'support_address' => env('MAIL_SUPPORT_ADDRESS', 'support@nativephp.com'),
+
+    /*
+    |--------------------------------------------------------------------------
     | Markdown Mail Settings
     |--------------------------------------------------------------------------
     |

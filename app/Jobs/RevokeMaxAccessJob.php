@@ -82,17 +82,17 @@ class RevokeMaxAccessJob implements ShouldQueue
         }
 
         $discord = DiscordApi::make();
-        $success = $discord->removeMaxRole($user->discord_id);
+        $success = $discord->removeUltraRole($user->discord_id);
 
         if ($success) {
             $user->update(['discord_role_granted_at' => null]);
 
-            Log::info('Discord Max role revoked for user', [
+            Log::info('Discord Ultra role revoked for user', [
                 'user_id' => $user->id,
                 'discord_id' => $user->discord_id,
             ]);
         } else {
-            Log::warning('Failed to revoke Discord Max role for user', [
+            Log::warning('Failed to revoke Discord Ultra role for user', [
                 'user_id' => $user->id,
                 'discord_id' => $user->discord_id,
             ]);

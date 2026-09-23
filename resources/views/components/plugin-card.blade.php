@@ -13,26 +13,38 @@
             />
         @elseif ($plugin->hasGradientIcon())
             <div class="grid size-12 shrink-0 place-items-center rounded-xl bg-gradient-to-br {{ $plugin->getGradientClasses() }} text-white">
-                <x-dynamic-component :component="'heroicon-o-' . $plugin->icon_name" class="size-6" />
+                <x-dynamic-component :component="$plugin->getIconComponent()" class="size-6" />
             </div>
         @else
             <div class="grid size-12 shrink-0 place-items-center rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 text-white">
                 <x-vaadin-plug class="size-6" />
             </div>
         @endif
-        @if ($plugin->isPaid() && $plugin->isOfficial() && auth()->user()?->hasUltraAccess())
-            <span class="inline-flex items-center rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-medium text-green-800 dark:bg-green-900/30 dark:text-green-400">
-                Included with Ultra
-            </span>
-        @elseif ($plugin->isPaid())
-            <span class="inline-flex items-center rounded-full bg-emerald-100 px-2.5 py-0.5 text-xs font-medium text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-400">
-                Paid
-            </span>
-        @else
-            <span class="inline-flex items-center rounded-full bg-gray-100 px-2.5 py-0.5 text-xs font-medium text-gray-800 dark:bg-gray-700 dark:text-gray-300">
-                Free
-            </span>
-        @endif
+        <div class="flex flex-col items-end gap-1.5">
+            @if ($plugin->isPaid() && $plugin->isOfficial() && auth()->user()?->hasUltraAccess())
+                <span class="inline-flex items-center rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-medium text-green-800 dark:bg-green-900/30 dark:text-green-400">
+                    Included with Ultra
+                </span>
+            @elseif ($plugin->isPaid())
+                <span class="inline-flex items-center rounded-full bg-emerald-100 px-2.5 py-0.5 text-xs font-medium text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-400">
+                    Premium
+                </span>
+            @else
+                <span class="inline-flex items-center rounded-full bg-gray-100 px-2.5 py-0.5 text-xs font-medium text-gray-800 dark:bg-gray-700 dark:text-gray-300">
+                    Free
+                </span>
+            @endif
+
+            @if ($plugin->worksInJump())
+                <span
+                    class="inline-flex items-center gap-1 rounded-full bg-indigo-100 px-2.5 py-0.5 text-xs font-medium text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-300"
+                    title="Runs in the Jump preview app without a native build"
+                >
+                    <x-heroicon-o-bolt class="size-3" aria-hidden="true" />
+                    Works in Jump
+                </span>
+            @endif
+        </div>
     </div>
 
     <div class="mt-4 flex-1">
@@ -49,10 +61,23 @@
         @endif
     </div>
 
-    <div class="mt-4 flex items-center gap-1.5 text-sm font-medium text-indigo-600 dark:text-indigo-400">
-        View details
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-4">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
-        </svg>
+    <div class="mt-4 flex items-center justify-between gap-3">
+        <span class="flex items-center gap-1.5 text-sm font-medium text-indigo-600 dark:text-indigo-400">
+            View details
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-4">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
+            </svg>
+        </span>
+
+        @if ($plugin->rating_count > 0)
+            <span
+                class="inline-flex items-center gap-1 text-xs"
+                title="{{ number_format($plugin->rating_average, 1) }} out of 5 stars from {{ $plugin->rating_count }} {{ Str::plural('rating', $plugin->rating_count) }}"
+            >
+                <x-heroicon-s-star class="size-3.5 text-amber-400" aria-hidden="true" />
+                <span class="font-medium text-gray-900 dark:text-white">{{ number_format($plugin->rating_average, 1) }}</span>
+                <span class="text-gray-500 dark:text-gray-400">({{ $plugin->rating_count }})</span>
+            </span>
+        @endif
     </div>
 </a>

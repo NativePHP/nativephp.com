@@ -66,6 +66,27 @@ npm run build -- --mode=ios
 npm run build -- --mode=android
 ```
 
+<aside>
+
+#### Using Inertia 3?
+
+NativePHP Mobile routes every outgoing HTTP request through the embedded PHP runtime
+by intercepting `axios` at bundle time. [Inertia 3 removed axios][inertia-axios] in
+favour of native `fetch`, so fresh Inertia 3 projects won't declare it — the
+NativePHP build will fail until you add axios as a direct dependency:
+
+```shell
+npm install axios
+```
+
+Then follow the [Inertia docs on using axios][inertia-axios] to tell Inertia to use
+it for its client-side requests. Apps on Inertia 2 (or using axios directly) already
+have it installed and don't need any change.
+
+[inertia-axios]: https://inertiajs.com/docs/v3/installation/client-side-setup#using-axios
+
+</aside>
+
 ## Compile your app
 
 To compile and run your app, simply run:

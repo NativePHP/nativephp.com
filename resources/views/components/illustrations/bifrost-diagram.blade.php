@@ -1,29 +1,25 @@
+{{--
+    Three columns with equal 1fr flanks so the Bifrost bubble stays centred
+    even below 2xs, where the source column is hidden.
+--}}
 <figure
-    class="flex items-center justify-center py-10"
+    class="grid grid-cols-[1fr_auto_1fr] items-center py-10"
     aria-labelledby="bifrost-diagram-caption"
 >
     {{-- Source (NativePHP app) --}}
-    <div
-        class="hidden flex-col items-center gap-2 pr-2 text-center 2xs:flex sm:pr-0"
-    >
+    <div class="hidden items-center justify-end gap-2 2xs:flex">
         <x-mini-logo
             class="h-7 sm:h-9"
             aria-hidden="true"
             focusable="false"
         />
 
-        <p class="hidden whitespace-nowrap sm:block md:text-lg">
-            <span>Your</span>
-            <span class="font-semibold">NativePHP</span>
-            <span>app</span>
-        </p>
+        {{-- Connecting line (decorative) --}}
+        <div
+            class="h-0.5 w-8 bg-gradient-to-r from-transparent to-blue-500/50"
+            aria-hidden="true"
+        ></div>
     </div>
-
-    {{-- Left line (decorative) --}}
-    <div
-        class="hidden h-0.5 w-8 bg-gradient-to-r from-transparent to-blue-500/50 2xs:block"
-        aria-hidden="true"
-    ></div>
 
     {{-- Center (Bifrost) --}}
     <div
@@ -67,16 +63,8 @@
     </div>
 
     {{-- Right (Build outputs to platforms) --}}
-    <div class="flex items-center">
-        <div aria-hidden="true">
-            <x-icons.home.arc-connector aria-hidden="true" />
-            <div
-                class="-my-0.5 h-0.5 w-16 rounded-full bg-gradient-to-r from-blue-300/20 to-blue-500/80"
-            ></div>
-            <div class="-scale-y-100">
-                <x-icons.home.arc-connector aria-hidden="true" />
-            </div>
-        </div>
+    <div class="flex items-center justify-start">
+        <x-icons.home.arc-fan aria-hidden="true" />
 
         {{-- Platforms list --}}
         <ul
@@ -113,17 +101,6 @@
                 />
                 <span class="sr-only">Android</span>
             </li>
-            <li
-                class="grid size-12 place-items-center rounded-xl bg-white dark:bg-slate-950/50"
-            >
-                <x-icons.home.windows
-                    class="h-6"
-                    role="img"
-                    aria-label="Windows"
-                />
-                <span class="sr-only">Windows</span>
-            </li>
-
             {{-- Decorative (bottom) --}}
             <li
                 class="absolute -bottom-15 left-0 -z-10 grid size-12 place-items-center rounded-xl mask-b-from-0% ring-2 ring-gray-200 ring-inset dark:ring-white/3"
@@ -141,6 +118,6 @@
         class="sr-only"
     >
         Diagram: NativePHP app passes through Bifrost build system to produce
-        Apple (macOS), Android, and Windows platform outputs.
+        Apple (macOS) and Android platform outputs.
     </figcaption>
 </figure>

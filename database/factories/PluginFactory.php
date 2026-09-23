@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Enums\PluginCategory;
 use App\Enums\PluginStatus;
 use App\Enums\PluginType;
 use App\Models\Plugin;
@@ -111,6 +112,7 @@ class PluginFactory extends Factory
             'ios_version' => fake()->randomElement(['15.0+', '16.0+', '14.0+', '17.0+', null]),
             'android_version' => fake()->randomElement(['12+', '13+', '11+', '14+', null]),
             'type' => PluginType::Free,
+            'category' => null,
             'status' => PluginStatus::Pending,
             'featured' => false,
             'rejection_reason' => null,
@@ -176,6 +178,20 @@ class PluginFactory extends Factory
         ]);
     }
 
+    public function inactive(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'is_active' => false,
+        ]);
+    }
+
+    public function worksInJump(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'works_in_jump' => true,
+        ]);
+    }
+
     public function free(): static
     {
         return $this->state(fn (array $attributes) => [
@@ -187,6 +203,13 @@ class PluginFactory extends Factory
     {
         return $this->state(fn (array $attributes) => [
             'type' => PluginType::Paid,
+        ]);
+    }
+
+    public function category(PluginCategory $category): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'category' => $category,
         ]);
     }
 

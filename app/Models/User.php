@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
 use App\Enums\GitHubAuthType;
 use App\Enums\PriceTier;
 use App\Enums\Subscription;
@@ -10,6 +9,7 @@ use App\Enums\TeamUserStatus;
 use Filament\Models\Contracts\FilamentUser;
 use Filament\Models\Contracts\HasName;
 use Filament\Panel;
+use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -18,11 +18,32 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Collection;
 use Laravel\Cashier\Billable;
+use Laravel\Passport\Contracts\ScopeAuthorizable;
+use Laravel\Sanctum\Contracts\HasAbilities;
 use Laravel\Sanctum\HasApiTokens;
 
-class User extends Authenticatable implements FilamentUser, HasName
+class User extends Authenticatable implements FilamentUser, HasName, MustVerifyEmail
 {
     use Billable, HasApiTokens, HasFactory, Notifiable;
+
+    /** @var HasAbilities|ScopeAuthorizable|null */
+    protected $accessToken;
+
+    /**
+     * Both the Sanctum and Passport guards attach a request token; token
+     * creation and the tokens() relationship continue to belong to Sanctum.
+     */
+    public function currentAccessToken(): HasAbilities|ScopeAuthorizable|null
+    {
+        return $this->accessToken;
+    }
+
+    public function withAccessToken(HasAbilities|ScopeAuthorizable|null $accessToken): static
+    {
+        $this->accessToken = $accessToken;
+
+        return $this;
+    }
 
     protected $guarded = [];
 
@@ -78,6 +99,14 @@ class User extends Authenticatable implements FilamentUser, HasName
     }
 
     /**
+     * @return HasMany<EmailChange>
+     */
+    public function emailChanges(): HasMany
+    {
+        return $this->hasMany(EmailChange::class);
+    }
+
+    /**
      * @return HasMany<WallOfLoveSubmission>
      */
     public function wallOfLoveSubmissions(): HasMany
@@ -119,6 +148,14 @@ class User extends Authenticatable implements FilamentUser, HasName
         }
 
         return $this->hasProductAccessViaTeam($product);
+    }
+
+    /**
+     * @return HasMany<LessonProgress>
+     */
+    public function lessonProgress(): HasMany
+    {
+        return $this->hasMany(LessonProgress::class);
     }
 
     /**
@@ -461,6 +498,16 @@ class User extends Authenticatable implements FilamentUser, HasName
         return false;
     }
 
+    public function canRatePlugin(Plugin $plugin): bool
+    {
+        return $plugin->user_id !== $this->id && $this->hasPluginAccess($plugin);
+    }
+
+    public function canReportPlugin(Plugin $plugin): bool
+    {
+        return $plugin->user_id !== $this->id;
+    }
+
     public function getGitHubToken(): ?string
     {
         if (! $this->github_token) {
@@ -586,6 +633,7 @@ class User extends Authenticatable implements FilamentUser, HasName
             'mobile_repo_access_granted_at' => 'datetime',
             'claude_plugins_repo_access_granted_at' => 'datetime',
             'discord_role_granted_at' => 'datetime',
+            'discord_early_adopter_role_granted_at' => 'datetime',
             'github_auth_type' => GitHubAuthType::class,
         ];
     }

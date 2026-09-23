@@ -24,6 +24,7 @@ class SupportTicket extends Model
         'product',
         'issue_type',
         'metadata',
+        'attachments',
     ];
 
     protected function casts(): array
@@ -31,6 +32,7 @@ class SupportTicket extends Model
         return [
             'status' => Status::class,
             'metadata' => 'array',
+            'attachments' => 'array',
         ];
     }
 

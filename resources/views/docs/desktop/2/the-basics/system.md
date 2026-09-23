@@ -108,6 +108,15 @@ System::print('<html>...', $printer);
 
 If no `$printer` object is provided, the default printer and settings will be used.
 
+To print an existing file — a PDF, for example — instead of an HTML string, use `printFile()`:
+
+```php
+System::printFile('/path/to/file.pdf', $printer);
+```
+
+It returns `true` once the file has been sent to the printer, and accepts the same `$printer` and `$settings`
+arguments as `print()`.
+
 You can also print directly to PDF:
 
 ```php

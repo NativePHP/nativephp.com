@@ -3,17 +3,26 @@
 namespace App\Models;
 
 use App\Enums\PluginActivityType;
+use App\Enums\PluginCategory;
 use App\Enums\PluginStatus;
 use App\Enums\PluginTier;
 use App\Enums\PluginType;
 use App\Enums\PriceTier;
-use App\Notifications\NewPluginAvailable;
+use App\Jobs\RemovePluginFromSatis;
+use App\Jobs\SendNewPluginNotifications;
+use App\Jobs\SyncPluginReleases;
 use App\Notifications\PluginApproved;
+use App\Notifications\PluginDeveloperReplied;
+use App\Notifications\PluginMessageReceived;
 use App\Notifications\PluginRejected;
+use App\Services\OgImageService;
 use App\Services\PluginSyncService;
-use App\Services\SatisService;
+use App\Support\PluginReadme;
+use BladeUI\Icons\Exceptions\SvgNotFound;
+use BladeUI\Icons\Factory as IconFactory;
 use Illuminate\Database\Eloquent\Attributes\Scope;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -76,13 +85,22 @@ class Plugin extends Model
             if ($plugin->wasChanged('tier') && $plugin->tier !== null) {
                 $plugin->syncPricesFromTier();
             }
+
+            // Satis membership follows the plugin's type, whichever route changed it
+            if ($plugin->wasChanged('type')) {
+                if ($plugin->isPaid()) {
+                    $plugin->syncToSatis();
+                } else {
+                    $plugin->removeFromSatis();
+                    $plugin->updateQuietly(['satis_synced_at' => null]);
+                }
+            }
         });
 
         static::deleting(function (Plugin $plugin): void {
-            // Remove from Satis when plugin is deleted
-            if ($plugin->name) {
-                resolve(SatisService::class)->removePackage($plugin->name);
-            }
+            $plugin->removeFromSatis();
+
+            resolve(OgImageService::class)->deleteForPlugin($plugin);
         });
     }
 
@@ -131,6 +149,18 @@ class Plugin extends Model
     public function activities(): HasMany
     {
         return $this->hasMany(PluginActivity::class)->latest();
+    }
+
+    /**
+     * The admin <-> developer conversation, oldest message first.
+     *
+     * @return HasMany<PluginActivity>
+     */
+    public function messages(): HasMany
+    {
+        return $this->hasMany(PluginActivity::class)
+            ->messages()
+            ->oldest('id');
     }
 
     /**
@@ -213,6 +243,22 @@ class Plugin extends Model
     }
 
     /**
+     * @return HasMany<PluginRating>
+     */
+    public function ratings(): HasMany
+    {
+        return $this->hasMany(PluginRating::class);
+    }
+
+    /**
+     * @return HasMany<PluginReport>
+     */
+    public function reports(): HasMany
+    {
+        return $this->hasMany(PluginReport::class);
+    }
+
+    /**
      * @return BelongsToMany<PluginBundle>
      */
     public function bundles(): BelongsToMany
@@ -268,6 +314,11 @@ class Plugin extends Model
         return $this->status === PluginStatus::Rejected;
     }
 
+    public function isActive(): bool
+    {
+        return $this->is_active ?? true;
+    }
+
     public function isFree(): bool
     {
         return $this->type === PluginType::Free;
@@ -288,9 +339,45 @@ class Plugin extends Model
         return $this->is_official ?? false;
     }
 
+    public function worksInJump(): bool
+    {
+        return $this->works_in_jump ?? false;
+    }
+
     public function isSatisSynced(): bool
     {
         return $this->satis_synced_at !== null;
+    }
+
+    /**
+     * Queue a satis build so the plugin is installable via Composer.
+     *
+     * Paid plugins are ingested from submission onwards, not from approval, so
+     * that reviewers can install and test them while the plugin is pending.
+     */
+    public function syncToSatis(): void
+    {
+        if (! $this->isPaid()) {
+            return;
+        }
+
+        SyncPluginReleases::dispatch($this);
+    }
+
+    /**
+     * Queue the plugin's removal from satis.
+     *
+     * Composer gives a custom repository precedence over Packagist, so a plugin
+     * left in satis after it stops being paid would keep shadowing the public
+     * package metadata.
+     */
+    public function removeFromSatis(): void
+    {
+        if (! $this->name) {
+            return;
+        }
+
+        RemovePluginFromSatis::dispatch($this->name);
     }
 
     /**
@@ -408,6 +495,47 @@ class Plugin extends Model
     }
 
     /**
+     * The Heroicon used when a plugin has no icon, or an unrecognised one.
+     */
+    public const DEFAULT_ICON_NAME = 'cube';
+
+    /**
+     * Whether the given name matches an outline Heroicon we can actually render.
+     *
+     * Icon names are free text typed in by developers, so they regularly don't
+     * exist (e.g. "image" instead of "photo", or "location" instead of "map-pin").
+     */
+    public static function isValidIconName(?string $iconName): bool
+    {
+        if ($iconName === null || preg_match('/^[a-z0-9-]+$/', $iconName) !== 1) {
+            return false;
+        }
+
+        try {
+            app(IconFactory::class)->svg('heroicon-o-'.$iconName);
+        } catch (SvgNotFound) {
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * The Blade component name for this plugin's gradient icon.
+     *
+     * Always resolvable: an unknown icon name would otherwise throw out of
+     * `<x-dynamic-component>` and take down the whole page.
+     */
+    public function getIconComponent(): string
+    {
+        $iconName = self::isValidIconName($this->icon_name)
+            ? $this->icon_name
+            : self::DEFAULT_ICON_NAME;
+
+        return 'heroicon-o-'.$iconName;
+    }
+
+    /**
      * Available gradient presets for plugin icons.
      *
      * @return array<string, string>
@@ -503,13 +631,39 @@ class Plugin extends Model
 
     public function getLicenseUrl(): ?string
     {
+        return $this->getRepositoryFileUrl('LICENSE');
+    }
+
+    /**
+     * Whether we host the license agreement for this plugin ourselves.
+     */
+    public function hasLicensePage(): bool
+    {
+        return $this->isPaid() && filled($this->license_html);
+    }
+
+    /**
+     * Build a URL to a file at the root of the plugin's repository.
+     */
+    public function getRepositoryFileUrl(string $path): ?string
+    {
         $repoInfo = $this->getRepositoryOwnerAndName();
 
         if (! $repoInfo) {
             return null;
         }
 
-        return "https://github.com/{$repoInfo['owner']}/{$repoInfo['repo']}/blob/main/LICENSE";
+        return "https://github.com/{$repoInfo['owner']}/{$repoInfo['repo']}/blob/main/".ltrim($path, '/');
+    }
+
+    /**
+     * The README, with links to the plugin's license file pointed at our license page.
+     */
+    protected function renderedReadmeHtml(): Attribute
+    {
+        return Attribute::make(get: fn () => $this->readme_html
+            ? PluginReadme::rewriteLicenseLinks($this->readme_html, $this)
+            : $this->readme_html);
     }
 
     public function generateWebhookSecret(): string
@@ -540,6 +694,21 @@ class Plugin extends Model
         ];
     }
 
+    public function getIssuesUrl(): ?string
+    {
+        if (! $this->repository_url || ! str_contains($this->repository_url, 'github.com')) {
+            return null;
+        }
+
+        $repoInfo = $this->getRepositoryOwnerAndName();
+
+        if (! $repoInfo) {
+            return null;
+        }
+
+        return "https://github.com/{$repoInfo['owner']}/{$repoInfo['repo']}/issues";
+    }
+
     public function approve(int $approvedById): void
     {
         $previousStatus = $this->status;
@@ -563,15 +732,12 @@ class Plugin extends Model
         $this->user->notify(new PluginApproved($this));
 
         if ($isFirstApproval) {
-            $recipients = User::query()
-                ->where('receives_new_plugin_notifications', true)
-                ->where('id', '!=', $this->user_id)
-                ->get();
-
-            Notification::send($recipients, new NewPluginAvailable($this));
+            SendNewPluginNotifications::dispatch($this);
         }
 
         resolve(PluginSyncService::class)->sync($this);
+
+        $this->syncToSatis();
     }
 
     public function reject(string $reason, int $rejectedById): void
@@ -642,6 +808,8 @@ class Plugin extends Model
             null,
             $this->user_id
         );
+
+        $this->syncToSatis();
     }
 
     /**
@@ -684,6 +852,54 @@ class Plugin extends Model
         );
     }
 
+    /**
+     * Send an ad-hoc message from the Marketplace admins to the plugin's developer.
+     *
+     * The message body is only ever surfaced in-app; the developer is emailed a
+     * content-free nudge to log in and read it.
+     */
+    public function messageDeveloper(string $message, ?int $causerId = null): PluginActivity
+    {
+        $activity = $this->activities()->create([
+            'type' => PluginActivityType::MessageToDeveloper,
+            'from_status' => null,
+            'to_status' => $this->status->value,
+            'note' => $message,
+            'causer_id' => $causerId,
+        ]);
+
+        $this->user->notify(new PluginMessageReceived($this));
+
+        return $activity;
+    }
+
+    /**
+     * Record a developer's reply to the Marketplace admins and notify them by email.
+     */
+    public function messageAdmins(string $message, ?int $causerId = null): PluginActivity
+    {
+        $activity = $this->activities()->create([
+            'type' => PluginActivityType::MessageFromDeveloper,
+            'from_status' => null,
+            'to_status' => $this->status->value,
+            'note' => $message,
+            'causer_id' => $causerId ?? $this->user_id,
+        ]);
+
+        Notification::route('mail', config('mail.support_address'))
+            ->notify(new PluginDeveloperReplied($this, $activity));
+
+        return $activity;
+    }
+
+    public function recalculateRating(): void
+    {
+        $this->update([
+            'rating_count' => $this->ratings()->count(),
+            'rating_average' => $this->ratings()->avg('rating'),
+        ]);
+    }
+
     public function updateDescription(string $description, int $updatedById): void
     {
         $oldDescription = $this->description;
@@ -723,10 +939,12 @@ class Plugin extends Model
             'status' => PluginStatus::class,
             'type' => PluginType::class,
             'tier' => PluginTier::class,
+            'category' => PluginCategory::class,
             'approved_at' => 'datetime',
             'featured' => 'boolean',
             'is_active' => 'boolean',
             'is_official' => 'boolean',
+            'works_in_jump' => 'boolean',
             'composer_data' => 'array',
             'nativephp_data' => 'array',
             'last_synced_at' => 'datetime',
@@ -734,6 +952,8 @@ class Plugin extends Model
             'webhook_installed' => 'boolean',
             'review_checks' => 'array',
             'reviewed_at' => 'datetime',
+            'rating_average' => 'decimal:2',
+            'rating_count' => 'integer',
         ];
     }
 }

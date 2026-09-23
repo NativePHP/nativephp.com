@@ -184,6 +184,14 @@
                         </flux:sidebar.item>
                     </flux:sidebar.group>
                 @endfeature
+
+                @feature(App\Features\ShowMasterclass::class)
+                    <flux:sidebar.group expandable :expanded="false" heading="Masterclass" class="mt-4 grid" x-data="sidebarGroup('masterclass')">
+                        <flux:sidebar.item icon="device-phone-mobile" href="{{ route('customer.course.index') }}" :current="request()->routeIs('customer.course.*')">
+                            Mobile
+                        </flux:sidebar.item>
+                    </flux:sidebar.group>
+                @endfeature
             </flux:sidebar.nav>
 
             <flux:sidebar.spacer />
@@ -249,6 +257,8 @@
         <flux:main container>
             {{ $slot }}
         </flux:main>
+
+        <flux:toast />
 
         <x-impersonate::banner/>
 

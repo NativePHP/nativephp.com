@@ -4,7 +4,6 @@ namespace Tests\Feature\Livewire;
 
 use App\Enums\Subscription;
 use App\Livewire\OrderSuccess;
-use App\Models\License;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Laravel\Cashier\Cashier;
@@ -37,90 +36,88 @@ class OrderSuccessTest extends TestCase
     }
 
     #[Test]
-    public function it_displays_loading_state_when_no_license_key_is_available()
+    public function it_displays_loading_state_when_subscription_record_is_not_yet_available()
     {
         Livewire::test(OrderSuccess::class, ['checkoutSessionId' => 'cs_test_123'])
             ->assertSet('email', null)
-            ->assertSet('licenseKey', null)
-            ->assertSee('License registration in progress')
-            ->assertSee('check your email');
+            ->assertSet('subscription', null)
+            ->assertSee('Finalising your subscription')
+            ->assertSeeHtml('wire:poll.2s="loadData"');
     }
 
     #[Test]
-    public function it_displays_license_key_when_available_in_database()
+    public function it_shows_dashboard_link_for_existing_users(): void
     {
         $user = User::factory()->create([
             'email' => 'test@example.com',
             'stripe_id' => 'cus_test123',
+            'email_verified_at' => now(),
         ]);
 
-        $subscription = Cashier::$subscriptionModel::factory()
-            ->for($user, 'user')
-            ->create([
-                'stripe_id' => 'sub_test123',
-            ]);
-
-        $subscriptionItem = Cashier::$subscriptionItemModel::factory()
-            ->for($subscription, 'subscription')
-            ->create([
-                'stripe_id' => 'si_test123',
-                'stripe_price' => Subscription::Max->stripePriceId(),
-            ]);
-
-        $license = License::factory()
-            ->for($user, 'user')
-            ->for($subscriptionItem, 'subscriptionItem')
-            ->create([
-                'key' => 'db-license-key-12345',
-                'policy_name' => 'max',
-            ]);
+        $this->buildSubscriptionRecord($user);
 
         Livewire::test(OrderSuccess::class, ['checkoutSessionId' => 'cs_test_123'])
             ->assertSet('email', 'test@example.com')
-            ->assertSet('licenseKey', 'db-license-key-12345')
-            ->assertSee('db-license-key-12345')
-            ->assertSee('test@example.com')
-            ->assertDontSee('License registration in progress');
+            ->assertSet('isExistingUser', true)
+            ->assertSee('Go to Dashboard')
+            ->assertSeeHtml(route('dashboard'))
+            ->assertDontSee('claim your account')
+            ->assertDontSee('Finalising your subscription');
     }
 
     #[Test]
-    public function it_polls_for_updates_from_database()
+    public function it_shows_claim_message_for_new_users(): void
+    {
+        $user = User::factory()->unverified()->create([
+            'email' => 'test@example.com',
+            'stripe_id' => 'cus_test123',
+        ]);
+
+        $this->buildSubscriptionRecord($user);
+
+        Livewire::test(OrderSuccess::class, ['checkoutSessionId' => 'cs_test_123'])
+            ->assertSet('email', 'test@example.com')
+            ->assertSet('isExistingUser', false)
+            ->assertSee('claim your account')
+            ->assertSee('test@example.com')
+            ->assertSee('support@nativephp.com')
+            ->assertDontSee('Go to Dashboard');
+    }
+
+    #[Test]
+    public function it_polls_until_subscription_record_appears(): void
     {
         $component = Livewire::test(OrderSuccess::class, ['checkoutSessionId' => 'cs_test_123'])
-            ->assertSet('licenseKey', null)
-            ->assertSee('License registration in progress')
+            ->assertSet('subscription', null)
+            ->assertSee('Finalising your subscription')
             ->assertSeeHtml('wire:poll.2s="loadData"');
 
         $user = User::factory()->create([
             'email' => 'test@example.com',
             'stripe_id' => 'cus_test123',
+            'email_verified_at' => now(),
         ]);
 
+        $this->buildSubscriptionRecord($user);
+
+        $component->call('loadData')
+            ->assertSet('subscription', Subscription::Max)
+            ->assertSee('Go to Dashboard')
+            ->assertDontSee('Finalising your subscription');
+    }
+
+    private function buildSubscriptionRecord(User $user): void
+    {
         $subscription = Cashier::$subscriptionModel::factory()
             ->for($user, 'user')
-            ->create([
-                'stripe_id' => 'sub_test123',
-            ]);
+            ->create(['stripe_id' => 'sub_test123']);
 
-        $subscriptionItem = Cashier::$subscriptionItemModel::factory()
+        Cashier::$subscriptionItemModel::factory()
             ->for($subscription, 'subscription')
             ->create([
                 'stripe_id' => 'si_test123',
                 'stripe_price' => Subscription::Max->stripePriceId(),
             ]);
-
-        $license = License::factory()
-            ->for($user, 'user')
-            ->for($subscriptionItem, 'subscriptionItem')
-            ->create([
-                'key' => 'db-polled-license-key',
-                'policy_name' => 'max',
-            ]);
-
-        $component->call('loadData')
-            ->assertSet('licenseKey', 'db-polled-license-key')
-            ->assertSee('db-polled-license-key')
-            ->assertDontSee('License registration in progress');
     }
 
     #[Test]

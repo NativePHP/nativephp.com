@@ -5,16 +5,11 @@
                 <flux:heading size="lg">
                     Keys
                     <span class="ml-2 text-sm text-zinc-500 dark:text-zinc-400">
-                        ({{ $activeSubLicenses->count() }}{{ $license->subLicenseLimit ? '/' . $license->subLicenseLimit : '' }})
+                        ({{ $activeSubLicenses->count() }}{{ $license->subLicenseLimit && ! $license->isExpired() ? '/' . $license->subLicenseLimit : '' }})
                     </span>
                 </flux:heading>
                 <flux:text>Manage license keys for team members or additional devices.</flux:text>
             </div>
-            @if($license->canCreateSubLicense())
-                <flux:button variant="primary" wire:click="openCreateModal">
-                    Create Key
-                </flux:button>
-            @endif
         </div>
 
         @if($license->subLicenses->isEmpty())
@@ -120,15 +115,13 @@
             @endif
         @endif
 
-        @if(!$license->canCreateSubLicense())
+        @if(!$license->canCreateSubLicense() && ! $license->isExpired())
             <flux:callout variant="warning" icon="exclamation-triangle" class="mt-4">
                 <flux:callout.text>
                     @if($license->remainingSubLicenses === 0)
                         You have reached the maximum number of keys for this plan.
                     @elseif($license->is_suspended)
                         Keys cannot be created for suspended licenses.
-                    @elseif($license->expires_at && $license->expires_at->isPast())
-                        Keys cannot be created for expired licenses.
                     @else
                         Keys cannot be created at this time.
                     @endif

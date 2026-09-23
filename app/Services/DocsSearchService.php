@@ -49,7 +49,7 @@ class DocsSearchService
     {
         $platform = $this->sanitizePlatform($platform);
         $version = $this->sanitizeVersion($version);
-        $section = $this->sanitizePathSegment($section);
+        $section = $this->sanitizeSectionPath($section);
         $slug = $this->sanitizePathSegment($slug);
 
         if (! $platform || ! $version || ! $section || ! $slug) {
@@ -65,6 +65,11 @@ class DocsSearchService
         return $this->parsePage($filePath, $platform, $version, $section);
     }
 
+    /**
+     * Resolve a page from a `platform/version/section/slug` path. The section
+     * may itself be nested (e.g. `mobile/4/plugins/core/camera`), so anything
+     * between the version and the slug is treated as the section path.
+     */
     public function getPageByPath(string $path): ?array
     {
         $parts = explode('/', $path);
@@ -73,17 +78,22 @@ class DocsSearchService
             return null;
         }
 
-        return $this->getPage($parts[0], $parts[1], $parts[2], $parts[3]);
+        $platform = array_shift($parts);
+        $version = array_shift($parts);
+        $slug = array_pop($parts);
+
+        return $this->getPage($platform, $version, implode('/', $parts), $slug);
     }
 
-    public function listApis(string $platform, string $version): array
+    public function listEdgeComponents(string $platform, string $version): array
     {
         if (! $this->sanitizePlatform($platform) || ! $this->sanitizeVersion($version)) {
             return [];
         }
 
         return collect($this->getAllPages($platform, $version))
-            ->filter(fn ($page) => $page['section'] === 'apis')
+            ->filter(fn ($page) => $page['section'] === 'edge-components'
+                || str_starts_with($page['section'], 'edge-components/'))
             ->sortBy('order')
             ->values()
             ->toArray();
@@ -110,7 +120,51 @@ class DocsSearchService
             usort($sections[$section], fn ($a, $b) => $a['order'] <=> $b['order']);
         }
 
-        return $sections;
+        // Order the sections themselves to match the sidebar (each section
+        // directory's `_index.md` front-matter `order` — the same source
+        // ShowDocumentationController sorts by). Nested subsections (e.g.
+        // plugins/core) rank right after their parent. JSON objects keep key
+        // order, so API consumers get the sidebar order for free. Unknown
+        // sections trail in their original grouping order (stable sort).
+        $rank = $this->sectionRanks($platform, $version);
+        $slugs = array_keys($sections);
+        usort($slugs, fn ($a, $b) => ($rank[$a] ?? PHP_INT_MAX) <=> ($rank[$b] ?? PHP_INT_MAX));
+
+        $ordered = [];
+        foreach ($slugs as $slug) {
+            $ordered[$slug] = $sections[$slug];
+        }
+
+        return $ordered;
+    }
+
+    /**
+     * Sidebar rank per section slug for one platform/version: top-level
+     * sections rank by their `_index.md` front-matter `order` (scaled so
+     * children can interleave); a nested subsection ranks just after its
+     * parent, offset by its own `order`. Sections without an `_index.md`
+     * get no rank (callers push them to the end).
+     *
+     * @return array<string, int>
+     */
+    protected function sectionRanks(string $platform, string $version): array
+    {
+        $base = "{$this->docsPath}/{$platform}/{$version}";
+        $rank = [];
+
+        foreach (glob("{$base}/*/_index.md") ?: [] as $index) {
+            $slug = basename(dirname($index));
+            $order = YamlFrontMatter::parse(file_get_contents($index))->matter('order') ?? 9999;
+            $rank[$slug] = $order * 10000;
+
+            foreach (glob("{$base}/{$slug}/*/_index.md") ?: [] as $nested) {
+                $nestedSlug = basename(dirname($nested));
+                $nestedOrder = YamlFrontMatter::parse(file_get_contents($nested))->matter('order') ?? 9999;
+                $rank["{$slug}/{$nestedSlug}"] = $rank[$slug] + 1 + min($nestedOrder, 9998);
+            }
+        }
+
+        return $rank;
     }
 
     public function getPlatforms(): array
@@ -144,8 +198,8 @@ class DocsSearchService
         $versions = $this->getVersions();
 
         return [
-            'desktop' => collect($versions['desktop'] ?? [])->sort()->last() ?? '2',
-            'mobile' => collect($versions['mobile'] ?? [])->sort()->last() ?? '3',
+            'desktop' => (string) (config('docs.latest_versions.desktop') ?? collect($versions['desktop'] ?? [])->sort()->last() ?? '2'),
+            'mobile' => (string) (config('docs.latest_versions.mobile') ?? collect($versions['mobile'] ?? [])->sort()->last() ?? '3'),
         ];
     }
 
@@ -158,7 +212,9 @@ class DocsSearchService
             return [];
         }
 
-        $cacheKey = 'mcp_docs_pages_'.($platform ?? 'all').'_'.($version ?? 'all');
+        // v2 keys: page ids now carry the full section path, so entries cached
+        // under the old shape must not be reused after a deploy.
+        $cacheKey = 'mcp_docs_pages_v2_'.($platform ?? 'all').'_'.($version ?? 'all');
 
         if (config('app.env') !== 'local') {
             $cached = Cache::get($cacheKey);
@@ -188,7 +244,10 @@ class DocsSearchService
                     ->in($versionPath);
 
                 foreach ($finder as $file) {
-                    $section = basename(dirname($file->getPathname()));
+                    // Relative to the version directory, so a page nested in a
+                    // subsection keeps its full section path (`plugins/core`)
+                    // and the ids we hand out stay resolvable by getPage().
+                    $section = $file->getRelativePath();
                     $page = $this->parsePage($file->getPathname(), $plat, $ver, $section);
                     if ($page) {
                         $pages[] = $page;
@@ -232,18 +291,30 @@ class DocsSearchService
 
     protected function stripBladeComponents(string $content): string
     {
-        // Remove <x-component>...</x-component> tags
-        $content = preg_replace('/<x-[^>]+>[\s\S]*?<\/x-[^>]+>/s', '', $content);
-        // Remove self-closing <x-component /> tags
-        $content = preg_replace('/<x-[^\/]+\/>/s', '', $content);
-        // Remove {{ }} blade echoes
-        $content = preg_replace('/\{\{.*?\}\}/s', '', $content);
-        // Remove {!! !!} unescaped echoes
-        $content = preg_replace('/\{!![\s\S]*?!!\}/s', '', $content);
-        // Remove @directives
-        $content = preg_replace('/@\w+(\([^)]*\))?/', '', $content);
+        // Fenced code blocks are preserved verbatim: they document the component
+        // API itself (<native:*> tags, @press/@change directives, {{ }} bindings),
+        // and Jump renders them as live examples. Only prose is cleaned — stripping
+        // directives from a code block turns `@press="save"` into `="save"`.
+        $segments = preg_split('/(```[\s\S]*?```)/', $content, -1, PREG_SPLIT_DELIM_CAPTURE);
 
-        return $content;
+        foreach ($segments as $i => $segment) {
+            if (str_starts_with($segment, '```')) {
+                continue; // code block — leave untouched
+            }
+            // Remove <x-component>...</x-component> tags
+            $segment = preg_replace('/<x-[^>]+>[\s\S]*?<\/x-[^>]+>/s', '', $segment);
+            // Remove self-closing <x-component /> tags
+            $segment = preg_replace('/<x-[^\/]+\/>/s', '', $segment);
+            // Remove {{ }} blade echoes
+            $segment = preg_replace('/\{\{.*?\}\}/s', '', $segment);
+            // Remove {!! !!} unescaped echoes
+            $segment = preg_replace('/\{!![\s\S]*?!!\}/s', '', $segment);
+            // Remove @directives (@verbatim wrappers, @php, etc.)
+            $segment = preg_replace('/@\w+(\([^)]*\))?/', '', $segment);
+            $segments[$i] = $segment;
+        }
+
+        return implode('', $segments);
     }
 
     protected function extractHeadings(string $content): array
@@ -335,6 +406,27 @@ class DocsSearchService
         }
 
         return preg_match('/^[0-9]+$/', $version) ? $version : null;
+    }
+
+    /**
+     * Validate a section path, which may nest (e.g. `plugins/core`). Every
+     * segment is checked on its own so traversal can't hide behind a separator.
+     */
+    protected function sanitizeSectionPath(?string $section): ?string
+    {
+        if ($section === null || $section === '') {
+            return null;
+        }
+
+        $segments = explode('/', $section);
+
+        foreach ($segments as $segment) {
+            if (! $this->sanitizePathSegment($segment)) {
+                return null;
+            }
+        }
+
+        return implode('/', $segments);
     }
 
     protected function sanitizePathSegment(?string $segment): ?string

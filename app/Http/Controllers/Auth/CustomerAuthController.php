@@ -5,10 +5,12 @@ namespace App\Http\Controllers\Auth;
 use App\Enums\TeamUserStatus;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\LoginRequest;
+use App\Http\Requests\Auth\RegisterRequest;
 use App\Models\Plugin;
 use App\Models\TeamUser;
 use App\Models\User;
 use App\Services\CartService;
+use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Passwords\PasswordBroker;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -21,8 +23,10 @@ class CustomerAuthController extends Controller
 {
     public function __construct(protected CartService $cartService) {}
 
-    public function showLogin(): View
+    public function showLogin(Request $request): View
     {
+        $this->rememberIntendedUrl($request);
+
         return view('auth.login');
     }
 
@@ -31,19 +35,15 @@ class CustomerAuthController extends Controller
         return view('auth.register');
     }
 
-    public function register(Request $request): RedirectResponse
+    public function register(RegisterRequest $request): RedirectResponse
     {
-        $request->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'email:rfc,dns', 'max:255', 'unique:users'],
-            'password' => ['required', 'string', 'min:8', 'confirmed'],
-        ]);
-
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
         ]);
+
+        event(new Registered($user));
 
         Auth::login($user);
 
@@ -153,9 +153,17 @@ class CustomerAuthController extends Controller
         $status = Password::reset(
             $request->only('email', 'password', 'password_confirmation', 'token'),
             function ($user, $password): void {
-                $user->forceFill([
-                    'password' => $password,
-                ]);
+                $attributes = ['password' => $password];
+
+                // Proving control of the inbox + setting a password is sufficient
+                // to consider the email verified. This also lets the same flow
+                // serve as the "claim your account" path for users created via
+                // checkout.
+                if (! $user->email_verified_at) {
+                    $attributes['email_verified_at'] = now();
+                }
+
+                $user->forceFill($attributes);
 
                 $user->save();
             }
@@ -164,6 +172,27 @@ class CustomerAuthController extends Controller
         return $status === PasswordBroker::PASSWORD_RESET
             ? to_route('customer.login')->with('status', __($status))
             : back()->withErrors(['email' => [__($status)]]);
+    }
+
+    /**
+     * Remember where the user was headed, so login sends them back there.
+     *
+     * Only same-site paths are accepted; anything else is ignored so the
+     * `redirect` parameter can't be used as an open redirect.
+     */
+    private function rememberIntendedUrl(Request $request): void
+    {
+        $redirect = $request->query('redirect');
+
+        if (! is_string($redirect) || ! str_starts_with($redirect, '/')) {
+            return;
+        }
+
+        if (str_starts_with($redirect, '//') || str_starts_with($redirect, '/\\')) {
+            return;
+        }
+
+        session(['url.intended' => url($redirect)]);
     }
 
     private function acceptPendingTeamInvitation(User $user): void

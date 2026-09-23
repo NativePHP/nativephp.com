@@ -20,15 +20,23 @@ use Illuminate\Support\Facades\Route;
 
 // MCP Server routes (no session/cookies - fixes CSRF 419 errors)
 Route::prefix('mcp')->group(function (): void {
-    Route::get('sse', [McpController::class, 'sse'])->name('mcp.sse');
     Route::post('message', [McpController::class, 'message'])->name('mcp.message');
     Route::get('health', [McpController::class, 'health'])->name('mcp.health');
 
     // REST API endpoints
     Route::get('search', [McpController::class, 'searchApi'])->name('mcp.api.search');
-    Route::get('page/{platform}/{version}/{section}/{slug}', [McpController::class, 'pageApi'])->name('mcp.api.page');
-    Route::get('apis/{platform}/{version}', [McpController::class, 'apisApi'])->name('mcp.api.apis');
+    // The trailing path is a wildcard so pages nested in a subsection
+    // (e.g. mobile/4/plugins/core/camera) resolve as well as flat ones.
+    Route::get('page/{platform}/{version}/{path}', [McpController::class, 'pageApi'])
+        ->where('path', '.*')
+        ->name('mcp.api.page');
+    Route::get('edge-components/{platform}/{version}', [McpController::class, 'edgeComponentsApi'])->name('mcp.api.edge-components');
     Route::get('navigation/{platform}/{version}', [McpController::class, 'navigationApi'])->name('mcp.api.navigation');
+
+    Route::get('plugins', [McpController::class, 'pluginsSearchApi'])->name('mcp.api.plugins.search');
+    Route::get('plugins/{vendor}/{package}', [McpController::class, 'pluginShowApi'])
+        ->where(['vendor' => '[A-Za-z0-9_.-]+', 'package' => '[A-Za-z0-9_.-]+'])
+        ->name('mcp.api.plugins.show');
 });
 
 Route::middleware('auth.api_key')->group(function (): void {

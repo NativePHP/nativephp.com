@@ -37,6 +37,7 @@ class ResendNewPluginNotifications extends Command
         }
 
         $recipients = User::query()
+            ->whereNotNull('email_verified_at')
             ->where('receives_new_plugin_notifications', true)
             ->whereNotIn('id', $plugins->pluck('user_id'))
             ->get();

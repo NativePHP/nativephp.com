@@ -4,9 +4,16 @@ namespace Tests\Feature\Jobs;
 
 use App\Jobs\CreateAnystackLicenseJob;
 use App\Jobs\HandleInvoicePaidJob;
+use App\Models\Cart;
+use App\Models\CartItem;
+use App\Models\Plugin;
+use App\Models\PluginBundle;
 use App\Models\User;
+use App\Notifications\PurchaseReceipt;
+use App\Notifications\UltraSubscriptionStarted;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Bus;
+use Illuminate\Support\Facades\Notification;
 use Laravel\Cashier\SubscriptionItem;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
@@ -114,6 +121,149 @@ class HandleInvoicePaidJobTest extends TestCase
 
         $this->assertFalse((bool) $subscription->is_comped);
         $this->assertEquals(0, $subscription->price_paid);
+    }
+
+    #[Test]
+    public function it_sends_ultra_welcome_email_when_an_ultra_subscription_is_created(): void
+    {
+        Notification::fake();
+
+        $user = User::factory()->create(['stripe_id' => 'cus_test123']);
+
+        $priceId = 'price_test_max';
+        config(['subscriptions.plans.max.stripe_price_id' => $priceId]);
+
+        $this->mockStripeSubscriptionRetrieve('sub_test123');
+
+        $invoice = $this->createStripeInvoice(
+            customerId: 'cus_test123',
+            subscriptionId: 'sub_test123',
+            billingReason: Invoice::BILLING_REASON_SUBSCRIPTION_CREATE,
+            priceId: $priceId,
+            subscriptionItemId: 'si_test123',
+        );
+
+        (new HandleInvoicePaidJob($invoice))->handle();
+
+        Notification::assertSentTo($user, UltraSubscriptionStarted::class);
+    }
+
+    #[Test]
+    public function it_does_not_send_ultra_welcome_email_for_non_ultra_subscriptions(): void
+    {
+        Notification::fake();
+
+        $user = User::factory()->create(['stripe_id' => 'cus_test123']);
+
+        $priceId = 'price_test_pro';
+        config(['subscriptions.plans.pro.stripe_price_id' => $priceId]);
+
+        $this->mockStripeSubscriptionRetrieve('sub_test123');
+
+        $invoice = $this->createStripeInvoice(
+            customerId: 'cus_test123',
+            subscriptionId: 'sub_test123',
+            billingReason: Invoice::BILLING_REASON_SUBSCRIPTION_CREATE,
+            priceId: $priceId,
+            subscriptionItemId: 'si_test123',
+        );
+
+        (new HandleInvoicePaidJob($invoice))->handle();
+
+        Notification::assertNothingSentTo($user);
+    }
+
+    #[Test]
+    public function it_sends_a_purchase_receipt_to_the_buyer_after_a_cart_purchase(): void
+    {
+        Notification::fake();
+
+        $buyer = User::factory()->create(['stripe_id' => 'cus_test_buyer']);
+
+        $plugin = Plugin::factory()->approved()->free()->create(['is_active' => true]);
+
+        $cart = Cart::factory()->for($buyer)->create();
+        CartItem::create([
+            'cart_id' => $cart->id,
+            'plugin_id' => $plugin->id,
+            'price_at_addition' => 0,
+        ]);
+
+        $invoice = Invoice::constructFrom([
+            'id' => 'in_test_'.uniqid(),
+            'billing_reason' => Invoice::BILLING_REASON_MANUAL,
+            'customer' => $buyer->stripe_id,
+            'payment_intent' => 'pi_test_'.uniqid(),
+            'currency' => 'usd',
+            'metadata' => ['cart_id' => $cart->id],
+            'lines' => [],
+        ]);
+
+        (new HandleInvoicePaidJob($invoice))->handle();
+
+        Notification::assertSentTo($buyer, PurchaseReceipt::class);
+    }
+
+    #[Test]
+    public function it_only_licenses_cart_items_recorded_in_the_invoice_snapshot(): void
+    {
+        Notification::fake();
+
+        $buyer = User::factory()->create(['stripe_id' => 'cus_test_buyer']);
+
+        $purchasedPlugin = Plugin::factory()->approved()->create(['is_active' => true]);
+
+        $leftoverPlugin = Plugin::factory()->approved()->create(['is_active' => true]);
+        $leftoverBundle = PluginBundle::factory()->create();
+        $leftoverBundle->plugins()->attach($leftoverPlugin->id, ['sort_order' => 1]);
+
+        $cart = Cart::factory()->for($buyer)->create();
+
+        $purchasedItem = CartItem::create([
+            'cart_id' => $cart->id,
+            'plugin_id' => $purchasedPlugin->id,
+            'price_at_addition' => 2500,
+        ]);
+
+        // This bundle is still sitting in the cart but was never part of the checkout.
+        CartItem::create([
+            'cart_id' => $cart->id,
+            'plugin_bundle_id' => $leftoverBundle->id,
+            'bundle_price_at_addition' => 9999,
+        ]);
+
+        $invoice = Invoice::constructFrom([
+            'id' => 'in_test_'.uniqid(),
+            'billing_reason' => Invoice::BILLING_REASON_MANUAL,
+            'customer' => $buyer->stripe_id,
+            'payment_intent' => 'pi_test_'.uniqid(),
+            'currency' => 'usd',
+            'metadata' => [
+                'cart_id' => (string) $cart->id,
+                'cart_item_ids' => (string) $purchasedItem->id,
+            ],
+            'lines' => [],
+        ]);
+
+        (new HandleInvoicePaidJob($invoice))->handle();
+
+        $this->assertDatabaseHas('plugin_licenses', [
+            'user_id' => $buyer->id,
+            'plugin_id' => $purchasedPlugin->id,
+            'plugin_bundle_id' => null,
+            'price_paid' => 2500,
+        ]);
+
+        $this->assertDatabaseMissing('plugin_licenses', [
+            'plugin_bundle_id' => $leftoverBundle->id,
+        ]);
+
+        $this->assertDatabaseMissing('plugin_licenses', [
+            'plugin_id' => $leftoverPlugin->id,
+        ]);
+
+        $this->assertEquals(1, $buyer->pluginLicenses()->count());
+        $this->assertNotNull($cart->fresh()->completed_at);
     }
 
     public static function subscriptionPlanProvider(): array

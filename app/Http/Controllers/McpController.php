@@ -2,65 +2,19 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\McpPluginSearchRequest;
 use App\Http\Requests\McpSearchRequest;
 use App\Services\DocsSearchService;
+use App\Services\PluginSearchService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Sleep;
-use Illuminate\Support\Str;
-use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class McpController extends Controller
 {
     public function __construct(
-        protected DocsSearchService $docsSearch
+        protected DocsSearchService $docsSearch,
+        protected PluginSearchService $pluginSearch,
     ) {}
-
-    /**
-     * SSE endpoint for MCP clients
-     */
-    public function sse(Request $request): StreamedResponse
-    {
-        $sessionId = Str::uuid()->toString();
-
-        return response()->stream(function () use ($sessionId): void {
-            // Send session info
-            $this->sendSseEvent([
-                'type' => 'session',
-                'sessionId' => $sessionId,
-            ]);
-
-            // Send server info
-            $this->sendSseEvent([
-                'type' => 'serverInfo',
-                'name' => 'nativephp-docs',
-                'version' => '1.0.0',
-                'capabilities' => ['tools' => new \stdClass],
-            ]);
-
-            // Send available tools
-            $this->sendSseEvent([
-                'type' => 'tools',
-                'tools' => $this->getToolDefinitions(),
-            ]);
-
-            // Keep connection alive
-            while (true) {
-                if (connection_aborted()) {
-                    break;
-                }
-                echo ": keepalive\n\n";
-                ob_flush();
-                flush();
-                Sleep::sleep(30);
-            }
-        }, 200, [
-            'Content-Type' => 'text/event-stream',
-            'Cache-Control' => 'no-cache',
-            'Connection' => 'keep-alive',
-            'X-Accel-Buffering' => 'no',
-        ]);
-    }
 
     /**
      * JSON-RPC message endpoint for tool calls
@@ -77,7 +31,10 @@ class McpController extends Controller
                 'notifications/initialized' => new \stdClass,
                 'ping' => new \stdClass,
                 'tools/list' => ['tools' => $this->getToolDefinitions()],
-                'tools/call' => $this->handleToolCall($params['name'] ?? '', $params['arguments'] ?? []),
+                'tools/call' => $this->handleToolCall(
+                    $params['name'] ?? '',
+                    $params['arguments'] ?? [],
+                ),
                 default => throw new \InvalidArgumentException("Unknown method: {$method}"),
             };
 
@@ -129,9 +86,9 @@ class McpController extends Controller
         return response()->json(['results' => $results]);
     }
 
-    public function pageApi(string $platform, string $version, string $section, string $slug): JsonResponse
+    public function pageApi(string $platform, string $version, string $path): JsonResponse
     {
-        $page = $this->docsSearch->getPage($platform, $version, $section, $slug);
+        $page = $this->docsSearch->getPageByPath("{$platform}/{$version}/{$path}");
 
         if (! $page) {
             return response()->json(['error' => 'Page not found'], 404);
@@ -140,11 +97,11 @@ class McpController extends Controller
         return response()->json(['page' => $page]);
     }
 
-    public function apisApi(string $platform, string $version): JsonResponse
+    public function edgeComponentsApi(string $platform, string $version): JsonResponse
     {
-        $apis = $this->docsSearch->listApis($platform, $version);
+        $components = $this->docsSearch->listEdgeComponents($platform, $version);
 
-        return response()->json(['apis' => $apis]);
+        return response()->json(['edge_components' => $components]);
     }
 
     public function navigationApi(string $platform, string $version): JsonResponse
@@ -152,6 +109,30 @@ class McpController extends Controller
         $nav = $this->docsSearch->getNavigation($platform, $version);
 
         return response()->json(['navigation' => $nav]);
+    }
+
+    public function pluginsSearchApi(McpPluginSearchRequest $request): JsonResponse
+    {
+        $validated = $request->validated();
+
+        $results = $this->pluginSearch->search(
+            $validated['q'],
+            $validated['type'] ?? null,
+            $validated['limit'] ?? PluginSearchService::DEFAULT_LIMIT,
+        );
+
+        return response()->json(['plugins' => $results]);
+    }
+
+    public function pluginShowApi(string $vendor, string $package): JsonResponse
+    {
+        $plugin = $this->pluginSearch->getByVendorPackage($vendor, $package);
+
+        if (! $plugin) {
+            return response()->json(['error' => 'Plugin not found'], 404);
+        }
+
+        return response()->json(['plugin' => $plugin]);
     }
 
     protected function getToolDefinitions(): array
@@ -188,7 +169,7 @@ class McpController extends Controller
             ],
             [
                 'name' => 'get_page',
-                'description' => 'Get full content of a documentation page by path (e.g., "mobile/3/apis/camera")',
+                'description' => 'Get full content of a documentation page by path (e.g., "mobile/4/plugins/core/camera")',
                 'inputSchema' => [
                     'type' => 'object',
                     'properties' => [
@@ -201,22 +182,22 @@ class McpController extends Controller
                 ],
             ],
             [
-                'name' => 'list_apis',
-                'description' => 'List all native APIs for a platform/version',
+                'name' => 'list_edge_components',
+                'description' => 'List EDGE / SuperNative UI components documented for a platform/version so agents build the NativePHP way (native UI via Blade EDGE components). Defaults to the latest version for the platform when version is omitted.',
                 'inputSchema' => [
                     'type' => 'object',
                     'properties' => [
                         'platform' => [
                             'type' => 'string',
                             'enum' => ['desktop', 'mobile'],
-                            'description' => 'Platform to list APIs for',
+                            'description' => 'Platform to list EDGE components for (default: mobile)',
+                            'default' => 'mobile',
                         ],
                         'version' => [
                             'type' => 'string',
-                            'description' => 'Version number',
+                            'description' => 'Version number (optional; defaults to the latest for the platform)',
                         ],
                     ],
-                    'required' => ['platform', 'version'],
                 ],
             ],
             [
@@ -236,6 +217,50 @@ class McpController extends Controller
                         ],
                     ],
                     'required' => ['platform', 'version'],
+                ],
+            ],
+            [
+                'name' => 'search_plugins',
+                'description' => 'Search the NativePHP plugin marketplace for approved, publicly listed plugins. Returns composer package names, free/paid type, price, and marketplace URLs.',
+                'inputSchema' => [
+                    'type' => 'object',
+                    'properties' => [
+                        'query' => [
+                            'type' => 'string',
+                            'description' => 'Search query matched against plugin name and description (e.g., "camera", "push notifications")',
+                        ],
+                        'type' => [
+                            'type' => 'string',
+                            'enum' => ['free', 'paid'],
+                            'description' => 'Filter by marketplace type (optional)',
+                        ],
+                        'limit' => [
+                            'type' => 'number',
+                            'description' => 'Max results to return (default: 10, max: 25)',
+                        ],
+                    ],
+                    'required' => ['query'],
+                ],
+            ],
+            [
+                'name' => 'get_plugin',
+                'description' => 'Get details for one marketplace plugin by composer name (vendor/package) or vendor + package path args.',
+                'inputSchema' => [
+                    'type' => 'object',
+                    'properties' => [
+                        'name' => [
+                            'type' => 'string',
+                            'description' => 'Composer package name, e.g. "nativephp/camera"',
+                        ],
+                        'vendor' => [
+                            'type' => 'string',
+                            'description' => 'Composer vendor segment (use with package)',
+                        ],
+                        'package' => [
+                            'type' => 'string',
+                            'description' => 'Composer package segment (use with vendor)',
+                        ],
+                    ],
                 ],
             ],
         ];
@@ -260,8 +285,10 @@ class McpController extends Controller
         return match ($name) {
             'search_docs' => $this->toolSearchDocs($args),
             'get_page' => $this->toolGetPage($args),
-            'list_apis' => $this->toolListApis($args),
+            'list_edge_components' => $this->toolListEdgeComponents($args),
             'get_navigation' => $this->toolGetNavigation($args),
+            'search_plugins' => $this->toolSearchPlugins($args),
+            'get_plugin' => $this->toolGetPlugin($args),
             default => [
                 'content' => [['type' => 'text', 'text' => "Unknown tool: {$name}"]],
                 'isError' => true,
@@ -323,27 +350,29 @@ class McpController extends Controller
         ];
     }
 
-    protected function toolListApis(array $args): array
+    protected function toolListEdgeComponents(array $args): array
     {
-        $platform = $args['platform'] ?? '';
-        $version = $args['version'] ?? '';
+        $platform = $args['platform'] ?? 'mobile';
+        $latestVersions = $this->docsSearch->getLatestVersions();
+        $version = $args['version'] ?? ($latestVersions[$platform] ?? '');
 
-        $apis = $this->docsSearch->listApis($platform, $version);
+        $components = $this->docsSearch->listEdgeComponents($platform, $version);
 
-        if (empty($apis)) {
+        if (empty($components)) {
             return [
-                'content' => [['type' => 'text', 'text' => "No APIs found for {$platform} v{$version}"]],
+                'content' => [['type' => 'text', 'text' => "No EDGE components found for {$platform} v{$version}"]],
             ];
         }
 
-        $formatted = collect($apis)->map(function ($api) {
-            $desc = $api['description'] ?: 'No description';
+        $formatted = collect($components)->map(function ($component) {
+            $desc = $component['description'] ?: 'No description';
+            $path = $component['id'];
 
-            return "- **{$api['title']}** ({$api['slug']})\n  {$desc}";
+            return "- **{$component['title']}** ({$component['slug']})\n  Path: {$path}\n  {$desc}";
         })->join("\n");
 
         return [
-            'content' => [['type' => 'text', 'text' => "# {$platform} v{$version} APIs\n\n{$formatted}"]],
+            'content' => [['type' => 'text', 'text' => "# {$platform} v{$version} EDGE components\n\n{$formatted}"]],
         ];
     }
 
@@ -371,10 +400,132 @@ class McpController extends Controller
         ];
     }
 
-    protected function sendSseEvent(array $data): void
+    protected function toolSearchPlugins(array $args): array
     {
-        echo 'data: '.json_encode($data)."\n\n";
-        ob_flush();
-        flush();
+        $query = (string) ($args['query'] ?? '');
+        $type = isset($args['type']) ? (string) $args['type'] : null;
+        $limit = isset($args['limit']) ? (int) $args['limit'] : PluginSearchService::DEFAULT_LIMIT;
+
+        if ($type !== null && ! in_array($type, ['free', 'paid'], true)) {
+            return [
+                'content' => [['type' => 'text', 'text' => 'Invalid type. Use "free" or "paid".']],
+                'isError' => true,
+            ];
+        }
+
+        $results = $this->pluginSearch->search($query, $type, $limit);
+
+        if (empty($results)) {
+            $filterDesc = $type ? " (type: {$type})" : '';
+
+            return [
+                'content' => [['type' => 'text', 'text' => "No marketplace plugins found for \"{$query}\"{$filterDesc}"]],
+            ];
+        }
+
+        $formatted = collect($results)->map(function (array $plugin, int $i): string {
+            return ($i + 1).'. '.$this->formatPluginResultText($plugin, detailed: false);
+        })->join("\n\n");
+
+        return [
+            'content' => [['type' => 'text', 'text' => 'Found '.count($results)." marketplace plugins for \"{$query}\":\n\n{$formatted}"]],
+        ];
+    }
+
+    protected function toolGetPlugin(array $args): array
+    {
+        $name = isset($args['name']) ? (string) $args['name'] : '';
+        $vendor = isset($args['vendor']) ? (string) $args['vendor'] : '';
+        $package = isset($args['package']) ? (string) $args['package'] : '';
+
+        $plugin = null;
+
+        if ($name !== '') {
+            $plugin = $this->pluginSearch->getByName($name);
+            $lookup = $name;
+        } elseif ($vendor !== '' && $package !== '') {
+            $plugin = $this->pluginSearch->getByVendorPackage($vendor, $package);
+            $lookup = "{$vendor}/{$package}";
+        } else {
+            return [
+                'content' => [['type' => 'text', 'text' => 'Provide either name (vendor/package) or both vendor and package.']],
+                'isError' => true,
+            ];
+        }
+
+        if (! $plugin) {
+            return [
+                'content' => [['type' => 'text', 'text' => "Plugin not found: {$lookup}"]],
+                'isError' => true,
+            ];
+        }
+
+        $text = "# {$plugin['name']}\n\n";
+        if ($plugin['description']) {
+            $text .= "{$plugin['description']}\n\n";
+        }
+        $text .= $this->formatPluginResultText($plugin, detailed: true);
+
+        return [
+            'content' => [['type' => 'text', 'text' => $text]],
+        ];
+    }
+
+    /**
+     * @param  array<string, mixed>  $plugin
+     */
+    protected function formatPluginResultText(array $plugin, bool $detailed): string
+    {
+        $lines = [];
+
+        if (! $detailed) {
+            $lines[] = "**{$plugin['name']}**";
+        }
+
+        if ($plugin['type'] === 'paid') {
+            $lines[] = 'Type: paid';
+            $lines[] = 'Price: '.($plugin['price'] ?: 'paid (price not listed)');
+            $lines[] = "Marketplace: {$plugin['marketplace_url']}";
+        } else {
+            $lines[] = 'Type: free';
+            $lines[] = "Marketplace: {$plugin['marketplace_url']}";
+        }
+
+        if ($detailed) {
+            if ($plugin['latest_version']) {
+                $lines[] = "Latest version: {$plugin['latest_version']}";
+            }
+
+            $flags = collect([
+                $plugin['featured'] ? 'featured' : null,
+                $plugin['is_official'] ? 'official' : null,
+                $plugin['works_in_jump'] ? 'works in Jump' : null,
+            ])->filter()->implode(', ');
+
+            if ($flags !== '') {
+                $lines[] = "Flags: {$flags}";
+            }
+
+            if (! empty($plugin['repository_url'])) {
+                $lines[] = "Repository: {$plugin['repository_url']}";
+            }
+
+            if (! empty($plugin['packagist_url'])) {
+                $lines[] = "Packagist: {$plugin['packagist_url']}";
+            }
+        } else {
+            if ($plugin['description']) {
+                $lines[] = $plugin['description'];
+            }
+            if ($plugin['latest_version']) {
+                $lines[] = "Latest: {$plugin['latest_version']}";
+            }
+        }
+
+        if ($detailed) {
+            return implode("\n", $lines);
+        }
+
+        return implode("\n   ", $lines);
     }
 }
