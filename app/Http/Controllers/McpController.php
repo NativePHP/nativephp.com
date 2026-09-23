@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\PluginType;
 use App\Http\Requests\McpPluginSearchRequest;
 use App\Http\Requests\McpSearchRequest;
+use App\Models\MissedPluginSearch;
 use App\Services\DocsSearchService;
 use App\Services\PluginSearchService;
 use Illuminate\Http\JsonResponse;
@@ -221,7 +223,7 @@ class McpController extends Controller
             ],
             [
                 'name' => 'search_plugins',
-                'description' => 'Search the NativePHP plugin marketplace for approved, publicly listed plugins. Returns composer package names, free/paid type, price, and marketplace URLs.',
+                'description' => 'Search the NativePHP plugin marketplace for approved, publicly listed plugins. Returns composer package names, free/paid type, price, and marketplace URLs. Searches that find nothing are kept anonymously so the NativePHP team can see which plugins to build next.',
                 'inputSchema' => [
                     'type' => 'object',
                     'properties' => [
@@ -237,6 +239,10 @@ class McpController extends Controller
                         'limit' => [
                             'type' => 'number',
                             'description' => 'Max results to return (default: 10, max: 25)',
+                        ],
+                        'use_case' => [
+                            'type' => 'string',
+                            'description' => 'A sentence on what the user needs the plugin to do (optional, e.g., "scan NFC tags to check in event attendees"). Only kept if nothing matches, to help decide which plugins to build. Leave out names, secrets and other private details.',
                         ],
                     ],
                     'required' => ['query'],
@@ -416,6 +422,8 @@ class McpController extends Controller
         $results = $this->pluginSearch->search($query, $type, $limit);
 
         if (empty($results)) {
+            rescue(fn () => $this->recordMissedSearch($query, $type, $args['use_case'] ?? null));
+
             $filterDesc = $type ? " (type: {$type})" : '';
 
             return [
@@ -430,6 +438,27 @@ class McpController extends Controller
         return [
             'content' => [['type' => 'text', 'text' => 'Found '.count($results)." marketplace plugins for \"{$query}\":\n\n{$formatted}"]],
         ];
+    }
+
+    /**
+     * Keep a search that found nothing so we can see which plugins people want that don't exist yet.
+     * A search narrowed to free or paid isn't a gap if a plugin of the other type covers it.
+     */
+    protected function recordMissedSearch(string $query, ?string $type, mixed $useCase): void
+    {
+        if (trim($query) === '') {
+            return;
+        }
+
+        if ($type !== null && $this->pluginSearch->search($query, limit: 1) !== []) {
+            return;
+        }
+
+        MissedPluginSearch::record(
+            $query,
+            PluginType::tryFrom((string) $type),
+            is_string($useCase) ? $useCase : null,
+        );
     }
 
     protected function toolGetPlugin(array $args): array
