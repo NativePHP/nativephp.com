@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use App\Enums\GitHubAuthType;
 use App\Features\ShowAuthButtons;
 use App\Features\ShowPlugins;
+use App\Livewire\GitHubAppStatus;
 use App\Models\GitHubInstallation;
 use App\Models\Plugin;
 use App\Models\User;
@@ -15,6 +16,7 @@ use Laravel\Pennant\Feature;
 use Laravel\Socialite\Facades\Socialite;
 use Laravel\Socialite\Two\GithubProvider;
 use Laravel\Socialite\Two\User as SocialiteUser;
+use Livewire\Livewire;
 use Mockery;
 use Tests\TestCase;
 
@@ -255,5 +257,47 @@ class GitHubAppInstallationPromptTest extends TestCase
             ->assertRedirect(route('customer.integrations'));
 
         $this->assertFalse(Cache::has("github_repos_{$user->id}"));
+    }
+
+    public function test_integrations_page_shows_installations_and_plugin_repo_coverage(): void
+    {
+        $user = User::factory()->withGitHubApp()->create();
+        $this->pluginFor($user, 'acme/covered-plugin');
+        $this->pluginFor($user, 'other-org/uncovered-plugin');
+
+        $installation = GitHubInstallation::factory()->forOrganization()->create([
+            'user_id' => $user->id,
+            'account_login' => 'acme',
+            'selection_type' => 'all',
+        ]);
+
+        Livewire::actingAs($user)
+            ->test(GitHubAppStatus::class)
+            ->assertSee('acme')
+            ->assertSee('All repositories')
+            ->assertSee("https://github.com/settings/installations/{$installation->installation_id}")
+            ->assertSee('acme/covered-plugin')
+            ->assertSee('other-org/uncovered-plugin')
+            ->assertSeeInOrder(['other-org/uncovered-plugin', 'Not accessible']);
+    }
+
+    public function test_integrations_page_prompts_to_install_when_there_are_no_installations(): void
+    {
+        $user = User::factory()->withGitHubApp()->create();
+
+        Livewire::actingAs($user)
+            ->test(GitHubAppStatus::class)
+            ->assertSee('No GitHub App installations found')
+            ->assertSee(self::INSTALL_URL);
+    }
+
+    public function test_disconnect_modal_explains_the_app_stays_installed(): void
+    {
+        $user = User::factory()->withGitHubApp()->create();
+
+        $this->actingAs($user)
+            ->get(route('customer.integrations'))
+            ->assertSee('give the NativePHP GitHub App access to the repositories you need')
+            ->assertSee('stays installed on your GitHub accounts');
     }
 }

@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources;
 
+use App\Enums\GitHubAuthType;
 use App\Filament\Resources\UserResource\Pages;
 use App\Filament\Resources\UserResource\RelationManagers;
 use App\Models\User;
@@ -147,6 +148,18 @@ class UserResource extends Resource
                     ->label('Developer')
                     ->boolean()
                     ->getStateUsing(fn (User $record) => $record->developerAccount !== null),
+                Tables\Columns\TextColumn::make('github_auth_type')
+                    ->label('GitHub')
+                    ->badge()
+                    ->formatStateUsing(fn (GitHubAuthType $state) => $state->label())
+                    ->color(fn (GitHubAuthType $state) => $state === GitHubAuthType::App ? 'success' : 'warning')
+                    ->placeholder('—')
+                    ->toggleable(),
+                Tables\Columns\TextColumn::make('github_app_migration_notified_at')
+                    ->label('GitHub App email sent')
+                    ->dateTime()
+                    ->placeholder('—')
+                    ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable(),
@@ -155,7 +168,14 @@ class UserResource extends Resource
                     ->sortable(),
             ])
             ->filters([
-                //
+                Tables\Filters\SelectFilter::make('github_auth_type')
+                    ->label('GitHub connection')
+                    ->options(collect(GitHubAuthType::cases())->mapWithKeys(
+                        fn (GitHubAuthType $type) => [$type->value => $type->label()]
+                    )),
+                Tables\Filters\Filter::make('plugin_authors_on_legacy_oauth')
+                    ->label('Plugin authors still on the OAuth App')
+                    ->query(fn ($query) => $query->where('github_auth_type', GitHubAuthType::OAuth)->has('plugins')),
             ])
             ->actions([
                 Impersonate::make(),

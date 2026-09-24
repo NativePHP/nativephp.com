@@ -14,7 +14,6 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Laravel\Socialite\Facades\Socialite;
@@ -84,11 +83,10 @@ class GitHubIntegrationController extends Controller
     protected function handleLinkAccount($githubUser, GitHubAuthType $authType): RedirectResponse
     {
         $user = Auth::user();
-        $user->update([
+
+        $this->saveGitHubCredentials($user, $githubUser, $authType, [
             'github_id' => $githubUser->id,
             'github_username' => $githubUser->nickname,
-            'github_token' => encrypt($githubUser->token),
-            'github_auth_type' => $authType,
         ]);
 
         $returnUrl = session()->pull('github_return_url');
@@ -116,10 +114,7 @@ class GitHubIntegrationController extends Controller
         $user = User::where('github_id', $githubUser->id)->first();
 
         if ($user) {
-            $user->update([
-                'github_token' => encrypt($githubUser->token),
-                'github_auth_type' => $authType,
-            ]);
+            $this->saveGitHubCredentials($user, $githubUser, $authType);
 
             Auth::login($user, remember: true);
 
@@ -129,11 +124,9 @@ class GitHubIntegrationController extends Controller
         $user = User::where('email', $githubUser->email)->first();
 
         if ($user) {
-            $user->update([
+            $this->saveGitHubCredentials($user, $githubUser, $authType, [
                 'github_id' => $githubUser->id,
                 'github_username' => $githubUser->nickname,
-                'github_token' => encrypt($githubUser->token),
-                'github_auth_type' => $authType,
             ]);
 
             Auth::login($user, remember: true);
@@ -146,8 +139,7 @@ class GitHubIntegrationController extends Controller
             'email' => $githubUser->email,
             'github_id' => $githubUser->id,
             'github_username' => $githubUser->nickname,
-            'github_token' => encrypt($githubUser->token),
-            'github_auth_type' => $authType,
+            ...$this->credentialAttributes($githubUser, $authType),
             'password' => bcrypt(Str::random(24)),
             'email_verified_at' => now(),
         ]);
@@ -156,6 +148,38 @@ class GitHubIntegrationController extends Controller
 
         return to_route('dashboard')
             ->with('success', 'Account created successfully!');
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    protected function credentialAttributes($githubUser, GitHubAuthType $authType): array
+    {
+        return [
+            'github_token' => encrypt($githubUser->token),
+            'github_auth_type' => $authType,
+            'github_refresh_token' => $githubUser->refreshToken ? encrypt($githubUser->refreshToken) : null,
+            'github_token_expires_at' => $githubUser->expiresIn ? now()->addSeconds($githubUser->expiresIn) : null,
+        ];
+    }
+
+    /**
+     * Save the user's new GitHub credentials. When they're moving from the legacy OAuth App to the
+     * GitHub App, their old authorization is revoked so its broad repo access stops working.
+     *
+     * @param  array<string, mixed>  $attributes
+     */
+    protected function saveGitHubCredentials(User $user, $githubUser, GitHubAuthType $authType, array $attributes = []): void
+    {
+        $legacyToken = $user->isUsingLegacyOAuth() && $authType === GitHubAuthType::App
+            ? $user->getGitHubToken()
+            : null;
+
+        $user->update([...$attributes, ...$this->credentialAttributes($githubUser, $authType)]);
+
+        if ($legacyToken) {
+            GitHubOAuth::make()->revokeOAuthGrant($legacyToken);
+        }
     }
 
     /**
@@ -178,7 +202,7 @@ class GitHubIntegrationController extends Controller
 
     public function handleSetup(Request $request): RedirectResponse
     {
-        $installationId = $request->query('installation_id');
+        $installationId = (int) $request->query('installation_id');
 
         if (! $installationId) {
             return to_route('customer.integrations')
@@ -186,46 +210,29 @@ class GitHubIntegrationController extends Controller
         }
 
         $user = Auth::user();
+        $appService = app(GitHubAppService::class);
+        $installation = GitHubInstallation::where('installation_id', $installationId)->first();
 
-        // Record the installation if the webhook hasn't already
-        $existing = GitHubInstallation::where('installation_id', $installationId)->first();
+        if ($installation && $installation->user_id !== $user->id) {
+            return to_route('customer.integrations')
+                ->with('error', 'That GitHub App installation is already linked to another NativePHP account.');
+        }
 
-        if (! $existing) {
-            // Fetch installation details from GitHub
-            try {
-                $appService = app(GitHubAppService::class);
-                $jwt = $appService->generateJwt();
-
-                $response = Http::withHeaders([
-                    'Authorization' => "Bearer {$jwt}",
-                    'Accept' => 'application/vnd.github+json',
-                ])->get("https://api.github.com/app/installations/{$installationId}");
-
-                if ($response->successful()) {
-                    $data = $response->json();
-
-                    $user->githubInstallations()->create([
-                        'installation_id' => $installationId,
-                        'account_login' => $data['account']['login'] ?? 'unknown',
-                        'account_type' => $data['account']['type'] ?? 'User',
-                        'account_id' => $data['account']['id'] ?? null,
-                        'selection_type' => $data['repository_selection'] ?? 'all',
-                    ]);
-                }
-            } catch (\Exception $e) {
-                Log::warning('Failed to fetch GitHub App installation details', [
-                    'installation_id' => $installationId,
-                    'error' => $e->getMessage(),
-                ]);
-
-                // Still create a basic record so the user isn't stuck
-                $user->githubInstallations()->create([
-                    'installation_id' => $installationId,
-                    'account_login' => $user->github_username ?? 'unknown',
-                    'account_type' => 'User',
-                    'selection_type' => 'all',
-                ]);
+        if (! $installation) {
+            if (! $user->isUsingGitHubApp() || ! $appService->userCanAccessInstallation($user, $installationId)) {
+                return to_route('customer.integrations')
+                    ->with('error', "We couldn't confirm that GitHub App installation belongs to your GitHub account. Please connect GitHub and try again.");
             }
+
+            $installation = $user->githubInstallations()->create([
+                'installation_id' => $installationId,
+                'account_login' => $user->github_username ?? 'unknown',
+            ]);
+        }
+
+        if (! $appService->syncInstallation($installation) && ! $installation->exists) {
+            return to_route('customer.integrations')
+                ->with('error', 'That GitHub App installation no longer exists.');
         }
 
         GitHubUserService::for($user)->clearRepositoryCache();
@@ -316,6 +323,8 @@ class GitHubIntegrationController extends Controller
             'github_username' => null,
             'github_token' => null,
             'github_auth_type' => null,
+            'github_refresh_token' => null,
+            'github_token_expires_at' => null,
             'mobile_repo_access_granted_at' => null,
             'claude_plugins_repo_access_granted_at' => null,
         ]);

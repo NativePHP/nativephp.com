@@ -5,12 +5,29 @@ namespace Tests\Unit;
 use App\Models\GitHubInstallation;
 use App\Models\User;
 use App\Services\GitHubAppService;
+use Firebase\JWT\JWT;
+use Firebase\JWT\Key;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\Concerns\InteractsWithGitHubApp;
 use Tests\TestCase;
 
 class GitHubAppServiceTest extends TestCase
 {
+    use InteractsWithGitHubApp;
     use RefreshDatabase;
+
+    public function test_jwt_is_signed_with_the_app_private_key(): void
+    {
+        $publicKey = $this->configureGitHubApp();
+
+        $jwt = (new GitHubAppService)->generateJwt();
+        $claims = JWT::decode($jwt, new Key($publicKey, 'RS256'));
+
+        $this->assertSame('12345', $claims->iss);
+        $this->assertLessThanOrEqual(time(), $claims->iat);
+        $this->assertGreaterThan(time(), $claims->exp);
+        $this->assertLessThanOrEqual(10 * 60, $claims->exp - $claims->iat);
+    }
 
     public function test_find_installation_for_repo_with_all_repos_selected(): void
     {

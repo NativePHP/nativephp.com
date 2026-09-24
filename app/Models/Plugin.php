@@ -15,6 +15,7 @@ use App\Notifications\PluginApproved;
 use App\Notifications\PluginDeveloperReplied;
 use App\Notifications\PluginMessageReceived;
 use App\Notifications\PluginRejected;
+use App\Services\GitHubAppService;
 use App\Services\OgImageService;
 use App\Services\PluginSyncService;
 use App\Support\PluginReadme;
@@ -673,6 +674,21 @@ class Plugin extends Model
         $this->update(['webhook_secret' => $secret]);
 
         return $secret;
+    }
+
+    /**
+     * Whether the owner's GitHub App installation covers this repository, in which case the app
+     * delivers push and release events for it and no per-repository webhook is needed.
+     */
+    public function isReachableViaGitHubApp(): bool
+    {
+        $repo = $this->getRepositoryOwnerAndName();
+
+        if (! $repo || ! $this->user?->isUsingGitHubApp()) {
+            return false;
+        }
+
+        return app(GitHubAppService::class)->findInstallationForRepo($this->user, $repo['owner'], $repo['repo']) !== null;
     }
 
     public function getRepositoryOwnerAndName(): ?array

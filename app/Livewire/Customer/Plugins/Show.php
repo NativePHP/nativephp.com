@@ -130,8 +130,12 @@ class Show extends Component
             $this->plugin->generateWebhookSecret();
         }
 
-        // Verify or install webhook
-        if ($repoInfo && $user->hasGitHubToken()) {
+        // The GitHub App delivers push and release events for repos it covers, so no per-repo hook is needed
+        if ($this->plugin->isReachableViaGitHubApp()) {
+            if (! $this->plugin->webhook_installed) {
+                $this->plugin->update(['webhook_installed' => true]);
+            }
+        } elseif ($repoInfo && $user->hasGitHubToken()) {
             $githubService = GitHubUserService::for($user);
             $webhookUrl = $this->plugin->getWebhookUrl();
 
@@ -232,6 +236,15 @@ class Show extends Component
     {
         $user = auth()->user();
         $repoInfo = $this->plugin->getRepositoryOwnerAndName();
+
+        if ($this->plugin->isReachableViaGitHubApp()) {
+            $this->plugin->update(['webhook_installed' => true]);
+            $this->plugin->refresh();
+
+            Flux::toast(variant: 'success', text: 'The NativePHP GitHub App keeps this plugin in sync, so no webhook is needed.');
+
+            return;
+        }
 
         if (! $repoInfo || ! $user->hasGitHubToken()) {
             Flux::toast(variant: 'danger', text: 'Unable to register webhook automatically. Please ensure your GitHub account is connected and the repository URL is valid.');

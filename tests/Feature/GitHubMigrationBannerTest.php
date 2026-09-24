@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use App\Features\ShowAuthButtons;
 use App\Features\ShowPlugins;
 use App\Livewire\Customer\Plugins\Create;
+use App\Models\Plugin;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Http;
@@ -33,8 +34,27 @@ class GitHubMigrationBannerTest extends TestCase
         $response = $this->actingAs($user)->get('/dashboard/integrations');
 
         $response->assertStatus(200);
+        $response->assertSee("We've Improved Our GitHub Connection", false);
+        $response->assertSee("You don't need to do anything.", false);
+        $response->assertSee('Reconnect GitHub');
+        $response->assertDontSee('GitHub Connection Upgrade Required');
+    }
+
+    public function test_legacy_plugin_author_sees_urgent_banner_with_deadline(): void
+    {
+        Http::fake(['api.github.com/*' => Http::response([], 404)]);
+        config(['services.github.legacy_oauth_cutoff_date' => '2026-12-31']);
+
+        $user = User::factory()->withLegacyGitHub()->create();
+        Plugin::factory()->create(['user_id' => $user->id]);
+
+        $response = $this->actingAs($user)->get('/dashboard/integrations');
+
+        $response->assertStatus(200);
         $response->assertSee('GitHub Connection Upgrade Required');
-        $response->assertSee('Upgrade GitHub Connection');
+        $response->assertSee("If you don't do it before 31 December 2026", false);
+        $response->assertSee('may remove them from the Marketplace');
+        $response->assertSee('Connect the GitHub App');
     }
 
     public function test_github_app_user_does_not_see_migration_banner(): void
@@ -72,7 +92,7 @@ class GitHubMigrationBannerTest extends TestCase
         $response = $this->get('/dashboard/developer/plugins');
 
         $response->assertStatus(200);
-        $response->assertSee('GitHub Connection Upgrade Required');
+        $response->assertSee("We've Improved Our GitHub Connection", false);
     }
 
     public function test_legacy_oauth_user_is_blocked_from_plugin_creation_via_livewire(): void
@@ -100,6 +120,6 @@ class GitHubMigrationBannerTest extends TestCase
 
         $response->assertStatus(200);
         $response->assertSee('GitHub Connection Upgrade Required');
-        $response->assertSee('You must upgrade your GitHub connection before you can submit or manage plugins.');
+        $response->assertSee('You need to connect the GitHub App before you can create a plugin.');
     }
 }

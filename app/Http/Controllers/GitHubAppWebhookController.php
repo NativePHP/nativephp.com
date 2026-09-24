@@ -2,9 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Jobs\SyncPluginReleases;
 use App\Models\GitHubInstallation;
+use App\Models\Plugin;
 use App\Models\User;
 use App\Services\GitHubUserService;
+use App\Services\PluginSyncService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -25,6 +28,7 @@ class GitHubAppWebhookController extends Controller
         return match ($event) {
             'installation' => $this->handleInstallation($payload),
             'installation_repositories' => $this->handleInstallationRepositories($payload),
+            'push', 'release' => $this->handleRepositoryEvent($event, $payload),
             default => response()->json(['status' => 'ignored']),
         };
     }
@@ -175,5 +179,35 @@ class GitHubAppWebhookController extends Controller
         ]);
 
         return response()->json(['status' => 'updated']);
+    }
+
+    /**
+     * Push and release events arrive here for every repository the app is installed on, so plugins
+     * the app covers stay in sync without a per-repository webhook.
+     */
+    protected function handleRepositoryEvent(string $event, array $payload): JsonResponse
+    {
+        $fullName = $payload['repository']['full_name'] ?? null;
+
+        if (! $fullName) {
+            return response()->json(['error' => 'Missing repository'], 400);
+        }
+
+        $plugins = Plugin::query()
+            ->where('repository_url', "https://github.com/{$fullName}")
+            ->get()
+            ->filter(fn (Plugin $plugin): bool => $plugin->isActive());
+
+        $syncService = app(PluginSyncService::class);
+
+        foreach ($plugins as $plugin) {
+            $syncService->sync($plugin);
+
+            if ($event === 'release') {
+                dispatch(new SyncPluginReleases($plugin));
+            }
+        }
+
+        return response()->json(['status' => 'synced', 'plugins' => $plugins->count()]);
     }
 }
