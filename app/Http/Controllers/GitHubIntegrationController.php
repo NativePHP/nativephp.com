@@ -94,9 +94,7 @@ class GitHubIntegrationController extends Controller
         $returnUrl = session()->pull('github_return_url');
 
         // For GitHub App users, redirect to install the app for repo access
-        if ($authType === GitHubAuthType::App && $slug = config('services.github_app.slug')) {
-            $installUrl = "https://github.com/apps/{$slug}/installations/new";
-
+        if ($authType === GitHubAuthType::App && $installUrl = app(GitHubAppService::class)->installationUrl()) {
             if ($returnUrl) {
                 session(['github_return_url' => $returnUrl]);
             }
@@ -125,8 +123,7 @@ class GitHubIntegrationController extends Controller
 
             Auth::login($user, remember: true);
 
-            return redirect()->intended(route('dashboard'))
-                ->with('success', 'Welcome back!');
+            return $this->redirectAfterLogin($user, $authType, 'Welcome back!');
         }
 
         $user = User::where('email', $githubUser->email)->first();
@@ -141,8 +138,7 @@ class GitHubIntegrationController extends Controller
 
             Auth::login($user, remember: true);
 
-            return redirect()->intended(route('dashboard'))
-                ->with('success', 'GitHub account connected and logged in!');
+            return $this->redirectAfterLogin($user, $authType, 'GitHub account connected and logged in!');
         }
 
         $user = User::create([
@@ -160,6 +156,24 @@ class GitHubIntegrationController extends Controller
 
         return to_route('dashboard')
             ->with('success', 'Account created successfully!');
+    }
+
+    /**
+     * Send plugin authors whose repositories the GitHub App can't reach to the installation
+     * page, so signing in with the app never silently cuts off their plugin syncing.
+     */
+    protected function redirectAfterLogin(User $user, GitHubAuthType $authType, string $message): RedirectResponse
+    {
+        $installUrl = app(GitHubAppService::class)->installationUrl();
+
+        if ($authType === GitHubAuthType::App && $installUrl && $user->pluginsMissingGitHubAppAccess()->isNotEmpty()) {
+            session(['github_return_url' => session()->pull('url.intended', route('dashboard'))]);
+
+            return redirect($installUrl);
+        }
+
+        return redirect()->intended(route('dashboard'))
+            ->with('success', $message);
     }
 
     public function handleSetup(Request $request): RedirectResponse
@@ -213,6 +227,8 @@ class GitHubIntegrationController extends Controller
                 ]);
             }
         }
+
+        GitHubUserService::for($user)->clearRepositoryCache();
 
         $returnUrl = session()->pull('github_return_url');
 

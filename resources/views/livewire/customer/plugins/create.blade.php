@@ -44,6 +44,23 @@
                     </flux:button>
                 </x-slot>
             </flux:callout>
+        {{-- GitHub App Installation Required --}}
+        @elseif (auth()->user()->needsGitHubAppInstallation())
+            <flux:callout variant="warning" icon="exclamation-triangle">
+                <flux:callout.heading>Install the GitHub App</flux:callout.heading>
+                <flux:callout.text>
+                    To create a plugin, install the NativePHP GitHub App on the account that owns your plugin's repository.
+                    You can choose to give it access to only the repositories you want to publish.
+                </flux:callout.text>
+                @if ($installUrl = app(\App\Services\GitHubAppService::class)->installationUrl())
+                    <x-slot name="actions">
+                        <flux:button variant="filled" href="{{ $installUrl }}">
+                            <x-heroicon-o-link class="size-4 mr-1" />
+                            Install GitHub App
+                        </flux:button>
+                    </x-slot>
+                @endif
+            </flux:callout>
         @else
             <form wire:submit="createPlugin" class="space-y-8">
                 {{-- Plugin Type --}}
@@ -118,6 +135,12 @@
                                         <flux:select.option value="{{ $repo['full_name'] }}">{{ $repo['name'] }}@if($repo['private']) (private)@endif</flux:select.option>
                                     @endforeach
                                 </flux:select>
+                            @endif
+
+                            @if (auth()->user()->isUsingGitHubApp() && $installUrl = app(\App\Services\GitHubAppService::class)->installationUrl())
+                                <flux:text class="text-sm">
+                                    Don't see your repository? <a href="{{ $installUrl }}" class="font-medium text-indigo-600 hover:text-indigo-500 dark:text-indigo-400">Give the GitHub App access to it</a>, then reload this page.
+                                </flux:text>
                             @endif
                         @endif
                     </div>

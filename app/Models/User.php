@@ -550,6 +550,41 @@ class User extends Authenticatable implements FilamentUser, HasName, MustVerifyE
     }
 
     /**
+     * Whether the user has signed in with the GitHub App but hasn't installed it anywhere yet.
+     */
+    public function needsGitHubAppInstallation(): bool
+    {
+        return $this->isUsingGitHubApp()
+            && ! $this->githubInstallations()->whereNull('suspended_at')->exists();
+    }
+
+    /**
+     * Plugins whose repositories aren't reachable through any of the user's active GitHub App installations.
+     *
+     * @return \Illuminate\Database\Eloquent\Collection<int, Plugin>
+     */
+    public function pluginsMissingGitHubAppAccess(): \Illuminate\Database\Eloquent\Collection
+    {
+        if (! $this->isUsingGitHubApp()) {
+            return new \Illuminate\Database\Eloquent\Collection;
+        }
+
+        $installations = $this->githubInstallations()->whereNull('suspended_at')->get();
+
+        return $this->plugins()
+            ->whereNotNull('repository_url')
+            ->get()
+            ->filter(function (Plugin $plugin) use ($installations): bool {
+                $repo = $plugin->getRepositoryOwnerAndName();
+
+                return $repo && ! $installations->contains(
+                    fn (GitHubInstallation $installation): bool => $installation->hasAccessToRepo($repo['owner'], $repo['repo'])
+                );
+            })
+            ->values();
+    }
+
+    /**
      * Plugin names that are available for free to eligible subscribers.
      */
     public const FREE_PLUGINS_OFFER = [

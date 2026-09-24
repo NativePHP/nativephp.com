@@ -11,6 +11,16 @@ use Illuminate\Support\Facades\Log;
 
 class GitHubAppService
 {
+    /**
+     * The GitHub page where a user installs the app or changes which repositories it can access.
+     */
+    public function installationUrl(): ?string
+    {
+        $slug = config('services.github_app.slug');
+
+        return $slug ? "https://github.com/apps/{$slug}/installations/new" : null;
+    }
+
     public function generateJwt(): string
     {
         $privateKeyPath = config('services.github_app.private_key_path');

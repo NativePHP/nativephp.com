@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\GitHubInstallation;
 use App\Models\User;
+use App\Services\GitHubUserService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -94,6 +95,8 @@ class GitHubAppWebhookController extends Controller
             ]
         );
 
+        GitHubUserService::for($user)->clearRepositoryCache();
+
         Log::info('[GitHubAppWebhook] Installation created', [
             'user_id' => $user->id,
             'installation_id' => $installation['id'],
@@ -162,6 +165,8 @@ class GitHubAppWebhookController extends Controller
             'selection_type' => $selection,
             'repository_selection' => ! empty($updatedRepos) ? $updatedRepos : null,
         ]);
+
+        GitHubUserService::for($installation->user)->clearRepositoryCache();
 
         Log::info('[GitHubAppWebhook] Repositories updated', [
             'installation_id' => $installationId,
