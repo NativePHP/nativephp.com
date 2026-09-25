@@ -103,11 +103,11 @@ Available cases:
 The `@navigate` directive triggers navigation directly from your view, with no component method required. It works on
 any node, so any element can become a navigation target.
 
-The short form takes a route:
+The short form takes a route in single quotes:
 
 @verbatim
 ```blade
-<native:pressable @navigate="/item/42" class="w-full p-4">
+<native:pressable @navigate='/item/42' class="w-full p-4">
     <native:text>View item</native:text>
 </native:pressable>
 ```
@@ -125,13 +125,16 @@ To pass data along with the navigation, use the args form — a route followed b
 
 The next screen reads the data with `$this->data('source')`, exactly as with `$this->navigate()`.
 
+Double quotes hold a PHP expression rather than a plain route, so `@navigate="/item/42"` won't compile. For a
+dynamic route, build the string in PHP: `@navigate="'/item/' . $item->id"`.
+
 ### Transition modifiers
 
 Add a transition as a modifier to override the default push animation:
 
 @verbatim
 ```blade
-<native:pressable @navigate.slideFromBottom="/item/42">
+<native:pressable @navigate.slideFromBottom='/item/42'>
     <native:text>Present modally</native:text>
 </native:pressable>
 ```
@@ -159,17 +162,17 @@ to `replace` or `exitToWeb`:
     <native:text>Go back</native:text>
 </native:pressable>
 
-<native:pressable @navigate.replace="/login">
+<native:pressable @navigate.replace='/login'>
     <native:text>Sign out</native:text>
 </native:pressable>
 
-<native:pressable @navigate.exitToWeb="/dashboard">
+<native:pressable @navigate.exitToWeb='/dashboard'>
     <native:text>Open dashboard</native:text>
 </native:pressable>
 ```
 @endverbatim
 
-Transition and action modifiers can be combined — `@navigate.replace.fade="/login"`.
+Transition and action modifiers can be combined — `@navigate.replace.fade='/login'`.
 
 ## Reading params and data
 
