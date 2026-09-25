@@ -36,6 +36,12 @@ class PluginReviewChecksIncomplete extends Notification implements ShouldQueue
             'docs_url' => self::DOCS_BASE.'/best-practices',
             'docs_label' => 'Best Practices guide',
         ],
+        'demo_video' => [
+            'label' => 'Demo video (YouTube, Vimeo or Loom) showing your plugin working, added on your plugin\'s Details tab (required for approval)',
+            'passing_label' => 'Demo video',
+            'docs_url' => self::DOCS_BASE.'/best-practices',
+            'docs_label' => 'Best Practices guide',
+        ],
         'supports_ios' => [
             'label' => 'iOS native code in `resources/ios/Sources/`',
             'passing_label' => 'iOS native code',
@@ -140,9 +146,7 @@ class PluginReviewChecksIncomplete extends Notification implements ShouldQueue
         $passing = [];
 
         foreach (self::CHECK_DEFINITIONS as $key => $definition) {
-            $isPassing = $key === 'webhook_configured'
-                ? $this->plugin->webhook_installed
-                : ! empty($checks[$key]);
+            $isPassing = $this->isCheckPassing($key, $checks);
 
             if ($isPassing) {
                 $passing[] = $definition['passing_label'];
@@ -160,9 +164,7 @@ class PluginReviewChecksIncomplete extends Notification implements ShouldQueue
         $failing = [];
 
         foreach (self::CHECK_DEFINITIONS as $key => $definition) {
-            $isPassing = $key === 'webhook_configured'
-                ? $this->plugin->webhook_installed
-                : ! empty($checks[$key]);
+            $isPassing = $this->isCheckPassing($key, $checks);
 
             if (! $isPassing) {
                 $failing[] = [
@@ -174,5 +176,14 @@ class PluginReviewChecksIncomplete extends Notification implements ShouldQueue
         }
 
         return $failing;
+    }
+
+    private function isCheckPassing(string $key, array $checks): bool
+    {
+        return match ($key) {
+            'webhook_configured' => (bool) $this->plugin->webhook_installed,
+            'demo_video' => $this->plugin->hasDemoVideo(),
+            default => ! empty($checks[$key]),
+        };
     }
 }
