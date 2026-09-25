@@ -73,7 +73,7 @@ return [
         'app_id' => env('GITHUB_APP_ID'),
         'client_id' => env('GITHUB_APP_CLIENT_ID'),
         'client_secret' => env('GITHUB_APP_CLIENT_SECRET'),
-        'private_key_path' => env('GITHUB_APP_PRIVATE_KEY_PATH', storage_path('github-app.pem')),
+        'private_key_path' => env('GITHUB_APP_PRIVATE_KEY_PATH') ?: storage_path('github-app.pem'),
         'webhook_secret' => env('GITHUB_APP_WEBHOOK_SECRET'),
         'redirect' => env('APP_URL').'/auth/github/callback',
         'slug' => env('GITHUB_APP_SLUG'),

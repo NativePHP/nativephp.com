@@ -2,13 +2,14 @@
 
 namespace App\Models;
 
+use Database\Factories\GitHubInstallationFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class GitHubInstallation extends Model
 {
-    /** @use HasFactory<\Database\Factories\GitHubInstallationFactory> */
+    /** @use HasFactory<GitHubInstallationFactory> */
     use HasFactory;
 
     protected $table = 'github_installations';

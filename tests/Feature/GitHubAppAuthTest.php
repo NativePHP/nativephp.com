@@ -8,6 +8,7 @@ use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Laravel\Pennant\Feature;
 use Laravel\Socialite\Facades\Socialite;
+use Laravel\Socialite\Two\GithubProvider;
 use Laravel\Socialite\Two\User as SocialiteUser;
 use Mockery;
 use Tests\TestCase;
@@ -32,7 +33,7 @@ class GitHubAppAuthTest extends TestCase
         $socialiteUser->email = 'test@example.com';
         $socialiteUser->token = 'ghu_test_token';
 
-        $provider = Mockery::mock(\Laravel\Socialite\Two\GithubProvider::class);
+        $provider = Mockery::mock(GithubProvider::class);
         $provider->shouldReceive('user')->andReturn($socialiteUser);
 
         Socialite::shouldReceive('driver')
@@ -64,7 +65,7 @@ class GitHubAppAuthTest extends TestCase
         $socialiteUser->email = 'test@example.com';
         $socialiteUser->token = 'gho_test_token';
 
-        $provider = Mockery::mock(\Laravel\Socialite\Two\GithubProvider::class);
+        $provider = Mockery::mock(GithubProvider::class);
         $provider->shouldReceive('user')->andReturn($socialiteUser);
 
         Socialite::shouldReceive('driver')
@@ -96,7 +97,7 @@ class GitHubAppAuthTest extends TestCase
         $socialiteUser->nickname = 'newusername';
         $socialiteUser->token = 'ghu_new_token';
 
-        $provider = Mockery::mock(\Laravel\Socialite\Two\GithubProvider::class);
+        $provider = Mockery::mock(GithubProvider::class);
         $provider->shouldReceive('user')->andReturn($socialiteUser);
 
         Socialite::shouldReceive('driver')
@@ -141,7 +142,7 @@ class GitHubAppAuthTest extends TestCase
 
         $user = User::factory()->create();
 
-        $provider = Mockery::mock(\Laravel\Socialite\Two\GithubProvider::class);
+        $provider = Mockery::mock(GithubProvider::class);
         $provider->shouldReceive('scopes')
             ->with(['read:user', 'user:email'])
             ->andReturnSelf();

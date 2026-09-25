@@ -9,6 +9,7 @@ use Firebase\JWT\JWT;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
+use RuntimeException;
 
 class GitHubAppService
 {
@@ -43,6 +44,11 @@ class GitHubAppService
     public function generateJwt(): string
     {
         $privateKeyPath = config('services.github_app.private_key_path');
+
+        if (! $privateKeyPath || ! is_readable($privateKeyPath)) {
+            throw new RuntimeException('The GitHub App private key is missing. Check GITHUB_APP_PRIVATE_KEY_PATH.');
+        }
+
         $privateKey = file_get_contents($privateKeyPath);
         $appId = config('services.github_app.app_id');
 

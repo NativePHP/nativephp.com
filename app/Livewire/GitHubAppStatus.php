@@ -3,11 +3,12 @@
 namespace App\Livewire;
 
 use Illuminate\Support\Facades\Auth;
+use Illuminate\View\View;
 use Livewire\Component;
 
 class GitHubAppStatus extends Component
 {
-    public function render(): \Illuminate\View\View
+    public function render(): View
     {
         $user = Auth::user();
         $installations = $user->githubInstallations()->orderBy('account_login')->get();

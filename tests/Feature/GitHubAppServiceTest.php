@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Unit;
+namespace Tests\Feature;
 
 use App\Models\GitHubInstallation;
 use App\Models\User;
@@ -27,6 +27,25 @@ class GitHubAppServiceTest extends TestCase
         $this->assertLessThanOrEqual(time(), $claims->iat);
         $this->assertGreaterThan(time(), $claims->exp);
         $this->assertLessThanOrEqual(10 * 60, $claims->exp - $claims->iat);
+    }
+
+    public function test_jwt_fails_clearly_when_the_private_key_is_missing(): void
+    {
+        config(['services.github_app.private_key_path' => '']);
+
+        $this->expectException(\RuntimeException::class);
+        $this->expectExceptionMessage('GITHUB_APP_PRIVATE_KEY_PATH');
+
+        (new GitHubAppService)->generateJwt();
+    }
+
+    public function test_a_missing_private_key_does_not_break_installation_token_lookups(): void
+    {
+        config(['services.github_app.private_key_path' => '']);
+
+        $installation = GitHubInstallation::factory()->create();
+
+        $this->assertNull((new GitHubAppService)->refreshInstallationToken($installation));
     }
 
     public function test_find_installation_for_repo_with_all_repos_selected(): void
