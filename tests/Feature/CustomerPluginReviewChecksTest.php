@@ -18,6 +18,8 @@ class CustomerPluginReviewChecksTest extends TestCase
 {
     use RefreshDatabase;
 
+    private const DEMO_VIDEO_URL = 'https://www.youtube.com/watch?v=dQw4w9WgXcQ';
+
     private function fakeGitHubForCreateAndSubmit(string $repoSlug): void
     {
         $base = "https://api.github.com/repos/{$repoSlug}";
@@ -101,8 +103,12 @@ class CustomerPluginReviewChecksTest extends TestCase
         $this->assertNotNull($plugin, 'Plugin should exist after creation');
         $this->assertEquals('draft', $plugin->status->value);
 
-        // Set support channel (required before submission)
-        $plugin->update(['support_channel' => 'dev@testplugin.io']);
+        // Set support channel and an attested demo video (both required before submission)
+        $plugin->update([
+            'support_channel' => 'dev@testplugin.io',
+            'demo_video_url' => self::DEMO_VIDEO_URL,
+            'demo_video_attested_at' => now(),
+        ]);
 
         // Re-fake HTTP for the submission step
         $this->fakeGitHubForCreateAndSubmit($repoSlug);
@@ -204,8 +210,12 @@ class CustomerPluginReviewChecksTest extends TestCase
 
         $plugin = $user->plugins()->where('repository_url', "https://github.com/{$repoSlug}")->first();
 
-        // Set support channel (required before submission)
-        $plugin->update(['support_channel' => 'support@bare-plugin.io']);
+        // Set support channel and an attested demo video (both required before submission)
+        $plugin->update([
+            'support_channel' => 'support@bare-plugin.io',
+            'demo_video_url' => self::DEMO_VIDEO_URL,
+            'demo_video_attested_at' => now(),
+        ]);
 
         // Re-fake HTTP for submission
         Http::fake([
