@@ -2,12 +2,14 @@
 
 namespace App\Filament\Resources;
 
+use App\Enums\PluginCategory;
 use App\Enums\PluginStatus;
 use App\Enums\PluginTier;
 use App\Enums\PluginType;
 use App\Filament\Resources\PluginResource\Pages;
 use App\Filament\Resources\PluginResource\RelationManagers;
 use App\Jobs\ReviewPluginRepository;
+use App\Jobs\SuggestPluginCategories;
 use App\Jobs\SyncPlugin;
 use App\Models\Plugin;
 use App\Models\PluginLicense;
@@ -20,12 +22,14 @@ use Filament\Forms;
 use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Schemas;
+use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
 use Filament\Tables;
 use Filament\Tables\Contracts\HasTable;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\HtmlString;
+use Throwable;
 
 class PluginResource extends Resource
 {
@@ -127,6 +131,74 @@ class PluginResource extends Resource
                             ->label('Works in Jump')
                             ->helperText('Show a badge indicating this plugin runs in the Jump preview app (i.e. it ships no custom native code)'),
                     ]),
+
+                Schemas\Components\Section::make('Categories')
+                    ->key('categories-section')
+                    ->inlineLabel()
+                    ->columns(1)
+                    ->schema([
+                        Forms\Components\CheckboxList::make('categories')
+                            ->options(PluginCategory::class)
+                            ->columns(4),
+
+                        Forms\Components\Placeholder::make('category_suggestions_display')
+                            ->label('Jev suggests')
+                            ->content(fn (?Plugin $record): string => match (true) {
+                                $record?->category_suggestions === null => 'Not asked yet',
+                                $record->suggestedCategories()->isEmpty() => 'No category is a confident fit',
+                                default => $record->suggestedCategories()
+                                    ->map(fn (PluginCategory $category): string => sprintf('%s (%d%%)', $category->label(), round($record->category_suggestions[$category->value] * 100)))
+                                    ->join(', '),
+                            }),
+                    ])
+                    ->headerActions([
+                        Action::make('suggestCategories')
+                            ->label(fn (?Plugin $record): string => $record?->category_suggestions === null ? 'Ask Jev' : 'Ask Jev again')
+                            ->icon('heroicon-o-sparkles')
+                            ->color('gray')
+                            ->action(function (Plugin $record): void {
+                                try {
+                                    (new SuggestPluginCategories($record))->handle();
+                                } catch (Throwable $exception) {
+                                    report($exception);
+
+                                    Notification::make()
+                                        ->title('Jev couldn\'t suggest categories')
+                                        ->body($exception->getMessage())
+                                        ->danger()
+                                        ->send();
+
+                                    return;
+                                }
+
+                                $suggestions = $record->suggestedCategories();
+
+                                Notification::make()
+                                    ->title($suggestions->isEmpty()
+                                        ? 'Jev isn\'t confident about any category'
+                                        : 'Jev suggests '.$suggestions->map->label()->join(', ', ' and '))
+                                    ->status($suggestions->isEmpty() ? 'warning' : 'success')
+                                    ->send();
+                            }),
+
+                        Action::make('applySuggestedCategories')
+                            ->label('Apply suggestions')
+                            ->icon('heroicon-o-check')
+                            ->color('success')
+                            ->visible(fn (?Plugin $record): bool => (bool) $record?->hasUnappliedCategorySuggestions())
+                            ->action(function (Plugin $record, Set $set): void {
+                                $record->applySuggestedCategories();
+
+                                $set('categories', $record->categories->map->value->all());
+
+                                Notification::make()
+                                    ->title('Categories applied')
+                                    ->body('This plugin is now in '.$record->categories->map->label()->join(', ', ' and ').'.')
+                                    ->success()
+                                    ->send();
+                            }),
+                    ])
+                    ->visible(fn (?Plugin $record) => $record !== null),
 
                 Schemas\Components\Section::make('Review Checks')
                     ->inlineLabel()

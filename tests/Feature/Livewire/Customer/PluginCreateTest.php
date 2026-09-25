@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Livewire\Customer;
 
+use App\Enums\PluginCategory;
 use App\Features\ShowAuthButtons;
 use App\Features\ShowPlugins;
 use App\Livewire\Customer\Plugins\Create;
@@ -9,13 +10,16 @@ use App\Models\Plugin;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Http;
+use Laravel\Ai\Classification;
+use Laravel\Ai\Prompts\ClassificationPrompt;
 use Laravel\Pennant\Feature;
 use Livewire\Livewire;
+use Tests\Concerns\FakesJevCategoryAnswers;
 use Tests\TestCase;
 
 class PluginCreateTest extends TestCase
 {
-    use RefreshDatabase;
+    use FakesJevCategoryAnswers, RefreshDatabase;
 
     protected function setUp(): void
     {
@@ -244,5 +248,60 @@ class PluginCreateTest extends TestCase
         // No webhook should be installed for drafts
         $plugin = Plugin::where('repository_url', 'https://github.com/testuser/draft-plugin')->first();
         $this->assertNull($plugin->webhook_secret);
+    }
+
+    // ========================================
+    // Category Suggestion Tests
+    // ========================================
+
+    public function test_jev_suggests_categories_for_a_new_plugin_from_its_synced_details(): void
+    {
+        Classification::fake([$this->categoryAnswers([PluginCategory::Media->value => 0.9])]);
+
+        $user = $this->createGitHubUser();
+
+        Http::fake([
+            'api.github.com/repos/testuser/camera-plugin/contents/composer.json*' => Http::response([
+                'content' => base64_encode(json_encode(['name' => 'testuser/camera-plugin', 'description' => 'Take photos'])),
+            ]),
+            'api.github.com/repos/testuser/camera-plugin/contents/README.md*' => Http::response([
+                'content' => base64_encode("# Camera Plugin\n\nTake photos with the device camera."),
+            ]),
+            'api.github.com/*' => Http::response([], 404),
+            'raw.githubusercontent.com/*' => Http::response('', 404),
+        ]);
+
+        Livewire::actingAs($user)->test(Create::class)
+            ->set('repository', 'testuser/camera-plugin')
+            ->set('pluginType', 'free')
+            ->call('createPlugin');
+
+        Classification::assertClassified(fn (ClassificationPrompt $prompt): bool => $prompt->state === [
+            'title' => 'testuser/camera-plugin',
+            'description' => 'Take photos',
+            'readme' => 'Camera Plugin Take photos with the device camera.',
+        ]);
+
+        $plugin = Plugin::where('name', 'testuser/camera-plugin')->sole();
+
+        $this->assertSame([PluginCategory::Media], $plugin->suggestedCategories()->all());
+        $this->assertNull($plugin->categories);
+    }
+
+    public function test_jev_is_not_asked_about_a_plugin_that_could_not_be_created(): void
+    {
+        $user = $this->createGitHubUser();
+
+        Http::fake([
+            'api.github.com/*' => Http::response([], 404),
+            'raw.githubusercontent.com/*' => Http::response('', 404),
+        ]);
+
+        Livewire::actingAs($user)->test(Create::class)
+            ->set('repository', 'testuser/no-composer')
+            ->set('pluginType', 'free')
+            ->call('createPlugin');
+
+        Classification::assertNothingClassified();
     }
 }

@@ -10,6 +10,7 @@ use App\Enums\PluginType;
 use App\Enums\PriceTier;
 use App\Jobs\RemovePluginFromSatis;
 use App\Jobs\SendNewPluginNotifications;
+use App\Jobs\SuggestPluginCategories;
 use App\Jobs\SyncPluginReleases;
 use App\Notifications\PluginApproved;
 use App\Notifications\PluginDeveloperReplied;
@@ -23,6 +24,7 @@ use BladeUI\Icons\Exceptions\SvgNotFound;
 use BladeUI\Icons\Factory as IconFactory;
 use Illuminate\Database\Eloquent\Attributes\Scope;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Casts\AsEnumCollection;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -31,6 +33,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Notification;
 
 class Plugin extends Model
@@ -480,6 +483,54 @@ class Plugin extends Model
         return $query->where('featured', true);
     }
 
+    /**
+     * Plugins that aren't in any category yet.
+     *
+     * @param  Builder<Plugin>  $query
+     * @return Builder<Plugin>
+     */
+    #[Scope]
+    protected function uncategorized(Builder $query): Builder
+    {
+        return $query->where(fn (Builder $query): Builder => $query
+            ->whereNull('categories')
+            ->orWhereJsonLength('categories', 0));
+    }
+
+    /**
+     * The categories Jev suggested for this plugin, likeliest first.
+     *
+     * @return Collection<int, PluginCategory>
+     */
+    public function suggestedCategories(): Collection
+    {
+        return collect($this->category_suggestions)
+            ->sortDesc()
+            ->keys()
+            ->map(fn (string $category): ?PluginCategory => PluginCategory::tryFrom($category))
+            ->filter()
+            ->values();
+    }
+
+    /**
+     * Whether applying Jev's suggestions would change the plugin's categories.
+     */
+    public function hasUnappliedCategorySuggestions(): bool
+    {
+        $suggested = $this->suggestedCategories()->map->value->sort()->values()->all();
+        $current = collect($this->categories)->map->value->sort()->values()->all();
+
+        return $suggested !== [] && $suggested !== $current;
+    }
+
+    /**
+     * Put the plugin in the categories Jev suggested, and only those.
+     */
+    public function applySuggestedCategories(): void
+    {
+        $this->update(['categories' => $this->suggestedCategories()]);
+    }
+
     public function getPackagistUrl(): string
     {
         return "https://packagist.org/packages/{$this->name}";
@@ -839,6 +890,8 @@ class Plugin extends Model
         );
 
         $this->syncToSatis();
+
+        SuggestPluginCategories::dispatch($this);
     }
 
     /**
@@ -968,7 +1021,8 @@ class Plugin extends Model
             'status' => PluginStatus::class,
             'type' => PluginType::class,
             'tier' => PluginTier::class,
-            'category' => PluginCategory::class,
+            'categories' => AsEnumCollection::of(PluginCategory::class),
+            'category_suggestions' => 'array',
             'approved_at' => 'datetime',
             'featured' => 'boolean',
             'is_active' => 'boolean',
