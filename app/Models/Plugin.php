@@ -17,6 +17,7 @@ use App\Notifications\PluginMessageReceived;
 use App\Notifications\PluginRejected;
 use App\Services\OgImageService;
 use App\Services\PluginSyncService;
+use App\Support\DemoVideo;
 use App\Support\PluginReadme;
 use BladeUI\Icons\Exceptions\SvgNotFound;
 use BladeUI\Icons\Factory as IconFactory;
@@ -392,7 +393,31 @@ class Plugin extends Model
             return false;
         }
 
-        return ! empty($checks['has_license_file']) && ! empty($checks['has_release_version']) && $this->webhook_installed;
+        return ! empty($checks['has_license_file'])
+            && ! empty($checks['has_release_version'])
+            && $this->webhook_installed
+            && $this->hasDemoVideo();
+    }
+
+    /**
+     * The developer has linked a supported demo video and confirmed it shows the plugin working.
+     */
+    public function hasDemoVideo(): bool
+    {
+        return $this->demoVideo() !== null && $this->demo_video_attested_at !== null;
+    }
+
+    public function demoVideo(): ?DemoVideo
+    {
+        return DemoVideo::fromUrl($this->demo_video_url);
+    }
+
+    /**
+     * Whether the demo video should be embedded on the public listing (admin-controlled).
+     */
+    public function showsDemoVideoPublicly(): bool
+    {
+        return $this->show_demo_video && $this->demoVideo() !== null;
     }
 
     /**
@@ -415,6 +440,10 @@ class Plugin extends Model
 
         if (! $this->webhook_installed) {
             $failing[] = 'Webhook configured';
+        }
+
+        if (! $this->hasDemoVideo()) {
+            $failing[] = 'Demo video showing the plugin working';
         }
 
         return $failing;
@@ -952,6 +981,8 @@ class Plugin extends Model
             'webhook_installed' => 'boolean',
             'review_checks' => 'array',
             'reviewed_at' => 'datetime',
+            'demo_video_attested_at' => 'datetime',
+            'show_demo_video' => 'boolean',
             'rating_average' => 'decimal:2',
             'rating_count' => 'integer',
         ];

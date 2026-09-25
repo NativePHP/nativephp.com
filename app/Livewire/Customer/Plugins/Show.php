@@ -10,6 +10,7 @@ use App\Models\Plugin;
 use App\Models\PluginActivity;
 use App\Notifications\PluginPendingReview;
 use App\Notifications\PluginSubmitted;
+use App\Rules\DemoVideoUrl;
 use App\Services\GitHubUserService;
 use Flux\Flux;
 use Illuminate\Database\Eloquent\Collection;
@@ -49,6 +50,10 @@ class Show extends Component
     public ?string $displayName = null;
 
     public ?string $supportChannel = null;
+
+    public ?string $demoVideoUrl = null;
+
+    public bool $demoVideoAttested = false;
 
     public string $notes = '';
 
@@ -111,6 +116,8 @@ class Show extends Component
         $this->iconGradient = $this->plugin->icon_gradient;
         $this->iconMode = $this->plugin->hasLogo() ? 'upload' : 'gradient';
         $this->supportChannel = $this->plugin->support_channel;
+        $this->demoVideoUrl = $this->plugin->demo_video_url;
+        $this->demoVideoAttested = $this->plugin->demo_video_attested_at !== null;
         $this->notes = $this->plugin->notes ?? '';
         $this->pluginType = $this->plugin->type->value;
         $this->tier = $this->plugin->tier?->value;
@@ -181,6 +188,12 @@ class Show extends Component
 
         if ($this->plugin->isPaid() && ! $this->plugin->tier) {
             Flux::toast(variant: 'danger', text: 'Please select a pricing tier for your paid plugin.');
+
+            return;
+        }
+
+        if (! $this->plugin->hasDemoVideo()) {
+            Flux::toast(variant: 'danger', text: 'Please add a demo video showing your plugin working and confirm it before submitting for review.');
 
             return;
         }
@@ -343,6 +356,22 @@ class Show extends Component
 
         if ($this->plugin->isDraft()) {
             $rules['notes'] = ['nullable', 'string', 'max:5000'];
+            $rules['demoVideoUrl'] = array_filter([
+                'bail',
+                'nullable',
+                'string',
+                'max:255',
+                'url',
+                $this->demoVideoUrlChanged() ? new DemoVideoUrl : null,
+            ]);
+            $rules['demoVideoAttested'] = [
+                'boolean',
+                function (string $attribute, mixed $value, \Closure $fail) {
+                    if (filled($this->demoVideoUrl) && ! $value) {
+                        $fail('Please confirm the video shows the current version of your plugin working.');
+                    }
+                },
+            ];
             $rules['pluginType'] = ['required', 'string', 'in:free,paid'];
 
             if ($this->pluginType === 'paid') {
@@ -368,6 +397,14 @@ class Show extends Component
         if ($this->plugin->isDraft()) {
             $data['notes'] = $this->notes ?: null;
 
+            $demoVideoUrl = filled($this->demoVideoUrl) ? trim($this->demoVideoUrl) : null;
+            $data['demo_video_url'] = $demoVideoUrl;
+            $data['demo_video_attested_at'] = match (true) {
+                $demoVideoUrl === null => null,
+                $demoVideoUrl !== $this->plugin->demo_video_url, $this->plugin->demo_video_attested_at === null => now(),
+                default => $this->plugin->demo_video_attested_at,
+            };
+
             $pluginType = PluginType::from($this->pluginType);
             $data['type'] = $pluginType;
             $data['tier'] = $pluginType === PluginType::Paid && $this->tier ? PluginTier::from($this->tier) : null;
@@ -378,6 +415,16 @@ class Show extends Component
         $this->plugin->refresh();
 
         Flux::toast(variant: 'success', text: 'Plugin details saved successfully!');
+    }
+
+    /**
+     * Only hit the provider's oEmbed endpoint when the developer changes the link.
+     */
+    protected function demoVideoUrlChanged(): bool
+    {
+        $demoVideoUrl = filled($this->demoVideoUrl) ? trim($this->demoVideoUrl) : null;
+
+        return $demoVideoUrl !== $this->plugin->demo_video_url;
     }
 
     public function updateIcon(): void

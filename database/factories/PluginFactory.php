@@ -111,6 +111,9 @@ class PluginFactory extends Factory
             'description' => fake()->randomElement($this->descriptions),
             'ios_version' => fake()->randomElement(['15.0+', '16.0+', '14.0+', '17.0+', null]),
             'android_version' => fake()->randomElement(['12+', '13+', '11+', '14+', null]),
+            'demo_video_url' => 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
+            'demo_video_attested_at' => now(),
+            'show_demo_video' => false,
             'type' => PluginType::Free,
             'category' => null,
             'status' => PluginStatus::Pending,
@@ -217,6 +220,22 @@ class PluginFactory extends Factory
     {
         return $this->state(fn (array $attributes) => [
             'description' => null,
+        ]);
+    }
+
+    public function withoutDemoVideo(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'demo_video_url' => null,
+            'demo_video_attested_at' => null,
+            'show_demo_video' => false,
+        ]);
+    }
+
+    public function withPublicDemoVideo(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'show_demo_video' => true,
         ]);
     }
 

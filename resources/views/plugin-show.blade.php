@@ -255,6 +255,21 @@
                         </aside>
                     @endif
 
+                    @if ($plugin->showsDemoVideoPublicly())
+                        <section class="mb-8" aria-label="Demo video">
+                            <div class="relative aspect-video w-full overflow-hidden rounded-2xl border border-gray-200 bg-black dark:border-gray-700">
+                                <iframe
+                                    src="{{ $plugin->demoVideo()->embedUrl() }}"
+                                    title="{{ $plugin->display_name ?? $plugin->name }} demo video"
+                                    class="size-full"
+                                    loading="lazy"
+                                    allow="accelerometer; encrypted-media; gyroscope; picture-in-picture; fullscreen"
+                                    allowfullscreen
+                                ></iframe>
+                            </div>
+                        </section>
+                    @endif
+
                     <article
                         x-init="
                             () => {
