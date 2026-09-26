@@ -97,6 +97,7 @@
                         ['key' => 'has_license_file', 'label' => 'License file (LICENSE or LICENSE.md)'],
                         ['key' => 'has_release_version', 'label' => 'Release version'],
                         ['key' => 'webhook_configured', 'label' => 'Webhook configured'],
+                        ['key' => 'demo_video', 'label' => 'Demo video showing the plugin working'],
                     ];
                     $optionalChecks = [
                         ['key' => 'supports_ios', 'label' => 'iOS support (resources/ios/)'],
@@ -110,9 +111,11 @@
                 <ul class="mt-2 space-y-3">
                     @foreach ($requiredChecks as $check)
                         @php
-                            $isPassing = $check['key'] === 'webhook_configured'
-                                ? $plugin->webhook_installed
-                                : ($plugin->review_checks[$check['key']] ?? false);
+                            $isPassing = match ($check['key']) {
+                                'webhook_configured' => $plugin->webhook_installed,
+                                'demo_video' => $plugin->hasDemoVideo(),
+                                default => $plugin->review_checks[$check['key']] ?? false,
+                            };
                         @endphp
                         <li>
                             <div class="flex items-center gap-2">
@@ -462,6 +465,50 @@
                                         Or choose a gradient icon instead
                                     </button>
                                 </div>
+                            </div>
+                        </flux:card>
+
+                        {{-- Demo Video --}}
+                        <flux:card class="mb-6">
+                            <flux:heading size="lg">Demo Video</flux:heading>
+                            <flux:text class="mt-1">
+                                Required for review. Link a YouTube, Vimeo or Loom video (public or unlisted) showing the current version of your plugin running on a real device or simulator. Reviewers watch this before approving.
+                            </flux:text>
+
+                            <div class="mt-4 space-y-4">
+                                <div>
+                                    <flux:input
+                                        wire:model="demoVideoUrl"
+                                        type="url"
+                                        placeholder="https://www.youtube.com/watch?v=..."
+                                    />
+                                    @error('demoVideoUrl')
+                                        <flux:text class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</flux:text>
+                                    @enderror
+                                </div>
+
+                                <div>
+                                    <flux:checkbox
+                                        wire:model="demoVideoAttested"
+                                        label="I confirm this video shows the current version of my plugin working as described."
+                                    />
+                                    @error('demoVideoAttested')
+                                        <flux:text class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</flux:text>
+                                    @enderror
+                                </div>
+
+                                @if ($demoVideo = $plugin->demoVideo())
+                                    <div class="relative aspect-video w-full overflow-hidden rounded-lg border border-gray-200 bg-black dark:border-gray-700" wire:key="demo-video-{{ $demoVideo->videoId }}">
+                                        <iframe
+                                            src="{{ $demoVideo->embedUrl() }}"
+                                            title="{{ $plugin->name }} demo video"
+                                            class="size-full"
+                                            loading="lazy"
+                                            allow="accelerometer; encrypted-media; gyroscope; picture-in-picture; fullscreen"
+                                            allowfullscreen
+                                        ></iframe>
+                                    </div>
+                                @endif
                             </div>
                         </flux:card>
 
@@ -944,6 +991,21 @@
                                             @endif
                                         @else
                                             <span class="text-sm text-gray-400 dark:text-gray-500">Not set</span>
+                                        @endif
+                                    </dd>
+                                </div>
+
+                                {{-- Demo Video --}}
+                                <div class="col-span-2">
+                                    <dt class="text-xs font-medium text-gray-500 dark:text-gray-400">Demo Video</dt>
+                                    <dd class="mt-1">
+                                        @if ($plugin->hasDemoVideo())
+                                            <a href="{{ $plugin->demo_video_url }}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 text-sm font-medium text-indigo-600 hover:text-indigo-500 dark:text-indigo-400 dark:hover:text-indigo-300">
+                                                {{ $plugin->demoVideo()->providerLabel() }} video
+                                                <x-heroicon-o-arrow-top-right-on-square class="size-3" />
+                                            </a>
+                                        @else
+                                            <span class="text-sm text-red-500 dark:text-red-400">Required &mdash; add one in the Details tab</span>
                                         @endif
                                     </dd>
                                 </div>

@@ -150,6 +150,14 @@ class PluginResource extends Resource
                             ->label('Webhook Configured (required)')
                             ->content(fn (?Plugin $record) => $record?->webhook_installed ? '✅ Configured' : '❌ Not configured'),
 
+                        Forms\Components\Placeholder::make('review_demo_video')
+                            ->label('Demo Video (required)')
+                            ->content(fn (?Plugin $record) => match (true) {
+                                $record?->hasDemoVideo() => '✅ '.$record->demoVideo()->providerLabel().' — attested '.$record->demo_video_attested_at->diffForHumans(),
+                                $record?->demoVideo() !== null => '❌ Not attested by developer',
+                                default => '❌ Missing',
+                            }),
+
                         Forms\Components\Placeholder::make('review_ios')
                             ->label('iOS Support')
                             ->content(fn (?Plugin $record) => ($record?->review_checks['supports_ios'] ?? false) ? '✅ Found' : '❌ Missing'),
@@ -217,6 +225,30 @@ class PluginResource extends Resource
                         Forms\Components\Placeholder::make('notes_display')
                             ->label('Notes')
                             ->content(fn (?Plugin $record) => $record?->notes ?? 'Not provided'),
+
+                        Forms\Components\Placeholder::make('demo_video_display')
+                            ->label('Demo Video')
+                            ->content(function (?Plugin $record) {
+                                $video = $record?->demoVideo();
+
+                                if (! $video) {
+                                    return 'Not provided';
+                                }
+
+                                return new HtmlString(
+                                    '<div style="max-width: 640px;">'
+                                    .'<div style="position: relative; padding-top: 56.25%; border-radius: 0.5rem; overflow: hidden;">'
+                                    .'<iframe src="'.e($video->embedUrl()).'" title="Demo video" style="position: absolute; inset: 0; width: 100%; height: 100%; border: 0;" loading="lazy" allow="encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe>'
+                                    .'</div>'
+                                    .'<a href="'.e($video->url).'" target="_blank" rel="noopener noreferrer" class="text-primary-600 hover:underline">Open on '.e($video->providerLabel()).' ↗</a>'
+                                    .'</div>'
+                                );
+                            }),
+
+                        Forms\Components\Toggle::make('show_demo_video')
+                            ->label('Show demo video on listing')
+                            ->helperText('Off by default. Only enable once you have watched the video and are happy with its quality.')
+                            ->disabled(fn (?Plugin $record) => $record?->demoVideo() === null),
                     ])
                     ->visible(fn (?Plugin $record) => $record !== null),
 
@@ -497,6 +529,7 @@ class PluginResource extends Resource
                             $lines = collect([
                                 ['License file *', $checks['has_license_file']],
                                 ['Release version *', $checks['has_release_version'] ? $checks['release_version'] : false],
+                                ['Demo video *', $record->hasDemoVideo() ? $record->demoVideo()->providerLabel() : false],
                                 ['iOS support', $checks['supports_ios']],
                                 ['Android support', $checks['supports_android']],
                                 ['JS support', $checks['supports_js']],
@@ -520,13 +553,13 @@ class PluginResource extends Resource
                                 'supports_ios', 'supports_android', 'supports_js',
                                 'requires_mobile_sdk',
                                 'has_ios_min_version', 'has_android_min_version',
-                            ])->filter()->count();
+                            ])->filter()->count() + ($record->hasDemoVideo() ? 1 : 0);
 
                             Notification::make()
-                                ->title("Review checks complete ({$passed}/8 passed)")
+                                ->title("Review checks complete ({$passed}/9 passed)")
                                 ->body(new HtmlString($lines))
                                 ->duration(15000)
-                                ->color($passed === 8 ? 'success' : 'warning')
+                                ->color($passed === 9 ? 'success' : 'warning')
                                 ->send();
                         }),
                 ])
