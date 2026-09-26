@@ -23,7 +23,7 @@ class PluginDirectory extends Component
     use WithPagination;
 
     /**
-     * Filter value representing plugins with no `category` recorded.
+     * Filter value representing plugins that aren't in any category.
      */
     public const string CATEGORY_UNCATEGORIZED = 'uncategorized';
 
@@ -169,12 +169,12 @@ class PluginDirectory extends Component
             })
             ->when($this->category !== '', function (Builder $query): void {
                 if ($this->category === self::CATEGORY_UNCATEGORIZED) {
-                    $query->whereNull('category');
+                    $query->uncategorized();
 
                     return;
                 }
 
-                $query->where('category', $this->category);
+                $query->whereJsonContains('categories', $this->category);
             })
             ->when($this->mobileVersion !== '', function (Builder $query): void {
                 if ($this->mobileVersion === self::MOBILE_VERSION_UNSPECIFIED) {

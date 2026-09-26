@@ -4,6 +4,7 @@ namespace App\Livewire\Customer\Plugins;
 
 use App\Enums\PluginStatus;
 use App\Features\AllowPaidPlugins;
+use App\Jobs\SuggestPluginCategories;
 use App\Models\Plugin;
 use App\Services\GitHubUserService;
 use App\Services\PluginSyncService;
@@ -208,6 +209,8 @@ class Create extends Component
 
             return;
         }
+
+        SuggestPluginCategories::dispatch($plugin);
 
         [$vendor, $package] = explode('/', $plugin->name);
 

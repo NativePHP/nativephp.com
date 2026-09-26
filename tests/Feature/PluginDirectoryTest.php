@@ -69,28 +69,50 @@ class PluginDirectoryTest extends TestCase
 
     public function test_category_filter_narrows_to_matching_plugins(): void
     {
-        $media = Plugin::factory()->approved()->category(PluginCategory::Media)->create();
-        Plugin::factory()->approved()->category(PluginCategory::Payments)->create();
+        $media = Plugin::factory()->approved()->categories(PluginCategory::Media)->create();
+        Plugin::factory()->approved()->categories(PluginCategory::Payments)->create();
 
         Livewire::test(PluginDirectory::class)
             ->set('category', PluginCategory::Media->value)
             ->assertViewHas('plugins', fn ($plugins) => $plugins->pluck('id')->all() === [$media->id]);
     }
 
+    public function test_category_filter_finds_a_plugin_under_each_of_its_categories(): void
+    {
+        $scanner = Plugin::factory()->approved()->categories(PluginCategory::Media, PluginCategory::System)->create();
+        Plugin::factory()->approved()->categories(PluginCategory::Payments)->create();
+
+        Livewire::test(PluginDirectory::class)
+            ->set('category', PluginCategory::Media->value)
+            ->assertViewHas('plugins', fn ($plugins) => $plugins->pluck('id')->all() === [$scanner->id])
+            ->set('category', PluginCategory::System->value)
+            ->assertViewHas('plugins', fn ($plugins) => $plugins->pluck('id')->all() === [$scanner->id]);
+    }
+
     public function test_category_filter_uncategorized_bucket_returns_only_null_category_plugins(): void
     {
-        $uncategorized = Plugin::factory()->approved()->create(['category' => null]);
-        Plugin::factory()->approved()->category(PluginCategory::Media)->create();
+        $uncategorized = Plugin::factory()->approved()->create(['categories' => null]);
+        Plugin::factory()->approved()->categories(PluginCategory::Media)->create();
 
         Livewire::test(PluginDirectory::class)
             ->set('category', PluginDirectory::CATEGORY_UNCATEGORIZED)
             ->assertViewHas('plugins', fn ($plugins) => $plugins->pluck('id')->all() === [$uncategorized->id]);
     }
 
+    public function test_category_filter_uncategorized_bucket_includes_plugins_whose_categories_were_all_removed(): void
+    {
+        $emptied = Plugin::factory()->approved()->create(['categories' => []]);
+        Plugin::factory()->approved()->categories(PluginCategory::Media)->create();
+
+        Livewire::test(PluginDirectory::class)
+            ->set('category', PluginDirectory::CATEGORY_UNCATEGORIZED)
+            ->assertViewHas('plugins', fn ($plugins) => $plugins->pluck('id')->all() === [$emptied->id]);
+    }
+
     public function test_unfiltered_view_does_not_hide_uncategorized_plugins(): void
     {
-        Plugin::factory()->approved()->create(['category' => null]);
-        Plugin::factory()->approved()->category(PluginCategory::Media)->create();
+        Plugin::factory()->approved()->create(['categories' => null]);
+        Plugin::factory()->approved()->categories(PluginCategory::Media)->create();
 
         Livewire::test(PluginDirectory::class)
             ->assertViewHas('plugins', fn ($plugins) => $plugins->count() === 2);
@@ -137,16 +159,16 @@ class PluginDirectoryTest extends TestCase
 
     public function test_combining_type_category_and_mobile_version_filters(): void
     {
-        $match = Plugin::factory()->approved()->paid()->category(PluginCategory::Analytics)->create([
+        $match = Plugin::factory()->approved()->paid()->categories(PluginCategory::Analytics)->create([
             'mobile_min_version' => '4.0.0',
         ]);
-        Plugin::factory()->approved()->free()->category(PluginCategory::Analytics)->create([
+        Plugin::factory()->approved()->free()->categories(PluginCategory::Analytics)->create([
             'mobile_min_version' => '4.0.0',
         ]);
-        Plugin::factory()->approved()->paid()->category(PluginCategory::Media)->create([
+        Plugin::factory()->approved()->paid()->categories(PluginCategory::Media)->create([
             'mobile_min_version' => '4.0.0',
         ]);
-        Plugin::factory()->approved()->paid()->category(PluginCategory::Analytics)->create([
+        Plugin::factory()->approved()->paid()->categories(PluginCategory::Analytics)->create([
             'mobile_min_version' => '3.0.0',
         ]);
 

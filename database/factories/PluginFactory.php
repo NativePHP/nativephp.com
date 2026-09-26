@@ -115,7 +115,7 @@ class PluginFactory extends Factory
             'demo_video_attested_at' => now(),
             'show_demo_video' => false,
             'type' => PluginType::Free,
-            'category' => null,
+            'categories' => null,
             'status' => PluginStatus::Pending,
             'featured' => false,
             'rejection_reason' => null,
@@ -209,10 +209,10 @@ class PluginFactory extends Factory
         ]);
     }
 
-    public function category(PluginCategory $category): static
+    public function categories(PluginCategory ...$categories): static
     {
         return $this->state(fn (array $attributes) => [
-            'category' => $category,
+            'categories' => $categories,
         ]);
     }
 
