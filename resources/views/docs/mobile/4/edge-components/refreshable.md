@@ -5,6 +5,14 @@ order: 315
 
 ## Overview
 
+<x-docs.edge-preview
+    ios="edge-refreshable-ios.png"
+    android="edge-refreshable-android.png"
+    source="resources/views/native/refreshable-demo.blade.php"
+    alt="Refreshable"
+    edge="both"
+/>
+
 A standalone scrolling container with native pull-to-refresh. Wrap any content in it, point `@refresh` at a
 component method, and the platform handles the gesture, spinner, and physics for you. On iOS it uses SwiftUI
 `ScrollView { ... }.refreshable { }`; on Android, Compose `PullToRefreshBox` wrapping a `LazyColumn`. Both show
