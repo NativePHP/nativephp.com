@@ -51,6 +51,30 @@ class GitHubAppSetupTest extends TestCase
         ]);
     }
 
+    /**
+     * Fake GitHub so the installation webhook records installation 555 for the given user while
+     * the setup request is still asking GitHub whether the installation is theirs.
+     */
+    private function fakeGitHubWhileTheWebhookRecordsTheInstallationFor(User $webhookUser): void
+    {
+        Http::fake([
+            'api.github.com/user/installations*' => function () use ($webhookUser) {
+                GitHubInstallation::factory()->create([
+                    'user_id' => $webhookUser->id,
+                    'installation_id' => 555,
+                ]);
+
+                return Http::response(['installations' => [['id' => 555]]]);
+            },
+            'api.github.com/app/installations/555' => Http::response([
+                'id' => 555,
+                'account' => ['login' => 'acme', 'type' => 'Organization', 'id' => 99],
+                'repository_selection' => 'all',
+                'suspended_at' => null,
+            ]),
+        ]);
+    }
+
     public function test_setup_records_an_installation_the_user_can_see_on_github(): void
     {
         $this->fakeGitHub([555], 'selected', ['acme/one', 'acme/two']);
@@ -151,6 +175,41 @@ class GitHubAppSetupTest extends TestCase
             ->assertSessionHas('success');
 
         $this->assertSame(['acme/new-repo'], $installation->fresh()->repository_selection);
+    }
+
+    public function test_setup_uses_the_installation_the_webhook_records_while_it_checks_github(): void
+    {
+        $user = User::factory()->withGitHubApp()->create();
+        $this->fakeGitHubWhileTheWebhookRecordsTheInstallationFor($user);
+
+        $this->actingAs($user)
+            ->get(route('github.setup', ['installation_id' => 555]))
+            ->assertRedirect(route('customer.integrations'))
+            ->assertSessionHas('success');
+
+        $installation = $user->githubInstallations()->sole();
+
+        $this->assertSame('acme', $installation->account_login);
+        $this->assertSame('Organization', $installation->account_type);
+    }
+
+    public function test_setup_will_not_hand_over_an_installation_the_webhook_links_to_someone_else_while_it_checks_github(): void
+    {
+        $owner = User::factory()->withGitHubApp()->create();
+        $this->fakeGitHubWhileTheWebhookRecordsTheInstallationFor($owner);
+
+        $otherUser = User::factory()->withGitHubApp()->create();
+
+        $this->actingAs($otherUser)
+            ->get(route('github.setup', ['installation_id' => 555]))
+            ->assertRedirect(route('customer.integrations'))
+            ->assertSessionHas('error', 'That GitHub App installation is already linked to another NativePHP account.');
+
+        $this->assertDatabaseCount('github_installations', 1);
+        $this->assertDatabaseHas('github_installations', [
+            'installation_id' => 555,
+            'user_id' => $owner->id,
+        ]);
     }
 
     public function test_sync_command_updates_installations_and_removes_ones_github_no_longer_has(): void

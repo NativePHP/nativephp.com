@@ -1,24 +1,17 @@
 <div>
-    <div class="rounded-lg border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-gray-800">
-        <div class="flex items-center justify-between">
+    <flux:card>
+        <div class="flex items-center justify-between gap-4">
             <div>
-                <h3 class="text-lg font-medium text-gray-900 dark:text-white">GitHub App Installations</h3>
-                <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">
-                    Manage which accounts and repositories the NativePHP app can access.
-                </p>
+                <flux:heading>GitHub App Installations</flux:heading>
+                <flux:text class="mt-1">Manage which accounts and repositories the NativePHP app can access.</flux:text>
             </div>
             @if($installUrl)
-                <a href="{{ $installUrl }}" target="_blank" class="inline-flex items-center rounded-md border border-gray-300 bg-white px-3 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600">
-                    Add Account
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="ml-1.5 size-4">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-                    </svg>
-                </a>
+                <flux:button href="{{ $installUrl }}" target="_blank" icon:trailing="plus">Add Account</flux:button>
             @endif
         </div>
 
         @if($installations->isEmpty())
-            <div class="mt-4 rounded-md bg-gray-50 p-4 dark:bg-gray-700/50">
+            <div class="mt-4 rounded-lg bg-gray-50 p-4 dark:bg-gray-700/50">
                 <p class="text-sm text-gray-600 dark:text-gray-400">
                     No GitHub App installations found. Install the app on your GitHub account to grant repository access.
                 </p>
@@ -34,7 +27,7 @@
         @else
             <div class="mt-4 space-y-3">
                 @foreach($installations as $installation)
-                    <div class="flex items-center justify-between rounded-md border border-gray-200 p-3 dark:border-gray-600">
+                    <div class="flex items-center justify-between rounded-lg border border-gray-200 p-3 dark:border-gray-600">
                         <div class="flex items-center gap-3">
                             <div class="flex size-8 items-center justify-center rounded-full bg-gray-100 dark:bg-gray-700">
                                 @if($installation->account_type === 'Organization')
@@ -91,5 +84,5 @@
                 </div>
             </div>
         @endif
-    </div>
+    </flux:card>
 </div>

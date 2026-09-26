@@ -7,7 +7,7 @@
 
 @if($hasLicense)
     <div @class(['max-w-7xl mx-auto px-4 sm:px-6 lg:px-8' => !$inline])>
-        <div class="bg-gradient-to-r from-purple-50 to-indigo-100 dark:from-purple-900/20 dark:to-indigo-900/20 border border-purple-300 dark:border-purple-600 rounded-lg p-6 h-full">
+        <div class="bg-gradient-to-r from-purple-50 to-indigo-100 dark:from-purple-900/20 dark:to-indigo-900/20 border border-purple-300 dark:border-purple-600 rounded-xl p-6 h-full">
             <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
                 <div class="flex items-start">
                     <div class="flex-shrink-0">

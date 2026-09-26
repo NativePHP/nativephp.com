@@ -21,7 +21,7 @@
 
 @if($needsMigration || $missingAccess->isNotEmpty())
     <div @class([
-        'mb-6 rounded-lg border p-6',
+        'mb-6 rounded-xl border p-6',
         'border-amber-200 bg-amber-50 dark:border-amber-900/50 dark:bg-amber-900/20' => $urgent,
         'border-blue-200 bg-blue-50 dark:border-blue-900/50 dark:bg-blue-900/20' => ! $urgent,
     ])>
