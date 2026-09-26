@@ -72,6 +72,9 @@ class PluginDirectoryController extends Controller
         $bestPrice = $plugin->getBestPriceForUser($user);
         $regularPrice = $plugin->getRegularPrice();
 
+        $currentManifest = $plugin->versions()->visible()->latest('published_at')->first()?->manifest_permissions;
+        $versionHistory = $plugin->versions()->visible()->orderByDesc('published_at')->limit(15)->get();
+
         $this->setPluginSeo($plugin);
 
         return view('plugin-show', [
@@ -81,6 +84,8 @@ class PluginDirectoryController extends Controller
             'regularPrice' => $regularPrice,
             'hasDiscount' => $bestPrice && $regularPrice && $bestPrice->id !== $regularPrice->id,
             'isAdminPreview' => (! $plugin->isApproved() || ! $plugin->is_active) && ($isAdmin || $isOwner),
+            'currentManifest' => $currentManifest,
+            'versionHistory' => $versionHistory,
         ]);
     }
 

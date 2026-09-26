@@ -4,6 +4,7 @@ namespace Tests\Feature\Jobs;
 
 use App\Jobs\ReviewPluginRepository;
 use App\Models\Plugin;
+use App\Services\PluginManifestParser;
 use GuzzleHttp\Promise\PromiseInterface;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Http;
@@ -62,7 +63,7 @@ class ReviewPluginRepositoryTest extends TestCase
             ['path' => 'src/ServiceProvider.php', 'type' => 'blob'],
         ]));
 
-        $checks = (new ReviewPluginRepository($plugin))->handle();
+        $checks = (new ReviewPluginRepository($plugin))->handle(new PluginManifestParser);
 
         $this->assertTrue($checks['supports_ios']);
         $this->assertTrue($checks['supports_android']);
@@ -80,7 +81,7 @@ class ReviewPluginRepositoryTest extends TestCase
             ['path' => 'src/ServiceProvider.php', 'type' => 'blob'],
         ]));
 
-        $checks = (new ReviewPluginRepository($plugin))->handle();
+        $checks = (new ReviewPluginRepository($plugin))->handle(new PluginManifestParser);
 
         $this->assertFalse($checks['supports_ios']);
         $this->assertFalse($checks['supports_android']);
@@ -99,7 +100,7 @@ class ReviewPluginRepositoryTest extends TestCase
             ['path' => 'resources/android', 'type' => 'tree'],
         ]));
 
-        $checks = (new ReviewPluginRepository($plugin))->handle();
+        $checks = (new ReviewPluginRepository($plugin))->handle(new PluginManifestParser);
 
         $this->assertFalse($checks['supports_ios']);
         $this->assertFalse($checks['supports_android']);
@@ -117,7 +118,7 @@ class ReviewPluginRepositoryTest extends TestCase
             'nativephp/mobile' => '^3.0.0',
         ]));
 
-        $checks = (new ReviewPluginRepository($plugin))->handle();
+        $checks = (new ReviewPluginRepository($plugin))->handle(new PluginManifestParser);
 
         $this->assertTrue($checks['requires_mobile_sdk']);
         $this->assertEquals('^3.0.0', $checks['mobile_sdk_constraint']);
@@ -132,7 +133,7 @@ class ReviewPluginRepositoryTest extends TestCase
 
         Http::fake($this->fakeGitHub('acme/no-sdk-plugin', composerRequire: ['php' => '^8.1']));
 
-        $checks = (new ReviewPluginRepository($plugin))->handle();
+        $checks = (new ReviewPluginRepository($plugin))->handle(new PluginManifestParser);
 
         $this->assertFalse($checks['requires_mobile_sdk']);
         $this->assertNull($checks['mobile_sdk_constraint']);
@@ -150,7 +151,7 @@ class ReviewPluginRepositoryTest extends TestCase
             'android' => ['min_version' => '24'],
         ]));
 
-        $checks = (new ReviewPluginRepository($plugin))->handle();
+        $checks = (new ReviewPluginRepository($plugin))->handle(new PluginManifestParser);
 
         $this->assertTrue($checks['has_ios_min_version']);
         $this->assertEquals('16.0', $checks['ios_min_version']);
@@ -167,7 +168,7 @@ class ReviewPluginRepositoryTest extends TestCase
 
         Http::fake($this->fakeGitHub('acme/no-manifest-plugin'));
 
-        $checks = (new ReviewPluginRepository($plugin))->handle();
+        $checks = (new ReviewPluginRepository($plugin))->handle(new PluginManifestParser);
 
         $this->assertFalse($checks['has_ios_min_version']);
         $this->assertNull($checks['ios_min_version']);
@@ -186,7 +187,7 @@ class ReviewPluginRepositoryTest extends TestCase
             'ios' => ['min_version' => '15.0'],
         ]));
 
-        $checks = (new ReviewPluginRepository($plugin))->handle();
+        $checks = (new ReviewPluginRepository($plugin))->handle(new PluginManifestParser);
 
         $this->assertTrue($checks['has_ios_min_version']);
         $this->assertEquals('15.0', $checks['ios_min_version']);
@@ -209,7 +210,7 @@ class ReviewPluginRepositoryTest extends TestCase
         $this->assertNull($plugin->reviewed_at);
         $this->assertNull($plugin->review_checks);
 
-        (new ReviewPluginRepository($plugin))->handle();
+        (new ReviewPluginRepository($plugin))->handle(new PluginManifestParser);
 
         $plugin->refresh();
 
@@ -227,7 +228,7 @@ class ReviewPluginRepositoryTest extends TestCase
             'repository_url' => null,
         ]);
 
-        $checks = (new ReviewPluginRepository($plugin))->handle();
+        $checks = (new ReviewPluginRepository($plugin))->handle(new PluginManifestParser);
 
         $this->assertFalse($checks['has_license_file']);
         $this->assertFalse($checks['has_release_version']);
@@ -250,7 +251,7 @@ class ReviewPluginRepositoryTest extends TestCase
             defaultBranch: 'master',
         ));
 
-        $checks = (new ReviewPluginRepository($plugin))->handle();
+        $checks = (new ReviewPluginRepository($plugin))->handle(new PluginManifestParser);
 
         $this->assertTrue($checks['supports_ios']);
         $this->assertTrue($checks['supports_android']);
@@ -271,7 +272,7 @@ class ReviewPluginRepositoryTest extends TestCase
             ['path' => 'src/ServiceProvider.php', 'type' => 'blob'],
         ]));
 
-        $checks = (new ReviewPluginRepository($plugin))->handle();
+        $checks = (new ReviewPluginRepository($plugin))->handle(new PluginManifestParser);
 
         $this->assertTrue($checks['has_license_file']);
     }
@@ -288,7 +289,7 @@ class ReviewPluginRepositoryTest extends TestCase
             ['path' => 'src/ServiceProvider.php', 'type' => 'blob'],
         ]));
 
-        $checks = (new ReviewPluginRepository($plugin))->handle();
+        $checks = (new ReviewPluginRepository($plugin))->handle(new PluginManifestParser);
 
         $this->assertTrue($checks['has_license_file']);
     }
@@ -304,7 +305,7 @@ class ReviewPluginRepositoryTest extends TestCase
             ['path' => 'src/ServiceProvider.php', 'type' => 'blob'],
         ]));
 
-        $checks = (new ReviewPluginRepository($plugin))->handle();
+        $checks = (new ReviewPluginRepository($plugin))->handle(new PluginManifestParser);
 
         $this->assertFalse($checks['has_license_file']);
     }
@@ -320,7 +321,7 @@ class ReviewPluginRepositoryTest extends TestCase
             ['path' => 'LICENSE', 'type' => 'tree'],
         ]));
 
-        $checks = (new ReviewPluginRepository($plugin))->handle();
+        $checks = (new ReviewPluginRepository($plugin))->handle(new PluginManifestParser);
 
         $this->assertFalse($checks['has_license_file']);
     }
@@ -334,7 +335,7 @@ class ReviewPluginRepositoryTest extends TestCase
 
         Http::fake($this->fakeGitHub('acme/released-plugin', latestRelease: 'v1.0.0'));
 
-        $checks = (new ReviewPluginRepository($plugin))->handle();
+        $checks = (new ReviewPluginRepository($plugin))->handle(new PluginManifestParser);
 
         $this->assertTrue($checks['has_release_version']);
         $this->assertEquals('v1.0.0', $checks['release_version']);
@@ -359,7 +360,7 @@ class ReviewPluginRepositoryTest extends TestCase
             ]
         ));
 
-        $checks = (new ReviewPluginRepository($plugin))->handle();
+        $checks = (new ReviewPluginRepository($plugin))->handle(new PluginManifestParser);
 
         $this->assertTrue($checks['has_release_version']);
         $this->assertEquals('v0.5.0', $checks['release_version']);
@@ -374,9 +375,68 @@ class ReviewPluginRepositoryTest extends TestCase
 
         Http::fake($this->fakeGitHub('acme/unreleased-plugin'));
 
-        $checks = (new ReviewPluginRepository($plugin))->handle();
+        $checks = (new ReviewPluginRepository($plugin))->handle(new PluginManifestParser);
 
         $this->assertFalse($checks['has_release_version']);
         $this->assertNull($checks['release_version']);
+    }
+
+    /** @test */
+    public function it_flags_android_permissions_missing_a_matching_ios_usage_description(): void
+    {
+        $plugin = Plugin::factory()->create([
+            'repository_url' => 'https://github.com/acme/camera-plugin',
+        ]);
+
+        Http::fake($this->fakeGitHub('acme/camera-plugin', tree: [
+            ['path' => 'resources/ios/Plugin.swift', 'type' => 'blob'],
+        ], nativephpJson: [
+            'android' => ['permissions' => ['android.permission.CAMERA']],
+        ]));
+
+        $checks = (new ReviewPluginRepository($plugin))->handle(new PluginManifestParser);
+
+        $this->assertFalse($checks['permission_parity_complete']);
+        $this->assertSame('android.permission.CAMERA', $checks['missing_permission_parity'][0]['permission']);
+        $this->assertSame('NSCameraUsageDescription', $checks['missing_permission_parity'][0]['expected_key']);
+    }
+
+    /** @test */
+    public function it_passes_permission_parity_when_the_usage_description_is_declared(): void
+    {
+        $plugin = Plugin::factory()->create([
+            'repository_url' => 'https://github.com/acme/camera-plugin-ok',
+        ]);
+
+        Http::fake($this->fakeGitHub('acme/camera-plugin-ok', tree: [
+            ['path' => 'resources/ios/Plugin.swift', 'type' => 'blob'],
+        ], nativephpJson: [
+            'android' => ['permissions' => ['android.permission.CAMERA']],
+            'ios' => ['info_plist' => ['NSCameraUsageDescription' => 'Used to scan documents.']],
+        ]));
+
+        $checks = (new ReviewPluginRepository($plugin))->handle(new PluginManifestParser);
+
+        $this->assertTrue($checks['permission_parity_complete']);
+        $this->assertSame([], $checks['missing_permission_parity']);
+    }
+
+    /** @test */
+    public function it_skips_permission_parity_for_android_only_plugins(): void
+    {
+        $plugin = Plugin::factory()->create([
+            'repository_url' => 'https://github.com/acme/android-only-plugin',
+        ]);
+
+        Http::fake($this->fakeGitHub('acme/android-only-plugin', tree: [
+            ['path' => 'resources/android/Plugin.kt', 'type' => 'blob'],
+        ], nativephpJson: [
+            'android' => ['permissions' => ['android.permission.CAMERA']],
+        ]));
+
+        $checks = (new ReviewPluginRepository($plugin))->handle(new PluginManifestParser);
+
+        $this->assertTrue($checks['permission_parity_complete']);
+        $this->assertSame([], $checks['missing_permission_parity']);
     }
 }
