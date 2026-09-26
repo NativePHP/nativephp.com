@@ -16,6 +16,14 @@ class GitHubAppServiceTest extends TestCase
     use InteractsWithGitHubApp;
     use RefreshDatabase;
 
+    public function test_installation_url_points_at_the_nativephp_app_by_default(): void
+    {
+        $this->assertSame(
+            'https://github.com/apps/nativephp-plugin-marketplace/installations/new',
+            (new GitHubAppService)->installationUrl()
+        );
+    }
+
     public function test_jwt_is_signed_with_the_app_private_key(): void
     {
         $publicKey = $this->configureGitHubApp();
@@ -29,19 +37,32 @@ class GitHubAppServiceTest extends TestCase
         $this->assertLessThanOrEqual(10 * 60, $claims->exp - $claims->iat);
     }
 
+    public function test_jwt_accepts_a_private_key_stored_on_one_line(): void
+    {
+        $publicKey = $this->configureGitHubApp();
+
+        config(['services.github_app.private_key' => str_replace("\n", '\n', config('services.github_app.private_key'))]);
+
+        $this->assertStringNotContainsString("\n", config('services.github_app.private_key'));
+
+        $claims = JWT::decode((new GitHubAppService)->generateJwt(), new Key($publicKey, 'RS256'));
+
+        $this->assertSame('12345', $claims->iss);
+    }
+
     public function test_jwt_fails_clearly_when_the_private_key_is_missing(): void
     {
-        config(['services.github_app.private_key_path' => '']);
+        config(['services.github_app.private_key' => '']);
 
         $this->expectException(\RuntimeException::class);
-        $this->expectExceptionMessage('GITHUB_APP_PRIVATE_KEY_PATH');
+        $this->expectExceptionMessage('GITHUB_APP_PRIVATE_KEY');
 
         (new GitHubAppService)->generateJwt();
     }
 
     public function test_a_missing_private_key_does_not_break_installation_token_lookups(): void
     {
-        config(['services.github_app.private_key_path' => '']);
+        config(['services.github_app.private_key' => '']);
 
         $installation = GitHubInstallation::factory()->create();
 

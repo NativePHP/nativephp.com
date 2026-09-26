@@ -43,13 +43,7 @@ class GitHubAppService
 
     public function generateJwt(): string
     {
-        $privateKeyPath = config('services.github_app.private_key_path');
-
-        if (! $privateKeyPath || ! is_readable($privateKeyPath)) {
-            throw new RuntimeException('The GitHub App private key is missing. Check GITHUB_APP_PRIVATE_KEY_PATH.');
-        }
-
-        $privateKey = file_get_contents($privateKeyPath);
+        $privateKey = $this->privateKey();
         $appId = config('services.github_app.app_id');
 
         $now = time();
@@ -61,6 +55,21 @@ class GitHubAppService
         ];
 
         return JWT::encode($payload, $privateKey, 'RS256');
+    }
+
+    /**
+     * The app's PEM private key from GITHUB_APP_PRIVATE_KEY. Some hosting dashboards store
+     * multi-line values with literal "\n" sequences, so those are turned back into newlines.
+     */
+    protected function privateKey(): string
+    {
+        $privateKey = trim((string) config('services.github_app.private_key'));
+
+        if ($privateKey === '') {
+            throw new RuntimeException('The GitHub App private key is missing. Set GITHUB_APP_PRIVATE_KEY.');
+        }
+
+        return str_replace('\n', "\n", $privateKey);
     }
 
     public function getInstallationToken(GitHubInstallation $installation): ?string

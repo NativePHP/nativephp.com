@@ -2,6 +2,7 @@
 
 namespace App\Livewire;
 
+use App\Services\GitHubAppService;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
 use Livewire\Component;
@@ -38,7 +39,7 @@ class GitHubAppStatus extends Component
         return view('livewire.git-hub-app-status', [
             'installations' => $installations,
             'pluginCoverage' => $pluginCoverage,
-            'slug' => config('services.github_app.slug'),
+            'installUrl' => app(GitHubAppService::class)->installationUrl(),
         ]);
     }
 }
