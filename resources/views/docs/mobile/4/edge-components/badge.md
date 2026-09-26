@@ -95,7 +95,7 @@ colors that work on both platforms.
 ## Element
 
 ```php
-use Nativephp\NativeUi\Elements\Badge;
+use Native\Mobile\UI\Elements\Badge;
 
 Badge::make()
     ->count(3)

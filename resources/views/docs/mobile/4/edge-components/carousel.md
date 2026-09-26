@@ -86,7 +86,7 @@ avatar is loading, or whenever `$contact->avatar` is empty.
 ## Element
 
 ```php
-use Nativephp\NativeUi\Elements\Carousel;
+use Native\Mobile\UI\Elements\Carousel;
 
 Carousel::make($child1, $child2, $child3)
     ->itemWidth(280)

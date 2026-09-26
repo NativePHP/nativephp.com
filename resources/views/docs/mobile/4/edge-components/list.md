@@ -186,7 +186,7 @@ list to keep flat rows with plain section headers instead.
 - `footer` - Optional footer text below the section
 
 ```php
-use Nativephp\NativeUi\Elements\ListSection;
+use Native\Mobile\UI\Elements\ListSection;
 
 ListSection::make('Fruits', ListItem::make('Apple'))->footer('1 item');
 ```
@@ -259,8 +259,8 @@ here just gives the demo enough rows to scroll before the end-reached trigger fi
 ## Element
 
 ```php
-use Nativephp\NativeUi\Elements\NativeList;
-use Nativephp\NativeUi\Elements\ListItem;
+use Native\Mobile\UI\Elements\NativeList;
+use Native\Mobile\UI\Elements\ListItem;
 
 NativeList::make(
     ListItem::make('Profile')->leadingIcon('person')->trailingIcon('forward'),

@@ -442,9 +442,9 @@ The `color` attribute can be set explicitly or picked up from a `text-*` class o
 ## Element
 
 ```php
-use Nativephp\NativeUi\Elements\OutlinedTextInput;
-use Nativephp\NativeUi\Elements\FilledTextInput;
-use Nativephp\NativeUi\Elements\BareTextInput;
+use Native\Mobile\UI\Elements\OutlinedTextInput;
+use Native\Mobile\UI\Elements\FilledTextInput;
+use Native\Mobile\UI\Elements\BareTextInput;
 
 OutlinedTextInput::make()
     ->label('Email')

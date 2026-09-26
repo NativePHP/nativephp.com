@@ -135,8 +135,8 @@ Material name on Android:
 ## Element
 
 ```php
-use Nativephp\NativeUi\Elements\TabRow;
-use Nativephp\NativeUi\Elements\Tab;
+use Native\Mobile\UI\Elements\TabRow;
+use Native\Mobile\UI\Elements\Tab;
 
 TabRow::make(
     Tab::make('Recent')->icon('history'),

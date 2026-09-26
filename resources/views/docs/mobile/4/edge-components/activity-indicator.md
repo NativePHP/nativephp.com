@@ -71,7 +71,7 @@ gives the example a bounded area to center in.
 ## Element
 
 ```php
-use Nativephp\NativeUi\Elements\ActivityIndicator;
+use Native\Mobile\UI\Elements\ActivityIndicator;
 
 ActivityIndicator::make()
     ->size('lg')

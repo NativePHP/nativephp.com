@@ -100,7 +100,7 @@ When the platforms need different symbols, override per platform — an SF Symbo
 ## Element
 
 ```php
-use Nativephp\NativeUi\Elements\Chip;
+use Native\Mobile\UI\Elements\Chip;
 
 Chip::make('Verified')
     ->icon('check')

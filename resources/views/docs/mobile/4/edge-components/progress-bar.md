@@ -79,7 +79,7 @@ Here `$progress` stands in for a public property on your component — declare `
 ## Element
 
 ```php
-use Nativephp\NativeUi\Elements\ProgressBar;
+use Native\Mobile\UI\Elements\ProgressBar;
 
 ProgressBar::make()->value(0.65);
 

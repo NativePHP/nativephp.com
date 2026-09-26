@@ -177,7 +177,7 @@ For per-tenant or user-selectable themes, merge tokens at runtime from a service
 It deep-merges over the config values, so you only pass what changes:
 
 ```php
-use Nativephp\NativeUi\Theme;
+use Native\Mobile\UI\Theme;
 
 Theme::merge([
     'light' => ['primary' => $tenant->brandColor],

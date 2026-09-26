@@ -231,8 +231,8 @@ For a slide-out side drawer, mix the native-ui `HasLayoutDrawer` trait into your
 `drawer()`. The content is any Blade view, so you build the drawer's UI with normal EDGE components:
 
 ```php
-use Nativephp\NativeUi\Builders\Drawer;
-use Nativephp\NativeUi\Concerns\HasLayoutDrawer;
+use Native\Mobile\UI\Builders\Drawer;
+use Native\Mobile\UI\Concerns\HasLayoutDrawer;
 
 class AppLayout extends NativeLayout
 {
@@ -267,8 +267,8 @@ The drawer is fully interactive without any wiring on your part:
 A single screen can replace or suppress the layout's drawer with the `InteractsWithDrawer` trait — the same shape as `navigationOptions()` for the nav bar:
 
 ```php
-use Nativephp\NativeUi\Builders\Drawer;
-use Nativephp\NativeUi\Concerns\InteractsWithDrawer;
+use Native\Mobile\UI\Builders\Drawer;
+use Native\Mobile\UI\Concerns\InteractsWithDrawer;
 
 class AdminScreen extends NativeComponent
 {
@@ -349,8 +349,8 @@ the content and the tab bar, so nothing is pushed up. Return `null` and nothing 
 The content is any element tree or Blade view, so you build the overlay's UI with normal EDGE components:
 
 ```php
-use Nativephp\NativeUi\Builders\FloatingOverlay;
-use Nativephp\NativeUi\Concerns\HasFloatingOverlay;
+use Native\Mobile\UI\Builders\FloatingOverlay;
+use Native\Mobile\UI\Concerns\HasFloatingOverlay;
 
 class AppLayout extends NativeLayout
 {
@@ -389,8 +389,8 @@ trait. Only rendered by layouts using native chrome (`usesNativeChrome()` is `tr
 A single screen replaces or suppresses the layout's overlay with the `InteractsWithFloatingOverlay` trait:
 
 ```php
-use Nativephp\NativeUi\Builders\FloatingOverlay;
-use Nativephp\NativeUi\Concerns\InteractsWithFloatingOverlay;
+use Native\Mobile\UI\Builders\FloatingOverlay;
+use Native\Mobile\UI\Concerns\InteractsWithFloatingOverlay;
 
 class CheckoutScreen extends NativeComponent
 {
