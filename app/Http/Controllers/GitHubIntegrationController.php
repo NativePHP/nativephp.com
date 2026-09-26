@@ -200,6 +200,10 @@ class GitHubIntegrationController extends Controller
             ->with('success', $message);
     }
 
+    /**
+     * GitHub redirects here after the app is installed and sends the installation webhook at the same
+     * time, so the webhook can record the installation while this request is still checking it.
+     */
     public function handleSetup(Request $request): RedirectResponse
     {
         $installationId = (int) $request->query('installation_id');
@@ -213,21 +217,21 @@ class GitHubIntegrationController extends Controller
         $appService = app(GitHubAppService::class);
         $installation = GitHubInstallation::where('installation_id', $installationId)->first();
 
-        if ($installation && $installation->user_id !== $user->id) {
-            return to_route('customer.integrations')
-                ->with('error', 'That GitHub App installation is already linked to another NativePHP account.');
-        }
-
         if (! $installation) {
             if (! $user->isUsingGitHubApp() || ! $appService->userCanAccessInstallation($user, $installationId)) {
                 return to_route('customer.integrations')
                     ->with('error', "We couldn't confirm that GitHub App installation belongs to your GitHub account. Please connect GitHub and try again.");
             }
 
-            $installation = $user->githubInstallations()->create([
-                'installation_id' => $installationId,
-                'account_login' => $user->github_username ?? 'unknown',
-            ]);
+            $installation = GitHubInstallation::createOrFirst(
+                ['installation_id' => $installationId],
+                ['user_id' => $user->id, 'account_login' => $user->github_username ?? 'unknown'],
+            );
+        }
+
+        if ($installation->user_id !== $user->id) {
+            return to_route('customer.integrations')
+                ->with('error', 'That GitHub App installation is already linked to another NativePHP account.');
         }
 
         if (! $appService->syncInstallation($installation) && ! $installation->exists) {

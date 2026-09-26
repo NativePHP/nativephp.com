@@ -1,6 +1,6 @@
 <div>
     <div @class(['max-w-7xl mx-auto px-4 sm:px-6 lg:px-8' => !$inline])>
-        <div class="bg-gradient-to-r from-indigo-50 to-purple-100 dark:from-indigo-900 dark:to-purple-900 border border-indigo-300 dark:border-indigo-600 rounded-lg p-6 h-full">
+        <div class="bg-gradient-to-r from-indigo-50 to-purple-100 dark:from-indigo-900 dark:to-purple-900 border border-indigo-300 dark:border-indigo-600 rounded-xl p-6 h-full">
             <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
                 <div class="flex items-start">
                     <div class="flex-shrink-0">
