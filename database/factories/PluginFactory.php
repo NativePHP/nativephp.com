@@ -216,6 +216,16 @@ class PluginFactory extends Factory
         ]);
     }
 
+    /**
+     * The lowest NativePHP Mobile release the plugin supports in each major version, e.g. ('3.0', '4.5.2').
+     */
+    public function mobileVersions(string ...$versions): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'mobile_versions' => collect($versions)->keyBy(fn (string $version): int => (int) $version)->all(),
+        ]);
+    }
+
     public function withoutDescription(): static
     {
         return $this->state(fn (array $attributes) => [

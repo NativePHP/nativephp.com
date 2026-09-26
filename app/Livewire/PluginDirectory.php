@@ -27,11 +27,6 @@ class PluginDirectory extends Component
      */
     public const string CATEGORY_UNCATEGORIZED = 'uncategorized';
 
-    /**
-     * Filter value representing plugins with no `mobile_min_version` recorded.
-     */
-    public const string MOBILE_VERSION_UNSPECIFIED = 'unspecified';
-
     #[Url]
     public string $search = '';
 
@@ -52,7 +47,8 @@ class PluginDirectory extends Component
 
     /**
      * Drop any `type`/`category` value that isn't a real enum case (a stale
-     * bookmark, a hand-edited URL) instead of crashing later on `::from()`.
+     * bookmark, a hand-edited URL) instead of crashing later on `::from()`,
+     * and any `mobileVersion` that isn't one of the filter's options.
      */
     public function mount(): void
     {
@@ -64,6 +60,10 @@ class PluginDirectory extends Component
             && $this->category !== self::CATEGORY_UNCATEGORIZED
             && PluginCategory::tryFrom($this->category) === null) {
             $this->category = '';
+        }
+
+        if ($this->mobileVersion !== '' && ! in_array($this->mobileVersion, $this->mobileVersionOptions(), true)) {
+            $this->mobileVersion = '';
         }
     }
 
@@ -177,16 +177,7 @@ class PluginDirectory extends Component
                 $query->whereJsonContains('categories', $this->category);
             })
             ->when($this->mobileVersion !== '', function (Builder $query): void {
-                if ($this->mobileVersion === self::MOBILE_VERSION_UNSPECIFIED) {
-                    $query->whereNull('mobile_min_version');
-
-                    return;
-                }
-
-                $query->where(function (Builder $q): void {
-                    $q->where('mobile_min_version', 'like', "{$this->mobileVersion}.%")
-                        ->orWhere('mobile_min_version', $this->mobileVersion);
-                });
+                $query->supportsMobileVersion((int) $this->mobileVersion);
             })
             ->orderByDesc('featured')
             ->latest()
@@ -211,9 +202,8 @@ class PluginDirectory extends Component
             'authorUser' => $authorUser,
             'typeOptions' => PluginType::cases(),
             'categoryOptions' => PluginCategory::cases(),
-            'mobileVersionOptions' => config('plugins.mobile_major_versions', []),
+            'mobileVersionOptions' => $this->mobileVersionOptions(),
             'categoryUncategorizedValue' => self::CATEGORY_UNCATEGORIZED,
-            'mobileVersionUnspecifiedValue' => self::MOBILE_VERSION_UNSPECIFIED,
             'typeLabel' => $this->type !== '' ? PluginType::from($this->type)->label() : null,
             'categoryLabel' => $this->categoryLabel(),
             'mobileVersionLabel' => $this->mobileVersionLabel(),
@@ -231,10 +221,16 @@ class PluginDirectory extends Component
 
     protected function mobileVersionLabel(): ?string
     {
-        return match (true) {
-            $this->mobileVersion === '' => null,
-            $this->mobileVersion === self::MOBILE_VERSION_UNSPECIFIED => 'Version unspecified',
-            default => "v{$this->mobileVersion}.x and up",
-        };
+        return $this->mobileVersion === '' ? null : "NativePHP {$this->mobileVersion}.x";
+    }
+
+    /**
+     * The NativePHP Mobile major versions plugins can be filtered by, newest first.
+     *
+     * @return array<int, string>
+     */
+    protected function mobileVersionOptions(): array
+    {
+        return array_map(strval(...), config('plugins.mobile_major_versions', []));
     }
 }

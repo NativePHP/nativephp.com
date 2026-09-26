@@ -8,8 +8,10 @@ use App\Features\ShowPlugins;
 use App\Livewire\PluginDirectory;
 use App\Models\Plugin;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Blade;
 use Laravel\Pennant\Feature;
 use Livewire\Livewire;
+use PHPUnit\Framework\Attributes\DataProvider;
 use Tests\TestCase;
 
 class PluginDirectoryTest extends TestCase
@@ -120,57 +122,118 @@ class PluginDirectoryTest extends TestCase
 
     public function test_mobile_version_filter_buckets_by_major_version(): void
     {
-        $v4 = Plugin::factory()->approved()->create(['mobile_min_version' => '4.2.0']);
-        Plugin::factory()->approved()->create(['mobile_min_version' => '3.1.0']);
+        $v4 = Plugin::factory()->approved()->mobileVersions('4.2')->create();
+        Plugin::factory()->approved()->mobileVersions('3.1')->create();
 
         Livewire::test(PluginDirectory::class)
             ->set('mobileVersion', '4')
             ->assertViewHas('plugins', fn ($plugins) => $plugins->pluck('id')->all() === [$v4->id]);
     }
 
-    public function test_mobile_version_filter_matches_exact_major_version_string(): void
+    public function test_mobile_version_filter_finds_a_plugin_under_each_major_version_it_supports(): void
     {
-        $v4 = Plugin::factory()->approved()->create(['mobile_min_version' => '4']);
-        Plugin::factory()->approved()->create(['mobile_min_version' => '3.1.0']);
+        $both = Plugin::factory()->approved()->mobileVersions('3.0', '4.0')->create();
+        $v3 = Plugin::factory()->approved()->mobileVersions('3.2.1')->create();
+        $v4 = Plugin::factory()->approved()->mobileVersions('4.5.2')->create();
+
+        Livewire::test(PluginDirectory::class)
+            ->set('mobileVersion', '3')
+            ->assertViewHas('plugins', fn ($plugins) => $plugins->pluck('id')->sort()->values()->all() === [$both->id, $v3->id])
+            ->set('mobileVersion', '4')
+            ->assertViewHas('plugins', fn ($plugins) => $plugins->pluck('id')->sort()->values()->all() === [$both->id, $v4->id]);
+    }
+
+    public function test_mobile_version_filter_leaves_out_plugins_without_versions(): void
+    {
+        Plugin::factory()->approved()->create(['mobile_versions' => null]);
+        $v4 = Plugin::factory()->approved()->mobileVersions('4.0')->create();
 
         Livewire::test(PluginDirectory::class)
             ->set('mobileVersion', '4')
             ->assertViewHas('plugins', fn ($plugins) => $plugins->pluck('id')->all() === [$v4->id]);
     }
 
-    public function test_mobile_version_filter_unspecified_bucket_returns_only_null_versions(): void
+    #[DataProvider('retiredMobileVersionValues')]
+    public function test_retired_or_unknown_mobile_version_query_param_is_ignored(string $value): void
     {
-        $unspecified = Plugin::factory()->approved()->create(['mobile_min_version' => null]);
-        Plugin::factory()->approved()->create(['mobile_min_version' => '4.0.0']);
+        Plugin::factory()->approved()->create(['mobile_versions' => null]);
+        Plugin::factory()->approved()->mobileVersions('4.0')->create();
 
-        Livewire::test(PluginDirectory::class)
-            ->set('mobileVersion', PluginDirectory::MOBILE_VERSION_UNSPECIFIED)
-            ->assertViewHas('plugins', fn ($plugins) => $plugins->pluck('id')->all() === [$unspecified->id]);
+        Livewire::withQueryParams(['mobileVersion' => $value])
+            ->test(PluginDirectory::class)
+            ->assertSet('mobileVersion', '')
+            ->assertViewHas('plugins', fn ($plugins) => $plugins->count() === 2);
     }
 
-    public function test_unfiltered_view_does_not_hide_plugins_without_mobile_min_version(): void
+    /**
+     * @return array<string, array{0: string}>
+     */
+    public static function retiredMobileVersionValues(): array
     {
-        Plugin::factory()->approved()->create(['mobile_min_version' => null]);
-        Plugin::factory()->approved()->create(['mobile_min_version' => '4.0.0']);
+        return [
+            'the old unspecified bucket' => ['unspecified'],
+            'an older major version' => ['2'],
+            'nonsense' => ['bogus'],
+        ];
+    }
+
+    public function test_mobile_version_filter_options_are_the_configured_major_versions(): void
+    {
+        Livewire::test(PluginDirectory::class)
+            ->assertViewHas('mobileVersionOptions', ['4', '3'])
+            ->assertSee('NativePHP 4.x')
+            ->assertSee('NativePHP 3.x')
+            ->assertDontSee('Version Unspecified');
+    }
+
+    public function test_unfiltered_view_does_not_hide_plugins_without_mobile_versions(): void
+    {
+        Plugin::factory()->approved()->create(['mobile_versions' => null]);
+        Plugin::factory()->approved()->mobileVersions('4.0')->create();
 
         Livewire::test(PluginDirectory::class)
             ->assertViewHas('plugins', fn ($plugins) => $plugins->count() === 2);
     }
 
+    public function test_plugin_card_shows_a_pill_for_each_supported_mobile_version(): void
+    {
+        $plugin = Plugin::factory()->approved()->mobileVersions('4.5.2', '3.0')->create();
+
+        $html = view('components.plugin-card', ['plugin' => $plugin])->render();
+
+        $this->assertMatchesRegularExpression(
+            '/Works with NativePHP Mobile 3\.x from 3\.0.*Works with NativePHP Mobile 4\.x from 4\.5\.2/s',
+            $html,
+        );
+    }
+
+    public function test_plugin_card_marks_mobile_versions_with_a_phone_icon(): void
+    {
+        $plugin = Plugin::factory()->approved()->mobileVersions('4.0')->create();
+
+        $html = view('components.plugin-card', ['plugin' => $plugin])->render();
+
+        $this->assertStringContainsString(
+            Blade::render('<x-icons.device-mobile-phone class="h-3 shrink-0" aria-hidden="true" />'),
+            $html,
+        );
+    }
+
+    public function test_plugin_card_has_no_mobile_version_pills_without_versions(): void
+    {
+        $plugin = Plugin::factory()->approved()->create(['mobile_versions' => null]);
+
+        $html = view('components.plugin-card', ['plugin' => $plugin])->render();
+
+        $this->assertStringNotContainsString('Works with NativePHP Mobile', $html);
+    }
+
     public function test_combining_type_category_and_mobile_version_filters(): void
     {
-        $match = Plugin::factory()->approved()->paid()->categories(PluginCategory::Analytics)->create([
-            'mobile_min_version' => '4.0.0',
-        ]);
-        Plugin::factory()->approved()->free()->categories(PluginCategory::Analytics)->create([
-            'mobile_min_version' => '4.0.0',
-        ]);
-        Plugin::factory()->approved()->paid()->categories(PluginCategory::Media)->create([
-            'mobile_min_version' => '4.0.0',
-        ]);
-        Plugin::factory()->approved()->paid()->categories(PluginCategory::Analytics)->create([
-            'mobile_min_version' => '3.0.0',
-        ]);
+        $match = Plugin::factory()->approved()->paid()->categories(PluginCategory::Analytics)->mobileVersions('4.0')->create();
+        Plugin::factory()->approved()->free()->categories(PluginCategory::Analytics)->mobileVersions('4.0')->create();
+        Plugin::factory()->approved()->paid()->categories(PluginCategory::Media)->mobileVersions('4.0')->create();
+        Plugin::factory()->approved()->paid()->categories(PluginCategory::Analytics)->mobileVersions('3.0')->create();
 
         Livewire::test(PluginDirectory::class)
             ->set('type', PluginType::Paid->value)
