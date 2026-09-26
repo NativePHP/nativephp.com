@@ -18,6 +18,12 @@ class Kernel extends ConsoleKernel
             ->onOneServer()
             ->runInBackground();
 
+        // Reconcile GitHub App installations in case we missed any installation webhooks
+        $schedule->command('github:sync-installations')
+            ->dailyAt('09:30')
+            ->onOneServer()
+            ->runInBackground();
+
         // Remove Discord Max role for users with expired Max licenses
         $schedule->command('discord:remove-expired-roles')
             ->dailyAt('10:30')

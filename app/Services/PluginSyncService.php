@@ -194,11 +194,28 @@ class PluginSyncService
     protected function getGitHubToken(Plugin $plugin): ?string
     {
         $user = $plugin->user;
+        $repo = $plugin->getRepositoryOwnerAndName();
 
+        // Priority 1: Installation token (GitHub App)
+        if ($user && $repo && $user->isUsingGitHubApp()) {
+            $appService = app(GitHubAppService::class);
+            $installation = $appService->findInstallationForRepo($user, $repo['owner'], $repo['repo']);
+
+            if ($installation) {
+                $token = $appService->getInstallationToken($installation);
+
+                if ($token) {
+                    return $token;
+                }
+            }
+        }
+
+        // Priority 2: User OAuth token
         if ($user && $user->hasGitHubToken()) {
             return $user->getGitHubToken();
         }
 
+        // Priority 3: Platform token
         return config('services.github.token');
     }
 

@@ -118,6 +118,12 @@ class Create extends Component
     {
         $user = auth()->user();
 
+        if ($user->needsGitHubAppMigration()) {
+            session()->flash('error', 'Please upgrade your GitHub connection before creating a plugin.');
+
+            return;
+        }
+
         if (! $user->github_id) {
             $this->addError('repository', 'You must connect your GitHub account to create a plugin.');
 

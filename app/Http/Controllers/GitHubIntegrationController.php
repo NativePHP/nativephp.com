@@ -2,12 +2,16 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\GitHubAuthType;
+use App\Models\GitHubInstallation;
 use App\Models\Product;
 use App\Models\User;
+use App\Services\GitHubAppService;
 use App\Services\GitHubUserService;
 use App\Support\GitHubOAuth;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
@@ -23,31 +27,42 @@ class GitHubIntegrationController extends Controller
 
     public function redirectToGitHub(): RedirectResponse
     {
-        session(['github_auth_intent' => 'link']);
+        $driver = $this->resolveDriver();
+
+        session([
+            'github_auth_intent' => 'link',
+            'github_auth_driver' => $driver,
+        ]);
 
         // Store the return URL if provided
         if (request()->has('return')) {
             session(['github_return_url' => request()->get('return')]);
         }
 
-        return Socialite::driver('github')
-            ->scopes(['read:user', 'repo'])
+        $scopes = $driver === 'github-app'
+            ? ['read:user', 'user:email']
+            : ['read:user', 'repo'];
+
+        return Socialite::driver($driver)
+            ->scopes($scopes)
             ->redirect();
     }
 
     public function handleCallback(): RedirectResponse
     {
         try {
-            $githubUser = Socialite::driver('github')->user();
+            $driver = session()->pull('github_auth_driver', 'github');
+            $githubUser = Socialite::driver($driver)->user();
 
             $intent = session()->pull('github_auth_intent', 'link');
+            $authType = $driver === 'github-app' ? GitHubAuthType::App : GitHubAuthType::OAuth;
 
             if (Auth::check()) {
-                return $this->handleLinkAccount($githubUser);
+                return $this->handleLinkAccount($githubUser, $authType);
             }
 
             if ($intent === 'login') {
-                return $this->handleLogin($githubUser);
+                return $this->handleLogin($githubUser, $authType);
             }
 
             return to_route('customer.login')
@@ -65,16 +80,25 @@ class GitHubIntegrationController extends Controller
         }
     }
 
-    protected function handleLinkAccount($githubUser): RedirectResponse
+    protected function handleLinkAccount($githubUser, GitHubAuthType $authType): RedirectResponse
     {
         $user = Auth::user();
-        $user->update([
+
+        $this->saveGitHubCredentials($user, $githubUser, $authType, [
             'github_id' => $githubUser->id,
             'github_username' => $githubUser->nickname,
-            'github_token' => encrypt($githubUser->token),
         ]);
 
         $returnUrl = session()->pull('github_return_url');
+
+        // For GitHub App users, redirect to install the app for repo access
+        if ($authType === GitHubAuthType::App && $installUrl = app(GitHubAppService::class)->installationUrl()) {
+            if ($returnUrl) {
+                session(['github_return_url' => $returnUrl]);
+            }
+
+            return redirect($installUrl);
+        }
 
         if ($returnUrl) {
             return redirect($returnUrl)
@@ -85,34 +109,29 @@ class GitHubIntegrationController extends Controller
             ->with('success', 'GitHub account connected successfully!');
     }
 
-    protected function handleLogin($githubUser): RedirectResponse
+    protected function handleLogin($githubUser, GitHubAuthType $authType): RedirectResponse
     {
         $user = User::where('github_id', $githubUser->id)->first();
 
         if ($user) {
-            $user->update([
-                'github_token' => encrypt($githubUser->token),
-            ]);
+            $this->saveGitHubCredentials($user, $githubUser, $authType);
 
             Auth::login($user, remember: true);
 
-            return redirect()->intended(route('dashboard'))
-                ->with('success', 'Welcome back!');
+            return $this->redirectAfterLogin($user, $authType, 'Welcome back!');
         }
 
         $user = User::where('email', $githubUser->email)->first();
 
         if ($user) {
-            $user->update([
+            $this->saveGitHubCredentials($user, $githubUser, $authType, [
                 'github_id' => $githubUser->id,
                 'github_username' => $githubUser->nickname,
-                'github_token' => encrypt($githubUser->token),
             ]);
 
             Auth::login($user, remember: true);
 
-            return redirect()->intended(route('dashboard'))
-                ->with('success', 'GitHub account connected and logged in!');
+            return $this->redirectAfterLogin($user, $authType, 'GitHub account connected and logged in!');
         }
 
         $user = User::create([
@@ -120,7 +139,7 @@ class GitHubIntegrationController extends Controller
             'email' => $githubUser->email,
             'github_id' => $githubUser->id,
             'github_username' => $githubUser->nickname,
-            'github_token' => encrypt($githubUser->token),
+            ...$this->credentialAttributes($githubUser, $authType),
             'password' => bcrypt(Str::random(24)),
             'email_verified_at' => now(),
         ]);
@@ -129,6 +148,104 @@ class GitHubIntegrationController extends Controller
 
         return to_route('dashboard')
             ->with('success', 'Account created successfully!');
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    protected function credentialAttributes($githubUser, GitHubAuthType $authType): array
+    {
+        return [
+            'github_token' => encrypt($githubUser->token),
+            'github_auth_type' => $authType,
+            'github_refresh_token' => $githubUser->refreshToken ? encrypt($githubUser->refreshToken) : null,
+            'github_token_expires_at' => $githubUser->expiresIn ? now()->addSeconds($githubUser->expiresIn) : null,
+        ];
+    }
+
+    /**
+     * Save the user's new GitHub credentials. When they're moving from the legacy OAuth App to the
+     * GitHub App, their old authorization is revoked so its broad repo access stops working.
+     *
+     * @param  array<string, mixed>  $attributes
+     */
+    protected function saveGitHubCredentials(User $user, $githubUser, GitHubAuthType $authType, array $attributes = []): void
+    {
+        $legacyToken = $user->isUsingLegacyOAuth() && $authType === GitHubAuthType::App
+            ? $user->getGitHubToken()
+            : null;
+
+        $user->update([...$attributes, ...$this->credentialAttributes($githubUser, $authType)]);
+
+        if ($legacyToken) {
+            GitHubOAuth::make()->revokeOAuthGrant($legacyToken);
+        }
+    }
+
+    /**
+     * Send plugin authors whose repositories the GitHub App can't reach to the installation
+     * page, so signing in with the app never silently cuts off their plugin syncing.
+     */
+    protected function redirectAfterLogin(User $user, GitHubAuthType $authType, string $message): RedirectResponse
+    {
+        $installUrl = app(GitHubAppService::class)->installationUrl();
+
+        if ($authType === GitHubAuthType::App && $installUrl && $user->pluginsMissingGitHubAppAccess()->isNotEmpty()) {
+            session(['github_return_url' => session()->pull('url.intended', route('dashboard'))]);
+
+            return redirect($installUrl);
+        }
+
+        return redirect()->intended(route('dashboard'))
+            ->with('success', $message);
+    }
+
+    public function handleSetup(Request $request): RedirectResponse
+    {
+        $installationId = (int) $request->query('installation_id');
+
+        if (! $installationId) {
+            return to_route('customer.integrations')
+                ->with('error', 'No installation ID provided.');
+        }
+
+        $user = Auth::user();
+        $appService = app(GitHubAppService::class);
+        $installation = GitHubInstallation::where('installation_id', $installationId)->first();
+
+        if ($installation && $installation->user_id !== $user->id) {
+            return to_route('customer.integrations')
+                ->with('error', 'That GitHub App installation is already linked to another NativePHP account.');
+        }
+
+        if (! $installation) {
+            if (! $user->isUsingGitHubApp() || ! $appService->userCanAccessInstallation($user, $installationId)) {
+                return to_route('customer.integrations')
+                    ->with('error', "We couldn't confirm that GitHub App installation belongs to your GitHub account. Please connect GitHub and try again.");
+            }
+
+            $installation = $user->githubInstallations()->create([
+                'installation_id' => $installationId,
+                'account_login' => $user->github_username ?? 'unknown',
+            ]);
+        }
+
+        if (! $appService->syncInstallation($installation) && ! $installation->exists) {
+            return to_route('customer.integrations')
+                ->with('error', 'That GitHub App installation no longer exists.');
+        }
+
+        GitHubUserService::for($user)->clearRepositoryCache();
+
+        $returnUrl = session()->pull('github_return_url');
+
+        if ($returnUrl) {
+            return redirect($returnUrl)
+                ->with('success', 'GitHub App installed successfully!');
+        }
+
+        return to_route('customer.integrations')
+            ->with('success', 'GitHub App installed successfully!');
     }
 
     public function requestRepoAccess(): RedirectResponse
@@ -199,10 +316,15 @@ class GitHubIntegrationController extends Controller
             $github->removeFromClaudePluginsRepo($user->github_username);
         }
 
+        $user->githubInstallations()->delete();
+
         $user->update([
             'github_id' => null,
             'github_username' => null,
             'github_token' => null,
+            'github_auth_type' => null,
+            'github_refresh_token' => null,
+            'github_token_expires_at' => null,
             'mobile_repo_access_granted_at' => null,
             'claude_plugins_repo_access_granted_at' => null,
         ]);
@@ -230,5 +352,14 @@ class GitHubIntegrationController extends Controller
         return response()->json([
             'repositories' => $repositories,
         ]);
+    }
+
+    protected function resolveDriver(): string
+    {
+        if (config('services.github_app.client_id')) {
+            return 'github-app';
+        }
+
+        return 'github';
     }
 }

@@ -23,6 +23,9 @@
         </flux:callout>
     @endif
 
+    {{-- GitHub App Migration Banner --}}
+    <x-github-migration-banner />
+
     {{-- Info Section --}}
     <flux:card class="mb-6">
         <flux:heading>About Integrations</flux:heading>
@@ -83,7 +86,10 @@
                         <ul class="list-disc list-inside space-y-1">
                             <li>Any access to the private <code>nativephp/mobile</code> and <code>nativephp/claude-code</code> repositories will be revoked.</li>
                             <li>Your GitHub repositories will no longer be available when submitting or managing plugins.</li>
-                            <li>You can reconnect at any time. When re-authorizing, be sure to grant access to any organizations whose repositories you need.</li>
+                            <li>You can reconnect at any time. When you do, give the NativePHP GitHub App access to the repositories you need.</li>
+                            @if (auth()->user()->isUsingGitHubApp())
+                                <li>The NativePHP GitHub App stays installed on your GitHub accounts until you uninstall it from your <a href="https://github.com/settings/installations" target="_blank" class="underline">GitHub settings</a>.</li>
+                            @endif
                         </ul>
                     </flux:callout.text>
                 </flux:callout>
@@ -105,6 +111,13 @@
                 </div>
             </form>
         </flux:modal>
+    @endif
+
+    {{-- GitHub App Status (for users on the new GitHub App) --}}
+    @if(auth()->user()->isUsingGitHubApp())
+        <div class="mb-6">
+            <livewire:git-hub-app-status />
+        </div>
     @endif
 
     {{-- Claude Plugins Access --}}

@@ -2,9 +2,11 @@
 
 namespace App\Models;
 
+use App\Enums\GitHubAuthType;
 use App\Enums\PriceTier;
 use App\Enums\Subscription;
 use App\Enums\TeamUserStatus;
+use App\Services\GitHubAppService;
 use Filament\Models\Contracts\FilamentUser;
 use Filament\Models\Contracts\HasName;
 use Filament\Panel;
@@ -50,6 +52,7 @@ class User extends Authenticatable implements FilamentUser, HasName, MustVerifyE
         'password',
         'remember_token',
         'github_token',
+        'github_refresh_token',
     ];
 
     public function getFilamentName(): string
@@ -513,8 +516,29 @@ class User extends Authenticatable implements FilamentUser, HasName, MustVerifyE
             return null;
         }
 
+        if ($this->isUsingLegacyOAuth() && app(GitHubAppService::class)->legacyOAuthHasBeenRetired()) {
+            return null;
+        }
+
+        if ($this->github_token_expires_at?->isBefore(now()->addMinute())) {
+            return app(GitHubAppService::class)->refreshUserToken($this);
+        }
+
         try {
             return decrypt($this->github_token);
+        } catch (\Exception) {
+            return null;
+        }
+    }
+
+    public function getGitHubRefreshToken(): ?string
+    {
+        if (! $this->github_refresh_token) {
+            return null;
+        }
+
+        try {
+            return decrypt($this->github_refresh_token);
         } catch (\Exception) {
             return null;
         }
@@ -523,6 +547,81 @@ class User extends Authenticatable implements FilamentUser, HasName, MustVerifyE
     public function hasGitHubToken(): bool
     {
         return $this->getGitHubToken() !== null;
+    }
+
+    /**
+     * @return HasMany<GitHubInstallation>
+     */
+    public function githubInstallations(): HasMany
+    {
+        return $this->hasMany(GitHubInstallation::class);
+    }
+
+    public function isUsingGitHubApp(): bool
+    {
+        return $this->github_auth_type === GitHubAuthType::App;
+    }
+
+    public function isUsingLegacyOAuth(): bool
+    {
+        return $this->github_auth_type === GitHubAuthType::OAuth;
+    }
+
+    public function needsGitHubAppMigration(): bool
+    {
+        return $this->isUsingLegacyOAuth();
+    }
+
+    /**
+     * The "owner/repo" name of each of the user's plugin repositories.
+     *
+     * @return Collection<int, string>
+     */
+    public function pluginRepositoryNames(): Collection
+    {
+        return $this->plugins()
+            ->whereNotNull('repository_url')
+            ->get()
+            ->map(fn (Plugin $plugin): ?array => $plugin->getRepositoryOwnerAndName())
+            ->filter()
+            ->map(fn (array $repo): string => "{$repo['owner']}/{$repo['repo']}")
+            ->unique()
+            ->values();
+    }
+
+    /**
+     * Whether the user has signed in with the GitHub App but hasn't installed it anywhere yet.
+     */
+    public function needsGitHubAppInstallation(): bool
+    {
+        return $this->isUsingGitHubApp()
+            && ! $this->githubInstallations()->whereNull('suspended_at')->exists();
+    }
+
+    /**
+     * Plugins whose repositories aren't reachable through any of the user's active GitHub App installations.
+     *
+     * @return \Illuminate\Database\Eloquent\Collection<int, Plugin>
+     */
+    public function pluginsMissingGitHubAppAccess(): \Illuminate\Database\Eloquent\Collection
+    {
+        if (! $this->isUsingGitHubApp()) {
+            return new \Illuminate\Database\Eloquent\Collection;
+        }
+
+        $installations = $this->githubInstallations()->whereNull('suspended_at')->get();
+
+        return $this->plugins()
+            ->whereNotNull('repository_url')
+            ->get()
+            ->filter(function (Plugin $plugin) use ($installations): bool {
+                $repo = $plugin->getRepositoryOwnerAndName();
+
+                return $repo && ! $installations->contains(
+                    fn (GitHubInstallation $installation): bool => $installation->hasAccessToRepo($repo['owner'], $repo['repo'])
+                );
+            })
+            ->values();
     }
 
     /**
@@ -610,6 +709,9 @@ class User extends Authenticatable implements FilamentUser, HasName, MustVerifyE
             'claude_plugins_repo_access_granted_at' => 'datetime',
             'discord_role_granted_at' => 'datetime',
             'discord_early_adopter_role_granted_at' => 'datetime',
+            'github_auth_type' => GitHubAuthType::class,
+            'github_token_expires_at' => 'datetime',
+            'github_app_migration_notified_at' => 'datetime',
         ];
     }
 }

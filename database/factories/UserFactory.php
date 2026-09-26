@@ -39,4 +39,24 @@ class UserFactory extends Factory
             'email_verified_at' => null,
         ]);
     }
+
+    public function withGitHubApp(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'github_id' => (string) fake()->randomNumber(8),
+            'github_username' => fake()->userName(),
+            'github_token' => encrypt('ghu_test_token_'.Str::random(20)),
+            'github_auth_type' => 'app',
+        ]);
+    }
+
+    public function withLegacyGitHub(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'github_id' => (string) fake()->randomNumber(8),
+            'github_username' => fake()->userName(),
+            'github_token' => encrypt('gho_test_token_'.Str::random(20)),
+            'github_auth_type' => 'oauth',
+        ]);
+    }
 }

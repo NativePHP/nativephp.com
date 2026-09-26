@@ -14,6 +14,8 @@ use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 use Laravel\Pennant\Feature;
+use Laravel\Socialite\Facades\Socialite;
+use Laravel\Socialite\Two\GithubProvider;
 use Sentry\State\Scope;
 
 use function Sentry\captureException;
@@ -39,6 +41,8 @@ class AppServiceProvider extends ServiceProvider
         $this->sendFailingJobsToSentry();
 
         $this->registerFeatureFlags();
+
+        $this->registerGitHubAppSocialiteDriver();
 
         RateLimiter::for('anystack', function () {
             return Limit::perMinute(30);
@@ -84,6 +88,24 @@ class AppServiceProvider extends ServiceProvider
 
                 captureException($event->exception);
             }
+        });
+    }
+
+    private function registerGitHubAppSocialiteDriver(): void
+    {
+        $clientId = config('services.github_app.client_id');
+
+        if (! $clientId) {
+            return;
+        }
+
+        Socialite::extend('github-app', function () use ($clientId) {
+            return new GithubProvider(
+                $this->app->make('request'),
+                $clientId,
+                config('services.github_app.client_secret'),
+                config('services.github_app.redirect'),
+            );
         });
     }
 

@@ -12,6 +12,7 @@ use App\Http\Controllers\CustomerLicenseController;
 use App\Http\Controllers\CustomerSubLicenseController;
 use App\Http\Controllers\DeveloperOnboardingController;
 use App\Http\Controllers\DiscordIntegrationController;
+use App\Http\Controllers\GitHubAppWebhookController;
 use App\Http\Controllers\GitHubAuthController;
 use App\Http\Controllers\GitHubIntegrationController;
 use App\Http\Controllers\LicenseRenewalController;
@@ -382,11 +383,15 @@ Route::get('auth/github/callback', [GitHubIntegrationController::class, 'handleC
 // GitHub OAuth routes (auth required)
 Route::middleware(['auth', EnsureFeaturesAreActive::using(ShowAuthButtons::class)])->group(function (): void {
     Route::get('auth/github', [GitHubIntegrationController::class, 'redirectToGitHub'])->name('github.redirect');
+    Route::get('auth/github/setup', [GitHubIntegrationController::class, 'handleSetup'])->name('github.setup');
     Route::post('dashboard/github/request-access', [GitHubIntegrationController::class, 'requestRepoAccess'])->name('github.request-access');
     Route::post('dashboard/github/request-claude-plugins-access', [GitHubIntegrationController::class, 'requestClaudePluginsAccess'])->name('github.request-claude-plugins-access');
     Route::delete('dashboard/github/disconnect', [GitHubIntegrationController::class, 'disconnect'])->name('github.disconnect');
     Route::get('dashboard/github/repositories', [GitHubIntegrationController::class, 'repositories'])->name('github.repositories');
 });
+
+// GitHub App webhook
+Route::post('webhooks/github-app', GitHubAppWebhookController::class)->name('webhooks.github-app');
 
 // Discord OAuth routes
 Route::middleware(['auth', EnsureFeaturesAreActive::using(ShowAuthButtons::class)])->group(function (): void {
