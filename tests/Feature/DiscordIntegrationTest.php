@@ -3,6 +3,8 @@
 namespace Tests\Feature;
 
 use App\Models\License;
+use App\Models\Product;
+use App\Models\ProductLicense;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Http;
@@ -24,6 +26,7 @@ class DiscordIntegrationTest extends TestCase
             'services.discord.guild_id' => 'test-guild-id',
             'services.discord.ultra_role_id' => 'ultra-role-id',
             'services.discord.early_adopter_role_id' => 'early-adopter-role-id',
+            'services.discord.master_role_id' => 'master-role-id',
         ]);
     }
 
@@ -135,6 +138,119 @@ class DiscordIntegrationTest extends TestCase
 
         $user->refresh();
         $this->assertNull($user->discord_early_adopter_role_granted_at);
+    }
+
+    #[Test]
+    public function integrations_page_shows_discord_banner_for_masterclass_owner(): void
+    {
+        $user = User::factory()->create();
+
+        ProductLicense::factory()->create([
+            'user_id' => $user->id,
+            'product_id' => Product::where('slug', 'nativephp-masterclass')->firstOrFail()->id,
+        ]);
+
+        $this->actingAs($user)
+            ->get(route('customer.integrations'))
+            ->assertOk()
+            ->assertSee('Connect your Discord account to receive your roles.');
+    }
+
+    #[Test]
+    public function integrations_page_hides_discord_banner_for_users_without_roles(): void
+    {
+        $user = User::factory()->create();
+
+        $this->actingAs($user)
+            ->get(route('customer.integrations'))
+            ->assertOk()
+            ->assertDontSee('Connect your Discord account to receive your roles.');
+    }
+
+    #[Test]
+    public function callback_assigns_master_role_for_masterclass_owner(): void
+    {
+        $user = User::factory()->create();
+
+        ProductLicense::factory()->create([
+            'user_id' => $user->id,
+            'product_id' => Product::where('slug', 'nativephp-masterclass')->firstOrFail()->id,
+        ]);
+
+        Http::fake([
+            'discord.com/api/oauth2/token' => Http::response([
+                'access_token' => 'test-access-token',
+            ]),
+            'discord.com/api/v10/users/@me' => Http::response([
+                'id' => '999888777',
+                'username' => 'student',
+            ]),
+            'discord.com/api/v10/guilds/test-guild-id/members/999888777' => Http::response([
+                'roles' => [],
+            ], 200),
+            'discord.com/api/v10/guilds/test-guild-id/members/999888777/roles/master-role-id' => Http::response([], 204),
+        ]);
+
+        $response = $this->actingAs($user)
+            ->get('/auth/discord/callback?code=test-code');
+
+        $response->assertRedirect(route('customer.integrations'));
+        $response->assertSessionHas('success');
+
+        $user->refresh();
+        $this->assertEquals('999888777', $user->discord_id);
+        $this->assertNotNull($user->discord_master_role_granted_at);
+    }
+
+    #[Test]
+    public function callback_does_not_assign_master_role_without_the_masterclass(): void
+    {
+        $user = User::factory()->create();
+
+        Http::fake([
+            'discord.com/api/oauth2/token' => Http::response([
+                'access_token' => 'test-access-token',
+            ]),
+            'discord.com/api/v10/users/@me' => Http::response([
+                'id' => '999888777',
+                'username' => 'newuser',
+            ]),
+            'discord.com/api/v10/guilds/test-guild-id/members/999888777' => Http::response([
+                'roles' => [],
+            ], 200),
+        ]);
+
+        $response = $this->actingAs($user)
+            ->get('/auth/discord/callback?code=test-code');
+
+        $response->assertRedirect(route('customer.integrations'));
+
+        $this->assertNull($user->fresh()->discord_master_role_granted_at);
+    }
+
+    #[Test]
+    public function disconnect_removes_master_role(): void
+    {
+        $user = User::factory()->create([
+            'discord_id' => '999888777',
+            'discord_username' => 'testuser',
+            'discord_master_role_granted_at' => now(),
+        ]);
+
+        Http::fake([
+            'discord.com/api/v10/guilds/test-guild-id/members/999888777/roles/master-role-id' => Http::response([], 204),
+        ]);
+
+        $response = $this->actingAs($user)
+            ->delete('/dashboard/discord/disconnect');
+
+        $response->assertSessionHas('success', 'Discord account disconnected successfully.');
+
+        $user->refresh();
+        $this->assertNull($user->discord_id);
+        $this->assertNull($user->discord_master_role_granted_at);
+
+        Http::assertSentCount(1);
     }
 
     #[Test]
