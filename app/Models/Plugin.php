@@ -18,6 +18,7 @@ use App\Notifications\PluginMessageReceived;
 use App\Notifications\PluginRejected;
 use App\Services\OgImageService;
 use App\Services\PluginSyncService;
+use App\Support\ComposerConstraint;
 use App\Support\DemoVideo;
 use App\Support\PluginReadme;
 use BladeUI\Icons\Exceptions\SvgNotFound;
@@ -348,6 +349,40 @@ class Plugin extends Model
         return $this->works_in_jump ?? false;
     }
 
+    /**
+     * The lowest NativePHP Mobile release the plugin works with in each major version
+     * it supports, keyed by major version, oldest first: [3 => '3.2.1', 4 => '4.0'].
+     *
+     * @return array<int, string>
+     */
+    public function supportedMobileVersions(): array
+    {
+        $versions = $this->mobile_versions ?? [];
+
+        ksort($versions);
+
+        return $versions;
+    }
+
+    /**
+     * Work out from a composer.json which NativePHP Mobile versions a plugin supports,
+     * shaped like supportedMobileVersions(). Null if it doesn't require nativephp/mobile
+     * or allows none of the major versions in config('plugins.mobile_major_versions').
+     *
+     * @param  array<string, mixed>|null  $composerData
+     * @return array<int, string>|null
+     */
+    public static function mobileVersionsFromComposer(?array $composerData): ?array
+    {
+        $constraint = $composerData['require']['nativephp/mobile'] ?? null;
+
+        if (! is_string($constraint)) {
+            return null;
+        }
+
+        return ComposerConstraint::lowestVersionsByMajor($constraint, config('plugins.mobile_major_versions', [])) ?: null;
+    }
+
     public function isSatisSynced(): bool
     {
         return $this->satis_synced_at !== null;
@@ -495,6 +530,18 @@ class Plugin extends Model
         return $query->where(fn (Builder $query): Builder => $query
             ->whereNull('categories')
             ->orWhereJsonLength('categories', 0));
+    }
+
+    /**
+     * Plugins whose composer.json allows a release of the given NativePHP Mobile major version.
+     *
+     * @param  Builder<Plugin>  $query
+     * @return Builder<Plugin>
+     */
+    #[Scope]
+    protected function supportsMobileVersion(Builder $query, int $majorVersion): Builder
+    {
+        return $query->whereJsonContainsKey("mobile_versions->{$majorVersion}");
     }
 
     /**
@@ -1028,6 +1075,7 @@ class Plugin extends Model
             'is_active' => 'boolean',
             'is_official' => 'boolean',
             'works_in_jump' => 'boolean',
+            'mobile_versions' => 'array',
             'composer_data' => 'array',
             'nativephp_data' => 'array',
             'last_synced_at' => 'datetime',

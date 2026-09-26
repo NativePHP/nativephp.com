@@ -94,9 +94,8 @@
                 >
                     <option value="">All NativePHP Versions</option>
                     @foreach ($mobileVersionOptions as $majorVersion)
-                        <option value="{{ $majorVersion }}">v{{ $majorVersion }}.x and up</option>
+                        <option value="{{ $majorVersion }}">NativePHP {{ $majorVersion }}.x</option>
                     @endforeach
-                    <option value="{{ $mobileVersionUnspecifiedValue }}">Version Unspecified</option>
                 </select>
             </div>
         @endif

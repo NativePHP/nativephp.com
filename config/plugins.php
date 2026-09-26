@@ -9,13 +9,14 @@ return [
     | Supported NativePHP Mobile major versions
     |--------------------------------------------------------------------------
     |
-    | The NativePHP Mobile major versions plugins can declare support for via
-    | their `mobile_min_version`. Drives the marketplace directory's version
-    | filter options, newest first.
+    | The NativePHP Mobile major versions that have plugins, newest first. A
+    | plugin's composer.json is checked against each one to find the lowest
+    | release it works with, and they're the marketplace's version filter
+    | options. After adding a new major, run plugins:backfill-mobile-versions.
     |
     */
 
-    'mobile_major_versions' => [4, 3, 2, 1],
+    'mobile_major_versions' => [4, 3],
 
     /*
     |--------------------------------------------------------------------------

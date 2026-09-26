@@ -53,6 +53,36 @@ class PluginSyncServiceTest extends TestCase
         $this->assertEquals('^3.0.0', $plugin->fresh()->mobile_min_version);
     }
 
+    public function test_sync_works_out_supported_mobile_versions_from_composer_data(): void
+    {
+        $composerJson = json_encode([
+            'name' => 'acme/test-plugin',
+            'require' => [
+                'nativephp/mobile' => '^3.2.1 || ^4.0',
+            ],
+        ]);
+
+        Http::fake([
+            'api.github.com/repos/acme/test-plugin/contents/composer.json' => Http::response([
+                'content' => base64_encode($composerJson),
+            ]),
+            'api.github.com/repos/acme/test-plugin/contents/nativephp.json' => Http::response([], 404),
+            'raw.githubusercontent.com/*' => Http::response('', 404),
+            'api.github.com/repos/acme/test-plugin/releases/latest' => Http::response([], 404),
+            'api.github.com/repos/acme/test-plugin/tags*' => Http::response([]),
+            'api.github.com/repos/acme/test-plugin/contents/LICENSE*' => Http::response([], 404),
+        ]);
+
+        $plugin = Plugin::factory()->create([
+            'name' => 'acme/test-plugin',
+            'repository_url' => 'https://github.com/acme/test-plugin',
+            'mobile_versions' => null,
+        ]);
+
+        $this->assertTrue((new PluginSyncService)->sync($plugin));
+        $this->assertSame([3 => '3.2.1', 4 => '4.0'], $plugin->fresh()->mobile_versions);
+    }
+
     public function test_sync_updates_name_from_composer_when_name_changes(): void
     {
         $composerJson = json_encode([
@@ -162,10 +192,10 @@ class PluginSyncServiceTest extends TestCase
             'api.github.com/repos/acme/test-plugin/contents/LICENSE*' => Http::response([], 404),
         ]);
 
-        $plugin = Plugin::factory()->create([
+        $plugin = Plugin::factory()->mobileVersions('3.0')->create([
             'name' => 'acme/test-plugin',
             'repository_url' => 'https://github.com/acme/test-plugin',
-            'mobile_min_version' => '^2.0.0',
+            'mobile_min_version' => '^3.0.0',
         ]);
 
         $service = new PluginSyncService;
@@ -173,5 +203,6 @@ class PluginSyncServiceTest extends TestCase
 
         $this->assertTrue($result);
         $this->assertNull($plugin->fresh()->mobile_min_version);
+        $this->assertNull($plugin->fresh()->mobile_versions);
     }
 }

@@ -92,6 +92,7 @@ class PluginSyncService
 
         if ($composerData) {
             $updateData['mobile_min_version'] = $composerData['require']['nativephp/mobile'] ?? null;
+            $updateData['mobile_versions'] = Plugin::mobileVersionsFromComposer($composerData);
         }
 
         if ($readme) {

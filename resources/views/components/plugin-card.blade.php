@@ -61,6 +61,21 @@
         @endif
     </div>
 
+    @if ($plugin->supportedMobileVersions() !== [])
+        <div class="mt-4 flex flex-wrap items-center gap-1.5">
+            @foreach ($plugin->supportedMobileVersions() as $majorVersion => $version)
+                <span
+                    class="inline-flex items-center gap-1 rounded-full border border-gray-200 px-2 py-0.5 text-xs font-medium text-gray-700 dark:border-gray-600 dark:text-gray-300"
+                    title="Works with NativePHP Mobile {{ $majorVersion }}.x from {{ $version }}"
+                >
+                    <x-icons.device-mobile-phone class="h-3 shrink-0" aria-hidden="true" />
+                    <span class="sr-only">NativePHP Mobile</span>
+                    {{ $version }}
+                </span>
+            @endforeach
+        </div>
+    @endif
+
     <div class="mt-4 flex items-center justify-between gap-3">
         <span class="flex items-center gap-1.5 text-sm font-medium text-indigo-600 dark:text-indigo-400">
             View details
