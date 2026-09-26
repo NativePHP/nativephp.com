@@ -21,7 +21,7 @@ final class BackfillPluginCategories extends Command
     {
         $dryRun = (bool) $this->option('dry-run');
 
-        $plugins = Plugin::query()->whereNull('category')->get();
+        $plugins = Plugin::query()->uncategorized()->get();
 
         if ($plugins->isEmpty()) {
             $this->info('No plugins need a category backfilled.');
@@ -46,7 +46,7 @@ final class BackfillPluginCategories extends Command
             $matched->push([$plugin, $category]);
 
             if (! $dryRun) {
-                $plugin->update(['category' => $category]);
+                $plugin->update(['categories' => [$category]]);
             }
         }
 
