@@ -36,6 +36,7 @@ Pair with [`<native:list-item>`](#list-item) for Material3 list rows, or use any
   plain section headers instead (optional, boolean, default: `false`)
 - `on-refresh` - Component method called on pull-to-refresh (optional, string) [iOS]
 - `on-end-reached` - Component method called when the user nears the end of the list (optional, string)
+- `end-reached-buffer` - Number of items from the end at which `on-end-reached` is triggered (optional, integer, default: `3`)
 
 ## Children
 
@@ -248,12 +249,18 @@ here just gives the demo enough rows to scroll before the end-reached trigger fi
 
 @verbatim
 ```blade
-<native:list on-end-reached="loadMore">
+<native:list
+    on-end-reached="loadMore"
+    :end-reached-buffer="5"
+>
     @foreach (range(1, 15) as $i)
         <native:list-item headline="Post {{ $i }}" supporting="Keep scrolling — loadMore() fires near the end" />
     @endforeach
 </native:list>
 ```
+
+A buffer of `5` triggers `loadMore()` when the list is within five items of the end. When omitted, the buffer defaults
+to `3`.
 @endverbatim
 
 ## Element
@@ -268,7 +275,8 @@ NativeList::make(
 )
     ->separator()
     ->onRefresh('refresh')
-    ->onEndReached('loadMore');
+    ->onEndReached('loadMore')
+    ->endReachedBuffer(5);
 ```
 
 ### `NativeList` methods
@@ -279,6 +287,7 @@ NativeList::make(
 - `separator(bool $value = true)` - Render dividers between rows
 - `onRefresh(string $method)` - Pull-to-refresh handler
 - `onEndReached(string $method)` - End-reached handler
+- `endReachedBuffer(int $items)` - Number of items from the end at which the end-reached handler is triggered (default: `3`)
 
 ### `ListItem` methods
 
