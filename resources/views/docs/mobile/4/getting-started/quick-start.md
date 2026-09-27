@@ -13,7 +13,7 @@ Don't waste hours downloading, installing, and configuring Xcode and Android Stu
 
 ### New Laravel app
 
-If you are creating new Laravel app, you can build using our starter kit:
+The recommended way to start is our starter kit:
 
 ```bash
 laravel new my-app --using=nativephp/mobile-starter --no-node
@@ -25,14 +25,13 @@ composer require nativephp/mobile-ui:^0.6
 php artisan native:jump
 ```
 
-The starter kit already registers `nativephp/mobile-ui`, but it pins an older 0.3 release, so the `composer require`
-line brings it up to date with these docs.
+The starter kit already installs and registers `nativephp/mobile-ui`, but it currently pins an older 0.3 release. The
+`composer require` line brings it up to date with these docs, and won't be needed once the starter kit moves to 0.6.
 
 <aside>
 
-Use `laravel new --using` as shown. A plain `composer create-project nativephp/mobile-starter` picks the latest
-tagged release of the starter kit, which is still built on NativePHP Mobile v3. If you do use `create-project`, add
-`--stability=dev`.
+Running `composer create-project nativephp/mobile-starter` directly? Add `--stability=dev`, or you'll get an older
+v3 release of the starter kit.
 
 </aside>
 

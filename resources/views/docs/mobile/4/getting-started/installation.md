@@ -3,6 +3,22 @@ title: Installation
 order: 100
 ---
 
+## Start from the starter kit
+
+The quickest way to a working v4 app is the starter kit, which comes with NativePHP and its UI components already
+installed and registered:
+
+```shell
+laravel new my-app --using=nativephp/mobile-starter --no-node
+cd my-app
+composer require nativephp/mobile-ui:^0.6
+```
+
+The starter kit currently pins an older `nativephp/mobile-ui` release, so the last line updates it. It won't be needed
+once the starter kit moves to 0.6. Then skip ahead to [Run the NativePHP installer](#run-the-nativephp-installer).
+
+To add NativePHP to an existing Laravel app instead, follow the next two sections.
+
 ## Install the Composer package
 
 NativePHP contains all the libraries, classes, commands, and interfaces that your application will need to work with
