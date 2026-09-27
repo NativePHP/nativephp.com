@@ -3,6 +3,7 @@
 namespace Tests\Feature\Commands;
 
 use App\Enums\PayoutStatus;
+use App\Enums\StripeConnectStatus;
 use App\Jobs\ProcessPayoutTransfer;
 use App\Models\DeveloperAccount;
 use App\Models\Plugin;
@@ -237,6 +238,44 @@ class ProcessEligiblePayoutsTest extends TestCase
         });
     }
 
+    public function test_releases_held_payouts_for_a_recipient_account_stuck_at_pending(): void
+    {
+        Queue::fake();
+
+        // How a developer on the recipient service agreement was left before charges_enabled
+        // stopped counting: onboarded and able to be paid out, but never marked active.
+        $developerAccount = DeveloperAccount::factory()->pending()->create([
+            'country' => 'MX',
+            'payout_currency' => 'MXN',
+            'payouts_enabled' => true,
+            'onboarding_completed_at' => now()->subMonth(),
+        ]);
+        $payout = PluginPayout::factory()->create([
+            'developer_account_id' => $developerAccount->id,
+            'status' => PayoutStatus::Held,
+            'eligible_for_payout_at' => now()->subDay(),
+        ]);
+
+        $accounts = $this->fakeStripeAccounts(canBePaid: true, serviceAgreement: 'recipient');
+
+        $this->artisan('payouts:process-eligible')
+            ->expectsOutputToContain('Healed 1 held payout(s)')
+            ->expectsOutputToContain('Dispatched 1 payout transfer job(s)')
+            ->assertExitCode(0);
+
+        $developerAccount->refresh();
+
+        $this->assertSame([$developerAccount->stripe_connect_account_id], $accounts->retrieved);
+        $this->assertSame(StripeConnectStatus::Active, $developerAccount->stripe_connect_status);
+        $this->assertFalse($developerAccount->charges_enabled);
+        $this->assertTrue($developerAccount->canReceivePayouts());
+        $this->assertEquals(PayoutStatus::Pending, $payout->fresh()->status);
+
+        Queue::assertPushed(ProcessPayoutTransfer::class, function ($job) use ($payout) {
+            return $job->payout->id === $payout->id;
+        });
+    }
+
     public function test_checks_stripe_for_developers_with_pending_payouts_that_are_due(): void
     {
         Queue::fake();
@@ -340,14 +379,14 @@ class ProcessEligiblePayoutsTest extends TestCase
         Queue::assertNothingPushed();
     }
 
-    private function fakeStripeAccounts(bool $canBePaid = false, bool $reachable = true): object
+    private function fakeStripeAccounts(bool $canBePaid = false, bool $reachable = true, string $serviceAgreement = 'full'): object
     {
-        $accounts = new class($canBePaid, $reachable)
+        $accounts = new class($canBePaid, $reachable, $serviceAgreement)
         {
             /** @var list<string> */
             public array $retrieved = [];
 
-            public function __construct(private bool $canBePaid, private bool $reachable) {}
+            public function __construct(private bool $canBePaid, private bool $reachable, private string $serviceAgreement) {}
 
             public function retrieve(string $id): Account
             {
@@ -357,12 +396,20 @@ class ProcessEligiblePayoutsTest extends TestCase
                     throw new ApiConnectionException('Could not connect to Stripe');
                 }
 
+                $capability = $this->canBePaid ? 'active' : 'inactive';
+                $isRecipient = $this->serviceAgreement === 'recipient';
+
                 return Account::constructFrom([
                     'id' => $id,
                     'payouts_enabled' => $this->canBePaid,
-                    'charges_enabled' => $this->canBePaid,
+                    // Recipient accounts can't take payments, so Stripe never enables charges on them.
+                    'charges_enabled' => $this->canBePaid && ! $isRecipient,
                     'details_submitted' => $this->canBePaid,
+                    'capabilities' => $isRecipient
+                        ? ['transfers' => $capability]
+                        : ['card_payments' => $capability, 'transfers' => $capability],
                     'requirements' => ['disabled_reason' => null],
+                    'tos_acceptance' => ['service_agreement' => $this->serviceAgreement],
                 ]);
             }
         };

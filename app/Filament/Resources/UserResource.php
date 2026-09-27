@@ -104,7 +104,8 @@ class UserResource extends Resource
                             ->content(fn (User $record) => $record->developerAccount->payouts_enabled ? 'Yes' : 'No'),
                         Forms\Components\Placeholder::make('developerAccount.charges_enabled')
                             ->label('Charges Enabled')
-                            ->content(fn (User $record) => $record->developerAccount->charges_enabled ? 'Yes' : 'No'),
+                            ->content(fn (User $record) => $record->developerAccount->charges_enabled ? 'Yes' : 'No')
+                            ->helperText('Not needed for payouts. Accounts on the recipient service agreement never have charges enabled.'),
                         Forms\Components\Placeholder::make('developerAccount.onboarding_completed_at')
                             ->label('Onboarding Completed')
                             ->content(fn (User $record) => $record->developerAccount->onboarding_completed_at?->format('M j, Y g:i A') ?? '—'),
