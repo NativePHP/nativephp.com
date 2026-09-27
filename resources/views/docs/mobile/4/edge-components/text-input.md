@@ -207,8 +207,8 @@ A short window like 150ms still feels live to the user. Reach for:
 - `native:model.blur` for form fields you only read when the form is submitted
 - plain `native:model` only when you need every character, such as a character counter, and the field is short
 
-Debounced and blurred fields always sync immediately on submit and on focus loss, so `@submit="add"` sees the full
-text.
+Debounced and blurred fields flush any pending change on submit and on focus loss, before `@submit` fires. The
+`@submit` handler also receives the field's text as its last argument, so `@submit="add"` calls `add($text)`.
 
 ## Caret and selection reporting
 

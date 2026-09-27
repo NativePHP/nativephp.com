@@ -127,6 +127,9 @@ A few things to know:
   the `.apk` on any emulator or device with `adb install -r path/to/app-debug.apk`.
 - `--build=profileable` on Android writes `apk/profileable/app-profileable.apk` instead.
 - The `nativephp` directory is rebuilt by `native:install --force`, so copy anything you want to keep somewhere else.
+- Keep `NATIVEPHP_APP_VERSION=DEBUG` in `.env` for these builds. A `DEBUG` build re-extracts your Laravel app every
+  time it launches. With a fixed version such as `1.0.0`, an app that is already installed only re-extracts when the
+  version or build number changes, so installing a fresh build over an old one can keep showing the old screens.
 - These are development builds. For signed release builds (`.ipa`, release `.apk` or `.aab`), use
   [`native:package`](commands#nativepackage) or [Bifrost](../publishing/bifrost).
 
