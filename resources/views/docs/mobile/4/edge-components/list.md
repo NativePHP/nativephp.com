@@ -53,8 +53,9 @@ content slots.
 `<native:list-item>` takes its content, slot, color and elevation attributes in camelCase (`leadingIcon`,
 `trailingText`, `leadingCheckbox`, `headlineColor`). The kebab-case spellings (`leading-icon`, `leading-checkbox`) are
 silently ignored. Callback and array attributes are the exception and use kebab-case: `on-leading-change`,
-`on-trailing-change`, `on-swipe-delete`, `leading-actions`, `trailing-actions`, `trailing-badges`, `trailing-menu` and
-`trailing-a11y-label`. Everything below is listed with the spelling that works.
+`on-trailing-change`, `on-trailing-press`, `on-swipe-delete`, `leading-actions`, `trailing-actions`,
+`trailing-badges`, `trailing-menu`, `trailing-a11y-label` and `headline-line-through`. Everything below is listed with
+the spelling that works.
 
 Bind boolean slots with `:` so a false value stays false: `:leadingCheckbox="$task->done"`. A literal
 `leadingCheckbox="false"` is a non-empty string and renders a checked box.
@@ -78,6 +79,9 @@ Bind boolean slots with `:` so a false value stays false: `:leadingCheckbox="$ta
 - `headline` - Primary text (required, string)
 - `supporting` - Secondary text rendered below the headline (optional, string)
 - `overline` - Small caption rendered above the headline (optional, string)
+- `headline-line-through` - Strike through the headline, e.g. for a completed todo (optional, boolean, default:
+  `false`). Bind it: `:headline-line-through="$todo->done"`. Not in `nativephp/mobile-ui` 0.6.0; it needs the
+  release that includes [NativePHP/mobile-ui#109](https://github.com/NativePHP/mobile-ui/pull/109)
 
 ### Leading slot (mutually exclusive)
 
@@ -101,10 +105,8 @@ Bind boolean slots with `:` so a false value stays false: `:leadingCheckbox="$ta
 - `trailingCheckbox` - Boolean value for a trailing checkbox. Interactive when `on-trailing-change` is set;
   static glyph otherwise
 - `trailingSwitch` - Boolean value for a trailing switch [Android]
-- `trailingIconButton` - Icon name for a trailing icon button. In `nativephp/mobile-ui` 0.6.0 there is no Blade
-  attribute that wires a handler to this button (`on-trailing-press` and `@trailing-press` are ignored), so from
-  Blade it renders but does nothing when tapped. Wire it with the fluent `->onTrailingPress()` on a `ListItem`
-  element, or attach a `trailing-menu` instead
+- `trailingIconButton` - Icon name for a tappable trailing button. Handle taps with `on-trailing-press` (see
+  [Events](#events))
 - `trailing-a11y-label` - Accessibility label for the trailing icon button (recommended whenever
   `trailingIconButton` is set). See [Accessibility](../digging-deeper/accessibility)
 - `trailing-menu` - Attach a tap-to-open dropdown to the row's trailing edge (`trailingMenu` also works). When set without an explicit trailing
@@ -144,9 +146,13 @@ All color props accept the full [color grammar](../digging-deeper/theming#color-
 - `on-leading-change` / `on-trailing-change` - Component method called when the leading/trailing checkbox or
   radio is toggled, receiving the new value. Without a handler the control renders as a static state glyph.
 
-The fluent `onTrailingPress()` fires on both platforms when the trailing icon button is tapped. It has no Blade
-attribute in `nativephp/mobile-ui` 0.6.0; see `trailingIconButton` above. The trailing switch is interactive on
-[Android] only.
+- `on-trailing-press` - Component method called when the trailing icon button is tapped, on both platforms. This
+  attribute needs the `nativephp/mobile-ui` release that includes
+  [NativePHP/mobile-ui#108](https://github.com/NativePHP/mobile-ui/pull/108). In 0.6.0 it is silently ignored and
+  only the fluent `->onTrailingPress()` on a `ListItem` element works. `@trailing-press` never works: unknown `@name`
+  attributes are treated as child-component events and dropped from plain elements
+
+The trailing switch is interactive on [Android] only.
 
 Handlers receive their arguments in this order: the arguments you wrote in the expression, then the value the control
 sends. So `on-leading-change="toggleTask(@{{ $task->id }})"` calls `toggleTask($id, $checked)`:

@@ -87,9 +87,14 @@ The tappable trailing icon button on a [list item](../edge-components/list) take
     headline="Backups"
     trailingIconButton="info"
     trailing-a11y-label="Backup details"
+    on-trailing-press="showBackupInfo"
 />
 ```
 @endverbatim
+
+`on-trailing-press` needs the `nativephp/mobile-ui` release that includes
+[NativePHP/mobile-ui#108](https://github.com/NativePHP/mobile-ui/pull/108). On 0.6.0, use the fluent
+`->onTrailingPress()` instead. See [List › Events](../edge-components/list#events).
 
 List rows group their content (headline, supporting text, leading and trailing decorations) into a single
 screen-reader focus stop; interactive trailing controls remain individually focusable.
