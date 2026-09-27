@@ -101,9 +101,24 @@ class McpController extends Controller
 
     public function edgeComponentsApi(string $platform, string $version): JsonResponse
     {
-        $components = $this->docsSearch->listEdgeComponents($platform, $version);
+        $tagsByPage = $this->edgeTagsByPage($platform, $version);
+
+        $components = collect($this->docsSearch->listEdgeComponents($platform, $version))
+            ->map(fn (array $component) => $component + ['tags' => $tagsByPage[$component['id']] ?? []])
+            ->all();
 
         return response()->json(['edge_components' => $components]);
+    }
+
+    public function edgeComponentApi(string $platform, string $version, string $tag): JsonResponse
+    {
+        $element = $this->docsSearch->getEdgeElement($platform, $version, $tag);
+
+        if (! $element) {
+            return response()->json(['error' => 'Component not found'], 404);
+        }
+
+        return response()->json(['edge_component' => $element]);
     }
 
     public function navigationApi(string $platform, string $version): JsonResponse
@@ -203,6 +218,30 @@ class McpController extends Controller
                 ],
             ],
             [
+                'name' => 'get_edge_component',
+                'description' => 'Get the props, events, children and fluent PHP API for one EDGE element, e.g. "button", "list-item" or "outlined-text-input" (also accepts "<native:list-item>" or "ListItem"). Taken from the same docs page get_page returns, minus the examples. Use list_edge_components to see every tag.',
+                'inputSchema' => [
+                    'type' => 'object',
+                    'properties' => [
+                        'tag' => [
+                            'type' => 'string',
+                            'description' => 'Element tag without the native: prefix, e.g. "list-item"',
+                        ],
+                        'platform' => [
+                            'type' => 'string',
+                            'enum' => ['desktop', 'mobile'],
+                            'description' => 'Platform (default: mobile)',
+                            'default' => 'mobile',
+                        ],
+                        'version' => [
+                            'type' => 'string',
+                            'description' => 'Version number (optional; defaults to the latest for the platform)',
+                        ],
+                    ],
+                    'required' => ['tag'],
+                ],
+            ],
+            [
                 'name' => 'get_navigation',
                 'description' => 'Get the docs navigation structure for a platform/version',
                 'inputSchema' => [
@@ -292,6 +331,7 @@ class McpController extends Controller
             'search_docs' => $this->toolSearchDocs($args),
             'get_page' => $this->toolGetPage($args),
             'list_edge_components' => $this->toolListEdgeComponents($args),
+            'get_edge_component' => $this->toolGetEdgeComponent($args),
             'get_navigation' => $this->toolGetNavigation($args),
             'search_plugins' => $this->toolSearchPlugins($args),
             'get_plugin' => $this->toolGetPlugin($args),
@@ -370,16 +410,77 @@ class McpController extends Controller
             ];
         }
 
-        $formatted = collect($components)->map(function ($component) {
+        $tagsByPage = $this->edgeTagsByPage($platform, $version);
+
+        $formatted = collect($components)->map(function ($component) use ($tagsByPage) {
             $desc = $component['description'] ?: 'No description';
             $path = $component['id'];
+            $text = "- **{$component['title']}** ({$component['slug']})\n  Path: {$path}";
 
-            return "- **{$component['title']}** ({$component['slug']})\n  Path: {$path}\n  {$desc}";
+            if (! empty($tagsByPage[$path])) {
+                $tags = collect($tagsByPage[$path])->map(fn ($tag) => "<native:{$tag}>")->join(', ');
+                $text .= "\n  Tags: {$tags}";
+            }
+
+            return "{$text}\n  {$desc}";
         })->join("\n");
 
+        $footer = "\n\nCall get_edge_component with a tag (e.g. \"list-item\") for its props, events and PHP API.";
+
         return [
-            'content' => [['type' => 'text', 'text' => "# {$platform} v{$version} EDGE components\n\n{$formatted}"]],
+            'content' => [['type' => 'text', 'text' => "# {$platform} v{$version} EDGE components\n\n{$formatted}{$footer}"]],
         ];
+    }
+
+    protected function toolGetEdgeComponent(array $args): array
+    {
+        $platform = (string) ($args['platform'] ?? 'mobile');
+        $version = (string) ($args['version'] ?? ($this->docsSearch->getLatestVersions()[$platform] ?? ''));
+        $tag = (string) ($args['tag'] ?? '');
+
+        $element = $this->docsSearch->getEdgeElement($platform, $version, $tag);
+
+        if (! $element) {
+            $known = collect(array_keys($this->docsSearch->edgeElements($platform, $version)))->join(', ');
+
+            return [
+                'content' => [['type' => 'text', 'text' => "No EDGE component \"{$tag}\" documented for {$platform} v{$version}.".($known ? " Known tags: {$known}" : '')]],
+                'isError' => true,
+            ];
+        }
+
+        $text = "# <native:{$element['tag']}>\n\n";
+        $text .= "Documented at: {$element['path']}".($element['section'] ? " (section \"{$element['section']}\")" : '')."\n";
+
+        if ($element['php_classes'] !== []) {
+            $text .= 'PHP element class: '.implode(', ', $element['php_classes'])."\n";
+        }
+
+        if ($element['other_tags'] !== []) {
+            $text .= 'Also on this page: '.collect($element['other_tags'])->map(fn ($other) => "<native:{$other}>")->join(', ')."\n";
+        }
+
+        if ($platform === 'mobile' && (int) $version >= 4) {
+            $text .= "Requires the nativephp/mobile-ui plugin, installed and registered in app/Providers/NativeServiceProvider.php. Without it the tag throws \"Unknown native element type\" or renders nothing.\n";
+        }
+
+        $text .= "Examples are left out here; get_page {$element['path']} has them.\n\n";
+        $text .= $element['reference'];
+
+        return [
+            'content' => [['type' => 'text', 'text' => $text]],
+        ];
+    }
+
+    /**
+     * @return array<string, array<int, string>>
+     */
+    protected function edgeTagsByPage(string $platform, string $version): array
+    {
+        return collect($this->docsSearch->edgeElements($platform, $version))
+            ->groupBy(fn ($element) => $element['page']['id'])
+            ->map(fn ($elements) => $elements->pluck('tag')->all())
+            ->all();
     }
 
     protected function toolGetNavigation(array $args): array
