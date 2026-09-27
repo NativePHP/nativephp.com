@@ -9,7 +9,7 @@ Every SuperNative app has one visual identity, defined in a single theme. Instea
 element, you name **semantic tokens** — `primary`, `surface`, `on-surface` — and reference them everywhere. Change
 a token once and it updates across every screen, in both light and dark mode.
 
-The theme is provided by the `nativephp/native-ui` plugin (which ships the components), but it governs the whole
+The theme is provided by the `nativephp/mobile-ui` plugin (which ships the components), but it governs the whole
 app, so it's the visual contract for everything you build.
 
 ## Publishing the config
@@ -138,7 +138,7 @@ theme('primary', '#0F766E'); // fall back to a value when the token is unset
 ```
 
 Pass a fallback when a setter needs a non-null string — `theme()` returns your default when the key is missing
-(or `native-ui` isn't installed).
+(or `nativephp/mobile-ui` isn't installed).
 
 ### Reacting to changes
 

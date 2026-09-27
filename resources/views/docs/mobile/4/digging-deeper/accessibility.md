@@ -87,7 +87,6 @@ The tappable trailing icon button on a [list item](../edge-components/list) take
     headline="Backups"
     trailingIconButton="info"
     trailing-a11y-label="Backup details"
-    @trailing-press="showBackupInfo"
 />
 ```
 @endverbatim

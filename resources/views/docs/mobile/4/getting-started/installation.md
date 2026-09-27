@@ -12,6 +12,40 @@ iOS and Android. And it's a single command away:
 composer require nativephp/mobile
 ```
 
+## Install the UI components
+
+The native UI elements (`<native:text>`, `<native:button>`, `<native:list>`, the text inputs and the rest of the
+[EDGE components](../edge-components/introduction)) ship in a separate plugin, `nativephp/mobile-ui`. Install it
+alongside the core package:
+
+```shell
+composer require nativephp/mobile-ui
+```
+
+Like every [plugin](../plugins/using-plugins), it has to be registered before its native code is compiled into your
+app. Publish the `NativeServiceProvider` and register the plugin:
+
+```shell
+php artisan vendor:publish --tag=nativephp-plugins-provider
+php artisan native:plugin:register nativephp/mobile-ui
+```
+
+This adds `\Native\Mobile\UI\NativeUIServiceProvider::class` to the `plugins()` array in
+`app/Providers/NativeServiceProvider.php`. Check it's there with `php artisan native:plugin:list`.
+
+<aside>
+
+#### Skipping this step breaks your screens
+
+Without `nativephp/mobile-ui` installed and registered, a tag like `<native:button>` or `<native:list-item>` fails
+with `Unknown native element type: button`. Layout and text tags like `<native:column>` and `<native:text>` still
+compile, because their PHP classes live in core, but their native renderers ship in the plugin, so on the device they
+draw nothing at all. If a screen comes up blank, check the plugin is registered.
+
+The [starter kit](quick-start#new-laravel-app) already includes and registers `nativephp/mobile-ui`.
+
+</aside>
+
 ### We love Laravel
 
 NativePHP for Mobile is built to work with Laravel. We recommend that you install it into a

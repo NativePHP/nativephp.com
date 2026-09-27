@@ -35,7 +35,7 @@ element a `ref` and target it by name. A `ref` works in Blade on any element:
     <native:text>Tap to vibrate</native:text>
 </native:pressable>
 
-<native:text-input ref="message-input" wire:model="message" />
+<native:outlined-text-input ref="message-input" native:model="message" />
 ```
 @endverbatim
 
@@ -83,7 +83,7 @@ Each control fires the same event its native counterpart emits:
 - `changeTab($target, $index)` — switch a tab row to an index.
 - `dismissSheet($target)` — dismiss a bottom sheet.
 
-Fields bound with `wire:model` sync their property as you'd expect:
+Fields bound with `native:model` sync their property as you'd expect:
 
 ```php
 it('fills and submits the toast form', function () {
@@ -93,6 +93,28 @@ it('fills and submits the toast form', function () {
         ->press('show-toast')
         ->assertNativeCalled('Dialog.Toast', fn (array $p) => $p['message'] === 'Hello from CI');
 });
+```
+
+### List rows
+
+A [list item](../edge-components/list#list-item)'s checkbox, radio and swipe-to-delete callbacks are best targeted by
+the expression you bound, since each row in a loop has its own:
+
+@verbatim
+```blade static
+<native:list-item
+    :headline="$task->title"
+    :leadingCheckbox="$task->done"
+    on-leading-change="toggleTask({{ $task->id }})"
+    on-swipe-delete="deleteTask({{ $task->id }})"
+/>
+```
+@endverbatim
+
+```php
+Native::test(Tasks::class)
+    ->check('toggleTask(1)')   // calls toggleTask(1, true)
+    ->press('deleteTask(1)');  // swipe-to-delete arrives as a press
 ```
 
 ## Setting properties and calling methods

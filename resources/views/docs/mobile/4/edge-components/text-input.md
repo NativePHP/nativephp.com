@@ -184,6 +184,32 @@ automatically, so the `@{{ $name }}` echo updates as you type.
 - `blur` — only fires on focus loss / submit
 - `debounce` — fires after `debounce-ms` of inactivity (300ms when unset), or immediately on blur / submit
 
+### Choosing a sync mode
+
+Plain `native:model` is `live`: every keystroke is a round trip to PHP and a re-render. That's fine for short fields
+and for screens that react to each character, but it has a cost when someone types quickly. With several keystrokes
+in flight, the value PHP sends back for an earlier keystroke can land after the user has typed more, and in
+`nativephp/mobile-ui` 0.6.0 that older value overwrites the field. The visible symptom is characters vanishing (and
+sometimes coming back) while typing.
+
+For free-typed text, debounce the binding so only one sync goes out once the user pauses:
+
+@verbatim
+```blade static
+<native:outlined-text-input native:model.debounce.150ms="title" @submit="add" />
+```
+@endverbatim
+
+A short window like 150ms still feels live to the user. Reach for:
+
+- `native:model.debounce.150ms` for text the user types freely: titles, notes, chat messages, new-item fields
+- `native:model.debounce.300ms` (or longer) for search and filter boxes that trigger a query
+- `native:model.blur` for form fields you only read when the form is submitted
+- plain `native:model` only when you need every character, such as a character counter, and the field is short
+
+Debounced and blurred fields always sync immediately on submit and on focus loss, so `@submit="add"` sees the full
+text.
+
 ## Caret and selection reporting
 
 `@selectionChange` reports caret position and text selection back to your component — for the cases where `@change`

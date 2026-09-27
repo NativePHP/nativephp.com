@@ -28,10 +28,17 @@ php artisan native:jump
 If you already have a Laravel app:
 
 ```bash
-composer require nativephp/mobile
+composer require nativephp/mobile nativephp/mobile-ui
+
+php artisan vendor:publish --tag=nativephp-plugins-provider
+php artisan native:plugin:register nativephp/mobile-ui
 
 php artisan native:jump
 ```
+
+`nativephp/mobile-ui` provides the native UI elements (text, buttons, lists, inputs and so on). It must be registered
+in `app/Providers/NativeServiceProvider.php` or your screens will render blank. See
+[Installation](installation#install-the-ui-components).
 
 Scan the QR code with Jump and you're off!
 
@@ -41,8 +48,12 @@ If you've already got your [environment set up](environment-setup) to build mobi
 Studio, you can build and run your app locally:
 
 ```bash
-# Install NativePHP for Mobile into a new Laravel app
-composer require nativephp/mobile
+# Install NativePHP for Mobile and its UI components into a new Laravel app
+composer require nativephp/mobile nativephp/mobile-ui
+
+# Register the UI plugin so its native code is compiled in
+php artisan vendor:publish --tag=nativephp-plugins-provider
+php artisan native:plugin:register nativephp/mobile-ui
 
 # Ready your app to go native
 php artisan native:install
