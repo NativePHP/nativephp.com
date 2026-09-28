@@ -252,14 +252,25 @@ class StripeConnectService
         return Cashier::stripe()->accounts->create($params);
     }
 
+    /**
+     * Buyers pay the platform and we send the developer's share with a transfer, so a
+     * developer's account never takes a charge itself. All we need is for it to receive
+     * transfers and pay them out to the bank. Recipient accounts can't take charges at all,
+     * so charges_enabled is always false for them and mustn't hold them back.
+     *
+     * Capabilities are read as an array because Stripe hands back an account with none as an
+     * empty array rather than an object.
+     */
     protected function determineStatus(Account $account): StripeConnectStatus
     {
-        if ($account->payouts_enabled && $account->charges_enabled) {
-            return StripeConnectStatus::Active;
-        }
-
         if ($account->requirements?->disabled_reason) {
             return StripeConnectStatus::Disabled;
+        }
+
+        $transfersCapability = $account->capabilities['transfers'] ?? null;
+
+        if ($transfersCapability === 'active' && $account->payouts_enabled) {
+            return StripeConnectStatus::Active;
         }
 
         return StripeConnectStatus::Pending;

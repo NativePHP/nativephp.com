@@ -11,6 +11,7 @@ use App\Models\PluginPayout;
 use App\Models\User;
 use App\Services\StripeConnectService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
 use Stripe\Account;
 use Stripe\PaymentIntent;
@@ -211,21 +212,110 @@ class StripeConnectServiceTest extends TestCase
     public function refresh_account_status_marks_a_developer_who_finished_onboarding_as_active(): void
     {
         $developerAccount = DeveloperAccount::factory()->pending()->create();
-        $this->fakeStripeAccounts();
+        $this->fakeStripeAccounts(self::fullAccount());
 
         app(StripeConnectService::class)->refreshAccountStatus($developerAccount);
 
         $developerAccount->refresh();
 
+        $this->assertSame(StripeConnectStatus::Active, $developerAccount->stripe_connect_status);
+        $this->assertTrue($developerAccount->charges_enabled);
         $this->assertTrue($developerAccount->canReceivePayouts());
         $this->assertTrue($developerAccount->hasCompletedOnboarding());
     }
 
-    private function fakeStripeAccounts(): object
+    #[Test]
+    public function refresh_account_status_marks_a_recipient_account_as_active_even_though_it_cannot_take_charges(): void
     {
-        $accounts = new class
+        $developerAccount = DeveloperAccount::factory()->pending()->create([
+            'country' => 'MX',
+            'payout_currency' => 'MXN',
+        ]);
+        $this->fakeStripeAccounts(self::recipientAccount());
+
+        app(StripeConnectService::class)->refreshAccountStatus($developerAccount);
+
+        $developerAccount->refresh();
+
+        $this->assertSame(StripeConnectStatus::Active, $developerAccount->stripe_connect_status);
+        $this->assertFalse($developerAccount->charges_enabled);
+        $this->assertTrue($developerAccount->payouts_enabled);
+        $this->assertTrue($developerAccount->canReceivePayouts());
+    }
+
+    /**
+     * @param  array<string, mixed>  $account
+     */
+    #[Test]
+    #[DataProvider('accountsThatCannotBePaidYet')]
+    public function refresh_account_status_keeps_a_developer_pending_until_stripe_can_pay_them(array $account): void
+    {
+        $developerAccount = DeveloperAccount::factory()->pending()->create();
+        $this->fakeStripeAccounts($account);
+
+        app(StripeConnectService::class)->refreshAccountStatus($developerAccount);
+
+        $developerAccount->refresh();
+
+        $this->assertSame(StripeConnectStatus::Pending, $developerAccount->stripe_connect_status);
+        $this->assertFalse($developerAccount->canReceivePayouts());
+    }
+
+    /**
+     * @return array<string, array{array<string, mixed>}>
+     */
+    public static function accountsThatCannotBePaidYet(): array
+    {
+        return [
+            'recipient account with transfers pending' => [self::recipientAccount(['capabilities' => ['transfers' => 'pending']])],
+            'recipient account with transfers inactive' => [self::recipientAccount(['capabilities' => ['transfers' => 'inactive']])],
+            'recipient account without payouts enabled' => [self::recipientAccount(['payouts_enabled' => false])],
+            'full account with transfers pending' => [self::fullAccount(['capabilities' => ['transfers' => 'pending']])],
+            'full account with transfers inactive' => [self::fullAccount(['capabilities' => ['transfers' => 'inactive']])],
+            'account without the transfers capability' => [array_merge(self::recipientAccount(), ['capabilities' => []])],
+        ];
+    }
+
+    /**
+     * @param  array<string, mixed>  $account
+     */
+    #[Test]
+    #[DataProvider('disabledAccounts')]
+    public function refresh_account_status_marks_a_disabled_account_as_disabled_even_if_it_could_otherwise_be_paid(array $account): void
+    {
+        $developerAccount = DeveloperAccount::factory()->create();
+        $this->fakeStripeAccounts($account);
+
+        app(StripeConnectService::class)->refreshAccountStatus($developerAccount);
+
+        $developerAccount->refresh();
+
+        $this->assertSame(StripeConnectStatus::Disabled, $developerAccount->stripe_connect_status);
+        $this->assertTrue($developerAccount->payouts_enabled);
+        $this->assertFalse($developerAccount->canReceivePayouts());
+    }
+
+    /**
+     * @return array<string, array{array<string, mixed>}>
+     */
+    public static function disabledAccounts(): array
+    {
+        return [
+            'recipient account' => [self::recipientAccount(['requirements' => ['disabled_reason' => 'requirements.past_due']])],
+            'full account' => [self::fullAccount(['requirements' => ['disabled_reason' => 'under_review']])],
+        ];
+    }
+
+    /**
+     * @param  array<string, mixed>|null  $retrieved  What Stripe returns when the account is retrieved.
+     */
+    private function fakeStripeAccounts(?array $retrieved = null): object
+    {
+        $accounts = new class($retrieved ?? self::fullAccount())
         {
             public ?array $createdWith = null;
+
+            public function __construct(private array $retrieved) {}
 
             public function create(array $params): Account
             {
@@ -236,13 +326,7 @@ class StripeConnectServiceTest extends TestCase
 
             public function retrieve(string $id): Account
             {
-                return Account::constructFrom([
-                    'id' => $id,
-                    'payouts_enabled' => true,
-                    'charges_enabled' => true,
-                    'details_submitted' => true,
-                    'requirements' => ['disabled_reason' => null],
-                ]);
+                return Account::constructFrom(['id' => $id] + $this->retrieved);
             }
         };
 
@@ -252,5 +336,61 @@ class StripeConnectServiceTest extends TestCase
         $this->app->bind(StripeClient::class, fn () => $mockStripeClient);
 
         return $accounts;
+    }
+
+    /**
+     * An onboarded Express account on the full service agreement, the way Stripe returns it.
+     *
+     * @param  array<string, mixed>  $overrides
+     * @return array<string, mixed>
+     */
+    private static function fullAccount(array $overrides = []): array
+    {
+        return array_replace_recursive([
+            'object' => 'account',
+            'type' => 'express',
+            'country' => 'GB',
+            'charges_enabled' => true,
+            'payouts_enabled' => true,
+            'details_submitted' => true,
+            'capabilities' => [
+                'card_payments' => 'active',
+                'transfers' => 'active',
+            ],
+            'requirements' => [
+                'currently_due' => [],
+                'past_due' => [],
+                'disabled_reason' => null,
+            ],
+            'tos_acceptance' => ['service_agreement' => 'full'],
+        ], $overrides);
+    }
+
+    /**
+     * An onboarded Express account on the recipient service agreement. It only has the
+     * transfers capability, so Stripe never enables charges on it.
+     *
+     * @param  array<string, mixed>  $overrides
+     * @return array<string, mixed>
+     */
+    private static function recipientAccount(array $overrides = []): array
+    {
+        return array_replace_recursive([
+            'object' => 'account',
+            'type' => 'express',
+            'country' => 'MX',
+            'charges_enabled' => false,
+            'payouts_enabled' => true,
+            'details_submitted' => true,
+            'capabilities' => [
+                'transfers' => 'active',
+            ],
+            'requirements' => [
+                'currently_due' => [],
+                'past_due' => [],
+                'disabled_reason' => null,
+            ],
+            'tos_acceptance' => ['service_agreement' => 'recipient'],
+        ], $overrides);
     }
 }
