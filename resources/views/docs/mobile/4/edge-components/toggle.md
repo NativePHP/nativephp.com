@@ -8,7 +8,7 @@ order: 440
 <x-docs.edge-preview
     ios="edge-toggle-ios.png"
     android="edge-toggle-android.png"
-    source="resources/views/native/explore/forms.blade.php"
+    source="resources/views/native/edge-components/toggle.blade.php"
     alt="Toggle"
     edge="both"
 />

@@ -8,7 +8,7 @@ order: 315
 <x-docs.edge-preview
     ios="edge-refreshable-ios.png"
     android="edge-refreshable-android.png"
-    source="resources/views/native/refreshable-demo.blade.php"
+    source="resources/views/native/edge-components/refreshable.blade.php"
     alt="Refreshable"
     edge="both"
 />

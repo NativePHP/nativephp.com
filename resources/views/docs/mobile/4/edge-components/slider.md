@@ -8,7 +8,7 @@ order: 380
 <x-docs.edge-preview
     ios="edge-slider-ios.png"
     android="edge-slider-android.png"
-    source="resources/views/native/explore/forms.blade.php"
+    source="resources/views/native/edge-components/slider.blade.php"
     alt="Slider"
     edge="both"
 />

@@ -8,7 +8,7 @@ order: 350
 <x-docs.edge-preview
     ios="edge-select-ios.png"
     android="edge-select-android.png"
-    source="resources/views/native/explore/forms.blade.php"
+    source="resources/views/native/edge-components/select.blade.php"
     alt="Select"
     edge="both"
 />

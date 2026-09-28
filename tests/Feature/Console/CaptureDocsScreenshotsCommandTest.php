@@ -10,7 +10,7 @@ use Tests\TestCase;
 
 class CaptureDocsScreenshotsCommandTest extends TestCase
 {
-    private string $superNativePath;
+    private string $demoPath;
 
     private string $stagingPath;
 
@@ -20,15 +20,16 @@ class CaptureDocsScreenshotsCommandTest extends TestCase
     {
         parent::setUp();
 
-        $this->superNativePath = sys_get_temp_dir().'/super-native-fake-'.uniqid();
-        File::ensureDirectoryExists($this->superNativePath.'/routes');
-        File::put($this->superNativePath.'/artisan', '');
-        File::put($this->superNativePath.'/routes/mobile.php', '');
+        $this->demoPath = sys_get_temp_dir().'/edge-components-demo-fake-'.uniqid();
+        File::ensureDirectoryExists($this->demoPath.'/routes');
+        File::put($this->demoPath.'/artisan', '');
+        File::put($this->demoPath.'/routes/mobile.php', '');
 
         $this->stagingPath = sys_get_temp_dir().'/docs-screenshots-staging-'.uniqid();
         $this->publishPath = sys_get_temp_dir().'/docs-screenshots-publish-'.uniqid();
 
         config([
+            'docs.screenshots.demo_path' => null,
             'docs.screenshots.staging_path' => $this->stagingPath,
             'docs.screenshots.publish_path' => $this->publishPath,
         ]);
@@ -36,7 +37,7 @@ class CaptureDocsScreenshotsCommandTest extends TestCase
 
     protected function tearDown(): void
     {
-        File::deleteDirectory($this->superNativePath);
+        File::deleteDirectory($this->demoPath);
         File::deleteDirectory($this->stagingPath);
         File::deleteDirectory($this->publishPath);
 
@@ -44,7 +45,7 @@ class CaptureDocsScreenshotsCommandTest extends TestCase
     }
 
     #[Test]
-    public function it_fails_without_a_super_native_path_before_running_any_process(): void
+    public function it_fails_without_a_demo_path_before_running_any_process(): void
     {
         Process::fake();
 
@@ -54,12 +55,12 @@ class CaptureDocsScreenshotsCommandTest extends TestCase
     }
 
     #[Test]
-    public function it_fails_when_the_path_does_not_look_like_a_super_native_checkout(): void
+    public function it_fails_when_the_path_does_not_look_like_a_demo_checkout(): void
     {
         Process::fake();
 
         $this->artisan('docs:capture-screenshots', [
-            '--super-native-path' => sys_get_temp_dir(),
+            '--demo-path' => sys_get_temp_dir(),
         ])->assertFailed();
 
         Process::assertNothingRan();
@@ -71,7 +72,7 @@ class CaptureDocsScreenshotsCommandTest extends TestCase
         Process::fake();
 
         $this->artisan('docs:capture-screenshots', [
-            '--super-native-path' => $this->superNativePath,
+            '--demo-path' => $this->demoPath,
             '--platform' => 'blackberry',
         ])->assertFailed();
 
@@ -84,7 +85,7 @@ class CaptureDocsScreenshotsCommandTest extends TestCase
         Process::fake();
 
         $this->artisan('docs:capture-screenshots', [
-            '--super-native-path' => $this->superNativePath,
+            '--demo-path' => $this->demoPath,
             '--only' => 'not-a-real-screen',
         ])->assertFailed();
 
@@ -115,7 +116,7 @@ class CaptureDocsScreenshotsCommandTest extends TestCase
         Process::fake();
 
         $this->artisan('docs:capture-screenshots', [
-            '--super-native-path' => $this->superNativePath,
+            '--demo-path' => $this->demoPath,
             '--platform' => 'ios',
             '--only' => 'top-bar',
             '--settle-ms' => 0,
@@ -141,7 +142,7 @@ class CaptureDocsScreenshotsCommandTest extends TestCase
         Process::fake();
 
         $this->artisan('docs:capture-screenshots', [
-            '--super-native-path' => $this->superNativePath,
+            '--demo-path' => $this->demoPath,
             '--platform' => 'android',
             '--only' => 'bottom-nav',
             '--udid' => 'emulator-5554',
@@ -162,7 +163,7 @@ class CaptureDocsScreenshotsCommandTest extends TestCase
         ]);
 
         $this->artisan('docs:capture-screenshots', [
-            '--super-native-path' => $this->superNativePath,
+            '--demo-path' => $this->demoPath,
             '--platform' => 'ios',
             '--only' => 'top-bar',
             '--settle-ms' => 0,
@@ -178,7 +179,7 @@ class CaptureDocsScreenshotsCommandTest extends TestCase
         File::put($this->stagingPath.'/edge-top-bar-ios.png', 'fake-png-bytes');
 
         $this->artisan('docs:capture-screenshots', [
-            '--super-native-path' => $this->superNativePath,
+            '--demo-path' => $this->demoPath,
             '--platform' => 'ios',
             '--only' => 'top-bar',
             '--settle-ms' => 0,
@@ -192,31 +193,31 @@ class CaptureDocsScreenshotsCommandTest extends TestCase
     }
 
     #[Test]
-    public function it_asks_to_manually_open_the_drawer_for_a_drawer_screen(): void
+    public function it_asks_for_the_manual_step_before_capturing_a_drawer_screen(): void
     {
         Process::fake();
 
         $this->artisan('docs:capture-screenshots', [
-            '--super-native-path' => $this->superNativePath,
+            '--demo-path' => $this->demoPath,
             '--platform' => 'ios',
             '--only' => 'side-nav',
             '--settle-ms' => 0,
             '--full' => true,
         ])
             ->expectsQuestion(
-                'Manually open the side drawer for "side-nav" in the ios simulator/emulator now, then press Enter to continue',
+                'Tap the ☰ button to open the side drawer for "side-nav" in the ios simulator/emulator now, then press Enter to continue',
                 ''
             )
             ->assertSuccessful();
     }
 
     #[Test]
-    public function it_skips_a_drawer_screen_and_fails_when_run_non_interactively(): void
+    public function it_skips_a_manual_step_screen_and_fails_when_run_non_interactively(): void
     {
         Process::fake();
 
         $this->artisan('docs:capture-screenshots', [
-            '--super-native-path' => $this->superNativePath,
+            '--demo-path' => $this->demoPath,
             '--platform' => 'ios',
             '--only' => 'side-nav',
             '--settle-ms' => 0,
@@ -232,7 +233,7 @@ class CaptureDocsScreenshotsCommandTest extends TestCase
         Process::fake();
 
         $this->artisan('docs:capture-screenshots', [
-            '--super-native-path' => $this->superNativePath,
+            '--demo-path' => $this->demoPath,
             '--platform' => 'ios',
             '--only' => 'top-bar',
             '--settle-ms' => -500,
@@ -246,7 +247,7 @@ class CaptureDocsScreenshotsCommandTest extends TestCase
         Process::fake();
 
         $this->artisan('docs:capture-screenshots', [
-            '--super-native-path' => $this->superNativePath,
+            '--demo-path' => $this->demoPath,
             '--platform' => 'ios',
             '--only' => 'top-bar',
             '--settle-ms' => 0,
@@ -261,12 +262,12 @@ class CaptureDocsScreenshotsCommandTest extends TestCase
         // No Process::fake() here — this exercises a real subprocess that
         // outlives the configured timeout, to prove the timeout is caught
         // rather than left to crash the command as an uncaught exception.
-        File::put($this->superNativePath.'/artisan', "<?php\nsleep(5);\n");
+        File::put($this->demoPath.'/artisan', "<?php\nsleep(5);\n");
 
         config(['docs.screenshots.process_timeout' => 1]);
 
         $this->artisan('docs:capture-screenshots', [
-            '--super-native-path' => $this->superNativePath,
+            '--demo-path' => $this->demoPath,
             '--platform' => 'ios',
             '--only' => 'top-bar',
             '--settle-ms' => 0,
@@ -279,7 +280,7 @@ class CaptureDocsScreenshotsCommandTest extends TestCase
         Process::fake();
 
         $this->artisan('docs:capture-screenshots', [
-            '--super-native-path' => $this->superNativePath,
+            '--demo-path' => $this->demoPath,
             '--platform' => 'ios',
             '--only' => 'top-bar,side-nav',
             '--dry-run' => true,
@@ -294,7 +295,7 @@ class CaptureDocsScreenshotsCommandTest extends TestCase
         Process::fake();
 
         $this->artisan('docs:capture-screenshots', [
-            '--super-native-path' => $this->superNativePath,
+            '--demo-path' => $this->demoPath,
             '--platform' => 'ios',
             '--only' => 'top-bar',
             '--crop-percent' => '1.5',
@@ -311,7 +312,7 @@ class CaptureDocsScreenshotsCommandTest extends TestCase
         Process::fake();
 
         $this->artisan('docs:capture-screenshots', [
-            '--super-native-path' => $this->superNativePath,
+            '--demo-path' => $this->demoPath,
             '--platform' => 'ios',
             '--only' => 'top-bar',
             '--settle-ms' => 0,
@@ -335,7 +336,7 @@ class CaptureDocsScreenshotsCommandTest extends TestCase
         Process::fake();
 
         $this->artisan('docs:capture-screenshots', [
-            '--super-native-path' => $this->superNativePath,
+            '--demo-path' => $this->demoPath,
             '--platform' => 'ios',
             '--only' => 'top-bar',
             '--crop-percent' => '0.5',
@@ -351,7 +352,7 @@ class CaptureDocsScreenshotsCommandTest extends TestCase
         Process::fake();
 
         $this->artisan('docs:capture-screenshots', [
-            '--super-native-path' => $this->superNativePath,
+            '--demo-path' => $this->demoPath,
             '--platform' => 'ios',
             '--only' => 'top-bar',
             '--settle-ms' => 0,
@@ -376,7 +377,7 @@ class CaptureDocsScreenshotsCommandTest extends TestCase
         Process::fake();
 
         $this->artisan('docs:capture-screenshots', [
-            '--super-native-path' => $this->superNativePath,
+            '--demo-path' => $this->demoPath,
             '--platform' => 'android',
             '--only' => 'bottom-nav',
             '--settle-ms' => 0,
@@ -399,13 +400,13 @@ class CaptureDocsScreenshotsCommandTest extends TestCase
         Process::fake();
 
         $this->artisan('docs:capture-screenshots', [
-            '--super-native-path' => $this->superNativePath,
+            '--demo-path' => $this->demoPath,
             '--platform' => 'ios',
             '--only' => 'side-nav',
             '--settle-ms' => 0,
         ])
             ->expectsQuestion(
-                'Manually open the side drawer for "side-nav" in the ios simulator/emulator now, then press Enter to continue',
+                'Tap the ☰ button to open the side drawer for "side-nav" in the ios simulator/emulator now, then press Enter to continue',
                 ''
             )
             ->assertSuccessful();
@@ -424,7 +425,7 @@ class CaptureDocsScreenshotsCommandTest extends TestCase
         Process::fake();
 
         $this->artisan('docs:capture-screenshots', [
-            '--super-native-path' => $this->superNativePath,
+            '--demo-path' => $this->demoPath,
             '--platform' => 'ios',
             '--only' => 'top-bar',
             '--settle-ms' => 0,
@@ -437,5 +438,63 @@ class CaptureDocsScreenshotsCommandTest extends TestCase
             'php', 'artisan', 'native:screenshot', 'ios',
             '--output='.$outputPath,
         ]);
+    }
+
+    #[Test]
+    public function every_screen_is_served_from_its_own_route_in_the_demo_app(): void
+    {
+        foreach (DocsScreenshotManifest::keys() as $key) {
+            $this->assertSame('/edge-components/'.$key, DocsScreenshotManifest::get($key)['route']);
+        }
+    }
+
+    #[Test]
+    public function it_falls_back_to_the_configured_demo_path(): void
+    {
+        Process::fake();
+
+        config(['docs.screenshots.demo_path' => $this->demoPath]);
+
+        $this->artisan('docs:capture-screenshots', [
+            '--platform' => 'ios',
+            '--only' => 'top-bar',
+            '--settle-ms' => 0,
+            '--full' => true,
+        ])->assertSuccessful();
+
+        Process::assertRan(fn ($process): bool => $process->path === $this->demoPath
+            && ($process->command[2] ?? '') === 'native:run');
+    }
+
+    #[Test]
+    public function it_asks_to_open_the_menu_before_capturing_the_menus_screen(): void
+    {
+        Process::fake();
+
+        $this->artisan('docs:capture-screenshots', [
+            '--demo-path' => $this->demoPath,
+            '--platform' => 'android',
+            '--only' => 'menus',
+            '--settle-ms' => 0,
+        ])
+            ->expectsQuestion(
+                'Tap "Export" to open its menu for "menus" in the android simulator/emulator now, then press Enter to continue',
+                ''
+            )
+            ->assertSuccessful();
+    }
+
+    #[Test]
+    public function it_captures_sheets_and_modals_without_a_manual_step(): void
+    {
+        Process::fake();
+
+        $this->artisan('docs:capture-screenshots', [
+            '--demo-path' => $this->demoPath,
+            '--platform' => 'ios',
+            '--only' => 'bottom-sheet,modal',
+            '--settle-ms' => 0,
+            '--no-interaction' => true,
+        ])->assertSuccessful();
     }
 }

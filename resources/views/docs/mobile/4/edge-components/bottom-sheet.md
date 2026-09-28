@@ -8,7 +8,7 @@ order: 130
 <x-docs.edge-preview
     ios="edge-bottom-sheet-ios.png"
     android="edge-bottom-sheet-android.png"
-    source="resources/views/native/explore/sheets.blade.php"
+    source="resources/views/native/edge-components/bottom-sheet.blade.php"
     alt="Bottom sheet"
     edge="both"
 />

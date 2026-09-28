@@ -19,7 +19,7 @@ final class CaptureDocsScreenshots extends Command
 
     protected $signature = 'docs:capture-screenshots
         {--platform=both : ios, android, or both}
-        {--super-native-path= : Local checkout of NativePHP/super-native}
+        {--demo-path= : Local checkout of NativePHP/edge-components-demo (defaults to docs.screenshots.demo_path)}
         {--udid= : Specific simulator/emulator UDID — required whenever native:run would otherwise have more than one device to pick from}
         {--only= : Comma-separated screen keys to limit to, e.g. top-bar,bottom-nav}
         {--settle-ms=2000 : Milliseconds to wait after launch before capturing}
@@ -29,13 +29,13 @@ final class CaptureDocsScreenshots extends Command
         {--dry-run : Print what would be captured without running anything}
         {--publish : Copy every staged screenshot into public/img/docs}';
 
-    protected $description = "Regenerate the mobile docs' Edge Component screenshots from a running super-native checkout";
+    protected $description = "Regenerate the mobile docs' Edge Component screenshots from a running edge-components-demo checkout";
 
     public function handle(): int
     {
-        $superNativePath = $this->resolveSuperNativePath();
+        $demoPath = $this->resolveDemoPath();
 
-        if ($superNativePath === null) {
+        if ($demoPath === null) {
             return self::FAILURE;
         }
 
@@ -66,7 +66,7 @@ final class CaptureDocsScreenshots extends Command
         }
 
         if ($this->option('dry-run')) {
-            $this->printDryRun($superNativePath, $keys, $platforms, $cropPercent, $cropOffset);
+            $this->printDryRun($demoPath, $keys, $platforms, $cropPercent, $cropOffset);
 
             return self::SUCCESS;
         }
@@ -74,7 +74,7 @@ final class CaptureDocsScreenshots extends Command
         $stagingPath = (string) config('docs.screenshots.staging_path');
         File::ensureDirectoryExists($stagingPath);
 
-        $capturer = new ScreenshotCapturer($superNativePath, (int) config('docs.screenshots.process_timeout'));
+        $capturer = new ScreenshotCapturer($demoPath, (int) config('docs.screenshots.process_timeout'));
         $failures = [];
 
         foreach ($keys as $key) {
@@ -100,18 +100,18 @@ final class CaptureDocsScreenshots extends Command
         return self::SUCCESS;
     }
 
-    private function resolveSuperNativePath(): ?string
+    private function resolveDemoPath(): ?string
     {
-        $path = rtrim((string) $this->option('super-native-path'), '/');
+        $path = rtrim((string) ($this->option('demo-path') ?: config('docs.screenshots.demo_path')), '/');
 
         if ($path === '') {
-            $this->error('--super-native-path is required — pass the local checkout of NativePHP/super-native, e.g. a sibling directory of this repo.');
+            $this->error('--demo-path is required — pass the local checkout of NativePHP/edge-components-demo, e.g. a sibling directory of this repo, or set DOCS_SCREENSHOTS_DEMO_PATH.');
 
             return null;
         }
 
         if (! is_dir($path) || ! is_file($path.'/artisan') || ! is_file($path.'/routes/mobile.php')) {
-            $this->error(sprintf("'%s' doesn't look like a super-native checkout (missing artisan or routes/mobile.php).", $path));
+            $this->error(sprintf("'%s' doesn't look like an edge-components-demo checkout (missing artisan or routes/mobile.php).", $path));
 
             return null;
         }
@@ -183,9 +183,9 @@ final class CaptureDocsScreenshots extends Command
      * @param  list<string>  $keys
      * @param  list<DocsScreenshotPlatform>  $platforms
      */
-    private function printDryRun(string $superNativePath, array $keys, array $platforms, float $cropPercent, float $cropOffset): void
+    private function printDryRun(string $demoPath, array $keys, array $platforms, float $cropPercent, float $cropOffset): void
     {
-        $this->info(sprintf('Would use super-native checkout: %s', $superNativePath));
+        $this->info(sprintf('Would use edge-components-demo checkout: %s', $demoPath));
 
         foreach ($keys as $key) {
             $screen = DocsScreenshotManifest::get($key);
@@ -201,7 +201,7 @@ final class CaptureDocsScreenshots extends Command
                     $platform->value,
                     $screen['route'],
                     $crop,
-                    $screen['requires_drawer_open'] ? ' — needs a manual drawer-open step' : ''
+                    $screen['manual_step'] !== null ? sprintf(' — manual step: %s', $screen['manual_step']) : ''
                 ));
             }
         }
@@ -223,7 +223,7 @@ final class CaptureDocsScreenshots extends Command
             key: $key,
             platform: $platform,
             route: $screen['route'],
-            requiresDrawerOpen: $screen['requires_drawer_open'],
+            manualStep: $screen['manual_step'],
             udid: (string) $this->option('udid'),
             settleMs: (int) $this->option('settle-ms'),
             outputPath: $outputPath,
@@ -231,7 +231,7 @@ final class CaptureDocsScreenshots extends Command
             cropPercent: $cropPercent,
             cropOffset: $cropOffset,
             isInteractive: $this->input->isInteractive(),
-            confirmDrawerOpen: fn (string $message) => $this->ask($message),
+            confirmManualStep: fn (string $message) => $this->ask($message),
         );
 
         if ($failure !== null) {

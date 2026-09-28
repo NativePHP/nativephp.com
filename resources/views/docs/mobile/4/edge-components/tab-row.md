@@ -8,7 +8,7 @@ order: 410
 <x-docs.edge-preview
     ios="edge-tab-row-ios.png"
     android="edge-tab-row-android.png"
-    source="resources/views/native/twitter-profile.blade.php"
+    source="resources/views/native/edge-components/tab-row.blade.php"
     alt="Tab row"
     edge="both"
 />

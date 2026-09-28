@@ -31,6 +31,10 @@
     $iosTopStyle = $splitBackground($sidebarWidthIos, '#ffffff');
     $iosBottomStyle = $splitBackground($sidebarWidthIos, '#f9fafb');
     $androidStyle = $splitBackground($sidebarWidthAndroid, '#f8fafc');
+
+    $sourceUrl = $source
+        ? sprintf('https://github.com/%s/blob/%s/%s', config('docs.screenshots.demo_repository'), config('docs.screenshots.demo_branch'), $source)
+        : null;
 @endphp
 
 <div x-data="{ platform: '{{ $default }}', collapsed: false, clockIos: '', clockAndroid: '', init() { try { this.collapsed = localStorage.getItem('{{ $storageKey }}' + window.location.pathname) === '1'; } catch (e) {} this.tickClock(); setInterval(() => this.tickClock(), 1000); }, tickClock() { const d = new Date(); let h = d.getHours() % 12; if (h === 0) h = 12; const m = String(d.getMinutes()).padStart(2, '0'); this.clockIos = h + ':' + m; this.clockAndroid = String(d.getHours()).padStart(2, '0') + ':' + m; }, toggleCollapsed() { this.collapsed = !this.collapsed; try { localStorage.setItem('{{ $storageKey }}' + window.location.pathname, this.collapsed ? '1' : '0'); } catch (e) {} } }" class="not-prose my-8 overflow-hidden rounded-2xl border border-gray-200 bg-gray-50 dark:border-white/10 dark:bg-white/[0.03]">
@@ -44,8 +48,8 @@
             <span class="text-xs font-medium text-gray-500 transition-opacity dark:text-gray-400" :class="collapsed ? 'opacity-40' : ''">{{ $ios ? 'iOS' : 'Android' }}</span>
         @endif
         <div class="flex items-center gap-2">
-            @if ($source)
-                <a href="https://github.com/NativePHP/super-native/blob/main/{{ $source }}" target="_blank" rel="noopener" title="View this example in super-native" class="inline-flex items-center gap-1.5 rounded-md border border-gray-200 px-2 py-1 text-xs font-medium text-gray-500 transition-colors hover:border-gray-300 hover:text-gray-800 dark:border-white/10 dark:text-gray-400 dark:hover:border-white/20 dark:hover:text-white">
+            @if ($sourceUrl)
+                <a href="{{ $sourceUrl }}" target="_blank" rel="noopener" title="View this example's source" class="inline-flex items-center gap-1.5 rounded-md border border-gray-200 px-2 py-1 text-xs font-medium text-gray-500 transition-colors hover:border-gray-300 hover:text-gray-800 dark:border-white/10 dark:text-gray-400 dark:hover:border-white/20 dark:hover:text-white">
                     <x-icons.github class="size-3.5" />
                     Source
                 </a>

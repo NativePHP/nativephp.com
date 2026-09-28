@@ -10,9 +10,10 @@ use Illuminate\Process\Exceptions\ProcessTimedOutException;
 use Illuminate\Support\Facades\Process;
 
 /**
- * Drives one screen/platform capture in a super-native checkout: launches
- * the screen with `native:run`, optionally waits for a manually-confirmed
- * drawer-open step, then captures it with `native:screenshot` — which owns
+ * Drives one screen/platform capture in an edge-components-demo checkout:
+ * launches the screen with `native:run`, optionally waits for a
+ * manually-confirmed step (opening a drawer or menu), then captures it with
+ * `native:screenshot` — which owns
  * cropping itself (`--crop`/`--crop-percent`/`--crop-offset`), so every
  * NativePHP developer gets it too, not just this docs pipeline.
  */
@@ -21,20 +22,21 @@ final class ScreenshotCapturer
     private const MICROSECONDS_PER_MILLISECOND = 1_000;
 
     public function __construct(
-        private readonly string $superNativePath,
+        private readonly string $demoPath,
         private readonly int $timeout,
     ) {}
 
     /**
      * Returns null on success, or a human-readable failure reason.
      *
-     * @param  callable(string): void  $confirmDrawerOpen  Prompts the user and blocks until they respond.
+     * @param  ?string  $manualStep  An instruction for the user to carry out before the capture, or null.
+     * @param  callable(string): void  $confirmManualStep  Prompts the user and blocks until they respond.
      */
     public function capture(
         string $key,
         DocsScreenshotPlatform $platform,
         string $route,
-        bool $requiresDrawerOpen,
+        ?string $manualStep,
         string $udid,
         int $settleMs,
         string $outputPath,
@@ -42,7 +44,7 @@ final class ScreenshotCapturer
         float $cropPercent,
         float $cropOffset,
         bool $isInteractive,
-        callable $confirmDrawerOpen,
+        callable $confirmManualStep,
     ): ?string {
         $runCommand = $this->buildArgv([
             'php', 'artisan', 'native:run', $platform->value, $udid,
@@ -59,17 +61,19 @@ final class ScreenshotCapturer
             );
         }
 
-        if ($requiresDrawerOpen) {
+        if ($manualStep !== null) {
             if (! $isInteractive) {
                 return sprintf(
-                    'Skipping %s (%s): opening its drawer needs a manual step, so it can only be captured interactively.',
+                    'Skipping %s (%s): it needs a manual step (%s), so it can only be captured interactively.',
                     $key,
-                    $platform->value
+                    $platform->value,
+                    $manualStep
                 );
             }
 
-            $confirmDrawerOpen(sprintf(
-                'Manually open the side drawer for "%s" in the %s simulator/emulator now, then press Enter to continue',
+            $confirmManualStep(sprintf(
+                '%s for "%s" in the %s simulator/emulator now, then press Enter to continue',
+                $manualStep,
                 $key,
                 $platform->value
             ));
@@ -103,7 +107,7 @@ final class ScreenshotCapturer
     private function runProcess(array $command): bool
     {
         try {
-            return Process::path($this->superNativePath)->timeout($this->timeout)->run($command)->successful();
+            return Process::path($this->demoPath)->timeout($this->timeout)->run($command)->successful();
         } catch (ProcessTimedOutException) {
             return false;
         }

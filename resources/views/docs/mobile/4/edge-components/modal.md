@@ -8,7 +8,7 @@ order: 280
 <x-docs.edge-preview
     ios="edge-modal-ios.png"
     android="edge-modal-android.png"
-    source="resources/views/native/explore/sheets.blade.php"
+    source="resources/views/native/edge-components/modal.blade.php"
     alt="Modal"
     edge="both"
 />
