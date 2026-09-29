@@ -1,12 +1,16 @@
-@props(['showcase'])
+@props(['showcase', 'platform' => null])
+
+@php
+    $displayScreenshots = $showcase->screenshotsFor($platform);
+@endphp
 
 <article
     x-data="{
         currentSlide: 0,
         lightboxSlide: 0,
         lightboxOpen: false,
-        screenshots: {{ json_encode($showcase->screenshots ?? []) }},
-        screenshotUrls: {{ json_encode(collect($showcase->screenshots ?? [])->map(fn($s) => Storage::disk('public')->url($s))->values()) }},
+        screenshots: {{ json_encode($displayScreenshots) }},
+        screenshotUrls: {{ json_encode(collect($displayScreenshots)->map(fn($s) => Storage::disk('public')->url($s))->values()) }},
         get hasScreenshots() {
             return this.screenshots && this.screenshots.length > 0
         },
@@ -60,9 +64,9 @@
 
     {{-- Screenshot Carousel --}}
     <div class="relative aspect-video bg-gray-100 dark:bg-gray-900 overflow-hidden">
-        @if($showcase->screenshots && count($showcase->screenshots) > 0)
+        @if(count($displayScreenshots) > 0)
             <div class="relative h-full">
-                @foreach($showcase->screenshots as $index => $screenshot)
+                @foreach($displayScreenshots as $index => $screenshot)
                     <button
                         type="button"
                         x-show="currentSlide === {{ $index }}"

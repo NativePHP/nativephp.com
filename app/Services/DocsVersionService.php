@@ -9,6 +9,7 @@ class DocsVersionService
         $latestVersion = $platform === 'mobile' ? config('docs.latest_versions.mobile') : config('docs.latest_versions.desktop');
 
         $page = $this->resolveOldVersionApisWithPluginsCorePage($platform, $latestVersion, $page);
+        $page = $this->resolvePageForVersion($platform, $latestVersion, $page);
 
         $latestPagePath = resource_path("views/docs/{$platform}/{$latestVersion}/{$page}.md");
 
@@ -19,6 +20,39 @@ class DocsVersionService
             'version' => $latestVersion,
             'page' => $page,
         ]);
+    }
+
+    /**
+     * Map a page to its equivalent path in the target version, following the
+     * configured renames in either direction. A page renamed in v4 resolves
+     * old-to-new when targeting v4 or later, and new-to-old when targeting
+     * anything earlier.
+     */
+    public function resolvePageForVersion(string $platform, int|string $targetVersion, string $page): string
+    {
+        $renames = config("docs.renamed_pages.{$platform}", []);
+
+        ksort($renames);
+
+        foreach ($renames as $renamedInVersion => $map) {
+            if ((int) $targetVersion >= (int) $renamedInVersion && isset($map[$page])) {
+                $page = $map[$page];
+            }
+        }
+
+        krsort($renames);
+
+        foreach ($renames as $renamedInVersion => $map) {
+            if ((int) $targetVersion < (int) $renamedInVersion) {
+                $reversed = array_flip($map);
+
+                if (isset($reversed[$page])) {
+                    $page = $reversed[$page];
+                }
+            }
+        }
+
+        return $page;
     }
 
     /**

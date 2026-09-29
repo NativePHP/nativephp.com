@@ -4,8 +4,11 @@ namespace Tests\Feature;
 
 use App\Features\ShowAuthButtons;
 use App\Models\User;
+use Illuminate\Auth\Notifications\ResetPassword;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Notification;
+use Illuminate\Support\Facades\Password;
 use Laravel\Pennant\Feature;
 use Tests\TestCase;
 
@@ -94,5 +97,73 @@ class CustomerAuthenticationTest extends TestCase
         $response = $this->get('/dashboard');
 
         $response->assertRedirect('/login');
+    }
+
+    public function test_password_reset_email_is_sent_for_unverified_users(): void
+    {
+        Notification::fake();
+
+        $user = User::factory()->unverified()->create([
+            'email' => 'unverified-customer@gmail.com',
+        ]);
+
+        $this->post('/forgot-password', ['email' => $user->email]);
+
+        Notification::assertSentTo($user, ResetPassword::class);
+    }
+
+    public function test_password_reset_email_is_sent_for_opted_out_users(): void
+    {
+        Notification::fake();
+
+        $user = User::factory()->create([
+            'email' => 'opted-out-customer@gmail.com',
+            'receives_notification_emails' => false,
+        ]);
+
+        $this->post('/forgot-password', ['email' => $user->email]);
+
+        Notification::assertSentTo($user, ResetPassword::class);
+    }
+
+    public function test_password_reset_verifies_email_when_unverified(): void
+    {
+        $user = User::factory()->unverified()->create([
+            'email' => 'claimer@gmail.com',
+        ]);
+        $token = Password::broker()->createToken($user);
+
+        $response = $this->post('/reset-password', [
+            'token' => $token,
+            'email' => $user->email,
+            'password' => 'new-password-123',
+            'password_confirmation' => 'new-password-123',
+        ]);
+
+        $response->assertRedirect('/login');
+
+        $user->refresh();
+        $this->assertNotNull($user->email_verified_at);
+        $this->assertTrue(Hash::check('new-password-123', $user->password));
+    }
+
+    public function test_password_reset_preserves_existing_verification_timestamp(): void
+    {
+        $verifiedAt = now()->subMonth()->startOfDay();
+        $user = User::factory()->create([
+            'email' => 'already-verified@gmail.com',
+            'email_verified_at' => $verifiedAt,
+        ]);
+        $token = Password::broker()->createToken($user);
+
+        $this->post('/reset-password', [
+            'token' => $token,
+            'email' => $user->email,
+            'password' => 'new-password-123',
+            'password_confirmation' => 'new-password-123',
+        ]);
+
+        $user->refresh();
+        $this->assertTrue($user->email_verified_at->equalTo($verifiedAt));
     }
 }

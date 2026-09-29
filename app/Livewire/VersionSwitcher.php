@@ -2,6 +2,7 @@
 
 namespace App\Livewire;
 
+use App\Services\DocsVersionService;
 use Illuminate\View\ViewException;
 use Livewire\Attributes\Locked;
 use Livewire\Component;
@@ -34,11 +35,25 @@ class VersionSwitcher extends Component
         $this->platform = request()->route()->parameter('platform');
         $this->version = request()->route()->parameter('version');
         $this->page = request()->route()->parameter('page');
+
+        $prereleaseVersions = config("docs.prerelease_versions.{$this->platform}", []);
+
+        foreach ($versions as $number => $label) {
+            if (in_array($number, $prereleaseVersions)) {
+                $versions[$number] = "{$label} (beta)";
+            }
+        }
+
+        krsort($versions);
+
         $this->versions = $versions;
     }
 
     public function updatedVersion()
     {
+        $this->page = app(DocsVersionService::class)
+            ->resolvePageForVersion($this->platform, $this->version, $this->page);
+
         if (! $this->pageExists($this->platform, $this->version, $this->page)) {
             $this->page = 'introduction';
         }

@@ -34,7 +34,7 @@
                                         <img src="{{ $pluginLicense->plugin->getLogoUrl() }}" alt="{{ $pluginLicense->plugin->name }}" class="size-10 rounded-lg object-cover">
                                     @elseif($pluginLicense->plugin->hasGradientIcon())
                                         <div class="grid size-10 place-items-center rounded-lg bg-gradient-to-br {{ $pluginLicense->plugin->getGradientClasses() }} text-white">
-                                            <x-dynamic-component :component="'heroicon-o-' . $pluginLicense->plugin->icon_name" class="size-5" />
+                                            <x-dynamic-component :component="$pluginLicense->plugin->getIconComponent()" class="size-5" />
                                         </div>
                                     @else
                                         <div class="grid size-10 place-items-center rounded-lg bg-gradient-to-br from-indigo-500 to-purple-600 text-white">

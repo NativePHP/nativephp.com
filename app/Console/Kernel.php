@@ -18,6 +18,12 @@ class Kernel extends ConsoleKernel
             ->onOneServer()
             ->runInBackground();
 
+        // Reconcile GitHub App installations in case we missed any installation webhooks
+        $schedule->command('github:sync-installations')
+            ->dailyAt('09:30')
+            ->onOneServer()
+            ->runInBackground();
+
         // Remove Discord Max role for users with expired Max licenses
         $schedule->command('discord:remove-expired-roles')
             ->dailyAt('10:30')
@@ -27,6 +33,11 @@ class Kernel extends ConsoleKernel
         // Process developer payouts that have passed the 15-day holding period
         $schedule->command('payouts:process-eligible')
             ->dailyAt('11:00')
+            ->onOneServer();
+
+        // Email a summary of the day's payouts, once the queued transfers have run
+        $schedule->command('payouts:send-daily-summary')
+            ->dailyAt('12:00')
             ->onOneServer();
     }
 

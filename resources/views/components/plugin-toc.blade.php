@@ -5,16 +5,28 @@
             const article = document.querySelector('article')
             if (! article) return
 
+            const seen = new Set()
             const elements = article.querySelectorAll('h2[id], h3[id]')
-            this.headings = Array.from(elements).map(el => {
-                const clone = el.cloneNode(true)
-                clone.querySelectorAll('.heading-anchor').forEach(a => a.remove())
-                return {
-                    id: el.id,
-                    text: clone.textContent.trim(),
-                    level: parseInt(el.tagName.substring(1)),
-                }
-            })
+            this.headings = Array.from(elements)
+                .filter(el => el.id !== '')
+                .map(el => {
+                    const clone = el.cloneNode(true)
+                    clone.querySelectorAll('.heading-anchor').forEach(a => a.remove())
+
+                    let id = el.id
+                    let suffix = 1
+                    while (seen.has(id)) {
+                        id = el.id + '-toc-' + suffix++
+                    }
+                    seen.add(id)
+
+                    return {
+                        id: el.id,
+                        tocKey: id,
+                        text: clone.textContent.trim(),
+                        level: parseInt(el.tagName.substring(1)),
+                    }
+                })
         },
     }"
     x-show="headings.length > 0"
@@ -27,13 +39,13 @@
         </flux:button>
 
         <flux:popover class="w-64">
-            <nav class="flex max-h-80 flex-col gap-0.5 overflow-y-auto">
-                <template x-for="heading in headings" :key="heading.id">
+            <nav class="flex max-h-96 flex-col gap-0.5 overflow-y-auto">
+                <template x-for="heading in headings" :key="heading.tocKey">
                     <a
                         :href="'#' + heading.id"
                         x-on:click.prevent="document.getElementById(heading.id)?.scrollIntoView({ behavior: 'smooth', block: 'start' })"
-                        :class="heading.level === 2 ? 'pl-2' : 'pl-5'"
-                        class="rounded-md px-2 py-1.5 text-xs transition hover:bg-zinc-100 dark:text-white/80 dark:hover:bg-zinc-700"
+                        :class="heading.level === 2 ? 'pl-2 font-semibold' : 'pl-5'"
+                        class="rounded-md px-2 py-1.5 text-sm transition hover:bg-zinc-100 dark:text-white/80 dark:hover:bg-zinc-700"
                         x-text="heading.text"
                     ></a>
                 </template>

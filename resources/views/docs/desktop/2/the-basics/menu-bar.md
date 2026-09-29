@@ -165,6 +165,13 @@ MenuBar::create()
     ->icon(storage_path('app/menuBarIconTemplate.png'));
 ```
 
+Like `label()` and `tooltip()`, the icon can also be changed after creation by calling `icon()` directly on the
+`MenuBar` facade:
+
+```php
+MenuBar::icon(storage_path('app/menuBarIconAlert.png'));
+```
+
 ### Vibrancy and Background Color
 
 For macOS, you may use the `vibrancy` method to apply window vibrancy effects:
@@ -222,6 +229,14 @@ MenuBar::create()
     ->alwaysOnTop();
 ```
 
+Similarly, `showOnAllWorkspaces()` keeps the menu bar window visible across every virtual desktop/Space (macOS) rather
+than just the one it was opened on.
+
+```php
+MenuBar::create()
+    ->showOnAllWorkspaces();
+```
+
 ## Menu Bar Context Menu
 
 You may add a context menu to your menu bar icon. This context menu will be shown when the user right-clicks on the menu bar icon.
@@ -251,6 +266,18 @@ MenuBar::create()
 ```
 
 To learn more about the `Menu` facade, please refer to the [Application Menu](/docs/the-basics/application-menu) documentation.
+
+You may also set or replace the context menu after the menu bar has already been created by calling `contextMenu()`
+directly on the `MenuBar` facade:
+
+```php
+MenuBar::contextMenu(
+    Menu::make(
+        Menu::label('Updated'),
+        Menu::quit()
+    )
+);
+```
 
 ### Opening a Context Menu
 

@@ -335,7 +335,6 @@ class CustomerSubLicenseManagementTest extends TestCase
         $response->assertSee('Testing Team');
         $response->assertSee($subLicense1->key);
         $response->assertSee($subLicense2->key);
-        $response->assertSee('Active');
         $response->assertSee('Suspended');
     }
 
@@ -519,5 +518,22 @@ class CustomerSubLicenseManagementTest extends TestCase
             ->assertSee('Suspended Key')
             ->assertSee($activeSubLicense->key)
             ->assertSee($suspendedSubLicense->key);
+    }
+
+    public function test_expired_license_hides_key_limit_and_expired_banner(): void
+    {
+        $user = User::factory()->create();
+        $license = License::factory()->create([
+            'user_id' => $user->id,
+            'policy_name' => 'pro', // Pro has a sub-license limit of 9
+            'is_suspended' => false,
+            'expires_at' => now()->subDay(),
+        ]);
+
+        $this->actingAs($user);
+
+        Livewire::test(SubLicenseManager::class, ['license' => $license])
+            ->assertDontSee('/9')
+            ->assertDontSee('Keys cannot be created for expired licenses.');
     }
 }

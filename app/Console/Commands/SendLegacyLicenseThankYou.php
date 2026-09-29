@@ -42,8 +42,8 @@ class SendLegacyLicenseThankYou extends Command
         foreach ($userLicenses as $userId => $licenses) {
             $user = $licenses->first()->user;
 
-            if (! $user) {
-                $this->warn("Skipping license(s) for user ID {$userId} - user not found");
+            if (! $user || ! $user->email_verified_at) {
+                $this->warn("Skipping license(s) for user ID {$userId} - user not found or email not verified");
                 $skipped++;
 
                 continue;

@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Enums\PluginCategory;
 use App\Enums\PluginStatus;
 use App\Enums\PluginType;
 use App\Models\Plugin;
@@ -110,7 +111,11 @@ class PluginFactory extends Factory
             'description' => fake()->randomElement($this->descriptions),
             'ios_version' => fake()->randomElement(['15.0+', '16.0+', '14.0+', '17.0+', null]),
             'android_version' => fake()->randomElement(['12+', '13+', '11+', '14+', null]),
+            'demo_video_url' => 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
+            'demo_video_attested_at' => now(),
+            'show_demo_video' => false,
             'type' => PluginType::Free,
+            'categories' => null,
             'status' => PluginStatus::Pending,
             'featured' => false,
             'rejection_reason' => null,
@@ -176,6 +181,20 @@ class PluginFactory extends Factory
         ]);
     }
 
+    public function inactive(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'is_active' => false,
+        ]);
+    }
+
+    public function worksInJump(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'works_in_jump' => true,
+        ]);
+    }
+
     public function free(): static
     {
         return $this->state(fn (array $attributes) => [
@@ -190,10 +209,43 @@ class PluginFactory extends Factory
         ]);
     }
 
+    public function categories(PluginCategory ...$categories): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'categories' => $categories,
+        ]);
+    }
+
+    /**
+     * The lowest NativePHP Mobile release the plugin supports in each major version, e.g. ('3.0', '4.5.2').
+     */
+    public function mobileVersions(string ...$versions): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'mobile_versions' => collect($versions)->keyBy(fn (string $version): int => (int) $version)->all(),
+        ]);
+    }
+
     public function withoutDescription(): static
     {
         return $this->state(fn (array $attributes) => [
             'description' => null,
+        ]);
+    }
+
+    public function withoutDemoVideo(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'demo_video_url' => null,
+            'demo_video_attested_at' => null,
+            'show_demo_video' => false,
+        ]);
+    }
+
+    public function withPublicDemoVideo(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'show_demo_video' => true,
         ]);
     }
 

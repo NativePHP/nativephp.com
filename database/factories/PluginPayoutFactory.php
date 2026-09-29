@@ -14,23 +14,27 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 class PluginPayoutFactory extends Factory
 {
     /**
-     * Define the model's default state.
-     *
      * @return array<string, mixed>
      */
     public function definition(): array
     {
-        $grossAmount = $this->faker->numberBetween(1000, 10000);
-        $split = PluginPayout::calculateSplit($grossAmount);
+        $gross = $this->faker->numberBetween(1000, 10000);
+        $split = PluginPayout::calculateSplit($gross);
 
         return [
             'plugin_license_id' => PluginLicense::factory(),
             'developer_account_id' => DeveloperAccount::factory(),
-            'gross_amount' => $grossAmount,
+            'gross_amount' => $gross,
             'platform_fee' => $split['platform_fee'],
             'developer_amount' => $split['developer_amount'],
             'status' => PayoutStatus::Pending,
+            'eligible_for_payout_at' => now()->subDay(),
         ];
+    }
+
+    public function pending(): static
+    {
+        return $this->state(fn () => ['status' => PayoutStatus::Pending]);
     }
 
     public function transferred(): static
@@ -39,6 +43,16 @@ class PluginPayoutFactory extends Factory
             'status' => PayoutStatus::Transferred,
             'stripe_transfer_id' => 'tr_'.$this->faker->uuid(),
             'transferred_at' => now(),
+        ]);
+    }
+
+    public function failed(): static
+    {
+        return $this->state(fn () => [
+            'status' => PayoutStatus::Failed,
+            'failure_reason' => 'Stripe error: insufficient funds',
+            'attempt_count' => 1,
+            'last_attempted_at' => now(),
         ]);
     }
 

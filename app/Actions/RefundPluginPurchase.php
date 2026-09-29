@@ -38,16 +38,15 @@ class RefundPluginPurchase
 
                 $payout = $licenseToRefund->payout;
 
-                if (! $payout) {
+                if (! $payout || $payout->isCancelled()) {
                     continue;
                 }
 
-                if ($payout->isPending()) {
-                    $payout->markAsCancelled();
-                } elseif ($payout->isTransferred()) {
+                if ($payout->isTransferred()) {
                     $this->stripeConnectService->reverseTransfer($payout->stripe_transfer_id);
-                    $payout->markAsCancelled();
                 }
+
+                $payout->markAsCancelled();
             }
         });
     }

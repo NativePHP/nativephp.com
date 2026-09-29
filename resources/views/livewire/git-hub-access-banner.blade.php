@@ -1,7 +1,7 @@
 <div>
 @if(auth()->user()->hasMobileRepoAccess())
     <div @class(['max-w-7xl mx-auto px-4 sm:px-6 lg:px-8' => !$inline])>
-        <div class="bg-gradient-to-r from-gray-50 to-slate-100 dark:from-gray-800 dark:to-slate-900 border border-gray-300 dark:border-gray-600 rounded-lg p-6 h-full">
+        <div class="bg-gradient-to-r from-gray-50 to-slate-100 dark:from-gray-800 dark:to-slate-900 border border-gray-300 dark:border-gray-600 rounded-xl p-6 h-full">
             <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
                 <div class="flex items-start">
                     <div class="flex-shrink-0">
@@ -55,13 +55,6 @@
                                 </button>
                             </form>
                         @endif
-                        <form action="{{ route('github.disconnect') }}" method="POST">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit" class="inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 text-sm font-medium rounded-md text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500">
-                                Disconnect
-                            </button>
-                        </form>
                     @else
                         <a href="{{ route('github.redirect') }}" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-gray-900 dark:bg-white dark:text-gray-900 hover:bg-gray-800 dark:hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500">
                             Connect GitHub

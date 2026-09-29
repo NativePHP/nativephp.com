@@ -273,6 +273,15 @@
                     >
                         <x-icons.checkmark class="size-5 shrink-0" />
                     </div>
+                    <div class="font-medium">Discounted consult hourly rate</div>
+                </div>
+                <div class="flex items-center gap-2">
+                    <div
+                        class="grid size-7 shrink-0 place-items-center rounded-xl bg-[#D4FD7D] dark:bg-[#d68ffe] dark:text-black"
+                        aria-hidden="true"
+                    >
+                        <x-icons.checkmark class="size-5 shrink-0" />
+                    </div>
                     <div class="font-medium">Teams &mdash; invite your whole team to share your Ultra benefits</div>
                 </div>
                 <div class="flex items-center gap-2">
@@ -356,23 +365,29 @@
                                                 <span class="text-gray-600 dark:text-gray-400">New plan (Ultra)@if($upgradePreview['is_prorated']) <span class="text-gray-400 dark:text-gray-500">(pro-rated)</span>@endif</span>
                                                 <span class="font-medium text-gray-900 dark:text-white">{{ $upgradePreview['new_charge'] }}</span>
                                             </div>
-                                            @if($upgradePreview['credit'])
+                                            @if($upgradePreview['credit'] ?? null)
                                                 <div class="flex items-baseline justify-between">
                                                     <span class="text-gray-600 dark:text-gray-400">Credit for unused {{ $currentPlanName }} time</span>
                                                     <span class="font-medium text-emerald-600 dark:text-emerald-400">-{{ $upgradePreview['credit'] }}</span>
                                                 </div>
                                             @endif
-                                            <div class="border-t border-gray-200 pt-2 dark:border-zinc-700">
-                                                <div class="flex items-baseline justify-between">
-                                                    <span class="font-medium text-gray-900 dark:text-white">Due today</span>
-                                                    <span class="text-lg font-semibold text-gray-900 dark:text-white">{{ $upgradePreview['amount_due'] }}</span>
+                                            @if($upgradePreview['proration_pending'] ?? false)
+                                                <p class="border-t border-gray-200 pt-2 text-xs text-gray-500 dark:border-zinc-700 dark:text-gray-400">
+                                                    Your remaining {{ $currentPlanName }} time will be credited against this charge at checkout.
+                                                </p>
+                                            @else
+                                                <div class="border-t border-gray-200 pt-2 dark:border-zinc-700">
+                                                    <div class="flex items-baseline justify-between">
+                                                        <span class="font-medium text-gray-900 dark:text-white">Due today</span>
+                                                        <span class="text-lg font-semibold text-gray-900 dark:text-white">{{ $upgradePreview['amount_due'] }}</span>
+                                                    </div>
+                                                    @if($upgradePreview['remaining_credit'] ?? null)
+                                                        <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                                                            {{ $upgradePreview['remaining_credit'] }} will be credited to your next invoice.
+                                                        </p>
+                                                    @endif
                                                 </div>
-                                                @if($upgradePreview['remaining_credit'])
-                                                    <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
-                                                        {{ $upgradePreview['remaining_credit'] }} will be credited to your next invoice.
-                                                    </p>
-                                                @endif
-                                            </div>
+                                            @endif
                                         </div>
                                     @else
                                         <p class="text-sm text-gray-500 dark:text-gray-400">

@@ -3,6 +3,19 @@
         class="mx-auto mt-10 w-full max-w-3xl px-5 md:mt-14"
         aria-labelledby="license-title"
     >
+        @if ($isAdminPreview ?? false)
+            <div class="mb-6 rounded-xl border border-amber-300 bg-amber-50 p-4 text-center dark:border-amber-600 dark:bg-amber-950/50">
+                <p class="text-sm font-medium text-amber-800 dark:text-amber-200">
+                    Preview &mdash; This plugin is not publicly visible.
+                    @if ($plugin->isApproved() && ! $plugin->is_active)
+                        It has been de-listed.
+                    @else
+                        Status: {{ $plugin->status->label() }}
+                    @endif
+                </p>
+            </div>
+        @endif
+
         <header class="relative">
             {{-- Back button --}}
             <div

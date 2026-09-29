@@ -38,10 +38,12 @@ class PluginPurchaseRefundTest extends TestCase
                 'developer_account_id' => $developerAccount->id,
             ];
 
-            $factory = PluginPayout::factory();
-            if ($payoutStatus === 'transferred') {
-                $factory = $factory->transferred();
-            }
+            $factory = match ($payoutStatus) {
+                'transferred' => PluginPayout::factory()->transferred(),
+                'failed' => PluginPayout::factory()->failed(),
+                'held' => PluginPayout::factory()->state(['status' => PayoutStatus::Held]),
+                default => PluginPayout::factory(),
+            };
 
             $payout = $factory->create($payoutData);
         }
@@ -180,6 +182,38 @@ class PluginPurchaseRefundTest extends TestCase
 
         $payout->refresh();
         $this->assertEquals(PayoutStatus::Cancelled, $payout->status);
+    }
+
+    #[Test]
+    public function held_payout_gets_cancelled_on_refund(): void
+    {
+        [$license, $payout] = $this->createLicenseWithPayout(
+            ['purchased_at' => now()->subDays(3)],
+            'held',
+        );
+
+        $this->mockStripeConnectService();
+
+        app(RefundPluginPurchase::class)->handle($license, User::factory()->create());
+
+        $this->assertEquals(PayoutStatus::Cancelled, $payout->refresh()->status);
+    }
+
+    #[Test]
+    public function failed_payout_gets_cancelled_on_refund_so_it_cannot_be_retried(): void
+    {
+        [$license, $payout] = $this->createLicenseWithPayout(
+            ['purchased_at' => now()->subDays(3)],
+            'failed',
+        );
+
+        $this->mockStripeConnectService();
+
+        app(RefundPluginPurchase::class)->handle($license, User::factory()->create());
+
+        $payout->refresh();
+        $this->assertEquals(PayoutStatus::Cancelled, $payout->status);
+        $this->assertFalse($payout->isFailed());
     }
 
     #[Test]

@@ -18,11 +18,15 @@ class PluginWebhookController extends Controller
             return response()->json(['error' => 'Invalid webhook secret'], 404);
         }
 
-        if (! $plugin->isApproved()) {
-            return response()->json(['error' => 'Plugin is not approved'], 403);
+        $event = $request->header('X-GitHub-Event');
+
+        if ($event === 'ping') {
+            return response()->json(['success' => true, 'message' => 'pong']);
         }
 
-        $event = $request->header('X-GitHub-Event');
+        if (! $plugin->isActive()) {
+            return response()->json(['error' => 'Plugin is not active'], 403);
+        }
 
         if ($event === 'release') {
             // Sync plugin metadata to update latest_version

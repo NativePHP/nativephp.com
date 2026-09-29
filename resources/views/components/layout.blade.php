@@ -66,6 +66,14 @@
             type="image/svg+xml"
         />
 
+        {{-- Blog RSS feed autodiscovery --}}
+        <link
+            rel="alternate"
+            type="application/rss+xml"
+            title="NativePHP Blog"
+            href="{{ route('blog.feed') }}"
+        />
+
         {!! SEOMeta::generate() !!}
         {!! OpenGraph::generate() !!}
         {!! Twitter::generate() !!}
@@ -108,9 +116,13 @@
                 scrolled = window.scrollY > 1
             })
         "
-        class="font-poppins min-h-screen overflow-x-clip antialiased selection:bg-black selection:text-[#b4a9ff] dark:bg-[#050714] dark:text-white"
+        class="min-h-screen overflow-x-clip bg-white font-poppins antialiased selection:bg-black selection:text-[#b4a9ff] dark:bg-[#050714] dark:text-white"
     >
-        <x-the-vibes-banner />
+        @if (now()->isBefore('2027-01-01T00:00:00Z'))
+            <x-bifrost-birthday-banner />
+        @else
+            <x-newsletter-banner />
+        @endif
 
         <x-navigation-bar />
 
@@ -122,7 +134,9 @@
 
         <x-footer />
 
-        <x-impersonate::banner/>
+        <x-newsletter-modal />
+
+        <x-impersonate::banner />
 
         @livewireScriptConfig
         @fluxScripts

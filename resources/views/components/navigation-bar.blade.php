@@ -1,4 +1,5 @@
 <nav
+    data-site-nav
     class="sticky top-0 z-50 flex flex-col items-center justify-center border-b px-2 transition duration-200 ease-out min-[500px]:px-3"
     aria-label="Main Navigation"
     :class="{
@@ -71,17 +72,16 @@
         {{-- Right side --}}
         <div class="flex items-center gap-2.5">
             {{-- Theme toggle (visible on large screens) --}}
-{{--            <div class="hidden lg:block">--}}
-{{--                <x-navbar.theme-toggle />--}}
-{{--            </div>--}}
+            {{-- <div class="hidden lg:block"> --}}
+            {{-- <x-navbar.theme-toggle /> --}}
+            {{-- </div> --}}
 
             {{-- Doc search (visible on large screens) --}}
-
 
             {{-- Ultra link (desktop only) --}}
             <a
                 href="{{ route('pricing') }}"
-                class="hidden items-center gap-1.5 rounded-full bg-violet-500/10 px-3 py-1.5 text-sm font-medium text-violet-600 transition duration-200 hover:bg-violet-500/20 lg:inline-flex dark:text-violet-400 dark:hover:bg-violet-500/20"
+                class="hidden items-center rounded-full bg-zinc-200/60 px-3 py-2 text-sm transition duration-200 hover:bg-zinc-200 lg:inline-flex dark:bg-slate-950/30 dark:ring-1 dark:ring-slate-700/50 dark:ring-inset dark:hover:bg-cloud/70"
             >
                 Ultra
             </a>
@@ -89,9 +89,17 @@
             {{-- Course link (desktop only) --}}
             <a
                 href="{{ route('course') }}"
-                class="hidden items-center gap-1.5 rounded-full bg-emerald-500/10 px-3 py-1.5 text-sm font-medium text-emerald-600 transition duration-200 hover:bg-emerald-500/20 lg:inline-flex dark:text-emerald-400 dark:hover:bg-emerald-500/20"
+                class="hidden items-center rounded-full bg-zinc-200/60 px-3 py-2 text-sm transition duration-200 hover:bg-zinc-200 lg:inline-flex dark:bg-slate-950/30 dark:ring-1 dark:ring-slate-700/50 dark:ring-inset dark:hover:bg-cloud/70"
             >
                 Masterclass
+            </a>
+
+            {{-- Build link (desktop only) --}}
+            <a
+                href="{{ route('build-my-app') }}"
+                class="hidden items-center rounded-full bg-zinc-200/60 px-3 py-2 text-sm transition duration-200 hover:bg-zinc-200 lg:inline-flex dark:bg-slate-950/30 dark:ring-1 dark:ring-slate-700/50 dark:ring-inset dark:hover:bg-cloud/70"
+            >
+                Build
             </a>
 
             {{-- Bifrost button (visible on large screens) --}}

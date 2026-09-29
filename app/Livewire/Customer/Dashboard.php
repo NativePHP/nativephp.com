@@ -3,6 +3,7 @@
 namespace App\Livewire\Customer;
 
 use App\Enums\Subscription;
+use App\Models\Product;
 use App\Models\Team;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\Layout;
@@ -127,5 +128,25 @@ class Dashboard extends Component
         return $this->licenseCount
             + $this->pluginLicenseCount
             + $user->productLicenses()->count();
+    }
+
+    #[Computed]
+    public function hasPurchasedCourse(): bool
+    {
+        $product = Product::where('slug', 'nativephp-masterclass')->first();
+
+        return $product && $product->isOwnedBy(auth()->user());
+    }
+
+    #[Computed]
+    public function priceIncreaseAt(): string
+    {
+        return config('services.stripe.course_price_increase_at');
+    }
+
+    #[Computed]
+    public function priceIncreased(): bool
+    {
+        return now()->gte($this->priceIncreaseAt());
     }
 }

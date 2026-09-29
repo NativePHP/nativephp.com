@@ -56,6 +56,12 @@ return [
             'throw' => false,
         ],
 
+        'support-tickets' => [
+            'driver' => 'scoped',
+            'disk' => 's3',
+            'prefix' => 'support-tickets',
+        ],
+
     ],
 
     /*

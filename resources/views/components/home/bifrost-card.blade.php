@@ -4,7 +4,7 @@
     target="_blank"
     rel="noopener noreferrer"
     onclick="fathom.trackEvent('bifrost_card_click');"
-    class="group relative block h-full overflow-hidden rounded-2xl bg-gradient-to-br from-sky-500/20 via-indigo-500/10 to-purple-500/20 p-0.5 ring-1 ring-zinc-200/50 transition duration-300 hover:ring-sky-400/50 dark:ring-sky-500/30"
+    class="group relative block h-full overflow-hidden rounded-2xl bg-gradient-to-br from-sky-500/20 via-indigo-500/10 to-purple-500/20 p-0.5 ring-1 ring-zinc-200/50 transition-shadow duration-300 hover:ring-sky-400/50 dark:ring-sky-500/30"
     x-init="
         () => {
             motion.inView($el, (element) => {
@@ -15,7 +15,7 @@
                         y: 0,
                         autoAlpha: 1,
                         duration: 0.6,
-                        delay: 0.1,
+                        delay: 0.3,
                         ease: 'power2.out',
                     },
                 )
@@ -23,7 +23,7 @@
         }
     "
 >
-    <div class="relative flex h-full flex-col overflow-hidden rounded-xl bg-gradient-to-br from-[#F9F9F9] via-white to-[#F9F9F9] p-6 md:p-8 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950">
+    <div class="relative flex h-full flex-col overflow-hidden rounded-xl bg-gradient-to-br from-[#F9F9F9] via-white to-[#F9F9F9] p-5 md:p-6 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950">
         {{-- Animated glow --}}
         <div
             x-init="
@@ -38,7 +38,7 @@
                     })
                 }
             "
-            class="pointer-events-none absolute -right-10 -top-10 size-40 rounded-full bg-sky-500/20 blur-[50px] transition duration-500 group-hover:bg-sky-500/30"
+            class="pointer-events-none absolute -right-10 -top-10 size-40 rounded-full bg-sky-500/20 blur-[50px] transition-colors duration-500 group-hover:bg-sky-500/30"
             aria-hidden="true"
         ></div>
         <div
@@ -54,7 +54,7 @@
                     })
                 }
             "
-            class="pointer-events-none absolute -bottom-10 -left-10 size-32 rounded-full bg-purple-500/15 blur-[40px] transition duration-500 group-hover:bg-purple-500/25"
+            class="pointer-events-none absolute -bottom-10 -left-10 size-32 rounded-full bg-purple-500/15 blur-[40px] transition-colors duration-500 group-hover:bg-purple-500/25"
             aria-hidden="true"
         ></div>
 
@@ -86,8 +86,13 @@
             <x-illustrations.bifrost-diagram />
         </div>
 
+        {{-- Price hint --}}
+        <p class="mt-4 text-xs text-gray-500 dark:text-slate-500">
+            Plans start from just $10/month
+        </p>
+
         {{-- CTA --}}
-        <div class="mt-4 flex items-center gap-2 text-sm font-medium text-sky-600 transition duration-300 group-hover:text-sky-500 dark:text-sky-400 dark:group-hover:text-sky-300">
+        <div class="mt-1.5 flex items-center gap-2 text-sm font-medium text-sky-600 transition duration-300 group-hover:text-sky-500 dark:text-sky-400 dark:group-hover:text-sky-300">
             <span>Ship it!</span>
             <svg
                 class="size-4 transition duration-300 group-hover:translate-x-1"

@@ -2,6 +2,7 @@
 
 namespace App\Notifications;
 
+use App\Contracts\TransactionalNotification;
 use App\Models\Plugin;
 use App\Models\PluginBundle;
 use Illuminate\Bus\Queueable;
@@ -10,7 +11,7 @@ use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 use Illuminate\Support\Collection;
 
-class BundleGranted extends Notification implements ShouldQueue
+class BundleGranted extends Notification implements ShouldQueue, TransactionalNotification
 {
     use Queueable;
 

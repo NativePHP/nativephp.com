@@ -2,6 +2,7 @@
     'title' => '',
     'url' => '#',
     'date' => null,
+    'image' => null,
 ])
 
 <a
@@ -10,46 +11,58 @@
     aria-labelledby="article-title-{{ Str::slug($title) }}"
 >
     <article
-        class="group relative z-0 block overflow-hidden rounded-2xl bg-zinc-200/60 p-7 transition duration-300 hover:bg-violet-200/60 dark:bg-mirage dark:hover:bg-violet-500/10"
+        class="group relative z-0 block overflow-hidden rounded-2xl bg-zinc-200/60 transition duration-300 hover:bg-violet-200/60 dark:bg-mirage dark:hover:bg-violet-500/10"
     >
-        {{-- Header --}}
-        <div class="flex items-start justify-between gap-10">
-            <div>
-                {{-- Title --}}
-                <h3
-                    id="article-title-{{ Str::slug($title) }}"
-                    class="line-clamp-4 text-xl leading-relaxed font-semibold text-pretty"
-                >
-                    {{ $title }}
-                </h3>
-                {{-- Date --}}
-                @if ($date)
-                    @php
-                        $dateObject = \Carbon\Carbon::parse($date);
-                        $formattedDate = $dateObject->format('F j, Y');
-                    @endphp
+        {{-- Preview image --}}
+        @if ($image)
+            <img
+                src="{{ $image }}"
+                alt=""
+                class="h-48 w-full object-cover"
+                loading="lazy"
+            />
+        @endif
 
-                    <time
-                        datetime="{{ $date }}"
-                        class="shrink-0 text-xs opacity-50"
+        <div class="p-7">
+            {{-- Header --}}
+            <div class="flex items-start justify-between gap-10">
+                <div>
+                    {{-- Title --}}
+                    <h3
+                        id="article-title-{{ Str::slug($title) }}"
+                        class="line-clamp-4 text-xl leading-relaxed font-semibold text-pretty"
                     >
-                        {{ $formattedDate }}
-                    </time>
-                @endif
+                        {{ $title }}
+                    </h3>
+                    {{-- Date --}}
+                    @if ($date)
+                        @php
+                            $dateObject = \Carbon\Carbon::parse($date);
+                            $formattedDate = $dateObject->format('F j, Y');
+                        @endphp
+
+                        <time
+                            datetime="{{ $date }}"
+                            class="shrink-0 text-xs opacity-50"
+                        >
+                            {{ $formattedDate }}
+                        </time>
+                    @endif
+                </div>
+
+                {{-- Arrow --}}
+                <x-icons.right-arrow
+                    class="mt-2 -ml-5 size-3.5 shrink-0 transition duration-300 will-change-transform group-hover:translate-x-1"
+                    aria-hidden="true"
+                />
             </div>
 
-            {{-- Arrow --}}
-            <x-icons.right-arrow
-                class="mt-2 -ml-5 size-3.5 shrink-0 transition duration-300 will-change-transform group-hover:translate-x-1"
-                aria-hidden="true"
-            />
-        </div>
-
-        <div class="flex items-end justify-between gap-10 pt-5">
-            {{-- Content --}}
-            <p class="line-clamp-3 text-sm leading-relaxed  opacity-50">
-                {{ $slot }}
-            </p>
+            <div class="flex items-end justify-between gap-10 pt-5">
+                {{-- Content --}}
+                <p class="line-clamp-3 text-sm leading-relaxed  opacity-50">
+                    {{ $slot }}
+                </p>
+            </div>
         </div>
 
         {{-- Blur decoration --}}

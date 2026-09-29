@@ -1,4 +1,7 @@
 <div>
+    {{-- GitHub App Migration Banner --}}
+    <x-github-migration-banner />
+
     <div class="mb-6">
         <flux:heading size="xl">Plugins</flux:heading>
         <flux:text>Extend NativePHP Mobile with powerful native features</flux:text>

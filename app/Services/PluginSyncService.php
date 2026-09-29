@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Jobs\GeneratePluginOgImage;
 use App\Models\Plugin;
 use App\Support\CommonMark\CommonMark;
 use Illuminate\Support\Facades\Http;
@@ -64,7 +65,7 @@ class PluginSyncService
         ];
 
         if ($composerData) {
-            if (isset($composerData['name']) && ! $plugin->name) {
+            if (! empty($composerData['name']) && $composerData['name'] !== $plugin->name) {
                 $existing = Plugin::where('name', $composerData['name'])
                     ->where('id', '!=', $plugin->id)
                     ->exists();
@@ -91,6 +92,7 @@ class PluginSyncService
 
         if ($composerData) {
             $updateData['mobile_min_version'] = $composerData['require']['nativephp/mobile'] ?? null;
+            $updateData['mobile_versions'] = Plugin::mobileVersionsFromComposer($composerData);
         }
 
         if ($readme) {
@@ -117,6 +119,8 @@ class PluginSyncService
         ]);
 
         $plugin->update($updateData);
+
+        GeneratePluginOgImage::dispatch($plugin);
 
         Log::info('[PluginSync] Sync complete', ['plugin_id' => $plugin->id, 'name' => $plugin->name]);
 
@@ -191,11 +195,28 @@ class PluginSyncService
     protected function getGitHubToken(Plugin $plugin): ?string
     {
         $user = $plugin->user;
+        $repo = $plugin->getRepositoryOwnerAndName();
 
+        // Priority 1: Installation token (GitHub App)
+        if ($user && $repo && $user->isUsingGitHubApp()) {
+            $appService = app(GitHubAppService::class);
+            $installation = $appService->findInstallationForRepo($user, $repo['owner'], $repo['repo']);
+
+            if ($installation) {
+                $token = $appService->getInstallationToken($installation);
+
+                if ($token) {
+                    return $token;
+                }
+            }
+        }
+
+        // Priority 2: User OAuth token
         if ($user && $user->hasGitHubToken()) {
             return $user->getGitHubToken();
         }
 
+        // Priority 3: Platform token
         return config('services.github.token');
     }
 

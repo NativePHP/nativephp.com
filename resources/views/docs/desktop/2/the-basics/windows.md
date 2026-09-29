@@ -106,6 +106,22 @@ Window::open()
     ->maximized();
 ```
 
+To reverse a maximize, use `Window::unmaximize()`. It accepts the same optional window ID as `maximize()`.
+
+```php
+Window::unmaximize('secondary');
+```
+
+#### Reloading a Window
+
+To reload a window's content, you may use the `Window::reload()` method. It accepts the same optional window ID as
+`resize()` and `close()`.
+
+```php
+Window::reload();
+Window::reload('settings');
+```
+
 ### Changing the URL
 
 While the URL in a window will change based on user activity, your Laravel routes and the flow of your application,
@@ -240,6 +256,14 @@ To specify the position of the window, you may use the `position($x, $y)` method
 ```php
 Window::open()
     ->position(100, 100);
+```
+
+You can also move an already-open window with `Window::position($x, $y, $animated, $id)` — pass `true` for `$animated`
+to smoothly move the window into place, and a window ID if you're not repositioning the window matching the current
+route.
+
+```php
+Window::position(200, 200, animated: true, id: 'settings');
 ```
 
 ### Remembering Window State

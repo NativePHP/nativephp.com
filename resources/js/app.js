@@ -8,13 +8,14 @@ import {
 } from '../../vendor/livewire/livewire/dist/livewire.esm.js'
 import codeBlock from './alpine/codeBlock.js'
 import copyMarkdown from './alpine/copyMarkdown.js'
+import courseVideo from './alpine/courseVideo.js'
 import sidebarGroup from './alpine/sidebarGroup.js'
 import docsearch from '@docsearch/js'
 import Atropos from 'atropos'
 import '@docsearch/css'
 import 'atropos/css'
 
-import.meta.glob(['../images/**', '../svg/**'])
+import.meta.glob(['../images/**', '../svg/**'], { eager: true })
 import {
     animate,
     hover,
@@ -63,6 +64,7 @@ window.gsap = gsap
 // Alpine
 Alpine.data('codeBlock', codeBlock)
 Alpine.data('copyMarkdown', copyMarkdown)
+Alpine.data('courseVideo', courseVideo)
 Alpine.data('sidebarGroup', sidebarGroup)
 Alpine.magic('refAll', (el) => {
     return (refName) => {
@@ -113,16 +115,63 @@ Alpine.data('countdown', (iso) => ({
     }, // tidy up
 }))
 
+// Which platform path the homepage is showing: 'mobile' | 'desktop'.
+// Shared across sections (hero, explainer) and remembered between visits.
+// Registered on alpine:init because $persist only exists once Livewire has
+// registered Alpine's plugins.
+document.addEventListener('alpine:init', () => {
+    Alpine.store('platform', {
+        current: Alpine.$persist('mobile').as('nativephpPlatform'),
+        is(name) {
+            return this.current === name
+        },
+        select(name) {
+            if (this.current === name) return
+
+            this.current = name
+            this.revealExplainer()
+        },
+        // Switching tracks rewrites the explainer, so bring it into view.
+        // Two frames: one for Alpine to apply the change, one for the
+        // browser to lay it out, so the target offset is the final one.
+        revealExplainer() {
+            requestAnimationFrame(() =>
+                requestAnimationFrame(() => {
+                    const target = document.getElementById('platform-explainer')
+                    if (!target) return
+
+                    const nav = document.querySelector('[data-site-nav]')
+                    const offset = (nav?.offsetHeight ?? 0) + 16
+                    const top =
+                        target.getBoundingClientRect().top +
+                        window.scrollY -
+                        offset
+
+                    window.scrollTo({
+                        top: Math.max(0, top),
+                        behavior: window.matchMedia(
+                            '(prefers-reduced-motion: reduce)',
+                        ).matches
+                            ? 'auto'
+                            : 'smooth',
+                    })
+                }),
+            )
+        },
+    })
+})
+
 Livewire.start()
 
 // Docsearch
-const docsPathMatch = window.location.pathname.match(/^\/docs\/(desktop|mobile)\/(\d+)/)
+const docsPathMatch = window.location.pathname.match(
+    /^\/docs\/(desktop|mobile)\/(\d+)/,
+)
 const docsearchOptions = {
     appId: 'ZNII9QZ8WI',
     apiKey: '9be495a1aaf367b47c873d30a8e7ccf5',
-    indexName: 'nativephp',
+    indices: ['nativephp'],
     insights: true,
-    debug: false,
     ...(docsPathMatch && {
         transformItems(items) {
             const prefix = `/docs/${docsPathMatch[1]}/${docsPathMatch[2]}/`
@@ -140,13 +189,18 @@ const docsearchOptions = {
 docsearch({
     ...docsearchOptions,
     container: '#docsearch-desktop',
+    // The site menu is a popover, so it renders above the search modal. Tell it
+    // to close when a keyboard shortcut opens search while the menu is open.
+    onOpen: () => window.dispatchEvent(new CustomEvent('docsearch:open')),
 })
 
 // Mirror the desktop DocSearch button into the mobile container so that
 // pressing Cmd+K only registers one handler (avoiding duplicate modals).
 const mobileContainer = document.getElementById('docsearch-mobile')
 if (mobileContainer) {
-    const desktopButton = document.querySelector('#docsearch-desktop .DocSearch-Button')
+    const desktopButton = document.querySelector(
+        '#docsearch-desktop .DocSearch-Button',
+    )
     if (desktopButton) {
         const mobileButton = desktopButton.cloneNode(true)
         mobileContainer.appendChild(mobileButton)

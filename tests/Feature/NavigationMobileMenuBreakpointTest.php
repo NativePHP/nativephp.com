@@ -20,6 +20,18 @@ class NavigationMobileMenuBreakpointTest extends TestCase
         $response->assertSee('class="relative z-40"', false);
     }
 
+    public function test_navigation_bar_does_not_show_consulting_link(): void
+    {
+        $this->blade('<x-navigation-bar />')
+            ->assertDontSee('Consulting');
+    }
+
+    public function test_mobile_menu_does_not_show_consulting_link(): void
+    {
+        $this->blade('<x-navbar.mobile-menu />')
+            ->assertDontSee('Consulting');
+    }
+
     public function test_resize_handler_does_not_auto_close_mobile_menu(): void
     {
         $response = $this->get('/');

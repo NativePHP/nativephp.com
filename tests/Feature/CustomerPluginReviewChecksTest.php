@@ -6,6 +6,7 @@ use App\Livewire\Customer\Plugins\Create;
 use App\Livewire\Customer\Plugins\Show;
 use App\Models\DeveloperAccount;
 use App\Models\User;
+use App\Notifications\PluginPendingReview;
 use App\Notifications\PluginSubmitted;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Http;
@@ -16,6 +17,8 @@ use Tests\TestCase;
 class CustomerPluginReviewChecksTest extends TestCase
 {
     use RefreshDatabase;
+
+    private const DEMO_VIDEO_URL = 'https://www.youtube.com/watch?v=dQw4w9WgXcQ';
 
     private function fakeGitHubForCreateAndSubmit(string $repoSlug): void
     {
@@ -46,7 +49,13 @@ class CustomerPluginReviewChecksTest extends TestCase
             "https://raw.githubusercontent.com/{$repoSlug}/*" => Http::response('', 404),
 
             // Webhook creation
-            "{$base}/hooks" => Http::response(['id' => 1], 201),
+            "{$base}/hooks" => function ($request) {
+                if ($request->method() === 'GET') {
+                    return Http::response([], 200);
+                }
+
+                return Http::response(['id' => 1], 201);
+            },
 
             // ReviewPluginRepository calls
             $base => Http::response(['default_branch' => 'main']),
@@ -94,8 +103,12 @@ class CustomerPluginReviewChecksTest extends TestCase
         $this->assertNotNull($plugin, 'Plugin should exist after creation');
         $this->assertEquals('draft', $plugin->status->value);
 
-        // Set support channel (required before submission)
-        $plugin->update(['support_channel' => 'dev@testplugin.io']);
+        // Set support channel and an attested demo video (both required before submission)
+        $plugin->update([
+            'support_channel' => 'dev@testplugin.io',
+            'demo_video_url' => self::DEMO_VIDEO_URL,
+            'demo_video_attested_at' => now(),
+        ]);
 
         // Re-fake HTTP for the submission step
         $this->fakeGitHubForCreateAndSubmit($repoSlug);
@@ -123,10 +136,18 @@ class CustomerPluginReviewChecksTest extends TestCase
         Notification::assertSentTo($user, PluginSubmitted::class, function (PluginSubmitted $notification) use ($plugin) {
             return $notification->plugin->id === $plugin->id;
         });
+
+        Notification::assertSentOnDemand(
+            PluginPendingReview::class,
+            function (PluginPendingReview $notification, array $channels, object $notifiable) use ($plugin) {
+                return $notifiable->routes['mail'] === 'support@nativephp.com'
+                    && $notification->plugin->id === $plugin->id;
+            }
+        );
     }
 
     /** @test */
-    public function plugin_submitted_email_includes_failing_checks(): void
+    public function plugin_submitted_email_includes_failing_optional_checks(): void
     {
         Notification::fake();
 
@@ -157,14 +178,21 @@ class CustomerPluginReviewChecksTest extends TestCase
             ]),
             "{$base}/contents/nativephp.json" => Http::response([], 404),
             "{$base}/contents/LICENSE*" => Http::response([], 404),
-            "{$base}/releases/latest" => Http::response([], 404),
-            "{$base}/tags*" => Http::response([]),
+            "{$base}/releases/latest" => Http::response(['tag_name' => 'v1.0.0']),
+            "{$base}/tags*" => Http::response([['name' => 'v1.0.0']]),
             "https://raw.githubusercontent.com/{$repoSlug}/*" => Http::response('', 404),
-            "{$base}/hooks" => Http::response([], 422),
+            "{$base}/hooks" => function ($request) {
+                if ($request->method() === 'GET') {
+                    return Http::response([], 200);
+                }
+
+                return Http::response(['id' => 1], 201);
+            },
             $base => Http::response(['default_branch' => 'main']),
             "{$base}/git/trees/main*" => Http::response([
                 'tree' => [
                     ['path' => 'src/ServiceProvider.php', 'type' => 'blob'],
+                    ['path' => 'LICENSE', 'type' => 'blob'],
                 ],
             ]),
             "{$base}/readme" => Http::response([
@@ -182,8 +210,12 @@ class CustomerPluginReviewChecksTest extends TestCase
 
         $plugin = $user->plugins()->where('repository_url', "https://github.com/{$repoSlug}")->first();
 
-        // Set support channel (required before submission)
-        $plugin->update(['support_channel' => 'support@bare-plugin.io']);
+        // Set support channel and an attested demo video (both required before submission)
+        $plugin->update([
+            'support_channel' => 'support@bare-plugin.io',
+            'demo_video_url' => self::DEMO_VIDEO_URL,
+            'demo_video_attested_at' => now(),
+        ]);
 
         // Re-fake HTTP for submission
         Http::fake([
@@ -197,13 +229,20 @@ class CustomerPluginReviewChecksTest extends TestCase
             ]),
             "{$base}/contents/nativephp.json" => Http::response([], 404),
             "{$base}/contents/LICENSE*" => Http::response([], 404),
-            "{$base}/releases/latest" => Http::response([], 404),
-            "{$base}/tags*" => Http::response([]),
-            "{$base}/hooks" => Http::response([], 422),
+            "{$base}/releases/latest" => Http::response(['tag_name' => 'v1.0.0']),
+            "{$base}/tags*" => Http::response([['name' => 'v1.0.0']]),
+            "{$base}/hooks" => function ($request) {
+                if ($request->method() === 'GET') {
+                    return Http::response([], 200);
+                }
+
+                return Http::response(['id' => 1], 201);
+            },
             $base => Http::response(['default_branch' => 'main']),
             "{$base}/git/trees/main*" => Http::response([
                 'tree' => [
                     ['path' => 'src/ServiceProvider.php', 'type' => 'blob'],
+                    ['path' => 'LICENSE', 'type' => 'blob'],
                 ],
             ]),
             "{$base}/readme" => Http::response([
@@ -213,7 +252,7 @@ class CustomerPluginReviewChecksTest extends TestCase
             "https://raw.githubusercontent.com/{$repoSlug}/*" => Http::response('', 404),
         ]);
 
-        // Step 2: Submit for review
+        // Step 2: Submit for review (required checks pass, optional ones don't)
         [$vendor, $package] = explode('/', $plugin->name);
         Livewire::actingAs($user)
             ->test(Show::class, ['vendor' => $vendor, 'package' => $package])
@@ -221,14 +260,11 @@ class CustomerPluginReviewChecksTest extends TestCase
 
         $plugin->refresh();
 
+        $this->assertEquals('pending', $plugin->status->value);
+
         Notification::assertSentTo($user, PluginSubmitted::class, function (PluginSubmitted $notification) use ($plugin) {
             $mail = $notification->toMail($plugin->user);
             $rendered = $mail->render()->toHtml();
-
-            // Should mention failing required checks
-            $this->assertStringContainsString('LICENSE', $rendered);
-            $this->assertStringContainsString('release version', $rendered);
-            $this->assertStringContainsString('webhook', $rendered);
 
             // Should mention failing optional checks
             $this->assertStringContainsString('Add iOS support', $rendered);

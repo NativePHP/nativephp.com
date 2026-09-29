@@ -42,26 +42,43 @@ class PluginStatusTransitionsTest extends TestCase
         ]);
     }
 
-    private function fakeGitHubForSubmission(Plugin $plugin): void
+    private function fakeGitHubForSubmission(Plugin $plugin, bool $passingChecks = true): void
     {
         $repoInfo = $plugin->getRepositoryOwnerAndName();
         $base = "https://api.github.com/repos/{$repoInfo['owner']}/{$repoInfo['repo']}";
 
         Http::fake([
-            "{$base}/hooks" => Http::response(['id' => 1], 201),
+            "{$base}/hooks" => function ($request) {
+                if ($request->method() === 'GET') {
+                    return Http::response([], 200);
+                }
+
+                return Http::response(['id' => 1], 201);
+            },
             $base => Http::response(['default_branch' => 'main']),
             "{$base}/git/trees/main*" => Http::response([
-                'tree' => [
-                    ['path' => 'src/ServiceProvider.php', 'type' => 'blob'],
-                ],
+                'tree' => $passingChecks
+                    ? [
+                        ['path' => 'src/ServiceProvider.php', 'type' => 'blob'],
+                        ['path' => 'LICENSE', 'type' => 'blob'],
+                    ]
+                    : [
+                        ['path' => 'src/ServiceProvider.php', 'type' => 'blob'],
+                    ],
             ]),
             "{$base}/contents/composer.json*" => Http::response([
                 'content' => base64_encode(json_encode(['name' => $plugin->name])),
                 'encoding' => 'base64',
             ]),
-            "{$base}/contents/LICENSE*" => Http::response([], 404),
-            "{$base}/releases/latest" => Http::response([], 404),
-            "{$base}/tags*" => Http::response([]),
+            "{$base}/contents/LICENSE*" => $passingChecks
+                ? Http::response(['name' => 'LICENSE', 'type' => 'file'], 200)
+                : Http::response([], 404),
+            "{$base}/releases/latest" => $passingChecks
+                ? Http::response(['tag_name' => 'v1.0.0'], 200)
+                : Http::response([], 404),
+            "{$base}/tags*" => $passingChecks
+                ? Http::response([['name' => 'v1.0.0']])
+                : Http::response([]),
             "{$base}/readme" => Http::response([
                 'content' => base64_encode('# Plugin'),
                 'encoding' => 'base64',
@@ -104,6 +121,19 @@ class PluginStatusTransitionsTest extends TestCase
         $this->assertNotNull($plugin->reviewed_at);
 
         Notification::assertSentTo($user, PluginSubmitted::class);
+    }
+
+    public function test_submit_requires_description(): void
+    {
+        $user = $this->createGitHubUser();
+        $plugin = $this->createDraftPlugin($user);
+        $plugin->update(['description' => null]);
+
+        $this->mountShowComponent($user, $plugin)
+            ->call('submitForReview');
+
+        $plugin->refresh();
+        $this->assertEquals(PluginStatus::Draft, $plugin->status);
     }
 
     public function test_submit_requires_support_channel(): void
@@ -438,5 +468,122 @@ class PluginStatusTransitionsTest extends TestCase
 
         $plugin->refresh();
         $this->assertEquals(PluginStatus::Pending, $plugin->status);
+    }
+
+    // ========================================
+    // Preflight Checks Gate Submission
+    // ========================================
+
+    public function test_submit_blocked_when_required_checks_fail(): void
+    {
+        $user = $this->createGitHubUser();
+        $plugin = $this->createDraftPlugin($user);
+        $this->fakeGitHubForSubmission($plugin, passingChecks: false);
+
+        $this->mountShowComponent($user, $plugin)
+            ->call('submitForReview');
+
+        $plugin->refresh();
+        $this->assertEquals(PluginStatus::Draft, $plugin->status);
+        $this->assertNotNull($plugin->review_checks);
+        $this->assertFalse($plugin->passesRequiredReviewChecks());
+    }
+
+    public function test_run_preflight_checks_populates_review_checks(): void
+    {
+        $user = $this->createGitHubUser();
+        $plugin = $this->createDraftPlugin($user);
+        $this->fakeGitHubForSubmission($plugin);
+
+        $this->assertNull($plugin->review_checks);
+
+        $this->mountShowComponent($user, $plugin)
+            ->call('runPreflightChecks');
+
+        $plugin->refresh();
+        $this->assertNotNull($plugin->review_checks);
+        $this->assertTrue($plugin->review_checks['has_license_file']);
+        $this->assertTrue($plugin->review_checks['has_release_version']);
+        $this->assertTrue($plugin->webhook_installed);
+    }
+
+    public function test_submit_succeeds_after_preflight_checks_pass(): void
+    {
+        Notification::fake();
+        $user = $this->createGitHubUser();
+        $plugin = $this->createDraftPlugin($user);
+        $this->fakeGitHubForSubmission($plugin);
+
+        // Run checks first
+        $this->mountShowComponent($user, $plugin)
+            ->call('runPreflightChecks');
+
+        $plugin->refresh();
+        $this->assertTrue($plugin->passesRequiredReviewChecks());
+
+        // Now submit
+        $this->mountShowComponent($user, $plugin)
+            ->call('submitForReview');
+
+        $plugin->refresh();
+        $this->assertEquals(PluginStatus::Pending, $plugin->status);
+        Notification::assertSentTo($user, PluginSubmitted::class);
+    }
+
+    public function test_preflight_detects_manually_installed_webhook(): void
+    {
+        $user = $this->createGitHubUser();
+        $plugin = $this->createDraftPlugin($user);
+
+        // Simulate a webhook secret existing but not marked as installed
+        $plugin->generateWebhookSecret();
+        $plugin->update(['webhook_installed' => false]);
+
+        $repoInfo = $plugin->getRepositoryOwnerAndName();
+        $base = "https://api.github.com/repos/{$repoInfo['owner']}/{$repoInfo['repo']}";
+        $webhookUrl = $plugin->getWebhookUrl();
+
+        Http::fake([
+            // GET /hooks returns our webhook in the list
+            "{$base}/hooks" => function ($request) use ($webhookUrl) {
+                if ($request->method() === 'GET') {
+                    return Http::response([
+                        ['id' => 42, 'config' => ['url' => $webhookUrl]],
+                    ], 200);
+                }
+
+                return Http::response(['id' => 1], 201);
+            },
+            $base => Http::response(['default_branch' => 'main']),
+            "{$base}/git/trees/main*" => Http::response([
+                'tree' => [
+                    ['path' => 'src/ServiceProvider.php', 'type' => 'blob'],
+                    ['path' => 'LICENSE', 'type' => 'blob'],
+                ],
+            ]),
+            "{$base}/contents/composer.json*" => Http::response([
+                'content' => base64_encode(json_encode(['name' => $plugin->name])),
+                'encoding' => 'base64',
+            ]),
+            "{$base}/contents/LICENSE*" => Http::response(['name' => 'LICENSE', 'type' => 'file'], 200),
+            "{$base}/releases/latest" => Http::response(['tag_name' => 'v1.0.0'], 200),
+            "{$base}/tags*" => Http::response([['name' => 'v1.0.0']]),
+            "{$base}/readme" => Http::response([
+                'content' => base64_encode('# Plugin'),
+                'encoding' => 'base64',
+            ]),
+            "{$base}/contents/README.md*" => Http::response([
+                'content' => base64_encode('# Plugin'),
+                'encoding' => 'base64',
+            ]),
+            "{$base}/contents/nativephp.json*" => Http::response([], 404),
+            'https://raw.githubusercontent.com/*' => Http::response('', 404),
+        ]);
+
+        $this->mountShowComponent($user, $plugin)
+            ->call('runPreflightChecks');
+
+        $plugin->refresh();
+        $this->assertTrue($plugin->webhook_installed);
     }
 }

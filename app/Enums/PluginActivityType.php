@@ -2,6 +2,8 @@
 
 namespace App\Enums;
 
+use Illuminate\Support\Str;
+
 enum PluginActivityType: string
 {
     case Submitted = 'submitted';
@@ -11,6 +13,18 @@ enum PluginActivityType: string
     case DescriptionUpdated = 'description_updated';
     case Withdrawn = 'withdrawn';
     case ReturnedToDraft = 'returned_to_draft';
+    case MessageToDeveloper = 'message_to_developer';
+    case MessageFromDeveloper = 'message_from_developer';
+
+    /**
+     * Types that represent a message in the admin <-> developer conversation.
+     *
+     * @return array<int, self>
+     */
+    public static function messageTypes(): array
+    {
+        return [self::MessageToDeveloper, self::MessageFromDeveloper];
+    }
 
     public function label(): string
     {
@@ -22,6 +36,20 @@ enum PluginActivityType: string
             self::DescriptionUpdated => 'Description Updated',
             self::Withdrawn => 'Withdrawn',
             self::ReturnedToDraft => 'Returned to Draft',
+            self::MessageToDeveloper => 'Message Sent',
+            self::MessageFromDeveloper => 'Developer Reply',
+        };
+    }
+
+    /**
+     * The same history read from the developer's side of the conversation.
+     */
+    public function developerLabel(): string
+    {
+        return match ($this) {
+            self::MessageToDeveloper => 'Message from NativePHP',
+            self::MessageFromDeveloper => 'Your Reply',
+            default => $this->label(),
         };
     }
 
@@ -35,6 +63,23 @@ enum PluginActivityType: string
             self::DescriptionUpdated => 'gray',
             self::Withdrawn => 'warning',
             self::ReturnedToDraft => 'warning',
+            self::MessageToDeveloper => 'primary',
+            self::MessageFromDeveloper => 'info',
+        };
+    }
+
+    /**
+     * Flux badge colour, grouping the log into approvals, rejections, each side
+     * of the conversation, and muted everyday status changes.
+     */
+    public function badgeColor(): string
+    {
+        return match ($this) {
+            self::Approved => 'green',
+            self::Rejected => 'red',
+            self::MessageToDeveloper => 'purple',
+            self::MessageFromDeveloper => 'sky',
+            default => 'zinc',
         };
     }
 
@@ -48,6 +93,16 @@ enum PluginActivityType: string
             self::DescriptionUpdated => 'heroicon-o-pencil-square',
             self::Withdrawn => 'heroicon-o-arrow-uturn-left',
             self::ReturnedToDraft => 'heroicon-o-arrow-uturn-left',
+            self::MessageToDeveloper => 'heroicon-o-chat-bubble-left-right',
+            self::MessageFromDeveloper => 'heroicon-o-chat-bubble-left-ellipsis',
         };
+    }
+
+    /**
+     * The icon without its Blade component prefix, as Flux components expect it.
+     */
+    public function iconName(): string
+    {
+        return Str::after($this->icon(), 'heroicon-o-');
     }
 }

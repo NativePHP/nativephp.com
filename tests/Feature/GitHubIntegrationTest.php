@@ -154,6 +154,64 @@ class GitHubIntegrationTest extends TestCase
         $response->assertSessionHas('error', 'Please connect your GitHub account first.');
     }
 
+    public function test_user_without_any_license_sees_github_account_card_with_connect_button(): void
+    {
+        Http::fake(['api.github.com/*' => Http::response([], 404)]);
+
+        $user = User::factory()->create();
+
+        $response = $this->actingAs($user)->get('/dashboard/integrations');
+
+        $response->assertStatus(200);
+        $response->assertSee('GitHub Account');
+        $response->assertSee('Connect GitHub');
+    }
+
+    public function test_connected_user_without_any_license_can_see_disconnect_option(): void
+    {
+        Http::fake(['api.github.com/*' => Http::response([], 404)]);
+
+        $user = User::factory()->create([
+            'github_username' => 'testuser',
+            'github_id' => '123456',
+        ]);
+
+        $response = $this->actingAs($user)->get('/dashboard/integrations');
+
+        $response->assertStatus(200);
+        $response->assertSee('GitHub Account');
+        $response->assertSee('Connected as');
+        $response->assertSee('@testuser');
+        $response->assertSee('Disconnect GitHub?');
+    }
+
+    public function test_disconnect_clears_token_and_collaborator_status_caches(): void
+    {
+        Http::fake(['api.github.com/*' => Http::response([], 204)]);
+
+        $user = User::factory()->create([
+            'github_username' => 'testuser',
+            'github_id' => '123456',
+            'github_token' => encrypt('gho_test_token'),
+        ]);
+
+        Cache::put("github_collab_status_{$user->id}", 'active', 300);
+        Cache::put("github_claude_plugins_collab_status_{$user->id}", 'active', 300);
+
+        $response = $this->actingAs($user)
+            ->delete('/dashboard/github/disconnect');
+
+        $response->assertRedirect();
+        $response->assertSessionHas('success');
+
+        $user->refresh();
+        $this->assertNull($user->github_token);
+        $this->assertNull($user->github_username);
+        $this->assertNull($user->github_id);
+        $this->assertFalse(Cache::has("github_collab_status_{$user->id}"));
+        $this->assertFalse(Cache::has("github_claude_plugins_collab_status_{$user->id}"));
+    }
+
     public function test_user_can_disconnect_github_account(): void
     {
         Http::fake([

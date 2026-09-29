@@ -78,7 +78,17 @@ class SyncPluginReleases implements ShouldQueue
             }
         }
 
-        $this->plugin->update(['last_synced_at' => now()]);
+        $updateData = ['last_synced_at' => now()];
+
+        if ($this->hasNewReleases) {
+            $latestVersion = $this->plugin->versions()->latest('published_at')->first();
+
+            if ($latestVersion) {
+                $updateData['latest_version'] = $latestVersion->version;
+            }
+        }
+
+        $this->plugin->update($updateData);
 
         Log::info('[SyncPluginReleases] Processing complete', [
             'plugin_id' => $this->plugin->id,
@@ -149,7 +159,7 @@ class SyncPluginReleases implements ShouldQueue
             'rate_limit_remaining' => $response->header('X-RateLimit-Remaining'),
         ]);
 
-        return $response->json();
+        return $response->json() ?? [];
     }
 
     protected function processRelease(array $release): bool

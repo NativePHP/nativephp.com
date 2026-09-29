@@ -455,6 +455,8 @@ class CartController extends Controller
         $cart->load('items.plugin', 'items.pluginBundle.plugins', 'items.product');
 
         $lineItems = [];
+        $purchasedItemIds = [];
+        $couponIds = [];
 
         Log::info('Creating multi-item checkout session', [
             'cart_id' => $cart->id,
@@ -463,6 +465,8 @@ class CartController extends Controller
         ]);
 
         foreach ($cart->items as $item) {
+            $purchasedItemIds[] = $item->id;
+
             if ($item->isBundle()) {
                 $bundle = $item->pluginBundle;
 
@@ -485,17 +489,32 @@ class CartController extends Controller
             } elseif ($item->isProduct()) {
                 $product = $item->product;
 
-                $lineItems[] = [
-                    'price_data' => [
-                        'currency' => strtolower($item->currency),
-                        'unit_amount' => $item->product_price_at_addition,
-                        'product_data' => [
-                            'name' => $product->name,
-                            'description' => $product->description ?? 'NativePHP Product',
+                $bestPrice = $product->getBestPriceForUser($user);
+
+                if ($bestPrice?->stripe_coupon_id) {
+                    $couponIds[] = $bestPrice->stripe_coupon_id;
+                }
+
+                // Prefer the real Stripe price when the resolved price is backed by one;
+                // otherwise fall back to an ad-hoc price built from the stored amount.
+                if ($bestPrice?->stripe_price_id) {
+                    $lineItems[] = [
+                        'price' => $bestPrice->stripe_price_id,
+                        'quantity' => 1,
+                    ];
+                } else {
+                    $lineItems[] = [
+                        'price_data' => [
+                            'currency' => strtolower($item->currency),
+                            'unit_amount' => $item->product_price_at_addition,
+                            'product_data' => [
+                                'name' => $product->name,
+                                'description' => $product->description ?? 'NativePHP Product',
+                            ],
                         ],
-                    ],
-                    'quantity' => 1,
-                ];
+                        'quantity' => 1,
+                    ];
+                }
             } else {
                 $plugin = $item->plugin;
 
@@ -516,12 +535,15 @@ class CartController extends Controller
         // Ensure the user has a valid Stripe customer ID
         $this->ensureValidStripeCustomer($user);
 
-        // Metadata only needs cart_id - we'll look up items from the cart
+        // Record the exact cart items that were turned into priced line items so the
+        // webhook only grants licenses for what was actually purchased, not whatever
+        // happens to be in the cart when the payment is confirmed.
         $metadata = [
             'cart_id' => (string) $cart->id,
+            'cart_item_ids' => implode(',', $purchasedItemIds),
         ];
 
-        $session = Cashier::stripe()->checkout->sessions->create([
+        $sessionParams = [
             'mode' => 'payment',
             'line_items' => $lineItems,
             'success_url' => route('cart.success').'?session_id={CHECKOUT_SESSION_ID}',
@@ -543,7 +565,25 @@ class CartController extends Controller
                     'metadata' => $metadata,
                 ],
             ],
-        ]);
+        ];
+
+        // Stripe accepts either allow_promotion_codes or discounts on a session,
+        // never both, and at most one discount per session.
+        $couponIds = array_values(array_unique($couponIds));
+
+        if ($couponIds !== []) {
+            unset($sessionParams['allow_promotion_codes']);
+            $sessionParams['discounts'] = [['coupon' => $couponIds[0]]];
+
+            if (count($couponIds) > 1) {
+                Log::warning('Cart resolved multiple pre-applied coupons; only the first was applied', [
+                    'cart_id' => $cart->id,
+                    'coupon_ids' => $couponIds,
+                ]);
+            }
+        }
+
+        $session = Cashier::stripe()->checkout->sessions->create($sessionParams);
 
         // Store the Stripe checkout session ID on the cart
         $cart->update(['stripe_checkout_session_id' => $session->id]);

@@ -68,7 +68,7 @@ class SendLicenseExpiryWarnings extends Command
         $licenses = $query->get();
 
         foreach ($licenses as $license) {
-            if ($license->user) {
+            if ($license->user && $license->user->email_verified_at) {
                 $license->user->notify(new LicenseExpiryWarning($license, $days));
 
                 // Track that we sent this warning

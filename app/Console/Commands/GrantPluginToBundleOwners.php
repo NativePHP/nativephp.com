@@ -47,7 +47,7 @@ class GrantPluginToBundleOwners extends Command
             ->distinct()
             ->pluck('user_id');
 
-        $users = User::whereIn('id', $userIds)->get();
+        $users = User::whereIn('id', $userIds)->whereNotNull('email_verified_at')->get();
 
         if ($users->isEmpty()) {
             $this->warn('No users found who have purchased this bundle.');

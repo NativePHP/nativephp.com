@@ -12,6 +12,9 @@ use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Illuminate\Support\HtmlString;
+use Illuminate\Support\Js;
+use Illuminate\Support\Str;
 
 class SupportTicketResource extends Resource
 {
@@ -76,7 +79,37 @@ class SupportTicketResource extends Resource
                             ->label('Subject'),
                         Infolists\Components\TextEntry::make('message')
                             ->label('Message')
-                            ->markdown(),
+                            ->hintAction(
+                                Actions\Action::make('copyMessageAsMarkdown')
+                                    ->label('Copy as Markdown')
+                                    ->icon('heroicon-m-clipboard-document')
+                                    ->color('gray')
+                                    ->link()
+                                    ->visible(fn (SupportTicket $record): bool => filled($record->message))
+                                    ->actionJs(fn (SupportTicket $record): string => self::copyMessageAsMarkdownJs($record))
+                            )
+                            ->formatStateUsing(fn (?string $state): ?HtmlString => $state === null
+                                ? null
+                                : new HtmlString(self::renderTicketMessage($state)))
+                            ->html(),
+                        Infolists\Components\TextEntry::make('attachments')
+                            ->label('Attachments')
+                            ->formatStateUsing(function (SupportTicket $record): HtmlString {
+                                $attachments = $record->attachments;
+
+                                if (empty($attachments)) {
+                                    return new HtmlString('<span style="color: #9ca3af;">None</span>');
+                                }
+
+                                $links = collect($attachments)->map(function (array $attachment, int $index) use ($record): string {
+                                    $url = route('customer.support.tickets.attachment', [$record, $index]);
+
+                                    return '<a href="'.e($url).'" target="_blank" style="color: #2563eb; text-decoration: underline;">'.e($attachment['name']).'</a>';
+                                });
+
+                                return new HtmlString($links->implode('<br>'));
+                            })
+                            ->html(),
                     ])
                     ->collapsible()
                     ->persistCollapsed(),
@@ -147,6 +180,200 @@ class SupportTicketResource extends Resource
     public static function getRelations(): array
     {
         return [];
+    }
+
+    public static function renderTicketMessage(string $message): string
+    {
+        $html = Str::markdown(self::convertAsciiTablesToHtml($message), [
+            'renderer' => [
+                'soft_break' => "<br />\n",
+            ],
+        ]);
+
+        return str_replace('<p>', '<p style="margin: 0 0 1rem 0;">', $html);
+    }
+
+    /**
+     * Convert a ticket message to Markdown suitable for pasting elsewhere, turning any
+     * ASCII tables it contains into Markdown tables.
+     */
+    public static function ticketMessageAsMarkdown(string $message): string
+    {
+        return trim(self::convertAsciiTables($message, self::renderAsciiTableAsMarkdown(...)));
+    }
+
+    protected static function copyMessageAsMarkdownJs(SupportTicket $record): string
+    {
+        $markdown = Js::from(self::ticketMessageAsMarkdown($record->message));
+
+        return <<<JS
+            window.navigator.clipboard.writeText({$markdown})
+            \$tooltip('Copied as Markdown', { theme: \$store.theme, timeout: 1500 })
+            JS;
+    }
+
+    protected static function convertAsciiTablesToHtml(string $message): string
+    {
+        return self::convertAsciiTables($message, self::renderAsciiTable(...));
+    }
+
+    /**
+     * @param  callable(list<string>): ?string  $renderTable
+     */
+    protected static function convertAsciiTables(string $message, callable $renderTable): string
+    {
+        $lines = preg_split('/\R/', $message) ?: [];
+        $result = [];
+        $buffer = [];
+
+        $flush = function () use (&$result, &$buffer, $renderTable): void {
+            if ($buffer === []) {
+                return;
+            }
+
+            $rendered = $renderTable($buffer);
+
+            if ($rendered === null) {
+                foreach ($buffer as $bufferedLine) {
+                    $result[] = $bufferedLine;
+                }
+            } else {
+                $result[] = '';
+                $result[] = $rendered;
+                $result[] = '';
+            }
+
+            $buffer = [];
+        };
+
+        foreach ($lines as $line) {
+            if (preg_match('/^\s*[+|]/', $line)) {
+                $buffer[] = $line;
+
+                continue;
+            }
+
+            $flush();
+            $result[] = $line;
+        }
+
+        $flush();
+
+        return implode("\n", $result);
+    }
+
+    /**
+     * @param  list<string>  $lines
+     * @return array{rows: list<list<string>>, hasHeader: bool}|null
+     */
+    protected static function parseAsciiTable(array $lines): ?array
+    {
+        $rows = [];
+        $separatorAfterRow = [];
+
+        foreach ($lines as $line) {
+            $trimmed = ltrim($line);
+
+            if (str_starts_with($trimmed, '+')) {
+                $separatorAfterRow[count($rows)] = true;
+
+                continue;
+            }
+
+            if (str_starts_with($trimmed, '|')) {
+                $rows[] = self::splitAsciiTableRow($trimmed);
+            }
+        }
+
+        if ($rows === []) {
+            return null;
+        }
+
+        return [
+            'rows' => $rows,
+            'hasHeader' => count($rows) > 1 && isset($separatorAfterRow[1]),
+        ];
+    }
+
+    /**
+     * @param  list<string>  $lines
+     */
+    protected static function renderAsciiTableAsMarkdown(array $lines): ?string
+    {
+        $table = self::parseAsciiTable($lines);
+
+        if ($table === null) {
+            return null;
+        }
+
+        ['rows' => $rows, 'hasHeader' => $hasHeader] = $table;
+
+        $columnCount = max(array_map('count', $rows));
+        $renderRow = fn (array $cells): string => '| '.implode(' | ', array_pad($cells, $columnCount, '')).' |';
+
+        $header = $hasHeader ? array_shift($rows) : array_fill(0, $columnCount, '');
+
+        return implode("\n", [
+            $renderRow($header),
+            $renderRow(array_fill(0, $columnCount, '---')),
+            ...array_map($renderRow, $rows),
+        ]);
+    }
+
+    /**
+     * @param  list<string>  $lines
+     */
+    protected static function renderAsciiTable(array $lines): ?string
+    {
+        $table = self::parseAsciiTable($lines);
+
+        if ($table === null) {
+            return null;
+        }
+
+        ['rows' => $rows, 'hasHeader' => $hasHeader] = $table;
+
+        $tableStyle = 'border-collapse: collapse; width: auto; margin: 0 0 1rem 0; border: 1px solid rgba(127, 127, 127, 0.25);';
+        $cellStyle = 'padding: 0.25rem 0.75rem; border: 1px solid rgba(127, 127, 127, 0.2); text-align: left; vertical-align: top;';
+        $headerCellStyle = $cellStyle.' font-weight: 600; background: rgba(127, 127, 127, 0.12);';
+        $stripeStyle = 'background: rgba(127, 127, 127, 0.06);';
+
+        $html = '<table style="'.$tableStyle.'">';
+
+        if ($hasHeader) {
+            $html .= '<thead><tr>';
+            foreach ($rows[0] as $cell) {
+                $html .= '<th style="'.$headerCellStyle.'">'.e($cell).'</th>';
+            }
+            $html .= '</tr></thead>';
+            $bodyRows = array_slice($rows, 1);
+        } else {
+            $bodyRows = $rows;
+        }
+
+        $html .= '<tbody>';
+        foreach ($bodyRows as $index => $row) {
+            $rowStyle = $index % 2 === 1 ? ' style="'.$stripeStyle.'"' : '';
+            $html .= '<tr'.$rowStyle.'>';
+            foreach ($row as $cell) {
+                $html .= '<td style="'.$cellStyle.'">'.e($cell).'</td>';
+            }
+            $html .= '</tr>';
+        }
+        $html .= '</tbody></table>';
+
+        return $html;
+    }
+
+    /**
+     * @return list<string>
+     */
+    protected static function splitAsciiTableRow(string $line): array
+    {
+        $line = trim($line);
+        $line = trim($line, '|');
+
+        return array_map('trim', explode('|', $line));
     }
 
     public static function getPages(): array

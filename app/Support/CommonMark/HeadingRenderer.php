@@ -10,6 +10,14 @@ use League\CommonMark\Util\HtmlElement;
 
 class HeadingRenderer implements NodeRendererInterface
 {
+    /** @var array<string, int> */
+    protected array $usedIds = [];
+
+    public function resetIds(): void
+    {
+        $this->usedIds = [];
+    }
+
     public function render(Node $node, ChildNodeRendererInterface $childRenderer)
     {
         $tag = 'h'.$node->getLevel();
@@ -19,6 +27,17 @@ class HeadingRenderer implements NodeRendererInterface
         $element = new HtmlElement($tag, $attrs, $childRenderer->renderNodes($node->children()));
 
         $id = Str::slug($element->getContents());
+
+        if ($id === '') {
+            $id = 'heading';
+        }
+
+        if (isset($this->usedIds[$id])) {
+            $this->usedIds[$id]++;
+            $id = $id.'-'.$this->usedIds[$id];
+        } else {
+            $this->usedIds[$id] = 0;
+        }
 
         $element->setAttribute('id', $id);
 

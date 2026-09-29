@@ -35,6 +35,23 @@ return [
         'key' => env('ANYSTACK_API_KEY'),
     ],
 
+    'mailcoach' => [
+        /*
+         * The public subscribe endpoint for the NativePHP newsletter list. Forms post
+         * straight to Mailcoach, which redirects back to the pages configured on the
+         * list (see the `newsletter.*` routes).
+         */
+        'newsletter_subscribe_url' => env(
+            'MAILCOACH_NEWSLETTER_SUBSCRIBE_URL',
+            'https://simonhamp.mailcoach.app/subscribe/79a8941f-a008-4a6a-b81e-e4bb54d66755',
+        ),
+
+        /*
+         * The honeypot field name configured on the list. It must be submitted empty.
+         */
+        'honeypot_field' => env('MAILCOACH_HONEYPOT_FIELD', 'pet'),
+    ],
+
     'bifrost' => [
         'api_key' => env('BIFROST_API_KEY'),
     ],
@@ -48,6 +65,19 @@ return [
         'client_secret' => env('GITHUB_CLIENT_SECRET'),
         'redirect' => env('APP_URL').'/auth/github/callback',
         'token' => env('GITHUB_TOKEN'),
+        // The date the legacy OAuth App stops working, shown to people who haven't moved to the GitHub App yet
+        'legacy_oauth_cutoff_date' => env('GITHUB_LEGACY_OAUTH_CUTOFF_DATE'),
+    ],
+
+    'github_app' => [
+        'app_id' => env('GITHUB_APP_ID'),
+        'client_id' => env('GITHUB_APP_CLIENT_ID'),
+        'client_secret' => env('GITHUB_APP_CLIENT_SECRET'),
+        'private_key' => env('GITHUB_APP_PRIVATE_KEY'),
+        'webhook_secret' => env('GITHUB_APP_WEBHOOK_SECRET'),
+        'redirect' => env('APP_URL').'/auth/github/callback',
+        // Public and fixed: the app's name in its github.com/apps/{slug} URL
+        'slug' => 'nativephp-plugin-marketplace',
     ],
 
     'discord' => [
@@ -56,17 +86,32 @@ return [
         'redirect' => env('APP_URL').'/auth/discord/callback',
         'bot_token' => env('DISCORD_BOT_TOKEN'),
         'guild_id' => env('DISCORD_GUILD_ID'),
-        'max_role_id' => env('DISCORD_MAX_ROLE_ID'),
+        'ultra_role_id' => env('DISCORD_ULTRA_ROLE_ID'),
+        'early_adopter_role_id' => env('DISCORD_EARLY_ADOPTER_ROLE_ID'),
     ],
 
     'turnstile' => [
         'site_key' => env('TURNSTILE_SITE_KEY'),
         'secret_key' => env('TURNSTILE_SECRET_KEY'),
+        'hostnames' => env('TURNSTILE_HOSTNAMES'),
+    ],
+
+    'youtube' => [
+        'api_key' => env('YOUTUBE_API_KEY'),
+        // @NativePHPOfficial
+        'channel_id' => env('YOUTUBE_CHANNEL_ID', 'UCbkAE6vLlR6lOy_nxd--22g'),
     ],
 
     'satis' => [
         'url' => env('SATIS_API_URL', 'https://plugins.nativephp.com'),
         'api_key' => env('SATIS_API_KEY'),
+    ],
+
+    'stripe' => [
+        'course_price_id' => env('STRIPE_COURSE_PRICE_ID'),
+        'course_price_id_199' => env('STRIPE_COURSE_PRICE_ID_199'),
+        'course_price_id_299' => env('STRIPE_COURSE_PRICE_ID_299'),
+        'course_price_increase_at' => '2026-06-15T00:00:00Z',
     ],
 
     'stripe_connect' => [

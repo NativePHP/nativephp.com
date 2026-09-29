@@ -22,7 +22,7 @@ return [
      * usually in the form of a reverse domain name.
      * For example: com.nativephp.app
      */
-    'app_id' => env('NATIVEPHP_APP_ID'),
+    'app_id' => env('NATIVEPHP_APP_ID', 'com.nativephp.app'),
 
     /**
      * If your application allows deep linking, you can specify the scheme
@@ -69,13 +69,19 @@ return [
      */
     'cleanup_env_keys' => [
         'AWS_*',
+        'AZURE_*',
         'GITHUB_*',
         'DO_SPACES_*',
         '*_SECRET',
+        'BIFROST_*',
         'NATIVEPHP_UPDATER_PATH',
         'NATIVEPHP_APPLE_ID',
         'NATIVEPHP_APPLE_ID_PASS',
         'NATIVEPHP_APPLE_TEAM_ID',
+        'NATIVEPHP_AZURE_PUBLISHER_NAME',
+        'NATIVEPHP_AZURE_ENDPOINT',
+        'NATIVEPHP_AZURE_CERTIFICATE_PROFILE_NAME',
+        'NATIVEPHP_AZURE_CODE_SIGNING_ACCOUNT_NAME',
     ],
 
     /**
@@ -84,9 +90,11 @@ return [
      * You may use glob / wildcard patterns here.
      */
     'cleanup_exclude_files' => [
+        'build',
+        'temp',
         'content',
-        'storage/app/framework/{sessions,testing,cache}',
-        'storage/logs/laravel.log',
+        'node_modules',
+        '*/tests',
     ],
 
     /**
@@ -103,6 +111,7 @@ return [
         /**
          * The updater provider to use.
          * Supported: "github", "s3", "spaces"
+         * Note: The "s3" provider is compatible with S3-compatible services like Cloudflare R2.
          */
         'default' => env('NATIVEPHP_UPDATER_PROVIDER', 'spaces'),
 
@@ -114,6 +123,7 @@ return [
                 'token' => env('GITHUB_TOKEN'),
                 'vPrefixedTagName' => env('GITHUB_V_PREFIXED_TAG_NAME', true),
                 'private' => env('GITHUB_PRIVATE', false),
+                'autoupdate_token' => env('GITHUB_AUTOUPDATE_TOKEN'), // Read-only token used by the updater for private repos
                 'channel' => env('GITHUB_CHANNEL', 'latest'),
                 'releaseType' => env('GITHUB_RELEASE_TYPE', 'draft'),
             ],
@@ -126,6 +136,13 @@ return [
                 'bucket' => env('AWS_BUCKET'),
                 'endpoint' => env('AWS_ENDPOINT'),
                 'path' => env('NATIVEPHP_UPDATER_PATH', null),
+                /**
+                 * Optional public URL for serving updates (e.g., CDN or custom domain).
+                 * When set, updates will be downloaded from this URL instead of the S3 endpoint.
+                 * Useful for S3 with CloudFront or Cloudflare R2 with public access
+                 * Example: 'https://updates.yourdomain.com'
+                 */
+                'public_url' => env('AWS_PUBLIC_URL'),
             ],
 
             'spaces' => [
@@ -138,8 +155,50 @@ return [
             ],
         ],
     ],
+
+    /**
+     * The queue workers that get auto-started on your application start.
+     */
+    'queue_workers' => [
+        'default' => [
+            'queues' => ['default'],
+            'memory_limit' => 128,
+            'timeout' => 60,
+            'sleep' => 3,
+        ],
+    ],
+
+    /**
+     * Define your own scripts to run before and after the build process.
+     */
+    'prebuild' => [
+        // 'npm run build',
+    ],
+
+    'postbuild' => [
+        // 'rm -rf public/build',
+    ],
+
+    /**
+     * The NSIS installer configuration for Windows builds.
+     *
+     * @see https://www.electron.build/generated/nsisoptions
+     */
+    'nsis' => [
+        'delete_app_data_on_uninstall' => env('NATIVEPHP_NSIS_DELETE_APP_DATA', false),
+    ],
+
+    /**
+     * Custom PHP binary path.
+     */
+    'binary_path' => env('NATIVEPHP_PHP_BINARY_PATH', null),
 ];
 ```
+
+- `queue_workers` — named queue-worker pools that start automatically alongside your app, each with its own queues, memory limit, timeout, and sleep interval — handy if part of your app's work needs to run on a queue other than `default`.
+- `prebuild` / `postbuild` — shell commands run immediately before and after the build step (e.g. `npm run build` to compile assets first, or cleanup afterward).
+- `nsis` — options passed to the [NSIS installer](https://www.electron.build/generated/nsisoptions) electron-builder generates for Windows.
+- `binary_path` — overrides the PHP binary NativePHP bundles with your own, when set.
 
 ## Customize php.ini
 

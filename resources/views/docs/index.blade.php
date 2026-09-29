@@ -3,6 +3,19 @@
     <meta name="docsearch:version" content="{{ $version }}" />
 @endpush
 
+@php
+    // Front matter `jump`: a version string, or false if no Jump build has it.
+    $jumpRequirement = $jump ?? null;
+
+    // Jump previews EDGE components (Mobile v4 only), and only where the
+    // shipping Jump can render the page — a QR to a blank screen is worse
+    // than no QR.
+    $showJumpPreview = $platform === 'mobile'
+        && (string) $version === '4'
+        && str_starts_with((string) request()->route('page'), 'edge-components/')
+        && \App\Support\JumpApp::supports($jumpRequirement);
+@endphp
+
 <x-docs-layout>
     <x-slot name="sidebarLeft">
         {!! $navigation !!}
@@ -19,14 +32,22 @@
             <livewire:version-switcher :versions="[
                 1 => '1.x',
                 2 => '2.x',
-                3 => '3.x'
+                3 => '3.x',
+                4 => '4.x'
             ]" />
         @endif
 
         <x-docs.toc-and-sponsors :tableOfContents="$tableOfContents">
+            {{-- EDGE component pages can be previewed live in the Jump app --}}
+            @if ($showJumpPreview)
+                <x-slot:beforeAds>
+                    <x-docs.jump-preview :path="$pagePath" />
+                </x-slot:beforeAds>
+            @endif
+
             {{-- Ad rotation --}}
             <x-blog.ad-rotation
-                :ads="$platform === 'desktop' ? ['mobile', 'ultra', 'vibes', 'masterclass'] : ['devkit', 'ultra', 'vibes', 'masterclass']"
+                :ads="$platform === 'desktop' ? ['mobile', 'bifrost', 'ultra', 'masterclass'] : ['desktop', 'bifrost', 'devkit', 'ultra', 'masterclass']"
             />
         </x-docs.toc-and-sponsors>
     </x-slot>
@@ -37,11 +58,37 @@
         :page="request()->route('page')"
     />
 
-    <h1 class="text-4xl font-semibold">
-        {{ $title }}
-    </h1>
+    <x-docs.beta-version-notice
+        :platform="$platform"
+        :version="$version"
+        :page="request()->route('page')"
+    />
+
+    <div class="flex flex-wrap items-center gap-x-3 gap-y-2">
+        <h1 class="text-4xl font-semibold">
+            {{ $title }}
+        </h1>
+
+        <x-docs.version-badge
+            :since="$since ?? null"
+            :changed="$changed ?? null"
+            :deprecated="$deprecated ?? null"
+            :removed="$removed ?? null"
+        />
+
+        <x-docs.jump-badge
+            :since="is_string($jumpRequirement) ? $jumpRequirement : null"
+            :unavailable="$jumpRequirement === false"
+        />
+    </div>
 
     <x-docs.separator class="mt-4" />
+
+    {{-- Prompts QR visitors who don't have Jump installed. Kept out of the
+         desktop-only sidebar, since it renders on the phone. --}}
+    @if ($showJumpPreview)
+        <x-docs.jump-app-overlay />
+    @endif
 
     {{-- Table of contents --}}
     <div class="xl:hidden pt-9 space-y-4">
@@ -56,7 +103,8 @@
             <livewire:version-switcher :versions="[
                 1 => '1.x',
                 2 => '2.x',
-                3 => '3.x'
+                3 => '3.x',
+                4 => '4.x'
             ]" />
         @endif
 
@@ -67,7 +115,7 @@
 
     @if (count($tableOfContents) > 0)
         <div class="sticky top-20 z-10 mt-8 mb-4 flex justify-end">
-            <div class="rounded-full bg-white shadow-sm dark:bg-zinc-800">
+            <div class="mr-2 rounded-full bg-white shadow-sm dark:bg-zinc-800">
                 <flux:dropdown position="bottom" align="end">
                     <flux:button variant="filled" size="sm" class="!rounded-full">
                         <x-icons.stacked-lines class="size-4" />
@@ -75,14 +123,14 @@
                     </flux:button>
 
                     <flux:popover class="w-64">
-                        <nav class="flex max-h-80 flex-col gap-0.5 overflow-y-auto">
+                        <nav class="flex max-h-96 flex-col gap-0.5 overflow-y-auto">
                             @foreach ($tableOfContents as $item)
                                 <a
                                     href="#{{ $item['anchor'] }}"
                                     x-on:click.prevent="document.getElementById('{{ $item['anchor'] }}')?.scrollIntoView({ behavior: 'smooth', block: 'start' })"
                                     @class([
-                                        'rounded-md px-2 py-1.5 text-xs transition hover:bg-zinc-100 dark:text-white/80 dark:hover:bg-zinc-700',
-                                        'pl-2' => $item['level'] == 2,
+                                        'rounded-md px-2 py-1.5 text-sm transition hover:bg-zinc-100 dark:text-white/80 dark:hover:bg-zinc-700',
+                                        'pl-2 font-semibold' => $item['level'] == 2,
                                         'pl-5' => $item['level'] == 3,
                                     ])
                                 >
@@ -156,6 +204,6 @@
     {{-- Mobile ad rotation --}}
     <x-blog.ad-rotation
         class="mx-auto mt-5 max-w-52 xl:hidden"
-        :ads="$platform === 'desktop' ? ['mobile', 'ultra', 'vibes', 'masterclass'] : ['devkit', 'ultra', 'vibes', 'masterclass']"
+        :ads="$platform === 'desktop' ? ['mobile', 'bifrost', 'ultra', 'masterclass'] : ['desktop', 'bifrost', 'devkit', 'ultra', 'masterclass']"
     />
 </x-docs-layout>

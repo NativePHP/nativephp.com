@@ -3,7 +3,7 @@
 namespace App\Filament\Resources\ArticleResource\Pages;
 
 use App\Filament\Resources\ArticleResource;
-use App\Services\OgImageService;
+use App\Services\ArticleImageService;
 use Filament\Resources\Pages\CreateRecord;
 
 class CreateArticle extends CreateRecord
@@ -12,13 +12,7 @@ class CreateArticle extends CreateRecord
 
     protected function afterCreate(): void
     {
-        $service = resolve(OgImageService::class);
-
-        $ogImageUrl = $service->generate($this->record);
-
-        $this->record->update([
-            'og_image' => $ogImageUrl,
-        ]);
+        resolve(ArticleImageService::class)->refreshImages($this->record);
     }
 
     protected function getRedirectUrl(): string

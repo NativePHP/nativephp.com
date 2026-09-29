@@ -100,6 +100,11 @@ class License extends Model
         });
     }
 
+    public function isExpired(): bool
+    {
+        return $this->expires_at && $this->expires_at->isPast();
+    }
+
     public function canCreateSubLicense(): bool
     {
         if (! $this->supportsSubLicenses()) {

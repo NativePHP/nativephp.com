@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Article;
+use App\Support\BlogFeed;
 use Artesaos\SEOTools\Facades\SEOTools;
+use Illuminate\Http\Response;
 
 class ShowBlogController extends Controller
 {
@@ -15,6 +17,19 @@ class ShowBlogController extends Controller
 
         return view('blog', [
             'articles' => $articles,
+        ]);
+    }
+
+    public function feed(BlogFeed $feed): Response
+    {
+        $articles = Article::query()
+            ->published()
+            ->with('author')
+            ->limit(20)
+            ->get();
+
+        return response($feed->toRss($articles), 200, [
+            'Content-Type' => 'application/rss+xml; charset=UTF-8',
         ]);
     }
 
