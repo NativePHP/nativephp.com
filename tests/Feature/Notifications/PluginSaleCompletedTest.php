@@ -3,6 +3,7 @@
 namespace Tests\Feature\Notifications;
 
 use App\Enums\PayoutStatus;
+use App\Listeners\SuppressMailNotificationListener;
 use App\Models\DeveloperAccount;
 use App\Models\Plugin;
 use App\Models\PluginLicense;
@@ -10,6 +11,7 @@ use App\Models\PluginPayout;
 use App\Models\User;
 use App\Notifications\PluginSaleCompleted;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Notifications\Events\NotificationSending;
 use Tests\TestCase;
 
 class PluginSaleCompletedTest extends TestCase
@@ -192,5 +194,35 @@ class PluginSaleCompletedTest extends TestCase
 
         $this->assertEquals([$payout->id], $array['payout_ids']);
         $this->assertEquals(2030, $array['total_developer_amount']);
+    }
+
+    public function test_email_is_sent_to_developers_who_opted_out_of_notification_emails(): void
+    {
+        $developer = User::factory()->create(['receives_notification_emails' => false]);
+
+        $event = new NotificationSending(
+            $developer,
+            new PluginSaleCompleted(collect()),
+            'mail',
+        );
+
+        $listener = new SuppressMailNotificationListener;
+
+        $this->assertTrue($listener->handle($event));
+    }
+
+    public function test_email_is_sent_to_developers_with_unverified_email_addresses(): void
+    {
+        $developer = User::factory()->unverified()->create();
+
+        $event = new NotificationSending(
+            $developer,
+            new PluginSaleCompleted(collect()),
+            'mail',
+        );
+
+        $listener = new SuppressMailNotificationListener;
+
+        $this->assertTrue($listener->handle($event));
     }
 }
