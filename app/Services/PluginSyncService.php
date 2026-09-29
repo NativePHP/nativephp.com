@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Jobs\Concerns\ResolvesGitHubToken;
 use App\Jobs\GeneratePluginOgImage;
 use App\Models\Plugin;
 use App\Support\CommonMark\CommonMark;
@@ -10,6 +11,8 @@ use Illuminate\Support\Facades\Log;
 
 class PluginSyncService
 {
+    use ResolvesGitHubToken;
+
     public function sync(Plugin $plugin): bool
     {
         Log::info('[PluginSync] Starting sync', ['plugin_id' => $plugin->id, 'name' => $plugin->name]);
@@ -28,7 +31,7 @@ class PluginSyncService
             'repo' => $repo['repo'],
         ]);
 
-        $token = $this->getGitHubToken($plugin);
+        $token = $this->resolveGitHubTokenFor($plugin);
 
         Log::info('[PluginSync] Token resolved', [
             'plugin_id' => $plugin->id,
@@ -190,34 +193,6 @@ class PluginSyncService
         }
 
         return null;
-    }
-
-    protected function getGitHubToken(Plugin $plugin): ?string
-    {
-        $user = $plugin->user;
-        $repo = $plugin->getRepositoryOwnerAndName();
-
-        // Priority 1: Installation token (GitHub App)
-        if ($user && $repo && $user->isUsingGitHubApp()) {
-            $appService = app(GitHubAppService::class);
-            $installation = $appService->findInstallationForRepo($user, $repo['owner'], $repo['repo']);
-
-            if ($installation) {
-                $token = $appService->getInstallationToken($installation);
-
-                if ($token) {
-                    return $token;
-                }
-            }
-        }
-
-        // Priority 2: User OAuth token
-        if ($user && $user->hasGitHubToken()) {
-            return $user->getGitHubToken();
-        }
-
-        // Priority 3: Platform token
-        return config('services.github.token');
     }
 
     protected function extractIosVersion(array $nativephpData): ?string

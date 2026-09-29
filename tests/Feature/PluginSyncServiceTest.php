@@ -3,8 +3,10 @@
 namespace Tests\Feature;
 
 use App\Models\Plugin;
+use App\Models\User;
 use App\Services\PluginSyncService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Http\Client\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Queue;
 use Tests\TestCase;
@@ -170,6 +172,32 @@ class PluginSyncServiceTest extends TestCase
 
         $this->assertTrue($result);
         $this->assertEquals('acme/original-name', $plugin->fresh()->name);
+    }
+
+    public function test_sync_skips_an_owner_token_github_has_revoked(): void
+    {
+        config(['services.github.token' => 'ghp_platform']);
+
+        Http::fake([
+            'api.github.com/repos/acme/test-plugin' => Http::response(['message' => 'Bad credentials'], 401),
+            'api.github.com/repos/acme/test-plugin/contents/composer.json' => Http::response([
+                'content' => base64_encode(json_encode(['name' => 'acme/test-plugin'])),
+            ]),
+            'api.github.com/*' => Http::response([], 404),
+            'raw.githubusercontent.com/*' => Http::response('', 404),
+        ]);
+
+        $plugin = Plugin::factory()
+            ->for(User::factory()->withGitHubApp()->create(['github_token' => encrypt('ghu_revoked')]))
+            ->create([
+                'name' => 'acme/test-plugin',
+                'repository_url' => 'https://github.com/acme/test-plugin',
+            ]);
+
+        $this->assertTrue((new PluginSyncService)->sync($plugin));
+
+        Http::assertSent(fn (Request $request) => str_ends_with($request->url(), '/contents/composer.json')
+            && $request->hasHeader('Authorization', 'Bearer ghp_platform'));
     }
 
     public function test_sync_sets_mobile_min_version_to_null_when_not_in_composer_data(): void
