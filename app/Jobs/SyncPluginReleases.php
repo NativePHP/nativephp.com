@@ -56,7 +56,7 @@ class SyncPluginReleases implements ShouldQueue
             'plugin_id' => $this->plugin->id,
             'owner' => $repo['owner'],
             'repo' => $repo['repo'],
-            'token_source' => $token ? ($this->plugin->user?->hasGitHubToken() ? 'user_oauth' : 'platform') : 'none',
+            'has_token' => $token !== null,
         ]);
 
         $releases = $this->fetchReleases($repo['owner'], $repo['repo'], $token);
@@ -104,7 +104,7 @@ class SyncPluginReleases implements ShouldQueue
                 'plugin_name' => $this->plugin->name,
             ]);
 
-            $result = $satisService->build([$this->plugin], $this->getGitHubToken());
+            $result = $satisService->build([$this->plugin], $token);
 
             if ($result['success'] ?? false) {
                 $this->plugin->update(['satis_synced_at' => now()]);

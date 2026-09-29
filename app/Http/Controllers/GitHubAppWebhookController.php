@@ -198,6 +198,10 @@ class GitHubAppWebhookController extends Controller
             ->get()
             ->filter(fn (Plugin $plugin): bool => $plugin->isActive());
 
+        if ($event === 'release') {
+            $plugins = $plugins->filter(fn (Plugin $plugin): bool => $plugin->claimReleaseEvent($payload));
+        }
+
         $syncService = app(PluginSyncService::class);
 
         foreach ($plugins as $plugin) {

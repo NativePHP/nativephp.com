@@ -48,6 +48,15 @@ class GitHubAppRepositoryEventsTest extends TestCase
         ], $body);
     }
 
+    private function releasePayload(string $action, int $releaseId): array
+    {
+        return [
+            'action' => $action,
+            'release' => ['id' => $releaseId, 'tag_name' => "v1.0.{$releaseId}"],
+            'repository' => ['full_name' => 'acme/camera-plugin'],
+        ];
+    }
+
     private function coveredPlugin(array $attributes = []): Plugin
     {
         $user = User::factory()->withGitHubApp()->create();
@@ -90,10 +99,62 @@ class GitHubAppRepositoryEventsTest extends TestCase
             $mock->shouldReceive('sync')->once()->andReturn(true);
         });
 
-        $this->sendAppWebhook('release', ['repository' => ['full_name' => 'acme/camera-plugin']])
+        $this->sendAppWebhook('release', $this->releasePayload('published', 101))
             ->assertOk();
 
         Bus::assertDispatched(SyncPluginReleases::class, fn (SyncPluginReleases $job) => $job->plugin->is($plugin));
+    }
+
+    public function test_only_the_published_release_event_is_synced(): void
+    {
+        Bus::fake([SyncPluginReleases::class]);
+        $this->coveredPlugin();
+
+        $this->mock(PluginSyncService::class, function (MockInterface $mock): void {
+            $mock->shouldReceive('sync')->once()->andReturn(true);
+        });
+
+        // GitHub sends all three of these when a release is published
+        foreach (['created', 'published', 'released'] as $action) {
+            $this->sendAppWebhook('release', $this->releasePayload($action, 101))->assertOk();
+        }
+
+        Bus::assertDispatchedTimes(SyncPluginReleases::class, 1);
+    }
+
+    public function test_a_release_the_repository_webhook_already_delivered_is_not_synced_again(): void
+    {
+        Bus::fake([SyncPluginReleases::class]);
+        $plugin = $this->coveredPlugin(['last_synced_at' => now()]);
+
+        $this->mock(PluginSyncService::class, function (MockInterface $mock): void {
+            $mock->shouldReceive('sync')->once()->andReturn(true);
+        });
+
+        $this->postJson(route('webhooks.plugins', $plugin->webhook_secret), $this->releasePayload('published', 101), [
+            'X-GitHub-Event' => 'release',
+        ])->assertOk();
+
+        $this->sendAppWebhook('release', $this->releasePayload('published', 101))
+            ->assertOk()
+            ->assertJson(['plugins' => 0]);
+
+        Bus::assertDispatchedTimes(SyncPluginReleases::class, 1);
+    }
+
+    public function test_each_published_release_is_synced(): void
+    {
+        Bus::fake([SyncPluginReleases::class]);
+        $this->coveredPlugin();
+
+        $this->mock(PluginSyncService::class, function (MockInterface $mock): void {
+            $mock->shouldReceive('sync')->twice()->andReturn(true);
+        });
+
+        $this->sendAppWebhook('release', $this->releasePayload('published', 101))->assertOk();
+        $this->sendAppWebhook('release', $this->releasePayload('published', 102))->assertOk();
+
+        Bus::assertDispatchedTimes(SyncPluginReleases::class, 2);
     }
 
     public function test_events_for_inactive_plugins_are_ignored(): void

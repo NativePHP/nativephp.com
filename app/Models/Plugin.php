@@ -36,6 +36,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Notification;
 
 class Plugin extends Model
@@ -816,6 +817,25 @@ class Plugin extends Model
         }
 
         return app(GitHubAppService::class)->findInstallationForRepo($this->user, $repo['owner'], $repo['repo']) !== null;
+    }
+
+    /**
+     * Claim a GitHub release event, so each published release is only synced once. GitHub sends
+     * created, published and released for a single publish, and a repository the GitHub App covers
+     * can still have its old per-repository webhook, which delivers every event a second time. Only
+     * the first published event for each release gets through.
+     *
+     * @param  array<string, mixed>  $payload
+     */
+    public function claimReleaseEvent(array $payload): bool
+    {
+        $releaseId = $payload['release']['id'] ?? null;
+
+        if (($payload['action'] ?? null) !== 'published' || ! $releaseId) {
+            return false;
+        }
+
+        return Cache::add("plugin_{$this->id}_published_release_{$releaseId}", true, now()->addHour());
     }
 
     public function getRepositoryOwnerAndName(): ?array
