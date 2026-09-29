@@ -4,6 +4,8 @@ namespace Tests\Feature;
 
 use App\Features\ShowAuthButtons;
 use App\Livewire\Customer\Dashboard;
+use App\Models\Plugin;
+use App\Models\PluginLicense;
 use App\Models\Product;
 use App\Models\ProductLicense;
 use App\Models\User;
@@ -120,5 +122,38 @@ class PurchaseHistoryTest extends TestCase
 
         $response->assertStatus(200);
         $response->assertSee('Plugin Dev Kit');
+    }
+
+    public function test_refunded_plugin_purchase_is_listed_as_refunded(): void
+    {
+        $user = User::factory()->create();
+        $plugin = Plugin::factory()->approved()->create(['name' => 'acme/refunded-plugin']);
+
+        PluginLicense::factory()->refunded()->create([
+            'user_id' => $user->id,
+            'plugin_id' => $plugin->id,
+            'price_paid' => 2900,
+            'purchased_at' => now()->subDays(5),
+            'refunded_at' => now()->subDays(2),
+        ]);
+
+        $response = $this->actingAs($user)->get('/dashboard/purchase-history');
+
+        $response->assertStatus(200);
+        $response->assertSee('acme/refunded-plugin');
+        $response->assertSee('$29.00');
+        $response->assertSee('Refunded '.now()->subDays(2)->format('M j, Y'));
+    }
+
+    public function test_dashboard_plugin_count_excludes_refunded_plugins(): void
+    {
+        $user = User::factory()->create();
+
+        PluginLicense::factory()->create(['user_id' => $user->id]);
+        PluginLicense::factory()->refunded()->create(['user_id' => $user->id]);
+
+        $component = Livewire::actingAs($user)->test(Dashboard::class);
+
+        $this->assertSame(1, $component->instance()->pluginLicenseCount);
     }
 }

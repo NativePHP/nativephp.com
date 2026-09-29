@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Carbon;
 
 class PluginPayout extends Model
 {
@@ -154,6 +155,33 @@ class PluginPayout extends Model
     public function isCancelled(): bool
     {
         return $this->status === PayoutStatus::Cancelled;
+    }
+
+    /**
+     * When a pending payout should be transferred to the developer's Stripe account.
+     * Older payouts may predate eligible_for_payout_at, so fall back to the 15-day hold.
+     */
+    public function expectedTransferDate(): ?Carbon
+    {
+        if (! $this->isPending()) {
+            return null;
+        }
+
+        return $this->eligible_for_payout_at ?? $this->created_at->copy()->addDays(15);
+    }
+
+    public function wasCancelledByRefund(): bool
+    {
+        return $this->isCancelled() && $this->pluginLicense?->isRefunded();
+    }
+
+    /**
+     * A cancelled payout that still has a transfer ID had its money sent to the
+     * developer before the refund, so the refund reversed that transfer.
+     */
+    public function wasReversed(): bool
+    {
+        return $this->wasCancelledByRefund() && $this->stripe_transfer_id !== null;
     }
 
     protected function casts(): array

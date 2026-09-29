@@ -62,6 +62,18 @@ class PluginLicense extends Model
     }
 
     /**
+     * The Stripe dashboard page for this purchase's payment, which also lists any refund.
+     */
+    public function stripePaymentUrl(): ?string
+    {
+        if (! $this->stripe_payment_intent_id) {
+            return null;
+        }
+
+        return 'https://dashboard.stripe.com/payments/'.$this->stripe_payment_intent_id;
+    }
+
+    /**
      * @param  Builder<PluginLicense>  $query
      * @return Builder<PluginLicense>
      */
@@ -73,6 +85,16 @@ class PluginLicense extends Model
                 $q->whereNull('expires_at')
                     ->orWhere('expires_at', '>', now());
             });
+    }
+
+    /**
+     * @param  Builder<PluginLicense>  $query
+     * @return Builder<PluginLicense>
+     */
+    #[Scope]
+    protected function notRefunded(Builder $query): Builder
+    {
+        return $query->whereNull('refunded_at');
     }
 
     /**

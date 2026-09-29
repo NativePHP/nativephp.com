@@ -2,16 +2,16 @@
 
 namespace App\Filament\Resources\UserResource\RelationManagers;
 
-use App\Actions\RefundPluginPurchase;
 use App\Enums\PluginType;
+use App\Filament\Actions\RefundPluginLicenseAction;
 use App\Models\PluginLicense;
 use Filament\Actions;
 use Filament\Forms;
-use Filament\Notifications\Notification;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Schemas\Schema;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 
 class PluginLicensesRelationManager extends RelationManager
 {
@@ -70,13 +70,26 @@ class PluginLicensesRelationManager extends RelationManager
                 Tables\Columns\TextColumn::make('refunded_at')
                     ->label('Refunded')
                     ->dateTime()
+                    ->description(fn (PluginLicense $record): ?string => $record->refundedBy ? 'by '.$record->refundedBy->email : null)
                     ->sortable()
                     ->placeholder('-'),
+                Tables\Columns\TextColumn::make('stripe_refund_id')
+                    ->label('Stripe Refund')
+                    ->fontFamily('mono')
+                    ->copyable()
+                    ->url(fn (PluginLicense $record): ?string => $record->stripePaymentUrl())
+                    ->openUrlInNewTab()
+                    ->placeholder('-')
+                    ->toggleable(),
             ])
+            ->modifyQueryUsing(fn (Builder $query) => $query->with('refundedBy'))
             ->defaultSort('purchased_at', 'desc')
             ->filters([
                 Tables\Filters\TernaryFilter::make('is_grandfathered')
                     ->label('Comped'),
+                Tables\Filters\TernaryFilter::make('refunded_at')
+                    ->label('Refunded')
+                    ->nullable(),
             ])
             ->headerActions([
                 Actions\CreateAction::make()
@@ -88,39 +101,7 @@ class PluginLicensesRelationManager extends RelationManager
                     }),
             ])
             ->actions([
-                Actions\Action::make('refund')
-                    ->label('Refund')
-                    ->color('danger')
-                    ->requiresConfirmation()
-                    ->modalHeading('Refund purchase')
-                    ->modalDescription(function (PluginLicense $record): string {
-                        $amount = '$'.number_format($record->price_paid / 100, 2);
-                        $description = "This will issue a full {$amount} refund to {$record->user->email} for {$record->plugin->name} and revoke their license.";
-
-                        if ($record->wasPurchasedAsBundle()) {
-                            $description .= ' This license was purchased as part of a bundle — all licenses in the bundle will be refunded.';
-                        }
-
-                        return $description;
-                    })
-                    ->modalSubmitActionLabel('Yes, refund')
-                    ->action(function (PluginLicense $record): void {
-                        try {
-                            app(RefundPluginPurchase::class)->handle($record, auth()->user());
-
-                            Notification::make()
-                                ->title('Purchase refunded successfully')
-                                ->success()
-                                ->send();
-                        } catch (\Exception $e) {
-                            Notification::make()
-                                ->title('Refund failed')
-                                ->body($e->getMessage())
-                                ->danger()
-                                ->send();
-                        }
-                    })
-                    ->visible(fn (PluginLicense $record): bool => $record->isRefundable()),
+                RefundPluginLicenseAction::make(),
                 Actions\DeleteAction::make(),
             ]);
     }

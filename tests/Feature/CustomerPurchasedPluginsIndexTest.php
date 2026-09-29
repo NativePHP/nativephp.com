@@ -70,6 +70,29 @@ class CustomerPurchasedPluginsIndexTest extends TestCase
         $response->assertSee('Licensed');
     }
 
+    public function test_customer_does_not_see_refunded_plugins(): void
+    {
+        $user = User::factory()->create();
+        $kept = Plugin::factory()->approved()->create(['name' => 'acme/kept-plugin-333']);
+        $refunded = Plugin::factory()->approved()->create(['name' => 'acme/refunded-plugin-444']);
+
+        PluginLicense::factory()->create([
+            'user_id' => $user->id,
+            'plugin_id' => $kept->id,
+        ]);
+
+        PluginLicense::factory()->refunded()->create([
+            'user_id' => $user->id,
+            'plugin_id' => $refunded->id,
+        ]);
+
+        $response = $this->actingAs($user)->get('/dashboard/purchased-plugins');
+
+        $response->assertStatus(200);
+        $response->assertSee('acme/kept-plugin-333');
+        $response->assertDontSee('acme/refunded-plugin-444');
+    }
+
     public function test_customer_does_not_see_other_users_plugins(): void
     {
         $user1 = User::factory()->create();
