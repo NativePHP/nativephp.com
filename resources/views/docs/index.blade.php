@@ -74,6 +74,7 @@
             :changed="$changed ?? null"
             :deprecated="$deprecated ?? null"
             :removed="$removed ?? null"
+            :package="$package ?? null"
         />
 
         <x-docs.jump-badge

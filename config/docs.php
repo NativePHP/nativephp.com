@@ -65,6 +65,33 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Separately Versioned Packages
+    |--------------------------------------------------------------------------
+    |
+    | Packages documented inside a platform's docs that ship on their own
+    | release line, keyed by the slug a label passes as `package`. Their labels
+    | name the package and are checked against the package's own released
+    | versions in the test suite, rather than the platform's.
+    |
+    | Labels at or below the baseline don't render. The baseline is whatever
+    | was current when the platform major shipped (mobile-ui 0.3.0 was current
+    | when nativephp/mobile 4.0.0 shipped), the same way x.0 never renders for
+    | the platform itself.
+    |
+    | Add the new entry here as part of shipping a release.
+    |
+    */
+
+    'packages' => [
+        'mobile-ui' => [
+            'name' => 'nativephp/mobile-ui',
+            'baseline' => '0.3',
+            'released_versions' => ['0.1', '0.2', '0.3', '0.4', '0.5', '0.6', '0.7'],
+        ],
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
     | Jump
     |--------------------------------------------------------------------------
     |

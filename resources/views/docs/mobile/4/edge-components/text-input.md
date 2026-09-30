@@ -61,7 +61,7 @@ All three variants accept the same shared prop set. The bare variant adds a `col
 - `keyboard` - Keyboard hint string: `text` (default), `number`, `email`, `phone`, `url`, `decimal`, `password`,
   `numberPassword`. On iOS `password` uses the standard keyboard; `secure` is the masking mechanism. The keyboard
   type also decides capitalization and autocorrect — see [Capitalization](#capitalization)
-- `autocapitalize` - Override that capitalization: `none`, `sentences`, `words`, or `characters` (HTML's
+- `autocapitalize` <x-docs.version-badge package="mobile-ui" since="0.5" /> - Override that capitalization: `none`, `sentences`, `words`, or `characters` (HTML's
   vocabulary). Leave it unset to let `keyboard` decide (optional, string)
 - `secure` - Mask input for passwords (optional, boolean, default: `false`)
 - `multiline` - Allow multiple lines (optional, boolean, default: `false`)
@@ -73,7 +73,7 @@ All three variants accept the same shared prop set. The bare variant adds a `col
 - `sync-mode` - How change events dispatch back to your component: `live` (default), `blur`, or `debounce`. Usually
   set via the `native:model` modifiers below, but accepted directly too
 - `debounce-ms` - Milliseconds of inactivity before a `debounce` sync fires (optional, int, default: `300`)
-- `selection-debounce-ms` - Coalescing window for `@selectionChange` events (optional, int, default: `150`). `0` or
+- `selection-debounce-ms` <x-docs.version-badge package="mobile-ui" since="0.4" /> - Coalescing window for `@selectionChange` events (optional, int, default: `150`). `0` or
   less means the default; positive values are floored at one frame (16ms). See
   [Caret and selection reporting](#caret-and-selection-reporting)
 
@@ -83,9 +83,9 @@ All three variants accept the same shared prop set. The bare variant adds a `col
 - `suffix` - Text rendered after the input (optional, string)
 - `leading-icon` - Icon name rendered at the start (optional, string)
 - `trailing-icon` - Icon name rendered at the end (optional, string)
-- `ios-leading-icon` / `android-leading-icon` - Per-platform overrides for `leading-icon` (optional). See
+- `ios-leading-icon` / `android-leading-icon` <x-docs.version-badge package="mobile-ui" since="0.4" /> - Per-platform overrides for `leading-icon` (optional). See
   [Per-platform icons](#per-platform-icons)
-- `ios-trailing-icon` / `android-trailing-icon` - Per-platform overrides for `trailing-icon` (optional)
+- `ios-trailing-icon` / `android-trailing-icon` <x-docs.version-badge package="mobile-ui" since="0.4" /> - Per-platform overrides for `trailing-icon` (optional)
 
 ### Typography
 
@@ -100,6 +100,8 @@ All three variants accept the same shared prop set. The bare variant adds a `col
 - `a11y-hint` - Accessibility hint (optional)
 
 ## Capitalization
+
+<x-docs.version-badge package="mobile-ui" since="0.5" />
 
 Declaring a `keyboard` type carries its typing behaviour with it, not just the key layout. Fields whose content is
 case-sensitive or non-alphabetic never capitalize, and never autocorrect:
@@ -140,7 +142,7 @@ own default, left as-is. Set `autocapitalize` explicitly when you need the two t
 
 - `@change` - Component method called when the text changes. Receives the new value
 - `@submit` - Component method called when the user submits (e.g. presses return). Receives the current value
-- `@selectionChange` - Component method called when the caret moves or the selection changes. Receives the full
+- `@selectionChange` <x-docs.version-badge package="mobile-ui" since="0.4" /> - Component method called when the caret moves or the selection changes. Receives the full
   current text plus the selection start and end offsets — see
   [Caret and selection reporting](#caret-and-selection-reporting)
 
@@ -185,6 +187,8 @@ automatically, so the `@{{ $name }}` echo updates as you type.
 - `debounce` — fires after `debounce-ms` of inactivity (300ms when unset), or immediately on blur / submit
 
 ## Caret and selection reporting
+
+<x-docs.version-badge package="mobile-ui" since="0.4" />
 
 `@selectionChange` reports caret position and text selection back to your component — for the cases where `@change`
 alone can't tell you *where* the user is typing. The handler receives the full current text plus the selection range:
@@ -265,6 +269,8 @@ Caret and selection reporting requires `nativephp/mobile` 4.0+, which ships the 
 </aside>
 
 ## Per-platform icons
+
+<x-docs.version-badge package="mobile-ui" since="0.4" />
 
 The shared `leading-icon` / `trailing-icon` names render the same icon on both platforms. When each platform should
 show its own symbol, prefix the attribute with the platform — the same convention as
@@ -471,9 +477,9 @@ All three elements share the same fluent API (defined on `BaseTextInput`):
 - `font(string $name)` - Custom font (file token or config alias)
 - `a11yLabel(string $value)`, `a11yHint(string $value)`
 - `syncMode(string $mode)`, `debounceMs(int $ms)`
-- `selectionDebounceMs(int $ms)` - Coalescing window for `@selectionChange` events (150ms when unset; `0` or less
+- `selectionDebounceMs(int $ms)` <x-docs.version-badge package="mobile-ui" since="0.4" /> - Coalescing window for `@selectionChange` events (150ms when unset; `0` or less
   means the default, positive values floored at 16ms)
-- `onChange(string $method)`, `onSubmit(string $method)`, `onSelectionChange(string $method)`
+- `onChange(string $method)`, `onSubmit(string $method)`, `onSelectionChange(string $method)` <x-docs.version-badge package="mobile-ui" since="0.4" />
 
 `BareTextInput` adds one method on top of the shared API:
 

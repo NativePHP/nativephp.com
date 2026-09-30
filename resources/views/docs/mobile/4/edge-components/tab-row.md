@@ -68,7 +68,7 @@ Here `currentTab` stands in for `public int $currentTab = 0;` on your component.
 
 - `label` - Tab label (required, string). Can also be passed as the first argument to `make()`
 - `icon` - Optional [icon](icon#icon-name-reference) name rendered above the label
-- `ios-icon` / `android-icon` - Per-platform overrides for the tab icon: an [SF Symbol](icon#ios-sf-symbols) name
+- `ios-icon` / `android-icon` <x-docs.version-badge package="mobile-ui" since="0.4" /> - Per-platform overrides for the tab icon: an [SF Symbol](icon#ios-sf-symbols) name
   on iOS, a [Material Icon](icon#android-material-icons) name on Android. `icon` is the fallback on whichever
   platform has no override. Bound `:ios-icon` / `:android-icon` also accept
   [enum cases](icon#typed-icon-enums); `iosIcon` / `androidIcon` and `ios` / `android` are accepted as aliases

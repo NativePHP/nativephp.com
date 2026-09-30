@@ -85,6 +85,30 @@ render on your phone when you scan a QR code. Where that's the case, you'll see:
 These disappear on their own as Jump catches up. Pages carrying one don't offer the "Preview in Jump" QR code, since
 scanning it wouldn't show you the component.
 
+### mobile-ui labels
+
+The [EDGE components](../edge-components/introduction) ship in `nativephp/mobile-ui`, which has its own version
+numbers. Anything on those pages without a label has been there since mobile-ui 0.3, the release that shipped
+alongside 4.0. Later additions and changes carry one of these labels:
+
+| Label | Meaning |
+|-------|---------|
+| <x-docs.version-badge package="mobile-ui" since="0.6" /> | Added in that mobile-ui release. Upgrade mobile-ui to at least that version to use it |
+| <x-docs.version-badge package="mobile-ui" changed="0.6" /> | Behaviour or signature changed in that release. Check it against what your app relies on before upgrading |
+| <x-docs.version-badge package="mobile-ui" deprecated="0.6" /> | Still works, but slated for removal. Move off it when convenient |
+| <x-docs.version-badge package="mobile-ui" removed="0.6" /> | Gone as of that release. Documented only so you know what replaced it |
+
+Because mobile-ui is still on 0.x, Composer treats each minor release like a major one, so a `^0.5` constraint never
+installs 0.6. Raise the constraint to pick up a newer release:
+
+```shell
+composer require nativephp/mobile-ui:^0.6
+```
+
+Then [rebuild your app](../plugins/using-plugins#rebuild-your-app), because the components' renderers are native code
+compiled in at build time. Newer mobile-ui releases can need a newer `nativephp/mobile` too (0.5 and later need 4.5),
+and Composer will say so.
+
 ## Your application versioning
 
 Just because we're using semantic versioning for the `nativephp/mobile` package, doesn't mean your app must follow that
