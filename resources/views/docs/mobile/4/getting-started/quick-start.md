@@ -20,8 +20,6 @@ laravel new my-app --using=nativephp/mobile-starter --no-node
 
 cd my-app
 
-composer require nativephp/mobile-ui:^0.6
-
 php artisan native:jump
 ```
 
@@ -29,8 +27,7 @@ php artisan native:jump
 need. `laravel new` also installs [Laravel Boost](https://laravel.com/ai/boost), which sets up AI agent guidelines for
 the project; pass `--no-boost` to skip it.
 
-The starter kit already installs and registers `nativephp/mobile-ui`, but it currently pins an older 0.3 release. The
-`composer require` line brings it up to date with these docs, and won't be needed once the starter kit moves to 0.6.
+The starter kit already installs and registers `nativephp/mobile-ui`.
 
 <aside>
 
