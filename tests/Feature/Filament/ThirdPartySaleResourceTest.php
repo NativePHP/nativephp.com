@@ -180,4 +180,60 @@ class ThirdPartySaleResourceTest extends TestCase
             ->assertCanSeeTableRecords([$missingPayout])
             ->assertCanNotSeeTableRecords([$withPayout]);
     }
+
+    public function test_refunded_sale_shows_refund_details_and_refunded_payout(): void
+    {
+        $plugin = $this->createThirdPartyPlugin();
+        $refunder = User::factory()->create(['email' => 'refunder@test.com']);
+
+        $license = PluginLicense::factory()->refunded()->create([
+            'plugin_id' => $plugin->id,
+            'refunded_by' => $refunder->id,
+        ]);
+        PluginPayout::factory()->cancelled()->create([
+            'plugin_license_id' => $license->id,
+            'developer_account_id' => $plugin->developer_account_id,
+        ]);
+
+        Livewire::actingAs($this->admin)
+            ->test(ListThirdPartySales::class)
+            ->assertCanSeeTableRecords([$license])
+            ->assertTableColumnStateSet('payout_status', 'Refunded', $license)
+            ->assertSee('by refunder@test.com');
+    }
+
+    public function test_filters_refunded_sales(): void
+    {
+        $plugin = $this->createThirdPartyPlugin();
+
+        $refunded = PluginLicense::factory()->refunded()->create(['plugin_id' => $plugin->id]);
+        $kept = PluginLicense::factory()->create(['plugin_id' => $plugin->id]);
+
+        Livewire::actingAs($this->admin)
+            ->test(ListThirdPartySales::class)
+            ->filterTable('refunded_at', true)
+            ->assertCanSeeTableRecords([$refunded])
+            ->assertCanNotSeeTableRecords([$kept]);
+    }
+
+    public function test_refund_action_is_only_visible_for_refundable_sales(): void
+    {
+        $plugin = $this->createThirdPartyPlugin();
+
+        $refundable = PluginLicense::factory()->create([
+            'plugin_id' => $plugin->id,
+            'purchased_at' => now()->subDays(3),
+        ]);
+        $tooOld = PluginLicense::factory()->create([
+            'plugin_id' => $plugin->id,
+            'purchased_at' => now()->subDays(20),
+        ]);
+        $alreadyRefunded = PluginLicense::factory()->refunded()->create(['plugin_id' => $plugin->id]);
+
+        Livewire::actingAs($this->admin)
+            ->test(ListThirdPartySales::class)
+            ->assertTableActionVisible('refund', $refundable)
+            ->assertTableActionHidden('refund', $tooOld)
+            ->assertTableActionHidden('refund', $alreadyRefunded);
+    }
 }

@@ -162,6 +162,63 @@ class PluginPayoutResourceTest extends TestCase
             ->assertTableActionHidden('retryPayout', $payout);
     }
 
+    private function createRefundedPayout(bool $wasTransferred = false): PluginPayout
+    {
+        $refunder = User::factory()->create();
+
+        $license = PluginLicense::factory()->refunded()->create([
+            'stripe_refund_id' => 're_test_abc123',
+            'refunded_by' => $refunder->id,
+        ]);
+
+        $factory = $wasTransferred ? PluginPayout::factory()->transferred() : PluginPayout::factory();
+
+        return $factory->cancelled()->create(['plugin_license_id' => $license->id]);
+    }
+
+    public function test_view_page_shows_refund_details_for_a_refunded_payout(): void
+    {
+        $payout = $this->createRefundedPayout();
+
+        Livewire::actingAs($this->admin)
+            ->test(ViewPluginPayout::class, ['record' => $payout->getRouteKey()])
+            ->assertSuccessful()
+            ->assertSee('The customer was refunded before this payout was sent, so it was cancelled.')
+            ->assertSee($payout->pluginLicense->refundedBy->email)
+            ->assertSee('re_test_abc123');
+    }
+
+    public function test_view_page_says_the_transfer_was_reversed_when_payout_had_been_sent(): void
+    {
+        $payout = $this->createRefundedPayout(wasTransferred: true);
+
+        Livewire::actingAs($this->admin)
+            ->test(ViewPluginPayout::class, ['record' => $payout->getRouteKey()])
+            ->assertSuccessful()
+            ->assertSee('so the transfer to the seller was reversed');
+    }
+
+    public function test_view_page_hides_refund_section_when_not_refunded(): void
+    {
+        $payout = PluginPayout::factory()->transferred()->create();
+
+        Livewire::actingAs($this->admin)
+            ->test(ViewPluginPayout::class, ['record' => $payout->getRouteKey()])
+            ->assertSuccessful()
+            ->assertDontSee('Refunded By');
+    }
+
+    public function test_list_marks_refunded_payouts(): void
+    {
+        $refunded = $this->createRefundedPayout();
+        $reversed = $this->createRefundedPayout(wasTransferred: true);
+
+        Livewire::actingAs($this->admin)
+            ->test(ListPluginPayouts::class)
+            ->assertCanSeeTableRecords([$refunded, $reversed])
+            ->assertSee('Refunded, transfer reversed');
+    }
+
     public function test_list_filters_by_status(): void
     {
         $failed = PluginPayout::factory()->failed()->create();

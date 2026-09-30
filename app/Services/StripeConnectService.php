@@ -15,6 +15,8 @@ use App\Support\StripeConnectCountries;
 use Illuminate\Support\Facades\Log;
 use Laravel\Cashier\Cashier;
 use Stripe\Account;
+use Stripe\Refund;
+use Stripe\TransferReversal;
 
 /**
  * Service for managing Stripe Connect accounts and processing developer payouts.
@@ -274,6 +276,19 @@ class StripeConnectService
         }
 
         return StripeConnectStatus::Pending;
+    }
+
+    public function refundPaymentIntent(string $paymentIntentId): Refund
+    {
+        return Cashier::stripe()->refunds->create([
+            'payment_intent' => $paymentIntentId,
+        ]);
+    }
+
+    public function reverseTransfer(string $stripeTransferId): TransferReversal
+    {
+        return Cashier::stripe()->transfers->retrieve($stripeTransferId)
+            ->reversals->create();
     }
 
     public function createProductAndPrice(Plugin $plugin, int $amountCents, string $currency = 'usd'): PluginPrice

@@ -40,7 +40,7 @@ class Dashboard extends Component
         return auth()->user()->plugins()
             ->where('status', PluginStatus::Approved)
             ->where('type', PluginType::Paid)
-            ->withCount('licenses')
+            ->withCount(['licenses' => fn ($query) => $query->notRefunded()])
             ->get();
     }
 

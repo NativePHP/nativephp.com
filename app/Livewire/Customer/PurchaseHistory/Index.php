@@ -32,6 +32,7 @@ class Index extends Component
                     'is_active' => ! $license->is_suspended && (! $license->expires_at || $license->expires_at->isFuture()),
                     'href' => route('customer.licenses.show', $license->key),
                     'is_grandfathered' => false,
+                    'refunded_at' => null,
                 ];
             });
 
@@ -58,6 +59,7 @@ class Index extends Component
                     'is_active' => $pluginLicense->isActive(),
                     'href' => $pluginLicense->plugin ? route('plugins.show', $pluginLicense->plugin->routeParams()) : null,
                     'is_grandfathered' => $pluginLicense->is_grandfathered,
+                    'refunded_at' => $pluginLicense->refunded_at,
                 ];
             });
 
@@ -77,6 +79,7 @@ class Index extends Component
                     'is_active' => true,
                     'href' => $productLicense->product ? route('products.show', $productLicense->product) : null,
                     'is_grandfathered' => false,
+                    'refunded_at' => null,
                 ];
             });
 

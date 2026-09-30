@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Support\Carbon;
 
 class PluginLicense extends Model
 {
@@ -47,9 +48,29 @@ class PluginLicense extends Model
         return $this->belongsTo(PluginBundle::class);
     }
 
+    /**
+     * @return BelongsTo<User, PluginLicense>
+     */
+    public function refundedBy(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'refunded_by');
+    }
+
     public function wasPurchasedAsBundle(): bool
     {
         return $this->plugin_bundle_id !== null;
+    }
+
+    /**
+     * The Stripe dashboard page for this purchase's payment, which also lists any refund.
+     */
+    public function stripePaymentUrl(): ?string
+    {
+        if (! $this->stripe_payment_intent_id) {
+            return null;
+        }
+
+        return 'https://dashboard.stripe.com/payments/'.$this->stripe_payment_intent_id;
     }
 
     /**
@@ -59,10 +80,21 @@ class PluginLicense extends Model
     #[Scope]
     protected function active(Builder $query): Builder
     {
-        return $query->where(function ($q): void {
-            $q->whereNull('expires_at')
-                ->orWhere('expires_at', '>', now());
-        });
+        return $query->whereNull('refunded_at')
+            ->where(function ($q): void {
+                $q->whereNull('expires_at')
+                    ->orWhere('expires_at', '>', now());
+            });
+    }
+
+    /**
+     * @param  Builder<PluginLicense>  $query
+     * @return Builder<PluginLicense>
+     */
+    #[Scope]
+    protected function notRefunded(Builder $query): Builder
+    {
+        return $query->whereNull('refunded_at');
     }
 
     /**
@@ -87,6 +119,10 @@ class PluginLicense extends Model
 
     public function isActive(): bool
     {
+        if ($this->isRefunded()) {
+            return false;
+        }
+
         if ($this->expires_at === null) {
             return true;
         }
@@ -99,6 +135,32 @@ class PluginLicense extends Model
         return ! $this->isActive();
     }
 
+    public function isRefunded(): bool
+    {
+        return $this->refunded_at !== null;
+    }
+
+    public function isRefundable(): bool
+    {
+        if ($this->isRefunded()) {
+            return false;
+        }
+
+        if ($this->is_grandfathered) {
+            return false;
+        }
+
+        if ($this->price_paid <= 0) {
+            return false;
+        }
+
+        if (! $this->stripe_payment_intent_id) {
+            return false;
+        }
+
+        return $this->purchased_at->diffInDays(Carbon::now()) <= 14;
+    }
+
     protected function casts(): array
     {
         return [
@@ -106,6 +168,7 @@ class PluginLicense extends Model
             'is_grandfathered' => 'boolean',
             'purchased_at' => 'datetime',
             'expires_at' => 'datetime',
+            'refunded_at' => 'datetime',
         ];
     }
 }
