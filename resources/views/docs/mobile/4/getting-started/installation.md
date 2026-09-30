@@ -14,6 +14,10 @@ cd my-app
 composer require nativephp/mobile-ui:^0.6
 ```
 
+`--no-node` skips the `npm install && npm run build` the installer runs by default, which a SuperNative app doesn't
+need. `laravel new` also installs [Laravel Boost](https://laravel.com/ai/boost), which sets up AI agent guidelines for
+the project; pass `--no-boost` to skip it.
+
 The starter kit currently pins an older `nativephp/mobile-ui` release, so the last line updates it. It won't be needed
 once the starter kit moves to 0.6. Then skip ahead to [Run the NativePHP installer](#run-the-nativephp-installer).
 
