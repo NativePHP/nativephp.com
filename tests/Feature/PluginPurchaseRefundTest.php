@@ -4,16 +4,22 @@ namespace Tests\Feature;
 
 use App\Actions\RefundPluginPurchase;
 use App\Enums\PayoutStatus;
+use App\Jobs\HandleInvoicePaidJob;
+use App\Models\Cart;
+use App\Models\CartItem;
 use App\Models\DeveloperAccount;
 use App\Models\Plugin;
 use App\Models\PluginBundle;
 use App\Models\PluginLicense;
 use App\Models\PluginPayout;
+use App\Models\PluginPrice;
 use App\Models\User;
+use App\Services\CartService;
 use App\Services\StripeConnectService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Mockery\MockInterface;
 use PHPUnit\Framework\Attributes\Test;
+use Stripe\Invoice;
 use Stripe\Refund;
 use Stripe\TransferReversal;
 use Tests\TestCase;
@@ -309,6 +315,63 @@ class PluginPurchaseRefundTest extends TestCase
 
         $payout->refresh();
         $this->assertEquals(PayoutStatus::Pending, $payout->status);
+    }
+
+    #[Test]
+    public function buyer_loses_access_when_refunded_and_regains_it_by_buying_again(): void
+    {
+        $buyer = User::factory()->create(['stripe_id' => 'cus_test_'.uniqid()]);
+        $developerAccount = DeveloperAccount::factory()->create();
+        $plugin = Plugin::factory()->approved()->paid()->create([
+            'name' => 'acme/rebuyable-plugin',
+            'is_active' => true,
+            'is_official' => false,
+            'user_id' => $developerAccount->user_id,
+            'developer_account_id' => $developerAccount->id,
+        ]);
+        PluginPrice::factory()->regular()->amount(2900)->create(['plugin_id' => $plugin->id]);
+
+        $firstPurchase = PluginLicense::factory()->create([
+            'user_id' => $buyer->id,
+            'plugin_id' => $plugin->id,
+            'price_paid' => 2900,
+            'purchased_at' => now()->subDays(3),
+        ]);
+        $this->assertTrue($buyer->hasPluginAccess($plugin));
+
+        $this->mockStripeConnectService();
+        app(RefundPluginPurchase::class)->handle($firstPurchase, User::factory()->create());
+
+        $this->assertFalse($buyer->hasPluginAccess($plugin));
+
+        $cart = Cart::factory()->for($buyer)->create();
+        CartItem::create([
+            'cart_id' => $cart->id,
+            'plugin_id' => $plugin->id,
+            'plugin_price_id' => $plugin->prices->first()->id,
+            'price_at_addition' => 2900,
+        ]);
+
+        $removed = app(CartService::class)->removeAlreadyOwned($cart->fresh('items'), $buyer);
+        $this->assertSame([], $removed, 'A refunded plugin should not count as already owned');
+
+        (new HandleInvoicePaidJob(Invoice::constructFrom([
+            'id' => 'in_test_'.uniqid(),
+            'billing_reason' => Invoice::BILLING_REASON_MANUAL,
+            'customer' => $buyer->stripe_id,
+            'payment_intent' => 'pi_test_'.uniqid(),
+            'currency' => 'usd',
+            'metadata' => ['cart_id' => $cart->id],
+            'lines' => [],
+        ])))->handle();
+
+        $this->assertTrue($buyer->hasPluginAccess($plugin));
+        $this->assertSame(2, $buyer->pluginLicenses()->forPlugin($plugin)->count());
+        $this->assertTrue($firstPurchase->fresh()->isRefunded());
+
+        $secondPurchase = $buyer->pluginLicenses()->forPlugin($plugin)->notRefunded()->sole();
+        $this->assertTrue($secondPurchase->isRefundable());
+        $this->assertTrue($secondPurchase->payout->isPending());
     }
 
     #[Test]
