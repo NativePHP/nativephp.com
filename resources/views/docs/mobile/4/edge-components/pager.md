@@ -1,6 +1,8 @@
 ---
 title: Pager
 order: 312
+package: mobile-ui
+since: "0.5"
 ---
 
 ## Overview

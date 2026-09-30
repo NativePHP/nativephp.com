@@ -27,7 +27,7 @@ fully rounded and can be adjusted with `rounded-*` classes.
 - `label` - Chip text (optional, string). Can also be passed as the first argument to `make()`
 - `selected` / `value` - Whether the chip is active (optional, boolean, default: `false`)
 - `icon` - Leading [icon](icon#icon-name-reference) name (optional, string)
-- `ios-icon` / `android-icon` - Per-platform overrides for the leading icon: an [SF Symbol](icon#ios-sf-symbols)
+- `ios-icon` / `android-icon` <x-docs.version-badge package="mobile-ui" since="0.4" /> - Per-platform overrides for the leading icon: an [SF Symbol](icon#ios-sf-symbols)
   name on iOS, a [Material Icon](icon#android-material-icons) name on Android. `icon` is the fallback on whichever
   platform has no override. Bound `:ios-icon` / `:android-icon` also accept
   [enum cases](icon#typed-icon-enums); `iosIcon` / `androidIcon` and `ios` / `android` are accepted as aliases

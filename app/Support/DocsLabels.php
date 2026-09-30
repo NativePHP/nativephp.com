@@ -22,9 +22,9 @@ final class DocsLabels
      * Null when that version's tree has no versioning page — an unlinked
      * label beats one that 404s.
      */
-    public static function versioningPolicyUrl(): ?string
+    public static function versioningPolicyUrl(string $fragment = 'version-labels'): ?string
     {
-        return self::pageUrl('getting-started/versioning', 'version-labels');
+        return self::pageUrl('getting-started/versioning', $fragment);
     }
 
     public static function jumpUrl(): ?string

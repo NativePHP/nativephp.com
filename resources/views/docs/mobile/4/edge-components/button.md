@@ -31,12 +31,12 @@ Slot content is treated as plain text — nested tags are stripped and whitespac
   in `config/native-ui.php`) — see [Theming](../digging-deeper/theming)
 - `size` - `sm`, `md` (default), `lg`
 - `icon` - A leading [icon](icon#icon-name-reference) name (optional)
-- `ios-icon` / `android-icon` - Per-platform overrides for the leading icon: an [SF Symbol](icon#ios-sf-symbols)
+- `ios-icon` / `android-icon` <x-docs.version-badge package="mobile-ui" since="0.4" /> - Per-platform overrides for the leading icon: an [SF Symbol](icon#ios-sf-symbols)
   name on iOS, a [Material Icon](icon#android-material-icons) name on Android. `icon` is the fallback on whichever
   platform has no override — or skip it and declare only per-platform icons. `iosIcon` / `androidIcon` and the
   `<native:icon>`-style `ios` / `android` are accepted as aliases
 - `icon-trailing` - A trailing [icon](icon#icon-name-reference) name (optional)
-- `ios-icon-trailing` / `android-icon-trailing` - Per-platform overrides for the trailing icon, mirroring
+- `ios-icon-trailing` / `android-icon-trailing` <x-docs.version-badge package="mobile-ui" since="0.4" /> - Per-platform overrides for the trailing icon, mirroring
   `ios-icon` / `android-icon` (camelCase aliases accepted; no `ios` / `android` shorthand for this slot)
 - `font` - Custom font for the label: a `resources/fonts/` file token or a config alias like `accent` (optional, string) — see [Text › Custom fonts](text#custom-fonts)
 - `line-height` - Label line height as a multiplier of the font size (optional, float)
@@ -103,6 +103,8 @@ attributes are intentionally dropped before reaching the renderer.
 @endverbatim
 
 ### Platform icons
+
+<x-docs.version-badge package="mobile-ui" since="0.4" />
 
 When one shared name doesn't map well on both platforms, give each platform its own symbol — an
 [SF Symbol](icon#ios-sf-symbols) name on iOS, a [Material Icon](icon#android-material-icons) name on Android:
