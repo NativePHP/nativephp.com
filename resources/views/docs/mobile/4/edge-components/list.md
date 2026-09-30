@@ -36,7 +36,8 @@ Pair with [`<native:list-item>`](#list-item) for Material3 list rows, or use any
   plain section headers instead (optional, boolean, default: `false`)
 - `on-refresh` - Component method called on pull-to-refresh (optional, string) [iOS]
 - `on-end-reached` - Component method called when the user nears the end of the list (optional, string)
-- `end-reached-buffer` - Number of items from the end at which `on-end-reached` is triggered (optional, integer, default: `3`)
+- `end-reached-buffer` <x-docs.version-badge package="mobile-ui" since="0.7" /> - Number of items from the end at which `on-end-reached` is triggered (optional, integer, default: `3`)
+
 
 ## Children
 
