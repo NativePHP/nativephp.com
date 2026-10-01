@@ -237,6 +237,15 @@
                     >
                         <x-icons.checkmark class="size-5 shrink-0" />
                     </div>
+                    <div class="font-medium">Around 30% off third-party plugins</div>
+                </div>
+                <div class="flex items-center gap-2">
+                    <div
+                        class="grid size-7 shrink-0 place-items-center rounded-xl bg-[#D4FD7D] dark:bg-[#d68ffe] dark:text-black"
+                        aria-hidden="true"
+                    >
+                        <x-icons.checkmark class="size-5 shrink-0" />
+                    </div>
                     <div class="font-medium">Keep up to 90% of Marketplace plugin earnings</div>
                 </div>
                 <div class="flex items-center gap-2">

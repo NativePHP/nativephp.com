@@ -7,6 +7,7 @@ enum PriceTier: string
     case Regular = 'regular';
     case Subscriber = 'subscriber';
     case Eap = 'eap';
+    case Ultra = 'ultra';
 
     public function label(): string
     {
@@ -14,6 +15,7 @@ enum PriceTier: string
             self::Regular => 'Regular',
             self::Subscriber => 'Subscriber',
             self::Eap => 'Early Access',
+            self::Ultra => 'Ultra',
         };
     }
 
@@ -23,6 +25,7 @@ enum PriceTier: string
             self::Regular => 'Standard pricing for all customers',
             self::Subscriber => 'Discounted pricing for subscribers',
             self::Eap => 'Special pricing for Early Access Program customers',
+            self::Ultra => 'Discounted pricing for Ultra subscribers',
         };
     }
 
@@ -35,8 +38,9 @@ enum PriceTier: string
     {
         return match ($this) {
             self::Eap => 1,
-            self::Subscriber => 2,
-            self::Regular => 3,
+            self::Ultra => 2,
+            self::Subscriber => 3,
+            self::Regular => 4,
         };
     }
 }

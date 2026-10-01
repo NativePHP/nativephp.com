@@ -113,6 +113,7 @@ class Plugin extends Model
 
     /**
      * Create or update prices based on the plugin's tier.
+     * Official plugins are included with Ultra, so they don't get an Ultra price.
      */
     public function syncPricesFromTier(): void
     {
@@ -121,6 +122,10 @@ class Plugin extends Model
         }
 
         $tierPrices = $this->tier->getPrices();
+
+        if ($this->isOfficial()) {
+            unset($tierPrices[PriceTier::Ultra->value]);
+        }
 
         foreach ($tierPrices as $priceTier => $amount) {
             $this->prices()->updateOrCreate(
@@ -202,24 +207,42 @@ class Plugin extends Model
     /**
      * Get the best (lowest) active price for a user based on their eligible tiers.
      * Returns null if no price exists for the user's eligible tiers.
-     * Third-party plugins never offer subscriber discounts — always regular price.
+     * The regular price wins a tie, so a discounted tier only applies when it is actually cheaper.
      */
     public function getBestPriceForUser(?User $user): ?PluginPrice
     {
-        if (! $this->isOfficial()) {
-            $eligibleTiers = [PriceTier::Regular];
-        } else {
-            $eligibleTiers = $user ? $user->getEligiblePriceTiers() : [PriceTier::Regular];
-        }
-
         // Get the lowest active price for the user's eligible tiers
         $bestPrice = $this->prices()
             ->active()
-            ->forTiers($eligibleTiers)
+            ->forTiers($this->getEligiblePriceTiersFor($user))
             ->orderBy('amount', 'asc')
+            ->orderByRaw("CASE WHEN tier = 'regular' THEN 0 ELSE 1 END")
             ->first();
 
         return $bestPrice;
+    }
+
+    /**
+     * Get the price tiers a user can buy this plugin at.
+     * Third-party plugins never offer subscriber or EAP discounts — only Ultra subscribers pay less.
+     * Official plugins are included with Ultra, so they never use an Ultra price.
+     *
+     * @return array<PriceTier>
+     */
+    protected function getEligiblePriceTiersFor(?User $user): array
+    {
+        if (! $this->isOfficial()) {
+            return $user?->hasActiveUltraSubscription()
+                ? [PriceTier::Regular, PriceTier::Ultra]
+                : [PriceTier::Regular];
+        }
+
+        $eligibleTiers = $user ? $user->getEligiblePriceTiers() : [PriceTier::Regular];
+
+        return array_values(array_filter(
+            $eligibleTiers,
+            fn (PriceTier $tier): bool => $tier !== PriceTier::Ultra
+        ));
     }
 
     /**
@@ -239,6 +262,30 @@ class Plugin extends Model
             ->active()
             ->forTier(PriceTier::Regular)
             ->first() ?? $this->activePrice;
+    }
+
+    /**
+     * Get the discounted price Ultra subscribers pay for a paid third-party plugin.
+     * Returns null if the plugin has no Ultra price, or it isn't lower than the regular price.
+     */
+    public function getUltraPrice(): ?PluginPrice
+    {
+        if (! $this->isPaid() || $this->isOfficial()) {
+            return null;
+        }
+
+        $ultraPrice = $this->prices()
+            ->active()
+            ->forTier(PriceTier::Ultra)
+            ->first();
+
+        $regularPrice = $this->getRegularPrice();
+
+        if (! $ultraPrice || ! $regularPrice || $ultraPrice->amount >= $regularPrice->amount) {
+            return null;
+        }
+
+        return $ultraPrice;
     }
 
     /**

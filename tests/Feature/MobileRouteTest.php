@@ -28,4 +28,15 @@ class MobileRouteTest extends TestCase
             ->assertOk()
             ->assertSeeLivewire('mobile-pricing');
     }
+
+    #[Test]
+    public function pricing_page_lists_the_third_party_plugin_discount()
+    {
+        $this
+            ->withoutVite()
+            ->get(route('pricing'))
+            ->assertOk()
+            ->assertSee('Around 30% off third-party plugins')
+            ->assertSee('around 30% off');
+    }
 }

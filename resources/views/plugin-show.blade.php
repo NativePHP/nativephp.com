@@ -403,6 +403,29 @@
                     </div>
                 @endif
 
+                {{-- Cheaper with Ultra --}}
+                @if ($plugin->is_active && $ultraOfferPrice && $regularPrice)
+                    <div class="mb-4 rounded-2xl border border-zinc-300 bg-gradient-to-br from-zinc-100 to-zinc-200 p-6 dark:border-zinc-600 dark:from-zinc-800 dark:to-zinc-900">
+                        <div class="flex items-start gap-3">
+                            <div class="shrink-0 text-zinc-700 dark:text-zinc-300">
+                                <x-heroicon-s-bolt class="size-6" />
+                            </div>
+                            <div>
+                                <p class="font-medium text-balance text-zinc-900 dark:text-zinc-100">Get this plugin for ${{ number_format($ultraOfferPrice->amount / 100) }} with Ultra</p>
+                                <p class="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
+                                    Ultra subscribers save ${{ number_format(($regularPrice->amount - $ultraOfferPrice->amount) / 100) }} on this plugin, and get every first-party NativePHP plugin included, from just ${{ config('subscriptions.plans.max.price_monthly') }}/month.
+                                </p>
+                                <a
+                                    href="{{ route('pricing') }}"
+                                    class="mt-4 inline-flex items-center rounded-md bg-black px-4 py-2 text-sm font-medium text-white transition hover:bg-zinc-800 dark:bg-white dark:text-black dark:hover:bg-zinc-200"
+                                >
+                                    Learn more
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                @endif
+
                 <div
                     x-data="{ open: false }"
                     class="rounded-2xl border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-slate-800/50"
