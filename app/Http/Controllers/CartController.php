@@ -34,7 +34,7 @@ class CartController extends Controller
         // Refresh prices and notify of changes
         $priceChanges = $this->cartService->refreshPrices($cart);
 
-        $cart = $cart->fresh(['items.plugin.activePrice', 'items.plugin.user', 'items.pluginBundle.plugins', 'items.product.activePrice']);
+        $cart = $cart->fresh(['items.plugin.activePrice', 'items.plugin.user', 'items.pluginPrice', 'items.pluginBundle.plugins', 'items.product.activePrice']);
 
         // Get bundle IDs already in the cart
         $cartBundleIds = $cart->items()
@@ -480,7 +480,7 @@ class CartController extends Controller
                         'currency' => strtolower($item->currency),
                         'unit_amount' => $item->bundle_price_at_addition,
                         'product_data' => [
-                            'name' => $bundle->name.' (Bundle)',
+                            'name' => $item->getItemName(),
                             'description' => 'Includes: '.$pluginNames,
                         ],
                     ],
@@ -523,7 +523,7 @@ class CartController extends Controller
                         'currency' => strtolower($item->currency),
                         'unit_amount' => $item->price_at_addition,
                         'product_data' => [
-                            'name' => $plugin->name,
+                            'name' => $item->getItemName(),
                             'description' => $plugin->description ?? 'NativePHP Plugin',
                         ],
                     ],

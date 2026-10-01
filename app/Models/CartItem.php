@@ -130,6 +130,10 @@ class CartItem extends Model
         return $currentPrice->amount !== $this->price_at_addition;
     }
 
+    /**
+     * The name the item is sold under at checkout. Plugins and bundles are matched
+     * back to their Stripe invoice line by it, so it has to stay the same in both places.
+     */
     public function getItemName(): string
     {
         if ($this->isProduct()) {

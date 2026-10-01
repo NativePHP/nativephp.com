@@ -142,7 +142,8 @@
             <x-faq-card question="What is NativePHP Ultra?">
                 <p>
                     NativePHP Ultra is a premium subscription that gives you
-                    access to all first-party plugins, the Claude Code
+                    access to all first-party plugins, around 30% off
+                    third-party plugins, the Claude Code
                     Plugin Dev Kit, discounts on NativePHP courses and
                     apps, Teams support, premium support through private channels with expedited
                     turnaround times, and up to 90% revenue share on

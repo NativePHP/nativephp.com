@@ -42,7 +42,7 @@ class BackfillMissingPayouts extends Command
         foreach ($licenses as $license) {
             $developerAccount = $license->plugin->developerAccount;
 
-            $split = PluginPayout::calculateSplit($license->price_paid, $developerAccount->platformFeePercent());
+            $split = PluginPayout::calculateSplit($license->price_paid, $developerAccount->platformFeePercentFor($license));
 
             $status = $developerAccount->canReceivePayouts()
                 ? PayoutStatus::Pending

@@ -3,6 +3,7 @@
 namespace Tests\Feature\Filament;
 
 use App\Enums\PluginType;
+use App\Enums\PriceTier;
 use App\Filament\Resources\ThirdPartySaleResource\Pages\ListThirdPartySales;
 use App\Models\DeveloperAccount;
 use App\Models\Plugin;
@@ -157,6 +158,36 @@ class ThirdPartySaleResourceTest extends TestCase
             ->assertTableColumnSummarySet('payout.developer_amount', 'sum', 4900)
             ->assertSee('$70.00')
             ->assertSee('$49.00');
+    }
+
+    public function test_marks_sales_made_at_the_ultra_price(): void
+    {
+        $plugin = $this->createThirdPartyPlugin();
+        $ultraSale = PluginLicense::factory()->create([
+            'plugin_id' => $plugin->id,
+            'price_paid' => 7000,
+            'price_tier' => PriceTier::Ultra,
+        ]);
+
+        Livewire::actingAs($this->admin)
+            ->test(ListThirdPartySales::class)
+            ->assertCanSeeTableRecords([$ultraSale])
+            ->assertSee('Ultra price');
+    }
+
+    public function test_does_not_mark_sales_made_at_the_regular_price(): void
+    {
+        $plugin = $this->createThirdPartyPlugin();
+        $regularSale = PluginLicense::factory()->create([
+            'plugin_id' => $plugin->id,
+            'price_paid' => 9900,
+            'price_tier' => PriceTier::Regular,
+        ]);
+
+        Livewire::actingAs($this->admin)
+            ->test(ListThirdPartySales::class)
+            ->assertCanSeeTableRecords([$regularSale])
+            ->assertDontSee('Ultra price');
     }
 
     public function test_filters_sales_missing_payouts(): void
