@@ -297,14 +297,21 @@ class DocsSearchService
         // directives from a code block turns `@press="save"` into `="save"`.
         $segments = preg_split('/(```[\s\S]*?```)/', $content, -1, PREG_SPLIT_DELIM_CAPTURE);
 
+        // An <x-component tag up to its closing bracket, capturing the full name.
+        // Quoted attribute values are matched whole, so a "/" or ">" inside one
+        // (a source path, a :bound expression) can't end the tag early. Tags
+        // often span several lines.
+        $tag = '<x-([\w.:-]+)(?![\w.:-])(?:"[^"]*"|\'[^\']*\'|[^"\'>])*';
+
         foreach ($segments as $i => $segment) {
             if (str_starts_with($segment, '```')) {
                 continue; // code block — leave untouched
             }
-            // Remove <x-component>...</x-component> tags
-            $segment = preg_replace('/<x-[^>]+>[\s\S]*?<\/x-[^>]+>/s', '', $segment);
-            // Remove self-closing <x-component /> tags
-            $segment = preg_replace('/<x-[^\/]+\/>/s', '', $segment);
+            // Remove self-closing <x-component /> tags, before the paired rule
+            // can mistake one for an opening tag
+            $segment = preg_replace('/'.$tag.'\/>/', '', $segment);
+            // Remove <x-component>...</x-component> tags, closed by the same name
+            $segment = preg_replace('/'.$tag.'(?<!\/)>[\s\S]*?<\/x-\1\s*>/', '', $segment);
             // Remove {{ }} blade echoes
             $segment = preg_replace('/\{\{.*?\}\}/s', '', $segment);
             // Remove {!! !!} unescaped echoes
