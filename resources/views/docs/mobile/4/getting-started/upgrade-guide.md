@@ -3,6 +3,34 @@ title: Upgrade Guide
 order: 3
 ---
 
+## Upgrading To 4.6 From 4.5
+
+### Translated iOS permission strings need `supported_locales`
+
+Before 4.6, any locale in `permission_localizations`, or in a plugin's `info_plist_localizations`, shipped with your
+iOS app automatically. From 4.6, translated permission strings are only written for locales your app supports: the
+ones in the new `supported_locales` config key, plus `config('app.locale')`.
+
+If your app relies on translated permission strings, add those locales to `config/nativephp.php`. A config file
+published before 4.6 won't have the key yet:
+
+```php
+'supported_locales' => ['nl', 'fr'], // [tl! add]
+
+'permission_localizations' => [
+    'nl' => [
+        'NSCameraUsageDescription' => 'Gebruikt om een profielfoto te maken.',
+    ],
+    'fr' => [
+        'NSCameraUsageDescription' => 'Utilisé pour prendre une photo de profil.',
+    ],
+],
+```
+
+The upside is that an English-only app that installs a well-translated plugin no longer advertises all of that
+plugin's languages on the App Store. See [Localization](../digging-deeper/localization) for everything
+`supported_locales` does.
+
 ## Upgrading To 4.5 From 4.4
 
 ### Public releases need `APP_ENV=production`
