@@ -9,7 +9,7 @@
         "build": "vite build"
     },
     "devDependencies": {
-        "@alpinejs/collapse": "^3.14.9",
+        "@alpinejs/collapse": "^3.17.1",
         "@alpinejs/persist": "^3.14.9",
         "@alpinejs/resize": "^3.14.9",
         "@docsearch/js": "^5.0.0",
