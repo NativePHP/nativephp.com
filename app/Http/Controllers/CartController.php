@@ -482,6 +482,7 @@ class CartController extends Controller
                         'product_data' => [
                             'name' => $bundle->name.' (Bundle)',
                             'description' => 'Includes: '.$pluginNames,
+                            'metadata' => ['plugin_bundle_id' => $bundle->id],
                         ],
                     ],
                     'quantity' => 1,
@@ -525,6 +526,7 @@ class CartController extends Controller
                         'product_data' => [
                             'name' => $plugin->name,
                             'description' => $plugin->description ?? 'NativePHP Plugin',
+                            'metadata' => ['plugin_id' => $plugin->id],
                         ],
                     ],
                     'quantity' => 1,

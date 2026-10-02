@@ -12,9 +12,11 @@ use App\Models\PluginPayoutAttempt;
 use App\Models\PluginPrice;
 use App\Models\User;
 use App\Support\StripeConnectCountries;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Log;
 use Laravel\Cashier\Cashier;
 use Stripe\Account;
+use Stripe\LineItem;
 use Stripe\Refund;
 use Stripe\TransferReversal;
 
@@ -278,11 +280,45 @@ class StripeConnectService
         return StripeConnectStatus::Pending;
     }
 
-    public function refundPaymentIntent(string $paymentIntentId): Refund
+    /**
+     * Refund what the buyer paid for one line of a checkout, after coupons and tax.
+     *
+     * The line is the idempotency key, so a double submit or a quick retry gets the same
+     * refund back from Stripe instead of refunding the line a second time.
+     */
+    public function refundCheckoutLineItem(string $paymentIntentId, LineItem $lineItem): Refund
     {
         return Cashier::stripe()->refunds->create([
             'payment_intent' => $paymentIntentId,
+            'amount' => $lineItem->amount_total,
+        ], [
+            'idempotency_key' => 'refund-'.$lineItem->id,
         ]);
+    }
+
+    /**
+     * The line items of the Checkout session a payment intent was paid through, each with
+     * its product expanded so the product's metadata can be read.
+     *
+     * @return Collection<int, LineItem>
+     */
+    public function checkoutLineItems(string $paymentIntentId): Collection
+    {
+        $session = Cashier::stripe()->checkout->sessions->all([
+            'payment_intent' => $paymentIntentId,
+            'limit' => 1,
+        ])->first();
+
+        if (! $session) {
+            return collect();
+        }
+
+        $lineItems = Cashier::stripe()->checkout->sessions->allLineItems($session->id, [
+            'limit' => 100,
+            'expand' => ['data.price.product'],
+        ]);
+
+        return collect($lineItems->data);
     }
 
     public function reverseTransfer(string $stripeTransferId): TransferReversal

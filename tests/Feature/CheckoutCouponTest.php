@@ -2,6 +2,10 @@
 
 namespace Tests\Feature;
 
+use App\Models\BundlePrice;
+use App\Models\Plugin;
+use App\Models\PluginBundle;
+use App\Models\PluginPrice;
 use App\Models\Product;
 use App\Models\ProductPrice;
 use App\Models\User;
@@ -339,5 +343,36 @@ class CheckoutCouponTest extends TestCase
         $this->assertSame('price_backed', $captured->params['line_items'][0]['price']);
         $this->assertArrayNotHasKey('price_data', $captured->params['line_items'][0]);
         $this->assertSame([['coupon' => 'coupon_test123']], $captured->params['discounts']);
+    }
+
+    #[Test]
+    public function cart_checkout_tags_plugin_and_bundle_lines_with_their_ids_so_a_refund_can_find_them(): void
+    {
+        $captured = $this->captureStripeCheckoutParams();
+        $user = User::factory()->create(['stripe_id' => 'cus_test123']);
+
+        $plugin = Plugin::factory()->approved()->paid()->create(['is_active' => true]);
+        PluginPrice::factory()->regular()->amount(2900)->create(['plugin_id' => $plugin->id]);
+
+        $bundle = PluginBundle::factory()->active()->create();
+        $bundle->plugins()->attach(Plugin::factory()->approved()->paid()->create(['is_active' => true]));
+        BundlePrice::factory()->regular()->amount(9900)->create(['plugin_bundle_id' => $bundle->id]);
+
+        $cartService = resolve(CartService::class);
+        $cart = $cartService->getCart($user);
+        $cartService->addPlugin($cart, $plugin);
+        $cartService->addBundle($cart, $bundle);
+
+        $this->actingAs($user)
+            ->post(route('cart.checkout'))
+            ->assertRedirect('https://checkout.stripe.com/test-session');
+
+        $this->assertNotNull($captured->params, 'Stripe checkout session should have been created');
+
+        $products = collect($captured->params['line_items'])->pluck('price_data.product_data')->keyBy('name');
+
+        $this->assertCount(2, $products);
+        $this->assertSame(['plugin_id' => $plugin->id], $products[$plugin->name]['metadata']);
+        $this->assertSame(['plugin_bundle_id' => $bundle->id], $products[$bundle->name.' (Bundle)']['metadata']);
     }
 }

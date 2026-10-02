@@ -9,8 +9,14 @@ use App\Models\Plugin;
 use App\Models\PluginLicense;
 use App\Models\PluginPayout;
 use App\Models\User;
+use App\Services\StripeConnectService;
+use Filament\Notifications\Notification;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Livewire\Livewire;
+use Mockery;
+use Mockery\MockInterface;
+use Stripe\LineItem;
+use Stripe\Refund;
 use Tests\TestCase;
 
 class ThirdPartySaleResourceTest extends TestCase
@@ -235,5 +241,64 @@ class ThirdPartySaleResourceTest extends TestCase
             ->assertTableActionVisible('refund', $refundable)
             ->assertTableActionHidden('refund', $tooOld)
             ->assertTableActionHidden('refund', $alreadyRefunded);
+    }
+
+    public function test_refund_confirmation_explains_what_will_be_refunded(): void
+    {
+        $plugin = $this->createThirdPartyPlugin();
+        $license = PluginLicense::factory()->create([
+            'plugin_id' => $plugin->id,
+            'purchased_at' => now()->subDays(3),
+        ]);
+
+        Livewire::actingAs($this->admin)
+            ->test(ListThirdPartySales::class)
+            ->mountTableAction('refund', $license)
+            ->assertMountedActionModalSee("This will refund {$license->user->email} what they paid for {$plugin->name}, after any coupon or tax, and revoke their license.");
+    }
+
+    public function test_refund_action_reports_the_amount_refunded(): void
+    {
+        $plugin = $this->createThirdPartyPlugin();
+        $license = PluginLicense::factory()->create([
+            'plugin_id' => $plugin->id,
+            'price_paid' => 2900,
+            'purchased_at' => now()->subDays(3),
+        ]);
+
+        $this->mock(StripeConnectService::class, function (MockInterface $mock) use ($license, $plugin) {
+            $mock->shouldReceive('checkoutLineItems')
+                ->with($license->stripe_payment_intent_id)
+                ->andReturn(collect([
+                    LineItem::constructFrom([
+                        'amount_subtotal' => 2900,
+                        'amount_discount' => 580,
+                        'amount_tax' => 464,
+                        'amount_total' => 2784,
+                        'description' => $plugin->name,
+                        'price' => ['product' => ['id' => 'prod_test_123', 'metadata' => ['plugin_id' => (string) $plugin->id]]],
+                    ]),
+                ]));
+            $mock->shouldReceive('refundCheckoutLineItem')
+                ->once()
+                ->with($license->stripe_payment_intent_id, Mockery::on(fn (LineItem $lineItem): bool => $lineItem->amount_total === 2784))
+                ->andReturn(Refund::constructFrom(['id' => 're_test_refund_123']));
+        });
+
+        Livewire::actingAs($this->admin)
+            ->test(ListThirdPartySales::class)
+            ->callTableAction('refund', $license)
+            ->assertNotified(
+                Notification::make()
+                    ->title('Purchase refunded successfully')
+                    ->body('Refunded $27.84.')
+                    ->success(),
+            );
+
+        $license->refresh();
+
+        $this->assertTrue($license->isRefunded());
+        $this->assertSame('re_test_refund_123', $license->stripe_refund_id);
+        $this->assertSame($this->admin->id, $license->refunded_by);
     }
 }
