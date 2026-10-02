@@ -52,61 +52,85 @@ care. If you choose to store them anywhere (either in a file or
 [Database](databases)), make sure you store them
 [encrypted](../the-basics/system#encryption-decryption) and decrypt them only when needed.
 
-## Secure Storage
-
-NativePHP provides access to your users' device's native Keystore/Keychain through the
-[`SecureStorage`](/docs/apis/secure-storage) facade, which
-allow you to store small amounts of data in a secure way.
-
-The device's secure storage encrypts and decrypts data on the fly and that means you can safely rely on it to store
-critical things like API tokens, keeping your users and your systems safe.
-
-This data is only accessible by your app and is persisted beyond the lifetime of your app, so it will still be available
-the next time your app is opened.
-
-
-> [!NOTE]
-> Secure Storage is only meant for small amounts of text data, usually no more than a few KBs. If you need to store
-> larger amounts of data or files, you should store this in a database or as a file.
-
-### When to use the Laravel `Crypt` facade
+## Encrypting data on the device
 
 When a user first opens your app, NativePHP generates a **unique `APP_KEY` just for their device** and stores it in the
-device's secure storage. This means each instance of your application has its own encryption key that is securely
-stored on the device.
+device's secure storage: the Keychain on iOS and the Keystore on Android. NativePHP reads the key from there each time
+your app starts and makes it available to Laravel.
 
-NativePHP securely reads the `APP_KEY` from secure storage and makes it available to Laravel. So you can safely use the
-`Crypt` facade to encrypt and decrypt data!
-
-> [!WARNING]
-> Make sure you do not leak the `APP_KEY` or decrypted data inadvertently through error tracking or debug logging tools.
-
-This is great for encrypting larger amounts of data that wouldn't easily fit in secure storage. You can encrypt values
-and store them in the file system or in the SQLite database, knowing that they are safe at rest:
+This means Laravel's encrypter works out of the box. You can use the `Crypt` facade and
+[encrypted Eloquent casts](https://laravel.com/docs/eloquent-mutators#encrypted-casting) just as you would on a server,
+and store the results in your [database](databases) or on the file system:
 
 ```php
 use Illuminate\Support\Facades\Crypt;
 
-$encryptedContents = Crypt::encryptString(
-    $request->file('super_private_file')
-);
+$user->update([
+    'api_token' => Crypt::encryptString($token),
+]);
 
-Storage::put('my_secure_file', $encryptedContents);
+$token = Crypt::decryptString($user->api_token);
 ```
 
-And then decrypt it later:
+You don't need a plugin for this.
 
-```php
-$decryptedContents = Crypt::decryptString(
-    Storage::get('my_secure_file')
-);
-```
+### What it protects against
+
+On-device encryption has one job: if someone gets hold of your app's files or its database, the sensitive values in
+them are unreadable without the key, and the key is not stored alongside them.
+
+That makes it a good fit for data that is sensitive but easy to replace:
+
+- API tokens and refresh tokens, ideally short-lived
+- Session data and cached responses from your API
+- Anything else you can fetch or generate again
+
+### The key never leaves the device
+
+Each device has its own key, and it stays there. It is not included in device backups and it does not move when your
+user sets up a new phone. Their app data usually does: the database and files are backed up and restored, but the key
+that decrypts them is not.
 
 > [!CAUTION]
-> Data encrypted with the `Crypt` facade should stay on the user's device with your app. Placing it encrypted anywhere
-> else risks the chance that it will be unrecoverable. If the user loses their device or deletes your app,
-> they will lose the encryption key and the data will be encrypted forever.
->
-> If you wish to share data, decrypt it first, transmit securely (e.g. over HTTPS) and re-encrypt it with a different key
-> that is safely managed elsewhere.
+> If the only copy of some data is encrypted on the device, your user can lose it for good. A new phone or a restore
+> from backup can leave encrypted data behind with no key to decrypt it, and deleting your app removes it altogether.
 
+So don't use on-device encryption for long-lived data your users expect to keep as they change devices and upgrade
+their OS. Keep that data on your server, or somewhere else that isn't tied to one device, and treat what's on the
+device as a copy.
+
+Your app should also expect to find values it can no longer decrypt, for example after a restore. Catch the
+`DecryptException`, discard the value and fetch it again:
+
+```php
+use Illuminate\Contracts\Encryption\DecryptException;
+
+try {
+    $token = Crypt::decryptString($user->api_token);
+} catch (DecryptException) {
+    // The key has changed. Ask the user to sign in again.
+}
+```
+
+### Don't send encrypted values anywhere else
+
+Only the device that encrypted a value can decrypt it. Sending the encrypted value to your back-end or to a third
+party is pointless unless you also send the key, and you should never do that.
+
+If you need to share data, decrypt it on the device, send it over HTTPS, and let the receiving service protect it with
+its own key.
+
+> [!WARNING]
+> Make sure you do not leak the `APP_KEY` or decrypted data inadvertently through error tracking or debug logging tools.
+
+### Secure Storage
+
+The [`SecureStorage`](../plugins/core/secure-storage) plugin takes a different approach. Instead of encrypting a value
+and leaving you to store it, it hands the value to the device's Keychain or Keystore-backed storage directly, so it
+never touches your database or files.
+
+It is meant for a small number of short text values, usually no more than a few KBs. It is device-bound in the same way:
+values do not move to a new device.
+
+For most apps Laravel's encrypter is all you need. Reach for Secure Storage if you would rather keep a secret out of
+your database and files altogether.
