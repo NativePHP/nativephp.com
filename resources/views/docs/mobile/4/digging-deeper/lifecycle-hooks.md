@@ -120,7 +120,7 @@ public function updatedQuery(string $value): void
 ## Instant screens with #[Lazy]
 
 When `mount()` does slow work (a network call, a heavy query), mark the component `#[Lazy]` to paint a
-placeholder **immediately** while `mount()` runs in the background, so navigation feels instant:
+placeholder **immediately** while `mount()` runs, so navigation feels instant:
 
 ```php
 use Native\Mobile\Attributes\Lazy;
@@ -142,6 +142,29 @@ class Dashboard extends NativeComponent
 
 Override `placeholder()` to customize the loading frame; the default is a centered activity indicator wrapped in
 the screen's layout chrome.
+
+<aside>
+
+Prefer [async tasks](async-tasks) for slow screens. `#[Lazy]` still runs `mount()` on the UI thread, so while the
+placeholder is showing the user can't interact with the screen or navigate away from it until `mount()` returns.
+
+Dispatching the slow work as an async task from `mount()` lets the real screen render straight away. It stays
+interactive while the work runs, and you decide exactly which parts show a loading state:
+
+```php
+class Dashboard extends NativeComponent
+{
+    public ?array $stats = null;
+
+    public function mount(): void
+    {
+        $this->async(static fn () => Stats::crunch())
+            ->finished(fn (array $stats) => $this->stats = $stats);
+    }
+}
+```
+
+</aside>
 
 ## Observing the lifecycle from outside
 
