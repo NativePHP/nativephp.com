@@ -2,16 +2,24 @@
 
 namespace Tests\Feature;
 
+use App\Jobs\HandleInvoicePaidJob;
+use App\Models\DeveloperAccount;
+use App\Models\Plugin;
+use App\Models\PluginPrice;
 use App\Models\Product;
 use App\Models\ProductPrice;
 use App\Models\User;
+use App\Notifications\PurchaseReceipt;
+use App\Services\CartService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Notification;
 use Laravel\Cashier\Subscription;
 use PHPUnit\Framework\Attributes\Test;
 use Stripe\Checkout\Session;
 use Stripe\Coupon;
 use Stripe\Customer;
+use Stripe\Invoice;
 use Stripe\StripeClient;
 use Tests\TestCase;
 
@@ -41,6 +49,54 @@ class CoursePageTest extends TestCase
         $mockStripeClient->coupons = $mockCoupons;
 
         $this->app->bind(StripeClient::class, fn () => $mockStripeClient);
+    }
+
+    /**
+     * Bind a mocked StripeClient and return a holder object whose ->params
+     * property captures the checkout session params sent to Stripe.
+     */
+    private function captureStripeCheckoutParams(): \stdClass
+    {
+        $captured = new \stdClass;
+        $captured->params = null;
+
+        $mockCheckoutSessions = new class($captured)
+        {
+            public function __construct(private \stdClass $captured) {}
+
+            public function create(array $params): Session
+            {
+                $this->captured->params = $params;
+
+                return Session::constructFrom([
+                    'id' => 'cs_test123',
+                    'url' => 'https://checkout.stripe.com/test-session',
+                ]);
+            }
+        };
+
+        $mockCheckout = new \stdClass;
+        $mockCheckout->sessions = $mockCheckoutSessions;
+
+        $mockCustomers = new class
+        {
+            public function retrieve(): Customer
+            {
+                return Customer::constructFrom([
+                    'id' => 'cus_test123',
+                    'name' => 'Test User',
+                    'email' => 'test@example.com',
+                ]);
+            }
+        };
+
+        $mockStripeClient = $this->createMock(StripeClient::class);
+        $mockStripeClient->checkout = $mockCheckout;
+        $mockStripeClient->customers = $mockCustomers;
+
+        $this->app->bind(StripeClient::class, fn () => $mockStripeClient);
+
+        return $captured;
     }
 
     #[Test]
@@ -209,6 +265,95 @@ class CoursePageTest extends TestCase
         $this->assertSame('auto', $capturedParams['customer_update']['name'] ?? null);
 
         Carbon::setTestNow();
+    }
+
+    #[Test]
+    public function course_checkout_does_not_use_the_cart(): void
+    {
+        $captured = $this->captureStripeCheckoutParams();
+
+        $masterclass = Product::where('slug', 'nativephp-masterclass')->firstOrFail();
+        $masterclass->prices()->update(['stripe_price_id' => 'price_test123']);
+
+        $this
+            ->actingAs(User::factory()->create(['stripe_id' => 'cus_test123']))
+            ->post(route('course.checkout'))
+            ->assertRedirect('https://checkout.stripe.com/test-session');
+
+        $this->assertDatabaseCount('carts', 0);
+
+        $invoiceMetadata = $captured->params['invoice_creation']['invoice_data']['metadata'];
+
+        $this->assertSame((string) $masterclass->id, $invoiceMetadata['product_id']);
+        $this->assertArrayNotHasKey('cart_id', $invoiceMetadata);
+    }
+
+    #[Test]
+    public function course_checkout_is_not_found_when_the_masterclass_is_inactive(): void
+    {
+        Product::where('slug', 'nativephp-masterclass')->update(['is_active' => false]);
+
+        $this
+            ->actingAs(User::factory()->create())
+            ->post(route('course.checkout'))
+            ->assertNotFound();
+    }
+
+    #[Test]
+    public function buying_the_masterclass_does_not_license_other_items_in_the_cart(): void
+    {
+        Notification::fake();
+
+        $captured = $this->captureStripeCheckoutParams();
+
+        $masterclass = Product::where('slug', 'nativephp-masterclass')->firstOrFail();
+        $masterclass->prices()->update(['stripe_price_id' => 'price_test123']);
+
+        $buyer = User::factory()->create(['stripe_id' => 'cus_test123']);
+
+        $developerAccount = DeveloperAccount::factory()->create();
+        $plugin = Plugin::factory()->approved()->paid()->create([
+            'is_active' => true,
+            'is_official' => false,
+            'user_id' => $developerAccount->user_id,
+            'developer_account_id' => $developerAccount->id,
+        ]);
+        PluginPrice::factory()->regular()->amount(4900)->create(['plugin_id' => $plugin->id]);
+
+        $cartService = resolve(CartService::class);
+        $cart = $cartService->getCart($buyer);
+        $pluginItem = $cartService->addPlugin($cart, $plugin);
+
+        $this
+            ->actingAs($buyer)
+            ->post(route('course.checkout'))
+            ->assertRedirect('https://checkout.stripe.com/test-session');
+
+        $this->assertSame([['price' => 'price_test123', 'quantity' => 1]], $captured->params['line_items']);
+
+        // Stripe copies the session's invoice metadata onto the invoice it reports as paid.
+        (new HandleInvoicePaidJob(Invoice::constructFrom([
+            'id' => 'in_test_'.uniqid(),
+            'billing_reason' => Invoice::BILLING_REASON_MANUAL,
+            'customer' => $buyer->stripe_id,
+            'payment_intent' => 'pi_test_'.uniqid(),
+            'currency' => 'usd',
+            'total' => 29900,
+            'metadata' => $captured->params['invoice_creation']['invoice_data']['metadata'],
+            'lines' => [],
+        ])))->handle();
+
+        $this->assertTrue($masterclass->isOwnedBy($buyer));
+        Notification::assertSentTo($buyer, PurchaseReceipt::class);
+
+        $this->assertDatabaseCount('plugin_payouts', 0);
+        Notification::assertNothingSentTo($developerAccount->user);
+        $this->assertDatabaseCount('plugin_licenses', 0);
+        $this->assertFalse($buyer->hasPluginAccess($plugin));
+
+        // The buyer's cart is exactly as they left it.
+        $this->assertNull($cart->fresh()->completed_at);
+        $this->assertSame([$pluginItem->id], $cart->items()->pluck('id')->all());
     }
 
     #[Test]

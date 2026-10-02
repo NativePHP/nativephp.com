@@ -46,7 +46,6 @@ use App\Livewire\OrderSuccess;
 use App\Livewire\PluginDirectory;
 use App\Models\Course;
 use App\Models\Product;
-use App\Services\CartService;
 use App\Services\DocsVersionService;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Exceptions\UrlGenerationException;
@@ -158,7 +157,7 @@ Route::post('course/checkout', function (Request $request) {
             ->with('message', 'Please log in or create an account to complete your purchase.');
     }
 
-    $product = Product::where('slug', 'nativephp-masterclass')->firstOrFail();
+    $product = Product::where('slug', 'nativephp-masterclass')->active()->firstOrFail();
 
     if ($product->isOwnedBy($user)) {
         return to_route('course')->with('error', 'You already own this course.');
@@ -180,11 +179,9 @@ Route::post('course/checkout', function (Request $request) {
 
     $user->createOrGetStripeCustomer();
 
-    $cartService = resolve(CartService::class);
-    $cart = $cartService->getCart($user);
-    $cartService->addProduct($cart, $product);
-
-    $metadata = ['cart_id' => (string) $cart->id];
+    // The course is bought on its own, never through the cart, so the webhook
+    // licenses it from this product ID and leaves the buyer's cart alone.
+    $metadata = ['product_id' => (string) $product->id];
 
     $sessionOptions = [
         'success_url' => route('cart.success').'?session_id={CHECKOUT_SESSION_ID}',

@@ -189,6 +189,13 @@ class HandleInvoicePaidJob implements ShouldQueue
             return;
         }
 
+        // A product bought on its own, outside the cart (e.g. the Masterclass from /course)
+        if (! empty($metadata['product_id'])) {
+            $this->processProductPurchase($metadata['product_id']);
+
+            return;
+        }
+
         // Legacy: Only process if this is a plugin purchase (has plugin metadata)
         if (empty($metadata['plugin_ids']) && empty($metadata['bundle_ids'])) {
             return;
@@ -295,6 +302,50 @@ class HandleInvoicePaidJob implements ShouldQueue
         Log::info('Cart purchase completed', [
             'invoice_id' => $this->invoice->id,
             'cart_id' => $cartId,
+            'user_id' => $user->id,
+        ]);
+    }
+
+    private function processProductPurchase(string $productId): void
+    {
+        $product = Product::find($productId);
+
+        if (! $product) {
+            Log::error('Product not found for invoice', [
+                'invoice_id' => $this->invoice->id,
+                'product_id' => $productId,
+            ]);
+
+            return;
+        }
+
+        $user = $this->billable();
+
+        // They have paid for it here, so make sure their cart cannot charge them for it again
+        CartItem::query()
+            ->where('product_id', $product->id)
+            ->whereHas('cart', fn ($query) => $query->where('user_id', $user->id)->whereNull('completed_at'))
+            ->delete();
+
+        // Idempotency: a user can only hold one license per product
+        if ($product->isOwnedBy($user)) {
+            Log::info('Product already owned, skipping', [
+                'invoice_id' => $this->invoice->id,
+                'product_id' => $product->id,
+                'user_id' => $user->id,
+            ]);
+
+            return;
+        }
+
+        $this->createProductLicense($user, $product, $this->invoice->total);
+
+        // Thank the buyer for their purchase
+        $user->notify(new PurchaseReceipt);
+
+        Log::info('Product purchase completed', [
+            'invoice_id' => $this->invoice->id,
+            'product_id' => $product->id,
             'user_id' => $user->id,
         ]);
     }
