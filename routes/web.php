@@ -231,6 +231,7 @@ Route::view('privacy-policy', 'privacy-policy')->name('privacy-policy');
 Route::view('terms-of-service', 'terms-of-service')->name('terms-of-service');
 Route::view('developer-terms', 'developer-terms')->name('developer-terms');
 Route::view('partners', 'partners')->name('partners');
+Route::view('partners/always-curious', 'partners.always-curious')->name('partners.always-curious');
 Route::view('build-my-app', 'build-my-app')->name('build-my-app');
 Route::view('consulting', 'consulting')->name('consulting');
 Route::view('the-vibes', 'the-vibes')->name('the-vibes');

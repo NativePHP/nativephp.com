@@ -1,11 +1,12 @@
 @php
     $sponsors = [
-        [
-            'url' => 'https://artisan.build/?utm_source=nativephp&utm_medium=logo&utm_campaign=nativephp',
-            'name' => 'Artisan Build',
-            'image' => '/img/sponsors/artisan-build.webp',
-            'imageDark' => '/img/sponsors/artisan-build-dark.webp',
-        ],
+        // Artisan Build - Hidden per client request (kept for reference)
+        // [
+        //     'url' => 'https://artisan.build/?utm_source=nativephp&utm_medium=logo&utm_campaign=nativephp',
+        //     'name' => 'Artisan Build',
+        //     'image' => '/img/sponsors/artisan-build.webp',
+        //     'imageDark' => '/img/sponsors/artisan-build-dark.webp',
+        // ],
         [
             'url' => 'https://beyondco.de/?utm_source=nativephp&utm_medium=logo&utm_campaign=nativephp',
             'name' => 'BeyondCode',
@@ -18,12 +19,13 @@
             'component' => 'sponsors.logos.laradevs',
             'class' => 'h-6 w-auto text-black dark:text-white',
         ],
-        [
-            'url' => 'https://statamic.com/?utm_source=nativephp&utm_medium=logo&utm_campaign=nativephp',
-            'name' => 'Statamic',
-            'image' => '/img/sponsors/statamic.svg',
-            'imageDark' => '/img/sponsors/statamic-dark.svg',
-        ],
+        // Statamic - Hidden per client request (kept for reference)
+        // [
+        //     'url' => 'https://statamic.com/?utm_source=nativephp&utm_medium=logo&utm_campaign=nativephp',
+        //     'name' => 'Statamic',
+        //     'image' => '/img/sponsors/statamic.svg',
+        //     'imageDark' => '/img/sponsors/statamic-dark.svg',
+        // ],
     ];
 @endphp
 
