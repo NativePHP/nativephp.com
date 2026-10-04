@@ -8,7 +8,14 @@
 
 @php
     $computedTitle = $title ?? "Learn more about {$partnerName}";
-    $isExternal = str_starts_with($href, 'http://') || str_starts_with($href, 'https://');
+    
+    // Determine if link is external by comparing hosts
+    $isExternal = false;
+    if (str_starts_with($href, 'http://') || str_starts_with($href, 'https://')) {
+        $hrefHost = parse_url($href, PHP_URL_HOST);
+        $currentHost = request()->getHost();
+        $isExternal = $hrefHost !== $currentHost;
+    }
 @endphp
 
 <a
