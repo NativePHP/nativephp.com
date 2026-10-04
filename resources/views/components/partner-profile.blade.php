@@ -93,7 +93,7 @@
                     "
                 >
                     <h2 class="text-2xl font-semibold md:text-3xl">
-                        What We Build
+                        Services
                     </h2>
                     <div class="mt-6 space-y-3 text-gray-600 dark:text-zinc-400">
                         {{ $whatWeBuild }}
@@ -125,7 +125,7 @@
                     "
                 >
                     <h2 class="text-2xl font-semibold md:text-3xl">
-                        Why Teams Work With Us
+                        What Sets Them Apart
                     </h2>
                     <div class="mt-6 space-y-3 text-gray-600 dark:text-zinc-400">
                         {{ $whyWorkWithUs }}
@@ -158,7 +158,7 @@
                     class="rounded-2xl bg-gray-100 p-8 dark:bg-[#1a1a2e] md:p-10"
                 >
                     <h2 class="text-2xl font-semibold md:text-3xl">
-                        Let's Talk
+                        Get In Touch
                     </h2>
                     <div class="mt-6 text-gray-600 dark:text-zinc-400">
                         {{ $contact }}

@@ -94,7 +94,7 @@
             </x-slot>
 
             <x-slot:description>
-                Always Curious is a strategy-led Laravel consultancy building native desktop and mobile apps with NativePHP. From fintech to field service and live events, we ship the simplest path to the right answer.
+                A strategy-led Laravel consultancy building native desktop and mobile apps with NativePHP. From fintech to field service and live events, they ship the simplest path to the right answer.
             </x-slot>
         </x-home.featured-partner-card>
 

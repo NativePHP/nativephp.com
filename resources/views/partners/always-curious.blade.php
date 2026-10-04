@@ -9,10 +9,10 @@
 
     <x-slot name="introduction">
         <p class="text-pretty">
-            Always Curious is a technology consultancy based in Richmond, Virginia. We work across software strategy, platform architecture, and creative design for teams in fintech, field service, aerospace, nonprofit, and live events.
+            Always Curious is a technology consultancy based in Richmond, Virginia. They work across software strategy, platform architecture, and creative design for teams in fintech, field service, aerospace, nonprofit, and live events.
         </p>
         <p class="mt-4 text-pretty">
-            Every engagement starts with one question: <strong class="font-semibold text-gray-900 dark:text-white">what's the simplest path that will still be the right answer in three years?</strong> NativePHP is often that answer. It lets our clients turn proven Laravel codebases and teams into real native apps without standing up a second stack.
+            Every engagement starts with one question: <strong class="font-semibold text-gray-900 dark:text-white">what's the simplest path that will still be the right answer in three years?</strong> NativePHP is often that answer. It lets their clients turn proven Laravel codebases and teams into real native apps without standing up a second stack.
         </p>
     </x-slot>
 
@@ -65,15 +65,15 @@
 
     <x-slot name="whyWorkWithUs">
         <ul class="list-inside list-disc space-y-2">
-            <li><strong class="font-semibold text-gray-900 dark:text-white">Senior, hands-on architecture.</strong> You work directly with the team designing and building your system.</li>
-            <li><strong class="font-semibold text-gray-900 dark:text-white">Deep Laravel and PHP roots.</strong> WordPress contributor since 1.0.1, commercial plugin author, and long-time Laravel practitioners and community sponsors.</li>
-            <li><strong class="font-semibold text-gray-900 dark:text-white">Built for the long run.</strong> Secure, maintainable systems on Cloud with deep AI-Native integrations that your team can own.</li>
+            <li><strong class="font-semibold text-gray-900 dark:text-white">Senior, hands-on architecture.</strong> Teams work directly with the designers and builders of their system.</li>
+            <li><strong class="font-semibold text-gray-900 dark:text-white">Deep Laravel and PHP roots.</strong> WordPress contributors since 1.0.1, commercial plugin authors, and long-time Laravel practitioners and community sponsors.</li>
+            <li><strong class="font-semibold text-gray-900 dark:text-white">Built for the long run.</strong> Secure, maintainable systems on Cloud with deep AI-Native integrations that teams can own.</li>
         </ul>
     </x-slot>
 
     <x-slot name="contact">
         <p class="mb-6">
-            Have a Laravel app that should be native, or an idea that needs a partner who operates beyond launch?
+            Always Curious partners with teams who need a Laravel app to go native, or an idea that needs a partner who operates beyond launch.
         </p>
 
         <div class="space-y-4">
