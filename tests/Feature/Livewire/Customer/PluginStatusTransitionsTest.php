@@ -73,6 +73,7 @@ class PluginStatusTransitionsTest extends TestCase
             "{$base}/contents/LICENSE*" => $passingChecks
                 ? Http::response(['name' => 'LICENSE', 'type' => 'file'], 200)
                 : Http::response([], 404),
+            "{$base}/commits/v1.0.0" => Http::response(['sha' => str_repeat('a', 40)]),
             "{$base}/releases/latest" => $passingChecks
                 ? Http::response(['tag_name' => 'v1.0.0'], 200)
                 : Http::response([], 404),
@@ -566,6 +567,7 @@ class PluginStatusTransitionsTest extends TestCase
                 'encoding' => 'base64',
             ]),
             "{$base}/contents/LICENSE*" => Http::response(['name' => 'LICENSE', 'type' => 'file'], 200),
+            "{$base}/commits/v1.0.0" => Http::response(['sha' => str_repeat('a', 40)]),
             "{$base}/releases/latest" => Http::response(['tag_name' => 'v1.0.0'], 200),
             "{$base}/tags*" => Http::response([['name' => 'v1.0.0']]),
             "{$base}/readme" => Http::response([
