@@ -3,11 +3,14 @@
 namespace App\Filament\Widgets;
 
 use App\Models\User;
+use BezhanSalleh\FilamentShield\Traits\HasWidgetShield;
 use Carbon\Carbon;
 use Filament\Widgets\ChartWidget;
 
 class UsersChart extends ChartWidget
 {
+    use HasWidgetShield;
+
     protected ?string $heading = 'User Growth';
 
     protected static ?int $sort = 2;

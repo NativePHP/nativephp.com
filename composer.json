@@ -10,6 +10,7 @@
     "require": {
         "php": "^8.2",
         "artesaos/seotools": "^1.2",
+        "bezhansalleh/filament-shield": "^4.3",
         "blade-ui-kit/blade-heroicons": "^2.3",
         "codeat3/blade-vaadin-icons": "^1.6",
         "embed/embed": "^4.4",

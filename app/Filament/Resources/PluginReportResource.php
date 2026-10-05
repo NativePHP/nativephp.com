@@ -63,6 +63,7 @@ final class PluginReportResource extends Resource
     {
         return [
             Actions\Action::make('resolve')
+                ->authorize('update')
                 ->label('Mark Resolved')
                 ->icon('heroicon-o-check-circle')
                 ->color('success')
@@ -83,6 +84,7 @@ final class PluginReportResource extends Resource
                 }),
 
             Actions\Action::make('dismiss')
+                ->authorize('update')
                 ->label('Dismiss')
                 ->icon('heroicon-o-x-circle')
                 ->color('gray')

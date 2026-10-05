@@ -31,6 +31,8 @@ class TicketRepliesWidget extends Widget
 
     public function sendReply(): void
     {
+        $this->authorize('update', $this->record);
+
         $this->validate([
             'newMessage' => ['required', 'string', 'max:5000'],
             'replyAttachments' => ['array', 'max:5'],

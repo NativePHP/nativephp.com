@@ -31,7 +31,7 @@ class SupportTicketPolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->isAdmin();
+        return $user->can('ViewAny:SupportTicket');
     }
 
     /**
@@ -39,7 +39,7 @@ class SupportTicketPolicy
      */
     public function view(User $user, SupportTicket $supportTicket): Response
     {
-        if ($user->isAdmin()) {
+        if ($user->can('View:SupportTicket')) {
             return Response::allow();
         }
 
@@ -61,7 +61,7 @@ class SupportTicketPolicy
      */
     public function update(User $user, SupportTicket $supportTicket): bool
     {
-        return $user->id === $supportTicket->user_id;
+        return $user->id === $supportTicket->user_id || $user->can('Update:SupportTicket');
     }
 
     /**
@@ -71,6 +71,14 @@ class SupportTicketPolicy
     {
         // Deletion not allowed.
         return false;
+    }
+
+    /**
+     * Determine whether the user can bulk delete models from the admin panel.
+     */
+    public function deleteAny(User $user): bool
+    {
+        return $user->can('DeleteAny:SupportTicket');
     }
 
     /**
