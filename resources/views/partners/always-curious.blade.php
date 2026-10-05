@@ -94,7 +94,7 @@
                     Laurie Wood
                 </div>
                 <div class="text-sm text-gray-500 dark:text-gray-400">
-                    Co-Founder and Chief of Client Strategy
+                    Co-Founder and Chief Strategy Officer
                 </div>
                 <a href="mailto:laurie@alwayscurious.co" class="text-blue-600 hover:underline dark:text-blue-400">
                     laurie@alwayscurious.co
