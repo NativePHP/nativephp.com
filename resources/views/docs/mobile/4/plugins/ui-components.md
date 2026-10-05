@@ -83,7 +83,7 @@ Add a `components` array to `nativephp.json`. Each entry wires one element type 
 | `android_renderer` | At least one | Fully qualified Kotlin object that renders the node |
 | `ios_renderer` | At least one | Swift `View` struct name (no module prefix) |
 | `self_closing` | No | `true` for leaf elements, `false` (default) for containers that take children |
-| `element_events` <x-docs.version-badge since="4.6" /> | No | Extra Blade `@event` names the element accepts, e.g. `["link"]` for `@link`. See [Custom Event Names](#custom-event-names) |
+| `element_events` <x-docs.version-badge since="4.6" /> | No | Extra event names for the element, such as `["link"]` for `@link`. See [Custom Event Names](#custom-event-names) |
 
 The manifest is validated on load: a component missing `type`, `element`, `blade`, or **both** renderers throws.
 Run `php artisan native:plugin:validate` to catch it before you build.
@@ -205,26 +205,27 @@ your renderer just applies the `modifier` it's handed.
 <x-docs.version-badge since="4.6" />
 
 @verbatim
-Core elements understand a fixed set of `@event` attributes — `@press`, `@change`, `@submit` and so on. Any other
-`@name` on a tag is treated as a [child-component event binding](../the-basics/nested-components), and a plain element
-drops it. If your element has its own kind of event — a link tapped in rendered markdown, a barcode scanned, a
-signature completed — declare the name so app developers can write `@link`, `@scan` or `@signed` instead of reusing
-`@change`.
+EDGE knows a fixed list of event attributes, such as `@press`, `@change` and `@submit`. Any other `@name` on a tag is
+read as a [child component event](../the-basics/nested-components), and a plain element ignores it.
 
-Declare names in the manifest with `element_events`:
+If your element has an event of its own, such as a link tapped in rendered markdown or a barcode scanned, you can
+declare a name for it. App developers can then write `@link` or `@scan` in the same way as a built-in event.
+
+Add the names to the component's `element_events` in `nativephp.json`:
 
 ```json
 {
     "type": "markdown",
-    "element": "MyVendor\Markdown\Elements\Markdown",
-    "blade": "MyVendor\Markdown\Components\Markdown",
+    "element": "MyVendor\\Markdown\\Elements\\Markdown",
+    "blade": "MyVendor\\Markdown\\Components\\Markdown",
     "android_renderer": "com.myvendor.plugins.markdown.ui.MarkdownRenderer",
     "ios_renderer": "MarkdownRenderer",
     "element_events": ["link"]
 }
 ```
 
-Or return them from a static `elementEvents()` on the Element class. Both sources are merged at boot:
+You can also return them from a static `elementEvents()` method on the Element class. Names from both places are
+registered when the app boots.
 
 ```php
 public static function elementEvents(): array
@@ -233,8 +234,8 @@ public static function elementEvents(): array
 }
 ```
 
-Then give the Element a matching `on` method and register the handler in `resolveProps()`, the same as `on_change`
-above:
+For each name, add an `on` method to the Element and register the handler in `resolveProps()`, the same way as
+`on_change` above:
 
 ```php
 public function onLink(string $method): static
@@ -256,23 +257,23 @@ protected function resolveProps(CallbackRegistry $registry): array
 }
 ```
 
-A declared `@link="openLink"` compiles to `_link`, and the collector calls `onLink('openLink')` for you, so there's
-nothing to add to `applyAttributes()`. Hyphenated names map to camel case: `@link-tapped` calls `onLinkTapped()`. If the
-Element has no matching method, the attribute is ignored.
+When an app writes `@link="openLink"`, NativePHP calls `onLink('openLink')` on your element, so you don't need to read
+the attribute in `applyAttributes()`. Names with a hyphen become camel case: `@link-tapped` calls `onLinkTapped()`. If
+the method doesn't exist, the attribute is ignored.
 
-On the native side, nothing new is needed. Read the callback id with `getCallbackId("on_link")` and send the payload
-with `sendTextChangeEvent` as shown in the renderers below; PHP routes the event by callback id, not by name.
+The renderers work the same as before. Read the callback id with `getCallbackId("on_link")` and send the event with
+`sendTextChangeEvent`, as in the examples below. PHP uses the callback id to find the right method.
 @endverbatim
 
-Names must start with a letter and contain only letters, digits, `-` and `_`. The manifest validator rejects anything
-else, and core names like `change` or `press` are already handled and are skipped.
+Event names must start with a letter and can only contain letters, numbers, `-` and `_`. The manifest validator
+rejects any other name. Declaring a built-in name such as `change` or `press` has no effect.
 
 <aside>
 
 @verbatim
-Declared names are **global** at compile time, just like `@change`. Once any installed plugin declares `link`, every
-`@link` in the app compiles as an element event — including one on a nested component's tag that was meant to catch
-`$this->emit('link')`. Pick specific names that are unlikely to collide with your users' own component events.
+Event names apply to the whole app, not only to your element. If any installed plugin declares `link`, every `@link`
+in the app is treated as an element event. That includes `@link` on a nested component's tag, which would otherwise
+listen for `$this->emit('link')`. Choose names that your users are unlikely to use for their own component events.
 @endverbatim
 
 </aside>
