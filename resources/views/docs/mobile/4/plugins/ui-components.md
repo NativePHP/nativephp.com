@@ -83,7 +83,7 @@ Add a `components` array to `nativephp.json`. Each entry wires one element type 
 | `android_renderer` | At least one | Fully qualified Kotlin object that renders the node |
 | `ios_renderer` | At least one | Swift `View` struct name (no module prefix) |
 | `self_closing` | No | `true` for leaf elements, `false` (default) for containers that take children |
-| `element_events` | No | Extra Blade `@event` names the element accepts, e.g. `["link"]` for `@link`. See [Custom Event Names](#custom-event-names) |
+| `element_events` <x-docs.version-badge since="4.6" /> | No | Extra Blade `@event` names the element accepts, e.g. `["link"]` for `@link`. See [Custom Event Names](#custom-event-names) |
 
 The manifest is validated on load: a component missing `type`, `element`, `blade`, or **both** renderers throws.
 Run `php artisan native:plugin:validate` to catch it before you build.
