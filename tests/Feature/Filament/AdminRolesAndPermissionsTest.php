@@ -4,6 +4,7 @@ namespace Tests\Feature\Filament;
 
 use App\Enums\PluginStatus;
 use App\Filament\Pages\Companies;
+use App\Filament\Pages\Dashboard;
 use App\Filament\Resources\PluginResource;
 use App\Filament\Resources\PluginResource\Pages\EditPlugin;
 use App\Filament\Resources\PluginResource\Pages\ListPlugins;
@@ -113,6 +114,25 @@ class AdminRolesAndPermissionsTest extends TestCase
         $this->get(RoleResource::getUrl('index'))->assertForbidden();
         $this->get(Companies::getUrl())->assertForbidden();
         $this->assertFalse(StatsOverview::canView());
+    }
+
+    public function test_staff_who_cannot_see_any_dashboard_widget_land_on_their_first_section(): void
+    {
+        $this->actingAs($this->userWithRole(self::PLUGIN_REVIEW_PERMISSIONS));
+
+        $this->assertFalse(Dashboard::shouldRegisterNavigation());
+
+        Livewire::test(Dashboard::class)->assertRedirect(PluginResource::getUrl('index'));
+    }
+
+    public function test_super_admin_still_gets_the_dashboard(): void
+    {
+        $this->actingAs($this->superAdmin());
+
+        $this->assertTrue(Dashboard::shouldRegisterNavigation());
+
+        $this->get(Dashboard::getUrl())->assertOk()->assertSeeLivewire(StatsOverview::class);
+        Livewire::test(Dashboard::class)->assertNoRedirect();
     }
 
     public function test_plugin_reviewer_can_reject_a_plugin(): void
