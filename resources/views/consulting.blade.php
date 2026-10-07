@@ -496,6 +496,24 @@
                 class="mt-8 grid grid-cols-1 gap-5 md:grid-cols-2"
             >
                 <x-home.featured-partner-card
+                    partnerName="Always Curious"
+                    tagline="Strategy-Led Laravel Apps, Built to Last"
+                    href="{{ route('partners.always-curious') }}"
+                >
+                    <x-slot:logo>
+                        <img
+                            src="/img/sponsors/always-curious.svg"
+                            class="h-10 w-auto"
+                            loading="lazy"
+                            alt="Always Curious logo"
+                        />
+                    </x-slot>
+                    <x-slot:description>
+                        Always Curious is a strategy-led Laravel consultancy building native desktop and mobile apps with NativePHP. From fintech to field service and live events, we ship the simplest path to the right answer.
+                    </x-slot>
+                </x-home.featured-partner-card>
+
+                <x-home.featured-partner-card
                     partnerName="Nexcalia"
                     tagline="Smart tools for scheduling & visitor management"
                     href="https://www.nexcalia.com/?ref=nativephp"
@@ -527,33 +545,36 @@
                     </x-slot>
                 </x-home.featured-partner-card>
 
-                <x-home.featured-partner-card
-                    partnerName="Synergi Tech"
-                    tagline="Bespoke software for complex infrastructure"
-                    href="https://synergitech.co.uk/partners/nativephp/"
-                >
-                    <x-slot:logo>
-                        <img
-                            src="/img/sponsors/synergi.svg"
-                            class="block dark:hidden"
-                            loading="lazy"
-                            alt="Synergi Tech logo"
-                            width="160"
-                            height="40"
-                        />
-                        <img
-                            src="/img/sponsors/synergi-dark.svg"
-                            class="hidden dark:block"
-                            loading="lazy"
-                            alt="Synergi Tech logo"
-                            width="160"
-                            height="40"
-                        />
-                    </x-slot>
-                    <x-slot:description>
-                        Synergi Tech are an established bespoke software development agency in the UK, specialising in business management and high-growth, complex infrastructure.
-                    </x-slot>
-                </x-home.featured-partner-card>
+                {{-- Synergi Tech - Hidden per client request (kept for reference) --}}
+                @if(false)
+                    <x-home.featured-partner-card
+                        partnerName="Synergi Tech"
+                        tagline="Bespoke software for complex infrastructure"
+                        href="https://synergitech.co.uk/partners/nativephp/"
+                    >
+                        <x-slot:logo>
+                            <img
+                                src="/img/sponsors/synergi.svg"
+                                class="block dark:hidden"
+                                loading="lazy"
+                                alt="Synergi Tech logo"
+                                width="160"
+                                height="40"
+                            />
+                            <img
+                                src="/img/sponsors/synergi-dark.svg"
+                                class="hidden dark:block"
+                                loading="lazy"
+                                alt="Synergi Tech logo"
+                                width="160"
+                                height="40"
+                            />
+                        </x-slot>
+                        <x-slot:description>
+                            Synergi Tech are an established bespoke software development agency in the UK, specialising in business management and high-growth, complex infrastructure.
+                        </x-slot>
+                    </x-home.featured-partner-card>
+                @endif
 
             </div>
 

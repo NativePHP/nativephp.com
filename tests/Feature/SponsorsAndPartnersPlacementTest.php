@@ -49,13 +49,13 @@ class SponsorsAndPartnersPlacementTest extends TestCase
     }
 
     #[Test]
-    public function the_home_page_sponsor_strip_includes_statamic()
+    public function the_home_page_sponsor_strip_includes_beyondcode()
     {
         $this->get(route('welcome'))
             ->assertOk()
-            ->assertSee('https://statamic.com/?utm_source=nativephp&utm_medium=logo&utm_campaign=nativephp')
-            ->assertSee('/img/sponsors/statamic.svg')
-            ->assertSee('/img/sponsors/statamic-dark.svg');
+            ->assertSee('https://beyondco.de/?utm_source=nativephp&utm_medium=logo&utm_campaign=nativephp')
+            ->assertSee('/img/sponsors/beyondcode.webp')
+            ->assertSee('/img/sponsors/beyondcode-dark.webp');
     }
 
     #[Test]
