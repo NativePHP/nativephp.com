@@ -5,6 +5,14 @@ order: 130
 
 ## Overview
 
+<x-docs.edge-preview
+    ios="edge-bottom-sheet-ios.png"
+    android="edge-bottom-sheet-android.png"
+    source="resources/views/native/explore/sheets.blade.php"
+    alt="Bottom sheet"
+    edge="both"
+/>
+
 A modal panel that slides up from the bottom of the screen. Use it for contextual actions, forms, and detail views
 that overlay the main content. Renders as SwiftUI's `.sheet` with `presentationDetents` on iOS and a Material3
 `ModalBottomSheet` on Android.

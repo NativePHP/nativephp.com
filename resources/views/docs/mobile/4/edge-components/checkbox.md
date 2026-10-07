@@ -5,6 +5,14 @@ order: 190
 
 ## Overview
 
+<x-docs.edge-preview
+    ios="edge-checkbox-ios.png"
+    android="edge-checkbox-android.png"
+    source="resources/views/native/explore/forms.blade.php"
+    alt="Checkbox"
+    edge="both"
+/>
+
 A binary tick/untick control with an optional inline label. On iOS, renders as a tappable SF Symbol pair
 (`checkmark.square.fill` / `square`) — SwiftUI has no native checkbox primitive. On Android, renders as a Material3
 `Checkbox`.

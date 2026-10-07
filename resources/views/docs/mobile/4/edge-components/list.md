@@ -5,6 +5,14 @@ order: 270
 
 ## Overview
 
+<x-docs.edge-preview
+    ios="edge-list-ios.png"
+    android="edge-list-android.png"
+    source="resources/views/native/mail-demo.blade.php"
+    alt="List"
+    edge="both"
+/>
+
 A virtualized list container. On iOS, renders as a SwiftUI `List` with native pull-to-refresh and trailing
 swipe-to-delete. On Android, renders as a `LazyColumn` / `LazyRow`.
 

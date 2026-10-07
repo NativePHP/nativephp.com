@@ -5,6 +5,14 @@ order: 280
 
 ## Overview
 
+<x-docs.edge-preview
+    ios="edge-modal-ios.png"
+    android="edge-modal-android.png"
+    source="resources/views/native/explore/sheets.blade.php"
+    alt="Modal"
+    edge="both"
+/>
+
 A full-screen modal overlay. Visibility is driven by the `visible` prop. Use a [bottom sheet](bottom-sheet) for
 contextual actions; reach for `<native:modal>` when you want the entire screen covered (e.g. an onboarding flow,
 image preview, or detail view).
