@@ -19,6 +19,7 @@ class RefundPluginLicenseAction extends Action
         parent::setUp();
 
         $this
+            ->authorize('refund')
             ->label('Refund')
             ->icon('heroicon-o-receipt-refund')
             ->color('danger')

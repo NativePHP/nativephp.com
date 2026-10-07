@@ -4,6 +4,7 @@ namespace App\Filament\Pages;
 
 use App\Filament\Resources\UserResource;
 use App\Services\CompanyAggregator;
+use BezhanSalleh\FilamentShield\Traits\HasPageShield;
 use Filament\Actions\Action;
 use Filament\Pages\Page;
 use Filament\Schemas\Components\EmbeddedTable;
@@ -18,7 +19,7 @@ use Illuminate\Support\Str;
 
 class Companies extends Page implements HasTable
 {
-    use InteractsWithTable;
+    use HasPageShield, InteractsWithTable;
 
     protected static \BackedEnum|string|null $navigationIcon = 'heroicon-o-building-office-2';
 

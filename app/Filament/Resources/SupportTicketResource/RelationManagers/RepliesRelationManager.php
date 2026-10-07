@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\SupportTicketResource\RelationManagers;
 
+use App\Filament\Resources\Concerns\AuthorizesThroughOwnerRecord;
 use App\Models\SupportTicket\Reply;
 use App\Notifications\SupportTicketReplied;
 use Filament\Forms;
@@ -12,6 +13,8 @@ use Filament\Tables\Table;
 
 class RepliesRelationManager extends RelationManager
 {
+    use AuthorizesThroughOwnerRecord;
+
     protected static string $relationship = 'replies';
 
     protected static ?string $title = 'Replies';

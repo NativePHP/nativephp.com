@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\UserResource\RelationManagers;
 
+use App\Filament\Resources\Concerns\AuthorizesThroughOwnerRecord;
 use Filament\Actions;
 use Filament\Forms;
 use Filament\Resources\RelationManagers\RelationManager;
@@ -11,6 +12,8 @@ use Filament\Tables\Table;
 
 class ProductLicensesRelationManager extends RelationManager
 {
+    use AuthorizesThroughOwnerRecord;
+
     protected static string $relationship = 'productLicenses';
 
     protected static ?string $title = 'Products';

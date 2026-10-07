@@ -23,6 +23,7 @@ class ViewPlugin extends ViewRecord
                 ->visible(fn () => $this->record->isApproved() || $this->record->isPending()),
 
             Actions\Action::make('approve')
+                ->authorize('approve')
                 ->icon('heroicon-o-check')
                 ->color('success')
                 ->visible(fn () => $this->record->isPending())
@@ -32,6 +33,7 @@ class ViewPlugin extends ViewRecord
                 ->modalDescription(fn () => "Are you sure you want to approve '{$this->record->name}'?"),
 
             Actions\Action::make('reject')
+                ->authorize('reject')
                 ->icon('heroicon-o-x-mark')
                 ->color('danger')
                 ->visible(fn () => $this->record->isPending() || $this->record->isApproved())
