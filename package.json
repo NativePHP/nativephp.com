@@ -13,7 +13,7 @@
         "@alpinejs/persist": "^3.14.9",
         "@alpinejs/resize": "^3.14.9",
         "@docsearch/js": "^5.0.0",
-        "@fontsource/poppins": "^5.2.6",
+        "@fontsource/poppins": "^5.3.0",
         "@tailwindcss/forms": "^0.5.10",
         "@tailwindcss/typography": "^0.5.16",
         "@tailwindcss/vite": "^4.1.12",
