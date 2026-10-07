@@ -32,6 +32,7 @@ Route::prefix('mcp')->group(function (): void {
         ->where('path', '.*')
         ->name('mcp.api.page');
     Route::get('edge-components/{platform}/{version}', [McpController::class, 'edgeComponentsApi'])->name('mcp.api.edge-components');
+    Route::get('edge-components/{platform}/{version}/{tag}', [McpController::class, 'edgeComponentApi'])->name('mcp.api.edge-component');
     Route::get('navigation/{platform}/{version}', [McpController::class, 'navigationApi'])->name('mcp.api.navigation');
 
     Route::get('plugins', [McpController::class, 'pluginsSearchApi'])->name('mcp.api.plugins.search');

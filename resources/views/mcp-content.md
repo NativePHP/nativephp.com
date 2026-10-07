@@ -128,6 +128,17 @@ hand straight to `get_page` (for example `mobile/4/edge-components/button`).
 Mobile v2+ ships an `edge-components` section; Desktop currently has none, so
 the list is empty there.
 
+Each page also lists the tags it documents, so the list page shows
+`<native:list>`, `<native:list-item>` and `<native:list-section>`.
+
+### `get_edge_component`
+
+Returns the reference for one element: its props, events, children and fluent
+PHP API, for a `tag` such as `button`, `list-item` or `outlined-text-input`.
+`<native:list-item>`, `list_item` and `ListItem` work too. It comes from the same
+docs page `get_page` returns, with the examples left out, so it can't drift from
+the site. `platform` defaults to `mobile` and `version` to the latest.
+
 ### `search_plugins`
 
 Search the public plugin marketplace the same way the directory does: approved,
@@ -165,6 +176,7 @@ MCP client:
 - `/api/mcp/page/{platform}/{version}/{section}/{slug}` — a single page
 - `/api/mcp/navigation/{platform}/{version}` — the docs navigation tree
 - `/api/mcp/edge-components/{platform}/{version}` — EDGE / SuperNative component listing
+- `/api/mcp/edge-components/{platform}/{version}/{tag}` — one EDGE component's reference
 - `/api/mcp/plugins?q=camera&type=free&limit=10` — marketplace plugin search
 - `/api/mcp/plugins/{vendor}/{package}` — one marketplace plugin
 - `/api/mcp/health` — liveness check, and the versions currently published
