@@ -66,6 +66,33 @@ class SyncData implements ShouldQueue
 }
 ```
 
+## Sending Events to a Screen
+
+<x-docs.version-badge since="TODO" />
+
+A job runs in its own PHP runtime, so it cannot change a screen directly. Fire an event that implements
+`BroadcastsGlobally` instead, and the live screen hears it in its `#[On]` methods:
+
+```php
+use App\Events\SyncFinished;
+
+public function handle()
+{
+    Http::post('https://api.example.com/sync', $this->payload);
+
+    event(new SyncFinished(count: count($this->payload)));
+}
+```
+
+The event only reaches a screen while a native screen is showing. Its `Event::listen` listeners then run in the
+runtime of the screens, and not in the job. Otherwise the event stays in the job, as any Laravel event does.
+
+This does not work under [Jump](../the-basics/jump): a job that `php artisan queue:work` runs on your machine does
+not reach the screen.
+
+See [Events from queued jobs and async tasks](../the-basics/events#events-from-queued-jobs-and-async-tasks) for how
+to write the event and the screen's method, and for the limits.
+
 ## How It Works
 
 When your app boots, NativePHP automatically starts a dedicated PHP runtime on a separate thread. This worker

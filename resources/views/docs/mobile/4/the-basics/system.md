@@ -71,6 +71,32 @@ Reading the current appearance and reacting to theme changes lives with the rest
 [Theming → Appearance in PHP](../digging-deeper/theming#appearance-in-php) for `System::appearance()`, `isDarkMode()`,
 `isLightMode()`, the `isDark()` / `theme()` helpers, and the `AppearanceChanged` event.
 
+## Orientation
+
+Read the orientation of the app window:
+
+```php
+System::orientation();  // 'portrait' | 'landscape'
+System::isPortrait();   // bool
+System::isLandscape();  // bool
+```
+
+When it changes, the `OrientationChanged` event fires. `$orientation` is `'portrait'` or `'landscape'`:
+
+```php
+use Native\Mobile\Attributes\On;
+use Native\Mobile\Events\System\OrientationChanged;
+
+#[On(OrientationChanged::class)]
+public function rotated(string $orientation): void
+{
+    $this->columns = $orientation === 'landscape' ? 4 : 2;
+}
+```
+
+`OrientationChanged` [broadcasts globally](events#broadcasting-globally). Next to the `#[On]` methods of the live
+screen, `Event::listen` hears it anywhere in your app.
+
 <aside>
 
 `System::flashlight()` <x-docs.version-badge removed="4.1" /> has been removed — use

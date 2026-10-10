@@ -160,6 +160,48 @@ required parameter that isn't in the payload can't be resolved, so the call fail
 
 </aside>
 
+## Sending events while a task runs
+
+<x-docs.version-badge since="TODO" />
+
+`finished()` hands back one result, at the end. To tell the screen something while the work still runs, such as
+progress, fire an event that implements `BroadcastsGlobally` inside the task. It is carried to the UI thread, where
+the live screen hears it in its `#[On]` methods:
+
+```php
+use App\Events\ReportProgressed;
+use Native\Mobile\AsyncTask;
+
+AsyncTask::dispatch(static function () {
+    foreach (ExpensiveReport::sections() as $index => $section) {
+        $section->build();
+
+        event(new ReportProgressed(done: $index + 1));
+    }
+});
+```
+
+```php
+use App\Events\ReportProgressed;
+use Native\Mobile\Attributes\On;
+
+#[On(ReportProgressed::class)]
+public function onProgress(int $done): void
+{
+    $this->sectionsDone = $done;
+}
+```
+
+Unlike a scoped callback, the event goes to whichever screen is live, and only while a native screen is showing.
+Its `Event::listen` listeners then run on the UI thread, and not in the task.
+
+Each event from a task costs its own render on the screen. Fire one per step, as above, and not one per row of a
+large loop: a large burst does not all reach the screen, see
+[A burst of events](../the-basics/events#a-burst-of-events).
+
+See [Events from queued jobs and async tasks](../the-basics/events#events-from-queued-jobs-and-async-tasks) for how
+to write the event, and for the limits.
+
 ## Running several at once
 
 Tasks run on a small pool of background PHP contexts, so several can be in flight together:
@@ -262,3 +304,6 @@ the callbacks run on your UI thread, in your component.
 - Async tasks don't survive the app being killed. For durable background work, use [Queues](queues).
 - Device APIs that need the UI (camera, dialogs, biometrics) don't belong inside async tasks. Fetch and compute
   in the task; drive UI from the callbacks.
+- On Android the background lane for async tasks starts 2.5 seconds after the app is ready. A task that is
+  dispatched before that is refused: its work does not run and `failed()` is called at once, saying that the
+  background lane is not available. Without a `failed()` callback, the refusal only shows in the log.
