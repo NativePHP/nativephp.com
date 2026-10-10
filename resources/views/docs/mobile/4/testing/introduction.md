@@ -54,7 +54,9 @@ it('increments the count', function () {
 `tap()` presses the nearest pressable element whose subtree shows the given text (or one carrying a matching `ref` —
 more on that in [Interactions](interactions)). `assertSet()` reads a public or `#[Computed]` property and compares it,
 while `assertNotSet()` asserts a property holds anything but a given value. Every interaction re-renders the component,
-so the assertions that follow see the fresh frame.
+so the assertions that follow see the fresh frame. The exception is an `emitNative()` that misses every `when` filter
+of the screen while nothing else is there for the event, see
+[Testing a when filter](native-events#testing-a-when-filter).
 
 ## Passing params and data
 
