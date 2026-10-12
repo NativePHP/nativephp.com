@@ -44,6 +44,24 @@ class DocumentationRenderingTest extends TestCase
     }
 
     #[Test]
+    public function modal_and_bottom_sheet_pages_note_that_inline_handlers_only_work_in_jump(): void
+    {
+        $pages = [
+            'modal' => 'openDetails',
+            'bottom-sheet' => 'openSheet',
+        ];
+
+        foreach ($pages as $page => $method) {
+            $this->withoutVite()
+                ->get("/docs/mobile/4/edge-components/{$page}")
+                ->assertOk()
+                ->assertSee('work in Jump previews. In your own app, call a method instead', false)
+                ->assertSee("public function {$method}(): void", false)
+                ->assertSee("@press=&quot;{$method}&quot;", false);
+        }
+    }
+
+    #[Test]
     public function every_documentation_page_renders_without_evaluating_example_variables(): void
     {
         /** @var ViewFactory $factory */
