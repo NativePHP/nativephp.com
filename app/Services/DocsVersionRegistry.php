@@ -43,4 +43,12 @@ final class DocsVersionRegistry
     {
         return config("docs.renamed_pages.{$platform->value}", []);
     }
+
+    /**
+     * @return array{package: string, config_path: string}
+     */
+    public function sourceRepo(DocsPlatform $platform): array
+    {
+        return config("docs.source_repos.{$platform->value}");
+    }
 }

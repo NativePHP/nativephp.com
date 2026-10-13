@@ -28,6 +28,12 @@ class Kernel extends ConsoleKernel
         $schedule->command('payouts:process-eligible')
             ->dailyAt('11:00')
             ->onOneServer();
+
+        // Flag docs that have drifted from the packages' config keys and console commands
+        $schedule->command('docs:audit-coverage')
+            ->weekly()
+            ->onOneServer()
+            ->runInBackground();
     }
 
     /**

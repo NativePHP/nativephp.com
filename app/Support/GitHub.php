@@ -3,9 +3,11 @@
 namespace App\Support;
 
 use App\Support\GitHub\Release;
+use Illuminate\Http\Client\PendingRequest;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 
 class GitHub
 {
@@ -18,6 +20,16 @@ class GitHub
     public const PACKAGE_PHP_BIN = 'nativephp/php-bin';
 
     public const PACKAGE_MOBILE_AIR = 'nativephp/mobile-air';
+
+    private const CACHE_LATEST_VERSION = 'latest-version';
+
+    private const CACHE_RELEASES = 'releases';
+
+    private const CACHE_TREE = 'tree';
+
+    private const CACHE_DEFAULT_BRANCH = 'default-branch';
+
+    private const CACHE_BLOB_PREFIX = 'blob-';
 
     public function __construct(
         private string $package
@@ -53,7 +65,7 @@ class GitHub
     public function latestVersion()
     {
         $release = Cache::remember(
-            $this->getCacheKey('latest-version'),
+            $this->getCacheKey(self::CACHE_LATEST_VERSION),
             now()->addHour(),
             fn () => $this->fetchLatestVersion()
         );
@@ -64,10 +76,36 @@ class GitHub
     public function releases(): Collection
     {
         return Cache::remember(
-            $this->getCacheKey('releases'),
+            $this->getCacheKey(self::CACHE_RELEASES),
             now()->addHour(),
             fn () => $this->fetchReleases()
         ) ?? collect();
+    }
+
+    /**
+     * @return Collection<int, array{path: string, type: string, sha: string}>
+     */
+    public function tree(): Collection
+    {
+        return Cache::remember(
+            $this->getCacheKey(self::CACHE_TREE),
+            now()->addHour(),
+            fn () => $this->fetchTree()
+        ) ?? collect();
+    }
+
+    /**
+     * The decoded contents of a single blob, addressed by the sha reported
+     * for it in tree(). Cached separately from the tree itself since blobs
+     * are large and most only need to be fetched once per commit.
+     */
+    public function blob(string $sha): ?string
+    {
+        return Cache::remember(
+            $this->getCacheKey(self::CACHE_BLOB_PREFIX.$sha),
+            now()->addDay(),
+            fn () => $this->fetchBlob($sha)
+        );
     }
 
     /**
@@ -107,10 +145,8 @@ class GitHub
 
     private function fetchLatestVersion(): ?Release
     {
-        // Make a request to GitHub
-        $response = Http::get('https://api.github.com/repos/'.$this->package.'/releases/latest');
+        $response = $this->request()->get('/releases/latest');
 
-        // Check if the request was successful
         if ($response->failed()) {
             return null;
         }
@@ -123,13 +159,64 @@ class GitHub
         return sprintf('%s-%s', $this->package, $string);
     }
 
+    private function defaultBranch(): string
+    {
+        return Cache::remember(
+            $this->getCacheKey(self::CACHE_DEFAULT_BRANCH),
+            now()->addDay(),
+            fn () => $this->fetchDefaultBranch()
+        ) ?? 'main';
+    }
+
+    private function fetchDefaultBranch(): ?string
+    {
+        $response = $this->request()->get('/');
+
+        if ($response->failed()) {
+            return null;
+        }
+
+        return $response->json('default_branch');
+    }
+
+    private function fetchTree(): Collection
+    {
+        $response = $this->request()->get('/git/trees/'.$this->defaultBranch(), ['recursive' => 1]);
+
+        if ($response->failed()) {
+            return collect();
+        }
+
+        // GitHub silently truncates trees over its internal size limit rather
+        // than erroring or paginating, so a truncated result would otherwise
+        // look like a repo that simply doesn't have the missing files.
+        if ($response->json('truncated') === true) {
+            Log::warning("GitHub tree for {$this->package} was truncated; some paths may be missing from the audit.");
+        }
+
+        return collect($response->json('tree'));
+    }
+
+    private function fetchBlob(string $sha): ?string
+    {
+        $response = $this->request()->get('/git/blobs/'.$sha);
+
+        if ($response->failed()) {
+            return null;
+        }
+
+        $content = $response->json('content');
+
+        return $content === null ? null : base64_decode($content);
+    }
+
     private function fetchReleases(): ?Collection
     {
         $releases = collect();
         $page = 1;
 
         do {
-            $response = Http::get('https://api.github.com/repos/'.$this->package.'/releases', [
+            $response = $this->request()->get('/releases', [
                 'per_page' => 100,
                 'page' => $page,
             ]);
@@ -144,5 +231,19 @@ class GitHub
         } while (count($pageReleases) === 100);
 
         return $releases->map(fn (array $release) => new Release($release));
+    }
+
+    /**
+     * A request pre-scoped to this repo, authenticated when a token is
+     * configured — GitHub's REST API allows only 60 unauthenticated
+     * requests/hour, which the per-file blob fetches in tree-walking
+     * callers (e.g. DocsCoverageAuditor) can exhaust in a single run.
+     */
+    private function request(): PendingRequest
+    {
+        $request = Http::baseUrl('https://api.github.com/repos/'.$this->package);
+        $token = config('services.github.token');
+
+        return $token ? $request->withToken($token) : $request;
     }
 }

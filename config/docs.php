@@ -1,5 +1,7 @@
 <?php
 
+use App\Support\GitHub;
+
 return [
 
     /*
@@ -154,6 +156,29 @@ return [
                 'super-native/search' => 'digging-deeper/search',
                 'super-native/accessibility' => 'digging-deeper/accessibility',
             ],
+        ],
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Source Repositories
+    |--------------------------------------------------------------------------
+    |
+    | The GitHub package DocsCoverageAuditor cross-references each platform's
+    | docs against, and the path within that package to its published config
+    | file. Console commands are located by scanning the whole repo tree, so
+    | there's no equivalent path to configure for those.
+    |
+    */
+
+    'source_repos' => [
+        'desktop' => [
+            'package' => GitHub::PACKAGE_DESKTOP,
+            'config_path' => 'config/nativephp.php',
+        ],
+        'mobile' => [
+            'package' => GitHub::PACKAGE_MOBILE_AIR,
+            'config_path' => 'config/nativephp.php',
         ],
     ],
 
