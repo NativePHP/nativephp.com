@@ -8,7 +8,7 @@ order: 420
 <x-docs.edge-preview
     ios="edge-text-ios.png"
     android="edge-text-android.png"
-    source="resources/views/native/explore/typography.blade.php"
+    source="resources/views/native/edge-components/text.blade.php"
     alt="Text"
     edge="both"
 />

@@ -68,6 +68,12 @@ return [
     | Screenshot Capture
     |--------------------------------------------------------------------------
     |
+    | Screenshots are captured from NativePHP/edge-components-demo — a
+    | stock-themed app with one screen per EDGE component. demo_path is a
+    | local checkout of it (overridden per run by --demo-path), and
+    | demo_repository / demo_branch build the "View source" links that
+    | <x-docs.edge-preview> renders next to each screenshot.
+    |
     | Where `docs:capture-screenshots` writes captured screenshots. Every run
     | writes to staging_path; `--publish` additionally copies them into
     | publish_path, overwriting the tracked images the docs pages reference.
@@ -95,6 +101,9 @@ return [
     */
 
     'screenshots' => [
+        'demo_path' => env('DOCS_SCREENSHOTS_DEMO_PATH'),
+        'demo_repository' => 'NativePHP/edge-components-demo',
+        'demo_branch' => 'main',
         'staging_path' => storage_path('docs-screenshots'),
         'publish_path' => public_path('img/docs'),
         'process_timeout' => 300,

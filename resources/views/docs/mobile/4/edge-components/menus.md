@@ -8,7 +8,7 @@ order: 275
 <x-docs.edge-preview
     ios="edge-menus-ios.png"
     android="edge-menus-android.png"
-    source="resources/views/native/explore/menus.blade.php"
+    source="resources/views/native/edge-components/menus.blade.php"
     alt="Menu"
     edge="both"
 />

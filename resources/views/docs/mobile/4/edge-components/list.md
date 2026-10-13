@@ -8,7 +8,7 @@ order: 270
 <x-docs.edge-preview
     ios="edge-list-ios.png"
     android="edge-list-android.png"
-    source="resources/views/native/mail-demo.blade.php"
+    source="resources/views/native/edge-components/list.blade.php"
     alt="List"
     edge="both"
 />

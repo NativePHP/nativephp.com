@@ -8,7 +8,7 @@ order: 190
 <x-docs.edge-preview
     ios="edge-checkbox-ios.png"
     android="edge-checkbox-android.png"
-    source="resources/views/native/explore/forms.blade.php"
+    source="resources/views/native/edge-components/checkbox.blade.php"
     alt="Checkbox"
     edge="both"
 />

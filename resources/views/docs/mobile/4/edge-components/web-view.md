@@ -6,7 +6,7 @@ order: 460
 <x-docs.edge-preview
     ios="edge-web-view-ios.png"
     android="edge-web-view-android.png"
-    source="resources/views/native/webview-demo.blade.php"
+    source="resources/views/native/edge-components/web-view.blade.php"
     alt="Web view"
     edge="both"
 />

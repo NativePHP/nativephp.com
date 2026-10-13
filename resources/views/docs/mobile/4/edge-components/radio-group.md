@@ -8,7 +8,7 @@ order: 310
 <x-docs.edge-preview
     ios="edge-radio-group-ios.png"
     android="edge-radio-group-android.png"
-    source="resources/views/native/explore/forms.blade.php"
+    source="resources/views/native/edge-components/radio-group.blade.php"
     alt="Radio group"
     edge="both"
 />

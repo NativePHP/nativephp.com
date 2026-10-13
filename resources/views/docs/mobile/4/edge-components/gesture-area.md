@@ -8,7 +8,7 @@ order: 225
 <x-docs.edge-preview
     ios="edge-gesture-area-ios.png"
     android="edge-gesture-area-android.png"
-    source="resources/views/native/animate.blade.php"
+    source="resources/views/native/edge-components/gesture-area.blade.php"
     alt="Gesture area"
     edge="both"
 />

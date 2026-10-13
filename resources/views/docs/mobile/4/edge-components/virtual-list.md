@@ -8,7 +8,7 @@ order: 455
 <x-docs.edge-preview
     ios="edge-virtual-list-ios.png"
     android="edge-virtual-list-android.png"
-    source="resources/views/native/explore-icons.blade.php"
+    source="resources/views/native/edge-components/virtual-list.blade.php"
     alt="Virtual list"
     edge="both"
 />
