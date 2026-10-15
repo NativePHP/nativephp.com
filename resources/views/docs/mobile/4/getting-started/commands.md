@@ -48,6 +48,11 @@ with `php artisan native:plugin:register`.
 
 </aside>
 
+The debug builds `native:run` produces are left on disk: the iOS simulator app at
+`nativephp/ios/build/Build/Products/Debug-iphonesimulator/NativePHP-simulator.app` and the Android APK at
+`nativephp/android/app/build/outputs/apk/debug/app-debug.apk`. See
+[Finding the built app](development#finding-the-built-app).
+
 ### native:watch
 
 Watch for file changes and sync to a running mobile app.
@@ -403,7 +408,7 @@ php artisan native:plugin:install-agent
 ### native-ui:generate-icons
 
 Generate the `App\Icons\Ios`, `App\Icons\Android`, and `App\Icons\AndroidOutlined` enums so you can reference icons as
-typed, autocompletable enum cases. Ships with the [native-ui](https://github.com/nativephp/native-ui) plugin.
+typed, autocompletable enum cases. Ships with the [`nativephp/mobile-ui`](https://github.com/NativePHP/mobile-ui) plugin.
 
 ```shell
 php artisan native-ui:generate-icons

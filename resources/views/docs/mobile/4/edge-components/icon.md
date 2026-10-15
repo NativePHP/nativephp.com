@@ -127,7 +127,7 @@ If you'd rather skip the `@@use` import, fully-qualified cases work anywhere:
 
 <aside>
 
-Three icon enums are generated into your app by the [native-ui](https://github.com/nativephp/native-ui) plugin:
+Three icon enums are generated into your app by the [`nativephp/mobile-ui`](https://github.com/NativePHP/mobile-ui) plugin:
 `App\Icons\Ios` (SF Symbols), `App\Icons\Android` (filled Material Icons), and `App\Icons\AndroidOutlined`
 (outlined Material Icons — its cases tell the renderer to use the outlined Material font). Run the command below
 once to create them, then reference any symbol as a typed, autocompletable case:
