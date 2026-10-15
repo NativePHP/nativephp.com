@@ -34,7 +34,9 @@ To audit a tree for screen-reader accessibility rather than a specific element, 
 
 ## Render-count guards
 
-Every interaction re-renders. When performance matters, assert on exactly how many frames a screen produced.
+Every interaction re-renders, except an `emitNative()` that misses every `when` filter of the screen while nothing
+else is there for the event (see [Testing a when filter](native-events#testing-a-when-filter)). When performance
+matters, assert on exactly how many frames a screen produced.
 
 - `renderCount()` — frames rendered so far (the initial mount counts as 1).
 - `assertRenderCount($count)` — an exact frame count.
