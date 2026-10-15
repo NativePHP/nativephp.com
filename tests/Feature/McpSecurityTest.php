@@ -78,6 +78,12 @@ class McpSecurityTest extends TestCase
         $response->assertJson(['edge_components' => []]);
     }
 
+    public function test_edge_component_endpoint_rejects_a_traversal_tag(): void
+    {
+        $this->getJson('/api/mcp/edge-components/mobile/4/..')->assertNotFound();
+        $this->getJson('/api/mcp/edge-components/mobile/..%2F..%2F4/button')->assertNotFound();
+    }
+
     public function test_navigation_endpoint_rejects_invalid_version(): void
     {
         $response = $this->getJson('/api/mcp/navigation/mobile/..');

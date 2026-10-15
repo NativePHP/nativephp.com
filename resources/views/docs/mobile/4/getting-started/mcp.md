@@ -55,6 +55,7 @@ Once connected, your agent gets these tools:
 - **`get_page`** — fetch a full page by path (e.g. `mobile/4/plugins/core/camera` or `mobile/4/edge-components/button`)
 - **`get_navigation`** — the sidebar for a platform and version
 - **`list_edge_components`** — list EDGE / SuperNative UI components for a platform (defaults to latest mobile) so agents build native UI via Blade EDGE components
+- **`get_edge_component`** — the props, events and PHP API for one element, e.g. `list-item` or `outlined-text-input`
 - **`search_plugins`** — search the public plugin marketplace (where Mobile v3+ native APIs live)
 - **`get_plugin`** — fetch one marketplace plugin by composer name
 
