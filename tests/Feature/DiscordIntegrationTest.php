@@ -2,7 +2,9 @@
 
 namespace Tests\Feature;
 
+use App\Livewire\DiscordAccessBanner;
 use App\Models\License;
+use App\Models\Plugin;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Http;
@@ -24,6 +26,7 @@ class DiscordIntegrationTest extends TestCase
             'services.discord.guild_id' => 'test-guild-id',
             'services.discord.ultra_role_id' => 'ultra-role-id',
             'services.discord.early_adopter_role_id' => 'early-adopter-role-id',
+            'services.discord.plugin_developer_role_id' => 'plugin-developer-role-id',
         ]);
     }
 
@@ -187,5 +190,86 @@ class DiscordIntegrationTest extends TestCase
         $this->assertNull($user->discord_early_adopter_role_granted_at);
 
         Http::assertSentCount(1);
+    }
+
+    #[Test]
+    public function callback_does_not_assign_plugin_developer_role_automatically(): void
+    {
+        $user = User::factory()->create();
+
+        Plugin::factory()->for($user)->approved()->create();
+
+        Http::fake([
+            'discord.com/api/oauth2/token' => Http::response([
+                'access_token' => 'test-access-token',
+            ]),
+            'discord.com/api/v10/users/@me' => Http::response([
+                'id' => '999888777',
+                'username' => 'plugindev',
+            ]),
+            'discord.com/api/v10/guilds/test-guild-id/members/999888777' => Http::response([
+                'roles' => [],
+            ], 200),
+        ]);
+
+        $this->actingAs($user)
+            ->get('/auth/discord/callback?code=test-code')
+            ->assertRedirect(route('customer.integrations'));
+
+        $user->refresh();
+        $this->assertEquals('999888777', $user->discord_id);
+        $this->assertNull($user->discord_plugin_developer_role_granted_at);
+
+        Http::assertNotSent(fn ($request) => $request->method() === 'PUT');
+    }
+
+    #[Test]
+    public function disconnect_removes_plugin_developer_role(): void
+    {
+        $user = User::factory()->create([
+            'discord_id' => '999888777',
+            'discord_username' => 'testuser',
+            'discord_plugin_developer_role_granted_at' => now(),
+        ]);
+
+        Http::fake([
+            'discord.com/api/v10/guilds/test-guild-id/members/999888777/roles/plugin-developer-role-id' => Http::response([], 204),
+        ]);
+
+        $this->actingAs($user)
+            ->delete('/dashboard/discord/disconnect')
+            ->assertSessionHas('success', 'Discord account disconnected successfully.');
+
+        $user->refresh();
+        $this->assertNull($user->discord_id);
+        $this->assertNull($user->discord_plugin_developer_role_granted_at);
+
+        Http::assertSentCount(1);
+    }
+
+    #[Test]
+    public function integrations_page_shows_discord_banner_to_approved_plugin_developers(): void
+    {
+        $user = User::factory()->create();
+
+        Plugin::factory()->for($user)->approved()->create();
+
+        $this->actingAs($user)
+            ->get(route('customer.integrations'))
+            ->assertOk()
+            ->assertSeeLivewire(DiscordAccessBanner::class);
+    }
+
+    #[Test]
+    public function integrations_page_hides_discord_banner_from_developers_without_an_approved_plugin(): void
+    {
+        $user = User::factory()->create();
+
+        Plugin::factory()->for($user)->pending()->create();
+
+        $this->actingAs($user)
+            ->get(route('customer.integrations'))
+            ->assertOk()
+            ->assertDontSeeLivewire(DiscordAccessBanner::class);
     }
 }
