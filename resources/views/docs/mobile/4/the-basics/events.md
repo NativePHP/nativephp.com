@@ -9,7 +9,7 @@ Screens react to things that happen outside a user tap — a push notification a
 a bridge call finishes. A component **listens** for these native events and updates its state in response; the
 screen re-renders like any other state change.
 
-This page covers listening for these native events from a component.
+This page covers listening for native events from a component and forwarding them to Laravel listeners across your app.
 
 ## Listening with #[On]
 
@@ -59,9 +59,70 @@ Native events originate on the device side and are delivered to whichever screen
 events an async native call resolves with. Because delivery targets the live screen, a listener only fires while
 its screen is on the stack.
 
-That last part is also the limit of this page. If something outside your screens needs to follow what the user
-is doing — analytics, telemetry, crash breadcrumbs — listen for the app-wide
-[screen lifecycle events](../digging-deeper/lifecycle-hooks#observing-the-lifecycle-from-outside) instead.
+## App-wide Laravel listeners
+
+On an EDGE screen, `#[On]` and `->on()` receive the native event's payload directly. Ordinary native events do
+not automatically pass through Laravel's event dispatcher.
+
+An event class can opt into Laravel dispatch by implementing `Native\Mobile\Events\Concerns\BroadcastsGlobally`.
+When that native event arrives, NativePHP constructs the event object from its payload and calls Laravel's
+`event($event)` in addition to delivering it to the component. Laravel listeners run even if the active component
+has no `#[On]` handler for that event.
+
+`AppearanceChanged` and `ShakeDetected` already implement this interface. For example, register an appearance
+listener in your `AppServiceProvider::boot()` method:
+
+```php
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Event;
+use Native\Mobile\Events\System\AppearanceChanged;
+
+public function boot(): void
+{
+    Event::listen(AppearanceChanged::class, function (AppearanceChanged $event): void {
+        Cache::put('preferred-appearance', $event->mode);
+    });
+}
+```
+
+The Laravel listener receives an event object. A component's `#[On(AppearanceChanged::class)]` method still
+receives individual payload fields, such as `string $mode`, bound by parameter name.
+
+### Opting in with a custom event
+
+Implement the interface on the PHP event class emitted by your native code:
+
+```php
+namespace App\Events;
+
+use Native\Mobile\Events\Concerns\BroadcastsGlobally;
+
+class ConnectionChanged implements BroadcastsGlobally
+{
+    public function __construct(public bool $connected) {}
+}
+```
+
+Your native code must emit this event's fully qualified class name with a payload such as `['connected' => true]`.
+NativePHP matches payload keys to constructor parameter names. Supply every required constructor argument; if
+NativePHP cannot construct the event object, it skips Laravel dispatch. The interface has no methods to implement.
+
+You can then register `Event::listen(ConnectionChanged::class, ...)` in a service provider and keep using
+`#[On(ConnectionChanged::class)]` in a component. Implementing the interface alone does not emit an event.
+
+<aside>
+
+`BroadcastsGlobally` belongs to NativePHP. It forwards native events to Laravel listeners within the running app;
+it does not broadcast over WebSockets like Laravel's `ShouldBroadcast`. It also does not keep the app running
+in the background: the native event must still reach the active app runtime.
+
+</aside>
+
+WebView events delivered through `/_native/api/events` already pass through Laravel's event dispatcher without
+this interface. `BroadcastsGlobally` opts an event into that behavior on EDGE screens.
+
+For analytics, telemetry, or crash breadcrumbs tied to screen navigation, use the separate
+[screen lifecycle events](../digging-deeper/lifecycle-hooks#observing-the-lifecycle-from-outside).
 
 <aside>
 
