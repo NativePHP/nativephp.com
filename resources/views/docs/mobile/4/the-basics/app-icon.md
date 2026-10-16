@@ -18,6 +18,9 @@ Place a single high-resolution icon file at: `public/icon.png`.
 This image will be automatically resized for all Android densities and used as the base iOS app icon.
 You must have the GD extension installed in your development machine's PHP environment for this to work.
 
+On Android, the resized icons can be written as WebP instead of PNG to reduce your app's size. See
+[Android Image Format](splash-screens#android-image-format).
+
 <aside>
 
 If you do not provide a custom app icon, a default one will be used.
