@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\PluginPayoutResource\RelationManagers;
 
+use App\Filament\Resources\Concerns\AuthorizesThroughOwnerRecord;
 use App\Models\PluginPayoutAttempt;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
@@ -9,6 +10,8 @@ use Filament\Tables\Table;
 
 class AttemptsRelationManager extends RelationManager
 {
+    use AuthorizesThroughOwnerRecord;
+
     protected static string $relationship = 'attempts';
 
     protected static ?string $title = 'Attempt History';

@@ -20,6 +20,7 @@ class ViewSupportTicket extends ViewRecord
             Impersonate::make()->impersonateRecord(fn () => $this->getRecord()->user),
 
             Actions\Action::make('updateStatus')
+                ->authorize('update')
                 ->label('Update Status')
                 ->icon('heroicon-o-arrow-path')
                 ->form([
