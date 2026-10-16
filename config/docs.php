@@ -92,6 +92,54 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Screenshot Capture
+    |--------------------------------------------------------------------------
+    |
+    | Screenshots are captured from NativePHP/edge-components-demo — a
+    | stock-themed app with one screen per EDGE component. demo_path is a
+    | local checkout of it (overridden per run by --demo-path), and
+    | demo_repository / demo_branch build the "View source" links that
+    | <x-docs.edge-preview> renders next to each screenshot.
+    |
+    | Where `docs:capture-screenshots` writes captured screenshots. Every run
+    | writes to staging_path; `--publish` additionally copies them into
+    | publish_path, overwriting the tracked images the docs pages reference.
+    |
+    | staging_path deliberately sits outside storage/app (the `local`
+    | filesystem disk's root) — these are scratch files from a local dev
+    | tool, not app-managed disk content.
+    |
+    | process_timeout bounds each `native:run` / `native:screenshot` call
+    | (seconds) — a real simulator/emulator boot and build can take a while.
+    |
+    | crop_percent is how much of the image height a top/bottom-cropped
+    | screenshot keeps (matches every existing top-bar/bottom-nav image in
+    | public/img/docs, which are cropped tight rather than full-screen).
+    | It's an approximation, not a per-device measurement — review a staged
+    | screenshot before publishing and adjust here if a component's bar is
+    | taller or shorter than this assumes. --full skips cropping entirely.
+    |
+    | crop_offset is how much of the image height to skip from the crop edge
+    | before measuring crop_percent, so the OS status bar (top crop) or OS
+    | nav bar/home indicator (bottom crop) is excluded from the captured
+    | strip. Like crop_percent, it's an approximation tuned against real
+    | device captures — review a staged screenshot before publishing.
+    |
+    */
+
+    'screenshots' => [
+        'demo_path' => env('DOCS_SCREENSHOTS_DEMO_PATH'),
+        'demo_repository' => 'NativePHP/edge-components-demo',
+        'demo_branch' => 'main',
+        'staging_path' => storage_path('docs-screenshots'),
+        'publish_path' => public_path('img/docs'),
+        'process_timeout' => 300,
+        'crop_percent' => 0.15,
+        'crop_offset' => 0.05,
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
     | Jump
     |--------------------------------------------------------------------------
     |
