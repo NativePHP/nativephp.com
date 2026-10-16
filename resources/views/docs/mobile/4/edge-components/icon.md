@@ -8,7 +8,7 @@ order: 230
 Displays a platform-native icon. On iOS, icons render as [SF Symbols](https://developer.apple.com/sf-symbols/);
 on Android, as [Material Icons](https://fonts.google.com/icons?icon.set=Material+Icons). You don't need to worry about
 the differences — use one consistent icon name and EDGE's smart mapping system translates it to the right platform
-symbol automatically.
+symbol automatically. When no system icon fits, you can ship [your own SVG icons](#custom-icons).
 
 @verbatim
 ```blade
@@ -151,6 +151,8 @@ through a four-tier resolution strategy:
 This approach means you can use intuitive icon names for common cases, leverage direct platform icons for advanced use
 cases, and get consistent results across iOS and Android.
 
+A name that starts with `custom:` points at one of your [custom icons](#custom-icons) instead.
+
 ### iOS (SF Symbols)
 
 On iOS, icons render as SF Symbols. Manual mappings convert common icon names to their SF Symbol equivalents.
@@ -218,6 +220,144 @@ For Blade components whose tag only takes a single `icon` string, pick the platf
 />
 ```
 @endverbatim
+
+## Custom icons
+
+<x-docs.version-badge since="4.7" /> <x-docs.version-badge package="mobile-ui" since="0.9" />
+
+Ship your own icons as SVG files. When NativePHP builds your app, it turns each one into a native icon: a template image
+in the iOS asset catalog, with its vector data kept, and a VectorDrawable on Android.
+
+Custom icons are tinted in one color, the same way system icons are. They take the color you give `<native:icon>`, and
+a tab follows the bar's active and inactive colors. You can use them in tab bars, top-bar actions and their menus,
+`<native:icon>`, and the icon props of other EDGE components such as buttons and list items.
+
+Tab bars, top-bar actions and their menus need `nativephp/mobile` 4.7. `<native:icon>` and icons in other EDGE
+components also need `nativephp/mobile-ui` 0.9.
+
+### Adding an icon
+
+Save each icon as `resources/icons/<name>.svg`, directly in that folder rather than in a subfolder. The file name is the
+icon's name. It must be lowercase kebab-case: letters, numbers and single hyphens, such as `git-commit-vertical`. A
+`.svg` file with any other name fails the build. Files that aren't `.svg` are ignored.
+
+Here's `resources/icons/git-commit-vertical.svg`, downloaded from [Lucide](https://lucide.dev):
+
+```xml
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+     stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M12 3v6" />
+    <circle cx="12" cy="12" r="3" />
+    <path d="M12 15v6" />
+</svg>
+```
+
+<aside>
+
+Icons are built into the native project, so adding or changing an SVG needs a native build. Run
+`php artisan native:run` to see it. Hot reload won't pick up icon changes.
+
+</aside>
+
+### Using an icon
+
+Pass `custom:<name>` anywhere an icon name goes:
+
+@verbatim
+```blade static
+<native:icon name="custom:git-commit-vertical" :size="20" />
+```
+@endverbatim
+
+The same string works in any `icon` attribute, such as `<native:bottom-nav-item icon="custom:git-commit-vertical">`.
+
+In PHP, `Icon::custom()` builds that string for you. It throws an `InvalidArgumentException` if the name isn't
+lowercase kebab-case:
+
+```php
+use Native\Mobile\Edge\Layouts\Builders\NavAction;
+use Native\Mobile\Edge\Layouts\Builders\Tab;
+use Native\Mobile\Icon\Icon;
+
+// A tab in your layout's tabBar()
+Tab::link('Log', '/log', Icon::custom('git-commit-vertical'));
+
+// A top-bar action, or an item in its menu
+NavAction::make('star')->icon(Icon::custom('star'))->press('toggleStar');
+```
+
+`Icon::custom('star')` returns the string `'custom:star'`, so you can pass the string itself if you prefer. This
+`Icon` class shares its short name with the [`Icon` element](#element). If a file needs both, alias one of them:
+`use Native\Mobile\Icon\Icon as CustomIcon;`.
+
+### Per-platform custom icons
+
+The `ios` and `android` overrides take custom icons too, so you can use your icon on one platform and keep the system
+icon on the other:
+
+```php
+use App\Icons\AndroidOutlined;
+use Native\Mobile\Edge\Layouts\Builders\NavAction;
+use Native\Mobile\Icon\Icon;
+
+// Your bell on iOS, the outlined Material bell on Android
+NavAction::make('alerts')->icon(Icon::custom('bell'), android: AndroidOutlined::Notifications);
+
+// The system bell on Android, your bell on iOS
+NavAction::make('alerts')->icon('bell', ios: Icon::custom('bell'));
+```
+
+In Blade, pass the string:
+
+@verbatim
+```blade static
+<native:icon name="bell" ios="custom:bell" />
+```
+@endverbatim
+
+### Which SVGs work
+
+SVGs downloaded from Lucide, [Tabler](https://tabler.io/icons) and similar stroked sets, or from
+[Material Symbols](https://fonts.google.com/icons), work as they are. NativePHP supports:
+
+- `path`, `circle`, `ellipse`, `line`, `rect` (including rounded corners), `polyline` and `polygon`, with or without
+  `g` groups around them
+- Strokes as well as fills. Lucide's style of `stroke-width="2"`, round caps and joins, `fill="none"` and
+  `currentColor` is kept
+- The presentation attributes `fill`, `stroke`, `stroke-width`, `stroke-linecap`, `stroke-linejoin`,
+  `stroke-miterlimit`, `fill-rule`, `opacity`, `fill-opacity` and `stroke-opacity`, set on the shape or inherited from
+  a parent `svg` or `g`. They also work inside a `style` attribute
+- Any `viewBox`. Icons are scaled so their longer side is 24pt on iOS and 24dp on Android, so a 24×24 Lucide icon and
+  a 960×960 Material Symbols icon come out the same size. A file without a `viewBox` needs numeric `width` and `height`
+
+`title`, `desc`, comments and an empty `defs` are ignored. Because icons are tinted in one color, the color in the file
+doesn't matter as long as there's only one: `currentColor`, `black` and any single hex or `rgb()` color all become the
+tint.
+
+Anything else fails the build with an error that names the file, the element and the attribute. That includes:
+
+- `transform` attributes
+- Gradients, patterns, masks, clip paths and filters
+- `use`, `symbol` and `marker` elements, and anything inside `defs`
+- `text`, `image` and `foreignObject` elements
+- `<style>` elements, and any property in a `style` attribute other than the presentation attributes above
+- More than one color in the same icon
+
+To fix one, flatten it to plain paths in a single color in your design tool, then export it again.
+
+<aside>
+
+Lucide is released under the ISC license. Whichever icon set you use, check its license and credit it the way it asks.
+
+</aside>
+
+### Missing icons
+
+When a build has no asset for a custom icon, NativePHP logs a warning and draws the system icon with the same name,
+using the usual [name resolution](#how-names-resolve). So `custom:bell` shows the system bell. This happens in
+[Jump](../the-basics/jump), which can't include your app's icons, and in any build made before you added the SVG.
+
+Naming an icon after the system icon it stands in for gives you a sensible fallback.
 
 ## Icon name reference
 

@@ -141,6 +141,9 @@ shorthand) override it per platform. Each override accepts a generated enum case
 ```
 @endverbatim
 
+[Custom icons](icon#custom-icons) <x-docs.version-badge since="4.7" /> work here too: put an SVG in `resources/icons`
+and pass `custom:<name>` as `icon` or as either override.
+
 ### Search tab
 
 Mark one item with the boolean `search` attribute to make it present a native search field instead of navigating.
