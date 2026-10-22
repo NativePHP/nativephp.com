@@ -96,6 +96,7 @@ Available cases:
 - `Transition::FadeFromBottom` - subtle vertical fade
 - `Transition::ScaleFromCenter` - zoom-in effect
 - `Transition::ParallaxPush` - incoming screen slides in from the right while the outgoing screen drifts partially left underneath
+- `Transition::Morph` <x-docs.version-badge since="4.7" /> - cross-fade while elements that share a `ref` move between the two screens. See [Morphing elements between screens](#morphing-elements-between-screens)
 - `Transition::None` - swap with no animation
 
 ## Navigating from Blade
@@ -149,6 +150,7 @@ Available transition modifiers:
 - `fadeFromBottom`
 - `scaleFromCenter`
 - `parallaxPush`
+- `morph` <x-docs.version-badge since="4.7" />
 - `none`
 
 ### Action modifiers
@@ -173,6 +175,94 @@ to `replace` or `exitToWeb`:
 @endverbatim
 
 Transition and action modifiers can be combined — `@navigate.replace.fade='/login'`.
+
+## Morphing elements between screens
+
+<x-docs.version-badge since="4.7" />
+
+The morph transition carries an element from where it sits on one screen to where it sits on the next. A thumbnail
+grows into a header image, or an avatar slides into place on a profile page. If you've used the web's View
+Transitions API, it's the same idea.
+
+Give the element the same `ref` on both screens, then navigate with the `morph` modifier:
+
+@verbatim
+```blade
+{{-- The album list --}}
+@foreach ($albums as $album)
+    <native:pressable @navigate.morph="'/album/' . $album->id">
+        <native:image :ref="'album-' . $album->id" :src="$album->cover" class="w-16 h-16 rounded-xl" />
+    </native:pressable>
+@endforeach
+```
+@endverbatim
+
+@verbatim
+```blade
+{{-- The album screen --}}
+<native:column class="w-full">
+    <native:image :ref="'album-' . $album->id" :src="$album->cover" class="w-full h-80" />
+
+    <native:pressable @navigate.back.morph>
+        <native:text>Back</native:text>
+    </native:pressable>
+</native:column>
+```
+@endverbatim
+
+Tapping an album cross-fades the two screens while the cover moves and grows from the small tile into the header.
+Going back with `@navigate.back.morph` plays it in reverse.
+
+From a component, pass `Transition::Morph`:
+
+```php
+use Native\Mobile\Edge\Transition;
+
+$this->navigate('/album/3')->transition(Transition::Morph);
+```
+
+### Shaping the morph
+
+These attributes change how an element travels. They're read from the element on the screen you're navigating to,
+so put them on both elements if you want the same motion in both directions.
+
+- `morph` - what moves. `frame` (the default) moves and resizes the element. `position` moves it at its final size.
+  `size` resizes it in place, at its final position. `none` stops the element morphing.
+- `morph-duration` - length in milliseconds. The default is `350`, the same as the cross-fade behind it.
+- `morph-easing` - the curve: `linear`, `ease-in`, `ease-out`, `ease-in-out` (the default) or `spring`.
+
+@verbatim
+```blade
+<native:column ref="now-playing" morph="position" morph-duration="500" morph-easing="spring">
+    ...
+</native:column>
+```
+@endverbatim
+
+<aside>
+
+On Android, `position` and `size` behave like `frame`. Compose's shared element API always animates the whole frame,
+so the element moves and resizes together.
+
+</aside>
+
+### Which elements morph
+
+- An element morphs only when its `ref` is on both screens. Everything else cross-fades with its screen.
+- Elements only morph under the `morph` transition. A `ref` that appears on both screens does nothing during a slide
+  or a fade.
+- Keep each `ref` unique within a screen. If two elements share one, you can't be sure which of them moves.
+- `ref` is also how [tests target elements](../testing/interactions#by-ref). If you've reused a test `ref` on two
+  screens and don't want those elements to morph, add `morph="none"` to either of them.
+
+### Native chrome
+
+A morph needs one whole screen to replace another. Inside native chrome that doesn't always happen. Pushing from one
+screen with a native top bar to another, or switching between tabs of a bottom nav, is animated by the platform's
+own navigation, and nothing morphs.
+
+Morphs do run between screens that have no native chrome, and whenever the chrome changes, such as a tab screen
+opening a detail screen that has a top bar instead. See [Layouts](layouts) for how screens get their chrome.
 
 ## Reading params and data
 
