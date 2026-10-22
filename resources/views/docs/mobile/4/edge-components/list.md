@@ -74,6 +74,9 @@ content slots.
 - `leadingMonogram` - 1-2 character monogram (combine with `leadingMonogramColor`)
 - `leadingMonogramColor` - Hex color for monogram background
 - `leadingImage` - URL of a square image with a small radius
+- `leadingImageFit` - How `leadingImage` fits its square: `cover` fills and crops (default); `contain` shows the
+  whole image while preserving its aspect ratio. For logos or wide images, set `leadingImageFit="contain"`.
+  Works on iOS and Android; `leading-image-fit` is also accepted
 - `leadingCheckbox` - Boolean value for a leading checkbox. Interactive when `on-leading-change` is set —
   tapping the box fires your handler with the new value (the row's own `@press` still handles taps elsewhere
   on the row); without a handler it renders as a static state glyph
@@ -300,7 +303,7 @@ Leading slot:
 - `leadingIcon(?string $name = null, IosSymbol|string|null $ios = null, AndroidSymbol|string|null $android = null)`
 - `leadingAvatar(string $url)`
 - `leadingMonogram(string $initials, ?string $color = null)`
-- `leadingImage(string $url)`
+- `leadingImage(string $url, ?string $fit = null)` - `cover` (default) or `contain`, e.g. `->leadingImage($url, 'contain')`
 - `leadingCheckbox(bool $checked = false)`
 - `leadingRadio(bool $selected = false)`
 
