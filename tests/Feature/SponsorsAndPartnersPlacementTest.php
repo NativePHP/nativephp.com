@@ -59,6 +59,51 @@ class SponsorsAndPartnersPlacementTest extends TestCase
     }
 
     #[Test]
+    public function the_home_page_partners_listing_includes_synergi()
+    {
+        $this->get(route('welcome'))
+            ->assertOk()
+            ->assertSee('https://synergitech.co.uk/partners/nativephp/')
+            ->assertSee('/img/sponsors/synergi.svg')
+            ->assertSee('/img/sponsors/synergi-dark.svg')
+            ->assertSee('Bespoke software for complex infrastructure')
+            ->assertSeeInOrder([
+                'https://synergitech.co.uk/partners/nativephp/',
+                'target="_blank"',
+            ], false);
+    }
+
+    #[Test]
+    public function the_partners_page_includes_synergi()
+    {
+        $this->get(route('partners'))
+            ->assertOk()
+            ->assertSee('https://synergitech.co.uk/partners/nativephp/')
+            ->assertSee('/img/sponsors/synergi.svg')
+            ->assertSee('/img/sponsors/synergi-dark.svg')
+            ->assertSee('Bespoke software for complex infrastructure')
+            ->assertSeeInOrder([
+                'https://synergitech.co.uk/partners/nativephp/',
+                'target="_blank"',
+            ], false);
+    }
+
+    #[Test]
+    public function the_consulting_page_includes_synergi()
+    {
+        $this->get(route('consulting'))
+            ->assertOk()
+            ->assertSee('https://synergitech.co.uk/partners/nativephp/')
+            ->assertSee('/img/sponsors/synergi.svg')
+            ->assertSee('/img/sponsors/synergi-dark.svg')
+            ->assertSee('Bespoke software for complex infrastructure')
+            ->assertSeeInOrder([
+                'https://synergitech.co.uk/partners/nativephp/',
+                'target="_blank"',
+            ], false);
+    }
+
+    #[Test]
     public function the_sidebar_sponsors_list_includes_statamic_in_its_rotation()
     {
         $this->blade('<x-sponsors.lists.docs.sponsors />')

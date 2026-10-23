@@ -545,36 +545,33 @@
                     </x-slot>
                 </x-home.featured-partner-card>
 
-                {{-- Synergi Tech - Hidden per client request (kept for reference) --}}
-                @if(false)
-                    <x-home.featured-partner-card
-                        partnerName="Synergi Tech"
-                        tagline="Bespoke software for complex infrastructure"
-                        href="https://synergitech.co.uk/partners/nativephp/"
-                    >
-                        <x-slot:logo>
-                            <img
-                                src="/img/sponsors/synergi.svg"
-                                class="block dark:hidden"
-                                loading="lazy"
-                                alt="Synergi Tech logo"
-                                width="160"
-                                height="40"
-                            />
-                            <img
-                                src="/img/sponsors/synergi-dark.svg"
-                                class="hidden dark:block"
-                                loading="lazy"
-                                alt="Synergi Tech logo"
-                                width="160"
-                                height="40"
-                            />
-                        </x-slot>
-                        <x-slot:description>
-                            Synergi Tech are an established bespoke software development agency in the UK, specialising in business management and high-growth, complex infrastructure.
-                        </x-slot>
-                    </x-home.featured-partner-card>
-                @endif
+                <x-home.featured-partner-card
+                    partnerName="Synergi Tech"
+                    tagline="Bespoke software for complex infrastructure"
+                    href="https://synergitech.co.uk/partners/nativephp/"
+                >
+                    <x-slot:logo>
+                        <img
+                            src="/img/sponsors/synergi.svg"
+                            class="block dark:hidden"
+                            loading="lazy"
+                            alt="Synergi Tech logo"
+                            width="160"
+                            height="40"
+                        />
+                        <img
+                            src="/img/sponsors/synergi-dark.svg"
+                            class="hidden dark:block"
+                            loading="lazy"
+                            alt="Synergi Tech logo"
+                            width="160"
+                            height="40"
+                        />
+                    </x-slot>
+                    <x-slot:description>
+                        Synergi Tech are an established bespoke software development agency in the UK, specialising in business management and high-growth, complex infrastructure.
+                    </x-slot>
+                </x-home.featured-partner-card>
 
             </div>
 
