@@ -10,6 +10,7 @@ use App\Services\DocsSearchService;
 use App\Services\PluginSearchService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 
 class McpController extends Controller
 {
@@ -21,8 +22,15 @@ class McpController extends Controller
     /**
      * JSON-RPC message endpoint for tool calls
      */
-    public function message(Request $request): JsonResponse
+    public function message(Request $request): JsonResponse|Response
     {
+        // A notification has no id and gets no JSON-RPC response. Over the
+        // Streamable HTTP transport, MCP answers it with 202 and no body.
+        // Clients such as Codex drop a server that sends a response here.
+        if (is_string($request->input('method')) && ! $request->has('id')) {
+            return response()->noContent(202);
+        }
+
         $method = $request->input('method');
         $params = $request->input('params', []);
         $id = $request->input('id');
@@ -30,7 +38,6 @@ class McpController extends Controller
         try {
             $result = match ($method) {
                 'initialize' => $this->handleInitialize($params),
-                'notifications/initialized' => new \stdClass,
                 'ping' => new \stdClass,
                 'tools/list' => ['tools' => $this->getToolDefinitions()],
                 'tools/call' => $this->handleToolCall(

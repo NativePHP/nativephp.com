@@ -8,6 +8,7 @@ use App\Enums\PluginStatus;
 use App\Enums\PluginTier;
 use App\Enums\PluginType;
 use App\Enums\PriceTier;
+use App\Jobs\BuildPluginInSatis;
 use App\Jobs\RemovePluginFromSatis;
 use App\Jobs\SendNewPluginNotifications;
 use App\Jobs\SuggestPluginCategories;
@@ -450,6 +451,23 @@ class Plugin extends Model
         }
 
         SyncPluginReleases::dispatch($this);
+    }
+
+    /**
+     * Queue a satis build of the plugin's repo as it stands.
+     *
+     * Unlike syncToSatis() this doesn't re-sync releases from GitHub, it only
+     * rebuilds. The build waits a minute so a burst of pushes can share one.
+     * Free plugins are skipped, since building one would put it in satis.
+     * Drafts are skipped too, because plugins enter satis on submission.
+     */
+    public function queueSatisRebuild(): void
+    {
+        if (! $this->isPaid() || $this->isDraft()) {
+            return;
+        }
+
+        BuildPluginInSatis::dispatch($this)->delay(now()->addMinute());
     }
 
     /**

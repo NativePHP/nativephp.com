@@ -32,10 +32,13 @@
     x-bind:class="{ 'dark': isDark === true }"
 >
     <head>
-        <meta
-            http-equiv="Content-Security-Policy"
-            content="upgrade-insecure-requests"
-        />
+        {{-- Skipped locally so the site can be served over plain http --}}
+        @unless (app()->isLocal())
+            <meta
+                http-equiv="Content-Security-Policy"
+                content="upgrade-insecure-requests"
+            />
+        @endunless
         <meta charset="utf-8" />
         <meta
             http-equiv="X-UA-Compatible"

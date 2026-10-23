@@ -48,6 +48,22 @@ Accepts any EDGE elements as children. `<native:list-item>` is the canonical chi
 A pre-styled Material3 row with a headline, optional supporting + overline text, and configurable leading + trailing
 content slots.
 
+<aside>
+
+#### Attribute spelling
+
+`<native:list-item>` takes its content, slot, color and elevation attributes in camelCase (`leadingIcon`,
+`trailingText`, `leadingCheckbox`, `headlineColor`). The kebab-case spellings (`leading-icon`, `leading-checkbox`) are
+silently ignored. Callback and array attributes are the exception and use kebab-case: `on-leading-change`,
+`on-trailing-change`, `on-trailing-press`, `on-swipe-delete`, `leading-actions`, `trailing-actions`,
+`trailing-badges`, `trailing-menu`, `trailing-a11y-label` and `headline-line-through`. Everything below is listed with
+the spelling that works.
+
+Bind boolean slots with `:` so a false value stays false: `:leadingCheckbox="$task->done"`. A literal
+`leadingCheckbox="false"` is a non-empty string and renders a checked box.
+
+</aside>
+
 @verbatim
 ```blade
 <native:list-item
@@ -65,6 +81,9 @@ content slots.
 - `headline` - Primary text (required, string)
 - `supporting` - Secondary text rendered below the headline (optional, string)
 - `overline` - Small caption rendered above the headline (optional, string)
+- `headline-line-through` - Strike through the headline, e.g. for a completed todo (optional, boolean, default:
+  `false`). Bind it: `:headline-line-through="$todo->done"`. Not in `nativephp/mobile-ui` 0.6.0; it needs the
+  release that includes [NativePHP/mobile-ui#109](https://github.com/NativePHP/mobile-ui/pull/109)
 
 ### Leading slot (mutually exclusive)
 
@@ -74,7 +93,7 @@ content slots.
 - `leadingMonogram` - 1-2 character monogram (combine with `leadingMonogramColor`)
 - `leadingMonogramColor` - Hex color for monogram background
 - `leadingImage` - URL of a square image with a small radius
-- `leadingCheckbox` - Boolean value for a leading checkbox. Interactive when `on-leading-change` is set —
+- `leadingCheckbox` - Boolean value for a leading checkbox (bind it: `:leadingCheckbox="$done"`). Interactive when `on-leading-change` is set —
   tapping the box fires your handler with the new value (the row's own `@press` still handles taps elsewhere
   on the row); without a handler it renders as a static state glyph
 - `leadingRadio` - Boolean value for a leading radio button. Interactive when `on-leading-change` is set;
@@ -88,10 +107,11 @@ content slots.
 - `trailingCheckbox` - Boolean value for a trailing checkbox. Interactive when `on-trailing-change` is set;
   static glyph otherwise
 - `trailingSwitch` - Boolean value for a trailing switch [Android]
-- `trailingIconButton` - Icon name for a tappable trailing button
+- `trailingIconButton` - Icon name for a tappable trailing button. Handle taps with `on-trailing-press` (see
+  [Events](#events))
 - `trailing-a11y-label` - Accessibility label for the trailing icon button (recommended whenever
   `trailingIconButton` is set). See [Accessibility](../digging-deeper/accessibility)
-- `trailing-menu` - Attach a tap-to-open dropdown to the row's trailing edge. When set without an explicit trailing
+- `trailing-menu` - Attach a tap-to-open dropdown to the row's trailing edge (`trailingMenu` also works). When set without an explicit trailing
   slot, an `ellipsis` icon button is auto-created as the anchor. See [Menus](menus)
 
 Independent of the mutually-exclusive slot above, a row can also show a stack of small status icons:
@@ -111,9 +131,11 @@ All color props accept the full [color grammar](../digging-deeper/theming#color-
 - `leadingIconColor`, `trailingIconColor`, `trailingTextColor` - Colors for the slot content
 - `leadingIconBgColor` - Background color of the leading icon's circle
 
-### State
+### State and accessibility
 
 - `disabled` - Disable the row (optional, boolean, default: `false`)
+- `a11y-label` / `a11y-hint` - Screen-reader label and hint for the whole row. See
+  [Accessibility](../digging-deeper/accessibility)
 - `tonalElevation` - Tonal elevation in dp [Android]
 - `shadowElevation` - Shadow elevation in dp [Android]
 
@@ -126,8 +148,26 @@ All color props accept the full [color grammar](../digging-deeper/theming#color-
 - `on-leading-change` / `on-trailing-change` - Component method called when the leading/trailing checkbox or
   radio is toggled, receiving the new value. Without a handler the control renders as a static state glyph.
 
-`onTrailingPress()` fires on both platforms when the trailing icon button is tapped. The trailing switch is
-interactive on [Android] only.
+- `on-trailing-press` - Component method called when the trailing icon button is tapped, on both platforms. This
+  attribute needs the `nativephp/mobile-ui` release that includes
+  [NativePHP/mobile-ui#108](https://github.com/NativePHP/mobile-ui/pull/108). In 0.6.0 it is silently ignored and
+  only the fluent `->onTrailingPress()` on a `ListItem` element works. `@trailing-press` never works: unknown `@name`
+  attributes are treated as child-component events and dropped from plain elements
+
+The trailing switch is interactive on [Android] only.
+
+Handlers receive their arguments in this order: the arguments you wrote in the expression, then the value the control
+sends. So `on-leading-change="toggleTask(@{{ $task->id }})"` calls `toggleTask($id, $checked)`:
+
+```php
+public function toggleTask(int $id, bool $checked): void
+{
+    Task::whereKey($id)->update(['done' => $checked]);
+}
+```
+
+`on-swipe-delete` and `@press` send no value, so `on-swipe-delete="deleteTask(@{{ $task->id }})"` calls
+`deleteTask($id)`. To drive these from a test, see [Testing a list](#testing-a-list).
 
 ### Swipe actions
 
@@ -226,7 +266,7 @@ The checkbox, swipe, and row press are three independent targets on one row: tap
         <native:list-item
             headline="{{ $task->title }}"
             supporting="{{ $task->due }}"
-            leadingCheckbox="{{ $task->done }}"
+            :leadingCheckbox="$task->done"
             on-leading-change="toggleTask({{ $task->id }})"
             trailingIcon="forward"
             on-swipe-delete="deleteTask({{ $task->id }})"
@@ -262,6 +302,23 @@ here just gives the demo enough rows to scroll before the end-reached trigger fi
 
 A buffer of `5` triggers `loadMore()` when the list is within five items of the end. When omitted, the buffer defaults to `3`.
 @endverbatim
+
+## Testing a list
+
+In a [component test](../testing/introduction), target a row's callbacks by the expression you wrote in the template.
+For the swipe-to-delete example above:
+
+```php
+use App\NativeComponents\Tasks;
+use Native\Mobile\Testing\Native;
+
+it('completes and deletes a task', function () {
+    Native::test(Tasks::class)
+        ->check('toggleTask(1)')       // tap the leading checkbox: calls toggleTask(1, true)
+        ->press('deleteTask(1)')       // swipe-to-delete fires a press at its callback
+        ->press('openTask(2)');        // tap the row
+});
+```
 
 ## Element
 

@@ -312,6 +312,30 @@ Set your Apple Developer Team ID for code signing:
 This is typically detected from your installed certificates, but you can override it here. Find your Team ID
 in your Apple Developer account under Membership details.
 
+## Supported Locales
+
+<x-docs.version-badge since="4.6" />
+
+The `supported_locales` array lists the languages your app supports:
+
+```php
+'supported_locales' => ['fr', 'nl', 'zh-Hans'],
+```
+
+On Android 13 and later, this puts your app in the system's per-app language picker. On iOS, it gives your app a
+Preferred Language setting and decides which languages the App Store lists on your product page.
+
+- `config('app.locale')` is always included and always first, so users can switch back to it. You don't list it
+  yourself.
+- Entries are BCP 47 codes (`nl`, `pt-BR`, `zh-Hans`). Laravel-style `nl_NL` is accepted and becomes `nl-NL`.
+- Duplicates are dropped, ignoring case. Invalid entries are skipped with a build warning.
+- An empty array means your app supports one language, `app.locale`.
+- The list is read at build time, so the base language of a build is whatever `APP_LOCALE` was on the machine that
+  built it.
+
+Listing a locale only lets the user pick it. Translating your app is still up to you and your `lang/` files. See
+[Localization](../digging-deeper/localization) for the full guide.
+
 ## iOS Permission Strings
 
 Plugins declare their own iOS `Info.plist` usage descriptions through their manifests (see
@@ -343,6 +367,8 @@ are shown at runtime by app code, so there's no equivalent override.
 
 ## Localizing iOS Permission Strings
 
+<x-docs.version-badge changed="4.6" />
+
 The strings in `permissions` go straight into `Info.plist`, which iOS treats as the **development region**
 fallback. Users running their device in another language see those same strings unless you ship a localized
 override.
@@ -351,6 +377,8 @@ Add per-locale strings under `permission_localizations`. Each key is a BCP 47 lo
 (e.g. `nl`, `fr`, `zh-Hans`, `pt-BR`) and its value mirrors the `permissions` shape:
 
 ```php
+'supported_locales' => ['nl', 'fr'],
+
 'permissions' => [
     'NSCameraUsageDescription' => 'Used to take a profile photo.',
 ],
@@ -369,6 +397,9 @@ At build time NativePHP writes one `{locale}.lproj/InfoPlist.strings` file per l
 and registers the locale with the Xcode project so it ships with the app. iOS then picks the right string
 at runtime based on the user's preferred language, falling back to the value in `permissions`.
 
+Strings are only written for locales your app supports: the ones in [`supported_locales`](#supported-locales), plus
+`app.locale`. Entries for any other locale are skipped.
+
 <aside>
 
 You only need to localize the keys that change between languages. Any `NS*UsageDescription` not listed in
@@ -379,6 +410,8 @@ a locale block automatically falls back to the value from `permissions` (`Info.p
 Plugins can ship their own per-locale strings — see
 [Permissions & Dependencies](../plugins/permissions-dependencies#localizing-infoplist-strings) — and
 app-level entries always win on key collisions, same as the merge rules for flat `permissions`.
+
+Plugins bring translations, not languages. A plugin's strings for a locale your app doesn't support are skipped too.
 
 ## App Store Connect
 

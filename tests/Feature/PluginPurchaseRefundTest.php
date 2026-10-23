@@ -17,9 +17,12 @@ use App\Models\User;
 use App\Services\CartService;
 use App\Services\StripeConnectService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Mockery;
+use Mockery\Matcher\Closure as MockeryClosure;
 use Mockery\MockInterface;
 use PHPUnit\Framework\Attributes\Test;
 use Stripe\Invoice;
+use Stripe\LineItem;
 use Stripe\Refund;
 use Stripe\TransferReversal;
 use Tests\TestCase;
@@ -67,10 +70,58 @@ class PluginPurchaseRefundTest extends TestCase
         return TransferReversal::constructFrom(['id' => $id]);
     }
 
-    private function mockStripeConnectService(?MockInterface &$mock = null): void
+    /**
+     * A line of a Stripe checkout, the way Stripe returns it with the product expanded.
+     * It is charged at $29.00 with no discount or tax unless $amounts says otherwise.
+     *
+     * @param  array<string, string>  $metadata  The product's metadata. Checkouts from before lines were tagged have none.
+     * @param  array<string, int>  $amounts
+     */
+    private function makeStripeLineItem(string $description, array $metadata = [], array $amounts = []): LineItem
     {
-        $this->mock(StripeConnectService::class, function (MockInterface $m) use (&$mock) {
-            $m->shouldReceive('refundPaymentIntent')
+        return LineItem::constructFrom(array_merge([
+            'amount_subtotal' => 2900,
+            'amount_discount' => 0,
+            'amount_tax' => 0,
+            'amount_total' => 2900,
+            'description' => $description,
+            'price' => ['product' => ['id' => 'prod_test_123', 'metadata' => $metadata]],
+        ], $amounts));
+    }
+
+    /**
+     * @param  array<string, int>  $amounts
+     */
+    private function makePluginLineItem(Plugin $plugin, array $amounts = []): LineItem
+    {
+        return $this->makeStripeLineItem($plugin->name, ['plugin_id' => (string) $plugin->id], $amounts);
+    }
+
+    /**
+     * @param  array<string, int>  $amounts
+     */
+    private function makeBundleLineItem(PluginBundle $bundle, array $amounts = []): LineItem
+    {
+        return $this->makeStripeLineItem($bundle->name.' (Bundle)', ['plugin_bundle_id' => (string) $bundle->id], $amounts);
+    }
+
+    /**
+     * Matches the checkout line handed to Stripe for refunding, by what was charged for it.
+     */
+    private function lineItemCharged(int $amount): MockeryClosure
+    {
+        return Mockery::on(fn (LineItem $lineItem): bool => $lineItem->amount_total === $amount);
+    }
+
+    /**
+     * @param  array<int, LineItem>  $lineItems  The lines of the Stripe checkout the license was bought in.
+     */
+    private function mockStripeConnectService(array $lineItems = [], ?MockInterface &$mock = null): void
+    {
+        $this->mock(StripeConnectService::class, function (MockInterface $m) use ($lineItems, &$mock) {
+            $m->shouldReceive('checkoutLineItems')
+                ->andReturn(collect($lineItems));
+            $m->shouldReceive('refundCheckoutLineItem')
                 ->andReturn($this->makeStripeRefund());
             $m->shouldReceive('reverseTransfer')
                 ->andReturn($this->makeStripeTransferReversal());
@@ -85,7 +136,7 @@ class PluginPurchaseRefundTest extends TestCase
             'purchased_at' => now()->subDays(5),
         ]);
 
-        $this->mockStripeConnectService();
+        $this->mockStripeConnectService([$this->makePluginLineItem($license->plugin)]);
 
         $admin = User::factory()->create();
         app(RefundPluginPurchase::class)->handle($license, $admin);
@@ -181,7 +232,7 @@ class PluginPurchaseRefundTest extends TestCase
         );
 
         $mock = null;
-        $this->mockStripeConnectService($mock);
+        $this->mockStripeConnectService([$this->makePluginLineItem($license->plugin)], $mock);
         $mock->shouldNotHaveReceived('reverseTransfer');
 
         app(RefundPluginPurchase::class)->handle($license, User::factory()->create());
@@ -198,7 +249,7 @@ class PluginPurchaseRefundTest extends TestCase
             'held',
         );
 
-        $this->mockStripeConnectService();
+        $this->mockStripeConnectService([$this->makePluginLineItem($license->plugin)]);
 
         app(RefundPluginPurchase::class)->handle($license, User::factory()->create());
 
@@ -213,7 +264,7 @@ class PluginPurchaseRefundTest extends TestCase
             'failed',
         );
 
-        $this->mockStripeConnectService();
+        $this->mockStripeConnectService([$this->makePluginLineItem($license->plugin)]);
 
         app(RefundPluginPurchase::class)->handle($license, User::factory()->create());
 
@@ -230,8 +281,10 @@ class PluginPurchaseRefundTest extends TestCase
             'transferred',
         );
 
-        $this->mock(StripeConnectService::class, function (MockInterface $mock) use ($payout) {
-            $mock->shouldReceive('refundPaymentIntent')
+        $this->mock(StripeConnectService::class, function (MockInterface $mock) use ($license, $payout) {
+            $mock->shouldReceive('checkoutLineItems')
+                ->andReturn(collect([$this->makePluginLineItem($license->plugin)]));
+            $mock->shouldReceive('refundCheckoutLineItem')
                 ->once()
                 ->andReturn($this->makeStripeRefund());
             $mock->shouldReceive('reverseTransfer')
@@ -244,6 +297,65 @@ class PluginPurchaseRefundTest extends TestCase
 
         $payout->refresh();
         $this->assertEquals(PayoutStatus::Cancelled, $payout->status);
+    }
+
+    #[Test]
+    public function refunding_one_plugin_from_a_multi_item_checkout_only_refunds_that_line(): void
+    {
+        $buyer = User::factory()->create();
+        $paymentIntentId = 'pi_multi_item_test_123';
+
+        [$license, $payout] = $this->createLicenseWithPayout([
+            'user_id' => $buyer->id,
+            'stripe_payment_intent_id' => $paymentIntentId,
+            'purchased_at' => now()->subDays(3),
+            'price_paid' => 2900,
+        ]);
+        [$otherLicense, $otherPayout] = $this->createLicenseWithPayout([
+            'user_id' => $buyer->id,
+            'stripe_payment_intent_id' => $paymentIntentId,
+            'purchased_at' => now()->subDays(3),
+            'price_paid' => 4900,
+        ]);
+
+        $this->mock(StripeConnectService::class, function (MockInterface $mock) use ($license, $otherLicense, $paymentIntentId) {
+            $mock->shouldReceive('checkoutLineItems')
+                ->once()
+                ->with($paymentIntentId)
+                ->andReturn(collect([
+                    $this->makePluginLineItem($otherLicense->plugin, [
+                        'amount_subtotal' => 4900,
+                        'amount_discount' => 980,
+                        'amount_tax' => 784,
+                        'amount_total' => 4704,
+                    ]),
+                    $this->makePluginLineItem($license->plugin, [
+                        'amount_subtotal' => 2900,
+                        'amount_discount' => 580,
+                        'amount_tax' => 464,
+                        'amount_total' => 2784,
+                    ]),
+                ]));
+            $mock->shouldReceive('refundCheckoutLineItem')
+                ->once()
+                ->with($paymentIntentId, $this->lineItemCharged(2784))
+                ->andReturn($this->makeStripeRefund());
+            $mock->shouldReceive('reverseTransfer')->never();
+        });
+
+        $amount = app(RefundPluginPurchase::class)->handle($license, User::factory()->create());
+
+        $this->assertSame(2784, $amount);
+
+        $license->refresh();
+        $this->assertNotNull($license->refunded_at);
+        $this->assertEquals('re_test_refund_123', $license->stripe_refund_id);
+        $this->assertEquals(PayoutStatus::Cancelled, $payout->refresh()->status);
+
+        $otherLicense->refresh();
+        $this->assertNull($otherLicense->refunded_at);
+        $this->assertNull($otherLicense->stripe_refund_id);
+        $this->assertEquals(PayoutStatus::Pending, $otherPayout->refresh()->status);
     }
 
     #[Test]
@@ -272,14 +384,31 @@ class PluginPurchaseRefundTest extends TestCase
             $licenses->push($license);
         }
 
-        $this->mock(StripeConnectService::class, function (MockInterface $mock) {
-            $mock->shouldReceive('refundPaymentIntent')
+        $boughtAlongside = Plugin::factory()->paid()->create();
+
+        $this->mock(StripeConnectService::class, function (MockInterface $mock) use ($bundle, $boughtAlongside, $paymentIntentId) {
+            $mock->shouldReceive('checkoutLineItems')
                 ->once()
+                ->with($paymentIntentId)
+                ->andReturn(collect([
+                    $this->makePluginLineItem($boughtAlongside),
+                    $this->makeBundleLineItem($bundle, [
+                        'amount_subtotal' => 9000,
+                        'amount_discount' => 1800,
+                        'amount_tax' => 1440,
+                        'amount_total' => 8640,
+                    ]),
+                ]));
+            $mock->shouldReceive('refundCheckoutLineItem')
+                ->once()
+                ->with($paymentIntentId, $this->lineItemCharged(8640))
                 ->andReturn($this->makeStripeRefund('re_bundle_refund'));
             $mock->shouldReceive('reverseTransfer')->never();
         });
 
-        app(RefundPluginPurchase::class)->handle($licenses->first(), User::factory()->create());
+        $amount = app(RefundPluginPurchase::class)->handle($licenses->first(), User::factory()->create());
+
+        $this->assertSame(8640, $amount);
 
         foreach ($licenses as $license) {
             $license->refresh();
@@ -291,14 +420,214 @@ class PluginPurchaseRefundTest extends TestCase
     }
 
     #[Test]
-    public function stripe_failure_leaves_everything_unchanged(): void
+    public function plugin_line_is_matched_by_id_even_after_the_plugin_is_renamed(): void
+    {
+        [$license] = $this->createLicenseWithPayout([
+            'purchased_at' => now()->subDays(3),
+        ]);
+
+        $lineItem = $this->makePluginLineItem($license->plugin);
+        $license->plugin->update(['name' => 'acme/renamed-since-purchase']);
+
+        $this->mock(StripeConnectService::class, function (MockInterface $mock) use ($license, $lineItem) {
+            $mock->shouldReceive('checkoutLineItems')
+                ->andReturn(collect([$lineItem]));
+            $mock->shouldReceive('refundCheckoutLineItem')
+                ->once()
+                ->with($license->stripe_payment_intent_id, $this->lineItemCharged(2900))
+                ->andReturn($this->makeStripeRefund());
+        });
+
+        $amount = app(RefundPluginPurchase::class)->handle($license, User::factory()->create());
+
+        $this->assertSame(2900, $amount);
+        $this->assertTrue($license->fresh()->isRefunded());
+    }
+
+    #[Test]
+    public function bundle_line_is_matched_by_id_even_after_the_bundle_is_renamed(): void
+    {
+        $bundle = PluginBundle::factory()->create();
+        [$license] = $this->createLicenseWithPayout([
+            'plugin_bundle_id' => $bundle->id,
+            'purchased_at' => now()->subDays(3),
+        ]);
+
+        $lineItem = $this->makeBundleLineItem($bundle);
+        $bundle->update(['name' => 'Renamed Since Purchase']);
+
+        $this->mock(StripeConnectService::class, function (MockInterface $mock) use ($license, $lineItem) {
+            $mock->shouldReceive('checkoutLineItems')
+                ->andReturn(collect([$lineItem]));
+            $mock->shouldReceive('refundCheckoutLineItem')
+                ->once()
+                ->with($license->stripe_payment_intent_id, $this->lineItemCharged(2900))
+                ->andReturn($this->makeStripeRefund());
+        });
+
+        $amount = app(RefundPluginPurchase::class)->handle($license, User::factory()->create());
+
+        $this->assertSame(2900, $amount);
+        $this->assertTrue($license->fresh()->isRefunded());
+    }
+
+    #[Test]
+    public function plugin_line_without_metadata_is_matched_by_name(): void
+    {
+        [$license] = $this->createLicenseWithPayout([
+            'purchased_at' => now()->subDays(3),
+        ]);
+
+        $this->mock(StripeConnectService::class, function (MockInterface $mock) use ($license) {
+            $mock->shouldReceive('checkoutLineItems')
+                ->andReturn(collect([
+                    $this->makeStripeLineItem('The NativePHP Masterclass', amounts: [
+                        'amount_subtotal' => 29900,
+                        'amount_total' => 29900,
+                    ]),
+                    $this->makeStripeLineItem($license->plugin->name),
+                ]));
+            $mock->shouldReceive('refundCheckoutLineItem')
+                ->once()
+                ->with($license->stripe_payment_intent_id, $this->lineItemCharged(2900))
+                ->andReturn($this->makeStripeRefund());
+        });
+
+        $amount = app(RefundPluginPurchase::class)->handle($license, User::factory()->create());
+
+        $this->assertSame(2900, $amount);
+        $this->assertTrue($license->fresh()->isRefunded());
+    }
+
+    #[Test]
+    public function bundle_line_without_metadata_is_matched_by_name_with_the_bundle_suffix(): void
+    {
+        $bundle = PluginBundle::factory()->create();
+        [$license] = $this->createLicenseWithPayout([
+            'plugin_bundle_id' => $bundle->id,
+            'purchased_at' => now()->subDays(3),
+        ]);
+
+        $this->mock(StripeConnectService::class, function (MockInterface $mock) use ($bundle, $license) {
+            $mock->shouldReceive('checkoutLineItems')
+                ->andReturn(collect([
+                    $this->makeStripeLineItem($license->plugin->name),
+                    $this->makeStripeLineItem($bundle->name.' (Bundle)', amounts: [
+                        'amount_subtotal' => 9900,
+                        'amount_total' => 9900,
+                    ]),
+                ]));
+            $mock->shouldReceive('refundCheckoutLineItem')
+                ->once()
+                ->with($license->stripe_payment_intent_id, $this->lineItemCharged(9900))
+                ->andReturn($this->makeStripeRefund());
+        });
+
+        $amount = app(RefundPluginPurchase::class)->handle($license, User::factory()->create());
+
+        $this->assertSame(9900, $amount);
+        $this->assertTrue($license->fresh()->isRefunded());
+    }
+
+    #[Test]
+    public function refund_is_blocked_when_the_checkout_only_has_a_line_for_something_else(): void
     {
         [$license, $payout] = $this->createLicenseWithPayout([
             'purchased_at' => now()->subDays(3),
         ]);
 
         $this->mock(StripeConnectService::class, function (MockInterface $mock) {
-            $mock->shouldReceive('refundPaymentIntent')
+            $mock->shouldReceive('checkoutLineItems')
+                ->andReturn(collect([
+                    $this->makeStripeLineItem('The NativePHP Masterclass', amounts: [
+                        'amount_subtotal' => 29900,
+                        'amount_total' => 29900,
+                    ]),
+                ]));
+            $mock->shouldReceive('refundCheckoutLineItem')->never();
+            $mock->shouldReceive('reverseTransfer')->never();
+        });
+
+        $this->assertThrows(
+            fn () => app(RefundPluginPurchase::class)->handle($license, User::factory()->create()),
+            \RuntimeException::class,
+            'Could not find this license on its Stripe checkout, so there is no amount to refund.',
+        );
+
+        $license->refresh();
+        $this->assertNull($license->refunded_at);
+        $this->assertNull($license->stripe_refund_id);
+        $this->assertEquals(PayoutStatus::Pending, $payout->refresh()->status);
+    }
+
+    #[Test]
+    public function refund_is_blocked_when_nothing_was_charged_for_the_line(): void
+    {
+        [$license, $payout] = $this->createLicenseWithPayout([
+            'purchased_at' => now()->subDays(3),
+        ]);
+
+        $this->mock(StripeConnectService::class, function (MockInterface $mock) use ($license) {
+            $mock->shouldReceive('checkoutLineItems')
+                ->andReturn(collect([
+                    $this->makePluginLineItem($license->plugin, [
+                        'amount_discount' => 2900,
+                        'amount_total' => 0,
+                    ]),
+                ]));
+            $mock->shouldReceive('refundCheckoutLineItem')->never();
+            $mock->shouldReceive('reverseTransfer')->never();
+        });
+
+        $this->assertThrows(
+            fn () => app(RefundPluginPurchase::class)->handle($license, User::factory()->create()),
+            \RuntimeException::class,
+            'Nothing was charged for this license, so there is nothing to refund.',
+        );
+
+        $license->refresh();
+        $this->assertNull($license->refunded_at);
+        $this->assertNull($license->stripe_refund_id);
+        $this->assertEquals(PayoutStatus::Pending, $payout->refresh()->status);
+    }
+
+    #[Test]
+    public function refund_is_blocked_when_the_checkout_has_no_line_items(): void
+    {
+        [$license, $payout] = $this->createLicenseWithPayout([
+            'purchased_at' => now()->subDays(3),
+        ]);
+
+        $this->mock(StripeConnectService::class, function (MockInterface $mock) {
+            $mock->shouldReceive('checkoutLineItems')
+                ->andReturn(collect());
+            $mock->shouldReceive('refundCheckoutLineItem')->never();
+            $mock->shouldReceive('reverseTransfer')->never();
+        });
+
+        $this->assertThrows(
+            fn () => app(RefundPluginPurchase::class)->handle($license, User::factory()->create()),
+            \RuntimeException::class,
+            'Could not find this license on its Stripe checkout, so there is no amount to refund.',
+        );
+
+        $license->refresh();
+        $this->assertNull($license->refunded_at);
+        $this->assertNull($license->stripe_refund_id);
+        $this->assertEquals(PayoutStatus::Pending, $payout->refresh()->status);
+    }
+
+    #[Test]
+    public function stripe_failure_leaves_everything_unchanged(): void
+    {
+        [$license, $payout] = $this->createLicenseWithPayout([
+            'purchased_at' => now()->subDays(3),
+        ]);
+
+        $this->mock(StripeConnectService::class, function (MockInterface $mock) use ($license) {
+            $mock->shouldReceive('checkoutLineItems')
+                ->andReturn(collect([$this->makePluginLineItem($license->plugin)]));
+            $mock->shouldReceive('refundCheckoutLineItem')
                 ->once()
                 ->andThrow(new \Exception('Stripe API error'));
         });
@@ -339,7 +668,7 @@ class PluginPurchaseRefundTest extends TestCase
         ]);
         $this->assertTrue($buyer->hasPluginAccess($plugin));
 
-        $this->mockStripeConnectService();
+        $this->mockStripeConnectService([$this->makePluginLineItem($plugin)]);
         app(RefundPluginPurchase::class)->handle($firstPurchase, User::factory()->create());
 
         $this->assertFalse($buyer->hasPluginAccess($plugin));

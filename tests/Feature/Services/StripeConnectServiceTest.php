@@ -14,7 +14,10 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
 use Stripe\Account;
+use Stripe\Collection as StripeCollection;
+use Stripe\LineItem;
 use Stripe\PaymentIntent;
+use Stripe\Refund;
 use Stripe\StripeClient;
 use Stripe\Transfer;
 use Tests\TestCase;
@@ -304,6 +307,163 @@ class StripeConnectServiceTest extends TestCase
             'recipient account' => [self::recipientAccount(['requirements' => ['disabled_reason' => 'requirements.past_due']])],
             'full account' => [self::fullAccount(['requirements' => ['disabled_reason' => 'under_review']])],
         ];
+    }
+
+    #[Test]
+    public function refund_checkout_line_item_refunds_only_what_was_charged_for_that_line(): void
+    {
+        $refunds = new class
+        {
+            public ?array $createdWith = null;
+
+            public ?array $createdWithOptions = null;
+
+            public function create(array $params, array $options): Refund
+            {
+                $this->createdWith = $params;
+                $this->createdWithOptions = $options;
+
+                return Refund::constructFrom(['id' => 're_test_123']);
+            }
+        };
+
+        $mockStripeClient = $this->createMock(StripeClient::class);
+        $mockStripeClient->refunds = $refunds;
+
+        $this->app->bind(StripeClient::class, fn () => $mockStripeClient);
+
+        $lineItem = LineItem::constructFrom([
+            'id' => 'li_test_plugin',
+            'amount_subtotal' => 2900,
+            'amount_discount' => 580,
+            'amount_tax' => 464,
+            'amount_total' => 2784,
+        ]);
+
+        $refund = app(StripeConnectService::class)->refundCheckoutLineItem('pi_test_123', $lineItem);
+
+        $this->assertSame('re_test_123', $refund->id);
+        $this->assertSame([
+            'payment_intent' => 'pi_test_123',
+            'amount' => 2784,
+        ], $refunds->createdWith);
+
+        // Asking Stripe again for the same line must not create a second refund.
+        $this->assertSame(['idempotency_key' => 'refund-li_test_plugin'], $refunds->createdWithOptions);
+    }
+
+    #[Test]
+    public function checkout_line_items_returns_the_lines_of_the_checkout_session_for_a_payment_intent(): void
+    {
+        $sessions = $this->fakeStripeCheckoutSessions(
+            sessions: [['id' => 'cs_test_123', 'object' => 'checkout.session']],
+            lineItems: [
+                [
+                    'id' => 'li_test_plugin',
+                    'object' => 'item',
+                    'amount_subtotal' => 2900,
+                    'amount_discount' => 580,
+                    'amount_tax' => 464,
+                    'amount_total' => 2784,
+                    'description' => 'acme/camera',
+                    'price' => [
+                        'id' => 'price_test_plugin',
+                        'object' => 'price',
+                        'product' => [
+                            'id' => 'prod_test_plugin',
+                            'object' => 'product',
+                            'metadata' => ['plugin_id' => '7'],
+                        ],
+                    ],
+                ],
+                [
+                    'id' => 'li_test_bundle',
+                    'object' => 'item',
+                    'amount_subtotal' => 9900,
+                    'amount_discount' => 0,
+                    'amount_tax' => 0,
+                    'amount_total' => 9900,
+                    'description' => 'Starter (Bundle)',
+                    'price' => [
+                        'id' => 'price_test_bundle',
+                        'object' => 'price',
+                        'product' => [
+                            'id' => 'prod_test_bundle',
+                            'object' => 'product',
+                            'metadata' => ['plugin_bundle_id' => '3'],
+                        ],
+                    ],
+                ],
+            ],
+        );
+
+        $lineItems = app(StripeConnectService::class)->checkoutLineItems('pi_test_123');
+
+        $this->assertSame(['payment_intent' => 'pi_test_123', 'limit' => 1], $sessions->listedWith);
+        $this->assertSame('cs_test_123', $sessions->lineItemsListedFor);
+        $this->assertSame(['limit' => 100, 'expand' => ['data.price.product']], $sessions->lineItemsListedWith);
+
+        $this->assertCount(2, $lineItems);
+        $this->assertContainsOnlyInstancesOf(LineItem::class, $lineItems);
+        $this->assertSame(['li_test_plugin', 'li_test_bundle'], $lineItems->pluck('id')->all());
+        $this->assertSame(2784, $lineItems[0]->amount_total);
+        $this->assertSame('7', $lineItems[0]->price->product->metadata['plugin_id']);
+        $this->assertSame('3', $lineItems[1]->price->product->metadata['plugin_bundle_id']);
+    }
+
+    #[Test]
+    public function checkout_line_items_is_empty_when_the_payment_intent_has_no_checkout_session(): void
+    {
+        $sessions = $this->fakeStripeCheckoutSessions(sessions: []);
+
+        $lineItems = app(StripeConnectService::class)->checkoutLineItems('pi_test_no_session');
+
+        $this->assertTrue($lineItems->isEmpty());
+        $this->assertSame(['payment_intent' => 'pi_test_no_session', 'limit' => 1], $sessions->listedWith);
+        $this->assertNull($sessions->lineItemsListedFor);
+    }
+
+    /**
+     * @param  array<int, array<string, mixed>>  $sessions  The Checkout sessions Stripe finds for the payment intent.
+     * @param  array<int, array<string, mixed>>  $lineItems  The line items of the session.
+     */
+    private function fakeStripeCheckoutSessions(array $sessions, array $lineItems = []): object
+    {
+        $checkoutSessions = new class($sessions, $lineItems)
+        {
+            public ?array $listedWith = null;
+
+            public ?string $lineItemsListedFor = null;
+
+            public ?array $lineItemsListedWith = null;
+
+            public function __construct(private array $sessions, private array $lineItems) {}
+
+            public function all(array $params): StripeCollection
+            {
+                $this->listedWith = $params;
+
+                return StripeCollection::constructFrom(['object' => 'list', 'data' => $this->sessions]);
+            }
+
+            public function allLineItems(string $id, array $params): StripeCollection
+            {
+                $this->lineItemsListedFor = $id;
+                $this->lineItemsListedWith = $params;
+
+                return StripeCollection::constructFrom(['object' => 'list', 'data' => $this->lineItems]);
+            }
+        };
+
+        $mockCheckout = new \stdClass;
+        $mockCheckout->sessions = $checkoutSessions;
+
+        $mockStripeClient = $this->createMock(StripeClient::class);
+        $mockStripeClient->checkout = $mockCheckout;
+
+        $this->app->bind(StripeClient::class, fn () => $mockStripeClient);
+
+        return $checkoutSessions;
     }
 
     /**
