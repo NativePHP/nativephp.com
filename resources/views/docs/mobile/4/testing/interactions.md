@@ -55,6 +55,15 @@ Native::test(HapticsDemo::class)
 
 Refs make a test read cleanly and survive copy changes — the label can move without breaking the test.
 
+<x-docs.version-badge since="4.7" />
+
+A `ref` also reaches the platform's accessibility tree, as the accessibility identifier on iOS and the resource ID on
+Android, so tools that drive the real app, such as Maestro or XCUITest, can find elements by the same name.
+
+The same `ref` on two screens makes that element [morph between them](../the-basics/routing#morphing-elements-between-screens)
+when you navigate with the `morph` transition. Add `morph="none"` to an element whose `ref` is only there for tests
+if you don't want that.
+
 ## Pressing
 
 - `tap($target)` — press by `ref` or visible text (the friendliest default).
