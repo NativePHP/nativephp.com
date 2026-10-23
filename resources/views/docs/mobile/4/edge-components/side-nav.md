@@ -3,88 +3,84 @@ title: Side Navigation
 order: 370
 ---
 
-> [!IMPORTANT]
-> **Use the [Drawer layout](../the-basics/layouts#drawer-navigation).** Unlike the other inline chrome elements
-> ([`top-bar`](top-bar), [`bottom-nav`](bottom-nav), [`fab`](fab)), an inline `<native:side-nav>` currently has
-> **no built-in drawer host**: the element compiles and is hoisted onto the chrome root, but nothing consumes it
-> yet, so it renders nothing on either platform. Provide drawers with the `Drawer` builder in a `NativeLayout` —
-> its contents are any Blade view. The element reference below is kept for when the inline drawer host lands.
-
 ## Overview
 
-<div class="images-two-up not-prose">
+<x-docs.edge-preview
+    ios="edge-side-nav-ios.png"
+    android="edge-side-nav-android.png"
+    source="resources/views/native/edge-components/side-nav-drawer.blade.php"
+    alt="Side navigation drawer"
+    edge="both"
+    :sidebar-width-ios="85"
+    :sidebar-width-android="87"
+/>
 
-![](/img/docs/edge-side-nav-ios.png)
+A slide-out navigation drawer. Side navigation is hosted by the
+[`Drawer` layout](../the-basics/layouts#drawer-navigation), and its content is any Blade view, so you build it from
+ordinary EDGE components:
 
-![](/img/docs/edge-side-nav-android.png)
+```php
+use Native\Mobile\UI\Builders\Drawer;
+use Native\Mobile\UI\Concerns\HasLayoutDrawer;
 
-</div>
+class AppLayout extends NativeLayout
+{
+    use HasLayoutDrawer;
 
-A slide-out navigation drawer with support for groups, headers, and dividers.
+    public function drawer(NativeComponent $screen): ?Drawer
+    {
+        return Drawer::make(view('native.sidebar'));
+    }
+}
+```
+
+`resources/views/native/sidebar.blade.php`:
 
 @verbatim
 ```blade static
-<native:side-nav gestures-enabled="true">
-    <native:side-nav-header
-        title="My App"
-        subtitle="user@example.com"
-        icon="person"
-    />
+<native:column class="w-full pb-6">
+    <native:row class="w-full px-6 pt-6 pb-5 gap-4 items-center">
+        <native:column class="w-12 h-12 rounded-full items-center justify-center bg-theme-primary">
+            <native:icon name="person" :size="24" class="text-theme-on-primary" />
+        </native:column>
+        <native:column class="gap-1">
+            <native:text class="text-lg font-semibold text-theme-on-surface">My App</native:text>
+            <native:text class="text-sm text-theme-on-surface-variant">user@example.com</native:text>
+        </native:column>
+    </native:row>
 
-    <native:side-nav-item
-        id="home"
-        label="Home"
-        icon="home"
-        url="/home"
-        :active="true"
-    />
+    <native:divider />
 
-    <native:side-nav-group heading="Account" :expanded="false">
-        <native:side-nav-item
-            id="profile"
-            label="Profile"
-            icon="person"
-            url="/profile"
-        />
-        <native:side-nav-item
-            id="settings"
-            label="Settings"
-            icon="settings"
-            url="/settings"
-        />
-    </native:side-nav-group>
+    <native:pressable @navigate="/home" class="w-full px-3">
+        <native:row class="w-full px-4 py-3 gap-4 items-center rounded-full bg-theme-primary/15">
+            <native:icon name="home" :size="22" class="text-theme-primary" />
+            <native:text class="text-base font-semibold text-theme-primary">Home</native:text>
+        </native:row>
+    </native:pressable>
 
-    <native:horizontal-divider />
-
-    <native:side-nav-item
-        id="help"
-        label="Help"
-        icon="help"
-        url="https://help.example.com"
-        open-in-browser="true"
-    />
-</native:side-nav>
+    <native:pressable @navigate="/settings" class="w-full px-3">
+        <native:row class="w-full px-4 py-3 gap-4 items-center">
+            <native:icon name="settings" :size="22" class="text-theme-on-surface-variant" />
+            <native:text class="text-base text-theme-on-surface">Settings</native:text>
+        </native:row>
+    </native:pressable>
+</native:column>
 ```
 @endverbatim
 
-## Props
-
-- `gestures-enabled` - Swipe to open (default: `false`) [Android]
-- `label-visibility` - `labeled` (default), `selected`, or `unlabeled` (optional)
-- `dark` - Force dark mode (optional, boolean)
+See [Drawer navigation](../the-basics/layouts#drawer-navigation) for the `Drawer` builder itself — width, modal vs.
+reveal presentation, per-screen overrides, and the built-in ☰ hamburger/edge-swipe/auto-close behavior.
 
 <aside>
 
-On iOS, gesture support is always enabled for the side nav.
+The `<native:side-nav-header>`, `<native:side-nav-item>` and `<native:side-nav-group>` elements below belong to the
+self-contained `<native:side-nav>`, which has **no drawer host yet** — it compiles, but renders nothing on either
+platform, and the same elements render nothing inside a `Drawer` either. Build drawer content from ordinary
+components as shown above. The element reference is kept for when the inline drawer host lands.
 
 </aside>
 
 ## Children
-
-> [!IMPORTANT]
-> In the [Layout model](../the-basics/layouts#drawer-navigation) a drawer's contents are any Blade view — build
-> the header, items, and groups below with standard EDGE components inside a `Drawer`, rather than the
-> `<native:side-nav-*>` elements.
 
 ### `<native:side-nav-header>`
 
@@ -119,6 +115,6 @@ force the browser even for a same-domain `url`.
 - `expanded` - Initially expanded (optional, default: `false`)
 - `icon` - Material icon (optional)
 
-### `<native:horizontal-divider>`
+### `<native:divider>`
 
-Add visual separators between navigation items. This item has no properties.
+A visual separator between navigation items. See [Divider](divider) for its full reference.

@@ -16,6 +16,7 @@ auth.json
 
 # storage
 /storage/*.key
+/storage/docs-screenshots
 
 # vendor
 /vendor
