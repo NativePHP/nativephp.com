@@ -13,14 +13,19 @@ final class PluginReportPolicy
 {
     public function viewAny(User $user): bool
     {
-        return $user->isAdmin();
+        return $user->can('ViewAny:PluginReport');
     }
 
     public function view(User $user, PluginReport $pluginReport): Response
     {
-        return $user->isAdmin()
+        return $user->can('View:PluginReport')
             ? Response::allow()
             : Response::denyAsNotFound('Report not found.');
+    }
+
+    public function update(User $user, PluginReport $pluginReport): bool
+    {
+        return $user->can('Update:PluginReport');
     }
 
     public function create(User $user, Plugin $plugin): bool

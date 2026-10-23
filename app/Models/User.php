@@ -22,10 +22,11 @@ use Laravel\Cashier\Billable;
 use Laravel\Passport\Contracts\ScopeAuthorizable;
 use Laravel\Sanctum\Contracts\HasAbilities;
 use Laravel\Sanctum\HasApiTokens;
+use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable implements FilamentUser, HasName, MustVerifyEmail
 {
-    use Billable, HasApiTokens, HasFactory, Notifiable;
+    use Billable, HasApiTokens, HasFactory, HasRoles, Notifiable;
 
     /** @var HasAbilities|ScopeAuthorizable|null */
     protected $accessToken;
@@ -60,14 +61,31 @@ class User extends Authenticatable implements FilamentUser, HasName, MustVerifyE
         return $this->attributes['display_name'] ?? $this->name ?? $this->email;
     }
 
+    /**
+     * Super admins can always reach the panel. Anyone else needs at least one
+     * role, whose permissions then decide which sections they can see.
+     */
     public function canAccessPanel(Panel $panel): bool
+    {
+        return $this->isAdmin() || $this->roles->isNotEmpty();
+    }
+
+    /**
+     * Only super admins can impersonate, so staff with a narrower role can't
+     * borrow anyone else's access.
+     */
+    public function canImpersonate(): bool
     {
         return $this->isAdmin();
     }
 
+    /**
+     * Super admins: anyone listed in FILAMENT_USERS or holding the super admin role.
+     */
     public function isAdmin(): bool
     {
-        return in_array($this->email, config('filament.users'), true);
+        return in_array($this->email, config('filament.users'), true)
+            || $this->hasRole(config('filament-shield.super_admin.name'));
     }
 
     /**

@@ -3,12 +3,15 @@
 namespace App\Filament\Resources\PluginResource\RelationManagers;
 
 use App\Enums\PluginActivityType;
+use App\Filament\Resources\Concerns\AuthorizesThroughOwnerRecord;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
 use Filament\Tables\Table;
 
 class ActivitiesRelationManager extends RelationManager
 {
+    use AuthorizesThroughOwnerRecord;
+
     protected static string $relationship = 'activities';
 
     protected static ?string $title = 'Activity History';
