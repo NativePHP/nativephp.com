@@ -70,7 +70,7 @@ wrapping a [`<native:row>`](row).
                 <native:column class="w-full h-full rounded-full bg-theme-surface-variant items-center justify-center">
                     <native:text class="text-base font-bold text-theme-on-surface-variant">{{ $contact->initials }}</native:text>
                 </native:column>
-                <native:image src="{{ $contact->avatar }}" :width="64" :height="64" class="rounded-full" :fit="2" alt="{{ $contact->name }}" />
+                <native:image src="{{ $contact->avatar }}" :width="64" :height="64" class="rounded-full" fit="cover" alt="{{ $contact->name }}" />
             </native:stack>
             <native:text class="text-xs text-theme-on-surface">{{ $contact->name }}</native:text>
         </native:column>

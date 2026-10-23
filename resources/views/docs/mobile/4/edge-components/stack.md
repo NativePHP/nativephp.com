@@ -78,7 +78,7 @@ In a real app the base layer would typically be a `<native:image>` avatar (e.g.
 @verbatim
 ```blade
 <native:stack class="w-full h-[250] rounded-2xl">
-    <native:image src="https://picsum.photos/seed/banner/800/500" class="w-full h-full" :fit="2" />
+    <native:image src="https://picsum.photos/seed/banner/800/500" class="w-full h-full" fit="cover" />
     <native:column class="w-full h-full justify-end p-4 bg-black/40">
         <native:text class="text-2xl font-bold text-white">Featured Article</native:text>
         <native:text class="text-base text-white">Read more about this topic</native:text>
