@@ -107,6 +107,10 @@ Your app will boot a little slower, but you will find that everything looks as y
 
 It's better than scratching your head for an hour trying to figure out why your changes aren't showing!
 
+If you do set a version, the app only refreshes when the version number or the build number changes, so bump
+`NATIVEPHP_APP_VERSION_CODE` before each build. See
+[how NativePHP uses these values](configuration#codenativephp-app-versioncode).
+
 </aside>
 
 ## Working with Xcode or Android Studio

@@ -34,11 +34,11 @@ So it's not something you want to be changing very often.
 
 ## `NATIVEPHP_APP_VERSION`
 
-The `NATIVEPHP_APP_VERSION` environment variable sets your app's **public version string** - what shows up in App Store
-and Play Store listings, and on-device under "Settings → Apps" (or equivalent). It maps to `CFBundleShortVersionString`
-on iOS and `versionName` on Android.
+The `NATIVEPHP_APP_VERSION` environment variable sets your app's **version number** - the public version string that
+shows up in App Store and Play Store listings, and on-device under "Settings → Apps" (or equivalent). It maps to
+`CFBundleShortVersionString` on iOS and `versionName` on Android.
 
-Its companion, `NATIVEPHP_APP_VERSION_CODE`, sets the **internal build number** the stores use to distinguish uploads
+Its companion, `NATIVEPHP_APP_VERSION_CODE`, sets the **build number** the stores use to distinguish uploads
 (`CFBundleVersion` on iOS, `versionCode` on Android). Users don't normally see this one, but the stores require it to
 increase with every upload.
 
@@ -46,9 +46,8 @@ increase with every upload.
 latest code without needing to bump a version number by hand.
 
 You only need to change this when you're cutting a release build for distribution. Rather than editing your `.env`
-manually, use the
-[`native:release` command](commands#nativerelease), which bumps the version (and build
-number) for you.
+manually, use the [`native:release` command](commands#nativerelease) to bump the version number.
+[`native:package`](commands#nativepackage) increments the build number each time it packages your app.
 
 <aside>
 
@@ -57,14 +56,19 @@ number) for you.
 When your app is compiling, NativePHP copies the relevant Laravel files into a temporary directory, zips them up, and
 embeds the archive into the native application.
 
-On boot, the app compares the embedded `NATIVEPHP_APP_VERSION` and `NATIVEPHP_APP_VERSION_CODE` against the values from
-the previously installed version. If they match, it skips extracting the archive and reuses the already-unpacked files.
+On boot, the app compares the embedded version number and build number with the pair it extracted last time. If either
+one is different, it extracts the archive. If both match, it skips extraction and reuses the already-unpacked files.
 
 This means the first boot after an install or update unpacks the bundled Laravel app, and every subsequent boot is
 significantly faster. It's also why `DEBUG` makes development boots a bit slower - the archive is always extracted so
 you see your latest changes.
 
 </aside>
+
+Because of this, two builds with the same version number and build number count as the same build. If you set a version
+and then rebuild and install over an existing copy of your app without changing either number, the app keeps running
+the code it extracted before. Bump `NATIVEPHP_APP_VERSION_CODE` before each build you install. `native:run` doesn't
+change it for you.
 
 ## Persistent Runtime
 
