@@ -97,6 +97,40 @@ $battery['isCharging'];    // bool
 | `batteryLevel` | Battery level from `0.0` to `1.0` |
 | `isCharging` | Whether the device is charging |
 
+## Events
+
+The device sends two events that a screen hears with `#[On]`:
+
+| Event | Fires when | Arguments |
+| --- | --- | --- |
+| `Native\Mobile\Events\Device\ThermalStateChanged` | The thermal state of the device changes | `state`, `previous` |
+| `Native\Mobile\Events\Motion\ShakeDetected` | The user shakes the device | None |
+
+`state` and `previous` are cases of the `Native\Mobile\ThermalState` enum: `Normal`, `Warm`, `Hot` or `Critical`.
+`Device::thermalState()` returns the current case at any time.
+
+```php
+use Native\Mobile\Attributes\On;
+use Native\Mobile\Events\Device\ThermalStateChanged;
+use Native\Mobile\Events\Motion\ShakeDetected;
+use Native\Mobile\ThermalState;
+
+#[On(ThermalStateChanged::class)]
+public function onThermal(ThermalState $state, ThermalState $previous): void
+{
+    $this->throttled = $state->isHot();
+}
+
+#[On(ShakeDetected::class)]
+public function onShake(): void
+{
+    $this->shakes++;
+}
+```
+
+Both events [broadcast globally](events#broadcasting-globally). Next to the `#[On]` methods of the live screen,
+`Event::listen` hears them anywhere in your app.
+
 ## Permissions
 
 | Platform | Permissions |
