@@ -98,8 +98,6 @@
             </x-slot>
         </x-home.featured-partner-card>
 
-        {{-- Synergi Tech - Hidden per client request (kept for reference) --}}
-        @if(false)
             <x-home.featured-partner-card
                 partnerName="Synergi Tech"
                 tagline="Bespoke software for complex infrastructure"
@@ -128,7 +126,6 @@
                     Synergi Tech are an established bespoke software development agency in the UK, specialising in business management and high-growth, complex infrastructure. Proud to partner with NativePHP.
                 </x-slot>
             </x-home.featured-partner-card>
-        @endif
 
             {{-- Partner CTA --}}
             <div
