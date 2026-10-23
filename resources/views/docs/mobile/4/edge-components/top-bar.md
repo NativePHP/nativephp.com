@@ -103,6 +103,7 @@ On iOS, if more than 5 actions are provided, they collapse into an overflow menu
 - `label` - Text label. Used for accessibility and displayed in overflow menus (optional but recommended)
 - `url` - A URL to navigate to when tapped (optional)
 - `destructive` - Render in the destructive (red) tint (optional, boolean)
+- `image` - An image URL drawn as a small circle over the icon, e.g. the signed-in user's avatar (optional, string). See [Action images](#action-images)
 
 <aside>
 
@@ -110,6 +111,35 @@ Any `url` that doesn't match a registered native route will exit to the web view
 method on your screen instead of navigating, use `@tap="methodName"`.
 
 </aside>
+
+### Action images
+
+Set `image` to show a picture, such as the signed-in user's avatar, in place of an action's icon. It works on plain
+actions and on actions that open a menu.
+
+@verbatim
+```blade static
+<native:top-bar title="Home">
+    <native:top-bar-action
+        id="account"
+        label="Account"
+        icon="person"
+        :image="$user->avatar_url"
+        @tap="openAccount"
+    />
+</native:top-bar>
+```
+@endverbatim
+
+With the `NavAction` builder, use `->image($url)`. Passing `null` or a blank string leaves the image unset:
+
+```php
+NavAction::make('account')->icon('person')->image($user->avatar_url)->press('openAccount');
+```
+
+The image is drawn as a 28pt circle over the icon. The icon shows while the image loads and stays if it fails to
+load, so always set an `icon` too. A `disabled` action fades the image along with the icon. When `image` is unset the
+action renders exactly as before.
 
 ### Platform icons
 
