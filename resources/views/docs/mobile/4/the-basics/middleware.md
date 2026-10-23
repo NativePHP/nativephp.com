@@ -106,6 +106,7 @@ result onto native navigation.
 | Redirects anywhere else | Exits to the web view with that URL |
 | Throws `AuthenticationException` | Redirects to its `redirectTo()`, else the `login` route |
 | Aborts (403) or returns a response | Navigation is refused; the user stays where they were |
+| Throws any other exception | The exception is reported and the user is sent to your `start_url` |
 
 Two guarantees are worth stating outright:
 
@@ -113,11 +114,44 @@ Two guarantees are worth stating outright:
 loading — no queries, no API calls — before being turned away. It publishes no frame either, so none of its content
 can appear.
 
-**Guards fail closed.** If middleware throws — an unresolvable alias, a bug in your own guard — the navigation is
-refused rather than allowed. Failing open would silently grant access.
+**Guards fail closed.** If middleware throws — an unresolvable alias, a bug in your own guard — the screen is
+refused rather than allowed. Failing open would silently grant access. See [When a guard throws](#when-a-guard-throws)
+for where the user goes instead.
 
 A guard that redirects to the very screen it guards would bounce forever. That case is detected and refused instead
 of hanging the runloop.
+
+## When a guard throws
+
+Refusing in place isn't always safe when a guard throws. After a `replace()` there may be no screen to go back to,
+and the app would be left on a blank screen.
+
+So NativePHP passes the exception to Laravel's `report()`, which means it reaches your logs and any error tracker
+you've configured, and then replaces the refused screen with your app's
+[`start_url`](../getting-started/configuration#start-url).
+
+To send the user somewhere else, register a callback from a service provider's `boot()`:
+
+```php
+use Native\Mobile\Edge\ScreenGuard;
+
+ScreenGuard::onFailure(function (Throwable $e, string $uri) {
+    return '/something-went-wrong';
+});
+```
+
+The callback receives the exception and the URI that was being guarded. It can return:
+
+- A URI. A native route is replaced onto, and anything else exits to the web view.
+- A `NavigationIntent`, used as it is. Return `new NavigationIntent(NavigationIntent::BACK)` to keep the user where
+  they were.
+- `null`, to keep the default `start_url`.
+
+If the callback throws, that exception is reported too and the user goes to `start_url`.
+
+If the destination is the screen whose guard just failed, for example a `start_url` behind the same broken
+middleware, replacing onto it would only fail again. NativePHP loads it in the web view as a real request instead.
+Laravel's HTTP kernel then runs the middleware itself, and you get either the screen or Laravel's error page.
 
 ## Testing
 
