@@ -109,6 +109,33 @@ It's better than scratching your head for an hour trying to figure out why your 
 
 </aside>
 
+## Finding the built app
+
+`native:run` builds a normal debug app and then installs it. The build output stays on disk afterwards, so you can
+hand it to a teammate, install it on another simulator or emulator, or upload it to a device farm.
+
+| Platform | Command | Output |
+|----------|---------|--------|
+| iOS simulator | `php artisan native:run ios {simulator-udid}` | `nativephp/ios/build/Build/Products/Debug-iphonesimulator/NativePHP-simulator.app` |
+| Android debug | `php artisan native:run android --build=debug` | `nativephp/android/app/build/outputs/apk/debug/app-debug.apk` |
+
+A few things to know:
+
+- The simulator `.app` is always named `NativePHP-simulator.app`, whatever your app is called. NativePHP sets the
+  bundle name inside it from your `APP_NAME`. It only runs on simulators, not on physical devices.
+- Install the `.app` on any booted simulator with `xcrun simctl install booted path/to/NativePHP-simulator.app`, and
+  the `.apk` on any emulator or device with `adb install -r path/to/app-debug.apk`.
+- `--build=profileable` on Android writes `apk/profileable/app-profileable.apk` instead.
+- The `nativephp` directory is rebuilt by `native:install --force`, so copy anything you want to keep somewhere else.
+- Keep `NATIVEPHP_APP_VERSION=DEBUG` in `.env` for these builds. A `DEBUG` build re-extracts your Laravel app every
+  time it launches. With a fixed version such as `1.0.0`, an app that is already installed only re-extracts when the
+  version or build number changes, so installing a fresh build over an old one can keep showing the old screens.
+- These are development builds. For signed release builds (`.ipa`, release `.apk` or `.aab`), use
+  [`native:package`](commands#nativepackage) or [Bifrost](../publishing/bifrost).
+
+To find a simulator's UDID, run `xcrun simctl list devices available`. For Android device serials, run
+`adb devices`.
+
 ## Working with Xcode or Android Studio
 
 On occasion, it is useful to compile your app from inside the target platform's dedicated development tools, Android

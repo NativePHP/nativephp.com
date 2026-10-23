@@ -104,7 +104,7 @@ value.
 
 @verbatim
 ```blade static
-<native:text-input native:model="query" />
+<native:outlined-text-input native:model="query" />
 ```
 @endverbatim
 
