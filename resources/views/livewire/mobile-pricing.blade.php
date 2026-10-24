@@ -1,6 +1,6 @@
 <section
     id="pricing"
-    class="mx-auto mt-24 max-w-2xl"
+    class="mx-auto mt-24 max-w-2xl scroll-mt-24"
     aria-labelledby="pricing-heading"
 >
     <header class="relative z-10 grid place-items-center text-center">
@@ -26,7 +26,7 @@
             "
             class="text-3xl font-semibold opacity-0"
         >
-            Choose your plan
+            Ready to go Ultra?
         </h2>
 
         <p
@@ -50,7 +50,7 @@
             "
             class="mx-auto max-w-xl pt-2 text-base/relaxed text-gray-600 opacity-0 dark:text-gray-400"
         >
-            Get the most out of NativePHP
+            One subscription, everything on this page. Cancel anytime.
         </p>
     </header>
 
