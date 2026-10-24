@@ -4,6 +4,7 @@ namespace Tests\Feature\Commands;
 
 use App\Enums\PayoutStatus;
 use App\Enums\PluginType;
+use App\Enums\PriceTier;
 use App\Models\DeveloperAccount;
 use App\Models\Plugin;
 use App\Models\PluginLicense;
@@ -50,6 +51,28 @@ class BackfillMissingPayoutsTest extends TestCase
         $this->assertEquals(8000, $payout->developer_amount);
         $this->assertEquals(PayoutStatus::Pending, $payout->status);
         $this->assertTrue($payout->eligible_for_payout_at->isPast());
+    }
+
+    public function test_creates_payout_without_platform_fee_for_sale_at_ultra_price(): void
+    {
+        $developerAccount = DeveloperAccount::factory()->create(['payout_percentage' => 70]);
+        $plugin = $this->createThirdPartyPlugin($developerAccount);
+
+        PluginLicense::factory()->create([
+            'plugin_id' => $plugin->id,
+            'price_paid' => 7000,
+            'price_tier' => PriceTier::Ultra,
+        ]);
+
+        $this->artisan('payouts:backfill')
+            ->expectsOutputToContain('Created 1 payout record(s).')
+            ->assertExitCode(0);
+
+        $payout = PluginPayout::first();
+        $this->assertNotNull($payout);
+        $this->assertEquals(7000, $payout->gross_amount);
+        $this->assertEquals(0, $payout->platform_fee);
+        $this->assertEquals(7000, $payout->developer_amount);
     }
 
     public function test_creates_held_payout_when_developer_cannot_receive_payouts(): void

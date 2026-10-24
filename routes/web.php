@@ -30,6 +30,7 @@ use App\Http\Controllers\SupportTicketAttachmentController;
 use App\Http\Controllers\TeamController;
 use App\Http\Controllers\TeamUserController;
 use App\Http\Controllers\UltraController;
+use App\Http\Controllers\UltraPageController;
 use App\Livewire\ClaimDonationLicense;
 use App\Livewire\Customer\Course\LessonShow;
 use App\Livewire\Customer\Dashboard;
@@ -117,7 +118,7 @@ Route::post('opencollective/contribution', [OpenCollectiveWebhookController::cla
 Route::get('opencollective/claim', ClaimDonationLicense::class)->name('opencollective.claim');
 
 Route::view('/', 'welcome')->name('welcome');
-Route::view('ultra', 'pricing')->name('pricing');
+Route::get('ultra', UltraPageController::class)->name('pricing');
 Route::view('alt-pricing', 'alt-pricing')->name('alt-pricing')->middleware('signed');
 Route::get('course', function () {
     $user = auth()->user();

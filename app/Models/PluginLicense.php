@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\PriceTier;
 use Illuminate\Database\Eloquent\Attributes\Scope;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -59,6 +60,14 @@ class PluginLicense extends Model
     public function wasPurchasedAsBundle(): bool
     {
         return $this->plugin_bundle_id !== null;
+    }
+
+    /**
+     * Ultra subscribers buy third-party plugins at a lower price, and the developer keeps all of it.
+     */
+    public function wasSoldAtUltraPrice(): bool
+    {
+        return $this->price_tier === PriceTier::Ultra;
     }
 
     /**
@@ -165,6 +174,7 @@ class PluginLicense extends Model
     {
         return [
             'price_paid' => 'integer',
+            'price_tier' => PriceTier::class,
             'is_grandfathered' => 'boolean',
             'purchased_at' => 'datetime',
             'expires_at' => 'datetime',

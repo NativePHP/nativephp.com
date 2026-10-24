@@ -395,6 +395,10 @@ class User extends Authenticatable implements FilamentUser, HasName, MustVerifyE
             $tiers[] = PriceTier::Subscriber;
         }
 
+        if ($this->hasActiveUltraSubscription()) {
+            $tiers[] = PriceTier::Ultra;
+        }
+
         if ($this->isEapCustomer()) {
             $tiers[] = PriceTier::Eap;
         }

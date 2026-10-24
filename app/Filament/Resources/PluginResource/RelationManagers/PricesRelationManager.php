@@ -24,7 +24,7 @@ class PricesRelationManager extends RelationManager
                     ->options(PriceTier::class)
                     ->required()
                     ->default(PriceTier::Regular)
-                    ->helperText('Regular = standard price, Subscriber = Pro/Max holders, EAP = Early Access'),
+                    ->helperText('Regular = standard price, Subscriber = Pro/Max holders, EAP = Early Access, Ultra = Ultra subscribers (the developer keeps 100% of these sales)'),
 
                 Forms\Components\TextInput::make('amount')
                     ->label('Price (cents)')
@@ -59,6 +59,7 @@ class PricesRelationManager extends RelationManager
                         PriceTier::Regular => 'gray',
                         PriceTier::Subscriber => 'info',
                         PriceTier::Eap => 'success',
+                        PriceTier::Ultra => 'warning',
                     })
                     ->sortable(),
 
