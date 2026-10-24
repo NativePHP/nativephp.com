@@ -31,6 +31,26 @@ Per Material 3, backdrop and surface colors come from `theme.background`. The cl
 ```
 @endverbatim
 
+<aside>
+
+Inline handlers like `@press="$showDetails = true"` work in Jump previews. In your own app, call a method instead:
+
+```php
+public bool $showDetails = false;
+
+public function openDetails(): void { $this->showDetails = true; }
+public function closeDetails(): void { $this->showDetails = false; }
+```
+
+@verbatim
+```blade
+<native:button label="View details" @press="openDetails" />
+<native:modal :visible="$showDetails" @dismiss="closeDetails">
+```
+@endverbatim
+
+</aside>
+
 ## Props
 
 - `visible` - Whether the modal is shown (required, boolean)
