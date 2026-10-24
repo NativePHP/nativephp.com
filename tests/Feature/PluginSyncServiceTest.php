@@ -131,11 +131,11 @@ class PluginSyncServiceTest extends TestCase
         ]);
 
         $this->assertFalse((new PluginSyncService)->sync($plugin));
-        Log::shouldHaveReceived('warning')->once()->with(
+        Log::shouldHaveReceived('warning')->with(
             '[PluginSync] Could not discover latest release',
             \Mockery::on(fn (array $context): bool => $context['plugin_id'] === $plugin->id
                 && str_contains($context['error'], '403')),
-        );
+        )->once();
         $this->assertSame('Existing documentation', $plugin->fresh()->readme_html);
         $this->assertNull($plugin->fresh()->last_synced_at);
         Http::assertNotSent(fn (Request $request): bool => str_contains($request->url(), '/contents/'));

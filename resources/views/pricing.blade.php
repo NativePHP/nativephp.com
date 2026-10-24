@@ -643,9 +643,12 @@
         </section>
     @endif
 
+    {{-- Pricing Section --}}
+    <livewire:mobile-pricing />
+
     {{-- FAQ Section --}}
     <section
-        class="mt-24"
+        class="mt-24 pb-24"
         aria-labelledby="faq-heading"
     >
         <h2
@@ -818,9 +821,4 @@
             </x-faq-card>
         </div>
     </section>
-
-    {{-- Pricing Section --}}
-    <div class="pb-24">
-        <livewire:mobile-pricing />
-    </div>
 </x-layout>

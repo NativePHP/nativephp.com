@@ -22,7 +22,7 @@ class UltraPageTest extends TestCase
     }
 
     #[Test]
-    public function it_shows_the_feature_sections_before_the_pricing_card(): void
+    public function it_shows_the_feature_sections_then_the_pricing_card_then_the_faqs(): void
     {
         $this
             ->withoutVite()
@@ -37,8 +37,8 @@ class UltraPageTest extends TestCase
                 'Premium support',
                 'Direct repo access',
                 'Shape the roadmap',
-                'Frequently Asked Questions',
                 'Ready to go Ultra?',
+                'Frequently Asked Questions',
             ]);
     }
 
