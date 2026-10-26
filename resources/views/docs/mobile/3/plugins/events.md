@@ -25,15 +25,16 @@ Add your event classes to the manifest:
 
 ## Creating Event Classes
 
-Events are simple PHP classes:
+Events are simple PHP classes that implement the `DispatchableFromNative` marker interface:
 
 ```php
 namespace Vendor\MyPlugin\Events;
 
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
+use Native\Mobile\Events\Contracts\DispatchableFromNative;
 
-class ProcessingComplete
+class ProcessingComplete implements DispatchableFromNative
 {
     use Dispatchable, SerializesModels;
 
@@ -49,6 +50,16 @@ class ProcessingComplete
 Events don't need `ShouldBroadcast` or channel configuration. NativePHP handles the dispatch directly.
 
 </aside>
+
+### Implement DispatchableFromNative
+
+Since nativephp/mobile 4.6.1 and 3.3.11, the `/_native/api/events` endpoint refuses any class that doesn't implement
+`Native\Mobile\Events\Contracts\DispatchableFromNative`. That endpoint is how a native event reaches your
+`Event::listen` listeners. An unmarked event is dropped there without an error. JavaScript listeners and `#[OnNative]`
+handlers still fire, because they hear the event in the web view, but your PHP listeners never run.
+
+The interface has no methods. Add it to every event class your native code dispatches, and require
+`"nativephp/mobile": "^3.3.11 || ^4.6.1"` in your `composer.json`, since older versions don't have the interface.
 
 ## Swift Event Dispatching
 
