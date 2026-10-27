@@ -79,6 +79,7 @@ class PluginDirectoryController extends Controller
             'bundles' => $bundles,
             'bestPrice' => $bestPrice,
             'regularPrice' => $regularPrice,
+            'ultraOfferPrice' => $user?->hasActiveUltraSubscription() ? null : $plugin->getUltraPrice(),
             'hasDiscount' => $bestPrice && $regularPrice && $bestPrice->id !== $regularPrice->id,
             'isAdminPreview' => (! $plugin->isApproved() || ! $plugin->is_active) && ($isAdmin || $isOwner),
         ]);

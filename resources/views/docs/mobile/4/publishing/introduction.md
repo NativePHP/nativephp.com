@@ -66,7 +66,7 @@ php artisan native:release patch
 ```
 
 You can pass `patch`, `minor`, or `major` depending on the type of release you're cutting. This updates
-`NATIVEPHP_APP_VERSION` in your `.env` and increments the build number for you.
+`NATIVEPHP_APP_VERSION` in your `.env`.
 
 ### Versioning
 
@@ -83,7 +83,13 @@ The app version is managed via the `NATIVEPHP_APP_VERSION` key in your `.env`.
 Both the Google Play Store and Apple App Store require your app's build number to increase for each release you submit.
 
 The build number is managed via the `NATIVEPHP_APP_VERSION_CODE` key in your `.env`. You don't need to manage this
-yourself — running `native:release` automatically increments the build number and persists it back to your `.env`.
+yourself for store builds: `native:package` increments the build number and persists it back to your `.env`.
+
+The build number also decides whether a device picks up your new code. Together with the version number, it identifies
+a build, and the app only unpacks its bundled Laravel code when that pair changes. A release build installed over a
+previous one with the same version and build number keeps running the previous code. `native:run --build=release`
+doesn't increment the build number, so bump `NATIVEPHP_APP_VERSION_CODE` yourself before testing a new release build
+on a device that already has one installed.
 
 ### Run a `release` build
 

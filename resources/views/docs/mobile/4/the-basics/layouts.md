@@ -61,7 +61,7 @@ includes two reference layouts you can copy as a starting point:
 - `App\NativeComponents\Layouts\TabsLayout` - Title bar plus a 3-tab bottom nav.
 
 @verbatim
-If you use the `nativephp/native-ui` plugin, its `native-ui-layouts` publish tag scaffolds a starter `<x-layouts.app>`
+If you use the `nativephp/mobile-ui` plugin, its `native-ui-layouts` publish tag scaffolds a starter `<x-layouts.app>`
 Blade component that wraps a screen's content with safe-area handling and optional scrolling — copy it to
 `feed.blade.php`, `detail.blade.php`, and so on for multiple page archetypes.
 @endverbatim
@@ -227,7 +227,7 @@ honors every tier everywhere.
 
 ## Drawer navigation
 
-For a slide-out side drawer, mix the native-ui `HasLayoutDrawer` trait into your layout and return a `Drawer` from
+For a slide-out side drawer, mix the mobile-ui `HasLayoutDrawer` trait into your layout and return a `Drawer` from
 `drawer()`. The content is any Blade view, so you build the drawer's UI with normal EDGE components:
 
 ```php
@@ -342,7 +342,7 @@ the content too far.
 ## Floating overlay
 
 For a pill or banner that **floats over** every screen — a "servers nearby" chip, a now-playing capsule, a
-sync-status badge — mix the native-ui `HasFloatingOverlay` trait into your layout and return a `FloatingOverlay`
+sync-status badge — mix the mobile-ui `HasFloatingOverlay` trait into your layout and return a `FloatingOverlay`
 from `floatingOverlay()`. Unlike `bottomBar()`, it does **not** inset the content: it hovers on a top layer above
 the content and the tab bar, so nothing is pushed up. Return `null` and nothing floats.
 

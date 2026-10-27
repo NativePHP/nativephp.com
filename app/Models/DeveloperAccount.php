@@ -71,6 +71,19 @@ class DeveloperAccount extends Model
         return 100 - $this->payout_percentage;
     }
 
+    /**
+     * The platform fee for one sale. A sale at the Ultra price carries no fee,
+     * so the developer is paid everything the buyer paid.
+     */
+    public function platformFeePercentFor(PluginLicense $license): int
+    {
+        if ($license->wasSoldAtUltraPrice()) {
+            return 0;
+        }
+
+        return $this->platformFeePercent();
+    }
+
     protected function casts(): array
     {
         return [

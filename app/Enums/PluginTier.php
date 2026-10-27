@@ -46,14 +46,17 @@ enum PluginTier: string
             self::Bronze => [
                 PriceTier::Regular->value => 2900,
                 PriceTier::Subscriber->value => 1100,
+                PriceTier::Ultra->value => 2000,
             ],
             self::Silver => [
                 PriceTier::Regular->value => 4900,
                 PriceTier::Subscriber->value => 1700,
+                PriceTier::Ultra->value => 3500,
             ],
             self::Gold => [
                 PriceTier::Regular->value => 9900,
                 PriceTier::Subscriber->value => 3100,
+                PriceTier::Ultra->value => 7000,
             ],
         };
     }

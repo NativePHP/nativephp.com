@@ -83,6 +83,7 @@ Add a `components` array to `nativephp.json`. Each entry wires one element type 
 | `android_renderer` | At least one | Fully qualified Kotlin object that renders the node |
 | `ios_renderer` | At least one | Swift `View` struct name (no module prefix) |
 | `self_closing` | No | `true` for leaf elements, `false` (default) for containers that take children |
+| `element_events` <x-docs.version-badge since="4.6" /> | No | Extra event names for the element, such as `["link"]` for `@link`. See [Custom Event Names](#custom-event-names) |
 
 The manifest is validated on load: a component missing `type`, `element`, `blade`, or **both** renderers throws.
 Run `php artisan native:plugin:validate` to catch it before you build.
@@ -198,6 +199,84 @@ Three hooks are worth knowing:
 Layout and styling come for free. Tailwind classes on the tag are parsed by the same parser core elements use, so
 `class="w-full rounded-2xl bg-theme-surface"` populates the node's layout and style maps without you writing anything —
 your renderer just applies the `modifier` it's handed.
+
+### Custom Event Names
+
+<x-docs.version-badge since="4.6" />
+
+@verbatim
+EDGE knows a fixed list of event attributes, such as `@press`, `@change` and `@submit`. Any other `@name` on a tag is
+read as a [child component event](../the-basics/nested-components), and a plain element ignores it.
+
+If your element has an event of its own, such as a link tapped in rendered markdown or a barcode scanned, you can
+declare a name for it. App developers can then write `@link` or `@scan` in the same way as a built-in event.
+
+Add the names to the component's `element_events` in `nativephp.json`:
+
+```json
+{
+    "type": "markdown",
+    "element": "MyVendor\\Markdown\\Elements\\Markdown",
+    "blade": "MyVendor\\Markdown\\Components\\Markdown",
+    "android_renderer": "com.myvendor.plugins.markdown.ui.MarkdownRenderer",
+    "ios_renderer": "MarkdownRenderer",
+    "element_events": ["link"]
+}
+```
+
+You can also return them from a static `elementEvents()` method on the Element class. Names from both places are
+registered when the app boots.
+
+```php
+public static function elementEvents(): array
+{
+    return ['link'];
+}
+```
+
+For each name, add an `on` method to the Element and register the handler in `resolveProps()`, the same way as
+`on_change` above:
+
+```php
+public function onLink(string $method): static
+{
+    $this->componentProps['on_link'] = $method;
+
+    return $this;
+}
+
+protected function resolveProps(CallbackRegistry $registry): array
+{
+    $props = $this->componentProps;
+
+    if (isset($props['on_link'])) {
+        $props['on_link'] = $registry->register($props['on_link']);
+    }
+
+    return $props;
+}
+```
+
+When an app writes `@link="openLink"`, NativePHP calls `onLink('openLink')` on your element, so you don't need to read
+the attribute in `applyAttributes()`. Names with a hyphen become camel case: `@link-tapped` calls `onLinkTapped()`. If
+the method doesn't exist, the attribute is ignored.
+
+The renderers work the same as before. Read the callback id with `getCallbackId("on_link")` and send the event with
+`sendTextChangeEvent`, as in the examples below. PHP uses the callback id to find the right method.
+@endverbatim
+
+Event names must start with a letter and can only contain letters, numbers, `-` and `_`. The manifest validator
+rejects any other name. Declaring a built-in name such as `change` or `press` has no effect.
+
+<aside>
+
+@verbatim
+Event names apply to the whole app, not only to your element. If any installed plugin declares `link`, every `@link`
+in the app is treated as an element event. That includes `@link` on a nested component's tag, which would otherwise
+listen for `$this->emit('link')`. Choose names that your users are unlikely to use for their own component events.
+@endverbatim
+
+</aside>
 
 ## The Blade Component
 
@@ -327,7 +406,7 @@ Install and register the plugin the [usual way](./using-plugins), then the eleme
 @verbatim
 ```blade static
 <native:column class="p-4 gap-3">
-    <native:my-widget :value="$label" _change="updateLabel" class="w-full h-40 rounded-2xl" />
+    <native:my-widget :value="$label" @change="updateLabel" class="w-full h-40 rounded-2xl" />
 </native:column>
 ```
 @endverbatim

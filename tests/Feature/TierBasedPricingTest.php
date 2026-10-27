@@ -349,6 +349,28 @@ class TierBasedPricingTest extends TestCase
     }
 
     #[Test]
+    public function regular_plugin_price_wins_a_tie_with_a_discounted_tier(): void
+    {
+        $user = User::factory()->create();
+        License::factory()
+            ->for($user)
+            ->mini()
+            ->active()
+            ->eapEligible()
+            ->withoutSubscriptionItem()
+            ->create();
+
+        $plugin = Plugin::factory()->approved()->paid()->create(['is_active' => true, 'is_official' => true]);
+        PluginPrice::factory()->eap()->amount(2999)->create(['plugin_id' => $plugin->id]);
+        PluginPrice::factory()->regular()->amount(2999)->create(['plugin_id' => $plugin->id]);
+
+        $bestPrice = $plugin->getBestPriceForUser($user);
+
+        $this->assertEquals(2999, $bestPrice->amount);
+        $this->assertEquals(PriceTier::Regular, $bestPrice->tier);
+    }
+
+    #[Test]
     public function plugin_falls_back_to_regular_price_when_user_tier_not_available(): void
     {
         $user = User::factory()->create();
@@ -940,7 +962,7 @@ class TierBasedPricingTest extends TestCase
     }
 
     #[Test]
-    public function third_party_plugin_always_returns_regular_price_for_max_subscriber(): void
+    public function third_party_plugin_ignores_subscriber_and_eap_prices_for_max_subscriber(): void
     {
         $user = User::factory()->create();
         $this->createSubscription($user, self::MAX_PRICE_ID);

@@ -81,6 +81,11 @@ class PluginPrice extends Model
         return $this->tier === PriceTier::Eap;
     }
 
+    public function isUltraTier(): bool
+    {
+        return $this->tier === PriceTier::Ultra;
+    }
+
     protected function casts(): array
     {
         return [

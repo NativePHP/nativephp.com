@@ -136,7 +136,7 @@ class UltraPluginAccessTest extends TestCase
         $this->assertEquals(1999, $bestPrice->amount);
     }
 
-    public function test_ultra_user_gets_regular_price_for_third_party_plugin(): void
+    public function test_ultra_user_does_not_get_subscriber_price_for_third_party_plugin(): void
     {
         $user = User::factory()->create();
         $this->createPaidMaxSubscription($user);
@@ -640,7 +640,7 @@ class UltraPluginAccessTest extends TestCase
         $this->assertEquals(4900, $bestPrice->amount);
     }
 
-    public function test_team_member_with_own_subscription_sees_regular_price_for_third_party_plugin(): void
+    public function test_team_member_with_own_subscription_does_not_get_subscriber_price_for_third_party_plugin(): void
     {
         $owner = User::factory()->create();
         $this->createPaidMaxSubscription($owner);

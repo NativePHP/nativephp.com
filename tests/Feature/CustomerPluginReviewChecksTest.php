@@ -34,7 +34,7 @@ class CustomerPluginReviewChecksTest extends TestCase
 
         Http::fake([
             // PluginSyncService calls
-            "{$base}/contents/README.md" => Http::response([
+            "{$base}/contents/README.md*" => Http::response([
                 'content' => base64_encode('# Test Plugin'),
                 'encoding' => 'base64',
             ]),
@@ -42,8 +42,9 @@ class CustomerPluginReviewChecksTest extends TestCase
                 'content' => base64_encode($composerJson),
                 'encoding' => 'base64',
             ]),
-            "{$base}/contents/nativephp.json" => Http::response([], 404),
+            "{$base}/contents/nativephp.json*" => Http::response([], 404),
             "{$base}/contents/LICENSE*" => Http::response([], 404),
+            "{$base}/commits/v1.0.0" => Http::response(['sha' => str_repeat('a', 40)]),
             "{$base}/releases/latest" => Http::response(['tag_name' => 'v1.0.0']),
             "{$base}/tags*" => Http::response([]),
             "https://raw.githubusercontent.com/{$repoSlug}/*" => Http::response('', 404),
@@ -168,7 +169,7 @@ class CustomerPluginReviewChecksTest extends TestCase
         ]);
 
         Http::fake([
-            "{$base}/contents/README.md" => Http::response([
+            "{$base}/contents/README.md*" => Http::response([
                 'content' => base64_encode('# Bare Plugin'),
                 'encoding' => 'base64',
             ]),
@@ -176,8 +177,9 @@ class CustomerPluginReviewChecksTest extends TestCase
                 'content' => base64_encode($composerJson),
                 'encoding' => 'base64',
             ]),
-            "{$base}/contents/nativephp.json" => Http::response([], 404),
+            "{$base}/contents/nativephp.json*" => Http::response([], 404),
             "{$base}/contents/LICENSE*" => Http::response([], 404),
+            "{$base}/commits/v1.0.0" => Http::response(['sha' => str_repeat('a', 40)]),
             "{$base}/releases/latest" => Http::response(['tag_name' => 'v1.0.0']),
             "{$base}/tags*" => Http::response([['name' => 'v1.0.0']]),
             "https://raw.githubusercontent.com/{$repoSlug}/*" => Http::response('', 404),
@@ -223,12 +225,13 @@ class CustomerPluginReviewChecksTest extends TestCase
                 'content' => base64_encode($composerJson),
                 'encoding' => 'base64',
             ]),
-            "{$base}/contents/README.md" => Http::response([
+            "{$base}/contents/README.md*" => Http::response([
                 'content' => base64_encode('# Bare Plugin'),
                 'encoding' => 'base64',
             ]),
-            "{$base}/contents/nativephp.json" => Http::response([], 404),
+            "{$base}/contents/nativephp.json*" => Http::response([], 404),
             "{$base}/contents/LICENSE*" => Http::response([], 404),
+            "{$base}/commits/v1.0.0" => Http::response(['sha' => str_repeat('a', 40)]),
             "{$base}/releases/latest" => Http::response(['tag_name' => 'v1.0.0']),
             "{$base}/tags*" => Http::response([['name' => 'v1.0.0']]),
             "{$base}/hooks" => function ($request) {
