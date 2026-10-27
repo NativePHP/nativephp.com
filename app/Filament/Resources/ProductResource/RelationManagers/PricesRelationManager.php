@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\ProductResource\RelationManagers;
 
 use App\Enums\PriceTier;
+use App\Filament\Resources\Concerns\AuthorizesThroughOwnerRecord;
 use App\Models\ProductPrice;
 use Filament\Actions;
 use Filament\Forms;
@@ -16,6 +17,8 @@ use Filament\Tables\Table;
 
 class PricesRelationManager extends RelationManager
 {
+    use AuthorizesThroughOwnerRecord;
+
     protected static string $relationship = 'prices';
 
     protected static ?string $title = 'Pricing';
