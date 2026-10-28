@@ -109,7 +109,7 @@ your app behave the way NativePHP for Mobile did before v4:
 Route::native('/home', WebViewScreen::class);
 
 // webviewscreen.blade.php
-<webview php url="/" fullscreen />
+<webview php src="/" fullscreen />
 
 // routes/web.php
 Route::view('/', 'welcome');
