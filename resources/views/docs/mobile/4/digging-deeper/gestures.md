@@ -35,6 +35,9 @@ Create one in PHP with `SharedValue::make($initial)`, bind it to a gesture, and 
 As the user drags, `$drag` updates on the UI thread and the bound props follow instantly — the card moves, fades,
 and shrinks together, with no PHP involved during the gesture.
 
+To have a drag settle on set points when the finger lifts, like a row that slides aside to show its actions, give the
+gesture area [snap points](../edge-components/gesture-area#swipe-to-reveal).
+
 ### Formulas
 
 Rather than bind the raw value everywhere, derive from it with a chainable formula. Each method returns a new
