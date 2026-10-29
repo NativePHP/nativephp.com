@@ -14,6 +14,8 @@ class DiscordAccessBanner extends Component
 
     public bool $hasEarlyAdopterRole = false;
 
+    public bool $hasPluginDeveloperRole = false;
+
     public bool $isGuildMember = false;
 
     public function mount(bool $inline = false): void
@@ -29,6 +31,7 @@ class DiscordAccessBanner extends Component
         if (! $user || ! $user->discord_id) {
             $this->hasUltraRole = false;
             $this->hasEarlyAdopterRole = false;
+            $this->hasPluginDeveloperRole = false;
             $this->isGuildMember = false;
 
             return;
@@ -43,12 +46,14 @@ class DiscordAccessBanner extends Component
                 'isGuildMember' => $discord->isGuildMember($user->discord_id),
                 'hasUltraRole' => $discord->hasUltraRole($user->discord_id),
                 'hasEarlyAdopterRole' => $discord->hasEarlyAdopterRole($user->discord_id),
+                'hasPluginDeveloperRole' => $discord->hasPluginDeveloperRole($user->discord_id),
             ];
         });
 
         $this->isGuildMember = $status['isGuildMember'];
         $this->hasUltraRole = $status['hasUltraRole'];
         $this->hasEarlyAdopterRole = $status['hasEarlyAdopterRole'];
+        $this->hasPluginDeveloperRole = $status['hasPluginDeveloperRole'] ?? false;
 
         if ($this->hasUltraRole && ! $user->discord_role_granted_at) {
             $user->update(['discord_role_granted_at' => now()]);
@@ -56,6 +61,10 @@ class DiscordAccessBanner extends Component
 
         if ($this->hasEarlyAdopterRole && ! $user->discord_early_adopter_role_granted_at) {
             $user->update(['discord_early_adopter_role_granted_at' => now()]);
+        }
+
+        if ($this->hasPluginDeveloperRole && ! $user->discord_plugin_developer_role_granted_at) {
+            $user->update(['discord_plugin_developer_role_granted_at' => now()]);
         }
     }
 
@@ -139,6 +148,42 @@ class DiscordAccessBanner extends Component
             session()->flash('success', 'Early Adopter role assigned successfully!');
         } else {
             session()->flash('error', 'Failed to assign Early Adopter role. Please try again later.');
+        }
+    }
+
+    public function requestPluginDeveloperRole(): void
+    {
+        $user = auth()->user();
+
+        if (! $user || ! $user->discord_id) {
+            session()->flash('error', 'Please connect your Discord account first.');
+
+            return;
+        }
+
+        if (! $user->hasHadPluginApproved()) {
+            session()->flash('error', 'The Plugin Developer role is for developers who have had a plugin approved for the Marketplace.');
+
+            return;
+        }
+
+        $discord = DiscordApi::make();
+
+        if (! $discord->isGuildMember($user->discord_id)) {
+            session()->flash('error', 'Please join the NativePHP Discord server first.');
+
+            return;
+        }
+
+        $success = $discord->assignPluginDeveloperRole($user->discord_id);
+
+        if ($success) {
+            $user->update(['discord_plugin_developer_role_granted_at' => now()]);
+            Cache::forget("discord_role_status_{$user->id}");
+            $this->checkRoleStatus();
+            session()->flash('success', 'Plugin Developer role assigned successfully!');
+        } else {
+            session()->flash('error', 'Failed to assign Plugin Developer role. Please try again later.');
         }
     }
 

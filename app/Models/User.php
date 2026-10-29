@@ -3,6 +3,8 @@
 namespace App\Models;
 
 use App\Enums\GitHubAuthType;
+use App\Enums\PluginActivityType;
+use App\Enums\PluginStatus;
 use App\Enums\PriceTier;
 use App\Enums\Subscription;
 use App\Enums\TeamUserStatus;
@@ -11,6 +13,7 @@ use Filament\Models\Contracts\FilamentUser;
 use Filament\Models\Contracts\HasName;
 use Filament\Panel;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -432,6 +435,22 @@ class User extends Authenticatable implements FilamentUser, HasName, MustVerifyE
         return $tiers;
     }
 
+    /**
+     * Whether any of the user's plugins has ever been approved for the Marketplace,
+     * even if it has since been rejected, withdrawn or deactivated.
+     */
+    public function hasHadPluginApproved(): bool
+    {
+        return $this->plugins()
+            ->where(function (Builder $query): void {
+                $query->where('status', PluginStatus::Approved)
+                    ->orWhereHas('activities', function (Builder $query): void {
+                        $query->where('type', PluginActivityType::Approved);
+                    });
+            })
+            ->exists();
+    }
+
     public function hasDiscordConnected(): bool
     {
         return ! empty($this->discord_id);
@@ -739,6 +758,7 @@ class User extends Authenticatable implements FilamentUser, HasName, MustVerifyE
             'claude_plugins_repo_access_granted_at' => 'datetime',
             'discord_role_granted_at' => 'datetime',
             'discord_early_adopter_role_granted_at' => 'datetime',
+            'discord_plugin_developer_role_granted_at' => 'datetime',
             'github_auth_type' => GitHubAuthType::class,
             'github_token_expires_at' => 'datetime',
             'github_app_migration_notified_at' => 'datetime',
