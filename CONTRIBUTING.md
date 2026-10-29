@@ -1,22 +1,11 @@
-Thank you for contributing!
+# Contributing
 
-## Getting Started
+Thanks for helping out with NativePHP!
 
-Be sure to fork and clone the repo: `gh repo clone NativePHP/nativephp.com`
+Everything you need to know about contributing, from opening a pull request
+to our Code of Conduct, is at
+[nativephp.com/contributing](https://nativephp.com/contributing).
 
-Make a branch for what change you want to contribute and open a pull request to the upstream main branch.
-
-## Torchlight
-
-The documentation uses [torchlight.dev](torchlight.dev) for syntax highlighting.
-
-Without a token, you will run into an error on pages like "/docs/desktop/1/getting-started/introduction".
-
-To get set up:
-
-1. Create an account and then make a new API token [here](https://torchlight.dev/account/api-tokens).
-2. Then set the API token in the .env.
-
-```
-TORCHLIGHT_TOKEN=<token>
-```
+Please don't report security vulnerabilities in public issues. Follow the
+security policy at [nativephp.com/security](https://nativephp.com/security)
+instead.
