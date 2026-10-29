@@ -231,6 +231,8 @@ Route::view('laracon-us-2025-giveaway', 'laracon-us-2025-giveaway')->name('larac
 Route::view('privacy-policy', 'privacy-policy')->name('privacy-policy');
 Route::view('terms-of-service', 'terms-of-service')->name('terms-of-service');
 Route::view('developer-terms', 'developer-terms')->name('developer-terms');
+Route::view('contributing', 'contributing')->name('contributing');
+Route::view('security', 'security')->name('security');
 Route::view('partners', 'partners')->name('partners');
 Route::view('partners/always-curious', 'partners.always-curious')->name('partners.always-curious');
 Route::view('build-my-app', 'build-my-app')->name('build-my-app');
