@@ -242,7 +242,7 @@ class PluginMessagesTest extends TestCase
 
         Notification::assertSentOnDemand(
             PluginDeveloperReplied::class,
-            fn (PluginDeveloperReplied $notification, array $channels, object $notifiable) => $notifiable->routes['mail'] === 'support@nativephp.com'
+            fn (PluginDeveloperReplied $notification, array $channels, object $notifiable) => $notifiable->routes['mail'] === ['support@nativephp.com', 'marketplace@nativephp.com']
                 && $notification->plugin->is($plugin)
                 && $notification->activity->is($reply)
         );

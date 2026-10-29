@@ -1116,7 +1116,7 @@ class Plugin extends Model
             'causer_id' => $causerId ?? $this->user_id,
         ]);
 
-        Notification::route('mail', config('mail.support_address'))
+        Notification::route('mail', [config('mail.support_address'), config('mail.marketplace_address')])
             ->notify(new PluginDeveloperReplied($this, $activity));
 
         return $activity;

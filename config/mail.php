@@ -118,6 +118,19 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Marketplace Address
+    |--------------------------------------------------------------------------
+    |
+    | The mailbox for the Marketplace team. Plugin review submissions and
+    | developer replies to review messages are sent here as well as to the
+    | support address.
+    |
+    */
+
+    'marketplace_address' => env('MAIL_MARKETPLACE_ADDRESS', 'marketplace@nativephp.com'),
+
+    /*
+    |--------------------------------------------------------------------------
     | Markdown Mail Settings
     |--------------------------------------------------------------------------
     |
