@@ -38,6 +38,7 @@ Per Material 3, the container color resolves from `theme.surface`. For a custom 
     - `medium`
     - `large`
     - `full` (100% of screen)
+    - `fit` (exactly as tall as the sheet's content, measured on the device and capped at `large`)
     - A numeric fraction `0.0`–`1.0` for a custom height (e.g. `"0.4"` for 40%)
 - `a11y-label` - Accessibility label (optional)
 - `a11y-hint` - Accessibility hint (optional)
@@ -135,6 +136,39 @@ Accepts any EDGE elements as children. The children are rendered inside the shee
 </native:column>
 ```
 @endverbatim
+
+### Fit to content
+
+Your PHP code doesn't know the screen's height, so a fraction can't size a sheet to its content. Use `fit` instead:
+the sheet is measured on the device and opens exactly as tall as its content, capped at `large`.
+
+@verbatim
+```blade
+@php $showConfirm = false; @endphp
+
+<native:column class="w-full gap-3 items-start">
+    <native:button label="Delete" @press="$showConfirm = true" />
+
+    <native:bottom-sheet :visible="$showConfirm" @dismiss="$showConfirm = false" detents="fit">
+        <native:column class="w-full p-4 gap-3 pb-8">
+            <native:text class="text-xl font-bold text-theme-on-surface-variant">Delete this item?</native:text>
+            <native:text class="text-base text-theme-on-surface-variant">This can't be undone.</native:text>
+            <native:button label="Delete" @press="$showConfirm = false" />
+        </native:column>
+    </native:bottom-sheet>
+</native:column>
+```
+@endverbatim
+
+On iOS, `fit` combines with the other detents: `detents="fit,large"` opens at the content's height and drags up to
+`large`. The sheet also follows its content's height when it changes.
+
+<aside>
+
+Android's sheet only has a fixed half-screen partial stop, so a `fit` sheet opens at its content's height there and
+ignores the other detents listed beside it.
+
+</aside>
 
 <aside>
 
