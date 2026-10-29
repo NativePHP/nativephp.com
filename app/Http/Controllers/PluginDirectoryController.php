@@ -54,13 +54,13 @@ class PluginDirectoryController extends Controller
 
         $user = Auth::user();
 
-        $isAdmin = $user?->isAdmin() ?? false;
+        $isStaff = $user?->can('view', $plugin) ?? false;
         $isOwner = $user && $plugin->user_id === $user->id;
 
-        abort_unless(($plugin->isApproved() && $plugin->is_active) || $isAdmin || $isOwner, 404);
+        abort_unless(($plugin->isApproved() && $plugin->is_active) || $isStaff || $isOwner, 404);
 
-        // For paid plugins, check if user has an accessible price (admins and owners bypass)
-        if (! $isAdmin && ! $isOwner && $plugin->isPaid() && ! $plugin->hasAccessiblePriceFor($user)) {
+        // For paid plugins, check if user has an accessible price (staff and owners bypass)
+        if (! $isStaff && ! $isOwner && $plugin->isPaid() && ! $plugin->hasAccessiblePriceFor($user)) {
             abort(404);
         }
 
@@ -81,7 +81,7 @@ class PluginDirectoryController extends Controller
             'regularPrice' => $regularPrice,
             'ultraOfferPrice' => $user?->hasActiveUltraSubscription() ? null : $plugin->getUltraPrice(),
             'hasDiscount' => $bestPrice && $regularPrice && $bestPrice->id !== $regularPrice->id,
-            'isAdminPreview' => (! $plugin->isApproved() || ! $plugin->is_active) && ($isAdmin || $isOwner),
+            'isAdminPreview' => (! $plugin->isApproved() || ! $plugin->is_active) && ($isStaff || $isOwner),
         ]);
     }
 
@@ -91,15 +91,15 @@ class PluginDirectoryController extends Controller
 
         $user = Auth::user();
 
-        $isAdmin = $user?->isAdmin() ?? false;
+        $isStaff = $user?->can('view', $plugin) ?? false;
         $isOwner = $user && $plugin->user_id === $user->id;
 
         abort_unless($plugin->isPaid(), 404);
         abort_unless($plugin->license_html, 404);
-        abort_unless(($plugin->isApproved() && $plugin->is_active) || $isAdmin || $isOwner, 404);
+        abort_unless(($plugin->isApproved() && $plugin->is_active) || $isStaff || $isOwner, 404);
 
-        // For paid plugins, check if user has an accessible price (admins and owners bypass)
-        if (! $isAdmin && ! $isOwner && ! $plugin->hasAccessiblePriceFor($user)) {
+        // For paid plugins, check if user has an accessible price (staff and owners bypass)
+        if (! $isStaff && ! $isOwner && ! $plugin->hasAccessiblePriceFor($user)) {
             abort(404);
         }
 
@@ -107,7 +107,7 @@ class PluginDirectoryController extends Controller
 
         return view('plugin-license', [
             'plugin' => $plugin,
-            'isAdminPreview' => (! $plugin->isApproved() || ! $plugin->is_active) && ($isAdmin || $isOwner),
+            'isAdminPreview' => (! $plugin->isApproved() || ! $plugin->is_active) && ($isStaff || $isOwner),
         ]);
     }
 
