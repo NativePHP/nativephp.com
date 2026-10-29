@@ -156,8 +156,8 @@ public function appearanceChanged(string $mode): void
 }
 ```
 
-`AppearanceChanged` also dispatches globally, so code anywhere in the app can listen — not just the active
-screen:
+`AppearanceChanged` also [broadcasts globally](../the-basics/events#broadcasting-globally), so code anywhere in the
+app can listen, not just the active screen:
 
 ```php
 use Illuminate\Support\Facades\Event;

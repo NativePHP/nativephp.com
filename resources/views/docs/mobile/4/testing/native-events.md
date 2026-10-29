@@ -18,6 +18,9 @@ responses. You reach its assertions through the harness, or the bridge itself th
 plugin pushes an event. It fires `#[On]` listeners, fluent `->on()` closures, and any pending `then()` / `catch()`
 callbacks the component chained onto its bridge call, then re-renders.
 
+No re-render follows an event that the screen hears only through `when` filters, when none of them matches and
+nothing else is there for the event. See [Testing a when filter](#testing-a-when-filter).
+
 Pass the event class and its payload:
 
 ```php
@@ -31,6 +34,107 @@ it('counts device shakes delivered as native events', function () {
         ->assertSee('Shaken 2×!');
 });
 ```
+
+## Testing a when filter
+
+<x-docs.version-badge since="TODO" />
+
+`emitNative()` hands the payload to the screen as you wrote it, so a
+[`when` filter](../the-basics/events#filtering-with-when) sees the values and types that you pass. The comparison is
+strict: write `42` and not `'42'` when the device sends a number. Only two numbers match across types, so `5` passes a
+filter on `5.0`.
+
+Deliver one event that the filter lets through and one that it does not:
+
+```php
+use Native\Mobile\Events\Alert\ButtonPressed;
+
+// ItemScreen: #[On(ButtonPressed::class, when: ['id' => 'delete-confirm', 'label' => 'Delete'])]
+it('deletes the item only when Delete is pressed', function () {
+    Native::test(ItemScreen::class)
+        ->emitNative(ButtonPressed::class, ['index' => 0, 'label' => 'Cancel', 'id' => 'delete-confirm'])
+        ->assertSet('deleted', false)
+        ->assertNotRerendered()
+        ->emitNative(ButtonPressed::class, ['index' => 1, 'label' => 'Delete', 'id' => 'delete-confirm'])
+        ->assertSet('deleted', true)
+        ->assertRerendered();
+});
+```
+
+A screen that listens for an event only through filters does not re-render when none of them matches, and the
+harness does the same: `emitNative()` then renders no new frame. Pin that down with `assertNotRerendered()` or
+`assertRenderCount()`, see [Render-count guards](advanced#render-count-guards).
+
+The exception is an event that something else is there for: a closure registered with `->on()`, a fluent callback
+that waits for it, or a Laravel listener that is registered for the event. The screen then re-renders, also on a
+miss.
+
+The package itself listens for `AppearanceChanged`, `OrientationChanged` and `ThermalStateChanged`, so do not expect
+`assertNotRerendered()` to pass after those three. An `Event::listen` in your app for an event that broadcasts
+globally has the same effect, and `Event::fake()` does not change that.
+
+## Events that broadcast globally
+
+An event that implements [`BroadcastsGlobally`](../the-basics/events#broadcasting-globally) is heard by the live
+screen and by Laravel's listeners. Test each direction from the side where the event starts.
+
+### From the device
+
+`emitNative()` delivers the event to the screen, and a marked event is also sent through `event()`. Fake Laravel's
+events to assert on that half. The screen still hears the event:
+
+```php
+use Illuminate\Support\Facades\Event;
+use Native\Mobile\Events\System\AppearanceChanged;
+
+it('hears a theme change on the screen and in Laravel', function () {
+    Event::fake();
+
+    Native::test(SettingsScreen::class)
+        ->emitNative(AppearanceChanged::class, ['mode' => 'dark'])
+        ->assertSet('mode', 'dark');
+
+    Event::assertDispatched(AppearanceChanged::class);
+});
+```
+
+### Fired from PHP
+
+<x-docs.version-badge since="TODO" />
+
+The screen under test is the live screen. Fire the event with `event()` in the body of the test, and the harness
+delivers it to the screen's `#[On]` methods before the next assertion, with one render:
+
+```php
+use App\Events\OrderUpdated;
+
+it('shows an order that shipped', function () {
+    $screen = Native::test(OrdersScreen::class);
+
+    event(new OrderUpdated(orderId: 42, status: 'shipped'));
+
+    $screen->assertSet('statuses', [42 => 'shipped'])
+        ->assertRerendered();
+});
+```
+
+When a method of the screen fires the event, its `#[On]` method runs after that method has returned, and the
+interaction still renders once:
+
+```php
+it('renders once when a handler fires the event', function () {
+    Native::test(OrdersScreen::class)
+        ->call('ship', 42)   // ship() fires event(new OrderUpdated(42, 'shipped'))
+        ->assertSet('statuses', [42 => 'shipped'])
+        ->assertRenderCount(2);
+});
+```
+
+Two things to keep in mind:
+
+- `Event::fake()` holds a marked event back, so it reaches no screen and no listener. To test the screen's side,
+  leave the event out of the fake, for example with `Event::fake([OtherEvent::class])`.
+- After `follow()`, the destination is the live screen. The screen underneath hears nothing, as on a device.
 
 ## Asserting on native calls
 

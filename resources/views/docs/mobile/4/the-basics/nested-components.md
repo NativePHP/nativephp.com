@@ -152,11 +152,95 @@ public function onAnyTaskToggled(string $title, bool $done): void
 }
 ```
 
+Several methods can listen for one event. They all run, in the order they are declared in the class.
+
+`#[On]` also takes a `when` filter <x-docs.version-badge since="TODO" />, which is matched against the **named**
+arguments of the event. A positional argument has no name, so it never matches a filter:
+
+```php
+use Native\Mobile\Attributes\On;
+
+// Emitted with names: $this->emit('task-toggled', title: $this->title, done: $this->done);
+#[On('task-toggled', when: ['done' => true])]
+public function onTaskDone(string $title): void
+{
+    // ...
+}
+```
+
+See [Filtering with when](events#filtering-with-when) for the rules.
+
 <aside>
 
 String-form `#[On('...')]` (component events) and class-form `#[On(PhotoTaken::class)]` (native device events)
 are different mechanisms sharing one attribute. Class-form listeners stay on the screen — see
 [Events](events).
+
+</aside>
+
+## Dispatching events
+
+`emit()` calls its listeners right away, and the event only travels up. `$this->dispatch('event-name', ...$params)`
+queues the event instead. It is delivered after the current action returns, and before the screen renders.
+
+```php
+namespace App\NativeComponents;
+
+use Native\Mobile\Edge\NativeComponent;
+
+class TaskCard extends NativeComponent
+{
+    public int $taskId = 0;
+
+    public function archive(): void
+    {
+        $this->dispatch('task-archived', id: $this->taskId);
+    }
+}
+```
+
+A dispatched event goes to, in this order:
+
+1. the `#[On('task-archived')]` methods of the component that dispatched it,
+2. the `@task-archived` binding on that component's mounting tag,
+3. the `#[On('task-archived')]` methods of every ancestor, up to the screen.
+
+So unlike `emit()`, `dispatch()` also reaches the component itself. A screen has no ancestors, and it can still
+dispatch an event to its own `#[On]` methods.
+
+Listen for a dispatched event as for an emitted one, with a string-form `#[On]`. Pass the parameters by name, as in
+`id: $this->taskId`, and they are bound to the method's parameters by name.
+
+Because the event waits until the action returns, you can narrow where it goes. `dispatch()` returns the event, and
+`->self()` and `->to()` set its destination.
+
+### Only the component itself
+
+`->self()` keeps the event inside the component that dispatched it. Only its own `#[On]` methods run. No tag binding
+and no ancestor hears it:
+
+```php
+$this->dispatch('draft-saved')->self();
+```
+
+### Components of one class
+
+`->to()` takes a component class name. The event goes to every component on the screen that is an instance of that
+class, wherever it sits: the screen itself, an ancestor, a sibling or a child. Nothing else hears it:
+
+```php
+use App\NativeComponents\TaskCounter;
+
+$this->dispatch('task-archived', id: $this->taskId)->to(TaskCounter::class);
+```
+
+Pass a component instance instead of a class name to reach only that one component.
+
+<aside>
+
+The parameter names `self`, `to` and `component` are read as the destination:
+`$this->dispatch('task-archived', to: TaskCounter::class)` does the same as `->to(TaskCounter::class)`. Give your own
+parameters other names.
 
 </aside>
 
@@ -204,6 +288,18 @@ Native::test(TaskBoard::class)
     ->tap('toggle-7')                 // ref rendered inside the task-7 child
     ->assertSee('1 done');            // tag binding updated the screen
 ```
+
+The harness records every event that was sent with `dispatch()`, so you can assert on those. An `emit()` is not
+recorded:
+
+```php
+Native::test(TaskBoard::class)
+    ->tap('archive-7')
+    ->assertDispatched('task-archived', id: 7)
+    ->assertNotDispatched('task-restored');
+```
+
+`assertDispatchedTo(TaskCounter::class, 'task-archived')` also checks the class that was given to `->to()`.
 
 ## Children vs. everything else
 
