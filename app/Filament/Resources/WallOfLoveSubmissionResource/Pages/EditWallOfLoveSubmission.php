@@ -17,9 +17,8 @@ class EditWallOfLoveSubmission extends EditRecord
             Actions\DeleteAction::make(),
             Actions\Action::make('user')
                 ->icon('heroicon-s-user')
-                ->action(function ($record) {
-                    return redirect(UserResource::getUrl('edit', ['record' => $record]));
-                }),
+                ->visible(fn ($record): bool => $record->user !== null && UserResource::can('update', $record->user))
+                ->url(fn ($record): string => UserResource::getUrl('edit', ['record' => $record->user_id])),
         ];
     }
 }

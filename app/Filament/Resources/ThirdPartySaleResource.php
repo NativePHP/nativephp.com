@@ -168,7 +168,7 @@ class ThirdPartySaleResource extends Resource
                     ->url(fn (PluginLicense $record): ?string => $record->payout
                         ? PluginPayoutResource::getUrl('view', ['record' => $record->payout])
                         : null)
-                    ->visible(fn (PluginLicense $record): bool => $record->payout !== null),
+                    ->visible(fn (PluginLicense $record): bool => $record->payout !== null && PluginPayoutResource::can('view', $record->payout)),
             ])
             ->bulkActions([])
             ->defaultSort('purchased_at', 'desc');

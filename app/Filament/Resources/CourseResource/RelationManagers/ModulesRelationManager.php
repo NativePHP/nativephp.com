@@ -71,7 +71,7 @@ class ModulesRelationManager extends RelationManager
             ])
             ->defaultSort('sort_order')
             ->reorderable('sort_order')
-            ->recordUrl(fn ($record) => CourseModuleResource::getUrl('edit', ['record' => $record]))
+            ->recordUrl(fn ($record) => CourseModuleResource::can('update', $record) ? CourseModuleResource::getUrl('edit', ['record' => $record]) : null)
             ->headerActions([
                 Actions\CreateAction::make(),
             ])

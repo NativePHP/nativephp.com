@@ -344,7 +344,7 @@ class PluginResource extends Resource
                                         ? UserResource::getUrl('edit', ['record' => $record->user_id])
                                         : null)
                                     ->openUrlInNewTab()
-                                    ->visible(fn (?Plugin $record) => $record?->user_id !== null),
+                                    ->visible(fn (?Plugin $record) => $record?->user !== null && UserResource::can('update', $record->user)),
                             ),
 
                         Forms\Components\Placeholder::make('created_at')

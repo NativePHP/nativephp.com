@@ -111,13 +111,13 @@
         <div style="display: flex; flex-direction: column; gap: 0.75rem;">
             @forelse ($record->replies()->with('user')->orderBy('created_at', 'desc')->get() as $reply)
                 @php
-                    $isAdmin = $reply->user?->isAdmin();
+                    $isStaff = $reply->user?->isStaff();
                     $isNote = $reply->note;
 
                     if ($isNote) {
                         $bgColor = '#fefce8';
                         $borderColor = '#facc15';
-                    } elseif ($isAdmin) {
+                    } elseif ($isStaff) {
                         $bgColor = '#ede9fe';
                         $borderColor = '#c4b5fd';
                     } else {
@@ -139,7 +139,7 @@
                                     @if ($reply->pinned)
                                         <x-filament::badge color="success" size="sm">Pinned</x-filament::badge>
                                     @endif
-                                @elseif ($isAdmin)
+                                @elseif ($isStaff)
                                     <x-filament::badge color="primary" size="sm">Staff</x-filament::badge>
                                 @endif
                             @endif

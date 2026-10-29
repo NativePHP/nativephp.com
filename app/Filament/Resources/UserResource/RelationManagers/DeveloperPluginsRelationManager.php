@@ -44,6 +44,6 @@ class DeveloperPluginsRelationManager extends RelationManager
                     ->sortable(),
             ])
             ->defaultSort('created_at', 'desc')
-            ->recordUrl(fn ($record) => PluginResource::getUrl('edit', ['record' => $record]));
+            ->recordUrl(fn ($record) => PluginResource::can('update', $record) ? PluginResource::getUrl('edit', ['record' => $record]) : null);
     }
 }
