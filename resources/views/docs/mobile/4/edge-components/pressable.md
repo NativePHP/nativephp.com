@@ -28,6 +28,9 @@ part of the card is tapped.
 All [shared layout and style attributes](layout) are supported, plus:
 
 - `menu` - Attach a tap-to-open dropdown; opening the menu shadows `@press`. See [Menus](menus)
+- `context-menu` <x-docs.version-badge since="4.7" /> <x-docs.version-badge package="mobile-ui" since="0.9" /> - Attach
+  the same kind of menu, opened by a long press, while a tap still fires `@press`. Use it instead of `menu`, not with
+  it, and leave off `@longPress`. See [Opening on a long press](menus#opening-on-a-long-press)
 - `@navigate` - Navigate directly from the view, with no component method. See [Routing](../the-basics/routing#navigating-from-blade)
 
 ## Events
@@ -89,6 +92,9 @@ Interpolate arguments straight into the handler — each row calls `selectItem()
 
 A tap calls `openDetail()`; holding the card calls `showOptions()` instead — one pressable can route each gesture to
 a different component method.
+
+If holding the card should only offer a list of actions, use `:context-menu` instead of `@longPress` and you get the
+platform's own menu. See [Opening on a long press](menus#opening-on-a-long-press).
 
 ### Navigation with @navigate
 
