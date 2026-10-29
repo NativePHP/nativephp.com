@@ -13,7 +13,7 @@ class SupportTicketAttachmentController extends Controller
     {
         $user = auth()->user();
 
-        abort_unless($user->id === $supportTicket->user_id || $user->isAdmin(), 403);
+        abort_unless($user->can('view', $supportTicket), 403);
 
         $attachments = $supportTicket->attachments ?? [];
 
@@ -30,7 +30,7 @@ class SupportTicketAttachmentController extends Controller
     {
         $user = auth()->user();
 
-        abort_unless($user->id === $supportTicket->user_id || $user->isAdmin(), 403);
+        abort_unless($user->can('view', $supportTicket), 403);
         abort_unless($reply->support_ticket_id === $supportTicket->id, 404);
 
         $attachments = $reply->attachments ?? [];

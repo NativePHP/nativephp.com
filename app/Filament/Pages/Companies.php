@@ -101,6 +101,7 @@ class Companies extends Page implements HasTable
                     ->label('Users')
                     ->icon('heroicon-o-users')
                     ->color('gray')
+                    ->visible(fn (): bool => UserResource::canViewAny())
                     ->url(fn (array $record): string => UserResource::getUrl('index', [
                         'tableSearch' => $record['domain'],
                     ])),

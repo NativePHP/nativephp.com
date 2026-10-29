@@ -39,7 +39,7 @@ class ViewSubscription extends ViewRecord
                     ->schema([
                         Components\TextEntry::make('user.email')
                             ->label('User')
-                            ->url(fn ($record) => UserResource::getUrl('edit', ['record' => $record->user_id])),
+                            ->url(fn ($record) => $record->user && UserResource::can('update', $record->user) ? UserResource::getUrl('edit', ['record' => $record->user_id]) : null),
                         Components\TextEntry::make('type'),
                         Components\TextEntry::make('stripe_id')
                             ->label('Stripe ID')

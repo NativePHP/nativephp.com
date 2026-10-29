@@ -67,6 +67,14 @@ class User extends Authenticatable implements FilamentUser, HasName, MustVerifyE
      */
     public function canAccessPanel(Panel $panel): bool
     {
+        return $this->isStaff();
+    }
+
+    /**
+     * Staff are super admins plus anyone given a role in the admin panel.
+     */
+    public function isStaff(): bool
+    {
         return $this->isAdmin() || $this->roles->isNotEmpty();
     }
 

@@ -11,10 +11,12 @@ use App\Filament\Resources\PluginResource\Pages\ListPlugins;
 use App\Filament\Resources\PluginResource\RelationManagers\ActivitiesRelationManager;
 use App\Filament\Resources\PluginResource\RelationManagers\PricesRelationManager;
 use App\Filament\Resources\SalesResource;
+use App\Filament\Resources\SupportTicketResource\Pages\ViewSupportTicket;
 use App\Filament\Resources\SupportTicketResource\Widgets\TicketRepliesWidget;
 use App\Filament\Resources\UserResource;
 use App\Filament\Resources\UserResource\Pages\EditUser;
 use App\Filament\Widgets\StatsOverview;
+use App\Models\Article;
 use App\Models\Plugin;
 use App\Models\PluginActivity;
 use App\Models\SupportTicket;
@@ -26,6 +28,7 @@ use Filament\Actions\Testing\TestAction;
 use Filament\Facades\Filament;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Notification;
+use Illuminate\Support\Facades\Storage;
 use Livewire\Livewire;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
@@ -315,6 +318,79 @@ class AdminRolesAndPermissionsTest extends TestCase
         foreach (array_diff($panel->getWidgets(), config('filament-shield.widgets.exclude')) as $widget) {
             $this->assertContains(HasWidgetShield::class, class_uses_recursive($widget), "{$widget} must use HasWidgetShield.");
         }
+    }
+
+    public function test_staff_with_article_view_permission_can_preview_a_draft_article(): void
+    {
+        $draft = Article::factory()->create(['published_at' => null]);
+
+        $this->actingAs($this->userWithRole(['ViewAny:Article', 'View:Article']))
+            ->get(route('article', $draft))
+            ->assertOk();
+
+        $this->actingAs($this->userWithRole(self::PLUGIN_REVIEW_PERMISSIONS))
+            ->get(route('article', $draft))
+            ->assertNotFound();
+    }
+
+    public function test_staff_with_ticket_view_permission_can_download_ticket_attachments(): void
+    {
+        Storage::fake('support-tickets', ['serve' => true]);
+        Storage::disk('support-tickets')->put('ticket/screenshot.png', 'image');
+
+        $ticket = SupportTicket::factory()->create([
+            'attachments' => [['name' => 'screenshot.png', 'path' => 'ticket/screenshot.png', 'size' => 5, 'mime_type' => 'image/png']],
+        ]);
+
+        $this->actingAs($this->userWithRole(['ViewAny:SupportTicket', 'View:SupportTicket']))
+            ->get(route('customer.support.tickets.attachment', [$ticket, 0]))
+            ->assertRedirect();
+
+        $this->actingAs($this->userWithRole(self::PLUGIN_REVIEW_PERMISSIONS))
+            ->get(route('customer.support.tickets.attachment', [$ticket, 0]))
+            ->assertForbidden();
+    }
+
+    public function test_anyone_with_a_role_counts_as_staff(): void
+    {
+        $this->assertTrue($this->userWithRole(['ViewAny:SupportTicket'])->isStaff());
+        $this->assertTrue($this->superAdmin()->isStaff());
+        $this->assertFalse(User::factory()->create()->isStaff());
+    }
+
+    public function test_links_to_other_sections_are_hidden_when_the_role_cannot_open_them(): void
+    {
+        $ticket = SupportTicket::factory()->create();
+        $userUrl = UserResource::getUrl('edit', ['record' => $ticket->user_id]);
+
+        $this->actingAs($this->userWithRole(['ViewAny:SupportTicket', 'View:SupportTicket']))
+            ->get(ViewSupportTicket::getUrl(['record' => $ticket]))
+            ->assertOk()
+            ->assertDontSee($userUrl, false);
+    }
+
+    public function test_super_admin_sees_links_to_other_sections(): void
+    {
+        $ticket = SupportTicket::factory()->create();
+
+        $this->actingAs($this->superAdmin())
+            ->get(ViewSupportTicket::getUrl(['record' => $ticket]))
+            ->assertOk()
+            ->assertSee(UserResource::getUrl('edit', ['record' => $ticket->user_id]), false);
+    }
+
+    public function test_go_to_user_action_is_hidden_without_user_access(): void
+    {
+        $plugin = Plugin::factory()->pending()->free()->create();
+        $goToUser = TestAction::make('viewUser')->schemaComponent('user_id');
+
+        Livewire::actingAs($this->userWithRole(self::PLUGIN_REVIEW_PERMISSIONS))
+            ->test(EditPlugin::class, ['record' => $plugin->getRouteKey()])
+            ->assertActionHidden($goToUser);
+
+        Livewire::actingAs($this->superAdmin())
+            ->test(EditPlugin::class, ['record' => $plugin->getRouteKey()])
+            ->assertActionVisible($goToUser);
     }
 
     private function superAdmin(): User
