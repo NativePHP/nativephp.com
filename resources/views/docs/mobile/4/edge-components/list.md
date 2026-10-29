@@ -37,6 +37,9 @@ Pair with [`<native:list-item>`](#list-item) for Material3 list rows, or use any
 - `on-refresh` - Component method called on pull-to-refresh (optional, string) [iOS]
 - `on-end-reached` - Component method called when the user nears the end of the list (optional, string)
 - `end-reached-buffer` <x-docs.version-badge package="mobile-ui" since="0.7" /> - Number of items from the end at which `on-end-reached` is triggered (optional, integer, default: `3`)
+- `on-scroll-end` <x-docs.version-badge package="mobile-ui" since="0.9" /> - Component method called once a scroll has
+  come to rest, with the positions of the first and last rows on screen (optional, string). See
+  [When scrolling stops](#when-scrolling-stops)
 
 
 ## Children
@@ -303,6 +306,39 @@ here just gives the demo enough rows to scroll before the end-reached trigger fi
 A buffer of `5` triggers `loadMore()` when the list is within five items of the end. When omitted, the buffer defaults to `3`.
 @endverbatim
 
+### When scrolling stops
+
+`on-scroll-end` calls your method once the list has stopped moving: after a drag, after a fling has slowed to a stop,
+or after a scroll to the top. Each scroll ends in one call. A tap on a list that isn't moving doesn't count, and a
+finger that stops a fling does.
+
+The method receives the positions of the first and last rows on screen, counted from `0`. In a list with sections,
+each section's rows count in their place and the headers don't count.
+
+@verbatim
+```blade
+<native:list on-scroll-end="scrollEnded">
+    @foreach ($posts as $post)
+        <native:list-item native:key="post-{{ $post->id }}" :headline="$post->title" />
+    @endforeach
+</native:list>
+```
+@endverbatim
+
+```php
+public function scrollEnded(int $first, int $last): void
+{
+    // Only the posts the user stopped on, not every one that flew past.
+    $this->posts->slice($first, $last - $first + 1)->each->markSeen();
+}
+```
+
+It's also the place for work that would make scrolling stutter. Every change to the screen while the list is moving
+has to be applied while it scrolls, so a screen that updates often can keep its changes until the list stops and
+make them here.
+
+Horizontal lists don't call it.
+
 ## Testing a list
 
 In a [component test](../testing/introduction), target a row's callbacks by the expression you wrote in the template.
@@ -318,6 +354,12 @@ it('completes and deletes a task', function () {
         ->press('deleteTask(1)')       // swipe-to-delete fires a press at its callback
         ->press('openTask(2)');        // tap the row
 });
+```
+
+A list's scroll handlers are plain component methods, so call them with the rows you want on screen:
+
+```php
+Native::test(Feed::class)->call('scrollEnded', 20, 27);
 ```
 
 ## Element
@@ -345,6 +387,7 @@ NativeList::make(
 - `onRefresh(string $method)` - Pull-to-refresh handler
 - `onEndReached(string $method)` - End-reached handler
 - `endReachedBuffer(int $items)` - Number of items from the end at which the end-reached handler is triggered (default: `3`)
+- `onScrollEnd(string $method)` - Handler called with the first and last rows on screen once a scroll comes to rest
 
 ### `ListItem` methods
 
