@@ -36,6 +36,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Notification;
@@ -501,7 +502,7 @@ class Plugin extends Model
         return ! empty($checks['has_license_file'])
             && ! empty($checks['has_release_version'])
             && $this->webhook_installed
-            && $this->hasDemoVideo();
+            && $this->meetsDemoVideoRequirement();
     }
 
     /**
@@ -510,6 +511,42 @@ class Plugin extends Model
     public function hasDemoVideo(): bool
     {
         return $this->demoVideo() !== null && $this->demo_video_attested_at !== null;
+    }
+
+    /**
+     * Plugins first submitted for review before demo videos became a requirement
+     * (#534) are grandfathered in and can be approved without one.
+     */
+    public function requiresDemoVideo(): bool
+    {
+        $firstSubmittedAt = $this->firstSubmittedAt();
+
+        return $firstSubmittedAt === null
+            || $firstSubmittedAt->gte(Carbon::parse(self::DEMO_VIDEO_REQUIRED_FROM, 'UTC'));
+    }
+
+    public function meetsDemoVideoRequirement(): bool
+    {
+        return $this->hasDemoVideo() || ! $this->requiresDemoVideo();
+    }
+
+    /**
+     * When the plugin was first sent for review. Plugins that left draft before
+     * submissions were logged as activity fall back to when they were created.
+     */
+    public function firstSubmittedAt(): ?Carbon
+    {
+        $submittedAt = $this->activities()
+            ->reorder()
+            ->where('type', PluginActivityType::Submitted)
+            ->oldest()
+            ->value('created_at');
+
+        if ($submittedAt !== null) {
+            return Carbon::parse($submittedAt);
+        }
+
+        return $this->status === PluginStatus::Draft ? null : $this->created_at;
     }
 
     public function demoVideo(): ?DemoVideo
@@ -547,7 +584,7 @@ class Plugin extends Model
             $failing[] = 'Webhook configured';
         }
 
-        if (! $this->hasDemoVideo()) {
+        if (! $this->meetsDemoVideoRequirement()) {
             $failing[] = 'Demo video showing the plugin working';
         }
 
@@ -692,6 +729,11 @@ class Plugin extends Model
      * The Heroicon used when a plugin has no icon, or an unrecognised one.
      */
     public const DEFAULT_ICON_NAME = 'cube';
+
+    /**
+     * When #534 made a demo video required for review (UTC).
+     */
+    public const DEMO_VIDEO_REQUIRED_FROM = '2026-09-25 16:23:52';
 
     /**
      * Whether the given name matches an outline Heroicon we can actually render.
