@@ -182,7 +182,7 @@ class PluginReviewChecksIncomplete extends Notification implements ShouldQueue
     {
         return match ($key) {
             'webhook_configured' => (bool) $this->plugin->webhook_installed,
-            'demo_video' => $this->plugin->hasDemoVideo(),
+            'demo_video' => $this->plugin->meetsDemoVideoRequirement(),
             default => ! empty($checks[$key]),
         };
     }
