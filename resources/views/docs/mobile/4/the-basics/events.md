@@ -47,14 +47,14 @@ on its own method, or that listener is lost.
 The payload of an event is bound to the parameters of your method by name:
 
 - A scalar is cast to the type of the parameter, so `'3'` arrives as `3` for an `int`.
-- A `null` stays `null` for a nullable parameter <x-docs.version-badge changed="TODO" />. For a parameter that does
+- A `null` stays `null` for a nullable parameter <x-docs.version-badge changed="4.7" />. For a parameter that does
   not allow `null`, it is cast like any other value, to `0`, `''` or `false`.
 - A parameter typed with a backed enum gets the enum, made from its backing value.
 - A key that your method has no parameter for is left out.
 
 ## Filtering with when
 
-<x-docs.version-badge since="TODO" />
+<x-docs.version-badge since="4.7" />
 
 Pass `when` as the second argument of `#[On]` to hear an event only for certain values. The method runs when every
 key of the filter is in the event's values, with the same value:
@@ -362,7 +362,7 @@ Laravel's listeners hear the event whether or not the live screen has an `#[On]`
 
 ### From Laravel to the screen
 
-<x-docs.version-badge since="TODO" />
+<x-docs.version-badge since="4.7" />
 
 A marked event that PHP fires with `event()` also reaches the live screen. Its public properties are the payload.
 They are bound to the method's parameters by name and matched against `when`, as the payload of a device event is:
@@ -418,7 +418,7 @@ Any other event class can implement the interface too: one of your own, or one i
 
 ## Events from queued jobs and async tasks
 
-<x-docs.version-badge since="TODO" />
+<x-docs.version-badge since="4.7" />
 
 A [queued job](../digging-deeper/queues), an [async task](../digging-deeper/async-tasks) and a
 [web view inside a native screen](../edge-components/web-view#php-mode) each run in a PHP runtime of their own inside
