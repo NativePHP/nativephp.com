@@ -37,7 +37,7 @@ it('counts device shakes delivered as native events', function () {
 
 ## Testing a when filter
 
-<x-docs.version-badge since="TODO" />
+<x-docs.version-badge since="4.7" />
 
 `emitNative()` hands the payload to the screen as you wrote it, so a
 [`when` filter](../the-basics/events#filtering-with-when) sees the values and types that you pass. The comparison is
@@ -100,7 +100,7 @@ it('hears a theme change on the screen and in Laravel', function () {
 
 ### Fired from PHP
 
-<x-docs.version-badge since="TODO" />
+<x-docs.version-badge since="4.7" />
 
 The screen under test is the live screen. Fire the event with `event()` in the body of the test, and the harness
 delivers it to the screen's `#[On]` methods before the next assertion, with one render:
