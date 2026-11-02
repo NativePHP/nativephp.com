@@ -586,6 +586,19 @@ class Plugin extends Model
     }
 
     /**
+     * Approved plugins that have not yet been included in an emailed "new plugins" digest.
+     *
+     * @param  Builder<Plugin>  $query
+     * @return Builder<Plugin>
+     */
+    #[Scope]
+    protected function pendingNewPluginNotification(Builder $query): Builder
+    {
+        return $query->where('status', PluginStatus::Approved)
+            ->whereNull('new_plugin_notified_at');
+    }
+  
+    /**
      * Plugins that aren't in any category yet.
      *
      * @param  Builder<Plugin>  $query
@@ -1172,6 +1185,7 @@ class Plugin extends Model
             'categories' => AsEnumCollection::of(PluginCategory::class),
             'category_suggestions' => 'array',
             'approved_at' => 'datetime',
+            'new_plugin_notified_at' => 'datetime',
             'featured' => 'boolean',
             'is_active' => 'boolean',
             'is_official' => 'boolean',
