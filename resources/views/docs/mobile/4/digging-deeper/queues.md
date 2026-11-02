@@ -68,7 +68,7 @@ class SyncData implements ShouldQueue
 
 ## Sending Events to a Screen
 
-<x-docs.version-badge since="TODO" />
+<x-docs.version-badge since="4.7" />
 
 A job runs in its own PHP runtime, so it cannot change a screen directly. Fire an event that implements
 `BroadcastsGlobally` instead, and the live screen hears it in its `#[On]` methods:
