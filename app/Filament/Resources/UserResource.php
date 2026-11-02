@@ -14,6 +14,8 @@ use Filament\Schemas\Schema;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Support\HtmlString;
+use Illuminate\Support\Str;
+use Spatie\Permission\Models\Role;
 use STS\FilamentImpersonate\Actions\Impersonate;
 
 class UserResource extends Resource
@@ -44,6 +46,16 @@ class UserResource extends Resource
                             ->required(fn (string $context): bool => $context === 'create')
                             ->hidden(fn (string $context): bool => $context === 'edit')
                             ->maxLength(255),
+                    ]),
+                Schemas\Components\Section::make('Admin Access')
+                    ->description('Roles decide which parts of this admin panel the user can open. Customers need none.')
+                    ->inlineLabel()
+                    ->columns(1)
+                    ->visible(fn (): bool => auth()->user()?->isAdmin() ?? false)
+                    ->schema([
+                        Forms\Components\CheckboxList::make('roles')
+                            ->relationship('roles', 'name')
+                            ->getOptionLabelFromRecordUsing(fn (Role $record): string => Str::headline($record->name)),
                     ]),
                 Schemas\Components\Section::make('Billing Information')
                     ->inlineLabel()

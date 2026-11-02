@@ -38,6 +38,14 @@ runtime without recompiling your app.
 
 Browse the full catalogue in the [EDGE Components](../edge-components/introduction) section.
 
+<aside>
+
+The elements themselves ship in the `nativephp/mobile-ui` plugin, which must be installed and registered in
+`app/Providers/NativeServiceProvider.php`. Without it, screens render blank or fail with
+`Unknown native element type`. See [Installation](../getting-started/installation#install-the-ui-components).
+
+</aside>
+
 ## Structuring your app
 
 Once you're comfortable with the component syntax, two concepts organize your screens into an app:

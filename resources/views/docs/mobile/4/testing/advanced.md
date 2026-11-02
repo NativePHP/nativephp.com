@@ -29,6 +29,24 @@ it('omits the android translucency on ios', function () {
 `assertElement($type, $matcher)` finds an element of a wire type, optionally narrowed by a closure receiving the wire
 node; `assertMissingElement()` is its inverse.
 
+`platform` also answers [platform detection](../the-basics/system#platform-detection) inside the screen
+<x-docs.version-badge changed="4.7" />: `System::isIos()` and friends, the `isIos()` helpers, and the `@ios`,
+`@android`, `@mobile` and `@web` Blade directives all report the platform you passed.
+
+In a test that doesn't render a screen, such as an HTTP test for a Blade view, set the `NATIVEPHP_PLATFORM`
+environment variable instead <x-docs.version-badge since="4.7" />. It's what the app sets on a real device. Clear it
+after each test so it doesn't leak into the next one:
+
+```php
+afterEach(fn () => putenv('NATIVEPHP_PLATFORM'));
+
+it('offers Sign in with Apple on iOS', function () {
+    putenv('NATIVEPHP_PLATFORM=ios');
+
+    $this->get('/login')->assertSee('Sign in with Apple');
+});
+```
+
 To audit a tree for screen-reader accessibility rather than a specific element, see
 [Accessibility](accessibility).
 

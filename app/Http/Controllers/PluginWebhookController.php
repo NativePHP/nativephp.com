@@ -47,6 +47,10 @@ class PluginWebhookController extends Controller
         }
 
         if ($event === 'push') {
+            // Satis publishes every branch and tag, so any push can change what's installable.
+            // Queued first so a failed metadata sync doesn't skip the build.
+            $plugin->queueSatisRebuild();
+
             $synced = $syncService->sync($plugin);
 
             if (! $synced) {

@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Jobs\BuildPluginInSatis;
 use App\Jobs\SyncPluginReleases;
 use App\Models\Plugin;
 use App\Services\PluginSyncService;
@@ -79,6 +80,112 @@ class PluginWebhookTest extends TestCase
 
         $response->assertOk()
             ->assertJson(['success' => true]);
+    }
+
+    #[Test]
+    public function push_queues_a_delayed_satis_build_for_a_paid_plugin(): void
+    {
+        Bus::fake([BuildPluginInSatis::class]);
+        $this->freezeTime();
+
+        $plugin = Plugin::factory()->paid()->create(['last_synced_at' => now()]);
+
+        $this->mock(PluginSyncService::class, function ($mock) {
+            $mock->shouldReceive('sync')->once()->andReturn(true);
+        });
+
+        $this->postJson(
+            route('webhooks.plugins', $plugin->webhook_secret),
+            ['ref' => 'refs/heads/main'],
+            ['X-GitHub-Event' => 'push']
+        )->assertOk();
+
+        Bus::assertDispatched(BuildPluginInSatis::class, fn (BuildPluginInSatis $job) => $job->plugin->is($plugin)
+            && $job->delay->equalTo(now()->addMinute()));
+    }
+
+    #[Test]
+    public function push_does_not_queue_a_satis_build_for_a_free_plugin(): void
+    {
+        Bus::fake([BuildPluginInSatis::class]);
+
+        $plugin = Plugin::factory()->free()->create(['last_synced_at' => now()]);
+
+        $this->mock(PluginSyncService::class, function ($mock) {
+            $mock->shouldReceive('sync')->once()->andReturn(true);
+        });
+
+        $this->postJson(
+            route('webhooks.plugins', $plugin->webhook_secret),
+            ['ref' => 'refs/heads/main'],
+            ['X-GitHub-Event' => 'push']
+        )->assertOk();
+
+        Bus::assertNotDispatched(BuildPluginInSatis::class);
+    }
+
+    #[Test]
+    public function push_does_not_queue_a_satis_build_for_a_paid_draft(): void
+    {
+        Bus::fake([BuildPluginInSatis::class]);
+
+        $plugin = Plugin::factory()->paid()->draft()->create(['last_synced_at' => now()]);
+        $plugin->generateWebhookSecret();
+
+        $this->mock(PluginSyncService::class, function ($mock) {
+            $mock->shouldReceive('sync')->once()->andReturn(true);
+        });
+
+        $this->postJson(
+            route('webhooks.plugins', $plugin->webhook_secret),
+            ['ref' => 'refs/heads/main'],
+            ['X-GitHub-Event' => 'push']
+        )->assertOk();
+
+        Bus::assertNotDispatched(BuildPluginInSatis::class);
+    }
+
+    #[Test]
+    public function push_still_queues_a_satis_build_when_the_metadata_sync_fails(): void
+    {
+        Bus::fake([BuildPluginInSatis::class]);
+
+        $plugin = Plugin::factory()->paid()->create(['last_synced_at' => now()]);
+
+        $this->mock(PluginSyncService::class, function ($mock) {
+            $mock->shouldReceive('sync')->once()->andReturn(false);
+        });
+
+        $this->postJson(
+            route('webhooks.plugins', $plugin->webhook_secret),
+            ['ref' => 'refs/heads/main'],
+            ['X-GitHub-Event' => 'push']
+        )->assertServerError();
+
+        Bus::assertDispatched(BuildPluginInSatis::class, fn (BuildPluginInSatis $job) => $job->plugin->is($plugin));
+    }
+
+    #[Test]
+    public function a_burst_of_pushes_queues_one_satis_build(): void
+    {
+        Bus::fake([BuildPluginInSatis::class]);
+
+        $plugin = Plugin::factory()->paid()->create(['last_synced_at' => now()]);
+
+        $this->mock(PluginSyncService::class, function ($mock) {
+            $mock->shouldReceive('sync')->twice()->andReturn(true);
+        });
+
+        // The unique lock is taken at dispatch and held until the build starts running
+        foreach (['refs/heads/main', 'refs/heads/wip'] as $ref) {
+            $this->postJson(
+                route('webhooks.plugins', $plugin->webhook_secret),
+                ['ref' => $ref],
+                ['X-GitHub-Event' => 'push']
+            )->assertOk();
+        }
+
+        Bus::assertDispatchedTimes(BuildPluginInSatis::class, 1);
     }
 
     #[Test]

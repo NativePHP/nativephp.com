@@ -78,6 +78,12 @@
 
             {{-- Doc search (visible on large screens) --}}
 
+            {{-- Ultra nudge (desktop only) --}}
+            <span class="hidden items-center gap-1.5 text-sm font-medium text-gray-600 motion-safe:animate-bounce-x lg:inline-flex dark:text-zinc-400">
+                Support open source
+                <x-icons.right-arrow class="size-3" aria-hidden="true" />
+            </span>
+
             {{-- Ultra link (desktop only) --}}
             <a
                 href="{{ route('pricing') }}"

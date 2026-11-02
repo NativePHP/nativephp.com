@@ -99,6 +99,196 @@ class DocsSearchService
             ->toArray();
     }
 
+    /**
+     * Every EDGE element tag documented for a platform/version, keyed by tag
+     * (`list-item`), with the page that documents it. Built from the same
+     * markdown the docs render, so it can't drift from the published pages.
+     *
+     * A tag belongs to the H2 section named after it (`## List Item` on the
+     * list page), else to the page whose slug matches it, else to the page
+     * that names it most often in prose (`<native:filled-text-input>` on the
+     * text-input page).
+     *
+     * @return array<string, array{tag: string, page: array<string, mixed>, section: ?string}>
+     */
+    public function edgeElements(string $platform, string $version): array
+    {
+        $claims = [];
+
+        foreach ($this->listEdgeComponents($platform, $version) as $page) {
+            $sections = $this->splitH2Sections($page['content']);
+            $tagsOnPage = $this->tagsIn($page['content']);
+
+            foreach (array_keys($sections) as $heading) {
+                $tag = Str::slug($heading);
+
+                if ($heading !== '' && in_array($tag, $tagsOnPage, true)) {
+                    $claims[$tag][] = ['page' => $page, 'section' => $heading, 'weight' => PHP_INT_MAX];
+                }
+            }
+
+            foreach ($tagsOnPage as $tag) {
+                if (str_replace('-', '', $tag) === str_replace('-', '', $page['slug'])) {
+                    $claims[$tag][] = ['page' => $page, 'section' => null, 'weight' => PHP_INT_MAX - 1];
+                }
+            }
+
+            preg_match_all('/```[\s\S]*?```/', $page['content'], $codeBlocks);
+            $tagsInCode = $this->tagsIn(implode("\n", $codeBlocks[0]));
+            $prose = preg_replace('/```[\s\S]*?```/', '', $page['content']);
+            preg_match_all('/`<native:([a-z][a-z0-9-]*[a-z0-9])[\s>\/`]/', $prose, $mentions);
+
+            foreach (array_count_values($mentions[1]) as $tag => $count) {
+                if (in_array($tag, $tagsInCode, true)) {
+                    $claims[$tag][] = ['page' => $page, 'section' => null, 'weight' => $count];
+                }
+            }
+        }
+
+        $elements = [];
+
+        foreach ($claims as $tag => $tagClaims) {
+            usort($tagClaims, fn ($a, $b) => $b['weight'] <=> $a['weight']);
+
+            $elements[$tag] = [
+                'tag' => $tag,
+                'page' => $tagClaims[0]['page'],
+                'section' => $tagClaims[0]['section'],
+            ];
+        }
+
+        ksort($elements);
+
+        return $elements;
+    }
+
+    /**
+     * The reference for one EDGE element: its props, events, children and
+     * fluent API as documented, without the examples. Accepts `list-item`,
+     * `<native:list-item>`, `list_item` or `ListItem`.
+     *
+     * @return array{tag: string, title: string, path: string, section: ?string, other_tags: array<int, string>, php_classes: array<int, string>, reference: string}|null
+     */
+    public function getEdgeElement(string $platform, string $version, string $tag): ?array
+    {
+        $tag = $this->normalizeTag($tag);
+        $elements = $this->edgeElements($platform, $version);
+
+        if ($tag === '' || ! isset($elements[$tag])) {
+            return null;
+        }
+
+        $element = $elements[$tag];
+        $page = $element['page'];
+        $sections = $this->splitH2Sections($page['content']);
+
+        $siblings = collect($elements)
+            ->filter(fn ($other) => $other['page']['id'] === $page['id'] && $other['tag'] !== $tag);
+
+        if ($element['section'] !== null) {
+            $content = "## {$element['section']}\n".$sections[$element['section']]
+                .$this->fluentApiFor(Str::studly($tag), $sections);
+
+            preg_match_all('/Native\\\\Mobile\\\\[A-Za-z\\\\]+\\\\Elements\\\\'.Str::studly($tag).'\b/', $page['content'], $classes);
+        } else {
+            $ownedElsewhere = $siblings->pluck('section')->filter()->all();
+
+            $content = collect($sections)
+                ->reject(fn ($body, $heading) => $heading === 'Examples' || in_array($heading, $ownedElsewhere, true))
+                ->map(fn ($body, $heading) => $heading === '' ? $body : "## {$heading}\n{$body}")
+                ->implode("\n");
+
+            preg_match_all('/Native\\\\Mobile\\\\[A-Za-z\\\\]+\\\\Elements\\\\\w+/', $content, $classes);
+        }
+
+        $reference = preg_replace('/```[\s\S]*?```\n?/', '', $content);
+        $reference = trim(preg_replace("/\n{3,}/", "\n\n", $reference));
+
+        return [
+            'tag' => $tag,
+            'title' => $page['title'],
+            'path' => $page['id'],
+            'section' => $element['section'],
+            'other_tags' => $siblings->keys()->values()->all(),
+            'php_classes' => array_values(array_unique($classes[0])),
+            'reference' => $reference,
+        ];
+    }
+
+    /**
+     * The H3 block documenting a sub-element's fluent methods, which lives in
+     * the page's Element section (`### \`ListItem\` methods`) rather than in
+     * the sub-element's own section.
+     *
+     * @param  array<string, string>  $sections
+     */
+    protected function fluentApiFor(string $class, array $sections): string
+    {
+        $pattern = '/^###\s+`'.preg_quote($class, '/').'`[^\n]*\n[\s\S]*?(?=^###?\s|\z)/m';
+
+        foreach ($sections as $body) {
+            if (preg_match($pattern, $body, $match)) {
+                return "\n".$match[0];
+            }
+        }
+
+        return '';
+    }
+
+    /**
+     * Split markdown into its H2 sections, keyed by heading text. Text before
+     * the first H2 is keyed ''. Headings inside fenced code are ignored.
+     *
+     * @return array<string, string>
+     */
+    protected function splitH2Sections(string $content): array
+    {
+        $sections = ['' => ''];
+        $current = '';
+        $inFence = false;
+
+        foreach (explode("\n", $content) as $line) {
+            if (str_starts_with(ltrim($line), '```')) {
+                $inFence = ! $inFence;
+            }
+
+            if (! $inFence && preg_match('/^##\s+(.+?)\s*$/', $line, $match)) {
+                $current = $match[1];
+                $sections[$current] = '';
+
+                continue;
+            }
+
+            $sections[$current] .= $line."\n";
+        }
+
+        if (trim($sections['']) === '') {
+            unset($sections['']);
+        }
+
+        return $sections;
+    }
+
+    /**
+     * @return array<int, string>
+     */
+    protected function tagsIn(string $content): array
+    {
+        preg_match_all('/<native:([a-z][a-z0-9-]*[a-z0-9])\b/', $content, $matches);
+
+        return array_values(array_unique($matches[1]));
+    }
+
+    protected function normalizeTag(string $tag): string
+    {
+        $tag = trim($tag);
+        $tag = preg_replace('/^<?\/?(native:)?/', '', $tag);
+        $tag = rtrim($tag, ' />');
+        $tag = Str::kebab(str_replace('_', '-', $tag));
+
+        return preg_match('/^[a-z][a-z0-9-]*$/', $tag) ? $tag : '';
+    }
+
     public function getNavigation(string $platform, string $version): array
     {
         if (! $this->sanitizePlatform($platform) || ! $this->sanitizeVersion($version)) {
@@ -212,9 +402,9 @@ class DocsSearchService
             return [];
         }
 
-        // v2 keys: page ids now carry the full section path, so entries cached
-        // under the old shape must not be reused after a deploy.
-        $cacheKey = 'mcp_docs_pages_v2_'.($platform ?? 'all').'_'.($version ?? 'all');
+        // v3 keys: prose now keeps inline code such as `@press`, so pages cached
+        // with those event names stripped must not be reused after a deploy.
+        $cacheKey = 'mcp_docs_pages_v3_'.($platform ?? 'all').'_'.($version ?? 'all');
 
         if (config('app.env') !== 'local') {
             $cached = Cache::get($cacheKey);
@@ -301,20 +491,44 @@ class DocsSearchService
             if (str_starts_with($segment, '```')) {
                 continue; // code block — leave untouched
             }
-            // Remove <x-component>...</x-component> tags
-            $segment = preg_replace('/<x-[^>]+>[\s\S]*?<\/x-[^>]+>/s', '', $segment);
-            // Remove self-closing <x-component /> tags
-            $segment = preg_replace('/<x-[^\/]+\/>/s', '', $segment);
-            // Remove {{ }} blade echoes
-            $segment = preg_replace('/\{\{.*?\}\}/s', '', $segment);
-            // Remove {!! !!} unescaped echoes
-            $segment = preg_replace('/\{!![\s\S]*?!!\}/s', '', $segment);
-            // Remove @directives (@verbatim wrappers, @php, etc.)
-            $segment = preg_replace('/@\w+(\([^)]*\))?/', '', $segment);
-            $segments[$i] = $segment;
+
+            $segments[$i] = $this->stripBladeFromProse($segment);
         }
 
         return implode('', $segments);
+    }
+
+    /**
+     * Clean Blade out of prose while keeping inline code spans. Inline code is
+     * where the docs name event attributes (`@press`, `@change`) and show
+     * escaped echoes (`@{{ $name }}`), so it is unescaped the way Blade would
+     * render it instead of being stripped with the surrounding directives.
+     */
+    protected function stripBladeFromProse(string $prose): string
+    {
+        // Remove <x-component>...</x-component> tags
+        $prose = preg_replace('/<x-[^>]+>[\s\S]*?<\/x-[^>]+>/s', '', $prose);
+        // Remove self-closing <x-component /> tags
+        $prose = preg_replace('/<x-[^\/]+\/>/s', '', $prose);
+
+        $parts = preg_split('/(`[^`\n]+`)/', $prose, -1, PREG_SPLIT_DELIM_CAPTURE);
+
+        foreach ($parts as $i => $part) {
+            if (str_starts_with($part, '`')) {
+                $parts[$i] = str_replace(['@{{', '@@'], ['{{', '@'], $part);
+
+                continue;
+            }
+
+            // Remove {{ }} blade echoes
+            $part = preg_replace('/\{\{.*?\}\}/s', '', $part);
+            // Remove {!! !!} unescaped echoes
+            $part = preg_replace('/\{!![\s\S]*?!!\}/s', '', $part);
+            // Remove @directives (@verbatim wrappers, @php, etc.)
+            $parts[$i] = preg_replace('/@\w+(\([^)]*\))?/', '', $part);
+        }
+
+        return implode('', $parts);
     }
 
     protected function extractHeadings(string $content): array

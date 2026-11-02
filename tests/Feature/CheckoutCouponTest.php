@@ -290,6 +290,59 @@ class CheckoutCouponTest extends TestCase
     }
 
     #[Test]
+    public function cart_checkout_charges_the_ultra_price_and_still_takes_promotion_codes(): void
+    {
+        $captured = $this->captureStripeCheckoutParams();
+
+        $ultraSubscriber = User::factory()->create(['stripe_id' => 'cus_test123']);
+        Subscription::factory()
+            ->for($ultraSubscriber)
+            ->active()
+            ->create(['stripe_price' => config('subscriptions.plans.max.stripe_price_id')]);
+
+        $plugin = Plugin::factory()->approved()->paid()->create(['is_active' => true, 'is_official' => false]);
+        PluginPrice::factory()->regular()->amount(9900)->create(['plugin_id' => $plugin->id]);
+        PluginPrice::factory()->ultra()->amount(7000)->create(['plugin_id' => $plugin->id]);
+
+        $cartService = resolve(CartService::class);
+        $cart = $cartService->getCart($ultraSubscriber);
+        $cartService->addPlugin($cart, $plugin);
+
+        $this->actingAs($ultraSubscriber)
+            ->post(route('cart.checkout'))
+            ->assertRedirect('https://checkout.stripe.com/test-session');
+
+        $this->assertNotNull($captured->params, 'Stripe checkout session should have been created');
+        $this->assertSame(7000, $captured->params['line_items'][0]['price_data']['unit_amount']);
+        $this->assertSame($plugin->name, $captured->params['line_items'][0]['price_data']['product_data']['name']);
+        $this->assertTrue($captured->params['allow_promotion_codes']);
+        $this->assertArrayNotHasKey('discounts', $captured->params);
+    }
+
+    #[Test]
+    public function cart_checkout_charges_the_regular_price_to_a_buyer_without_ultra(): void
+    {
+        $captured = $this->captureStripeCheckoutParams();
+        $user = User::factory()->create(['stripe_id' => 'cus_test123']);
+
+        $plugin = Plugin::factory()->approved()->paid()->create(['is_active' => true, 'is_official' => false]);
+        PluginPrice::factory()->regular()->amount(9900)->create(['plugin_id' => $plugin->id]);
+        PluginPrice::factory()->ultra()->amount(7000)->create(['plugin_id' => $plugin->id]);
+
+        $cartService = resolve(CartService::class);
+        $cart = $cartService->getCart($user);
+        $cartService->addPlugin($cart, $plugin);
+
+        $this->actingAs($user)
+            ->post(route('cart.checkout'))
+            ->assertRedirect('https://checkout.stripe.com/test-session');
+
+        $this->assertNotNull($captured->params, 'Stripe checkout session should have been created');
+        $this->assertSame(9900, $captured->params['line_items'][0]['price_data']['unit_amount']);
+        $this->assertTrue($captured->params['allow_promotion_codes']);
+    }
+
+    #[Test]
     public function course_checkout_uses_stripe_price_id_from_the_database_over_config(): void
     {
         Carbon::setTestNow('2026-06-14 23:59:59');

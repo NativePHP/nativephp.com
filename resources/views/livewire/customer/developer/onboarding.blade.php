@@ -197,7 +197,7 @@
                 <div>
                     <flux:heading>How does the revenue share work?</flux:heading>
                     <flux:text class="mt-1">
-                        You receive 70% of each sale. NativePHP retains 30% to cover payment processing, hosting, and platform maintenance.
+                        You receive 70% of each sale. NativePHP retains 30% to cover payment processing, hosting, and platform maintenance. NativePHP Ultra subscribers pay a lower Ultra price for your plugin, and you receive 100% of what they pay.
                     </flux:text>
                 </div>
 

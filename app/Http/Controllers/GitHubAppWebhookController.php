@@ -205,6 +205,11 @@ class GitHubAppWebhookController extends Controller
         $syncService = app(PluginSyncService::class);
 
         foreach ($plugins as $plugin) {
+            // Satis publishes every branch and tag, so any push can change what's installable
+            if ($event === 'push') {
+                $plugin->queueSatisRebuild();
+            }
+
             $syncService->sync($plugin);
 
             if ($event === 'release') {

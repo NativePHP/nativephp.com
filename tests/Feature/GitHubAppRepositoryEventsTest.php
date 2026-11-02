@@ -3,8 +3,10 @@
 namespace Tests\Feature;
 
 use App\Enums\PluginStatus;
+use App\Enums\PluginType;
 use App\Features\ShowAuthButtons;
 use App\Features\ShowPlugins;
+use App\Jobs\BuildPluginInSatis;
 use App\Jobs\SyncPluginReleases;
 use App\Livewire\Customer\Plugins\Show;
 use App\Models\GitHubInstallation;
@@ -88,6 +90,38 @@ class GitHubAppRepositoryEventsTest extends TestCase
             ->assertJson(['plugins' => 1]);
 
         Bus::assertNotDispatched(SyncPluginReleases::class);
+    }
+
+    public function test_push_event_from_the_app_queues_a_satis_build_for_paid_plugins(): void
+    {
+        Bus::fake([SyncPluginReleases::class, BuildPluginInSatis::class]);
+        $plugin = $this->coveredPlugin(['type' => PluginType::Paid]);
+
+        $this->mock(PluginSyncService::class, function (MockInterface $mock): void {
+            $mock->shouldReceive('sync')->once()->andReturn(true);
+        });
+
+        $this->sendAppWebhook('push', ['ref' => 'refs/heads/main', 'repository' => ['full_name' => 'acme/camera-plugin']])
+            ->assertOk();
+
+        Bus::assertDispatched(BuildPluginInSatis::class, fn (BuildPluginInSatis $job) => $job->plugin->is($plugin));
+    }
+
+    public function test_release_event_from_the_app_does_not_queue_a_satis_build(): void
+    {
+        Bus::fake([SyncPluginReleases::class, BuildPluginInSatis::class]);
+        $plugin = $this->coveredPlugin(['type' => PluginType::Paid]);
+
+        $this->mock(PluginSyncService::class, function (MockInterface $mock): void {
+            $mock->shouldReceive('sync')->once()->andReturn(true);
+        });
+
+        $this->sendAppWebhook('release', $this->releasePayload('published', 101))
+            ->assertOk();
+
+        // SyncPluginReleases runs its own satis build
+        Bus::assertDispatched(SyncPluginReleases::class, fn (SyncPluginReleases $job) => $job->plugin->is($plugin));
+        Bus::assertNotDispatched(BuildPluginInSatis::class);
     }
 
     public function test_release_event_from_the_app_syncs_releases(): void

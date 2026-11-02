@@ -11,7 +11,7 @@ PHP side; change the property in PHP and the control reflects it on the next ren
 
 @verbatim
 ```blade static
-<native:text-input native:model="name" placeholder="Your name" />
+<native:outlined-text-input native:model="name" placeholder="Your name" />
 ```
 @endverbatim
 
@@ -29,7 +29,7 @@ render sees the current value.
 
 Any input-style EDGE component binds with `native:model`:
 
-- [`<native:text-input>`](../edge-components/text-input) — string
+- [`<native:outlined-text-input>`, `<native:filled-text-input>` and `<native:bare-text-input>`](../edge-components/text-input) — string
 - [`<native:toggle>`](../edge-components/toggle) / [`<native:checkbox>`](../edge-components/checkbox) — boolean
 - [`<native:slider>`](../edge-components/slider) — float
 - [`<native:radio-group>`](../edge-components/radio-group) / [`<native:select>`](../edge-components/select) — string
@@ -51,13 +51,18 @@ useful for text inputs where syncing on every character is wasteful:
 | `native:model.lazy` | Alias for `.blur`. |
 | `native:model.debounce.300ms` | After the user stops changing it for the given delay. |
 
+For text the user types freely, prefer a short debounce such as `native:model.debounce.150ms`. A live binding sends
+every keystroke to PHP, and when someone types quickly an earlier keystroke's value can come back after later ones and
+overwrite them, so characters appear to vanish. See
+[Text Input › Choosing a sync mode](../edge-components/text-input#choosing-a-sync-mode).
+
 @verbatim
 ```blade static
 {{-- Sync only when the user leaves the field --}}
-<native:text-input native:model.blur="email" />
+<native:outlined-text-input native:model.blur="email" />
 
 {{-- Sync 500ms after typing stops --}}
-<native:text-input native:model.debounce.500ms="search" />
+<native:outlined-text-input native:model.debounce.500ms="search" />
 ```
 @endverbatim
 
@@ -88,7 +93,7 @@ something other than a public property — set the value and change handler dire
 
 @verbatim
 ```blade static
-<native:text-input :value="$name" @change="rename" />
+<native:outlined-text-input :value="$name" @change="rename" />
 ```
 @endverbatim
 

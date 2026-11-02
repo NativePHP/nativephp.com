@@ -418,6 +418,8 @@ The parser recognizes the classes listed below.
 | Text color | `text-{palette}-{shade}`, `text-white`, `text-black`, `text-transparent`, `text-[#hex]`, `text-theme-{token}` |
 | Border color | `border-{palette}-{shade}`, `border-white`, `border-black`, `border-transparent`, `border-[#hex]`, `border-theme-{token}` |
 | Border width | `border` (1dp), `border-2`, `border-4`, `border-8` |
+| Border width (per side) <x-docs.version-badge since="4.7" /> | `border-t`, `border-r`, `border-b`, `border-l`, and `border-x` / `border-y` for two sides at once. Each takes the same `-0`, `-2`, `-4`, `-8` scale and arbitrary values (`border-l-[1.5]`). A bare side (`border-l`) is 1dp. See [Dashed, dotted and per-side borders](#dashed-dotted-and-per-side-borders) |
+| Border style <x-docs.version-badge since="4.7" /> | `border-solid`, `border-dashed`, `border-dotted` |
 | Rounded | `rounded` (4dp), `rounded-sm`, `rounded-md`, `rounded-lg`, `rounded-xl`, `rounded-2xl`, `rounded-3xl`, `rounded-full`, `rounded-[N]` |
 | Rounded (per side) <x-docs.version-badge since="4.2" /> | `rounded-t-*`, `rounded-r-*`, `rounded-b-*`, `rounded-l-*` — each rounds that side's two corners. A bare side (`rounded-b`) uses the same 4dp default as `rounded` |
 | Rounded (per corner) <x-docs.version-badge since="4.2" /> | `rounded-tl-*`, `rounded-tr-*`, `rounded-br-*`, `rounded-bl-*`, including arbitrary values (`rounded-br-[4]`) |
@@ -456,7 +458,8 @@ border-theme-outline/50
 ```
 
 **Arbitrary values** — `prefix-[value]` for the prefixes shown above: `w`, `h`, `min-w`/`max-w`/`min-h`/`max-h`,
-`p`/`px`/`py`/`pt`/`pr`/`pb`/`pl`, `m`/`mx`/`my`/`mt`/`mr`/`mb`/`ml`, `gap`, `bg`, `text`, `border`, `rounded`
+`p`/`px`/`py`/`pt`/`pr`/`pb`/`pl`, `m`/`mx`/`my`/`mt`/`mr`/`mb`/`ml`, `gap`, `bg`, `text`, `border`
+(and its per-side forms, `border-l`, `border-y` and so on, which take a width only), `rounded`
 (and its per-side / per-corner forms — `rounded-t`, `rounded-br`, …), `opacity`, `leading`, `aspect`, `top`,
 `right`, `bottom`, `left`.
 
@@ -472,6 +475,54 @@ corners you want different. Class order doesn't matter; the more specific class 
 ```
 @endverbatim
 
+### Dashed, dotted and per-side borders
+
+<x-docs.version-badge since="4.7" />
+
+`border-dashed` and `border-dotted` change how a border is drawn, and `border-solid` changes it back, so
+`border-dashed md:border-solid` is dashed on a phone and solid from tablet width up.
+
+Per-side widths compose with the uniform width the same way per-corner rounding does. The sides you name take their
+own width and the rest keep the uniform one, or have no border if there isn't one. So `border-l` on its own is a left
+border only, and `border border-l-0` is a box without its left side.
+
+The border is drawn natively along the element's edges, so its length comes from layout. You don't have to work out
+in PHP how tall a line needs to be:
+
+@verbatim
+```blade static
+{{-- A dashed line down the side of a row, however tall the text makes it --}}
+<native:row class="relative pl-4">
+    <native:column class="absolute top-0 bottom-0 left-0 w-[1] border-l border-dashed border-theme-outline" />
+    <native:text>{{ $reply->body }}</native:text>
+</native:row>
+
+{{-- A dashed ring --}}
+<native:column class="w-12 h-12 rounded-full border-2 border-dashed border-theme-primary" />
+
+{{-- An elbow: dashes run down the left side, round the corner and along the bottom --}}
+<native:column class="w-6 h-4 border-l border-b rounded-bl-xl border-dashed border-theme-outline" />
+```
+@endverbatim
+
+Dashes are the border width plus 3 long, with gaps of the width plus 2. That makes 4dp dashes with 3dp gaps on a 1dp
+border, and 5dp dashes with 4dp gaps at `border-2`. Dots are round, as wide as the border and one width apart.
+
+Sides of the same width that meet are drawn as one line, so the dashes carry on round a corner unbroken. On a closed
+shape, like a ring or a full box, the gaps stretch slightly so that a whole number of dashes fits all the way round.
+A border that doesn't go all the way round starts with a dash at its top or left end, or with a dash centred on its
+first corner if it turns one.
+
+<aside>
+
+A border is only drawn when it has a color. A `border-theme-*` color on its own still gives a 1dp border all the
+way round, but not once you've set a side: `border-l border-theme-outline` is a left border only.
+
+Where a rounded corner sits between a side with a border and a side without one, the border runs halfway round the
+corner at full width. A browser tapers it to nothing instead.
+
+</aside>
+
 ### Deliberately unsupported
 
 A handful of Tailwind classes are recognised as real Tailwind but left unparsed on purpose, rather than mapped to
@@ -481,6 +532,8 @@ something approximate. They are reported in the dropped-class log in debug build
 |-------|-----|-------------|
 | `max-w-full`, `max-w-screen`, `min-w-full` | Min and max ride the wire as plain numbers with no accompanying size mode, so "100% of the parent" has nowhere to go | `w-full` |
 | `rounded-s-*`, `rounded-e-*`, `rounded-ss-*`, `rounded-se-*`, `rounded-es-*`, `rounded-ee-*` | These are *logical* corners that flip with writing direction, and the renderers do not mirror layout for RTL — accepting them would silently draw left-to-right geometry in a right-to-left layout | the physical `rounded-l-*` / `rounded-tl-*` forms |
+| `border-s-*`, `border-e-*` | Logical sides, dropped for the same reason as `rounded-s-*` | the physical `border-l-*` / `border-r-*` forms |
+| Per-side colors (`border-l-red-500`, `border-t-[#hex]`) | An element has one border color, so a side's own color would end up painting every side | one `border-*` color for the element |
 
 <aside>
 

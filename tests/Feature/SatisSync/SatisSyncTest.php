@@ -4,6 +4,7 @@ namespace Tests\Feature\SatisSync;
 
 use App\Enums\PluginType;
 use App\Filament\Resources\PluginResource\Pages\EditPlugin;
+use App\Jobs\BuildPluginInSatis;
 use App\Jobs\RemovePluginFromSatis;
 use App\Jobs\SyncPluginReleases;
 use App\Models\Plugin;
@@ -167,6 +168,42 @@ class SatisSyncTest extends TestCase
             ->andReturn(['success' => true]);
 
         (new RemovePluginFromSatis('acme/widget'))->handle($satisService);
+    }
+
+    public function test_build_plugin_in_satis_job_builds_the_plugin_and_stamps_satis_synced_at(): void
+    {
+        Http::fake(['*' => Http::response(['job_id' => 'test-123', 'message' => 'Build started'], 200)]);
+
+        config(['services.satis.url' => 'https://satis.test', 'services.satis.api_key' => 'test-key']);
+
+        $plugin = Plugin::factory()->paid()->approved()->create();
+
+        (new BuildPluginInSatis($plugin))->handle(new SatisService);
+
+        Http::assertSent(function ($request) use ($plugin) {
+            return $request->url() === 'https://satis.test/api/build'
+                && $request->data()['plugins'][0]['name'] === $plugin->name;
+        });
+
+        $this->assertNotNull($plugin->fresh()->satis_synced_at);
+    }
+
+    public function test_build_plugin_in_satis_job_skips_a_plugin_that_has_gone_free(): void
+    {
+        Http::fake();
+        Bus::fake([RemovePluginFromSatis::class]);
+
+        config(['services.satis.url' => 'https://satis.test', 'services.satis.api_key' => 'test-key']);
+
+        $plugin = Plugin::factory()->paid()->approved()->create();
+        $job = new BuildPluginInSatis($plugin);
+
+        $plugin->update(['type' => PluginType::Free]);
+
+        $job->handle(new SatisService);
+
+        Http::assertNothingSent();
+        $this->assertNull($plugin->fresh()->satis_synced_at);
     }
 
     public function test_filament_sync_to_satis_action_dispatches_job(): void

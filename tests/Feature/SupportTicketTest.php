@@ -1233,6 +1233,8 @@ class SupportTicketTest extends TestCase
             'note' => false,
         ]);
 
+        // Livewire 4.4.6+ turns ModelNotFoundException into a 404 response in tests unless exception handling is off.
+        $this->withoutExceptionHandling();
         $this->expectException(ModelNotFoundException::class);
 
         Livewire::actingAs($admin)

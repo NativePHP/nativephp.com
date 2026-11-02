@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\PluginBundleResource\RelationManagers;
 
+use App\Filament\Resources\Concerns\AuthorizesThroughOwnerRecord;
 use App\Models\Plugin;
 use App\Models\PluginBundle;
 use Filament\Actions;
@@ -13,6 +14,8 @@ use Illuminate\Support\Facades\Artisan;
 
 class PluginsRelationManager extends RelationManager
 {
+    use AuthorizesThroughOwnerRecord;
+
     protected static string $relationship = 'plugins';
 
     protected static ?string $recordTitleAttribute = 'name';

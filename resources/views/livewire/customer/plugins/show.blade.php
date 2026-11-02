@@ -320,13 +320,18 @@
                                 <div class="mt-6 space-y-4">
                                     @foreach (\App\Enums\PluginTier::cases() as $pluginTier)
                                         @php
-                                            $regularPrice = $pluginTier->getPrices()[\App\Enums\PriceTier::Regular->value] / 100;
+                                            $tierPrices = $pluginTier->getPrices();
+                                            $regularPrice = $tierPrices[\App\Enums\PriceTier::Regular->value] / 100;
+                                            $ultraPrice = $tierPrices[\App\Enums\PriceTier::Ultra->value] / 100;
                                         @endphp
                                         <label class="relative flex cursor-pointer rounded-lg border p-4 transition focus:outline-none"
                                             :class="$wire.tier === '{{ $pluginTier->value }}' ? 'border-indigo-500 bg-indigo-50 dark:border-indigo-400 dark:bg-indigo-950/30' : 'border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/50'">
                                             <input type="radio" wire:model.live="tier" value="{{ $pluginTier->value }}" class="sr-only" />
                                             <span class="flex flex-1 items-center justify-between">
-                                                <span class="text-sm font-medium text-gray-900 dark:text-white">{{ $pluginTier->label() }}</span>
+                                                <span class="flex flex-col">
+                                                    <span class="text-sm font-medium text-gray-900 dark:text-white">{{ $pluginTier->label() }}</span>
+                                                    <span class="mt-1 text-sm text-gray-500 dark:text-gray-400">${{ number_format($ultraPrice) }} for Ultra subscribers</span>
+                                                </span>
                                                 <span class="text-lg font-semibold text-gray-900 dark:text-white">${{ number_format($regularPrice) }}</span>
                                             </span>
                                         </label>
@@ -338,7 +343,7 @@
                                 @enderror
 
                                 <flux:text class="mt-4 text-xs text-gray-500 dark:text-gray-400">
-                                    Actual sale price may vary due to discounts and offers. You keep 70% of the sale price. If a NativePHP Ultra subscriber purchases your plugin, you receive 100% of the sale price. Additional payment processing fees may apply.
+                                    Actual sale price may vary due to discounts and offers. You keep 70% of the sale price. NativePHP Ultra subscribers pay the lower Ultra price, and you keep 100% of what they pay. Additional payment processing fees may apply.
                                 </flux:text>
                             </flux:card>
                         @endif
