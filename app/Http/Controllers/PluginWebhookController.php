@@ -29,6 +29,10 @@ class PluginWebhookController extends Controller
         }
 
         if ($event === 'release') {
+            if (! $plugin->claimReleaseEvent($this->payload($request))) {
+                return response()->json(['success' => true, 'message' => 'Release event ignored']);
+            }
+
             // Sync plugin metadata to update latest_version
             $syncService->sync($plugin);
 
@@ -43,6 +47,10 @@ class PluginWebhookController extends Controller
         }
 
         if ($event === 'push') {
+            // Satis publishes every branch and tag, so any push can change what's installable.
+            // Queued first so a failed metadata sync doesn't skip the build.
+            $plugin->queueSatisRebuild();
+
             $synced = $syncService->sync($plugin);
 
             if (! $synced) {
@@ -68,5 +76,18 @@ class PluginWebhookController extends Controller
             'synced_at' => $plugin->fresh()->last_synced_at->toIso8601String(),
             'releases_sync' => 'queued',
         ]);
+    }
+
+    /**
+     * The event payload. A webhook left on GitHub's default form content type sends it as JSON in
+     * a "payload" field.
+     *
+     * @return array<string, mixed>
+     */
+    protected function payload(Request $request): array
+    {
+        $payload = $request->input('payload');
+
+        return is_string($payload) ? (json_decode($payload, true) ?? []) : $request->all();
     }
 }

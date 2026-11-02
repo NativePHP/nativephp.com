@@ -23,6 +23,43 @@ class GitHubOAuth
     }
 
     /**
+     * Revoke a user's authorization of the legacy OAuth App, which invalidates every token it issued them.
+     */
+    public function revokeOAuthGrant(string $accessToken): bool
+    {
+        $clientId = config('services.github.client_id');
+        $clientSecret = config('services.github.client_secret');
+
+        if (! $clientId || ! $clientSecret) {
+            return false;
+        }
+
+        try {
+            $response = Http::withBasicAuth($clientId, $clientSecret)
+                ->accept('application/vnd.github+json')
+                ->delete("https://api.github.com/applications/{$clientId}/grant", [
+                    'access_token' => $accessToken,
+                ]);
+        } catch (\Exception $e) {
+            Log::warning('Failed to revoke legacy GitHub OAuth grant', ['error' => $e->getMessage()]);
+
+            return false;
+        }
+
+        // 404 means the grant is already gone
+        if ($response->failed() && ! $response->notFound()) {
+            Log::warning('Failed to revoke legacy GitHub OAuth grant', [
+                'status' => $response->status(),
+                'response' => $response->json(),
+            ]);
+
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
      * Invite a user to a repository with read-only access.
      */
     public function inviteToRepo(string $repository, string $githubUsername): bool

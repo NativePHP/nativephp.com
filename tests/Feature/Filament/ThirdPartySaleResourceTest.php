@@ -3,14 +3,21 @@
 namespace Tests\Feature\Filament;
 
 use App\Enums\PluginType;
+use App\Enums\PriceTier;
 use App\Filament\Resources\ThirdPartySaleResource\Pages\ListThirdPartySales;
 use App\Models\DeveloperAccount;
 use App\Models\Plugin;
 use App\Models\PluginLicense;
 use App\Models\PluginPayout;
 use App\Models\User;
+use App\Services\StripeConnectService;
+use Filament\Notifications\Notification;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Livewire\Livewire;
+use Mockery;
+use Mockery\MockInterface;
+use Stripe\LineItem;
+use Stripe\Refund;
 use Tests\TestCase;
 
 class ThirdPartySaleResourceTest extends TestCase
@@ -122,6 +129,73 @@ class ThirdPartySaleResourceTest extends TestCase
             ->assertCanNotSeeTableRecords([$granted]);
     }
 
+    public function test_totals_paid_and_due_to_seller(): void
+    {
+        $plugin = $this->createThirdPartyPlugin();
+
+        $first = PluginLicense::factory()->create([
+            'plugin_id' => $plugin->id,
+            'price_paid' => 2000,
+        ]);
+        PluginPayout::factory()->create([
+            'plugin_license_id' => $first->id,
+            'developer_account_id' => $plugin->developer_account_id,
+            'gross_amount' => 2000,
+            'platform_fee' => 600,
+            'developer_amount' => 1400,
+        ]);
+
+        $second = PluginLicense::factory()->create([
+            'plugin_id' => $plugin->id,
+            'price_paid' => 5000,
+        ]);
+        PluginPayout::factory()->create([
+            'plugin_license_id' => $second->id,
+            'developer_account_id' => $plugin->developer_account_id,
+            'gross_amount' => 5000,
+            'platform_fee' => 1500,
+            'developer_amount' => 3500,
+        ]);
+
+        Livewire::actingAs($this->admin)
+            ->test(ListThirdPartySales::class)
+            ->assertSuccessful()
+            ->assertTableColumnSummarySet('price_paid', 'sum', 7000)
+            ->assertTableColumnSummarySet('payout.developer_amount', 'sum', 4900)
+            ->assertSee('$70.00')
+            ->assertSee('$49.00');
+    }
+
+    public function test_marks_sales_made_at_the_ultra_price(): void
+    {
+        $plugin = $this->createThirdPartyPlugin();
+        $ultraSale = PluginLicense::factory()->create([
+            'plugin_id' => $plugin->id,
+            'price_paid' => 7000,
+            'price_tier' => PriceTier::Ultra,
+        ]);
+
+        Livewire::actingAs($this->admin)
+            ->test(ListThirdPartySales::class)
+            ->assertCanSeeTableRecords([$ultraSale])
+            ->assertSee('Ultra price');
+    }
+
+    public function test_does_not_mark_sales_made_at_the_regular_price(): void
+    {
+        $plugin = $this->createThirdPartyPlugin();
+        $regularSale = PluginLicense::factory()->create([
+            'plugin_id' => $plugin->id,
+            'price_paid' => 9900,
+            'price_tier' => PriceTier::Regular,
+        ]);
+
+        Livewire::actingAs($this->admin)
+            ->test(ListThirdPartySales::class)
+            ->assertCanSeeTableRecords([$regularSale])
+            ->assertDontSee('Ultra price');
+    }
+
     public function test_filters_sales_missing_payouts(): void
     {
         $plugin = $this->createThirdPartyPlugin();
@@ -142,5 +216,120 @@ class ThirdPartySaleResourceTest extends TestCase
             ->filterTable('missing_payout', true)
             ->assertCanSeeTableRecords([$missingPayout])
             ->assertCanNotSeeTableRecords([$withPayout]);
+    }
+
+    public function test_refunded_sale_shows_refund_details_and_refunded_payout(): void
+    {
+        $plugin = $this->createThirdPartyPlugin();
+        $refunder = User::factory()->create(['email' => 'refunder@test.com']);
+
+        $license = PluginLicense::factory()->refunded()->create([
+            'plugin_id' => $plugin->id,
+            'refunded_by' => $refunder->id,
+        ]);
+        PluginPayout::factory()->cancelled()->create([
+            'plugin_license_id' => $license->id,
+            'developer_account_id' => $plugin->developer_account_id,
+        ]);
+
+        Livewire::actingAs($this->admin)
+            ->test(ListThirdPartySales::class)
+            ->assertCanSeeTableRecords([$license])
+            ->assertTableColumnStateSet('payout_status', 'Refunded', $license)
+            ->assertSee('by refunder@test.com');
+    }
+
+    public function test_filters_refunded_sales(): void
+    {
+        $plugin = $this->createThirdPartyPlugin();
+
+        $refunded = PluginLicense::factory()->refunded()->create(['plugin_id' => $plugin->id]);
+        $kept = PluginLicense::factory()->create(['plugin_id' => $plugin->id]);
+
+        Livewire::actingAs($this->admin)
+            ->test(ListThirdPartySales::class)
+            ->filterTable('refunded_at', true)
+            ->assertCanSeeTableRecords([$refunded])
+            ->assertCanNotSeeTableRecords([$kept]);
+    }
+
+    public function test_refund_action_is_only_visible_for_refundable_sales(): void
+    {
+        $plugin = $this->createThirdPartyPlugin();
+
+        $refundable = PluginLicense::factory()->create([
+            'plugin_id' => $plugin->id,
+            'purchased_at' => now()->subDays(3),
+        ]);
+        $tooOld = PluginLicense::factory()->create([
+            'plugin_id' => $plugin->id,
+            'purchased_at' => now()->subDays(20),
+        ]);
+        $alreadyRefunded = PluginLicense::factory()->refunded()->create(['plugin_id' => $plugin->id]);
+
+        Livewire::actingAs($this->admin)
+            ->test(ListThirdPartySales::class)
+            ->assertTableActionVisible('refund', $refundable)
+            ->assertTableActionHidden('refund', $tooOld)
+            ->assertTableActionHidden('refund', $alreadyRefunded);
+    }
+
+    public function test_refund_confirmation_explains_what_will_be_refunded(): void
+    {
+        $plugin = $this->createThirdPartyPlugin();
+        $license = PluginLicense::factory()->create([
+            'plugin_id' => $plugin->id,
+            'purchased_at' => now()->subDays(3),
+        ]);
+
+        Livewire::actingAs($this->admin)
+            ->test(ListThirdPartySales::class)
+            ->mountTableAction('refund', $license)
+            ->assertMountedActionModalSee("This will refund {$license->user->email} what they paid for {$plugin->name}, after any coupon or tax, and revoke their license.");
+    }
+
+    public function test_refund_action_reports_the_amount_refunded(): void
+    {
+        $plugin = $this->createThirdPartyPlugin();
+        $license = PluginLicense::factory()->create([
+            'plugin_id' => $plugin->id,
+            'price_paid' => 2900,
+            'purchased_at' => now()->subDays(3),
+        ]);
+
+        $this->mock(StripeConnectService::class, function (MockInterface $mock) use ($license, $plugin) {
+            $mock->shouldReceive('checkoutLineItems')
+                ->with($license->stripe_payment_intent_id)
+                ->andReturn(collect([
+                    LineItem::constructFrom([
+                        'amount_subtotal' => 2900,
+                        'amount_discount' => 580,
+                        'amount_tax' => 464,
+                        'amount_total' => 2784,
+                        'description' => $plugin->name,
+                        'price' => ['product' => ['id' => 'prod_test_123', 'metadata' => ['plugin_id' => (string) $plugin->id]]],
+                    ]),
+                ]));
+            $mock->shouldReceive('refundCheckoutLineItem')
+                ->once()
+                ->with($license->stripe_payment_intent_id, Mockery::on(fn (LineItem $lineItem): bool => $lineItem->amount_total === 2784))
+                ->andReturn(Refund::constructFrom(['id' => 're_test_refund_123']));
+        });
+
+        Livewire::actingAs($this->admin)
+            ->test(ListThirdPartySales::class)
+            ->callTableAction('refund', $license)
+            ->assertNotified(
+                Notification::make()
+                    ->title('Purchase refunded successfully')
+                    ->body('Refunded $27.84.')
+                    ->success(),
+            );
+
+        $license->refresh();
+
+        $this->assertTrue($license->isRefunded());
+        $this->assertSame('re_test_refund_123', $license->stripe_refund_id);
+        $this->assertSame($this->admin->id, $license->refunded_by);
     }
 }

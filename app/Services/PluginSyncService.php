@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Jobs\Concerns\ResolvesGitHubToken;
 use App\Jobs\GeneratePluginOgImage;
 use App\Models\Plugin;
 use App\Support\CommonMark\CommonMark;
@@ -10,6 +11,8 @@ use Illuminate\Support\Facades\Log;
 
 class PluginSyncService
 {
+    use ResolvesGitHubToken;
+
     public function sync(Plugin $plugin): bool
     {
         Log::info('[PluginSync] Starting sync', ['plugin_id' => $plugin->id, 'name' => $plugin->name]);
@@ -28,17 +31,39 @@ class PluginSyncService
             'repo' => $repo['repo'],
         ]);
 
-        $token = $this->getGitHubToken($plugin);
+        $token = $this->resolveGitHubTokenFor($plugin);
 
         Log::info('[PluginSync] Token resolved', [
             'plugin_id' => $plugin->id,
             'has_token' => $token !== null,
         ]);
 
-        $readme = $this->fetchFileFromGitHub($repo['owner'], $repo['repo'], 'README.md', $token);
-        $license = $this->fetchLicenseFile($repo['owner'], $repo['repo'], $token);
-        $composerJson = $this->fetchFileFromGitHub($repo['owner'], $repo['repo'], 'composer.json', $token);
-        $nativephpJson = $this->fetchFileFromGitHub($repo['owner'], $repo['repo'], 'nativephp.json', $token);
+        try {
+            $latestTag = $this->fetchLatestTag($repo['owner'], $repo['repo'], $token);
+        } catch (\Exception $e) {
+            Log::warning('[PluginSync] Could not discover latest release', [
+                'plugin_id' => $plugin->id,
+                'error' => $e->getMessage(),
+            ]);
+
+            return false;
+        }
+        $commitSha = null;
+
+        if ($latestTag !== null) {
+            $commitSha = $this->fetchCommitSha($repo['owner'], $repo['repo'], $latestTag, $token);
+
+            if ($commitSha === null) {
+                Log::warning('[PluginSync] Could not resolve release commit', ['plugin_id' => $plugin->id, 'tag' => $latestTag]);
+
+                return false;
+            }
+        }
+
+        $readme = $this->fetchFileFromGitHub($repo['owner'], $repo['repo'], 'README.md', $token, $commitSha);
+        $license = $this->fetchLicenseFile($repo['owner'], $repo['repo'], $token, $commitSha);
+        $composerJson = $this->fetchFileFromGitHub($repo['owner'], $repo['repo'], 'composer.json', $token, $commitSha);
+        $nativephpJson = $this->fetchFileFromGitHub($repo['owner'], $repo['repo'], 'nativephp.json', $token, $commitSha);
 
         Log::info('[PluginSync] Fetch results', [
             'plugin_id' => $plugin->id,
@@ -92,6 +117,7 @@ class PluginSyncService
 
         if ($composerData) {
             $updateData['mobile_min_version'] = $composerData['require']['nativephp/mobile'] ?? null;
+            $updateData['mobile_versions'] = Plugin::mobileVersionsFromComposer($composerData);
         }
 
         if ($readme) {
@@ -102,8 +128,6 @@ class PluginSyncService
             $updateData['license_html'] = CommonMark::convertToHtml($license);
         }
 
-        // Fetch the latest tag/release
-        $latestTag = $this->fetchLatestTag($repo['owner'], $repo['repo'], $token);
         if ($latestTag) {
             $updateData['latest_version'] = ltrim($latestTag, 'v');
         }
@@ -142,6 +166,10 @@ class PluginSyncService
                 return $response->json('tag_name');
             }
 
+            if (! $response->notFound()) {
+                $response->throw();
+            }
+
             // Fall back to tags if no releases exist
             $tagsResponse = Http::timeout(10)
                 ->when($token, fn ($http) => $http->withToken($token))
@@ -149,17 +177,41 @@ class PluginSyncService
                     'per_page' => 1,
                 ]);
 
+            if (! $tagsResponse->notFound()) {
+                $tagsResponse->throw();
+            }
+
             if ($tagsResponse->successful() && count($tagsResponse->json()) > 0) {
                 return $tagsResponse->json()[0]['name'];
             }
         } catch (\Exception $e) {
             Log::warning("Failed to fetch latest tag for {$owner}/{$repo}: {$e->getMessage()}");
+
+            throw $e;
         }
 
         return null;
     }
 
-    protected function fetchFileFromGitHub(string $owner, string $repo, string $path, ?string $token): ?string
+    protected function fetchCommitSha(string $owner, string $repo, string $tag, ?string $token): ?string
+    {
+        try {
+            $reference = rawurlencode($tag);
+            $response = Http::timeout(10)
+                ->when($token, fn ($http) => $http->withToken($token))
+                ->get("https://api.github.com/repos/{$owner}/{$repo}/commits/{$reference}");
+
+            if ($response->successful() && filled($response->json('sha'))) {
+                return $response->json('sha');
+            }
+        } catch (\Exception $e) {
+            Log::warning("Failed to resolve release commit for {$owner}/{$repo}: {$e->getMessage()}");
+        }
+
+        return null;
+    }
+
+    protected function fetchFileFromGitHub(string $owner, string $repo, string $path, ?string $token, ?string $commitSha = null): ?string
     {
         try {
             $request = Http::timeout(10);
@@ -168,7 +220,10 @@ class PluginSyncService
                 $request = $request->withToken($token);
             }
 
-            $response = $request->get("https://api.github.com/repos/{$owner}/{$repo}/contents/{$path}");
+            $response = $request->get(
+                "https://api.github.com/repos/{$owner}/{$repo}/contents/{$path}",
+                $commitSha !== null ? ['ref' => $commitSha] : [],
+            );
 
             if ($response->successful()) {
                 $data = $response->json();
@@ -178,7 +233,8 @@ class PluginSyncService
                 }
             }
 
-            $baseUrl = "https://raw.githubusercontent.com/{$owner}/{$repo}/main";
+            $reference = $commitSha ?? 'main';
+            $baseUrl = "https://raw.githubusercontent.com/{$owner}/{$repo}/{$reference}";
             $fallbackResponse = Http::timeout(10)->get("{$baseUrl}/{$path}");
 
             if ($fallbackResponse->successful()) {
@@ -191,17 +247,6 @@ class PluginSyncService
         return null;
     }
 
-    protected function getGitHubToken(Plugin $plugin): ?string
-    {
-        $user = $plugin->user;
-
-        if ($user && $user->hasGitHubToken()) {
-            return $user->getGitHubToken();
-        }
-
-        return config('services.github.token');
-    }
-
     protected function extractIosVersion(array $nativephpData): ?string
     {
         return $nativephpData['ios']['min_version'] ?? null;
@@ -212,13 +257,13 @@ class PluginSyncService
         return $nativephpData['android']['min_version'] ?? null;
     }
 
-    protected function fetchLicenseFile(string $owner, string $repo, ?string $token): ?string
+    protected function fetchLicenseFile(string $owner, string $repo, ?string $token, ?string $commitSha = null): ?string
     {
         // Try common license file names
         $licenseFiles = ['LICENSE.md', 'LICENSE', 'LICENSE.txt', 'license.md', 'license', 'license.txt'];
 
         foreach ($licenseFiles as $filename) {
-            $content = $this->fetchFileFromGitHub($owner, $repo, $filename, $token);
+            $content = $this->fetchFileFromGitHub($owner, $repo, $filename, $token, $commitSha);
 
             if ($content) {
                 return $content;

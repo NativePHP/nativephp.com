@@ -65,6 +65,19 @@ return [
         'client_secret' => env('GITHUB_CLIENT_SECRET'),
         'redirect' => env('APP_URL').'/auth/github/callback',
         'token' => env('GITHUB_TOKEN'),
+        // The date the legacy OAuth App stops working, shown to people who haven't moved to the GitHub App yet
+        'legacy_oauth_cutoff_date' => env('GITHUB_LEGACY_OAUTH_CUTOFF_DATE'),
+    ],
+
+    'github_app' => [
+        'app_id' => env('GITHUB_APP_ID'),
+        'client_id' => env('GITHUB_APP_CLIENT_ID'),
+        'client_secret' => env('GITHUB_APP_CLIENT_SECRET'),
+        'private_key' => env('GITHUB_APP_PRIVATE_KEY'),
+        'webhook_secret' => env('GITHUB_APP_WEBHOOK_SECRET'),
+        'redirect' => env('APP_URL').'/auth/github/callback',
+        // Public and fixed: the app's name in its github.com/apps/{slug} URL
+        'slug' => 'nativephp-plugin-marketplace',
     ],
 
     'discord' => [
@@ -81,6 +94,12 @@ return [
         'site_key' => env('TURNSTILE_SITE_KEY'),
         'secret_key' => env('TURNSTILE_SECRET_KEY'),
         'hostnames' => env('TURNSTILE_HOSTNAMES'),
+    ],
+
+    'youtube' => [
+        'api_key' => env('YOUTUBE_API_KEY'),
+        // @NativePHPOfficial
+        'channel_id' => env('YOUTUBE_CHANNEL_ID', 'UCbkAE6vLlR6lOy_nxd--22g'),
     ],
 
     'satis' => [

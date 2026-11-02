@@ -13,12 +13,15 @@ use App\Http\Controllers\CustomerSubLicenseController;
 use App\Http\Controllers\DeveloperOnboardingController;
 use App\Http\Controllers\DiscordIntegrationController;
 use App\Http\Controllers\DocsWhatsNewController;
+use App\Http\Controllers\GitHubAppWebhookController;
 use App\Http\Controllers\GitHubAuthController;
 use App\Http\Controllers\GitHubIntegrationController;
 use App\Http\Controllers\LicenseRenewalController;
 use App\Http\Controllers\NotificationUnsubscribeController;
 use App\Http\Controllers\OpenCollectiveWebhookController;
 use App\Http\Controllers\PluginDirectoryController;
+use App\Http\Controllers\PluginRatingController;
+use App\Http\Controllers\PluginReportController;
 use App\Http\Controllers\PluginWebhookController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ShowBlogController;
@@ -28,6 +31,7 @@ use App\Http\Controllers\SupportTicketAttachmentController;
 use App\Http\Controllers\TeamController;
 use App\Http\Controllers\TeamUserController;
 use App\Http\Controllers\UltraController;
+use App\Http\Controllers\UltraPageController;
 use App\Livewire\ClaimDonationLicense;
 use App\Livewire\Customer\Course\LessonShow;
 use App\Livewire\Customer\Dashboard;
@@ -44,7 +48,6 @@ use App\Livewire\OrderSuccess;
 use App\Livewire\PluginDirectory;
 use App\Models\Course;
 use App\Models\Product;
-use App\Services\CartService;
 use App\Services\DocsVersionService;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Exceptions\UrlGenerationException;
@@ -127,7 +130,7 @@ Route::post('opencollective/contribution', [OpenCollectiveWebhookController::cla
 Route::get('opencollective/claim', ClaimDonationLicense::class)->name('opencollective.claim');
 
 Route::view('/', 'welcome')->name('welcome');
-Route::view('ultra', 'pricing')->name('pricing');
+Route::get('ultra', UltraPageController::class)->name('pricing');
 Route::view('alt-pricing', 'alt-pricing')->name('alt-pricing')->middleware('signed');
 Route::get('course', function () {
     $user = auth()->user();
@@ -167,7 +170,7 @@ Route::post('course/checkout', function (Request $request) {
             ->with('message', 'Please log in or create an account to complete your purchase.');
     }
 
-    $product = Product::where('slug', 'nativephp-masterclass')->firstOrFail();
+    $product = Product::where('slug', 'nativephp-masterclass')->active()->firstOrFail();
 
     if ($product->isOwnedBy($user)) {
         return to_route('course')->with('error', 'You already own this course.');
@@ -189,11 +192,9 @@ Route::post('course/checkout', function (Request $request) {
 
     $user->createOrGetStripeCustomer();
 
-    $cartService = resolve(CartService::class);
-    $cart = $cartService->getCart($user);
-    $cartService->addProduct($cart, $product);
-
-    $metadata = ['cart_id' => (string) $cart->id];
+    // The course is bought on its own, never through the cart, so the webhook
+    // licenses it from this product ID and leaves the buyer's cart alone.
+    $metadata = ['product_id' => (string) $product->id];
 
     $sessionOptions = [
         'success_url' => route('cart.success').'?session_id={CHECKOUT_SESSION_ID}',
@@ -236,13 +237,16 @@ Route::view('newsletter/unsubscribed', 'newsletter.unsubscribed')->name('newslet
 Route::view('wall-of-love', 'wall-of-love')->name('wall-of-love');
 Route::view('brand', 'brand')->name('brand');
 Route::get('showcase/{platform?}', [ShowcaseController::class, 'index'])
-    ->where('platform', 'mobile|desktop')
+    ->where('platform', 'mobile|desktop|both')
     ->name('showcase');
 Route::view('laracon-us-2025-giveaway', 'laracon-us-2025-giveaway')->name('laracon-us-2025-giveaway');
 Route::view('privacy-policy', 'privacy-policy')->name('privacy-policy');
 Route::view('terms-of-service', 'terms-of-service')->name('terms-of-service');
 Route::view('developer-terms', 'developer-terms')->name('developer-terms');
+Route::view('contributing', 'contributing')->name('contributing');
+Route::view('security', 'security')->name('security');
 Route::view('partners', 'partners')->name('partners');
+Route::view('partners/always-curious', 'partners.always-curious')->name('partners.always-curious');
 Route::view('build-my-app', 'build-my-app')->name('build-my-app');
 Route::view('consulting', 'consulting')->name('consulting');
 Route::view('the-vibes', 'the-vibes')->name('the-vibes');
@@ -255,6 +259,12 @@ Route::middleware(EnsureFeaturesAreActive::using(ShowPlugins::class))->group(fun
     Route::get('plugins/marketplace', PluginDirectory::class)->name('plugins.marketplace');
     Route::get('plugins/{vendor}/{package}', [PluginDirectoryController::class, 'show'])->name('plugins.show');
     Route::get('plugins/{vendor}/{package}/license', [PluginDirectoryController::class, 'license'])->name('plugins.license');
+
+    Route::middleware('auth')->group(function (): void {
+        Route::post('plugins/{vendor}/{package}/rating', [PluginRatingController::class, 'store'])->name('plugins.rating.store');
+        Route::delete('plugins/{vendor}/{package}/rating', [PluginRatingController::class, 'destroy'])->name('plugins.rating.destroy');
+        Route::post('plugins/{vendor}/{package}/report', [PluginReportController::class, 'store'])->name('plugins.report.store');
+    });
 });
 
 Route::view('sponsor', 'sponsoring')->name('sponsoring');
@@ -393,11 +403,15 @@ Route::get('auth/github/callback', [GitHubIntegrationController::class, 'handleC
 // GitHub OAuth routes (auth required)
 Route::middleware(['auth', EnsureFeaturesAreActive::using(ShowAuthButtons::class)])->group(function (): void {
     Route::get('auth/github', [GitHubIntegrationController::class, 'redirectToGitHub'])->name('github.redirect');
+    Route::get('auth/github/setup', [GitHubIntegrationController::class, 'handleSetup'])->name('github.setup');
     Route::post('dashboard/github/request-access', [GitHubIntegrationController::class, 'requestRepoAccess'])->name('github.request-access');
     Route::post('dashboard/github/request-claude-plugins-access', [GitHubIntegrationController::class, 'requestClaudePluginsAccess'])->name('github.request-claude-plugins-access');
     Route::delete('dashboard/github/disconnect', [GitHubIntegrationController::class, 'disconnect'])->name('github.disconnect');
     Route::get('dashboard/github/repositories', [GitHubIntegrationController::class, 'repositories'])->name('github.repositories');
 });
+
+// GitHub App webhook
+Route::post('webhooks/github-app', GitHubAppWebhookController::class)->name('webhooks.github-app');
 
 // Discord OAuth routes
 Route::middleware(['auth', EnsureFeaturesAreActive::using(ShowAuthButtons::class)])->group(function (): void {

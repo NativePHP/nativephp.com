@@ -23,8 +23,10 @@ class CustomerAuthController extends Controller
 {
     public function __construct(protected CartService $cartService) {}
 
-    public function showLogin(): View
+    public function showLogin(Request $request): View
     {
+        $this->rememberIntendedUrl($request);
+
         return view('auth.login');
     }
 
@@ -170,6 +172,27 @@ class CustomerAuthController extends Controller
         return $status === PasswordBroker::PASSWORD_RESET
             ? to_route('customer.login')->with('status', __($status))
             : back()->withErrors(['email' => [__($status)]]);
+    }
+
+    /**
+     * Remember where the user was headed, so login sends them back there.
+     *
+     * Only same-site paths are accepted; anything else is ignored so the
+     * `redirect` parameter can't be used as an open redirect.
+     */
+    private function rememberIntendedUrl(Request $request): void
+    {
+        $redirect = $request->query('redirect');
+
+        if (! is_string($redirect) || ! str_starts_with($redirect, '/')) {
+            return;
+        }
+
+        if (str_starts_with($redirect, '//') || str_starts_with($redirect, '/\\')) {
+            return;
+        }
+
+        session(['url.intended' => url($redirect)]);
     }
 
     private function acceptPendingTeamInvitation(User $user): void

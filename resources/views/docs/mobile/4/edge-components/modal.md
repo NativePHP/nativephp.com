@@ -71,7 +71,7 @@ Programmatically setting `visible` to `false` from PHP does not fire the callbac
 
     <native:modal :visible="$showImage" @dismiss="$showImage = false">
         <native:column class="w-full h-full" center>
-            <native:image src="{{ $previewUrl }}" class="w-full" :fit="1" />
+            <native:image src="{{ $previewUrl }}" class="w-full" fit="contain" />
         </native:column>
     </native:modal>
 </native:column>

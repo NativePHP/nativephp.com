@@ -39,7 +39,8 @@ class UserResourceDeveloperTest extends TestCase
         $this->actingAs($this->admin)
             ->get(EditUser::getUrl(['record' => $this->user]))
             ->assertSee('Developer Account')
-            ->assertSee($this->user->developerAccount->stripe_connect_account_id);
+            ->assertSee($this->user->developerAccount->stripe_connect_account_id)
+            ->assertSee('Not needed for payouts.');
     }
 
     public function test_developer_account_section_is_hidden_when_user_has_no_developer_account(): void

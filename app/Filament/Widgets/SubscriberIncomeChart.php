@@ -2,6 +2,7 @@
 
 namespace App\Filament\Widgets;
 
+use BezhanSalleh\FilamentShield\Traits\HasWidgetShield;
 use Carbon\Carbon;
 use Filament\Support\RawJs;
 use Filament\Widgets\ChartWidget;
@@ -9,6 +10,8 @@ use Laravel\Cashier\Subscription;
 
 class SubscriberIncomeChart extends ChartWidget
 {
+    use HasWidgetShield;
+
     protected ?string $heading = 'Subscriber Income';
 
     protected static ?int $sort = 3;

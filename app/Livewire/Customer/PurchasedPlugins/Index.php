@@ -16,6 +16,7 @@ class Index extends Component
     public function pluginLicenses(): Collection
     {
         return auth()->user()->pluginLicenses()
+            ->notRefunded()
             ->with('plugin', 'pluginBundle')
             ->orderBy('purchased_at', 'desc')
             ->get();

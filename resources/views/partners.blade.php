@@ -701,6 +701,25 @@
                     </x-slot>
                 </x-home.featured-partner-card>
 
+            <x-home.featured-partner-card
+                partnerName="Always Curious"
+                tagline="Strategy-Led Laravel Apps, Built to Last"
+                href="{{ route('partners.always-curious') }}"
+            >
+                <x-slot:logo>
+                    <img
+                        src="/img/sponsors/always-curious.svg"
+                        class="h-10 w-auto"
+                        loading="lazy"
+                        alt="Always Curious logo"
+                    />
+                </x-slot>
+
+                <x-slot:description>
+                    Always Curious is a strategy-led Laravel consultancy building native desktop and mobile apps with NativePHP. From fintech to field service and live events, we ship the simplest path to the right answer.
+                </x-slot>
+            </x-home.featured-partner-card>
+
                 <x-home.featured-partner-card
                     partnerName="Synergi Tech"
                     tagline="Bespoke software for complex infrastructure"

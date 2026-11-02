@@ -32,10 +32,13 @@
     x-bind:class="{ 'dark': isDark === true }"
 >
     <head>
-        <meta
-            http-equiv="Content-Security-Policy"
-            content="upgrade-insecure-requests"
-        />
+        {{-- Skipped locally so the site can be served over plain http --}}
+        @unless (app()->isLocal())
+            <meta
+                http-equiv="Content-Security-Policy"
+                content="upgrade-insecure-requests"
+            />
+        @endunless
         <meta charset="utf-8" />
         <meta
             http-equiv="X-UA-Compatible"
@@ -118,7 +121,11 @@
         "
         class="min-h-screen overflow-x-clip bg-white font-poppins antialiased selection:bg-black selection:text-[#b4a9ff] dark:bg-[#050714] dark:text-white"
     >
-        <x-newsletter-banner />
+        @if (now()->isBefore('2027-01-01T00:00:00Z'))
+            <x-bifrost-birthday-banner />
+        @else
+            <x-newsletter-banner />
+        @endif
 
         <x-navigation-bar />
 

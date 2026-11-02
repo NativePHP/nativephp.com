@@ -79,7 +79,7 @@ class Dashboard extends Component
     #[Computed]
     public function pluginLicenseCount(): int
     {
-        return auth()->user()->pluginLicenses()->count();
+        return auth()->user()->pluginLicenses()->notRefunded()->count();
     }
 
     #[Computed]

@@ -20,14 +20,14 @@
         <flux:table>
             <flux:table.columns>
                 <flux:table.column>Plugin</flux:table.column>
-                <flux:table.column>Status</flux:table.column>
-                <flux:table.column>Purchased</flux:table.column>
+                <flux:table.column class="hidden sm:table-cell">Status</flux:table.column>
+                <flux:table.column class="hidden sm:table-cell">Purchased</flux:table.column>
             </flux:table.columns>
 
             <flux:table.rows>
                 @foreach($this->pluginLicenses as $pluginLicense)
                     <flux:table.row :key="$pluginLicense->id">
-                        <flux:table.cell>
+                        <flux:table.cell class="whitespace-normal">
                             <div class="flex items-center gap-3">
                                 <div class="shrink-0">
                                     @if($pluginLicense->plugin->hasLogo())
@@ -42,18 +42,24 @@
                                         </div>
                                     @endif
                                 </div>
-                                <div>
-                                    <a href="{{ route('plugins.show', $pluginLicense->plugin->routeParams()) }}" class="font-medium text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300">
+                                <div class="min-w-0">
+                                    <a href="{{ route('plugins.show', $pluginLicense->plugin->routeParams()) }}" class="font-medium text-blue-600 wrap-anywhere hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300">
                                         {{ $pluginLicense->plugin->name }}
                                     </a>
                                     @if($pluginLicense->plugin->description)
                                         <flux:text class="text-xs line-clamp-1">{{ $pluginLicense->plugin->description }}</flux:text>
                                     @endif
+                                    <flux:text class="mt-1 text-xs sm:hidden">
+                                        Purchased {{ $pluginLicense->purchased_at->format('M j, Y') }}
+                                        @if($pluginLicense->wasPurchasedAsBundle() && $pluginLicense->pluginBundle)
+                                            &middot; Part of {{ $pluginLicense->pluginBundle->name }}
+                                        @endif
+                                    </flux:text>
                                 </div>
                             </div>
                         </flux:table.cell>
 
-                        <flux:table.cell>
+                        <flux:table.cell class="hidden sm:table-cell">
                             <div>
                                 <x-customer.status-badge status="Licensed" />
                                 @if($pluginLicense->wasPurchasedAsBundle() && $pluginLicense->pluginBundle)
@@ -62,7 +68,7 @@
                             </div>
                         </flux:table.cell>
 
-                        <flux:table.cell>
+                        <flux:table.cell class="hidden sm:table-cell">
                             {{ $pluginLicense->purchased_at->format('M j, Y') }}
                         </flux:table.cell>
                     </flux:table.row>

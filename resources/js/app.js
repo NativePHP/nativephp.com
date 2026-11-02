@@ -15,7 +15,7 @@ import Atropos from 'atropos'
 import '@docsearch/css'
 import 'atropos/css'
 
-import.meta.glob(['../images/**', '../svg/**'])
+import.meta.glob(['../images/**', '../svg/**'], { eager: true })
 import {
     animate,
     hover,
@@ -201,6 +201,10 @@ function initDocsearch(broadenScope) {
         debug: false,
         container: docsearchContainerSelector,
         ...(docsPathMatch && ! broadenScope && { transformItems: scopedTransformItems }),
+
+        // The site menu is a popover, so it renders above the search modal. Tell it
+        // to close when a keyboard shortcut opens search while the menu is open.
+        onOpen: () => window.dispatchEvent(new CustomEvent('docsearch:open')),
     })
 }
 

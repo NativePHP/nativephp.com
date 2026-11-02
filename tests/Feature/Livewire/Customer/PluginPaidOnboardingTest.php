@@ -165,6 +165,27 @@ class PluginPaidOnboardingTest extends TestCase
             ->assertDontSee('complete developer onboarding');
     }
 
+    public function test_edit_draft_shows_what_ultra_subscribers_pay_for_each_tier(): void
+    {
+        $user = $this->createGitHubUser();
+        DeveloperAccount::factory()->for($user)->create();
+        $plugin = Plugin::factory()->draft()->for($user)->create([
+            'name' => 'testuser/tier-prices',
+        ]);
+
+        [$vendor, $package] = explode('/', $plugin->name);
+
+        Livewire::actingAs($user)->test(Show::class, [
+            'vendor' => $vendor,
+            'package' => $package,
+        ])
+            ->set('pluginType', 'paid')
+            ->assertSee('$20 for Ultra subscribers')
+            ->assertSee('$35 for Ultra subscribers')
+            ->assertSee('$70 for Ultra subscribers')
+            ->assertSee('you keep 100% of what they pay');
+    }
+
     public function test_save_draft_as_paid_blocked_without_onboarding(): void
     {
         $user = $this->createGitHubUser();

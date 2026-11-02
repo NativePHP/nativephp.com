@@ -4,6 +4,7 @@ namespace App\Filament\Resources;
 
 use App\Enums\PayoutStatus;
 use App\Enums\PluginType;
+use App\Filament\Actions\RefundPluginLicenseAction;
 use App\Filament\Resources\ThirdPartySaleResource\Pages;
 use App\Models\PluginLicense;
 use Filament\Actions;
@@ -44,7 +45,7 @@ class ThirdPartySaleResource extends Resource
                     ->where('type', PluginType::Paid);
             })
             ->where('is_grandfathered', false)
-            ->with(['plugin.developerAccount.user', 'user', 'payout']);
+            ->with(['plugin.developerAccount.user', 'user', 'payout', 'refundedBy']);
     }
 
     public static function form(Schema $schema): Schema
@@ -79,17 +80,24 @@ class ThirdPartySaleResource extends Resource
                 Tables\Columns\TextColumn::make('price_paid')
                     ->label('Paid')
                     ->formatStateUsing(fn (int $state): string => '$'.number_format($state / 100, 2))
+                    ->description(fn (PluginLicense $record): ?string => $record->wasSoldAtUltraPrice() ? 'Ultra price' : null)
+                    ->summarize(Tables\Columns\Summarizers\Sum::make('sum')->money('USD', divideBy: 100))
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('payout.developer_amount')
                     ->label('Due to Seller')
                     ->formatStateUsing(fn (?int $state): string => $state === null ? '—' : '$'.number_format($state / 100, 2))
+                    ->summarize(Tables\Columns\Summarizers\Sum::make('sum')->money('USD', divideBy: 100))
                     ->placeholder('—'),
 
                 Tables\Columns\TextColumn::make('payout_status')
                     ->label('Payout')
                     ->badge()
                     ->getStateUsing(function (PluginLicense $record): string {
+                        if ($record->payout?->isCancelled() && $record->isRefunded()) {
+                            return 'Refunded';
+                        }
+
                         if ($record->payout) {
                             return $record->payout->status->label();
                         }
@@ -103,8 +111,28 @@ class ThirdPartySaleResource extends Resource
 
                         return $record->price_paid > 0 ? 'danger' : 'gray';
                     }),
+
+                Tables\Columns\TextColumn::make('refunded_at')
+                    ->label('Refunded')
+                    ->dateTime()
+                    ->description(fn (PluginLicense $record): ?string => $record->refundedBy ? 'by '.$record->refundedBy->email : null)
+                    ->sortable()
+                    ->placeholder('-'),
+
+                Tables\Columns\TextColumn::make('stripe_refund_id')
+                    ->label('Stripe Refund')
+                    ->fontFamily('mono')
+                    ->copyable()
+                    ->url(fn (PluginLicense $record): ?string => $record->stripePaymentUrl())
+                    ->openUrlInNewTab()
+                    ->placeholder('-')
+                    ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
+                Tables\Filters\TernaryFilter::make('refunded_at')
+                    ->label('Refunded')
+                    ->nullable(),
+
                 Tables\Filters\TernaryFilter::make('missing_payout')
                     ->label('Missing Payout')
                     ->queries(
@@ -132,13 +160,15 @@ class ThirdPartySaleResource extends Resource
                     ->preload(),
             ])
             ->actions([
+                RefundPluginLicenseAction::make(),
+
                 Actions\Action::make('viewPayout')
                     ->label('View Payout')
                     ->icon('heroicon-o-currency-dollar')
                     ->url(fn (PluginLicense $record): ?string => $record->payout
                         ? PluginPayoutResource::getUrl('view', ['record' => $record->payout])
                         : null)
-                    ->visible(fn (PluginLicense $record): bool => $record->payout !== null),
+                    ->visible(fn (PluginLicense $record): bool => $record->payout !== null && PluginPayoutResource::can('view', $record->payout)),
             ])
             ->bulkActions([])
             ->defaultSort('purchased_at', 'desc');

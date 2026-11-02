@@ -78,10 +78,16 @@
 
             {{-- Doc search (visible on large screens) --}}
 
+            {{-- Ultra nudge (desktop only) --}}
+            <span class="hidden items-center gap-1.5 text-sm font-medium text-gray-600 motion-safe:animate-bounce-x lg:inline-flex dark:text-zinc-400">
+                Support open source
+                <x-icons.right-arrow class="size-3" aria-hidden="true" />
+            </span>
+
             {{-- Ultra link (desktop only) --}}
             <a
                 href="{{ route('pricing') }}"
-                class="hidden items-center gap-1.5 rounded-full bg-orange-500/10 px-3 py-1.5 text-sm font-medium text-orange-600 transition duration-200 hover:bg-orange-500/20 lg:inline-flex dark:text-orange-400 dark:hover:bg-orange-500/20"
+                class="hidden items-center rounded-full bg-zinc-200/60 px-3 py-2 text-sm transition duration-200 hover:bg-zinc-200 lg:inline-flex dark:bg-slate-950/30 dark:ring-1 dark:ring-slate-700/50 dark:ring-inset dark:hover:bg-cloud/70"
             >
                 Ultra
             </a>
@@ -89,7 +95,7 @@
             {{-- Course link (desktop only) --}}
             <a
                 href="{{ route('course') }}"
-                class="hidden items-center gap-1.5 rounded-full bg-emerald-500/10 px-3 py-1.5 text-sm font-medium text-emerald-600 transition duration-200 hover:bg-emerald-500/20 lg:inline-flex dark:text-emerald-400 dark:hover:bg-emerald-500/20"
+                class="hidden items-center rounded-full bg-zinc-200/60 px-3 py-2 text-sm transition duration-200 hover:bg-zinc-200 lg:inline-flex dark:bg-slate-950/30 dark:ring-1 dark:ring-slate-700/50 dark:ring-inset dark:hover:bg-cloud/70"
             >
                 Masterclass
             </a>
@@ -97,7 +103,7 @@
             {{-- Build link (desktop only) --}}
             <a
                 href="{{ route('build-my-app') }}"
-                class="hidden items-center gap-1.5 rounded-full bg-violet-500/10 px-3 py-1.5 text-sm font-medium text-violet-600 transition duration-200 hover:bg-violet-500/20 lg:inline-flex dark:text-violet-400 dark:hover:bg-violet-500/20"
+                class="hidden items-center rounded-full bg-zinc-200/60 px-3 py-2 text-sm transition duration-200 hover:bg-zinc-200 lg:inline-flex dark:bg-slate-950/30 dark:ring-1 dark:ring-slate-700/50 dark:ring-inset dark:hover:bg-cloud/70"
             >
                 Build
             </a>

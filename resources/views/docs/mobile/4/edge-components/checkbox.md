@@ -99,7 +99,7 @@ Each checkbox binds its own public boolean property; the summary line re-renders
 ## Element
 
 ```php
-use Nativephp\NativeUi\Elements\Checkbox;
+use Native\Mobile\UI\Elements\Checkbox;
 
 Checkbox::make()
     ->value($agreed)

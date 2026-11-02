@@ -22,6 +22,15 @@ final class DocsLabels
     }
 
     /**
+     * Null when that version's tree has no versioning page — an unlinked
+     * label beats one that 404s.
+     */
+    public static function versioningPolicyUrl(string $fragment = 'version-labels'): ?string
+    {
+        return self::pageUrl('getting-started/versioning', $fragment);
+    }
+
+    /**
      * The current platform/version is always a real directory when a badge
      * is rendering (it's rendering on a live page inside it), so unlike
      * pageUrl() this never needs a file_exists guard.

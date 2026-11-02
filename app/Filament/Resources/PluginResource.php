@@ -2,12 +2,14 @@
 
 namespace App\Filament\Resources;
 
+use App\Enums\PluginCategory;
 use App\Enums\PluginStatus;
 use App\Enums\PluginTier;
 use App\Enums\PluginType;
 use App\Filament\Resources\PluginResource\Pages;
 use App\Filament\Resources\PluginResource\RelationManagers;
 use App\Jobs\ReviewPluginRepository;
+use App\Jobs\SuggestPluginCategories;
 use App\Jobs\SyncPlugin;
 use App\Models\Plugin;
 use App\Models\PluginLicense;
@@ -20,12 +22,15 @@ use Filament\Forms;
 use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Schemas;
+use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
 use Filament\Tables;
 use Filament\Tables\Contracts\HasTable;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\HtmlString;
+use Throwable;
 
 class PluginResource extends Resource
 {
@@ -65,12 +70,14 @@ class PluginResource extends Resource
                             ->label('Description'),
 
                         Forms\Components\Select::make('type')
-                            ->options(PluginType::class),
+                            ->options(PluginType::class)
+                            ->disabled(fn (?Plugin $record): bool => static::cannotChangePricing($record)),
 
                         Forms\Components\Select::make('tier')
                             ->options(PluginTier::class)
                             ->placeholder('No tier')
-                            ->helperText('Set pricing tier for paid plugins'),
+                            ->helperText('Set pricing tier for paid plugins')
+                            ->disabled(fn (?Plugin $record): bool => static::cannotChangePricing($record)),
 
                         Forms\Components\Placeholder::make('name')
                             ->label('Composer Package Name')
@@ -128,6 +135,74 @@ class PluginResource extends Resource
                             ->helperText('Show a badge indicating this plugin runs in the Jump preview app (i.e. it ships no custom native code)'),
                     ]),
 
+                Schemas\Components\Section::make('Categories')
+                    ->key('categories-section')
+                    ->inlineLabel()
+                    ->columns(1)
+                    ->schema([
+                        Forms\Components\CheckboxList::make('categories')
+                            ->options(PluginCategory::class)
+                            ->columns(4),
+
+                        Forms\Components\Placeholder::make('category_suggestions_display')
+                            ->label('Jev suggests')
+                            ->content(fn (?Plugin $record): string => match (true) {
+                                $record?->category_suggestions === null => 'Not asked yet',
+                                $record->suggestedCategories()->isEmpty() => 'No category is a confident fit',
+                                default => $record->suggestedCategories()
+                                    ->map(fn (PluginCategory $category): string => sprintf('%s (%d%%)', $category->label(), round($record->category_suggestions[$category->value] * 100)))
+                                    ->join(', '),
+                            }),
+                    ])
+                    ->headerActions([
+                        Action::make('suggestCategories')
+                            ->label(fn (?Plugin $record): string => $record?->category_suggestions === null ? 'Ask Jev' : 'Ask Jev again')
+                            ->icon('heroicon-o-sparkles')
+                            ->color('gray')
+                            ->action(function (Plugin $record): void {
+                                try {
+                                    (new SuggestPluginCategories($record))->handle();
+                                } catch (Throwable $exception) {
+                                    report($exception);
+
+                                    Notification::make()
+                                        ->title('Jev couldn\'t suggest categories')
+                                        ->body($exception->getMessage())
+                                        ->danger()
+                                        ->send();
+
+                                    return;
+                                }
+
+                                $suggestions = $record->suggestedCategories();
+
+                                Notification::make()
+                                    ->title($suggestions->isEmpty()
+                                        ? 'Jev isn\'t confident about any category'
+                                        : 'Jev suggests '.$suggestions->map->label()->join(', ', ' and '))
+                                    ->status($suggestions->isEmpty() ? 'warning' : 'success')
+                                    ->send();
+                            }),
+
+                        Action::make('applySuggestedCategories')
+                            ->label('Apply suggestions')
+                            ->icon('heroicon-o-check')
+                            ->color('success')
+                            ->visible(fn (?Plugin $record): bool => (bool) $record?->hasUnappliedCategorySuggestions())
+                            ->action(function (Plugin $record, Set $set): void {
+                                $record->applySuggestedCategories();
+
+                                $set('categories', $record->categories->map->value->all());
+
+                                Notification::make()
+                                    ->title('Categories applied')
+                                    ->body('This plugin is now in '.$record->categories->map->label()->join(', ', ' and ').'.')
+                                    ->success()
+                                    ->send();
+                            }),
+                    ])
+                    ->visible(fn (?Plugin $record) => $record !== null),
+
                 Schemas\Components\Section::make('Review Checks')
                     ->inlineLabel()
                     ->columns(1)
@@ -149,6 +224,14 @@ class PluginResource extends Resource
                         Forms\Components\Placeholder::make('review_webhook')
                             ->label('Webhook Configured (required)')
                             ->content(fn (?Plugin $record) => $record?->webhook_installed ? '✅ Configured' : '❌ Not configured'),
+
+                        Forms\Components\Placeholder::make('review_demo_video')
+                            ->label('Demo Video (required)')
+                            ->content(fn (?Plugin $record) => match (true) {
+                                $record?->hasDemoVideo() => '✅ '.$record->demoVideo()->providerLabel().' — attested '.$record->demo_video_attested_at->diffForHumans(),
+                                $record?->demoVideo() !== null => '❌ Not attested by developer',
+                                default => '❌ Missing',
+                            }),
 
                         Forms\Components\Placeholder::make('review_ios')
                             ->label('iOS Support')
@@ -182,6 +265,7 @@ class PluginResource extends Resource
                     ])
                     ->headerActions([
                         Action::make('emailReviewChecks')
+                            ->authorize('messageDeveloper')
                             ->label('Email Developer')
                             ->icon('heroicon-o-envelope')
                             ->color('warning')
@@ -217,6 +301,30 @@ class PluginResource extends Resource
                         Forms\Components\Placeholder::make('notes_display')
                             ->label('Notes')
                             ->content(fn (?Plugin $record) => $record?->notes ?? 'Not provided'),
+
+                        Forms\Components\Placeholder::make('demo_video_display')
+                            ->label('Demo Video')
+                            ->content(function (?Plugin $record) {
+                                $video = $record?->demoVideo();
+
+                                if (! $video) {
+                                    return 'Not provided';
+                                }
+
+                                return new HtmlString(
+                                    '<div style="max-width: 640px;">'
+                                    .'<div style="position: relative; padding-top: 56.25%; border-radius: 0.5rem; overflow: hidden;">'
+                                    .'<iframe src="'.e($video->embedUrl()).'" title="Demo video" style="position: absolute; inset: 0; width: 100%; height: 100%; border: 0;" loading="lazy" allow="encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe>'
+                                    .'</div>'
+                                    .'<a href="'.e($video->url).'" target="_blank" rel="noopener noreferrer" class="text-primary-600 hover:underline">Open on '.e($video->providerLabel()).' ↗</a>'
+                                    .'</div>'
+                                );
+                            }),
+
+                        Forms\Components\Toggle::make('show_demo_video')
+                            ->label('Show demo video on listing')
+                            ->helperText('Off by default. Only enable once you have watched the video and are happy with its quality.')
+                            ->disabled(fn (?Plugin $record) => $record?->demoVideo() === null),
                     ])
                     ->visible(fn (?Plugin $record) => $record !== null),
 
@@ -236,7 +344,7 @@ class PluginResource extends Resource
                                         ? UserResource::getUrl('edit', ['record' => $record->user_id])
                                         : null)
                                     ->openUrlInNewTab()
-                                    ->visible(fn (?Plugin $record) => $record?->user_id !== null),
+                                    ->visible(fn (?Plugin $record) => $record?->user !== null && UserResource::can('update', $record->user)),
                             ),
 
                         Forms\Components\Placeholder::make('created_at')
@@ -258,6 +366,9 @@ class PluginResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->modifyQueryUsing(fn (Builder $query): Builder => $query->withCount([
+                'reports as open_reports_count' => fn (Builder $query): Builder => $query->open(),
+            ]))
             ->columns([
                 Tables\Columns\ImageColumn::make('logo_path')
                     ->label('Logo')
@@ -306,6 +417,12 @@ class PluginResource extends Resource
                     })
                     ->sortable()
                     ->toggleable(),
+
+                Tables\Columns\TextColumn::make('open_reports_count')
+                    ->label('Reports')
+                    ->badge()
+                    ->color(fn (int $state): string => $state > 0 ? 'danger' : 'gray')
+                    ->sortable(),
 
                 Tables\Columns\TextColumn::make('mobile_min_version')
                     ->label('Mobile SDK')
@@ -389,6 +506,7 @@ class PluginResource extends Resource
             ->actions([
                 Actions\ActionGroup::make([
                     Action::make('resync')
+                        ->authorize('resync')
                         ->label('Re-sync from GitHub')
                         ->icon('heroicon-o-arrow-path')
                         ->color('primary')
@@ -407,6 +525,7 @@ class PluginResource extends Resource
                         }),
 
                     Action::make('grantToUser')
+                        ->authorize('grantToUser')
                         ->label('Grant to User')
                         ->icon('heroicon-o-gift')
                         ->color('success')
@@ -465,6 +584,7 @@ class PluginResource extends Resource
                         ->modalSubmitActionLabel('Grant'),
 
                     Action::make('runReviewChecks')
+                        ->authorize('runReviewChecks')
                         ->label('Run Review Checks')
                         ->icon('heroicon-o-clipboard-document-check')
                         ->color('primary')
@@ -488,6 +608,7 @@ class PluginResource extends Resource
                             $lines = collect([
                                 ['License file *', $checks['has_license_file']],
                                 ['Release version *', $checks['has_release_version'] ? $checks['release_version'] : false],
+                                ['Demo video *', $record->hasDemoVideo() ? $record->demoVideo()->providerLabel() : false],
                                 ['iOS support', $checks['supports_ios']],
                                 ['Android support', $checks['supports_android']],
                                 ['JS support', $checks['supports_js']],
@@ -511,13 +632,13 @@ class PluginResource extends Resource
                                 'supports_ios', 'supports_android', 'supports_js',
                                 'requires_mobile_sdk',
                                 'has_ios_min_version', 'has_android_min_version',
-                            ])->filter()->count();
+                            ])->filter()->count() + ($record->hasDemoVideo() ? 1 : 0);
 
                             Notification::make()
-                                ->title("Review checks complete ({$passed}/8 passed)")
+                                ->title("Review checks complete ({$passed}/9 passed)")
                                 ->body(new HtmlString($lines))
                                 ->duration(15000)
-                                ->color($passed === 8 ? 'success' : 'warning')
+                                ->color($passed === 9 ? 'success' : 'warning')
                                 ->send();
                         }),
                 ])
@@ -538,12 +659,22 @@ class PluginResource extends Resource
             );
     }
 
+    /**
+     * Type and tier decide what a plugin costs, so they follow the
+     * "Convert to paid" permission rather than plain update access.
+     */
+    protected static function cannotChangePricing(?Plugin $record): bool
+    {
+        return $record !== null && Gate::denies('convertToPaid', $record);
+    }
+
     public static function getRelations(): array
     {
         return [
             RelationManagers\PricesRelationManager::class,
             RelationManagers\LicensesRelationManager::class,
             RelationManagers\ActivitiesRelationManager::class,
+            RelationManagers\RatingsRelationManager::class,
         ];
     }
 

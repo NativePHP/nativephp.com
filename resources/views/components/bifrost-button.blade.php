@@ -4,39 +4,6 @@
 
 <a
     href="https://bifrost.nativephp.com/"
-    x-data="{ tl: null, items: [] }"
-    x-init="
-        $nextTick(() => {
-            this.items = Array.from($refs.textContainer.children);
-            if (this.items.length > 1) {
-                gsap.set(this.items, { autoAlpha: 0, y: 10 });
-                gsap.set(this.items[0], { autoAlpha: 1, y: 0 });
-
-                const hold = 0.7;
-                this.tl = gsap.timeline({ repeat: -1 });
-
-                for (let i = 0; i < this.items.length; i++) {
-                    const curr = this.items[i];
-                    const next = this.items[(i + 1) % this.items.length];
-
-                    this.tl.to(curr, { duration: 0.5, autoAlpha: 0, y: -10, ease: 'circ.inOut' }, `+=${hold}`)
-                           .to(next, { duration: 0.5, autoAlpha: 1, y: 0, ease: 'circ.inOut' }, '<');
-                }
-            }
-        })
-    "
-    @mouseenter="
-        if (tl) {
-            tl.pause();
-            gsap.to(items, { autoAlpha: 0, y: -10, duration: 0.2 });
-            gsap.to(items[0], { autoAlpha: 1, y: 0, duration: 0.2 });
-        }
-    "
-    @mouseleave="
-        if (tl) {
-            tl.restart();
-        }
-    "
     @class([
         'group relative z-0 inline-flex items-center overflow-hidden rounded-full bg-gray-200 transition duration-200 will-change-transform hover:scale-x-105 dark:bg-slate-800',
 
@@ -61,29 +28,5 @@
         class="absolute bottom-0 left-1/2 h-1/3 w-4/5 -translate-x-1/2 rounded-full bg-indigo-400/15 opacity-50 blur-md transition-all duration-500 group-hover:h-2/3 group-hover:opacity-100"
         aria-hidden="true"
     ></div>
-    <span
-        x-ref="textContainer"
-        class="inline-grid font-medium"
-    >
-        <span
-            class="self-center justify-self-center whitespace-nowrap [grid-area:1/-1]"
-        >
-            Try Bifrost!
-        </span>
-        <span
-            class="self-center justify-self-center whitespace-nowrap [grid-area:1/-1]"
-        >
-            Build
-        </span>
-        <span
-            class="self-center justify-self-center whitespace-nowrap [grid-area:1/-1]"
-        >
-            Distribute
-        </span>
-        <span
-            class="self-center justify-self-center whitespace-nowrap [grid-area:1/-1]"
-        >
-            {{ $small ? 'Ship' : 'Ship it!' }}
-        </span>
-    </span>
+    <span class="relative font-medium">Bifrost</span>
 </a>

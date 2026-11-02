@@ -3,24 +3,31 @@
 namespace App\Models;
 
 use App\Enums\PluginActivityType;
+use App\Enums\PluginCategory;
 use App\Enums\PluginStatus;
 use App\Enums\PluginTier;
 use App\Enums\PluginType;
 use App\Enums\PriceTier;
+use App\Jobs\BuildPluginInSatis;
 use App\Jobs\RemovePluginFromSatis;
 use App\Jobs\SendNewPluginNotifications;
+use App\Jobs\SuggestPluginCategories;
 use App\Jobs\SyncPluginReleases;
 use App\Notifications\PluginApproved;
 use App\Notifications\PluginDeveloperReplied;
 use App\Notifications\PluginMessageReceived;
 use App\Notifications\PluginRejected;
+use App\Services\GitHubAppService;
 use App\Services\OgImageService;
 use App\Services\PluginSyncService;
+use App\Support\ComposerConstraint;
+use App\Support\DemoVideo;
 use App\Support\PluginReadme;
 use BladeUI\Icons\Exceptions\SvgNotFound;
 use BladeUI\Icons\Factory as IconFactory;
 use Illuminate\Database\Eloquent\Attributes\Scope;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Casts\AsEnumCollection;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -29,6 +36,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Notification;
 
 class Plugin extends Model
@@ -105,6 +114,7 @@ class Plugin extends Model
 
     /**
      * Create or update prices based on the plugin's tier.
+     * Official plugins are included with Ultra, so they don't get an Ultra price.
      */
     public function syncPricesFromTier(): void
     {
@@ -113,6 +123,10 @@ class Plugin extends Model
         }
 
         $tierPrices = $this->tier->getPrices();
+
+        if ($this->isOfficial()) {
+            unset($tierPrices[PriceTier::Ultra->value]);
+        }
 
         foreach ($tierPrices as $priceTier => $amount) {
             $this->prices()->updateOrCreate(
@@ -194,24 +208,42 @@ class Plugin extends Model
     /**
      * Get the best (lowest) active price for a user based on their eligible tiers.
      * Returns null if no price exists for the user's eligible tiers.
-     * Third-party plugins never offer subscriber discounts — always regular price.
+     * The regular price wins a tie, so a discounted tier only applies when it is actually cheaper.
      */
     public function getBestPriceForUser(?User $user): ?PluginPrice
     {
-        if (! $this->isOfficial()) {
-            $eligibleTiers = [PriceTier::Regular];
-        } else {
-            $eligibleTiers = $user ? $user->getEligiblePriceTiers() : [PriceTier::Regular];
-        }
-
         // Get the lowest active price for the user's eligible tiers
         $bestPrice = $this->prices()
             ->active()
-            ->forTiers($eligibleTiers)
+            ->forTiers($this->getEligiblePriceTiersFor($user))
             ->orderBy('amount', 'asc')
+            ->orderByRaw("CASE WHEN tier = 'regular' THEN 0 ELSE 1 END")
             ->first();
 
         return $bestPrice;
+    }
+
+    /**
+     * Get the price tiers a user can buy this plugin at.
+     * Third-party plugins never offer subscriber or EAP discounts — only Ultra subscribers pay less.
+     * Official plugins are included with Ultra, so they never use an Ultra price.
+     *
+     * @return array<PriceTier>
+     */
+    protected function getEligiblePriceTiersFor(?User $user): array
+    {
+        if (! $this->isOfficial()) {
+            return $user?->hasActiveUltraSubscription()
+                ? [PriceTier::Regular, PriceTier::Ultra]
+                : [PriceTier::Regular];
+        }
+
+        $eligibleTiers = $user ? $user->getEligiblePriceTiers() : [PriceTier::Regular];
+
+        return array_values(array_filter(
+            $eligibleTiers,
+            fn (PriceTier $tier): bool => $tier !== PriceTier::Ultra
+        ));
     }
 
     /**
@@ -234,11 +266,51 @@ class Plugin extends Model
     }
 
     /**
+     * Get the discounted price Ultra subscribers pay for a paid third-party plugin.
+     * Returns null if the plugin has no Ultra price, or it isn't lower than the regular price.
+     */
+    public function getUltraPrice(): ?PluginPrice
+    {
+        if (! $this->isPaid() || $this->isOfficial()) {
+            return null;
+        }
+
+        $ultraPrice = $this->prices()
+            ->active()
+            ->forTier(PriceTier::Ultra)
+            ->first();
+
+        $regularPrice = $this->getRegularPrice();
+
+        if (! $ultraPrice || ! $regularPrice || $ultraPrice->amount >= $regularPrice->amount) {
+            return null;
+        }
+
+        return $ultraPrice;
+    }
+
+    /**
      * @return HasMany<PluginLicense>
      */
     public function licenses(): HasMany
     {
         return $this->hasMany(PluginLicense::class);
+    }
+
+    /**
+     * @return HasMany<PluginRating>
+     */
+    public function ratings(): HasMany
+    {
+        return $this->hasMany(PluginRating::class);
+    }
+
+    /**
+     * @return HasMany<PluginReport>
+     */
+    public function reports(): HasMany
+    {
+        return $this->hasMany(PluginReport::class);
     }
 
     /**
@@ -327,6 +399,40 @@ class Plugin extends Model
         return $this->works_in_jump ?? false;
     }
 
+    /**
+     * The lowest NativePHP Mobile release the plugin works with in each major version
+     * it supports, keyed by major version, oldest first: [3 => '3.2.1', 4 => '4.0'].
+     *
+     * @return array<int, string>
+     */
+    public function supportedMobileVersions(): array
+    {
+        $versions = $this->mobile_versions ?? [];
+
+        ksort($versions);
+
+        return $versions;
+    }
+
+    /**
+     * Work out from a composer.json which NativePHP Mobile versions a plugin supports,
+     * shaped like supportedMobileVersions(). Null if it doesn't require nativephp/mobile
+     * or allows none of the major versions in config('plugins.mobile_major_versions').
+     *
+     * @param  array<string, mixed>|null  $composerData
+     * @return array<int, string>|null
+     */
+    public static function mobileVersionsFromComposer(?array $composerData): ?array
+    {
+        $constraint = $composerData['require']['nativephp/mobile'] ?? null;
+
+        if (! is_string($constraint)) {
+            return null;
+        }
+
+        return ComposerConstraint::lowestVersionsByMajor($constraint, config('plugins.mobile_major_versions', [])) ?: null;
+    }
+
     public function isSatisSynced(): bool
     {
         return $this->satis_synced_at !== null;
@@ -345,6 +451,23 @@ class Plugin extends Model
         }
 
         SyncPluginReleases::dispatch($this);
+    }
+
+    /**
+     * Queue a satis build of the plugin's repo as it stands.
+     *
+     * Unlike syncToSatis() this doesn't re-sync releases from GitHub, it only
+     * rebuilds. The build waits a minute so a burst of pushes can share one.
+     * Free plugins are skipped, since building one would put it in satis.
+     * Drafts are skipped too, because plugins enter satis on submission.
+     */
+    public function queueSatisRebuild(): void
+    {
+        if (! $this->isPaid() || $this->isDraft()) {
+            return;
+        }
+
+        BuildPluginInSatis::dispatch($this)->delay(now()->addMinute());
     }
 
     /**
@@ -375,7 +498,31 @@ class Plugin extends Model
             return false;
         }
 
-        return ! empty($checks['has_license_file']) && ! empty($checks['has_release_version']) && $this->webhook_installed;
+        return ! empty($checks['has_license_file'])
+            && ! empty($checks['has_release_version'])
+            && $this->webhook_installed
+            && $this->hasDemoVideo();
+    }
+
+    /**
+     * The developer has linked a supported demo video and confirmed it shows the plugin working.
+     */
+    public function hasDemoVideo(): bool
+    {
+        return $this->demoVideo() !== null && $this->demo_video_attested_at !== null;
+    }
+
+    public function demoVideo(): ?DemoVideo
+    {
+        return DemoVideo::fromUrl($this->demo_video_url);
+    }
+
+    /**
+     * Whether the demo video should be embedded on the public listing (admin-controlled).
+     */
+    public function showsDemoVideoPublicly(): bool
+    {
+        return $this->show_demo_video && $this->demoVideo() !== null;
     }
 
     /**
@@ -398,6 +545,10 @@ class Plugin extends Model
 
         if (! $this->webhook_installed) {
             $failing[] = 'Webhook configured';
+        }
+
+        if (! $this->hasDemoVideo()) {
+            $failing[] = 'Demo video showing the plugin working';
         }
 
         return $failing;
@@ -432,6 +583,79 @@ class Plugin extends Model
     protected function featured(Builder $query): Builder
     {
         return $query->where('featured', true);
+    }
+
+    /**
+     * Approved plugins that have not yet been included in an emailed "new plugins" digest.
+     *
+     * @param  Builder<Plugin>  $query
+     * @return Builder<Plugin>
+     */
+    #[Scope]
+    protected function pendingNewPluginNotification(Builder $query): Builder
+    {
+        return $query->where('status', PluginStatus::Approved)
+            ->whereNull('new_plugin_notified_at');
+    }
+  
+    /**
+     * Plugins that aren't in any category yet.
+     *
+     * @param  Builder<Plugin>  $query
+     * @return Builder<Plugin>
+     */
+    #[Scope]
+    protected function uncategorized(Builder $query): Builder
+    {
+        return $query->where(fn (Builder $query): Builder => $query
+            ->whereNull('categories')
+            ->orWhereJsonLength('categories', 0));
+    }
+
+    /**
+     * Plugins whose composer.json allows a release of the given NativePHP Mobile major version.
+     *
+     * @param  Builder<Plugin>  $query
+     * @return Builder<Plugin>
+     */
+    #[Scope]
+    protected function supportsMobileVersion(Builder $query, int $majorVersion): Builder
+    {
+        return $query->whereJsonContainsKey("mobile_versions->{$majorVersion}");
+    }
+
+    /**
+     * The categories Jev suggested for this plugin, likeliest first.
+     *
+     * @return Collection<int, PluginCategory>
+     */
+    public function suggestedCategories(): Collection
+    {
+        return collect($this->category_suggestions)
+            ->sortDesc()
+            ->keys()
+            ->map(fn (string $category): ?PluginCategory => PluginCategory::tryFrom($category))
+            ->filter()
+            ->values();
+    }
+
+    /**
+     * Whether applying Jev's suggestions would change the plugin's categories.
+     */
+    public function hasUnappliedCategorySuggestions(): bool
+    {
+        $suggested = $this->suggestedCategories()->map->value->sort()->values()->all();
+        $current = collect($this->categories)->map->value->sort()->values()->all();
+
+        return $suggested !== [] && $suggested !== $current;
+    }
+
+    /**
+     * Put the plugin in the categories Jev suggested, and only those.
+     */
+    public function applySuggestedCategories(): void
+    {
+        $this->update(['categories' => $this->suggestedCategories()]);
     }
 
     public function getPackagistUrl(): string
@@ -658,6 +882,40 @@ class Plugin extends Model
         return $secret;
     }
 
+    /**
+     * Whether the owner's GitHub App installation covers this repository, in which case the app
+     * delivers push and release events for it and no per-repository webhook is needed.
+     */
+    public function isReachableViaGitHubApp(): bool
+    {
+        $repo = $this->getRepositoryOwnerAndName();
+
+        if (! $repo || ! $this->user?->isUsingGitHubApp()) {
+            return false;
+        }
+
+        return app(GitHubAppService::class)->findInstallationForRepo($this->user, $repo['owner'], $repo['repo']) !== null;
+    }
+
+    /**
+     * Claim a GitHub release event, so each published release is only synced once. GitHub sends
+     * created, published and released for a single publish, and a repository the GitHub App covers
+     * can still have its old per-repository webhook, which delivers every event a second time. Only
+     * the first published event for each release gets through.
+     *
+     * @param  array<string, mixed>  $payload
+     */
+    public function claimReleaseEvent(array $payload): bool
+    {
+        $releaseId = $payload['release']['id'] ?? null;
+
+        if (($payload['action'] ?? null) !== 'published' || ! $releaseId) {
+            return false;
+        }
+
+        return Cache::add("plugin_{$this->id}_published_release_{$releaseId}", true, now()->addHour());
+    }
+
     public function getRepositoryOwnerAndName(): ?array
     {
         if (! $this->repository_url) {
@@ -675,6 +933,21 @@ class Plugin extends Model
             'owner' => $parts[0],
             'repo' => str_replace('.git', '', $parts[1]),
         ];
+    }
+
+    public function getIssuesUrl(): ?string
+    {
+        if (! $this->repository_url || ! str_contains($this->repository_url, 'github.com')) {
+            return null;
+        }
+
+        $repoInfo = $this->getRepositoryOwnerAndName();
+
+        if (! $repoInfo) {
+            return null;
+        }
+
+        return "https://github.com/{$repoInfo['owner']}/{$repoInfo['repo']}/issues";
     }
 
     public function approve(int $approvedById): void
@@ -778,6 +1051,8 @@ class Plugin extends Model
         );
 
         $this->syncToSatis();
+
+        SuggestPluginCategories::dispatch($this);
     }
 
     /**
@@ -854,10 +1129,18 @@ class Plugin extends Model
             'causer_id' => $causerId ?? $this->user_id,
         ]);
 
-        Notification::route('mail', 'support@nativephp.com')
+        Notification::route('mail', [config('mail.support_address'), config('mail.marketplace_address')])
             ->notify(new PluginDeveloperReplied($this, $activity));
 
         return $activity;
+    }
+
+    public function recalculateRating(): void
+    {
+        $this->update([
+            'rating_count' => $this->ratings()->count(),
+            'rating_average' => $this->ratings()->avg('rating'),
+        ]);
     }
 
     public function updateDescription(string $description, int $updatedById): void
@@ -899,11 +1182,15 @@ class Plugin extends Model
             'status' => PluginStatus::class,
             'type' => PluginType::class,
             'tier' => PluginTier::class,
+            'categories' => AsEnumCollection::of(PluginCategory::class),
+            'category_suggestions' => 'array',
             'approved_at' => 'datetime',
+            'new_plugin_notified_at' => 'datetime',
             'featured' => 'boolean',
             'is_active' => 'boolean',
             'is_official' => 'boolean',
             'works_in_jump' => 'boolean',
+            'mobile_versions' => 'array',
             'composer_data' => 'array',
             'nativephp_data' => 'array',
             'last_synced_at' => 'datetime',
@@ -911,6 +1198,10 @@ class Plugin extends Model
             'webhook_installed' => 'boolean',
             'review_checks' => 'array',
             'reviewed_at' => 'datetime',
+            'demo_video_attested_at' => 'datetime',
+            'show_demo_video' => 'boolean',
+            'rating_average' => 'decimal:2',
+            'rating_count' => 'integer',
         ];
     }
 }

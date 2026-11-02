@@ -103,7 +103,7 @@ tracks the thumb as it settles.
 ## Element
 
 ```php
-use Nativephp\NativeUi\Elements\Slider;
+use Native\Mobile\UI\Elements\Slider;
 
 Slider::make()
     ->value($volume)

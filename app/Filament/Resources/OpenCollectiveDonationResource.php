@@ -90,7 +90,7 @@ class OpenCollectiveDonationResource extends Resource
                         Infolists\Components\TextEntry::make('user.email')
                             ->label('Claimed By')
                             ->placeholder('Not claimed')
-                            ->url(fn ($record) => $record->user_id ? UserResource::getUrl('edit', ['record' => $record->user_id]) : null),
+                            ->url(fn ($record) => $record->user && UserResource::can('update', $record->user) ? UserResource::getUrl('edit', ['record' => $record->user_id]) : null),
                     ]),
             ]);
     }

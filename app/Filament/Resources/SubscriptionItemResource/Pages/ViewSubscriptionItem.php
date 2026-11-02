@@ -88,10 +88,10 @@ class ViewSubscriptionItem extends ViewRecord
                     ->schema([
                         Components\TextEntry::make('subscription.id')
                             ->label('Subscription ID')
-                            ->url(fn ($record) => SubscriptionResource::getUrl('view', ['record' => $record->subscription_id])),
+                            ->url(fn ($record) => $record->subscription && SubscriptionResource::can('view', $record->subscription) ? SubscriptionResource::getUrl('view', ['record' => $record->subscription_id]) : null),
                         Components\TextEntry::make('subscription.user.email')
                             ->label('User')
-                            ->url(fn ($record) => UserResource::getUrl('edit', ['record' => $record->subscription_id])),
+                            ->url(fn ($record) => $record->subscription?->user && UserResource::can('update', $record->subscription->user) ? UserResource::getUrl('edit', ['record' => $record->subscription->user_id]) : null),
                         Components\TextEntry::make('stripe_id')
                             ->label('Stripe ID')
                             ->copyable(),
