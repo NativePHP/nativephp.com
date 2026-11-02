@@ -154,7 +154,7 @@ public function onAnyTaskToggled(string $title, bool $done): void
 
 Several methods can listen for one event. They all run, in the order they are declared in the class.
 
-`#[On]` also takes a `when` filter <x-docs.version-badge since="TODO" />, which is matched against the **named**
+`#[On]` also takes a `when` filter <x-docs.version-badge since="4.7" />, which is matched against the **named**
 arguments of the event. A positional argument has no name, so it never matches a filter:
 
 ```php
