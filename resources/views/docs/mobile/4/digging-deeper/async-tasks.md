@@ -162,7 +162,7 @@ required parameter that isn't in the payload can't be resolved, so the call fail
 
 ## Sending events while a task runs
 
-<x-docs.version-badge since="TODO" />
+<x-docs.version-badge since="4.7" />
 
 `finished()` hands back one result, at the end. To tell the screen something while the work still runs, such as
 progress, fire an event that implements `BroadcastsGlobally` inside the task. It is carried to the UI thread, where
