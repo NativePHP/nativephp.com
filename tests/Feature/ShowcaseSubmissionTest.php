@@ -7,8 +7,10 @@ use App\Models\Showcase;
 use App\Models\User;
 use App\Notifications\ShowcaseSubmitted;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Notifications\AnonymousNotifiable;
 use Illuminate\Support\Facades\Notification;
+use Illuminate\Support\Facades\Storage;
 use Livewire\Livewire;
 use Tests\TestCase;
 
@@ -122,5 +124,70 @@ class ShowcaseSubmissionTest extends TestCase
             ->toHtml();
 
         $this->assertStringContainsString('sent back for review', $resubmitted);
+    }
+
+    public function test_submitting_both_platforms_stores_platform_specific_screenshots(): void
+    {
+        Storage::fake('public');
+
+        $user = User::factory()->create();
+
+        Livewire::actingAs($user)
+            ->test(ShowcaseSubmissionForm::class)
+            ->set('title', 'Cross-Platform App')
+            ->set('description', 'Works everywhere.')
+            ->set('hasMobile', true)
+            ->set('hasDesktop', true)
+            ->set('mobileScreenshots', [UploadedFile::fake()->image('mobile.png')])
+            ->set('desktopScreenshots', [UploadedFile::fake()->image('desktop.png')])
+            ->set('certifiedNativephp', true)
+            ->call('submit')
+            ->assertHasNoErrors();
+
+        $showcase = Showcase::where('title', 'Cross-Platform App')->firstOrFail();
+        $this->assertCount(1, $showcase->mobile_screenshots);
+        $this->assertCount(1, $showcase->desktop_screenshots);
+        Storage::disk('public')->assertExists($showcase->mobile_screenshots[0]);
+        Storage::disk('public')->assertExists($showcase->desktop_screenshots[0]);
+    }
+
+    public function test_submitting_a_single_platform_never_stores_platform_specific_screenshots(): void
+    {
+        Storage::fake('public');
+
+        $user = User::factory()->create();
+
+        Livewire::actingAs($user)
+            ->test(ShowcaseSubmissionForm::class)
+            ->set('title', 'Mobile Only App')
+            ->set('description', 'Just mobile.')
+            ->set('hasMobile', true)
+            ->set('certifiedNativephp', true)
+            ->call('submit')
+            ->assertHasNoErrors();
+
+        $showcase = Showcase::where('title', 'Mobile Only App')->firstOrFail();
+        $this->assertNull($showcase->mobile_screenshots);
+        $this->assertNull($showcase->desktop_screenshots);
+    }
+
+    public function test_unchecking_a_platform_clears_its_platform_specific_screenshots(): void
+    {
+        Storage::fake('public');
+
+        $user = User::factory()->create();
+        $showcase = Showcase::factory()->both()->withMobileScreenshots(2)->withDesktopScreenshots(2)->create([
+            'user_id' => $user->id,
+        ]);
+
+        Livewire::actingAs($user)
+            ->test(ShowcaseSubmissionForm::class, ['showcase' => $showcase])
+            ->set('hasDesktop', false)
+            ->call('submit')
+            ->assertHasNoErrors();
+
+        $showcase->refresh();
+        $this->assertNull($showcase->mobile_screenshots);
+        $this->assertNull($showcase->desktop_screenshots);
     }
 }

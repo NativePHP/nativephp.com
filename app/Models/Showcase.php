@@ -18,6 +18,8 @@ class Showcase extends Model
         'description',
         'image',
         'screenshots',
+        'mobile_screenshots',
+        'desktop_screenshots',
         'has_mobile',
         'has_desktop',
         'play_store_url',
@@ -60,6 +62,20 @@ class Showcase extends Model
         return $this->approved_at !== null && $this->updated_at->isAfter($this->approved_at);
     }
 
+    /**
+     * @return array<int, string>
+     */
+    public function screenshotsFor(?string $platform): array
+    {
+        $override = match ($platform) {
+            'mobile' => $this->mobile_screenshots,
+            'desktop' => $this->desktop_screenshots,
+            default => null,
+        };
+
+        return ! empty($override) ? $override : ($this->screenshots ?? []);
+    }
+
     #[Scope]
     protected function approved(Builder $query): Builder
     {
@@ -88,6 +104,8 @@ class Showcase extends Model
     {
         return [
             'screenshots' => 'array',
+            'mobile_screenshots' => 'array',
+            'desktop_screenshots' => 'array',
             'has_mobile' => 'boolean',
             'has_desktop' => 'boolean',
             'certified_nativephp' => 'boolean',

@@ -108,6 +108,17 @@ AutoUpdater::checkForUpdates();
 **Note:** If an update is available, it will be downloaded automatically. Calling `AutoUpdater::checkForUpdates() twice
 will download the update two times.
 
+## Manually downloading an update
+
+An update found by `checkForUpdates()` downloads automatically, so you won't usually need this — but if a download
+was cancelled (see the `UpdateCancelled` event below) or otherwise didn't complete, `downloadUpdate()` re-triggers it:
+
+```php
+use Native\Desktop\Facades\AutoUpdater;
+
+AutoUpdater::downloadUpdate();
+```
+
 ## Quit and Install
 
 You can quit the application and install the update by calling the `quitAndInstall` method on the `AutoUpdater` facade:
@@ -162,6 +173,21 @@ The event contains the following properties:
 - `releaseDate`: The release date of the update in ISO 8601 format.
 - `releaseNotes`: The release notes of the update.
 - `releaseName`: The name of the update.
+
+### `UpdateCancelled`
+
+The `Native\Desktop\Events\AutoUpdater\UpdateCancelled` event is dispatched when an in-progress download is
+cancelled before it finishes.
+
+The event contains the following properties:
+
+- `version`: The version of the update that was being downloaded.
+- `files`: The release's file manifest.
+- `releaseDate`: The release date of the update in ISO 8601 format.
+- `releaseName`: The name of the update.
+- `releaseNotes`: The release notes of the update.
+- `stagingPercentage`: The staged-rollout percentage this release is limited to, if any.
+- `minimumSystemVersion`: The minimum OS version the update requires, if any.
 
 ### `Error`
 

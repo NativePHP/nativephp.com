@@ -55,4 +55,11 @@ class PluginPayoutFactory extends Factory
             'last_attempted_at' => now(),
         ]);
     }
+
+    public function cancelled(): static
+    {
+        return $this->state(fn () => [
+            'status' => PayoutStatus::Cancelled,
+        ]);
+    }
 }

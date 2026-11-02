@@ -2,9 +2,11 @@
 
 namespace App\Models;
 
+use App\Enums\GitHubAuthType;
 use App\Enums\PriceTier;
 use App\Enums\Subscription;
 use App\Enums\TeamUserStatus;
+use App\Services\GitHubAppService;
 use Filament\Models\Contracts\FilamentUser;
 use Filament\Models\Contracts\HasName;
 use Filament\Panel;
@@ -17,11 +19,33 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Collection;
 use Laravel\Cashier\Billable;
+use Laravel\Passport\Contracts\ScopeAuthorizable;
+use Laravel\Sanctum\Contracts\HasAbilities;
 use Laravel\Sanctum\HasApiTokens;
+use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable implements FilamentUser, HasName, MustVerifyEmail
 {
-    use Billable, HasApiTokens, HasFactory, Notifiable;
+    use Billable, HasApiTokens, HasFactory, HasRoles, Notifiable;
+
+    /** @var HasAbilities|ScopeAuthorizable|null */
+    protected $accessToken;
+
+    /**
+     * Both the Sanctum and Passport guards attach a request token; token
+     * creation and the tokens() relationship continue to belong to Sanctum.
+     */
+    public function currentAccessToken(): HasAbilities|ScopeAuthorizable|null
+    {
+        return $this->accessToken;
+    }
+
+    public function withAccessToken(HasAbilities|ScopeAuthorizable|null $accessToken): static
+    {
+        $this->accessToken = $accessToken;
+
+        return $this;
+    }
 
     protected $guarded = [];
 
@@ -29,6 +53,7 @@ class User extends Authenticatable implements FilamentUser, HasName, MustVerifyE
         'password',
         'remember_token',
         'github_token',
+        'github_refresh_token',
     ];
 
     public function getFilamentName(): string
@@ -36,14 +61,39 @@ class User extends Authenticatable implements FilamentUser, HasName, MustVerifyE
         return $this->attributes['display_name'] ?? $this->name ?? $this->email;
     }
 
+    /**
+     * Super admins can always reach the panel. Anyone else needs at least one
+     * role, whose permissions then decide which sections they can see.
+     */
     public function canAccessPanel(Panel $panel): bool
+    {
+        return $this->isStaff();
+    }
+
+    /**
+     * Staff are super admins plus anyone given a role in the admin panel.
+     */
+    public function isStaff(): bool
+    {
+        return $this->isAdmin() || $this->roles->isNotEmpty();
+    }
+
+    /**
+     * Only super admins can impersonate, so staff with a narrower role can't
+     * borrow anyone else's access.
+     */
+    public function canImpersonate(): bool
     {
         return $this->isAdmin();
     }
 
+    /**
+     * Super admins: anyone listed in FILAMENT_USERS or holding the super admin role.
+     */
     public function isAdmin(): bool
     {
-        return in_array($this->email, config('filament.users'), true);
+        return in_array($this->email, config('filament.users'), true)
+            || $this->hasRole(config('filament-shield.super_admin.name'));
     }
 
     /**
@@ -371,6 +421,10 @@ class User extends Authenticatable implements FilamentUser, HasName, MustVerifyE
             $tiers[] = PriceTier::Subscriber;
         }
 
+        if ($this->hasActiveUltraSubscription()) {
+            $tiers[] = PriceTier::Ultra;
+        }
+
         if ($this->isEapCustomer()) {
             $tiers[] = PriceTier::Eap;
         }
@@ -476,10 +530,28 @@ class User extends Authenticatable implements FilamentUser, HasName, MustVerifyE
         return false;
     }
 
+    public function canRatePlugin(Plugin $plugin): bool
+    {
+        return $plugin->user_id !== $this->id && $this->hasPluginAccess($plugin);
+    }
+
+    public function canReportPlugin(Plugin $plugin): bool
+    {
+        return $plugin->user_id !== $this->id;
+    }
+
     public function getGitHubToken(): ?string
     {
         if (! $this->github_token) {
             return null;
+        }
+
+        if ($this->isUsingLegacyOAuth() && app(GitHubAppService::class)->legacyOAuthHasBeenRetired()) {
+            return null;
+        }
+
+        if ($this->github_token_expires_at?->isBefore(now()->addMinute())) {
+            return app(GitHubAppService::class)->refreshUserToken($this);
         }
 
         try {
@@ -489,9 +561,97 @@ class User extends Authenticatable implements FilamentUser, HasName, MustVerifyE
         }
     }
 
+    public function getGitHubRefreshToken(): ?string
+    {
+        if (! $this->github_refresh_token) {
+            return null;
+        }
+
+        try {
+            return decrypt($this->github_refresh_token);
+        } catch (\Exception) {
+            return null;
+        }
+    }
+
     public function hasGitHubToken(): bool
     {
         return $this->getGitHubToken() !== null;
+    }
+
+    /**
+     * @return HasMany<GitHubInstallation>
+     */
+    public function githubInstallations(): HasMany
+    {
+        return $this->hasMany(GitHubInstallation::class);
+    }
+
+    public function isUsingGitHubApp(): bool
+    {
+        return $this->github_auth_type === GitHubAuthType::App;
+    }
+
+    public function isUsingLegacyOAuth(): bool
+    {
+        return $this->github_auth_type === GitHubAuthType::OAuth;
+    }
+
+    public function needsGitHubAppMigration(): bool
+    {
+        return $this->isUsingLegacyOAuth();
+    }
+
+    /**
+     * The "owner/repo" name of each of the user's plugin repositories.
+     *
+     * @return Collection<int, string>
+     */
+    public function pluginRepositoryNames(): Collection
+    {
+        return $this->plugins()
+            ->whereNotNull('repository_url')
+            ->get()
+            ->map(fn (Plugin $plugin): ?array => $plugin->getRepositoryOwnerAndName())
+            ->filter()
+            ->map(fn (array $repo): string => "{$repo['owner']}/{$repo['repo']}")
+            ->unique()
+            ->values();
+    }
+
+    /**
+     * Whether the user has signed in with the GitHub App but hasn't installed it anywhere yet.
+     */
+    public function needsGitHubAppInstallation(): bool
+    {
+        return $this->isUsingGitHubApp()
+            && ! $this->githubInstallations()->whereNull('suspended_at')->exists();
+    }
+
+    /**
+     * Plugins whose repositories aren't reachable through any of the user's active GitHub App installations.
+     *
+     * @return \Illuminate\Database\Eloquent\Collection<int, Plugin>
+     */
+    public function pluginsMissingGitHubAppAccess(): \Illuminate\Database\Eloquent\Collection
+    {
+        if (! $this->isUsingGitHubApp()) {
+            return new \Illuminate\Database\Eloquent\Collection;
+        }
+
+        $installations = $this->githubInstallations()->whereNull('suspended_at')->get();
+
+        return $this->plugins()
+            ->whereNotNull('repository_url')
+            ->get()
+            ->filter(function (Plugin $plugin) use ($installations): bool {
+                $repo = $plugin->getRepositoryOwnerAndName();
+
+                return $repo && ! $installations->contains(
+                    fn (GitHubInstallation $installation): bool => $installation->hasAccessToRepo($repo['owner'], $repo['repo'])
+                );
+            })
+            ->values();
     }
 
     /**
@@ -579,6 +739,9 @@ class User extends Authenticatable implements FilamentUser, HasName, MustVerifyE
             'claude_plugins_repo_access_granted_at' => 'datetime',
             'discord_role_granted_at' => 'datetime',
             'discord_early_adopter_role_granted_at' => 'datetime',
+            'github_auth_type' => GitHubAuthType::class,
+            'github_token_expires_at' => 'datetime',
+            'github_app_migration_notified_at' => 'datetime',
         ];
     }
 }

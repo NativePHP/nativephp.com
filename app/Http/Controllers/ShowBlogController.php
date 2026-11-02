@@ -35,7 +35,7 @@ class ShowBlogController extends Controller
 
     public function show(Article $article)
     {
-        abort_unless($article->isPublished() || $article->isScheduled() || auth()->user()?->isAdmin(), 404);
+        abort_unless($article->isPublished() || $article->isScheduled() || auth()->user()?->can('view', $article), 404);
 
         // Set SEO metadata for the article
         SEOTools::setTitle($article->title.' - Blog');

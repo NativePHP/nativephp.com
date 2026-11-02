@@ -105,7 +105,7 @@ with the selection.
 ## Element
 
 ```php
-use Nativephp\NativeUi\Elements\Select;
+use Native\Mobile\UI\Elements\Select;
 
 Select::make()
     ->label('Country')

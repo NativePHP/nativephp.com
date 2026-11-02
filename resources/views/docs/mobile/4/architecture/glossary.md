@@ -13,25 +13,25 @@ components, the render pipeline, the shared-memory boundary and the platform ren
 
 ## EDGE (Element Definition and Generation Engine)
 
-The component language: the suite of `native:` Blade components — layout containers, typography, forms, navigation
-chrome, overlays — that screens are built from. EDGE templates compile down to [Elements](#element);
+The component language: the suite of `native:` Blade components (layout containers, typography, forms, navigation
+chrome, overlays) that screens are built from. EDGE templates compile down to [Elements](#element);
 the renderer only ever sees the resulting tree. See [EDGE Components](../edge-components/introduction).
 
 ## Native Component
 
-The PHP class that drives a screen — the Livewire-style component you register with `Route::native()`. It holds
+The PHP class that drives a screen, the Livewire-style component you register with `Route::native()`. It holds
 the screen's state, renders the [Element Tree](#element-tree), and its methods are what event handlers like
 `@press` call.
 
 ## Element
 
-A plain PHP object describing one piece of UI — a column, a text, a button — including its layout, style, props
+A plain PHP object describing one piece of UI (a column, a text, a button), including its layout, style, props
 and handlers. Primitive elements are what appear in the Element Tree; higher-level EDGE components flatten into
 them during rendering.
 
 ## Element Tree
 
-The tree of Elements produced by a Native Component's `render()` — the PHP-side description of the entire screen.
+The tree of Elements produced by a Native Component's `render()`, the PHP-side description of the entire screen.
 The input to the [Publish phase](render-publish-mount#phase-2-publish).
 
 ## Element Runtime
@@ -48,9 +48,9 @@ and shrunk by [subtree reuse](subtree-reuse).
 
 ## Node
 
-The fixed-layout binary record representing one Element inside a frame — its type, layout values, style values and
-references to its props and callbacks. Because every node has the same shape, the native readers can decode frames
-extremely quickly, and both platforms interpret every field identically.
+The fixed-layout binary record for one Element inside a frame. It carries the element's type, layout values, style
+values and references to its props and callbacks. Because every node has the same shape, the native readers can
+decode frames very quickly, and both platforms interpret every field identically.
 
 ## Node Tree
 
@@ -88,7 +88,7 @@ there's something for your code to do.
 
 ## SharedValue
 
-A value that lives on the native side and is updated on the UI thread — by gestures or animations — at the
+A value that lives on the native side and is updated on the UI thread, by gestures or animations, at the
 display's full frame rate. PHP holds a handle, binds it to animatable props in Blade, and receives discrete events
 when something meaningful happens. The mechanism behind PHP-free interaction, described in
 [Render, Publish, and Mount](render-publish-mount#native-side-state-updates).
@@ -96,7 +96,7 @@ when something meaningful happens. The mechanism behind PHP-free interaction, de
 ## Bridge Functions
 
 The second, simpler PHP↔native seam: a registry of named native functions (camera, biometrics, geolocation, and
-everything plugins add) that PHP calls with JSON parameters. Independent from the rendering path — see
+everything plugins add) that PHP calls with JSON parameters. Independent from the rendering path. See
 [Cross-Platform Implementation](cross-platform-implementation#two-seams-one-boundary) and the
 [plugin docs](../plugins/bridge-functions).
 

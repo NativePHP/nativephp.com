@@ -10,6 +10,7 @@ use App\Models\Plugin;
 use App\Models\PluginActivity;
 use App\Notifications\PluginPendingReview;
 use App\Notifications\PluginSubmitted;
+use App\Rules\DemoVideoUrl;
 use App\Services\GitHubUserService;
 use Flux\Flux;
 use Illuminate\Database\Eloquent\Collection;
@@ -49,6 +50,10 @@ class Show extends Component
     public ?string $displayName = null;
 
     public ?string $supportChannel = null;
+
+    public ?string $demoVideoUrl = null;
+
+    public bool $demoVideoAttested = false;
 
     public string $notes = '';
 
@@ -111,6 +116,8 @@ class Show extends Component
         $this->iconGradient = $this->plugin->icon_gradient;
         $this->iconMode = $this->plugin->hasLogo() ? 'upload' : 'gradient';
         $this->supportChannel = $this->plugin->support_channel;
+        $this->demoVideoUrl = $this->plugin->demo_video_url;
+        $this->demoVideoAttested = $this->plugin->demo_video_attested_at !== null;
         $this->notes = $this->plugin->notes ?? '';
         $this->pluginType = $this->plugin->type->value;
         $this->tier = $this->plugin->tier?->value;
@@ -130,8 +137,12 @@ class Show extends Component
             $this->plugin->generateWebhookSecret();
         }
 
-        // Verify or install webhook
-        if ($repoInfo && $user->hasGitHubToken()) {
+        // The GitHub App delivers push and release events for repos it covers, so no per-repo hook is needed
+        if ($this->plugin->isReachableViaGitHubApp()) {
+            if (! $this->plugin->webhook_installed) {
+                $this->plugin->update(['webhook_installed' => true]);
+            }
+        } elseif ($repoInfo && $user->hasGitHubToken()) {
             $githubService = GitHubUserService::for($user);
             $webhookUrl = $this->plugin->getWebhookUrl();
 
@@ -185,6 +196,12 @@ class Show extends Component
             return;
         }
 
+        if (! $this->plugin->hasDemoVideo()) {
+            Flux::toast(variant: 'danger', text: 'Please add a demo video showing your plugin working and confirm it before submitting for review.');
+
+            return;
+        }
+
         // Run preflight checks
         $this->runPreflightChecks();
 
@@ -204,7 +221,7 @@ class Show extends Component
         // Notify
         $user->notify(new PluginSubmitted($this->plugin));
 
-        Notification::route('mail', 'support@nativephp.com')
+        Notification::route('mail', [config('mail.support_address'), config('mail.marketplace_address')])
             ->notify(new PluginPendingReview($this->plugin));
 
         Flux::toast(variant: 'success', text: 'Your plugin has been submitted for review!');
@@ -232,6 +249,15 @@ class Show extends Component
     {
         $user = auth()->user();
         $repoInfo = $this->plugin->getRepositoryOwnerAndName();
+
+        if ($this->plugin->isReachableViaGitHubApp()) {
+            $this->plugin->update(['webhook_installed' => true]);
+            $this->plugin->refresh();
+
+            Flux::toast(variant: 'success', text: 'The NativePHP GitHub App keeps this plugin in sync, so no webhook is needed.');
+
+            return;
+        }
 
         if (! $repoInfo || ! $user->hasGitHubToken()) {
             Flux::toast(variant: 'danger', text: 'Unable to register webhook automatically. Please ensure your GitHub account is connected and the repository URL is valid.');
@@ -343,6 +369,22 @@ class Show extends Component
 
         if ($this->plugin->isDraft()) {
             $rules['notes'] = ['nullable', 'string', 'max:5000'];
+            $rules['demoVideoUrl'] = array_filter([
+                'bail',
+                'nullable',
+                'string',
+                'max:255',
+                'url',
+                $this->demoVideoUrlChanged() ? new DemoVideoUrl : null,
+            ]);
+            $rules['demoVideoAttested'] = [
+                'boolean',
+                function (string $attribute, mixed $value, \Closure $fail) {
+                    if (filled($this->demoVideoUrl) && ! $value) {
+                        $fail('Please confirm the video shows the current version of your plugin working.');
+                    }
+                },
+            ];
             $rules['pluginType'] = ['required', 'string', 'in:free,paid'];
 
             if ($this->pluginType === 'paid') {
@@ -368,6 +410,14 @@ class Show extends Component
         if ($this->plugin->isDraft()) {
             $data['notes'] = $this->notes ?: null;
 
+            $demoVideoUrl = filled($this->demoVideoUrl) ? trim($this->demoVideoUrl) : null;
+            $data['demo_video_url'] = $demoVideoUrl;
+            $data['demo_video_attested_at'] = match (true) {
+                $demoVideoUrl === null => null,
+                $demoVideoUrl !== $this->plugin->demo_video_url, $this->plugin->demo_video_attested_at === null => now(),
+                default => $this->plugin->demo_video_attested_at,
+            };
+
             $pluginType = PluginType::from($this->pluginType);
             $data['type'] = $pluginType;
             $data['tier'] = $pluginType === PluginType::Paid && $this->tier ? PluginTier::from($this->tier) : null;
@@ -380,6 +430,16 @@ class Show extends Component
         Flux::toast(variant: 'success', text: 'Plugin details saved successfully!');
     }
 
+    /**
+     * Only hit the provider's oEmbed endpoint when the developer changes the link.
+     */
+    protected function demoVideoUrlChanged(): bool
+    {
+        $demoVideoUrl = filled($this->demoVideoUrl) ? trim($this->demoVideoUrl) : null;
+
+        return $demoVideoUrl !== $this->plugin->demo_video_url;
+    }
+
     public function updateIcon(): void
     {
         if (! $this->plugin->isDraft() && ! $this->plugin->isApproved()) {
@@ -390,7 +450,17 @@ class Show extends Component
 
         $this->validate([
             'iconGradient' => ['required', 'string', 'in:'.implode(',', array_keys(Plugin::gradientPresets()))],
-            'iconName' => ['required', 'string', 'max:100', 'regex:/^[a-z0-9-]+$/'],
+            'iconName' => [
+                'required',
+                'string',
+                'max:100',
+                'regex:/^[a-z0-9-]+$/',
+                function (string $attribute, mixed $value, \Closure $fail) {
+                    if (is_string($value) && ! Plugin::isValidIconName($value)) {
+                        $fail('That isn\'t a Heroicon outline name. Browse the available icons at heroicons.com and use the name shown there, e.g. photo, map-pin, cube.');
+                    }
+                },
+            ],
         ]);
 
         if ($this->plugin->logo_path) {

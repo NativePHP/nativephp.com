@@ -3,11 +3,14 @@
 namespace App\Filament\Widgets;
 
 use App\Models\PluginLicense;
+use BezhanSalleh\FilamentShield\Traits\HasWidgetShield;
 use Filament\Widgets\ChartWidget;
 use Illuminate\Support\Facades\DB;
 
 class PluginRevenueChart extends ChartWidget
 {
+    use HasWidgetShield;
+
     protected ?string $heading = 'Revenue by Plugin';
 
     protected static ?int $sort = 5;

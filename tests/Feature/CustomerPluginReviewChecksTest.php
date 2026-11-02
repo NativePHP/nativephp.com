@@ -18,6 +18,8 @@ class CustomerPluginReviewChecksTest extends TestCase
 {
     use RefreshDatabase;
 
+    private const DEMO_VIDEO_URL = 'https://www.youtube.com/watch?v=dQw4w9WgXcQ';
+
     private function fakeGitHubForCreateAndSubmit(string $repoSlug): void
     {
         $base = "https://api.github.com/repos/{$repoSlug}";
@@ -32,7 +34,7 @@ class CustomerPluginReviewChecksTest extends TestCase
 
         Http::fake([
             // PluginSyncService calls
-            "{$base}/contents/README.md" => Http::response([
+            "{$base}/contents/README.md*" => Http::response([
                 'content' => base64_encode('# Test Plugin'),
                 'encoding' => 'base64',
             ]),
@@ -40,8 +42,9 @@ class CustomerPluginReviewChecksTest extends TestCase
                 'content' => base64_encode($composerJson),
                 'encoding' => 'base64',
             ]),
-            "{$base}/contents/nativephp.json" => Http::response([], 404),
+            "{$base}/contents/nativephp.json*" => Http::response([], 404),
             "{$base}/contents/LICENSE*" => Http::response([], 404),
+            "{$base}/commits/v1.0.0" => Http::response(['sha' => str_repeat('a', 40)]),
             "{$base}/releases/latest" => Http::response(['tag_name' => 'v1.0.0']),
             "{$base}/tags*" => Http::response([]),
             "https://raw.githubusercontent.com/{$repoSlug}/*" => Http::response('', 404),
@@ -101,8 +104,12 @@ class CustomerPluginReviewChecksTest extends TestCase
         $this->assertNotNull($plugin, 'Plugin should exist after creation');
         $this->assertEquals('draft', $plugin->status->value);
 
-        // Set support channel (required before submission)
-        $plugin->update(['support_channel' => 'dev@testplugin.io']);
+        // Set support channel and an attested demo video (both required before submission)
+        $plugin->update([
+            'support_channel' => 'dev@testplugin.io',
+            'demo_video_url' => self::DEMO_VIDEO_URL,
+            'demo_video_attested_at' => now(),
+        ]);
 
         // Re-fake HTTP for the submission step
         $this->fakeGitHubForCreateAndSubmit($repoSlug);
@@ -134,7 +141,7 @@ class CustomerPluginReviewChecksTest extends TestCase
         Notification::assertSentOnDemand(
             PluginPendingReview::class,
             function (PluginPendingReview $notification, array $channels, object $notifiable) use ($plugin) {
-                return $notifiable->routes['mail'] === 'support@nativephp.com'
+                return $notifiable->routes['mail'] === ['support@nativephp.com', 'marketplace@nativephp.com']
                     && $notification->plugin->id === $plugin->id;
             }
         );
@@ -162,7 +169,7 @@ class CustomerPluginReviewChecksTest extends TestCase
         ]);
 
         Http::fake([
-            "{$base}/contents/README.md" => Http::response([
+            "{$base}/contents/README.md*" => Http::response([
                 'content' => base64_encode('# Bare Plugin'),
                 'encoding' => 'base64',
             ]),
@@ -170,8 +177,9 @@ class CustomerPluginReviewChecksTest extends TestCase
                 'content' => base64_encode($composerJson),
                 'encoding' => 'base64',
             ]),
-            "{$base}/contents/nativephp.json" => Http::response([], 404),
+            "{$base}/contents/nativephp.json*" => Http::response([], 404),
             "{$base}/contents/LICENSE*" => Http::response([], 404),
+            "{$base}/commits/v1.0.0" => Http::response(['sha' => str_repeat('a', 40)]),
             "{$base}/releases/latest" => Http::response(['tag_name' => 'v1.0.0']),
             "{$base}/tags*" => Http::response([['name' => 'v1.0.0']]),
             "https://raw.githubusercontent.com/{$repoSlug}/*" => Http::response('', 404),
@@ -204,8 +212,12 @@ class CustomerPluginReviewChecksTest extends TestCase
 
         $plugin = $user->plugins()->where('repository_url', "https://github.com/{$repoSlug}")->first();
 
-        // Set support channel (required before submission)
-        $plugin->update(['support_channel' => 'support@bare-plugin.io']);
+        // Set support channel and an attested demo video (both required before submission)
+        $plugin->update([
+            'support_channel' => 'support@bare-plugin.io',
+            'demo_video_url' => self::DEMO_VIDEO_URL,
+            'demo_video_attested_at' => now(),
+        ]);
 
         // Re-fake HTTP for submission
         Http::fake([
@@ -213,12 +225,13 @@ class CustomerPluginReviewChecksTest extends TestCase
                 'content' => base64_encode($composerJson),
                 'encoding' => 'base64',
             ]),
-            "{$base}/contents/README.md" => Http::response([
+            "{$base}/contents/README.md*" => Http::response([
                 'content' => base64_encode('# Bare Plugin'),
                 'encoding' => 'base64',
             ]),
-            "{$base}/contents/nativephp.json" => Http::response([], 404),
+            "{$base}/contents/nativephp.json*" => Http::response([], 404),
             "{$base}/contents/LICENSE*" => Http::response([], 404),
+            "{$base}/commits/v1.0.0" => Http::response(['sha' => str_repeat('a', 40)]),
             "{$base}/releases/latest" => Http::response(['tag_name' => 'v1.0.0']),
             "{$base}/tags*" => Http::response([['name' => 'v1.0.0']]),
             "{$base}/hooks" => function ($request) {

@@ -3,12 +3,15 @@
 namespace App\Filament\Resources\UserResource\RelationManagers;
 
 use App\Enums\PluginType;
+use App\Filament\Actions\RefundPluginLicenseAction;
+use App\Models\PluginLicense;
 use Filament\Actions;
 use Filament\Forms;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Schemas\Schema;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 
 class PluginLicensesRelationManager extends RelationManager
 {
@@ -64,11 +67,29 @@ class PluginLicensesRelationManager extends RelationManager
                     ->dateTime()
                     ->sortable()
                     ->placeholder('Never'),
+                Tables\Columns\TextColumn::make('refunded_at')
+                    ->label('Refunded')
+                    ->dateTime()
+                    ->description(fn (PluginLicense $record): ?string => $record->refundedBy ? 'by '.$record->refundedBy->email : null)
+                    ->sortable()
+                    ->placeholder('-'),
+                Tables\Columns\TextColumn::make('stripe_refund_id')
+                    ->label('Stripe Refund')
+                    ->fontFamily('mono')
+                    ->copyable()
+                    ->url(fn (PluginLicense $record): ?string => $record->stripePaymentUrl())
+                    ->openUrlInNewTab()
+                    ->placeholder('-')
+                    ->toggleable(),
             ])
+            ->modifyQueryUsing(fn (Builder $query) => $query->with('refundedBy'))
             ->defaultSort('purchased_at', 'desc')
             ->filters([
                 Tables\Filters\TernaryFilter::make('is_grandfathered')
                     ->label('Comped'),
+                Tables\Filters\TernaryFilter::make('refunded_at')
+                    ->label('Refunded')
+                    ->nullable(),
             ])
             ->headerActions([
                 Actions\CreateAction::make()
@@ -80,6 +101,7 @@ class PluginLicensesRelationManager extends RelationManager
                     }),
             ])
             ->actions([
+                RefundPluginLicenseAction::make(),
                 Actions\DeleteAction::make(),
             ]);
     }

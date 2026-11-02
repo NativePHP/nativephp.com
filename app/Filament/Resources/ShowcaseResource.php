@@ -109,6 +109,28 @@ class ShowcaseResource extends Resource
                                     ->url()
                                     ->maxLength(255),
                             ]),
+
+                        Schemas\Components\Fieldset::make('Platform-specific Screenshots')
+                            ->visible(fn (Schemas\Components\Utilities\Get $get) => $get('has_mobile') && $get('has_desktop'))
+                            ->schema([
+                                Forms\Components\FileUpload::make('mobile_screenshots')
+                                    ->label('Mobile Screenshots (optional, up to 5)')
+                                    ->image()
+                                    ->multiple()
+                                    ->maxFiles(5)
+                                    ->disk('public')
+                                    ->directory('showcase-screenshots')
+                                    ->reorderable(),
+
+                                Forms\Components\FileUpload::make('desktop_screenshots')
+                                    ->label('Desktop Screenshots (optional, up to 5)')
+                                    ->image()
+                                    ->multiple()
+                                    ->maxFiles(5)
+                                    ->disk('public')
+                                    ->directory('showcase-screenshots')
+                                    ->reorderable(),
+                            ]),
                     ]),
 
                 Schemas\Components\Section::make('Certification')

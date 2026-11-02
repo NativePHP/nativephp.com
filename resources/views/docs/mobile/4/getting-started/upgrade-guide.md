@@ -3,11 +3,57 @@ title: Upgrade Guide
 order: 3
 ---
 
+## Upgrading To 4.6 From 4.5
+
+### Translated iOS permission strings need `supported_locales`
+
+Before 4.6, any locale in `permission_localizations`, or in a plugin's `info_plist_localizations`, shipped with your
+iOS app automatically. From 4.6, translated permission strings are only written for locales your app supports: the
+ones in the new `supported_locales` config key, plus `config('app.locale')`.
+
+If your app relies on translated permission strings, add those locales to `config/nativephp.php`. A config file
+published before 4.6 won't have the key yet:
+
+```php
+'supported_locales' => ['nl', 'fr'], // [tl! add]
+
+'permission_localizations' => [
+    'nl' => [
+        'NSCameraUsageDescription' => 'Gebruikt om een profielfoto te maken.',
+    ],
+    'fr' => [
+        'NSCameraUsageDescription' => 'Utilisé pour prendre une photo de profil.',
+    ],
+],
+```
+
+The upside is that an English-only app that installs a well-translated plugin no longer advertises all of that
+plugin's languages on the App Store. See [Localization](../digging-deeper/localization) for everything
+`supported_locales` does.
+
+## Upgrading To 4.5 From 4.4
+
+### Public releases need `APP_ENV=production`
+
+From 4.5, only a build packaged with `APP_ENV=production` can be released to the public. Any other `APP_ENV` makes a
+testing build: Google Play holds it to the internal and closed testing tracks, and the App Store limits it to
+TestFlight's internal testers.
+
+If you've been packaging store releases with Laravel's default `APP_ENV=local`, set `APP_ENV=production` in your
+`.env` before you package your next release. See
+[Production and testing builds](../publishing/introduction#production-and-testing-builds).
+
 ## Upgrading To 4.0 From 3.x
 
 v4's headline is [SuperNative](../architecture/super-native) — fully native UI. Most of the release is additive,
-but there is **one breaking change to your dependencies**: a handful of APIs that used to be separate plugins are
-now core built-ins.
+but there are **two breaking changes to your dependencies**: the minimum PHP version has gone up, and a handful of
+APIs that used to be separate plugins are now core built-ins.
+
+### PHP 8.4 is now the minimum
+
+v3 ran on PHP 8.3. `nativephp/mobile` v4 requires **PHP 8.4 or later**, so upgrade your CLI PHP before running
+`composer update` or Composer will refuse to resolve. See [Environment Setup](environment-setup) for the full
+list of requirements.
 
 ### Device, Dialog, File and System are now built in
 

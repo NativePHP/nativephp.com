@@ -85,14 +85,15 @@ class DocsSearchService
         return $this->getPage($platform, $version, implode('/', $parts), $slug);
     }
 
-    public function listApis(string $platform, string $version): array
+    public function listEdgeComponents(string $platform, string $version): array
     {
         if (! $this->sanitizePlatform($platform) || ! $this->sanitizeVersion($version)) {
             return [];
         }
 
         return collect($this->getAllPages($platform, $version))
-            ->filter(fn ($page) => $page['section'] === 'apis')
+            ->filter(fn ($page) => $page['section'] === 'edge-components'
+                || str_starts_with($page['section'], 'edge-components/'))
             ->sortBy('order')
             ->values()
             ->toArray();

@@ -60,7 +60,7 @@ class SupportTicketResource extends Resource
                         Infolists\Components\TextEntry::make('user.email')
                             ->label('User')
                             ->formatStateUsing(fn (SupportTicket $record): string => trim(($record->user->name ?? '').' ('.$record->user->email.')'))
-                            ->url(fn (SupportTicket $record): string => UserResource::getUrl('edit', ['record' => $record->user_id])),
+                            ->url(fn (SupportTicket $record): ?string => $record->user && UserResource::can('update', $record->user) ? UserResource::getUrl('edit', ['record' => $record->user_id]) : null),
                         Infolists\Components\TextEntry::make('created_at')
                             ->label('Created')
                             ->dateTime(),

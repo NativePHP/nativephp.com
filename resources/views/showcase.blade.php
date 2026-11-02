@@ -1,4 +1,4 @@
-<x-layout title="{{ $platform ? ucfirst($platform) . ' ' : '' }}Showcase - Apps Built with NativePHP">
+<x-layout title="{{ $platform === 'both' ? 'Cross-Platform ' : ($platform ? ucfirst($platform) . ' ' : '') }}Showcase - Apps Built with NativePHP">
     {{-- Hero Section --}}
     <section
         class="mt-10 md:mt-14"
@@ -35,6 +35,8 @@
                             Mobile
                         @elseif($platform === 'desktop')
                             Desktop
+                        @elseif($platform === 'both')
+                            Cross-Platform
                         @else
                             App
                         @endif
@@ -71,7 +73,7 @@
                 "
                 class="mx-auto mt-5 max-w-2xl text-center text-base/relaxed text-gray-600 sm:text-lg/relaxed dark:text-gray-400"
             >
-                Discover amazing {{ $platform ?? '' }} apps built by the NativePHP community. From productivity tools to creative applications, see what's possible with NativePHP.
+                Discover amazing {{ $platform === 'both' ? 'cross-platform' : ($platform ?? '') }} apps built by the NativePHP community. From productivity tools to creative applications, see what's possible with NativePHP.
             </p>
 
             {{-- Platform Filter --}}
@@ -106,6 +108,16 @@
                 >
                     Desktop
                 </a>
+                <a
+                    href="{{ route('showcase', 'both') }}"
+                    @class([
+                        'px-4 py-2 rounded-full text-sm font-medium transition-all',
+                        'bg-gray-900 text-white dark:bg-white dark:text-gray-900' => $platform === 'both',
+                        'bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700' => $platform !== 'both',
+                    ])
+                >
+                    Cross-Platform
+                </a>
             </div>
         </header>
     </section>
@@ -115,7 +127,7 @@
         @if ($showcases->count() > 0)
             <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                 @foreach ($showcases as $showcase)
-                    <x-showcase-card :showcase="$showcase" />
+                    <x-showcase-card :showcase="$showcase" :platform="$platform" />
                 @endforeach
             </div>
 
@@ -138,7 +150,7 @@
                     </h3>
                     <p class="text-gray-600 dark:text-gray-400">
                         @if($platform)
-                            No {{ $platform }} apps have been showcased yet. Be the first to submit yours!
+                            No {{ $platform === 'both' ? 'cross-platform' : $platform }} apps have been showcased yet. Be the first to submit yours!
                         @else
                             The showcase is empty. Be the first to submit your NativePHP app!
                         @endif

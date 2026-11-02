@@ -34,11 +34,11 @@ So it's not something you want to be changing very often.
 
 ## `NATIVEPHP_APP_VERSION`
 
-The `NATIVEPHP_APP_VERSION` environment variable sets your app's **public version string** - what shows up in App Store
-and Play Store listings, and on-device under "Settings → Apps" (or equivalent). It maps to `CFBundleShortVersionString`
-on iOS and `versionName` on Android.
+The `NATIVEPHP_APP_VERSION` environment variable sets your app's **version number** - the public version string that
+shows up in App Store and Play Store listings, and on-device under "Settings → Apps" (or equivalent). It maps to
+`CFBundleShortVersionString` on iOS and `versionName` on Android.
 
-Its companion, `NATIVEPHP_APP_VERSION_CODE`, sets the **internal build number** the stores use to distinguish uploads
+Its companion, `NATIVEPHP_APP_VERSION_CODE`, sets the **build number** the stores use to distinguish uploads
 (`CFBundleVersion` on iOS, `versionCode` on Android). Users don't normally see this one, but the stores require it to
 increase with every upload.
 
@@ -46,9 +46,8 @@ increase with every upload.
 latest code without needing to bump a version number by hand.
 
 You only need to change this when you're cutting a release build for distribution. Rather than editing your `.env`
-manually, use the
-[`native:release` command](commands#nativerelease), which bumps the version (and build
-number) for you.
+manually, use the [`native:release` command](commands#nativerelease) to bump the version number.
+[`native:package`](commands#nativepackage) increments the build number each time it packages your app.
 
 <aside>
 
@@ -57,14 +56,19 @@ number) for you.
 When your app is compiling, NativePHP copies the relevant Laravel files into a temporary directory, zips them up, and
 embeds the archive into the native application.
 
-On boot, the app compares the embedded `NATIVEPHP_APP_VERSION` and `NATIVEPHP_APP_VERSION_CODE` against the values from
-the previously installed version. If they match, it skips extracting the archive and reuses the already-unpacked files.
+On boot, the app compares the embedded version number and build number with the pair it extracted last time. If either
+one is different, it extracts the archive. If both match, it skips extraction and reuses the already-unpacked files.
 
 This means the first boot after an install or update unpacks the bundled Laravel app, and every subsequent boot is
 significantly faster. It's also why `DEBUG` makes development boots a bit slower - the archive is always extracted so
 you see your latest changes.
 
 </aside>
+
+Because of this, two builds with the same version number and build number count as the same build. If you set a version
+and then rebuild and install over an existing copy of your app without changing either number, the app keeps running
+the code it extracted before. Bump `NATIVEPHP_APP_VERSION_CODE` before each build you install. `native:run` doesn't
+change it for you.
 
 ## Persistent Runtime
 
@@ -165,6 +169,10 @@ With NativePHP, your app can work on iPad too! If you wish to support iPad, simp
 
 Using standard CSS responsive design principles, you can make your app work beautifully across all screen sizes. 
 
+For EDGE screens, use breakpoint prefixes like `md:` and `lg:` on your classes. They follow the app's window width,
+including rotation and Split View, and their thresholds live in the `breakpoints` config option. See
+[Responsive Breakpoints](../edge-components/layout#responsive-breakpoints).
+
 <aside>
 
 #### Once iPad, Always iPad
@@ -252,11 +260,11 @@ Control the color of the status bar and navigation bar icons:
 
 ```php
 'android' => [
-    'status_bar_style' => env('NATIVEPHP_ANDROID_STATUS_BAR_STYLE', 'auto'),
+    'status_bar_style' => 'auto',
 ],
 ```
 
-Options: `auto` (detect from system theme), `light` (white icons), or `dark` (dark icons).
+Options: `auto` (detect from system theme), `light` (white icons), or `dark` (dark icons). This isn't wrapped in an `env()` call — change the value directly in the published config to override it.
 
 ## Development Server
 
@@ -267,14 +275,14 @@ Configure the development server used by `native:jump` and `native:watch`:
     'http_port' => env('NATIVEPHP_HTTP_PORT', 3000),
     'ws_port' => env('NATIVEPHP_WS_PORT', 8081),
     'service_name' => env('NATIVEPHP_SERVICE_NAME', 'NativePHP Server'),
-    'open_browser' => env('NATIVEPHP_OPEN_BROWSER', true),
+    'open_browser' => env('NATIVEPHP_OPEN_BROWSER', false),
 ],
 ```
 
 - `http_port` — The port for serving your app during development. (default: `3000`)
 - `ws_port` — The WebSocket port for hot reload communication. (default: `8081`)
 - `service_name` — The mDNS service name advertised on your network. (default: `NativePHP Server`)
-- `open_browser` — Automatically open a browser with a QR code when the server starts. (default: `true`)
+- `open_browser` — Automatically open a browser with a QR code when the server starts. (default: `false` — the terminal already renders a scannable QR code; pass `--browser` to `native:jump`, or set `NATIVEPHP_OPEN_BROWSER=true`, to opt in)
 
 ## Hot Reload
 
@@ -308,6 +316,30 @@ Set your Apple Developer Team ID for code signing:
 This is typically detected from your installed certificates, but you can override it here. Find your Team ID
 in your Apple Developer account under Membership details.
 
+## Supported Locales
+
+<x-docs.version-badge since="4.6" />
+
+The `supported_locales` array lists the languages your app supports:
+
+```php
+'supported_locales' => ['fr', 'nl', 'zh-Hans'],
+```
+
+On Android 13 and later, this puts your app in the system's per-app language picker. On iOS, it gives your app a
+Preferred Language setting and decides which languages the App Store lists on your product page.
+
+- `config('app.locale')` is always included and always first, so users can switch back to it. You don't list it
+  yourself.
+- Entries are BCP 47 codes (`nl`, `pt-BR`, `zh-Hans`). Laravel-style `nl_NL` is accepted and becomes `nl-NL`.
+- Duplicates are dropped, ignoring case. Invalid entries are skipped with a build warning.
+- An empty array means your app supports one language, `app.locale`.
+- The list is read at build time, so the base language of a build is whatever `APP_LOCALE` was on the machine that
+  built it.
+
+Listing a locale only lets the user pick it. Translating your app is still up to you and your `lang/` files. See
+[Localization](../digging-deeper/localization) for the full guide.
+
 ## iOS Permission Strings
 
 Plugins declare their own iOS `Info.plist` usage descriptions through their manifests (see
@@ -339,6 +371,8 @@ are shown at runtime by app code, so there's no equivalent override.
 
 ## Localizing iOS Permission Strings
 
+<x-docs.version-badge changed="4.6" />
+
 The strings in `permissions` go straight into `Info.plist`, which iOS treats as the **development region**
 fallback. Users running their device in another language see those same strings unless you ship a localized
 override.
@@ -347,6 +381,8 @@ Add per-locale strings under `permission_localizations`. Each key is a BCP 47 lo
 (e.g. `nl`, `fr`, `zh-Hans`, `pt-BR`) and its value mirrors the `permissions` shape:
 
 ```php
+'supported_locales' => ['nl', 'fr'],
+
 'permissions' => [
     'NSCameraUsageDescription' => 'Used to take a profile photo.',
 ],
@@ -365,6 +401,9 @@ At build time NativePHP writes one `{locale}.lproj/InfoPlist.strings` file per l
 and registers the locale with the Xcode project so it ships with the app. iOS then picks the right string
 at runtime based on the user's preferred language, falling back to the value in `permissions`.
 
+Strings are only written for locales your app supports: the ones in [`supported_locales`](#supported-locales), plus
+`app.locale`. Entries for any other locale are skipped.
+
 <aside>
 
 You only need to localize the keys that change between languages. Any `NS*UsageDescription` not listed in
@@ -375,6 +414,8 @@ a locale block automatically falls back to the value from `permissions` (`Info.p
 Plugins can ship their own per-locale strings — see
 [Permissions & Dependencies](../plugins/permissions-dependencies#localizing-infoplist-strings) — and
 app-level entries always win on key collisions, same as the merge rules for flat `permissions`.
+
+Plugins bring translations, not languages. A plugin's strings for a locale your app doesn't support are skipped too.
 
 ## App Store Connect
 

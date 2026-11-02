@@ -4,10 +4,16 @@
 @endpush
 
 @php
-    // Jump previews EDGE components, which only exist in the Mobile v4 docs.
+    // Front matter `jump`: a version string, or false if no Jump build has it.
+    $jumpRequirement = $jump ?? null;
+
+    // Jump previews EDGE components (Mobile v4 only), and only where the
+    // shipping Jump can render the page — a QR to a blank screen is worse
+    // than no QR.
     $showJumpPreview = $platform === 'mobile'
         && (string) $version === '4'
-        && str_starts_with((string) request()->route('page'), 'edge-components/');
+        && str_starts_with((string) request()->route('page'), 'edge-components/')
+        && \App\Support\JumpApp::supports($jumpRequirement);
 @endphp
 
 <x-docs-layout>
@@ -41,7 +47,7 @@
 
             {{-- Ad rotation --}}
             <x-blog.ad-rotation
-                :ads="$platform === 'desktop' ? ['mobile', 'bifrost', 'ultra', 'vibes', 'masterclass'] : ['desktop', 'bifrost', 'devkit', 'ultra', 'vibes', 'masterclass']"
+                :ads="$platform === 'desktop' ? ['mobile', 'bifrost', 'ultra', 'masterclass'] : ['desktop', 'bifrost', 'devkit', 'ultra', 'masterclass']"
             />
         </x-docs.toc-and-sponsors>
     </x-slot>
@@ -58,9 +64,24 @@
         :page="request()->route('page')"
     />
 
-    <h1 class="text-4xl font-semibold">
-        {{ $title }}
-    </h1>
+    <div class="flex flex-wrap items-center gap-x-3 gap-y-2">
+        <h1 class="text-4xl font-semibold">
+            {{ $title }}
+        </h1>
+
+        <x-docs.version-badge
+            :since="$since ?? null"
+            :changed="$changed ?? null"
+            :deprecated="$deprecated ?? null"
+            :removed="$removed ?? null"
+            :package="$package ?? null"
+        />
+
+        <x-docs.jump-badge
+            :since="is_string($jumpRequirement) ? $jumpRequirement : null"
+            :unavailable="$jumpRequirement === false"
+        />
+    </div>
 
     <x-docs.separator class="mt-4" />
 
@@ -184,6 +205,6 @@
     {{-- Mobile ad rotation --}}
     <x-blog.ad-rotation
         class="mx-auto mt-5 max-w-52 xl:hidden"
-        :ads="$platform === 'desktop' ? ['mobile', 'bifrost', 'ultra', 'vibes', 'masterclass'] : ['desktop', 'bifrost', 'devkit', 'ultra', 'vibes', 'masterclass']"
+        :ads="$platform === 'desktop' ? ['mobile', 'bifrost', 'ultra', 'masterclass'] : ['desktop', 'bifrost', 'devkit', 'ultra', 'masterclass']"
     />
 </x-docs-layout>

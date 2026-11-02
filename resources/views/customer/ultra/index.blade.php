@@ -53,6 +53,16 @@
                             <x-icons.checkmark class="size-5 shrink-0" />
                         </div>
                         <div>
+                            <div class="font-medium">Discounted third-party plugins</div>
+                            <flux:text class="text-sm">Pay around 30% less for third-party plugins in the Marketplace.</flux:text>
+                        </div>
+                    </div>
+
+                    <div class="flex items-start gap-3">
+                        <div class="grid size-7 shrink-0 place-items-center rounded-xl bg-[#D4FD7D] dark:bg-[#d68ffe] dark:text-black">
+                            <x-icons.checkmark class="size-5 shrink-0" />
+                        </div>
+                        <div>
                             <div class="font-medium">Claude Code Plugin Dev Kit</div>
                             <flux:text class="text-sm">Tools and resources to build NativePHP plugins using Claude Code.</flux:text>
                             <flux:button variant="primary" size="xs" class="mt-1" href="{{ route('customer.integrations') }}" icon-trailing="arrow-right">Set up access via Integrations</flux:button>
@@ -141,7 +151,7 @@
                                                     <img src="{{ $plugin->getLogoUrl() }}" alt="{{ $plugin->name }}" class="size-10 rounded-lg object-cover">
                                                 @elseif($plugin->hasGradientIcon())
                                                     <div class="grid size-10 place-items-center rounded-lg bg-gradient-to-br {{ $plugin->getGradientClasses() }} text-white">
-                                                        <x-dynamic-component :component="'heroicon-o-' . $plugin->icon_name" class="size-5" />
+                                                        <x-dynamic-component :component="$plugin->getIconComponent()" class="size-5" />
                                                     </div>
                                                 @else
                                                     <div class="grid size-10 place-items-center rounded-lg bg-gradient-to-br from-indigo-500 to-purple-600 text-white">

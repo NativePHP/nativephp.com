@@ -63,31 +63,36 @@
             </div>
             <flux:separator class="my-4" />
 
-            <div class="divide-y divide-gray-200 dark:divide-gray-700">
-                @forelse ($this->plugins->take(5) as $plugin)
-                    <a href="{{ route('customer.plugins.show', $plugin->routeParams()) }}" class="block py-4 first:pt-0 last:pb-0 hover:bg-gray-50 dark:hover:bg-gray-700/50 -mx-2 px-2 rounded-lg" wire:key="plugin-{{ $plugin->id }}">
-                        <div class="flex items-center justify-between">
-                            <div class="min-w-0 flex-1">
-                                <p class="truncate font-medium text-gray-900 dark:text-white">{{ $plugin->display_name ?? $plugin->name }}</p>
-                                @if ($plugin->display_name)
-                                    <p class="truncate font-mono text-xs text-gray-500 dark:text-gray-400">{{ $plugin->name }}</p>
-                                @endif
-                            </div>
-                            <div class="ml-4 text-right">
-                                <flux:text class="font-medium">{{ $plugin->licenses_count }} sales</flux:text>
-                            </div>
-                        </div>
-                    </a>
-                @empty
-                    <x-customer.empty-state
-                        icon="puzzle-piece"
-                        title="No premium plugins yet"
-                        description="Submit a paid plugin to start selling."
-                    >
-                        <flux:button variant="primary" size="sm" href="{{ route('customer.plugins.create') }}">Submit a plugin</flux:button>
-                    </x-customer.empty-state>
-                @endforelse
-            </div>
+            @if ($this->plugins->isNotEmpty())
+                <flux:table>
+                    <flux:table.rows>
+                        @foreach ($this->plugins->take(5) as $plugin)
+                            <flux:table.row :key="'plugin-'.$plugin->id">
+                                <flux:table.cell class="whitespace-normal">
+                                    <a href="{{ route('customer.plugins.show', $plugin->routeParams()) }}" class="text-sm font-medium text-blue-600 wrap-anywhere hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300">
+                                        {{ $plugin->display_name ?? $plugin->name }}
+                                    </a>
+                                    @if ($plugin->display_name)
+                                        <flux:text class="font-mono text-xs wrap-anywhere">{{ $plugin->name }}</flux:text>
+                                    @endif
+                                </flux:table.cell>
+
+                                <flux:table.cell align="end">
+                                    {{ trans_choice(':count sale|:count sales', $plugin->licenses_count) }}
+                                </flux:table.cell>
+                            </flux:table.row>
+                        @endforeach
+                    </flux:table.rows>
+                </flux:table>
+            @else
+                <x-customer.empty-state
+                    icon="puzzle-piece"
+                    title="No premium plugins yet"
+                    description="Submit a paid plugin to start selling."
+                >
+                    <flux:button variant="primary" size="sm" href="{{ route('customer.plugins.create') }}">Submit a plugin</flux:button>
+                </x-customer.empty-state>
+            @endif
         </flux:card>
 
         {{-- Recent Payouts --}}
@@ -95,38 +100,57 @@
             <flux:heading size="lg">Recent Payouts</flux:heading>
             <flux:separator class="my-4" />
 
-            <div class="divide-y divide-gray-200 dark:divide-gray-700">
-                @forelse ($this->payouts as $payout)
-                    <div class="py-4 first:pt-0 last:pb-0" wire:key="payout-{{ $payout->id }}">
-                        <div class="flex items-center justify-between">
-                            <div class="min-w-0 flex-1">
-                                <p class="truncate font-medium text-gray-900 dark:text-white">
-                                    {{ $payout->pluginLicense->plugin->name ?? 'Unknown Plugin' }}
-                                </p>
-                                <flux:text class="text-sm">{{ $payout->created_at->format('M j, Y') }}</flux:text>
-                            </div>
-                            <div class="ml-4 text-right">
-                                <p class="font-medium text-gray-900 dark:text-white">
-                                    ${{ number_format($payout->developer_amount / 100, 2) }}
-                                </p>
-                                @if ($payout->status === \App\Enums\PayoutStatus::Transferred)
-                                    <flux:badge color="green" size="sm">Paid</flux:badge>
-                                @elseif ($payout->status === \App\Enums\PayoutStatus::Pending)
-                                    <flux:badge color="yellow" size="sm">Pending</flux:badge>
-                                @else
-                                    <flux:badge color="red" size="sm">Failed</flux:badge>
-                                @endif
-                            </div>
-                        </div>
-                    </div>
-                @empty
-                    <x-customer.empty-state
-                        icon="banknotes"
-                        title="No payouts yet"
-                        description="Payouts will appear here after you make your first sale."
-                    />
-                @endforelse
-            </div>
+            @if ($this->payouts->isNotEmpty())
+                <flux:table>
+                    <flux:table.rows>
+                        @foreach ($this->payouts as $payout)
+                            <flux:table.row :key="'payout-'.$payout->id">
+                                <flux:table.cell class="whitespace-normal">
+                                    <span class="text-sm font-medium text-zinc-800 wrap-anywhere dark:text-white">
+                                        {{ $payout->pluginLicense->plugin->name ?? 'Unknown Plugin' }}
+                                    </span>
+                                    <flux:text class="text-xs">{{ $payout->created_at->format('M j, Y') }}</flux:text>
+                                    @if ($expectedAt = $payout->expectedTransferDate())
+                                        <flux:text class="text-xs">
+                                            @if ($expectedAt->isFuture())
+                                                Expected in your Stripe account around {{ $expectedAt->format('M j, Y') }}
+                                            @else
+                                                Expected in your Stripe account soon
+                                            @endif
+                                        </flux:text>
+                                    @endif
+                                </flux:table.cell>
+
+                                <flux:table.cell align="end">
+                                    <div class="flex flex-col items-end gap-1">
+                                        @if ($payout->wasCancelledByRefund())
+                                            <span class="line-through">${{ number_format($payout->developer_amount / 100, 2) }}</span>
+                                        @else
+                                            <span class="font-medium text-zinc-800 dark:text-white">${{ number_format($payout->developer_amount / 100, 2) }}</span>
+                                        @endif
+
+                                        @if ($payout->status === \App\Enums\PayoutStatus::Transferred)
+                                            <flux:badge color="green" size="sm">Paid</flux:badge>
+                                        @elseif ($payout->status === \App\Enums\PayoutStatus::Pending)
+                                            <flux:badge color="yellow" size="sm">Pending</flux:badge>
+                                        @elseif ($payout->wasCancelledByRefund())
+                                            <flux:badge color="zinc" size="sm">Refunded</flux:badge>
+                                        @else
+                                            <flux:badge color="red" size="sm">Failed</flux:badge>
+                                        @endif
+                                    </div>
+                                </flux:table.cell>
+                            </flux:table.row>
+                        @endforeach
+                    </flux:table.rows>
+                </flux:table>
+            @else
+                <x-customer.empty-state
+                    icon="banknotes"
+                    title="No payouts yet"
+                    description="Payouts will appear here after you make your first sale."
+                />
+            @endif
         </flux:card>
     </div>
 </div>

@@ -6,6 +6,7 @@ use App\Features\ShowPlugins;
 use App\Models\Plugin;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Blade;
 use Laravel\Pennant\Feature;
 use Tests\TestCase;
 
@@ -30,6 +31,36 @@ class PluginShowMobileVersionTest extends TestCase
             ->assertStatus(200)
             ->assertSee('NativePHP Mobile')
             ->assertSee('^3.0.0');
+    }
+
+    public function test_plugin_header_shows_a_pill_for_each_supported_mobile_version(): void
+    {
+        $plugin = Plugin::factory()->approved()->mobileVersions('3.0', '4.5.2')->create();
+
+        $this->get(route('plugins.show', $plugin->routeParams()))
+            ->assertStatus(200)
+            ->assertSeeInOrder([
+                'Works with NativePHP Mobile 3.x from 3.0',
+                'Works with NativePHP Mobile 4.x from 4.5.2',
+            ]);
+    }
+
+    public function test_plugin_header_marks_mobile_versions_with_a_phone_icon(): void
+    {
+        $plugin = Plugin::factory()->approved()->mobileVersions('4.0')->create();
+
+        $this->get(route('plugins.show', $plugin->routeParams()))
+            ->assertStatus(200)
+            ->assertSee(Blade::render('<x-icons.device-mobile-phone class="h-3.5 shrink-0" aria-hidden="true" />'), false);
+    }
+
+    public function test_plugin_header_has_no_mobile_version_pills_without_versions(): void
+    {
+        $plugin = Plugin::factory()->approved()->create(['mobile_versions' => null]);
+
+        $this->get(route('plugins.show', $plugin->routeParams()))
+            ->assertStatus(200)
+            ->assertDontSee('Works with NativePHP Mobile');
     }
 
     public function test_plugin_show_displays_dash_when_mobile_min_version_is_null(): void

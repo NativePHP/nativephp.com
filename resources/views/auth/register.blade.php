@@ -30,6 +30,8 @@
                 <flux:label>Confirm Password</flux:label>
                 <flux:input name="password_confirmation" type="password" autocomplete="new-password" required viewable placeholder="Confirm your password" />
             </flux:field>
+
+            <x-turnstile action="register" />
         </div>
 
         <flux:button type="submit" variant="primary" class="w-full">Create account</flux:button>

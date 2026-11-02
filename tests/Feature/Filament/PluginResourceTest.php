@@ -138,6 +138,7 @@ class PluginResourceTest extends TestCase
 
         Livewire::actingAs($this->admin)
             ->test(ListPlugins::class)
+            ->set('activeTab', 'all')
             ->assertCanRenderTableColumn('approved_at')
             ->sortTable('approved_at', 'desc')
             ->assertCanSeeTableRecords([$newest, $middle, $oldest], inOrder: true)

@@ -95,7 +95,7 @@ a different component method.
 @verbatim
 ```blade
 @foreach ($items as $item)
-    <native:pressable @navigate="/detail/{{ $item->id }}" class="w-full px-4 py-3">
+    <native:pressable @navigate="'/detail/' . $item->id" class="w-full px-4 py-3">
         <native:text class="text-base text-theme-on-surface">{{ $item->name }}</native:text>
     </native:pressable>
 @endforeach

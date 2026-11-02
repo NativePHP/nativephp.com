@@ -70,6 +70,7 @@ class UltraBenefitsPageTest extends TestCase
         $response->assertSee('Ultra');
         $response->assertSee('Your premium subscription benefits');
         $response->assertSee('All first-party plugins');
+        $response->assertSee('Discounted third-party plugins');
         $response->assertSee('Claude Code Plugin Dev Kit');
         $response->assertSee('Teams');
         $response->assertSee('Premium support');

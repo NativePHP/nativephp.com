@@ -81,7 +81,7 @@ class Show extends Component
             'attachments' => $attachments,
         ]);
 
-        Notification::route('mail', 'support@nativephp.com')
+        Notification::route('mail', config('mail.support_address'))
             ->notify(new SupportTicketUserReplied($this->supportTicket, $reply));
 
         $this->replyMessage = '';

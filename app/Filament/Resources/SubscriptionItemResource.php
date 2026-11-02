@@ -62,7 +62,7 @@ class SubscriptionItemResource extends Resource
                 Tables\Columns\TextColumn::make('subscription.id')
                     ->numeric()
                     ->sortable()
-                    ->url(fn ($record) => SubscriptionResource::getUrl('view', ['record' => $record->subscription])),
+                    ->url(fn ($record) => $record->subscription && SubscriptionResource::can('view', $record->subscription) ? SubscriptionResource::getUrl('view', ['record' => $record->subscription]) : null),
                 Tables\Columns\TextColumn::make('subscription.stripe_status')
                     ->label('Subscription Status')
                     ->badge()

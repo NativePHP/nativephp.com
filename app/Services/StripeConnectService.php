@@ -11,9 +11,14 @@ use App\Models\PluginPayout;
 use App\Models\PluginPayoutAttempt;
 use App\Models\PluginPrice;
 use App\Models\User;
+use App\Support\StripeConnectCountries;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Log;
 use Laravel\Cashier\Cashier;
 use Stripe\Account;
+use Stripe\LineItem;
+use Stripe\Refund;
+use Stripe\TransferReversal;
 
 /**
  * Service for managing Stripe Connect accounts and processing developer payouts.
@@ -22,18 +27,7 @@ class StripeConnectService
 {
     public function createConnectAccount(User $user, string $country, string $payoutCurrency): DeveloperAccount
     {
-        $account = Cashier::stripe()->accounts->create([
-            'type' => 'express',
-            'country' => $country,
-            'email' => $user->email,
-            'metadata' => [
-                'user_id' => $user->id,
-            ],
-            'capabilities' => [
-                'card_payments' => ['requested' => true],
-                'transfers' => ['requested' => true],
-            ],
-        ]);
+        $account = $this->createStripeAccount($user, $country);
 
         return DeveloperAccount::create([
             'user_id' => $user->id,
@@ -43,6 +37,33 @@ class StripeConnectService
             'charges_enabled' => false,
             'country' => $country,
             'payout_currency' => $payoutCurrency,
+        ]);
+    }
+
+    /**
+     * Point the developer at a brand new Stripe account, created with the service agreement
+     * their country needs. Stripe won't change the agreement on an account that has already
+     * accepted one, so the developer has to go through onboarding again.
+     */
+    public function replaceConnectAccount(DeveloperAccount $developerAccount, string $country): void
+    {
+        $previousAccountId = $developerAccount->stripe_connect_account_id;
+
+        $account = $this->createStripeAccount($developerAccount->user, $country);
+
+        $developerAccount->update([
+            'stripe_connect_account_id' => $account->id,
+            'stripe_connect_status' => StripeConnectStatus::Pending,
+            'payouts_enabled' => false,
+            'charges_enabled' => false,
+            'onboarding_completed_at' => null,
+            'country' => $country,
+        ]);
+
+        Log::info('Replaced developer Stripe Connect account', [
+            'developer_account_id' => $developerAccount->id,
+            'previous_stripe_account_id' => $previousAccountId,
+            'stripe_account_id' => $account->id,
         ]);
     }
 
@@ -66,7 +87,9 @@ class StripeConnectService
             'payouts_enabled' => $stripeAccount->payouts_enabled,
             'charges_enabled' => $stripeAccount->charges_enabled,
             'stripe_connect_status' => $this->determineStatus($stripeAccount),
-            'onboarding_completed_at' => $stripeAccount->details_submitted ? now() : null,
+            'onboarding_completed_at' => $stripeAccount->details_submitted
+                ? ($account->onboarding_completed_at ?? now())
+                : null,
         ]);
 
         Log::info('Refreshed developer account status', [
@@ -202,17 +225,106 @@ class StripeConnectService
         }
     }
 
-    protected function determineStatus(Account $account): StripeConnectStatus
+    /**
+     * Developers outside the countries we can pay on the `full` service agreement get a
+     * `recipient` account, which can only receive transfers and can't take payments.
+     */
+    protected function createStripeAccount(User $user, string $country): Account
     {
-        if ($account->payouts_enabled && $account->charges_enabled) {
-            return StripeConnectStatus::Active;
+        $params = [
+            'type' => 'express',
+            'country' => $country,
+            'email' => $user->email,
+            'metadata' => [
+                'user_id' => $user->id,
+            ],
+            'capabilities' => [
+                'card_payments' => ['requested' => true],
+                'transfers' => ['requested' => true],
+            ],
+        ];
+
+        if (StripeConnectCountries::requiresRecipientServiceAgreement($country)) {
+            $params['capabilities'] = [
+                'transfers' => ['requested' => true],
+            ];
+            $params['tos_acceptance'] = [
+                'service_agreement' => 'recipient',
+            ];
         }
 
+        return Cashier::stripe()->accounts->create($params);
+    }
+
+    /**
+     * Buyers pay the platform and we send the developer's share with a transfer, so a
+     * developer's account never takes a charge itself. All we need is for it to receive
+     * transfers and pay them out to the bank. Recipient accounts can't take charges at all,
+     * so charges_enabled is always false for them and mustn't hold them back.
+     *
+     * Capabilities are read as an array because Stripe hands back an account with none as an
+     * empty array rather than an object.
+     */
+    protected function determineStatus(Account $account): StripeConnectStatus
+    {
         if ($account->requirements?->disabled_reason) {
             return StripeConnectStatus::Disabled;
         }
 
+        $transfersCapability = $account->capabilities['transfers'] ?? null;
+
+        if ($transfersCapability === 'active' && $account->payouts_enabled) {
+            return StripeConnectStatus::Active;
+        }
+
         return StripeConnectStatus::Pending;
+    }
+
+    /**
+     * Refund what the buyer paid for one line of a checkout, after coupons and tax.
+     *
+     * The line is the idempotency key, so a double submit or a quick retry gets the same
+     * refund back from Stripe instead of refunding the line a second time.
+     */
+    public function refundCheckoutLineItem(string $paymentIntentId, LineItem $lineItem): Refund
+    {
+        return Cashier::stripe()->refunds->create([
+            'payment_intent' => $paymentIntentId,
+            'amount' => $lineItem->amount_total,
+        ], [
+            'idempotency_key' => 'refund-'.$lineItem->id,
+        ]);
+    }
+
+    /**
+     * The line items of the Checkout session a payment intent was paid through, each with
+     * its product expanded so the product's metadata can be read.
+     *
+     * @return Collection<int, LineItem>
+     */
+    public function checkoutLineItems(string $paymentIntentId): Collection
+    {
+        $session = Cashier::stripe()->checkout->sessions->all([
+            'payment_intent' => $paymentIntentId,
+            'limit' => 1,
+        ])->first();
+
+        if (! $session) {
+            return collect();
+        }
+
+        $lineItems = Cashier::stripe()->checkout->sessions->allLineItems($session->id, [
+            'limit' => 100,
+            'expand' => ['data.price.product'],
+        ]);
+
+        return collect($lineItems->data);
+    }
+
+    public function reverseTransfer(string $stripeTransferId): TransferReversal
+    {
+        return Cashier::stripe()->transfers->retrieve($stripeTransferId)
+            ->reversals->create();
     }
 
     public function createProductAndPrice(Plugin $plugin, int $amountCents, string $currency = 'usd'): PluginPrice

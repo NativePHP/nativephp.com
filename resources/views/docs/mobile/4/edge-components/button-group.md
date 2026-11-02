@@ -93,7 +93,7 @@ method that receives the new index — assign it to `$difficulty` there:
 ## Element
 
 ```php
-use Nativephp\NativeUi\Elements\ButtonGroup;
+use Native\Mobile\UI\Elements\ButtonGroup;
 
 ButtonGroup::make()
     ->options(['Daily', 'Weekly', 'Monthly'])

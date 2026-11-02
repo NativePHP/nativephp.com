@@ -1,6 +1,8 @@
 ---
 title: Accordion
 order: 90
+package: mobile-ui
+since: "0.4"
 ---
 
 ## Overview

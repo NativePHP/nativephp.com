@@ -37,6 +37,79 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Released Minor Versions
+    |--------------------------------------------------------------------------
+    |
+    | Every minor release that exists, keyed by platform and then by major.
+    | The version labels rendered by <x-docs.version-badge> are checked against
+    | this list in the test suite, so a label can't quietly point at a version
+    | that was never released — or at one belonging to a different major after
+    | a page has been copied forward into a new version's tree.
+    |
+    | Add the new entry here as part of shipping a release.
+    |
+    */
+
+    'released_versions' => [
+        'desktop' => [
+            1 => ['1.0'],
+            2 => ['2.0', '2.1', '2.2'],
+        ],
+        'mobile' => [
+            1 => ['1.0', '1.1'],
+            2 => ['2.0'],
+            3 => ['3.0', '3.1', '3.2', '3.3'],
+            4 => ['4.0', '4.1', '4.2', '4.3', '4.4', '4.5', '4.6', '4.7'],
+        ],
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Separately Versioned Packages
+    |--------------------------------------------------------------------------
+    |
+    | Packages documented inside a platform's docs that ship on their own
+    | release line, keyed by the slug a label passes as `package`. Their labels
+    | name the package and are checked against the package's own released
+    | versions in the test suite, rather than the platform's.
+    |
+    | Labels at or below the baseline don't render. The baseline is whatever
+    | was current when the platform major shipped (mobile-ui 0.3.0 was current
+    | when nativephp/mobile 4.0.0 shipped), the same way x.0 never renders for
+    | the platform itself.
+    |
+    | Add the new entry here as part of shipping a release.
+    |
+    */
+
+    'packages' => [
+        'mobile-ui' => [
+            'name' => 'nativephp/mobile-ui',
+            'baseline' => '0.3',
+            'released_versions' => ['0.1', '0.2', '0.3', '0.4', '0.5', '0.6', '0.7'],
+        ],
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Jump
+    |--------------------------------------------------------------------------
+    |
+    | Jump ships on its own cadence, so a feature can be released in NativePHP
+    | and still not render when someone scans the QR code on a docs page.
+    |
+    | Pages and sections declare the Jump version they need; this value records
+    | what Jump currently ships. Bump it when Jump catches up and every label it
+    | now satisfies disappears on its own — no docs edits required.
+    |
+    */
+
+    'jump' => [
+        'current_version' => '3.0',
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
     | Renamed Documentation Pages
     |--------------------------------------------------------------------------
     |

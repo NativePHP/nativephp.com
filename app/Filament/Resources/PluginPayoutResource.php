@@ -99,6 +99,28 @@ class PluginPayoutResource extends Resource
                             ->dateTime(),
                     ]),
 
+                Schemas\Components\Section::make('Refund')
+                    ->description(fn (PluginPayout $record): string => $record->wasReversed()
+                        ? 'The customer was refunded after this payout was sent, so the transfer to the seller was reversed.'
+                        : 'The customer was refunded before this payout was sent, so it was cancelled.')
+                    ->inlineLabel()
+                    ->columns(1)
+                    ->schema([
+                        Infolists\Components\TextEntry::make('pluginLicense.refunded_at')
+                            ->label('Refunded At')
+                            ->dateTime(),
+                        Infolists\Components\TextEntry::make('pluginLicense.refundedBy.email')
+                            ->label('Refunded By')
+                            ->placeholder('—'),
+                        Infolists\Components\TextEntry::make('pluginLicense.stripe_refund_id')
+                            ->label('Stripe Refund ID')
+                            ->copyable()
+                            ->url(fn (PluginPayout $record): ?string => $record->pluginLicense?->stripePaymentUrl())
+                            ->openUrlInNewTab()
+                            ->placeholder('—'),
+                    ])
+                    ->visible(fn (PluginPayout $record): bool => $record->wasCancelledByRefund()),
+
                 Schemas\Components\Section::make('Latest Failure Reason')
                     ->inlineLabel()
                     ->columns(1)
@@ -132,17 +154,24 @@ class PluginPayoutResource extends Resource
                 Tables\Columns\TextColumn::make('gross_amount')
                     ->label('Paid')
                     ->formatStateUsing(fn (int $state): string => '$'.number_format($state / 100, 2))
+                    ->summarize(Tables\Columns\Summarizers\Sum::make('sum')->money('USD', divideBy: 100))
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('developer_amount')
                     ->label('Due to Seller')
                     ->formatStateUsing(fn (int $state): string => '$'.number_format($state / 100, 2))
+                    ->summarize(Tables\Columns\Summarizers\Sum::make('sum')->money('USD', divideBy: 100))
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('status')
                     ->badge()
                     ->color(fn (PayoutStatus $state): string => $state->color())
                     ->formatStateUsing(fn (PayoutStatus $state): string => $state->label())
+                    ->description(fn (PluginPayout $record): ?string => match (true) {
+                        $record->wasReversed() => 'Refunded, transfer reversed',
+                        $record->wasCancelledByRefund() => 'Refunded',
+                        default => null,
+                    })
                     ->sortable(),
 
                 Tables\Columns\IconColumn::make('paid_out')

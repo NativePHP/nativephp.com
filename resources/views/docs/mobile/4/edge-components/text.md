@@ -74,6 +74,8 @@ and is available fluently as `->font('Inter-Bold')`.
 
 ### Downloading from Google Fonts
 
+<x-docs.version-badge package="mobile-ui" changed="0.4" />
+
 The `native:font` command downloads a [Google Fonts](https://fonts.google.com)
 family into `resources/fonts/` and registers it in your config — no API key
 needed:
@@ -99,9 +101,9 @@ whether one style should become the app-wide `default`. Google Fonts are
 libre-licensed (OFL / Apache), so bundling them in your app is permitted.
 
 - `--default` — make the downloaded font the app-wide `default` alias without asking
-- `--force` — overwrite files that already exist in `resources/fonts/` (and skip the `--reset` confirmation)
-- `--reset` — delete every font file in `resources/fonts/` and reset the config to `'default' => 'System'` (asks first)
-- `--clear-cache` — clear the cached catalog (the family list is cached for 24 hours)
+- `--force` <x-docs.version-badge package="mobile-ui" since="0.4" /> — overwrite files that already exist in `resources/fonts/` (and skip the `--reset` confirmation)
+- `--reset` <x-docs.version-badge package="mobile-ui" since="0.4" /> — delete every font file in `resources/fonts/` and reset the config to `'default' => 'System'` (asks first)
+- `--clear-cache` <x-docs.version-badge package="mobile-ui" since="0.4" /> — clear the cached catalog (the family list is cached for 24 hours)
 
 Non-interactive runs (`--no-interaction`, CI) require the family argument,
 download only Regular (400) — or the first listed style for families without
@@ -140,7 +142,7 @@ explicit `font-serif` / `font-mono` classes still win over it. Swapping a font
 app-wide becomes a one-line config change; blades keep their semantic names.
 Each alias must point directly at a file token (no alias-to-alias chaining).
 
-`native:font` maintains this array for you — every downloaded style gets an
+`native:font` <x-docs.version-badge package="mobile-ui" changed="0.4" /> maintains this array for you — every downloaded style gets an
 entry, and the `--default` flag (or the prompt) sets `default`. Prefer aliases
 over the older `font-family` theme token (which `fonts.default` supersedes when
 both are set); `native:font --default` only falls back to writing `font-family`

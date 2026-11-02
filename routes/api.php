@@ -3,6 +3,7 @@
 use App\Http\Controllers\Api\LicenseController;
 use App\Http\Controllers\Api\PluginAccessController;
 use App\Http\Controllers\Api\TemporaryLinkController;
+use App\Http\Controllers\Api\VideoController;
 use App\Http\Controllers\McpController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -30,9 +31,19 @@ Route::prefix('mcp')->group(function (): void {
     Route::get('page/{platform}/{version}/{path}', [McpController::class, 'pageApi'])
         ->where('path', '.*')
         ->name('mcp.api.page');
-    Route::get('apis/{platform}/{version}', [McpController::class, 'apisApi'])->name('mcp.api.apis');
+    Route::get('edge-components/{platform}/{version}', [McpController::class, 'edgeComponentsApi'])->name('mcp.api.edge-components');
     Route::get('navigation/{platform}/{version}', [McpController::class, 'navigationApi'])->name('mcp.api.navigation');
+
+    Route::get('plugins', [McpController::class, 'pluginsSearchApi'])->name('mcp.api.plugins.search');
+    Route::get('plugins/{vendor}/{package}', [McpController::class, 'pluginShowApi'])
+        ->where(['vendor' => '[A-Za-z0-9_.-]+', 'package' => '[A-Za-z0-9_.-]+'])
+        ->name('mcp.api.plugins.show');
 });
+
+// Latest NativePHP YouTube uploads, for the Jump app's Videos tab.
+Route::get('videos', VideoController::class)
+    ->middleware('throttle:60,1')
+    ->name('api.videos');
 
 Route::middleware('auth.api_key')->group(function (): void {
     Route::prefix('plugins')->name('api.plugins.')->group(function (): void {

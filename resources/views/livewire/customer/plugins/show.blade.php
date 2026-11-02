@@ -97,6 +97,7 @@
                         ['key' => 'has_license_file', 'label' => 'License file (LICENSE or LICENSE.md)'],
                         ['key' => 'has_release_version', 'label' => 'Release version'],
                         ['key' => 'webhook_configured', 'label' => 'Webhook configured'],
+                        ['key' => 'demo_video', 'label' => 'Demo video showing the plugin working'],
                     ];
                     $optionalChecks = [
                         ['key' => 'supports_ios', 'label' => 'iOS support (resources/ios/)'],
@@ -110,9 +111,11 @@
                 <ul class="mt-2 space-y-3">
                     @foreach ($requiredChecks as $check)
                         @php
-                            $isPassing = $check['key'] === 'webhook_configured'
-                                ? $plugin->webhook_installed
-                                : ($plugin->review_checks[$check['key']] ?? false);
+                            $isPassing = match ($check['key']) {
+                                'webhook_configured' => $plugin->webhook_installed,
+                                'demo_video' => $plugin->hasDemoVideo(),
+                                default => $plugin->review_checks[$check['key']] ?? false,
+                            };
                         @endphp
                         <li>
                             <div class="flex items-center gap-2">
@@ -317,13 +320,18 @@
                                 <div class="mt-6 space-y-4">
                                     @foreach (\App\Enums\PluginTier::cases() as $pluginTier)
                                         @php
-                                            $regularPrice = $pluginTier->getPrices()[\App\Enums\PriceTier::Regular->value] / 100;
+                                            $tierPrices = $pluginTier->getPrices();
+                                            $regularPrice = $tierPrices[\App\Enums\PriceTier::Regular->value] / 100;
+                                            $ultraPrice = $tierPrices[\App\Enums\PriceTier::Ultra->value] / 100;
                                         @endphp
                                         <label class="relative flex cursor-pointer rounded-lg border p-4 transition focus:outline-none"
                                             :class="$wire.tier === '{{ $pluginTier->value }}' ? 'border-indigo-500 bg-indigo-50 dark:border-indigo-400 dark:bg-indigo-950/30' : 'border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/50'">
                                             <input type="radio" wire:model.live="tier" value="{{ $pluginTier->value }}" class="sr-only" />
                                             <span class="flex flex-1 items-center justify-between">
-                                                <span class="text-sm font-medium text-gray-900 dark:text-white">{{ $pluginTier->label() }}</span>
+                                                <span class="flex flex-col">
+                                                    <span class="text-sm font-medium text-gray-900 dark:text-white">{{ $pluginTier->label() }}</span>
+                                                    <span class="mt-1 text-sm text-gray-500 dark:text-gray-400">${{ number_format($ultraPrice) }} for Ultra subscribers</span>
+                                                </span>
                                                 <span class="text-lg font-semibold text-gray-900 dark:text-white">${{ number_format($regularPrice) }}</span>
                                             </span>
                                         </label>
@@ -335,7 +343,7 @@
                                 @enderror
 
                                 <flux:text class="mt-4 text-xs text-gray-500 dark:text-gray-400">
-                                    Actual sale price may vary due to discounts and offers. You keep 70% of the sale price. If a NativePHP Ultra subscriber purchases your plugin, you receive 100% of the sale price. Additional payment processing fees may apply.
+                                    Actual sale price may vary due to discounts and offers. You keep 70% of the sale price. NativePHP Ultra subscribers pay the lower Ultra price, and you keep 100% of what they pay. Additional payment processing fees may apply.
                                 </flux:text>
                             </flux:card>
                         @endif
@@ -387,7 +395,7 @@
                                             <img src="{{ $plugin->getLogoUrl() }}" alt="{{ $plugin->name }} logo" class="size-16 rounded-lg object-cover shadow-sm" />
                                         @elseif ($plugin->hasGradientIcon())
                                             <div class="grid size-16 place-items-center rounded-lg bg-gradient-to-br {{ $plugin->getGradientClasses() }} text-white shadow-sm">
-                                                <x-dynamic-component :component="'heroicon-o-' . $plugin->icon_name" class="size-8" />
+                                                <x-dynamic-component :component="$plugin->getIconComponent()" class="size-8" />
                                             </div>
                                         @endif
                                         <flux:button size="sm" variant="danger" icon="trash" wire:click="deleteIcon" type="button">Remove icon</flux:button>
@@ -421,7 +429,7 @@
                                             wire:model="iconName"
                                             label="Heroicon name"
                                             placeholder="cube"
-                                            description="Enter a Heroicon outline name, e.g., cube, sparkles, bolt."
+                                            description="Enter an outline icon name exactly as it appears on heroicons.com, e.g., cube, sparkles, bolt, photo, map-pin."
                                         />
                                         @error('iconName')
                                             <flux:text class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</flux:text>
@@ -462,6 +470,50 @@
                                         Or choose a gradient icon instead
                                     </button>
                                 </div>
+                            </div>
+                        </flux:card>
+
+                        {{-- Demo Video --}}
+                        <flux:card class="mb-6">
+                            <flux:heading size="lg">Demo Video</flux:heading>
+                            <flux:text class="mt-1">
+                                Required for review. Link a YouTube, Vimeo or Loom video (public or unlisted) showing the current version of your plugin running on a real device or simulator. Reviewers watch this before approving.
+                            </flux:text>
+
+                            <div class="mt-4 space-y-4">
+                                <div>
+                                    <flux:input
+                                        wire:model="demoVideoUrl"
+                                        type="url"
+                                        placeholder="https://www.youtube.com/watch?v=..."
+                                    />
+                                    @error('demoVideoUrl')
+                                        <flux:text class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</flux:text>
+                                    @enderror
+                                </div>
+
+                                <div>
+                                    <flux:checkbox
+                                        wire:model="demoVideoAttested"
+                                        label="I confirm this video shows the current version of my plugin working as described."
+                                    />
+                                    @error('demoVideoAttested')
+                                        <flux:text class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</flux:text>
+                                    @enderror
+                                </div>
+
+                                @if ($demoVideo = $plugin->demoVideo())
+                                    <div class="relative aspect-video w-full overflow-hidden rounded-lg border border-gray-200 bg-black dark:border-gray-700" wire:key="demo-video-{{ $demoVideo->videoId }}">
+                                        <iframe
+                                            src="{{ $demoVideo->embedUrl() }}"
+                                            title="{{ $plugin->name }} demo video"
+                                            class="size-full"
+                                            loading="lazy"
+                                            allow="accelerometer; encrypted-media; gyroscope; picture-in-picture; fullscreen"
+                                            allowfullscreen
+                                        ></iframe>
+                                    </div>
+                                @endif
                             </div>
                         </flux:card>
 
@@ -567,7 +619,7 @@
                                             <img src="{{ $plugin->getLogoUrl() }}" alt="{{ $plugin->name }} logo" class="size-16 rounded-lg object-cover shadow-sm" />
                                         @elseif ($plugin->hasGradientIcon())
                                             <div class="grid size-16 place-items-center rounded-lg bg-gradient-to-br {{ $plugin->getGradientClasses() }} text-white shadow-sm">
-                                                <x-dynamic-component :component="'heroicon-o-' . $plugin->icon_name" class="size-8" />
+                                                <x-dynamic-component :component="$plugin->getIconComponent()" class="size-8" />
                                             </div>
                                         @endif
                                         <flux:button size="sm" variant="danger" icon="trash" wire:click="deleteIcon" type="button">Remove icon</flux:button>
@@ -601,7 +653,7 @@
                                             wire:model="iconName"
                                             label="Heroicon name"
                                             placeholder="cube"
-                                            description="Enter a Heroicon outline name, e.g., cube, sparkles, bolt."
+                                            description="Enter an outline icon name exactly as it appears on heroicons.com, e.g., cube, sparkles, bolt, photo, map-pin."
                                         />
                                         @error('iconName')
                                             <flux:text class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</flux:text>
@@ -675,7 +727,7 @@
                                     <img src="{{ $plugin->getLogoUrl() }}" alt="{{ $plugin->name }} logo" class="size-16 shrink-0 rounded-lg object-cover shadow-sm" />
                                 @elseif ($plugin->hasGradientIcon())
                                     <div class="grid size-16 shrink-0 place-items-center rounded-lg bg-gradient-to-br {{ $plugin->getGradientClasses() }} text-white shadow-sm">
-                                        <x-dynamic-component :component="'heroicon-o-' . $plugin->icon_name" class="size-8" />
+                                        <x-dynamic-component :component="$plugin->getIconComponent()" class="size-8" />
                                     </div>
                                 @else
                                     <div class="grid size-16 shrink-0 place-items-center rounded-lg bg-gradient-to-br from-indigo-500 to-purple-600 text-white shadow-sm">
@@ -825,7 +877,7 @@
                                         <img src="{{ $plugin->getLogoUrl() }}" alt="{{ $plugin->name }} logo" class="size-16 shrink-0 rounded-lg object-cover shadow-sm" />
                                     @elseif ($plugin->hasGradientIcon())
                                         <div class="grid size-16 shrink-0 place-items-center rounded-lg bg-gradient-to-br {{ $plugin->getGradientClasses() }} text-white shadow-sm">
-                                            <x-dynamic-component :component="'heroicon-o-' . $plugin->icon_name" class="size-8" />
+                                            <x-dynamic-component :component="$plugin->getIconComponent()" class="size-8" />
                                         </div>
                                     @else
                                         <div class="grid size-16 shrink-0 place-items-center rounded-lg bg-gradient-to-br from-indigo-500 to-purple-600 text-white shadow-sm">
@@ -944,6 +996,21 @@
                                             @endif
                                         @else
                                             <span class="text-sm text-gray-400 dark:text-gray-500">Not set</span>
+                                        @endif
+                                    </dd>
+                                </div>
+
+                                {{-- Demo Video --}}
+                                <div class="col-span-2">
+                                    <dt class="text-xs font-medium text-gray-500 dark:text-gray-400">Demo Video</dt>
+                                    <dd class="mt-1">
+                                        @if ($plugin->hasDemoVideo())
+                                            <a href="{{ $plugin->demo_video_url }}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 text-sm font-medium text-indigo-600 hover:text-indigo-500 dark:text-indigo-400 dark:hover:text-indigo-300">
+                                                {{ $plugin->demoVideo()->providerLabel() }} video
+                                                <x-heroicon-o-arrow-top-right-on-square class="size-3" />
+                                            </a>
+                                        @else
+                                            <span class="text-sm text-red-500 dark:text-red-400">Required &mdash; add one in the Details tab</span>
                                         @endif
                                     </dd>
                                 </div>

@@ -76,8 +76,8 @@ $info['model'];      // e.g. 'iPhone15,3'
 
 <aside>
 
-`System::isIos()`, `isAndroid()`, and `isMobile()` are thin conveniences over `getInfo()['platform']` — reach
-for those when you only need platform detection. See [System](system).
+When you only need the platform, reach for `System::isIos()`, `isAndroid()`, `isMobile()` or `platform()` instead.
+On the device they don't call `getInfo()` at all. See [System](system).
 
 </aside>
 

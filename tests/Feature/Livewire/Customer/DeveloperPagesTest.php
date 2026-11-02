@@ -7,6 +7,9 @@ use App\Features\ShowPlugins;
 use App\Livewire\Customer\Developer\Dashboard;
 use App\Livewire\Customer\Developer\Onboarding;
 use App\Models\DeveloperAccount;
+use App\Models\Plugin;
+use App\Models\PluginLicense;
+use App\Models\PluginPayout;
 use App\Models\User;
 use App\Services\StripeConnectService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -182,6 +185,81 @@ class DeveloperPagesTest extends TestCase
             ->assertSee('Published Plugins')
             ->assertSee('Total Sales')
             ->assertStatus(200);
+    }
+
+    public function test_developer_dashboard_shows_refunded_payouts_and_excludes_them_from_sales(): void
+    {
+        $user = User::factory()->create();
+        $developerAccount = DeveloperAccount::factory()->create(['user_id' => $user->id]);
+        $plugin = Plugin::factory()->paid()->approved()->create([
+            'user_id' => $user->id,
+            'developer_account_id' => $developerAccount->id,
+        ]);
+
+        $sale = PluginLicense::factory()->create(['plugin_id' => $plugin->id]);
+        PluginPayout::factory()->transferred()->create([
+            'plugin_license_id' => $sale->id,
+            'developer_account_id' => $developerAccount->id,
+        ]);
+
+        $refundedSale = PluginLicense::factory()->refunded()->create(['plugin_id' => $plugin->id]);
+        PluginPayout::factory()->cancelled()->create([
+            'plugin_license_id' => $refundedSale->id,
+            'developer_account_id' => $developerAccount->id,
+        ]);
+
+        $this->mock(StripeConnectService::class, function ($mock): void {
+            $mock->shouldReceive('refreshAccountStatus')->once();
+        });
+
+        Livewire::actingAs($user)
+            ->test(Dashboard::class)
+            ->assertSee('Refunded')
+            ->assertDontSee('Failed')
+            ->assertSee('1 sale')
+            ->assertDontSee('2 sales')
+            ->assertStatus(200);
+    }
+
+    public function test_developer_dashboard_shows_when_pending_payouts_are_expected(): void
+    {
+        $this->travelTo('2026-09-29 10:00:00');
+
+        $user = User::factory()->create();
+        $developerAccount = DeveloperAccount::factory()->create(['user_id' => $user->id]);
+
+        PluginPayout::factory()->pending()->create([
+            'developer_account_id' => $developerAccount->id,
+            'eligible_for_payout_at' => now()->addDays(13),
+        ]);
+        PluginPayout::factory()->pending()->create([
+            'developer_account_id' => $developerAccount->id,
+            'eligible_for_payout_at' => now()->subHour(),
+        ]);
+        PluginPayout::factory()->transferred()->create([
+            'developer_account_id' => $developerAccount->id,
+        ]);
+
+        $this->mock(StripeConnectService::class, function ($mock): void {
+            $mock->shouldReceive('refreshAccountStatus')->once();
+        });
+
+        Livewire::actingAs($user)
+            ->test(Dashboard::class)
+            ->assertSee('Expected in your Stripe account around Oct 12, 2026')
+            ->assertSee('Expected in your Stripe account soon')
+            ->assertStatus(200);
+    }
+
+    public function test_expected_transfer_date_falls_back_to_fifteen_days_after_the_sale(): void
+    {
+        $payout = PluginPayout::factory()->pending()->create([
+            'created_at' => '2026-09-01 12:00:00',
+            'eligible_for_payout_at' => null,
+        ]);
+
+        $this->assertSame('2026-09-16', $payout->expectedTransferDate()->toDateString());
+        $this->assertNull(PluginPayout::factory()->transferred()->create()->expectedTransferDate());
     }
 
     public function test_developer_dashboard_shows_empty_states(): void

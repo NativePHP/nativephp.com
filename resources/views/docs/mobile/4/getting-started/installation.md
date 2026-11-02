@@ -3,6 +3,24 @@ title: Installation
 order: 100
 ---
 
+## Start from the starter kit
+
+The quickest way to a working v4 app is the starter kit, which comes with NativePHP and its UI components already
+installed and registered:
+
+```shell
+laravel new my-app --using=nativephp/mobile-starter --no-node
+cd my-app
+```
+
+`--no-node` skips the `npm install && npm run build` the installer runs by default, which a SuperNative app doesn't
+need. `laravel new` also installs [Laravel Boost](https://laravel.com/ai/boost), which sets up AI agent guidelines for
+the project; pass `--no-boost` to skip it.
+
+Then skip ahead to [Run the NativePHP installer](#run-the-nativephp-installer).
+
+To add NativePHP to an existing Laravel app instead, follow the next two sections.
+
 ## Install the Composer package
 
 NativePHP contains all the libraries, classes, commands, and interfaces that your application will need to work with
@@ -11,6 +29,40 @@ iOS and Android. And it's a single command away:
 ```shell
 composer require nativephp/mobile
 ```
+
+## Install the UI components
+
+The native UI elements (`<native:text>`, `<native:button>`, `<native:list>`, the text inputs and the rest of the
+[EDGE components](../edge-components/introduction)) ship in a separate plugin, `nativephp/mobile-ui`. Install it
+alongside the core package:
+
+```shell
+composer require nativephp/mobile-ui
+```
+
+Like every [plugin](../plugins/using-plugins), it has to be registered before its native code is compiled into your
+app. Publish the `NativeServiceProvider` and register the plugin:
+
+```shell
+php artisan vendor:publish --tag=nativephp-plugins-provider
+php artisan native:plugin:register nativephp/mobile-ui
+```
+
+This adds `\Native\Mobile\UI\NativeUIServiceProvider::class` to the `plugins()` array in
+`app/Providers/NativeServiceProvider.php`. Check it's there with `php artisan native:plugin:list`.
+
+<aside>
+
+#### Skipping this step breaks your screens
+
+Without `nativephp/mobile-ui` installed and registered, a tag like `<native:button>` or `<native:list-item>` fails
+with `Unknown native element type: button`. Layout and text tags like `<native:column>` and `<native:text>` still
+compile, because their PHP classes live in core, but their native renderers ship in the plugin, so on the device they
+draw nothing at all. If a screen comes up blank, check the plugin is registered.
+
+The [starter kit](quick-start#new-laravel-app) already includes and registers `nativephp/mobile-ui`.
+
+</aside>
 
 ### We love Laravel
 

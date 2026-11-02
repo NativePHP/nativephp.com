@@ -1,4 +1,4 @@
-@props(['ads' => ['mobile', 'desktop', 'bifrost', 'devkit', 'ultra', 'vibes', 'masterclass']])
+@props(['ads' => ['mobile', 'desktop', 'bifrost', 'devkit', 'ultra', 'masterclass']])
 
 @php
     $adsJson = json_encode($ads);
@@ -276,54 +276,6 @@
             />
             <x-icons.star
                 class="absolute bottom-12 right-6 z-10 w-2.5 text-amber-100 animate-pulse "
-            />
-        </a>
-    @endif
-
-    {{-- The Vibes Ad --}}
-    @if (in_array('vibes', $ads))
-        <a
-            x-show="ad === 'vibes'"
-            x-cloak
-            href="{{ route('the-vibes') }}"
-            class="group relative z-0 grid place-items-center overflow-hidden rounded-2xl px-4 py-8 text-center text-pretty transition duration-200 hover:ring-1 hover:ring-violet-400"
-        >
-            {{-- Background image --}}
-            <img
-                src="{{ Vite::asset('resources/images/the-vibes/what-is-vibes.webp') }}"
-                alt=""
-                aria-hidden="true"
-                class="absolute inset-0 -z-10 size-full object-cover blur-[1px] contrast-75 brightness-65"
-                loading="lazy"
-            />
-
-            {{-- Title --}}
-            <div class="z-10 text-lg font-bold text-white drop-shadow">
-                The Vibes
-            </div>
-
-            {{-- Tagline --}}
-            <div class="z-10 mt-2 text-sm text-violet-100 drop-shadow">
-                The unofficial Laracon US
-                <strong class="text-white">Day 3</strong>
-            </div>
-
-            {{-- CTA --}}
-            <div class="z-10 mt-4 rounded-lg bg-white/20 px-4 py-1.5 text-sm font-medium text-white backdrop-blur-sm transition group-hover:bg-white/30">
-                Grab Your Spot
-            </div>
-
-            {{-- Scarcity Label --}}
-            <div class="z-10 mt-2 text-xs text-violet-100 drop-shadow">
-                Only 100 tickets!
-            </div>
-
-            {{-- Decorative stars --}}
-            <x-icons.star
-                class="absolute top-4 right-3 z-10 w-3 -rotate-7 text-violet-300 animate-ping "
-            />
-            <x-icons.star
-                class="absolute top-8 left-4 z-10 w-2 rotate-12 text-indigo-300 animate-spin "
             />
         </a>
     @endif

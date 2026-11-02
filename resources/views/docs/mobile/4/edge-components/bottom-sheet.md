@@ -130,7 +130,7 @@ Accepts any EDGE elements as children. The children are rendered inside the shee
     <native:button label="Preview" @press="$showPreview = true" />
 
     <native:bottom-sheet :visible="$showPreview" @dismiss="$showPreview = false" detents="0.4">
-        <native:image src="{{ $previewUrl }}" class="w-full h-full" :fit="2" />
+        <native:image src="{{ $previewUrl }}" class="w-full h-full" fit="cover" />
     </native:bottom-sheet>
 </native:column>
 ```
@@ -146,7 +146,7 @@ of sync with the actual sheet state after the user dismisses it by gesture.
 ## Element
 
 ```php
-use Nativephp\NativeUi\Elements\BottomSheet;
+use Native\Mobile\UI\Elements\BottomSheet;
 
 BottomSheet::make()
     ->visible($showSheet)

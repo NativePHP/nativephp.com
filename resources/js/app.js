@@ -15,7 +15,7 @@ import Atropos from 'atropos'
 import '@docsearch/css'
 import 'atropos/css'
 
-import.meta.glob(['../images/**', '../svg/**'])
+import.meta.glob(['../images/**', '../svg/**'], { eager: true })
 import {
     animate,
     hover,
@@ -170,9 +170,8 @@ const docsPathMatch = window.location.pathname.match(
 const docsearchOptions = {
     appId: 'ZNII9QZ8WI',
     apiKey: '9be495a1aaf367b47c873d30a8e7ccf5',
-    indexName: 'nativephp',
+    indices: ['nativephp'],
     insights: true,
-    debug: false,
     ...(docsPathMatch && {
         transformItems(items) {
             const prefix = `/docs/${docsPathMatch[1]}/${docsPathMatch[2]}/`
@@ -190,6 +189,9 @@ const docsearchOptions = {
 docsearch({
     ...docsearchOptions,
     container: '#docsearch-desktop',
+    // The site menu is a popover, so it renders above the search modal. Tell it
+    // to close when a keyboard shortcut opens search while the menu is open.
+    onOpen: () => window.dispatchEvent(new CustomEvent('docsearch:open')),
 })
 
 // Mirror the desktop DocSearch button into the mobile container so that

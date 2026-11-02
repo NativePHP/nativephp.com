@@ -3,6 +3,7 @@
 namespace App\Jobs;
 
 use App\Enums\PayoutStatus;
+use App\Enums\PriceTier;
 use App\Enums\Subscription;
 use App\Models\Cart;
 use App\Models\CartItem;
@@ -189,6 +190,13 @@ class HandleInvoicePaidJob implements ShouldQueue
             return;
         }
 
+        // A product bought on its own, outside the cart (e.g. the Masterclass from /course)
+        if (! empty($metadata['product_id'])) {
+            $this->processProductPurchase($metadata['product_id']);
+
+            return;
+        }
+
         // Legacy: Only process if this is a plugin purchase (has plugin metadata)
         if (empty($metadata['plugin_ids']) && empty($metadata['bundle_ids'])) {
             return;
@@ -226,6 +234,7 @@ class HandleInvoicePaidJob implements ShouldQueue
     {
         $cart = Cart::with([
             'items.plugin.developerAccount',
+            'items.pluginPrice',
             'items.pluginBundle.plugins.developerAccount',
             'items.product',
         ])->find($cartId);
@@ -299,6 +308,50 @@ class HandleInvoicePaidJob implements ShouldQueue
         ]);
     }
 
+    private function processProductPurchase(string $productId): void
+    {
+        $product = Product::find($productId);
+
+        if (! $product) {
+            Log::error('Product not found for invoice', [
+                'invoice_id' => $this->invoice->id,
+                'product_id' => $productId,
+            ]);
+
+            return;
+        }
+
+        $user = $this->billable();
+
+        // They have paid for it here, so make sure their cart cannot charge them for it again
+        CartItem::query()
+            ->where('product_id', $product->id)
+            ->whereHas('cart', fn ($query) => $query->where('user_id', $user->id)->whereNull('completed_at'))
+            ->delete();
+
+        // Idempotency: a user can only hold one license per product
+        if ($product->isOwnedBy($user)) {
+            Log::info('Product already owned, skipping', [
+                'invoice_id' => $this->invoice->id,
+                'product_id' => $product->id,
+                'user_id' => $user->id,
+            ]);
+
+            return;
+        }
+
+        $this->createProductLicense($user, $product, $this->invoice->total);
+
+        // Thank the buyer for their purchase
+        $user->notify(new PurchaseReceipt);
+
+        Log::info('Product purchase completed', [
+            'invoice_id' => $this->invoice->id,
+            'product_id' => $product->id,
+            'user_id' => $user->id,
+        ]);
+    }
+
     /**
      * Resolve which cart items were actually paid for in this invoice.
      *
@@ -350,7 +403,51 @@ class HandleInvoicePaidJob implements ShouldQueue
             return;
         }
 
-        $this->createPluginLicense($user, $plugin, $item->price_at_addition);
+        $this->createPluginLicense($user, $plugin, $this->amountPaidFor($item), $item->pluginPrice?->tier);
+    }
+
+    /**
+     * What the buyer paid for a plugin or bundle once any promotion code or coupon has come off.
+     * Developers are paid their share of this rather than of the listed price, so it has to match the charge.
+     *
+     * Stripe reports the discount against each invoice line, which checkout names after the cart
+     * item. If the item's line can't be found, the invoice's discount is shared out in proportion
+     * to the listed price instead, rounded down so the payouts for one invoice can never add up
+     * to more than was charged.
+     */
+    private function amountPaidFor(CartItem $item): int
+    {
+        $listedAmount = $item->getItemPrice();
+
+        $invoiceDiscount = (int) collect($this->invoice->total_discount_amounts ?? [])->sum('amount');
+
+        if ($invoiceDiscount <= 0) {
+            return $listedAmount;
+        }
+
+        $line = collect($this->invoice->lines->data ?? [])->first(
+            fn (StripeObject $line): bool => ($line->description ?? null) === $item->getItemName()
+                && ($line->amount ?? null) === $listedAmount
+        );
+
+        if ($line) {
+            $lineDiscount = (int) collect($line->discount_amounts ?? [])->sum('amount');
+
+            return max(0, $listedAmount - $lineDiscount);
+        }
+
+        $subtotal = (int) ($this->invoice->subtotal ?? 0);
+
+        if ($subtotal <= 0) {
+            return $listedAmount;
+        }
+
+        Log::warning('Invoice line not found for discounted cart item; sharing the discount proportionally', [
+            'invoice_id' => $this->invoice->id,
+            'cart_item_id' => $item->id,
+        ]);
+
+        return intdiv($listedAmount * max(0, $subtotal - $invoiceDiscount), $subtotal);
     }
 
     private function processCartBundleItem(User $user, CartItem $item): void
@@ -366,8 +463,8 @@ class HandleInvoicePaidJob implements ShouldQueue
         // Load plugins with developer accounts if not already loaded
         $bundle->loadMissing('plugins.developerAccount');
 
-        // Calculate proportional allocation based on price at time of addition
-        $allocations = $bundle->calculateProportionalAllocation($item->bundle_price_at_addition);
+        // Calculate proportional allocation based on what was paid for the bundle
+        $allocations = $bundle->calculateProportionalAllocation($this->amountPaidFor($item));
 
         foreach ($bundle->plugins as $plugin) {
             // Check if license already exists for this invoice + plugin + bundle
@@ -549,7 +646,7 @@ class HandleInvoicePaidJob implements ShouldQueue
         }
     }
 
-    private function createPluginLicense(User $user, Plugin $plugin, int $amount): PluginLicense
+    private function createPluginLicense(User $user, Plugin $plugin, int $amount, ?PriceTier $priceTier = null): PluginLicense
     {
         $license = PluginLicense::create([
             'user_id' => $user->id,
@@ -557,6 +654,7 @@ class HandleInvoicePaidJob implements ShouldQueue
             'stripe_invoice_id' => $this->invoice->id,
             'stripe_payment_intent_id' => $this->invoice->payment_intent,
             'price_paid' => $amount,
+            'price_tier' => $priceTier,
             'currency' => strtoupper($this->invoice->currency),
             'is_grandfathered' => false,
             'purchased_at' => now(),
@@ -603,6 +701,7 @@ class HandleInvoicePaidJob implements ShouldQueue
      * Payouts are 1:1 with paid sales. If the developer cannot yet receive payouts,
      * the payout is created as Held and promoted to Pending by the daily
      * payouts:process-eligible run once their Stripe Connect account is ready.
+     * Sales at the Ultra price carry no platform fee.
      */
     private function createPayoutForLicense(PluginLicense $license, Plugin $plugin, int $amount): void
     {
@@ -622,7 +721,7 @@ class HandleInvoicePaidJob implements ShouldQueue
             return;
         }
 
-        $split = PluginPayout::calculateSplit($amount, $plugin->developerAccount->platformFeePercent());
+        $split = PluginPayout::calculateSplit($amount, $plugin->developerAccount->platformFeePercentFor($license));
 
         PluginPayout::create([
             'plugin_license_id' => $license->id,

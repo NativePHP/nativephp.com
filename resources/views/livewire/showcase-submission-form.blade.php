@@ -41,6 +41,9 @@
     {{-- Screenshots Field --}}
     <flux:field>
         <flux:label>Screenshots (up to 5)</flux:label>
+        @if ($hasMobile && $hasDesktop)
+            <flux:description>Shown on every platform. Add Mobile or Desktop screenshots below to override these for a specific platform.</flux:description>
+        @endif
         @if (count($existingScreenshots) > 0)
             <div class="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-5">
                 @foreach ($existingScreenshots as $index => $screenshot)
@@ -111,6 +114,53 @@
                         <flux:error name="linuxDownloadUrl" />
                     </flux:field>
                 </div>
+            @endif
+
+            {{-- Platform-specific Screenshots (shown when both platforms are selected) --}}
+            @if ($hasMobile && $hasDesktop)
+                <flux:field>
+                    <flux:label>Mobile Screenshots (optional, up to 5)</flux:label>
+                    @if (count($existingMobileScreenshots) > 0)
+                        <div class="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-5">
+                            @foreach ($existingMobileScreenshots as $index => $screenshot)
+                                <div wire:key="mobile-screenshot-{{ $index }}" class="group relative">
+                                    <img src="{{ Storage::disk('public')->url($screenshot) }}" alt="Mobile screenshot {{ $index + 1 }}" class="h-32 w-full rounded-lg object-cover">
+                                    <button type="button" wire:click="removeExistingMobileScreenshot({{ $index }})" class="absolute right-1 top-1 rounded-full bg-red-600 p-1 text-white opacity-0 transition-opacity group-hover:opacity-100">
+                                        <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                                        </svg>
+                                    </button>
+                                </div>
+                            @endforeach
+                        </div>
+                    @endif
+                    @if (count($existingMobileScreenshots) < 5)
+                        <flux:input type="file" wire:model="mobileScreenshots" accept="image/*" multiple />
+                    @endif
+                    @error('mobileScreenshots.*') <flux:text class="text-sm text-red-600 dark:text-red-400">{{ $message }}</flux:text> @enderror
+                </flux:field>
+
+                <flux:field>
+                    <flux:label>Desktop Screenshots (optional, up to 5)</flux:label>
+                    @if (count($existingDesktopScreenshots) > 0)
+                        <div class="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-5">
+                            @foreach ($existingDesktopScreenshots as $index => $screenshot)
+                                <div wire:key="desktop-screenshot-{{ $index }}" class="group relative">
+                                    <img src="{{ Storage::disk('public')->url($screenshot) }}" alt="Desktop screenshot {{ $index + 1 }}" class="h-32 w-full rounded-lg object-cover">
+                                    <button type="button" wire:click="removeExistingDesktopScreenshot({{ $index }})" class="absolute right-1 top-1 rounded-full bg-red-600 p-1 text-white opacity-0 transition-opacity group-hover:opacity-100">
+                                        <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                                        </svg>
+                                    </button>
+                                </div>
+                            @endforeach
+                        </div>
+                    @endif
+                    @if (count($existingDesktopScreenshots) < 5)
+                        <flux:input type="file" wire:model="desktopScreenshots" accept="image/*" multiple />
+                    @endif
+                    @error('desktopScreenshots.*') <flux:text class="text-sm text-red-600 dark:text-red-400">{{ $message }}</flux:text> @enderror
+                </flux:field>
             @endif
         </div>
 

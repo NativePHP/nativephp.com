@@ -104,7 +104,7 @@ event.
 ## Element
 
 ```php
-use Nativephp\NativeUi\Elements\Toggle;
+use Native\Mobile\UI\Elements\Toggle;
 
 Toggle::make()
     ->value($darkMode)

@@ -30,7 +30,8 @@ In a real app you would typically loop a collection property on your component (
 ## Props
 
 - `columns` - Number of equal-width tracks the cells flow across. When `horizontal` is set, this becomes the number
-  of fixed rows instead (optional, int, default: `2`, minimum `1`)
+  of fixed rows instead (optional, int, default: `2`, minimum `1`). The `grid-cols-N` class sets the same value; if
+  both are given, the attribute wins
 - `gap` - Spacing in dp applied to **both** axes — between rows and between columns. Match the surrounding column's
   `gap-N` if you want flush alignment with neighbouring content (optional, float, default: `0`)
 - `horizontal` - Flip the scroll orientation. Rows become the cross axis, `columns` is the number of fixed-height
@@ -60,7 +61,7 @@ it be the screen's scroll container) to keep lazy composition.
 <native:lazy-grid :columns="3" :gap="2" class="w-full">
     @foreach (range(1, 9) as $i)
         <native:column :height="120">
-            <native:image src="https://picsum.photos/seed/grid{{ $i }}/300" class="w-full h-full" :fit="2" />
+            <native:image src="https://picsum.photos/seed/grid{{ $i }}/300" class="w-full h-full" fit="cover" />
         </native:column>
     @endforeach
 </native:lazy-grid>
@@ -69,6 +70,28 @@ it be the screen's scroll container) to keep lazy composition.
 
 Swap `range(1, 9)` for your own `$photos` collection and bind `src` from each item (e.g. `$photo->url`).
 
+### Responsive columns
+
+<x-docs.version-badge since="4.5" />
+
+Set the column count with `grid-cols-N` and add a [breakpoint](layout#responsive-breakpoints) prefix to change it
+as the window widens. The grid re-tracks live when an iPad rotates or the app is resized in Split View.
+
+@verbatim
+```blade static
+<native:lazy-grid :gap="12" class="w-full grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+    @foreach($projects as $project)
+        <native:column class="p-4 gap-2 rounded-xl bg-theme-surface">
+            <native:text class="font-semibold">{{ $project->name }}</native:text>
+        </native:column>
+    @endforeach
+</native:lazy-grid>
+```
+@endverbatim
+
+Leave out the `columns` attribute when you use the classes. An explicit `:columns` overrides `grid-cols-*` at every
+width.
+
 ### Horizontal category shelves
 
 @verbatim
@@ -76,7 +99,7 @@ Swap `range(1, 9)` for your own `$photos` collection and bind `src` from each it
 <native:lazy-grid :columns="2" :gap="12" horizontal>
     @foreach($products as $product)
         <native:column :width="160" class="p-3 gap-2 rounded-lg bg-theme-surface">
-            <native:image src="{{ $product->image }}" :width="136" :height="100" class="rounded-lg" :fit="2" />
+            <native:image src="{{ $product->image }}" :width="136" :height="100" class="rounded-lg" fit="cover" />
             <native:text class="text-sm font-medium">{{ $product->name }}</native:text>
         </native:column>
     @endforeach
