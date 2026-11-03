@@ -39,6 +39,10 @@ screen in your app and drag the card.
 - `content-ratio` <x-docs.version-badge since="4.7" /> <x-docs.version-badge package="mobile-ui" since="0.9" /> - The content's width over height, for `bounded` (optional, float).
   The content is taken to be that shape fitted inside the area, which is where an image with `fit="contain"` draws.
   Leave it out when the content fills the area.
+- `snap-x` / `snap-y` <x-docs.version-badge since="4.7" /> <x-docs.version-badge package="mobile-ui" since="0.9" /> - The points a bound pan settles on when the finger lifts
+  (optional), as an array of numbers or a comma-separated string. Give at least two. See
+  [Swipe to reveal](#swipe-to-reveal).
+- `swipe-fingers` - How many fingers a `@swipe` needs (optional, integer, default `1`).
 
 <aside>
 
@@ -47,6 +51,29 @@ through PHP during the gesture. See [Gestures & Animation](../digging-deeper/ges
 interpolation formulas.
 
 </aside>
+
+## Events
+
+- `@dragEnd` <x-docs.version-badge since="4.5" /> <x-docs.version-badge package="mobile-ui" since="0.5" /> - Component method to call when the finger lifts after a drag.
+  It gets the final translation on each axis as two floats, `x` then `y`. A bound axis reports its shared value,
+  which with snap points is the point it settled on. An unbound axis reports how far the finger moved.
+- `@pinchEnd` - Component method to call when the fingers lift after a pinch, with the final scale as a float.
+- `@swipe` - Component method to call on a quick swipe, with its direction as a string: `left`, `right`, `up` or
+  `down`.
+
+## Scrolling and swipe back
+
+<x-docs.version-badge package="mobile-ui" changed="0.9" />
+
+A gesture area shares its touches with the scroll view around it and with the system's back gesture:
+
+- A pan bound on one axis only takes drags along that axis, so a list of rows that each pan sideways still scrolls
+  up and down. On iOS, before mobile-ui 0.9, a one-axis pan took every touch from the moment the finger went down.
+- On iOS 26, which lets you swipe back from anywhere on a screen, a sideways drag that starts on a `pan-x` area or a
+  `@swipe` area moves the area and leaves the screen where it is. A swipe in from the left edge of the screen still
+  goes back.
+- A swipe across a pressable inside the area, or one around it, doesn't press it. On Android, before mobile-ui 0.9,
+  it pressed it as well.
 
 ## Zoomable images
 
@@ -104,5 +131,85 @@ public function showImage(): void
 Without `content-ratio` the bounds are the area itself. That's right for content that fills the area, but an image
 drawn smaller than the area (with bars above and below, or at the sides) could then be pulled partly off screen.
 Pass its width over height so the bounds match the picture.
+
+</aside>
+
+## Swipe to reveal
+
+<x-docs.version-badge since="4.7" /> <x-docs.version-badge package="mobile-ui" since="0.9" />
+
+With `snap-x` (or `snap-y`), a bound pan settles on set points, the way a row in a mail app slides aside to show its
+actions:
+
+- Between the lowest and highest point, the content follows the finger. Past them it moves a third as far as the
+  finger does.
+- When the finger lifts, the content springs to the nearest point. A flick counts by where it was heading, so a quick
+  flick opens a row the finger only moved part of the way.
+- `@dragEnd` gets the point it settled on.
+
+Here a card slides left to show a Reply button beside it. The button is there the whole time, shrunk to nothing, and
+grows in as the card moves:
+
+@verbatim
+```blade static
+@php $shown = $offset->interpolate([-48, 0], [1, 0]); @endphp
+
+<native:gesture-area :pan-x="$offset" :snap-x="[-48, 0]" @dragEnd="settled" class="w-full">
+    <native:row :translate-x="$offset" class="w-full gap-2 items-center">
+        <native:column class="flex-shrink px-4 py-3 rounded-2xl bg-theme-surface">
+            <native:text>Swipe me left</native:text>
+        </native:column>
+
+        @if ($open)
+            <native:pressable @press="reply" :scale="$shown" :opacity="$shown" a11y-label="Reply">
+                <native:icon ios="arrowshape.turn.up.left" android="reply" :size="20" class="text-theme-primary" />
+            </native:pressable>
+        @else
+            <native:stack :scale="$shown" :opacity="$shown">
+                <native:icon ios="arrowshape.turn.up.left" android="reply" :size="20" class="text-theme-primary" />
+            </native:stack>
+        @endif
+    </native:row>
+</native:gesture-area>
+```
+@endverbatim
+
+The shared value lives on the component, so the card stays where it settled when the screen renders again. A fresh
+one each render would put it back at rest every time.
+
+PHP doesn't hear about the drag frame by frame, so `settled()` records where the card came to rest with `setValue()`.
+Setting a snapping pan's value from PHP springs the content there, so closing the card is one more `setValue()`:
+
+```php
+use Native\Mobile\Edge\SharedValue;
+
+public ?SharedValue $offset = null;
+
+public bool $open = false;
+
+public function mount(): void
+{
+    $this->offset = SharedValue::make();
+}
+
+public function settled(float $x, float $y): void
+{
+    $this->offset->setValue($x);
+    $this->open = $x < 0;
+}
+
+public function reply(): void
+{
+    $this->offset->setValue(0);
+    $this->open = false;
+
+    // ...
+}
+```
+
+<aside>
+
+A button shrunk or faded to nothing still takes taps where it sits. That's why the example only makes Reply pressable
+once the card has settled open. Otherwise a tap beside a closed card would reply.
 
 </aside>
