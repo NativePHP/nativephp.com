@@ -44,6 +44,12 @@ the pager where that window sits. See [Windowed feeds](#windowed-feeds).
   this render has not shipped. See [Placeholders](#placeholders).
 - `horizontal` - Page sideways instead of vertically (optional, boolean, default: `false`).
 - `on-page-change` - Component method called with `(int $index)` as the current page changes.
+- `report-on-settle` - Call `on-page-change` once the swipe comes to rest instead of mid-swipe (optional, boolean,
+  default: `false`) <x-docs.version-badge package="mobile-ui" since="0.9" />. See [Pager position](#pager-position).
+- `tabs` - One tab label per page, drawn natively above the pages (optional, array)
+  <x-docs.version-badge package="mobile-ui" since="0.9" />. See [Tabs](#tabs).
+- `tabs-scrollable` - Size the tabs to their labels in a row that scrolls (optional, boolean, default: `false`)
+- `on-tab-reselect` - Component method called with `(int $index)` when the tab already showing is tapped
 - `a11y-label` - Accessibility label (optional)
 - `a11y-hint` - Accessibility hint (optional) [Android]
 
@@ -85,6 +91,106 @@ public function onPagerPage(int $index): void
     $this->setPagerPage($index);
 }
 ```
+
+That suits a media feed, where the next video should start loading early. On a screen whose render is large, such as
+paged lists, the frame that the change causes can land during the swipe animation and make it stutter. Add
+`report-on-settle` <x-docs.version-badge package="mobile-ui" since="0.9" /> to call `on-page-change` only once the
+swipe has come to rest. Paged tabs usually want it, because the [tabs](#tabs) already follow the swipe without PHP.
+
+A page you jump to with `page` is never reported back, because PHP already knows it.
+
+## Tabs
+
+<x-docs.version-badge package="mobile-ui" since="0.9" />
+
+Pass `tabs` to draw a row of tabs above the pages, one label per page. This is the pattern for paged tabs such as
+Following, Latest and Trending:
+
+@verbatim
+```blade
+<native:pager
+    horizontal
+    report-on-settle
+    class="w-full flex-1"
+    :tabs="['Following', 'Latest', 'Trending']"
+    :page="$page"
+    on-page-change="showPage"
+    on-tab-reselect="scrollToTop"
+>
+    @foreach ($feeds as $feed)
+        @include('native.feed-page', ['feed' => $feed])
+    @endforeach
+</native:pager>
+```
+@endverbatim
+
+The row is native and reads the pager's own scroll position, so none of this waits for PHP:
+
+- The indicator under the labels follows the swipe frame by frame.
+- The highlighted label switches as the swipe passes halfway to the next page.
+- Tapping a tab scrolls the pager to that page. `on-page-change` is called when it gets there, the same as for a swipe.
+- Tapping the tab that is already showing calls `on-tab-reselect` with its index instead. Use it to take that page
+  back to its top.
+
+```php
+public function showPage(int $index): void
+{
+    $this->page = $index;
+}
+
+public function scrollToTop(int $index): void
+{
+    // A new key on the page's list mounts it afresh, at the top.
+    $this->listKeys[$index]++;
+}
+```
+
+By default the tabs share the row equally, which suits two to four short labels. With more, add `tabs-scrollable`:
+each tab is as wide as its label and the row scrolls sideways, keeping the current tab in view as you swipe.
+
+A tab can also be an array with an `a11y-label`, for when VoiceOver and TalkBack should say more than the label shows:
+
+@verbatim
+```blade
+:tabs="[['label' => 'Mentions', 'a11y-label' => 'Mentions, 3 new'], 'Follows']"
+```
+@endverbatim
+
+The tabs are announced as tabs, with the selected one marked.
+
+### Styling tabs
+
+The row takes its colors from the [theme](../digging-deeper/theming): `on-surface` for the active label,
+`on-surface-variant` for the others, `primary` for the indicator and `outline-variant` for the hairline under the row.
+Its background is the pager's own `bg-*`. These attributes change it for one pager:
+
+- `tab-active-color` - Active label color
+- `tab-color` - Other labels' color
+- `tab-indicator-color` - Indicator color
+- `tab-divider-color` - Hairline color. `transparent` hides it.
+- `tab-font` - Label font: a bundled font's file name or a `fonts` alias (default: the theme's font)
+- `tab-font-size` - Label size in points (default: the theme's `font-md`)
+- `tab-indicator-height` - Indicator thickness in points (default: `3`)
+- `tab-padding-x` - Space either side of each label (default: `12`)
+- `tab-padding-top` - Space above the labels (default: `14`)
+- `tab-padding-bottom` - Space between the labels and the indicator (default: `11`)
+- `tab-edge-padding` - Space before the first tab and after the last in a scrollable row (default: `4`)
+
+Colors take any [color value](../digging-deeper/theming#color-values), and `theme-<token>` for any token in your
+theme, custom ones included. A theme token also brings its dark mode shade:
+
+@verbatim
+```blade
+<native:pager
+    horizontal
+    :tabs="$labels"
+    tab-active-color="theme-ink"
+    tab-color="theme-ink-muted"
+    tab-divider-color="theme-hairline"
+    tab-font="semibold"
+>
+```
+@endverbatim
 
 ## Placeholders
 
@@ -242,6 +348,13 @@ Pager::make($page1, $page2, $page3)
     ->hasMore()
     ->placeholders($posters)
     ->onPageChange('onPagerPage');
+
+Pager::make(...$pages)
+    ->horizontal()
+    ->reportOnSettle()
+    ->tabs(['Following', 'Latest', 'Trending'])
+    ->onPageChange('showPage')
+    ->onTabReselect('scrollToTop');
 ```
 
 - `make(Element ...$children)` - Create a pager whose children are the pages
@@ -251,6 +364,16 @@ Pager::make($page1, $page2, $page3)
 - `hasMore(bool $value = true)` - Append the trailing loading page
 - `placeholders(array $urls)` - One image URL per loaded page index
 - `onPageChange(string $method)` - Page-change handler
+- `reportOnSettle(bool $value = true)` - Report the page once the swipe comes to rest
+- `tabs(array $tabs)` - One tab per page, each a label or `['label' => ..., 'a11y-label' => ...]`
+- `tabsScrollable(bool $value = true)` - Size the tabs to their labels in a row that scrolls
+- `onTabReselect(string $method)` - Handler for a tap on the tab already showing
+- `tabActiveColor(string $color)`, `tabColor(string $color)`, `tabIndicatorColor(string $color)`,
+  `tabDividerColor(string $color)` - Tab colors
+- `tabFont(string $font)`, `tabFontSize(float $size)` - Tab label font
+- `tabIndicatorHeight(float $height)` - Indicator thickness
+- `tabPadding(?float $x = null, ?float $top = null, ?float $bottom = null)` - Space around the labels
+- `tabEdgePadding(float $padding)` - Space at the ends of a scrollable row
 - `a11yLabel(string $value)` - Accessibility label
 - `a11yHint(string $value)` - Accessibility hint
 
