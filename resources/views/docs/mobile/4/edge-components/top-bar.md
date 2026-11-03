@@ -103,7 +103,7 @@ On iOS, if more than 5 actions are provided, they collapse into an overflow menu
 - `label` - Text label. Used for accessibility and displayed in overflow menus (optional but recommended)
 - `url` - A URL to navigate to when tapped (optional)
 - `destructive` - Render in the destructive (red) tint (optional, boolean)
-- `image` - An image URL drawn as a small circle over the icon, e.g. the signed-in user's avatar (optional, string). See [Action images](#action-images)
+- `image` - An image URL drawn as a small circle over the icon, e.g. the signed-in user's avatar (optional, string). See [Action images](#action-images) <x-docs.version-badge since="4.7" />
 
 <aside>
 
@@ -113,6 +113,8 @@ method on your screen instead of navigating, use `@tap="methodName"`.
 </aside>
 
 ### Action images
+
+<x-docs.version-badge since="4.7" />
 
 Set `image` to show a picture, such as the signed-in user's avatar, in place of an action's icon. It works on plain
 actions and on actions that open a menu.
