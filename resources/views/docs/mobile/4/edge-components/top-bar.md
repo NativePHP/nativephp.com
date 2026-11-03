@@ -138,6 +138,9 @@ shorthand) override it per platform. Each override accepts a generated enum case
 On iOS the SF Symbol wins and no Material variant is emitted; on Android the Material glyph (plus any outlined
 variant) wins; when the platform can't be determined the shared `icon` string is used verbatim.
 
+[Custom icons](icon#custom-icons) <x-docs.version-badge since="4.7" /> work here too: put an SVG in `resources/icons`
+and pass `custom:<name>` as `icon` or as either override.
+
 ## Custom bars
 
 Add the boolean `custom` attribute to keep a bar in the content tree as an ordinary drawn element — the escape hatch
