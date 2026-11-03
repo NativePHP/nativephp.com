@@ -111,6 +111,10 @@ Route::redirect('docs/mobile/4/the-basics/navigation', '/docs/mobile/4/the-basic
 Route::redirect('docs/mobile/4/edge-components/screen', '/docs/mobile/4/edge-components/layout', 301);
 Route::redirect('docs/mobile/4/edge-components/card', '/docs/mobile/4/edge-components/layout', 301);
 
+// The mobile docs' contributing guide moved to the site-wide contributing page.
+Route::redirect('docs/mobile/4/getting-started/contributing', '/contributing', 301);
+Route::redirect('docs/mobile/getting-started/contributing', '/contributing', 301);
+
 // Webhook routes (must be outside web middleware for CSRF bypass)
 Route::post('opencollective/contribution', [OpenCollectiveWebhookController::class, 'handle'])->name('opencollective.webhook');
 
