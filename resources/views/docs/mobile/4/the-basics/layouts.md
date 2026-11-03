@@ -143,7 +143,10 @@ in a screen's Blade.
 - `press(string $method)` — screen method to call when tapped
 - `url(string)` — navigate to a URL when tapped; `event(string)` — dispatch a native event (advanced)
 - `destructive(bool = true)` — render in the destructive tint
-- `items(array $actions)` — nest `NavAction`s to render a pull-down menu; `NavAction::divider()` adds a separator
+- `items(array $actions)` — nest `NavAction`s to render a pull-down menu; `NavAction::divider()` adds a separator,
+  `NavAction::section($title, $items)` groups items under a heading, `NavAction::row($items)` adds a compact row of
+  buttons, and an item with its own `items()` opens a submenu. See [Sections, rows and submenus](../edge-components/menus#sections-rows-and-submenus)
+- `subtitle(string)` and `checked(bool = true)` add a second line and a checkmark to an item inside a menu
 
 #### Custom title view / logo
 
