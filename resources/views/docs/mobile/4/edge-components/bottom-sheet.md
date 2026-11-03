@@ -38,7 +38,7 @@ Per Material 3, the container color resolves from `theme.surface`. For a custom 
     - `medium`
     - `large`
     - `full` (100% of screen)
-    - `fit` (exactly as tall as the sheet's content, measured on the device and capped at `large`)
+    - `fit` <x-docs.version-badge package="mobile-ui" since="0.9" /> (exactly as tall as the sheet's content, measured on the device and capped at `large`)
     - A numeric fraction `0.0`–`1.0` for a custom height (e.g. `"0.4"` for 40%)
 - `a11y-label` - Accessibility label (optional)
 - `a11y-hint` - Accessibility hint (optional)
@@ -138,6 +138,8 @@ Accepts any EDGE elements as children. The children are rendered inside the shee
 @endverbatim
 
 ### Fit to content
+
+<x-docs.version-badge package="mobile-ui" since="0.9" />
 
 Your PHP code doesn't know the screen's height, so a fraction can't size a sheet to its content. Use `fit` instead:
 the sheet is measured on the device and opens exactly as tall as its content, capped at `large`.
