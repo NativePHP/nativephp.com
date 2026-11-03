@@ -113,7 +113,7 @@
                         @php
                             $isPassing = match ($check['key']) {
                                 'webhook_configured' => $plugin->webhook_installed,
-                                'demo_video' => $plugin->hasDemoVideo(),
+                                'demo_video' => $plugin->meetsDemoVideoRequirement(),
                                 default => $plugin->review_checks[$check['key']] ?? false,
                             };
                         @endphp

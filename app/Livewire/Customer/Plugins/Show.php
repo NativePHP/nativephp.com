@@ -196,7 +196,7 @@ class Show extends Component
             return;
         }
 
-        if (! $this->plugin->hasDemoVideo()) {
+        if (! $this->plugin->meetsDemoVideoRequirement()) {
             Flux::toast(variant: 'danger', text: 'Please add a demo video showing your plugin working and confirm it before submitting for review.');
 
             return;
