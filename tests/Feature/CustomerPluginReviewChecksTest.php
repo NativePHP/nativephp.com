@@ -141,7 +141,7 @@ class CustomerPluginReviewChecksTest extends TestCase
         Notification::assertSentOnDemand(
             PluginPendingReview::class,
             function (PluginPendingReview $notification, array $channels, object $notifiable) use ($plugin) {
-                return $notifiable->routes['mail'] === 'support@nativephp.com'
+                return $notifiable->routes['mail'] === ['support@nativephp.com', 'marketplace@nativephp.com']
                     && $notification->plugin->id === $plugin->id;
             }
         );

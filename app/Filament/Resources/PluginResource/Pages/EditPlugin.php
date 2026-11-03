@@ -49,18 +49,33 @@ class EditPlugin extends EditRecord
     {
         return [
             Actions\Action::make('approve')
+                ->authorize('approve')
                 ->icon('heroicon-o-check')
                 ->color('success')
                 ->visible(fn () => $this->record->isPending())
-                ->disabled(fn () => ! $this->record->passesRequiredReviewChecks())
-                ->action(fn () => $this->record->approve(auth()->id()))
+                ->action(function (): void {
+                    if (! $this->record->passesRequiredReviewChecks()) {
+                        Notification::make()
+                            ->title('Required review checks are failing')
+                            ->body(implode(', ', $this->record->getFailingRequiredChecks()))
+                            ->danger()
+                            ->send();
+
+                        return;
+                    }
+
+                    $this->record->approve(auth()->id());
+                })
                 ->requiresConfirmation()
+                ->modalSubmitAction(fn (Actions\Action $action): Actions\Action|false => $this->record->passesRequiredReviewChecks() ? $action : false)
+                ->modalCancelActionLabel(fn (): string => $this->record->passesRequiredReviewChecks() ? 'Cancel' : 'Close')
                 ->modalHeading('Approve Plugin')
                 ->modalDescription(fn () => ! $this->record->passesRequiredReviewChecks()
                     ? "Cannot approve '{$this->record->name}' — required checks are failing: ".implode(', ', $this->record->getFailingRequiredChecks())
                     : "Are you sure you want to approve '{$this->record->name}'?"),
 
             Actions\Action::make('reject')
+                ->authorize('reject')
                 ->icon('heroicon-o-x-mark')
                 ->color('danger')
                 ->visible(fn () => $this->record->isPending() || $this->record->isApproved())
@@ -76,6 +91,7 @@ class EditPlugin extends EditRecord
                 ->modalDescription(fn () => "Are you sure you want to reject '{$this->record->name}'?"),
 
             Actions\Action::make('messageDeveloper')
+                ->authorize('messageDeveloper')
                 ->label('Message Developer')
                 ->icon('heroicon-o-chat-bubble-left-right')
                 ->color('info')
@@ -111,6 +127,7 @@ class EditPlugin extends EditRecord
 
             Actions\ActionGroup::make([
                 Actions\Action::make('convertToPaid')
+                    ->authorize('convertToPaid')
                     ->label('Convert to Paid')
                     ->icon('heroicon-o-currency-dollar')
                     ->color('success')
@@ -139,6 +156,7 @@ class EditPlugin extends EditRecord
                     ->modalSubmitActionLabel('Convert & Ingest'),
 
                 Actions\Action::make('syncToSatis')
+                    ->authorize('syncToSatis')
                     ->label(fn () => $this->record->isSatisSynced() ? 'Re-sync to Satis' : 'Sync to Satis')
                     ->icon('heroicon-o-arrow-path')
                     ->color('warning')
@@ -159,6 +177,7 @@ class EditPlugin extends EditRecord
                     }),
 
                 Actions\Action::make('grantToUser')
+                    ->authorize('grantToUser')
                     ->label('Grant to User')
                     ->icon('heroicon-o-gift')
                     ->color('success')
@@ -217,6 +236,7 @@ class EditPlugin extends EditRecord
                     ->modalSubmitActionLabel('Grant'),
 
                 Actions\Action::make('runReviewChecks')
+                    ->authorize('runReviewChecks')
                     ->label('Run Review Checks')
                     ->icon('heroicon-o-clipboard-document-check')
                     ->color('primary')
@@ -277,6 +297,7 @@ class EditPlugin extends EditRecord
                     }),
 
                 Actions\Action::make('resync')
+                    ->authorize('resync')
                     ->label('Re-sync from GitHub')
                     ->icon('heroicon-o-arrow-path')
                     ->color('primary')

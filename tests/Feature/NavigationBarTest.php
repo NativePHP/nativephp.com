@@ -24,6 +24,29 @@ class NavigationBarTest extends TestCase
         }
     }
 
+    #[Test]
+    public function a_sideways_bouncing_support_open_source_nudge_sits_just_before_the_ultra_link_on_desktop(): void
+    {
+        $dom = new DOMDocument;
+        libxml_use_internal_errors(true);
+        $dom->loadHTML('<?xml encoding="utf-8" ?>'.$this->get('/')->assertOk()->getContent());
+
+        $xpath = new DOMXPath($dom);
+
+        $ultraLink = $xpath->query("//nav[@data-site-nav]/div/div/a[@href='".route('pricing')."']")->item(0);
+        $this->assertNotNull($ultraLink, 'The Ultra link is missing from the nav bar.');
+
+        $nudge = $xpath->query('preceding-sibling::*[1]', $ultraLink)->item(0);
+        $this->assertNotNull($nudge, 'Nothing sits before the Ultra link.');
+        $this->assertSame('Support open source', trim($nudge->textContent));
+
+        $nudgeClasses = preg_split('/\s+/', $nudge->getAttribute('class'), flags: PREG_SPLIT_NO_EMPTY);
+
+        $this->assertContains('motion-safe:animate-bounce-x', $nudgeClasses);
+        $this->assertContains('hidden', $nudgeClasses);
+        $this->assertContains('lg:inline-flex', $nudgeClasses);
+    }
+
     /**
      * Ultra, Masterclass and Build used to be tinted, see-through pills that
      * lost their contrast whenever the sticky nav floated over dark content.

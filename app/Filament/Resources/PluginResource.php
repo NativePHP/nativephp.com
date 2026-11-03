@@ -28,6 +28,7 @@ use Filament\Tables;
 use Filament\Tables\Contracts\HasTable;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\HtmlString;
 use Throwable;
 
@@ -69,12 +70,14 @@ class PluginResource extends Resource
                             ->label('Description'),
 
                         Forms\Components\Select::make('type')
-                            ->options(PluginType::class),
+                            ->options(PluginType::class)
+                            ->disabled(fn (?Plugin $record): bool => static::cannotChangePricing($record)),
 
                         Forms\Components\Select::make('tier')
                             ->options(PluginTier::class)
                             ->placeholder('No tier')
-                            ->helperText('Set pricing tier for paid plugins'),
+                            ->helperText('Set pricing tier for paid plugins')
+                            ->disabled(fn (?Plugin $record): bool => static::cannotChangePricing($record)),
 
                         Forms\Components\Placeholder::make('name')
                             ->label('Composer Package Name')
@@ -226,6 +229,7 @@ class PluginResource extends Resource
                             ->label('Demo Video (required)')
                             ->content(fn (?Plugin $record) => match (true) {
                                 $record?->hasDemoVideo() => '✅ '.$record->demoVideo()->providerLabel().' — attested '.$record->demo_video_attested_at->diffForHumans(),
+                                $record?->requiresDemoVideo() === false => '✅ Not required — submitted before demo videos were required',
                                 $record?->demoVideo() !== null => '❌ Not attested by developer',
                                 default => '❌ Missing',
                             }),
@@ -262,6 +266,7 @@ class PluginResource extends Resource
                     ])
                     ->headerActions([
                         Action::make('emailReviewChecks')
+                            ->authorize('messageDeveloper')
                             ->label('Email Developer')
                             ->icon('heroicon-o-envelope')
                             ->color('warning')
@@ -340,7 +345,7 @@ class PluginResource extends Resource
                                         ? UserResource::getUrl('edit', ['record' => $record->user_id])
                                         : null)
                                     ->openUrlInNewTab()
-                                    ->visible(fn (?Plugin $record) => $record?->user_id !== null),
+                                    ->visible(fn (?Plugin $record) => $record?->user !== null && UserResource::can('update', $record->user)),
                             ),
 
                         Forms\Components\Placeholder::make('created_at')
@@ -502,6 +507,7 @@ class PluginResource extends Resource
             ->actions([
                 Actions\ActionGroup::make([
                     Action::make('resync')
+                        ->authorize('resync')
                         ->label('Re-sync from GitHub')
                         ->icon('heroicon-o-arrow-path')
                         ->color('primary')
@@ -520,6 +526,7 @@ class PluginResource extends Resource
                         }),
 
                     Action::make('grantToUser')
+                        ->authorize('grantToUser')
                         ->label('Grant to User')
                         ->icon('heroicon-o-gift')
                         ->color('success')
@@ -578,6 +585,7 @@ class PluginResource extends Resource
                         ->modalSubmitActionLabel('Grant'),
 
                     Action::make('runReviewChecks')
+                        ->authorize('runReviewChecks')
                         ->label('Run Review Checks')
                         ->icon('heroicon-o-clipboard-document-check')
                         ->color('primary')
@@ -601,7 +609,11 @@ class PluginResource extends Resource
                             $lines = collect([
                                 ['License file *', $checks['has_license_file']],
                                 ['Release version *', $checks['has_release_version'] ? $checks['release_version'] : false],
-                                ['Demo video *', $record->hasDemoVideo() ? $record->demoVideo()->providerLabel() : false],
+                                ['Demo video *', match (true) {
+                                    $record->hasDemoVideo() => $record->demoVideo()->providerLabel(),
+                                    ! $record->requiresDemoVideo() => 'not required',
+                                    default => false,
+                                }],
                                 ['iOS support', $checks['supports_ios']],
                                 ['Android support', $checks['supports_android']],
                                 ['JS support', $checks['supports_js']],
@@ -625,7 +637,7 @@ class PluginResource extends Resource
                                 'supports_ios', 'supports_android', 'supports_js',
                                 'requires_mobile_sdk',
                                 'has_ios_min_version', 'has_android_min_version',
-                            ])->filter()->count() + ($record->hasDemoVideo() ? 1 : 0);
+                            ])->filter()->count() + ($record->meetsDemoVideoRequirement() ? 1 : 0);
 
                             Notification::make()
                                 ->title("Review checks complete ({$passed}/9 passed)")
@@ -650,6 +662,15 @@ class PluginResource extends Resource
                     : 'created_at',
                 'desc',
             );
+    }
+
+    /**
+     * Type and tier decide what a plugin costs, so they follow the
+     * "Convert to paid" permission rather than plain update access.
+     */
+    protected static function cannotChangePricing(?Plugin $record): bool
+    {
+        return $record !== null && Gate::denies('convertToPaid', $record);
     }
 
     public static function getRelations(): array

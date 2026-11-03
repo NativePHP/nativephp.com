@@ -241,6 +241,8 @@
                                                     </p>
                                                     @if ($item->plugin->isOfficial() && auth()->user()?->hasUltraAccess())
                                                         <span class="text-xs text-green-600 dark:text-green-400">Included with Ultra</span>
+                                                    @elseif ($item->pluginPrice?->isUltraTier())
+                                                        <span class="text-xs text-green-600 dark:text-green-400">Ultra price</span>
                                                     @endif
                                                 </div>
                                             </div>

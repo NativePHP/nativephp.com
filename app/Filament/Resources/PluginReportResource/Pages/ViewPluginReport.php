@@ -20,6 +20,7 @@ final class ViewPluginReport extends ViewRecord
     {
         return [
             Actions\Action::make('resolve')
+                ->authorize('update')
                 ->label('Mark Resolved')
                 ->icon('heroicon-o-check-circle')
                 ->color('success')
@@ -44,6 +45,7 @@ final class ViewPluginReport extends ViewRecord
                 }),
 
             Actions\Action::make('dismiss')
+                ->authorize('update')
                 ->label('Dismiss')
                 ->icon('heroicon-o-x-circle')
                 ->color('gray')

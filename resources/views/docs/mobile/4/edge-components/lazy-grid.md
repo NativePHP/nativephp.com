@@ -61,7 +61,7 @@ it be the screen's scroll container) to keep lazy composition.
 <native:lazy-grid :columns="3" :gap="2" class="w-full">
     @foreach (range(1, 9) as $i)
         <native:column :height="120">
-            <native:image src="https://picsum.photos/seed/grid{{ $i }}/300" class="w-full h-full" :fit="2" />
+            <native:image src="https://picsum.photos/seed/grid{{ $i }}/300" class="w-full h-full" fit="cover" />
         </native:column>
     @endforeach
 </native:lazy-grid>
@@ -99,7 +99,7 @@ width.
 <native:lazy-grid :columns="2" :gap="12" horizontal>
     @foreach($products as $product)
         <native:column :width="160" class="p-3 gap-2 rounded-lg bg-theme-surface">
-            <native:image src="{{ $product->image }}" :width="136" :height="100" class="rounded-lg" :fit="2" />
+            <native:image src="{{ $product->image }}" :width="136" :height="100" class="rounded-lg" fit="cover" />
             <native:text class="text-sm font-medium">{{ $product->name }}</native:text>
         </native:column>
     @endforeach

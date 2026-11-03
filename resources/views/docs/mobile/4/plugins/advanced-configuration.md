@@ -307,6 +307,60 @@ configuration:
 }
 ```
 
+## iOS Scene Configurations
+
+<x-docs.version-badge since="4.7" />
+
+Some features need a scene beyond the app's main window, like showing different content on an external display or
+CarPlay. iOS only offers those scene roles when `Info.plist` declares them, so add the configuration under
+`ios.info_plist`:
+
+```json
+{
+    "ios": {
+        "info_plist": {
+            "UIApplicationSceneManifest": {
+                "UISceneConfigurations": {
+                    "UIWindowSceneSessionRoleExternalDisplayNonInteractive": [
+                        {
+                            "UISceneConfigurationName": "External Display",
+                            "UISceneDelegateClassName": "MySceneDelegate"
+                        }
+                    ]
+                }
+            }
+        }
+    }
+}
+```
+
+Then provide the scene delegate. The `@objc` name must match `UISceneDelegateClassName`:
+
+```swift
+@objc(MySceneDelegate)
+class MySceneDelegate: UIResponder, UIWindowSceneDelegate {
+    var window: UIWindow?
+
+    func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
+        guard let windowScene = scene as? UIWindowScene else { return }
+
+        window = UIWindow(windowScene: windowScene)
+        window?.rootViewController = UIViewController()
+        window?.isHidden = false
+    }
+}
+```
+
+Your configuration is merged alongside the app's main scene. iOS uses one configuration per role, so only one
+installed plugin should claim a given role.
+
+<aside>
+
+Apps whose iOS project was created before 4.7 need to run `php artisan native:install ios` before scene
+configurations take effect. Until then, the build warns that they're being ignored.
+
+</aside>
+
 ## Minimum Platform Versions
 
 Specify minimum platform versions your plugin requires:

@@ -196,8 +196,8 @@ php artisan native:package ios \
 php artisan native:release patch
 ```
 
-Build numbers (`NATIVEPHP_APP_VERSION_CODE`) are incremented automatically based on your `.env`, so you don't have to
-manage them by hand.
+Build numbers (`NATIVEPHP_APP_VERSION_CODE`) are incremented automatically by `native:package`, so you don't have to
+manage them by hand for App Store builds.
 
 ## Artifact Locations
 

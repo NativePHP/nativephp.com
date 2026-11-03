@@ -46,6 +46,13 @@ class PluginPriceFactory extends Factory
         ]);
     }
 
+    public function ultra(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'tier' => PriceTier::Ultra,
+        ]);
+    }
+
     public function inactive(): static
     {
         return $this->state(fn (array $attributes) => [

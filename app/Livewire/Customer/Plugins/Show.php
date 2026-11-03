@@ -196,7 +196,7 @@ class Show extends Component
             return;
         }
 
-        if (! $this->plugin->hasDemoVideo()) {
+        if (! $this->plugin->meetsDemoVideoRequirement()) {
             Flux::toast(variant: 'danger', text: 'Please add a demo video showing your plugin working and confirm it before submitting for review.');
 
             return;
@@ -221,7 +221,7 @@ class Show extends Component
         // Notify
         $user->notify(new PluginSubmitted($this->plugin));
 
-        Notification::route('mail', config('mail.support_address'))
+        Notification::route('mail', [config('mail.support_address'), config('mail.marketplace_address')])
             ->notify(new PluginPendingReview($this->plugin));
 
         Flux::toast(variant: 'success', text: 'Your plugin has been submitted for review!');

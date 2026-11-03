@@ -45,6 +45,34 @@ It doesn't even rely on the web view!
 
 </aside>
 
+## Installing the components
+
+Every element in this section comes from the `nativephp/mobile-ui` plugin. Core `nativephp/mobile` defines the
+rendering pipeline and a few PHP element classes, but the SwiftUI and Compose renderers for all of these elements,
+including `<native:text>` and `<native:column>`, ship in the plugin. Install and register it:
+
+```shell
+composer require nativephp/mobile-ui
+php artisan vendor:publish --tag=nativephp-plugins-provider
+php artisan native:plugin:register nativephp/mobile-ui
+```
+
+If the plugin isn't registered in `app/Providers/NativeServiceProvider.php`, plugin elements such as `button`,
+`list_item` or `outlined_text_input` throw `Unknown native element type` when the screen renders, and the core-backed
+ones (`text`, `column`, `row` and friends) render nothing on the device. The PHP classes live in the
+`Native\Mobile\UI\Elements` namespace. See [Installation](../getting-started/installation#install-the-ui-components).
+
+## Attribute names
+
+Most attributes are written in kebab-case (`leading-icon`, `on-refresh`, `max-length`). A few elements, notably
+[`<native:list-item>`](list#list-item), take camelCase attributes (`leadingIcon`, `trailingText`,
+`leadingCheckbox`). Spell attributes exactly as each component's page lists them: an unrecognised spelling is
+silently ignored rather than raising an error.
+
+Boolean attributes follow PHP truthiness. A bare attribute (`disabled`) or a bound value (`:disabled="$busy"`) works
+as you'd expect, but a literal string such as `disabled="false"` is a non-empty string and counts as `true`. Bind
+booleans with `:` whenever the value can be false.
+
 ## The `native:` prefix is optional
 
 `<native:column>` and `<column>` compile to exactly the same thing — the prefix is optional. We use it throughout

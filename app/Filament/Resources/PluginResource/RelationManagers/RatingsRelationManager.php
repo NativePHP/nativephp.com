@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Filament\Resources\PluginResource\RelationManagers;
 
+use App\Filament\Resources\Concerns\AuthorizesThroughOwnerRecord;
 use Filament\Actions;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
@@ -11,6 +12,8 @@ use Filament\Tables\Table;
 
 final class RatingsRelationManager extends RelationManager
 {
+    use AuthorizesThroughOwnerRecord;
+
     protected static string $relationship = 'ratings';
 
     protected static ?string $title = 'Ratings';

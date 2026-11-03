@@ -30,6 +30,7 @@ use App\Http\Controllers\SupportTicketAttachmentController;
 use App\Http\Controllers\TeamController;
 use App\Http\Controllers\TeamUserController;
 use App\Http\Controllers\UltraController;
+use App\Http\Controllers\UltraPageController;
 use App\Livewire\ClaimDonationLicense;
 use App\Livewire\Customer\Course\LessonShow;
 use App\Livewire\Customer\Dashboard;
@@ -110,6 +111,10 @@ Route::redirect('docs/mobile/4/the-basics/navigation', '/docs/mobile/4/the-basic
 Route::redirect('docs/mobile/4/edge-components/screen', '/docs/mobile/4/edge-components/layout', 301);
 Route::redirect('docs/mobile/4/edge-components/card', '/docs/mobile/4/edge-components/layout', 301);
 
+// The mobile docs' contributing guide moved to the site-wide contributing page.
+Route::redirect('docs/mobile/4/getting-started/contributing', '/contributing', 301);
+Route::redirect('docs/mobile/getting-started/contributing', '/contributing', 301);
+
 // Webhook routes (must be outside web middleware for CSRF bypass)
 Route::post('opencollective/contribution', [OpenCollectiveWebhookController::class, 'handle'])->name('opencollective.webhook');
 
@@ -117,7 +122,7 @@ Route::post('opencollective/contribution', [OpenCollectiveWebhookController::cla
 Route::get('opencollective/claim', ClaimDonationLicense::class)->name('opencollective.claim');
 
 Route::view('/', 'welcome')->name('welcome');
-Route::view('ultra', 'pricing')->name('pricing');
+Route::get('ultra', UltraPageController::class)->name('pricing');
 Route::view('alt-pricing', 'alt-pricing')->name('alt-pricing')->middleware('signed');
 Route::get('course', function () {
     $user = auth()->user();
@@ -230,6 +235,8 @@ Route::view('laracon-us-2025-giveaway', 'laracon-us-2025-giveaway')->name('larac
 Route::view('privacy-policy', 'privacy-policy')->name('privacy-policy');
 Route::view('terms-of-service', 'terms-of-service')->name('terms-of-service');
 Route::view('developer-terms', 'developer-terms')->name('developer-terms');
+Route::view('contributing', 'contributing')->name('contributing');
+Route::view('security', 'security')->name('security');
 Route::view('partners', 'partners')->name('partners');
 Route::view('partners/always-curious', 'partners.always-curious')->name('partners.always-curious');
 Route::view('build-my-app', 'build-my-app')->name('build-my-app');

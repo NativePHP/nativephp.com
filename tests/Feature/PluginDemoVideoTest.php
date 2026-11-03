@@ -312,6 +312,7 @@ class PluginDemoVideoTest extends TestCase
         $plugin = Plugin::factory()->pending()->withoutDemoVideo()->create([
             'review_checks' => self::PASSING_REPO_CHECKS,
             'webhook_installed' => true,
+            'created_at' => now(),
         ]);
 
         $this->assertFalse($plugin->passesRequiredReviewChecks());
@@ -365,6 +366,7 @@ class PluginDemoVideoTest extends TestCase
         $plugin = Plugin::factory()->pending()->withoutDemoVideo()->for($user)->create([
             'review_checks' => self::PASSING_REPO_CHECKS,
             'webhook_installed' => true,
+            'created_at' => now(),
         ]);
 
         $rendered = (string) (new PluginReviewChecksIncomplete($plugin))->toMail($user)->render();

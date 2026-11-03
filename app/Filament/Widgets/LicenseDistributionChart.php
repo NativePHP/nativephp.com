@@ -3,11 +3,14 @@
 namespace App\Filament\Widgets;
 
 use App\Models\License;
+use BezhanSalleh\FilamentShield\Traits\HasWidgetShield;
 use Filament\Widgets\ChartWidget;
 use Illuminate\Support\Facades\DB;
 
 class LicenseDistributionChart extends ChartWidget
 {
+    use HasWidgetShield;
+
     protected ?string $heading = 'License Types';
 
     protected static ?int $sort = 4;

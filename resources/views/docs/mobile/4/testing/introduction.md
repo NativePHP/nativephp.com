@@ -17,6 +17,24 @@ component's state.
 Rendering fidelity — how SwiftUI or Compose actually paints those elements on screen — is out of scope by design. The
 suite asserts on *what your component published*, exactly the layer you control from PHP.
 
+## Setup
+
+The testing helpers ship with `nativephp/mobile`, in the `Native\Mobile\Testing` namespace. There's nothing extra to
+install beyond your test runner. New Laravel apps ship with PHPUnit; to use Pest as these examples do:
+
+```shell
+composer require pestphp/pest --dev --with-all-dependencies
+./vendor/bin/pest --init
+```
+
+Tests boot your real application, so the plugins registered in `app/Providers/NativeServiceProvider.php` are what
+the test renders against. If `nativephp/mobile-ui` isn't [registered](../getting-started/installation#install-the-ui-components),
+a screen using `<native:button>` or `<native:list-item>` fails in the test with `Unknown native element type`, the
+same as it would in the app.
+
+Put component tests in `tests/Feature` (which `pest --init` binds to your app's `TestCase`) and run them with
+`php artisan test` or `./vendor/bin/pest`.
+
 ## The `Native` entry point
 
 Every test starts from the `Native` facade. It has three entry points:
@@ -54,7 +72,9 @@ it('increments the count', function () {
 `tap()` presses the nearest pressable element whose subtree shows the given text (or one carrying a matching `ref` —
 more on that in [Interactions](interactions)). `assertSet()` reads a public or `#[Computed]` property and compares it,
 while `assertNotSet()` asserts a property holds anything but a given value. Every interaction re-renders the component,
-so the assertions that follow see the fresh frame.
+so the assertions that follow see the fresh frame. The exception is an `emitNative()` that misses every `when` filter
+of the screen while nothing else is there for the event, see
+[Testing a when filter](native-events#testing-a-when-filter).
 
 ## Passing params and data
 

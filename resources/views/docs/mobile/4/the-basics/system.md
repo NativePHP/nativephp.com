@@ -19,9 +19,27 @@ use Native\Mobile\Facades\System;
 System::isIos();      // true on iOS
 System::isAndroid();  // true on Android
 System::isMobile();   // true on either platform
+System::platform();   // 'ios', 'android', or null outside the app
 ```
 
-Use these to branch behavior or conditionally render UI for a specific platform.
+Use these to branch behavior or conditionally render UI for a specific platform. `System::platform()`
+<x-docs.version-badge since="4.7" /> gives you the answer as a string, which saves checking both.
+
+On the device <x-docs.version-badge changed="4.7" />, the platform comes from an environment variable the app sets
+before PHP starts, so these checks are cheap enough to call as often as you like, even once per row of a long list.
+Before 4.7 every check asked the native side, which was far slower.
+
+Under [Jump](jump), PHP runs on your computer instead of the phone, so that variable isn't set. The first check asks
+the connected device, and the answer is remembered after that.
+
+To render a screen as one platform in a test, see [Platform variants](../testing/advanced#platform-variants).
+
+<aside>
+
+If you've been using the undocumented `Native\Mobile\Platform` class, switch to these methods. It's
+<x-docs.version-badge deprecated="4.7" /> and passes straight through to `System` until it's removed.
+
+</aside>
 
 Each is also available as a global helper function — `isIos()`, `isAndroid()`, `isMobile()` — for terse use in
 Blade and components:
@@ -70,6 +88,32 @@ System::appSettings();
 Reading the current appearance and reacting to theme changes lives with the rest of theming — see
 [Theming → Appearance in PHP](../digging-deeper/theming#appearance-in-php) for `System::appearance()`, `isDarkMode()`,
 `isLightMode()`, the `isDark()` / `theme()` helpers, and the `AppearanceChanged` event.
+
+## Orientation
+
+Read the orientation of the app window:
+
+```php
+System::orientation();  // 'portrait' | 'landscape'
+System::isPortrait();   // bool
+System::isLandscape();  // bool
+```
+
+When it changes, the `OrientationChanged` event fires. `$orientation` is `'portrait'` or `'landscape'`:
+
+```php
+use Native\Mobile\Attributes\On;
+use Native\Mobile\Events\System\OrientationChanged;
+
+#[On(OrientationChanged::class)]
+public function rotated(string $orientation): void
+{
+    $this->columns = $orientation === 'landscape' ? 4 : 2;
+}
+```
+
+`OrientationChanged` [broadcasts globally](events#broadcasting-globally). Next to the `#[On]` methods of the live
+screen, `Event::listen` hears it anywhere in your app.
 
 <aside>
 

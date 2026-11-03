@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Filament\Resources\PluginIdeaResource\RelationManagers;
 
 use App\Enums\PluginType;
+use App\Filament\Resources\Concerns\AuthorizesThroughOwnerRecord;
 use App\Models\MissedPluginSearch;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
@@ -12,6 +13,8 @@ use Filament\Tables\Table;
 
 final class MissedSearchesRelationManager extends RelationManager
 {
+    use AuthorizesThroughOwnerRecord;
+
     protected static string $relationship = 'missedSearches';
 
     protected static ?string $title = 'Searches';

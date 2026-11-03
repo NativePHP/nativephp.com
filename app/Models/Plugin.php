@@ -36,6 +36,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Notification;
@@ -114,6 +115,7 @@ class Plugin extends Model
 
     /**
      * Create or update prices based on the plugin's tier.
+     * Official plugins are included with Ultra, so they don't get an Ultra price.
      */
     public function syncPricesFromTier(): void
     {
@@ -122,6 +124,10 @@ class Plugin extends Model
         }
 
         $tierPrices = $this->tier->getPrices();
+
+        if ($this->isOfficial()) {
+            unset($tierPrices[PriceTier::Ultra->value]);
+        }
 
         foreach ($tierPrices as $priceTier => $amount) {
             $this->prices()->updateOrCreate(
@@ -203,24 +209,42 @@ class Plugin extends Model
     /**
      * Get the best (lowest) active price for a user based on their eligible tiers.
      * Returns null if no price exists for the user's eligible tiers.
-     * Third-party plugins never offer subscriber discounts — always regular price.
+     * The regular price wins a tie, so a discounted tier only applies when it is actually cheaper.
      */
     public function getBestPriceForUser(?User $user): ?PluginPrice
     {
-        if (! $this->isOfficial()) {
-            $eligibleTiers = [PriceTier::Regular];
-        } else {
-            $eligibleTiers = $user ? $user->getEligiblePriceTiers() : [PriceTier::Regular];
-        }
-
         // Get the lowest active price for the user's eligible tiers
         $bestPrice = $this->prices()
             ->active()
-            ->forTiers($eligibleTiers)
+            ->forTiers($this->getEligiblePriceTiersFor($user))
             ->orderBy('amount', 'asc')
+            ->orderByRaw("CASE WHEN tier = 'regular' THEN 0 ELSE 1 END")
             ->first();
 
         return $bestPrice;
+    }
+
+    /**
+     * Get the price tiers a user can buy this plugin at.
+     * Third-party plugins never offer subscriber or EAP discounts — only Ultra subscribers pay less.
+     * Official plugins are included with Ultra, so they never use an Ultra price.
+     *
+     * @return array<PriceTier>
+     */
+    protected function getEligiblePriceTiersFor(?User $user): array
+    {
+        if (! $this->isOfficial()) {
+            return $user?->hasActiveUltraSubscription()
+                ? [PriceTier::Regular, PriceTier::Ultra]
+                : [PriceTier::Regular];
+        }
+
+        $eligibleTiers = $user ? $user->getEligiblePriceTiers() : [PriceTier::Regular];
+
+        return array_values(array_filter(
+            $eligibleTiers,
+            fn (PriceTier $tier): bool => $tier !== PriceTier::Ultra
+        ));
     }
 
     /**
@@ -240,6 +264,30 @@ class Plugin extends Model
             ->active()
             ->forTier(PriceTier::Regular)
             ->first() ?? $this->activePrice;
+    }
+
+    /**
+     * Get the discounted price Ultra subscribers pay for a paid third-party plugin.
+     * Returns null if the plugin has no Ultra price, or it isn't lower than the regular price.
+     */
+    public function getUltraPrice(): ?PluginPrice
+    {
+        if (! $this->isPaid() || $this->isOfficial()) {
+            return null;
+        }
+
+        $ultraPrice = $this->prices()
+            ->active()
+            ->forTier(PriceTier::Ultra)
+            ->first();
+
+        $regularPrice = $this->getRegularPrice();
+
+        if (! $ultraPrice || ! $regularPrice || $ultraPrice->amount >= $regularPrice->amount) {
+            return null;
+        }
+
+        return $ultraPrice;
     }
 
     /**
@@ -454,7 +502,7 @@ class Plugin extends Model
         return ! empty($checks['has_license_file'])
             && ! empty($checks['has_release_version'])
             && $this->webhook_installed
-            && $this->hasDemoVideo();
+            && $this->meetsDemoVideoRequirement();
     }
 
     /**
@@ -463,6 +511,42 @@ class Plugin extends Model
     public function hasDemoVideo(): bool
     {
         return $this->demoVideo() !== null && $this->demo_video_attested_at !== null;
+    }
+
+    /**
+     * Plugins first submitted for review before demo videos became a requirement
+     * (#534) are grandfathered in and can be approved without one.
+     */
+    public function requiresDemoVideo(): bool
+    {
+        $firstSubmittedAt = $this->firstSubmittedAt();
+
+        return $firstSubmittedAt === null
+            || $firstSubmittedAt->gte(Carbon::parse(self::DEMO_VIDEO_REQUIRED_FROM, 'UTC'));
+    }
+
+    public function meetsDemoVideoRequirement(): bool
+    {
+        return $this->hasDemoVideo() || ! $this->requiresDemoVideo();
+    }
+
+    /**
+     * When the plugin was first sent for review. Plugins that left draft before
+     * submissions were logged as activity fall back to when they were created.
+     */
+    public function firstSubmittedAt(): ?Carbon
+    {
+        $submittedAt = $this->activities()
+            ->reorder()
+            ->where('type', PluginActivityType::Submitted)
+            ->oldest()
+            ->value('created_at');
+
+        if ($submittedAt !== null) {
+            return Carbon::parse($submittedAt);
+        }
+
+        return $this->status === PluginStatus::Draft ? null : $this->created_at;
     }
 
     public function demoVideo(): ?DemoVideo
@@ -500,7 +584,7 @@ class Plugin extends Model
             $failing[] = 'Webhook configured';
         }
 
-        if (! $this->hasDemoVideo()) {
+        if (! $this->meetsDemoVideoRequirement()) {
             $failing[] = 'Demo video showing the plugin working';
         }
 
@@ -538,6 +622,19 @@ class Plugin extends Model
         return $query->where('featured', true);
     }
 
+    /**
+     * Approved plugins that have not yet been included in an emailed "new plugins" digest.
+     *
+     * @param  Builder<Plugin>  $query
+     * @return Builder<Plugin>
+     */
+    #[Scope]
+    protected function pendingNewPluginNotification(Builder $query): Builder
+    {
+        return $query->where('status', PluginStatus::Approved)
+            ->whereNull('new_plugin_notified_at');
+    }
+  
     /**
      * Plugins that aren't in any category yet.
      *
@@ -645,6 +742,11 @@ class Plugin extends Model
      * The Heroicon used when a plugin has no icon, or an unrecognised one.
      */
     public const DEFAULT_ICON_NAME = 'cube';
+
+    /**
+     * When #534 made a demo video required for review (UTC).
+     */
+    public const DEMO_VIDEO_REQUIRED_FROM = '2026-09-25 16:23:52';
 
     /**
      * Whether the given name matches an outline Heroicon we can actually render.
@@ -1069,7 +1171,7 @@ class Plugin extends Model
             'causer_id' => $causerId ?? $this->user_id,
         ]);
 
-        Notification::route('mail', config('mail.support_address'))
+        Notification::route('mail', [config('mail.support_address'), config('mail.marketplace_address')])
             ->notify(new PluginDeveloperReplied($this, $activity));
 
         return $activity;
@@ -1125,6 +1227,7 @@ class Plugin extends Model
             'categories' => AsEnumCollection::of(PluginCategory::class),
             'category_suggestions' => 'array',
             'approved_at' => 'datetime',
+            'new_plugin_notified_at' => 'datetime',
             'featured' => 'boolean',
             'is_active' => 'boolean',
             'is_official' => 'boolean',

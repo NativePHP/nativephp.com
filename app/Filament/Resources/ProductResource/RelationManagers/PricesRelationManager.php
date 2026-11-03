@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\ProductResource\RelationManagers;
 
 use App\Enums\PriceTier;
+use App\Filament\Resources\Concerns\AuthorizesThroughOwnerRecord;
 use App\Models\ProductPrice;
 use Filament\Actions;
 use Filament\Forms;
@@ -16,6 +17,8 @@ use Filament\Tables\Table;
 
 class PricesRelationManager extends RelationManager
 {
+    use AuthorizesThroughOwnerRecord;
+
     protected static string $relationship = 'prices';
 
     protected static ?string $title = 'Pricing';
@@ -28,7 +31,7 @@ class PricesRelationManager extends RelationManager
                     ->options(PriceTier::class)
                     ->required()
                     ->default(PriceTier::Regular)
-                    ->helperText('Regular = standard price, Subscriber = Pro/Max holders, EAP = Early Access'),
+                    ->helperText('Regular = standard price, Subscriber = Pro/Max holders, EAP = Early Access, Ultra = Ultra subscribers'),
 
                 Forms\Components\TextInput::make('stripe_price_id')
                     ->label('Stripe price ID')
@@ -108,6 +111,7 @@ class PricesRelationManager extends RelationManager
                         PriceTier::Regular => 'gray',
                         PriceTier::Subscriber => 'info',
                         PriceTier::Eap => 'success',
+                        PriceTier::Ultra => 'warning',
                     })
                     ->sortable(),
 
