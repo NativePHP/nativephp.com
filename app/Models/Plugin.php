@@ -597,7 +597,7 @@ class Plugin extends Model
         return $query->where('status', PluginStatus::Approved)
             ->whereNull('new_plugin_notified_at');
     }
-  
+
     /**
      * Plugins that aren't in any category yet.
      *
