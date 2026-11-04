@@ -95,6 +95,39 @@ We recommend avoiding symlinks within your NativePHP app. Instead, consider eith
 - Placing files directly in their intended locations
 - Using Laravel's Storage facade to mount directories outside your application
 
+### Getting the path of a dropped file
+
+For security, the browser doesn't tell your page where a dragged-in file lives on disk. NativePHP exposes Electron's
+[`webUtils.getPathForFile()`](https://www.electronjs.org/docs/latest/api/web-utils) as `window.Native.getPathForFile()`,
+which returns the full path of a `File` from a drop or a file input.
+
+This example passes the path to a `useFile` method on a Livewire component:
+
+```blade
+<div
+    x-data
+    x-on:dragover.prevent
+    x-on:drop.prevent="$event.dataTransfer.files.length && $wire.useFile(window.Native.getPathForFile($event.dataTransfer.files[0]))"
+>
+    Drop a file here
+</div>
+```
+
+It returns an empty string when the `File` isn't backed by a file on disk, for example one created in JavaScript, so check
+for that before using it. Something dragged from a web browser depends on the browser: it can come back as the path of a
+temporary copy the browser made, or the drop may contain no files at all.
+
+<aside>
+
+By default, dropping a file onto a window outside of an element that handles the drop navigates the window to that
+file. To stop that, prevent the default `dragover` and `drop` behaviour on `window`:
+
+```js
+['dragover', 'drop'].forEach((type) => window.addEventListener(type, (e) => e.preventDefault()));
+```
+
+</aside>
+
 ## Bundling Application Resources
 
 NativePHP allows you to bundle additional files with your application that can be accessed at runtime. This is useful for including pre-compiled executables or other resources that need to be distributed with your app.
