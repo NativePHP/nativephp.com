@@ -97,9 +97,10 @@ We recommend avoiding symlinks within your NativePHP app. Instead, consider eith
 
 ### Getting the path of a dropped file
 
-For security, the browser doesn't tell your page where a dragged-in file lives on disk. NativePHP exposes Electron's
-[`webUtils.getPathForFile()`](https://www.electronjs.org/docs/latest/api/web-utils) as `window.Native.getPathForFile()`,
-which returns the full path of a `File` from a drop or a file input.
+JavaScript running in a window can read a dropped file's name and contents but, for security, not where it lives on
+disk. To get the path, use `window.Native.getPathForFile()`, which wraps Electron's
+[`webUtils.getPathForFile()`](https://www.electronjs.org/docs/latest/api/web-utils) and returns the full path of a `File`
+from a drop or a file input.
 
 This example passes the path to a `useFile` method on a Livewire component:
 
