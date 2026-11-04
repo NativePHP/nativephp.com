@@ -107,6 +107,18 @@ php artisan native:run --watch --vite
 The old `--no-vite` flag still exists but is now redundant — Vite is off unless you ask for it. If you have
 `--no-vite` in your scripts, you can drop it.
 
+### Web views and untrusted code
+
+v4 turns the web view into a component you can point at a remote `src`, feed inline HTML, or run in
+[PHP mode](../edge-components/web-view#php-mode) with the full native bridge. Whichever you reach for, a web view runs
+on your app's own origin: any code it loads runs with your app's privileges, and in PHP mode can reach the native
+bridge. Treat it as an untrusted-code boundary:
+
+- Prefer loading only code that ships in your own app bundle.
+- Treat remote URLs, third-party scripts, and user-supplied HTML or JavaScript as untrusted.
+
+See [Web View](../edge-components/web-view) for the full picture.
+
 ### Update your dependency
 
 ```json
