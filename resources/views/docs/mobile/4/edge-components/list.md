@@ -103,8 +103,8 @@ Independent of the mutually-exclusive slot above, a row can also show a stack of
 
 ### Trailing appearance
 
-- `trailingTextStyle` - Size of `trailingText`: `headline` matches the headline size; `label` uses a small caption
-- `trailingAlign` - Vertical alignment of both the leading and trailing slots: `center` or `top`. On Android,
+- `trailingTextStyle` <x-docs.version-badge package="mobile-ui" since="0.9" /> - Size of `trailingText`: `headline` matches the headline size; `label` uses a small caption
+- `trailingAlign` <x-docs.version-badge package="mobile-ui" since="0.9" /> - Vertical alignment of both the leading and trailing slots: `center` or `top`. On Android,
   `center` also uses two-line row spacing
 
 Both props are optional. When omitted, each platform keeps its defaults: iOS uses headline-sized trailing text
@@ -319,8 +319,8 @@ Trailing slot:
 
 - `trailingIcon(?string $name = null, IosSymbol|string|null $ios = null, AndroidSymbol|string|null $android = null)`
 - `trailingText(string $text)`
-- `trailingTextStyle(string $style)` - `headline` or `label`
-- `trailingAlign(string $align)` - `center` or `top`
+- `trailingTextStyle(string $style)` <x-docs.version-badge package="mobile-ui" since="0.9" /> - `headline` or `label`
+- `trailingAlign(string $align)` <x-docs.version-badge package="mobile-ui" since="0.9" /> - `center` or `top`
 - `trailingCheckbox(bool $checked = false)`
 - `trailingSwitch(bool $checked = false)`
 - `trailingIconButton(?string $name = null, IosSymbol|string|null $ios = null, AndroidSymbol|string|null $android = null)`
