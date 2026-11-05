@@ -159,4 +159,92 @@ class GitHubTest extends TestCase
 
         $this->assertTrue(GitHub::mobileAir()->releasesAfter('3.1.0')->isEmpty());
     }
+
+    public function test_tree_fetches_the_recursive_tree_of_the_default_branch(): void
+    {
+        Http::fake([
+            'api.github.com/repos/nativephp/mobile-air/' => Http::response(['default_branch' => 'develop']),
+            'api.github.com/repos/nativephp/mobile-air/git/trees/develop*' => Http::response([
+                'tree' => [
+                    ['path' => 'config/nativephp.php', 'type' => 'blob', 'sha' => 'abc123'],
+                ],
+                'truncated' => false,
+            ]),
+        ]);
+
+        $tree = GitHub::mobileAir()->tree();
+
+        $this->assertCount(1, $tree);
+        $this->assertSame('config/nativephp.php', $tree->first()['path']);
+        Http::assertSent(fn ($request) => str_starts_with($request->url(), 'https://api.github.com/repos/nativephp/mobile-air/git/trees/develop?'));
+    }
+
+    public function test_tree_falls_back_to_main_when_the_default_branch_lookup_fails(): void
+    {
+        Http::fake([
+            'api.github.com/repos/nativephp/mobile-air/' => Http::response(null, 404),
+            'api.github.com/repos/nativephp/mobile-air/git/trees/main*' => Http::response(['tree' => [], 'truncated' => false]),
+        ]);
+
+        GitHub::mobileAir()->tree();
+
+        Http::assertSent(fn ($request) => str_starts_with($request->url(), 'https://api.github.com/repos/nativephp/mobile-air/git/trees/main?'));
+    }
+
+    public function test_tree_returns_an_empty_collection_when_the_request_fails(): void
+    {
+        Http::fake([
+            'api.github.com/repos/nativephp/mobile-air/' => Http::response(['default_branch' => 'main']),
+            'api.github.com/repos/nativephp/mobile-air/git/trees/main*' => Http::response(null, 500),
+        ]);
+
+        $this->assertTrue(GitHub::mobileAir()->tree()->isEmpty());
+    }
+
+    public function test_blob_decodes_the_base64_content(): void
+    {
+        Http::fake([
+            'api.github.com/repos/nativephp/mobile-air/git/blobs/abc123' => Http::response([
+                'content' => base64_encode("<?php\nreturn ['foo' => 'bar'];\n"),
+                'encoding' => 'base64',
+            ]),
+        ]);
+
+        $this->assertSame("<?php\nreturn ['foo' => 'bar'];\n", GitHub::mobileAir()->blob('abc123'));
+    }
+
+    public function test_blob_returns_null_when_the_request_fails(): void
+    {
+        Http::fake([
+            'api.github.com/repos/nativephp/mobile-air/git/blobs/missing' => Http::response(null, 404),
+        ]);
+
+        $this->assertNull(GitHub::mobileAir()->blob('missing'));
+    }
+
+    public function test_requests_are_authenticated_when_a_github_token_is_configured(): void
+    {
+        config(['services.github.token' => 'test-token']);
+
+        Http::fake([
+            'api.github.com/*' => Http::response(['default_branch' => 'main']),
+        ]);
+
+        GitHub::mobileAir()->tree();
+
+        Http::assertSent(fn ($request) => $request->hasHeader('Authorization', 'Bearer test-token'));
+    }
+
+    public function test_requests_carry_no_authorization_header_without_a_configured_token(): void
+    {
+        config(['services.github.token' => null]);
+
+        Http::fake([
+            'api.github.com/*' => Http::response(['default_branch' => 'main']),
+        ]);
+
+        GitHub::mobileAir()->tree();
+
+        Http::assertSent(fn ($request) => ! $request->hasHeader('Authorization'));
+    }
 }

@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\DocsPlatform;
+use App\Services\DocsNavigationService;
+use App\Services\DocsVersionRegistry;
 use App\Services\DocsVersionService;
 use App\Support\CommonMark\CommonMark;
 use Artesaos\SEOTools\Facades\SEOMeta;
@@ -26,6 +29,9 @@ class ShowDocumentationController extends Controller
     public function __invoke(Request $request, string $platform, string $version, ?string $page = null)
     {
         abort_unless(is_dir(resource_path('views/docs/'.$platform.'/'.$version)), 404);
+        // The route only constrains {platform} to [a-z]+, so a real docs
+        // directory isn't proof it's one DocsPlatform::from() below can resolve.
+        abort_unless(DocsPlatform::tryFrom($platform) !== null, 404);
 
         session(['viewing_docs_version' => $version]);
         session(['viewing_docs_platform' => $platform]);
@@ -33,7 +39,7 @@ class ShowDocumentationController extends Controller
         $fingerprint = $this->fingerprint($platform, $version);
 
         $navigation = $this->cacheOrCompute("docs_nav_{$platform}_{$version}", $fingerprint,
-            fn () => $this->getNavigation($platform, $version)
+            fn () => app(DocsNavigationService::class)->build(DocsPlatform::from($platform), (int) $version)
         );
 
         if (is_null($page)) {
@@ -170,12 +176,17 @@ class ShowDocumentationController extends Controller
         $pageProperties['version'] = $version;
         $pageProperties['pagePath'] = request()->path();
 
+        $platformEnum = DocsPlatform::tryFrom($platform);
+        $pageProperties['docsVersionLabels'] = $platformEnum
+            ? app(DocsVersionRegistry::class)->switcherLabels($platformEnum)
+            : [];
+
         $pageProperties['content'] = CommonMark::convertToHtml($document->body(), [
             'user' => auth()->user(),
         ]);
         $pageProperties['tableOfContents'] = $this->extractTableOfContents($pageProperties['content']);
 
-        $navigation = $this->getNavigation($platform, $version);
+        $navigation = app(DocsNavigationService::class)->build(DocsPlatform::from($platform), (int) $version);
         $pageProperties['navigation'] = Menu::build($navigation, function (Menu $menu, $nav): void {
             if (array_key_exists('path', $nav)) {
                 $menu->link($nav['path'], $nav['title']);
@@ -279,137 +290,6 @@ class ShowDocumentationController extends Controller
         return $pageProperties;
     }
 
-    protected function getNavigation(string $platform, string $version): array
-    {
-        $basePath = resource_path('views');
-        $path = "$basePath/docs/$platform/$version";
-
-        $mainNavigation = (new Finder)
-            ->files()
-            ->name('_index.md')
-            ->depth(1)
-            ->in($path);
-
-        $navigation = collect();
-
-        $mainPages = (new Finder)
-            ->files()
-            ->notName('_index.md')
-            ->name('*.md')
-            ->depth(0)
-            ->in($path);
-
-        /** @var SplFileInfo $mainPage */
-        foreach ($mainPages as $mainPage) {
-            $parsedSection = YamlFrontMatter::parse($mainPage->getContents());
-
-            $path = Str::after($mainPage->getPath(), $basePath).'/'.$mainPage->getBasename('.md');
-
-            $navigation->push([
-                'path' => $path,
-                'title' => $parsedSection->matter('title', ''),
-                'order' => $parsedSection->matter('order', 0),
-            ]);
-        }
-
-        /** @var SplFileInfo $section */
-        foreach ($mainNavigation as $section) {
-            $parsedSection = YamlFrontMatter::parse($section->getContents());
-            $navigationEntry = [
-                'relative_path' => $section->getRelativePath(),
-                'title' => $parsedSection->matter('title', ''),
-                'order' => $parsedSection->matter('order', 0),
-            ];
-
-            // Get direct child pages (depth 0)
-            $subSections = (new Finder)
-                ->files()
-                ->notName('_index.md')
-                ->name('*.md')
-                ->depth(0)
-                ->in($section->getPath());
-
-            $children = collect();
-
-            /** @var SplFileInfo $subSection */
-            foreach ($subSections as $subSection) {
-                $parsedSection = YamlFrontMatter::parse($subSection->getContents());
-
-                $path = Str::after($subSection->getPath(), $basePath).'/'.$subSection->getBasename('.md');
-
-                $title = $parsedSection->matter('title', '');
-
-                if ($title === '') {
-                    $content = CommonMark::convertToHtml($subSection->getContents());
-                    $title = $this->extractTitle($content);
-                }
-
-                $children->push([
-                    'path' => $path,
-                    'title' => $title,
-                    'order' => $parsedSection->matter('order', 0),
-                ]);
-            }
-
-            // Check for nested subsections (3rd tier)
-            $nestedSections = (new Finder)
-                ->files()
-                ->name('_index.md')
-                ->depth(1)
-                ->in($section->getPath());
-
-            /** @var SplFileInfo $nestedSection */
-            foreach ($nestedSections as $nestedSection) {
-                $parsedNested = YamlFrontMatter::parse($nestedSection->getContents());
-
-                $nestedEntry = [
-                    'title' => $parsedNested->matter('title', ''),
-                    'order' => $parsedNested->matter('order', 0),
-                    'is_subsection' => true,
-                ];
-
-                // Get pages within this nested section
-                $nestedPages = (new Finder)
-                    ->files()
-                    ->notName('_index.md')
-                    ->name('*.md')
-                    ->depth(0)
-                    ->in($nestedSection->getPath());
-
-                $nestedChildren = collect();
-
-                /** @var SplFileInfo $nestedPage */
-                foreach ($nestedPages as $nestedPage) {
-                    $parsedPage = YamlFrontMatter::parse($nestedPage->getContents());
-
-                    $path = Str::after($nestedPage->getPath(), $basePath).'/'.$nestedPage->getBasename('.md');
-
-                    $title = $parsedPage->matter('title', '');
-
-                    if ($title === '') {
-                        $content = CommonMark::convertToHtml($nestedPage->getContents());
-                        $title = $this->extractTitle($content);
-                    }
-
-                    $nestedChildren->push([
-                        'path' => $path,
-                        'title' => $title,
-                        'order' => $parsedPage->matter('order', 0),
-                    ]);
-                }
-
-                $nestedEntry['children'] = $nestedChildren->sortBy('order')->values()->toArray();
-                $children->push($nestedEntry);
-            }
-
-            $navigationEntry['children'] = $children->sortBy('order')->values()->toArray();
-
-            $navigation->push($navigationEntry);
-        }
-
-        return $navigation->sortBy('order')->values()->toArray();
-    }
-
     protected function findFirstPath(array $children): string
     {
         foreach ($children as $child) {
@@ -471,15 +351,6 @@ class ShowDocumentationController extends Controller
             })
             ->values()
             ->toArray();
-    }
-
-    protected function extractTitle(string $document): string
-    {
-        $matches = [];
-
-        preg_match('/<h1>([^<]+)/', $document, $matches);
-
-        return $matches[1] ?? '';
     }
 
     protected function markdownViewExists($platform, $version, $page): bool

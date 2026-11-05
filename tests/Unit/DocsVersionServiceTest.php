@@ -139,6 +139,29 @@ class DocsVersionServiceTest extends TestCase
     }
 
     #[Test]
+    #[DataProvider('platformDataProvider')]
+    public function no_two_renamed_pages_entries_in_the_same_version_share_a_target(string $platform): void
+    {
+        // resolvePageForVersion()'s reverse (older-version) lookup builds its map
+        // with array_flip(), which silently keeps only the last of several old
+        // paths mapping to the same new one — so two entries sharing a target
+        // isn't just untidy config, it's a real collision.
+        $collisions = collect(config("docs.renamed_pages.{$platform}", []))
+            ->flatMap(function (array $map, int $version) {
+                return collect($map)
+                    ->countBy()
+                    ->filter(fn (int $count) => $count > 1)
+                    ->keys()
+                    ->map(fn (string $target) => "v{$version}: {$target}");
+            });
+
+        $this->assertTrue(
+            $collisions->isEmpty(),
+            "renamed_pages.{$platform} has colliding targets: ".$collisions->implode(', '),
+        );
+    }
+
+    #[Test]
     public function it_flattens_super_native_pages_into_the_digging_deeper_section_in_v4(): void
     {
         // The old SuperNative introduction becomes the SuperNative page in Architecture.

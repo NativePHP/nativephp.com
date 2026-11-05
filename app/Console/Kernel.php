@@ -35,6 +35,12 @@ class Kernel extends ConsoleKernel
             ->dailyAt('11:00')
             ->onOneServer();
 
+        // Flag docs that have drifted from the packages' config keys and console commands
+        $schedule->command('docs:audit-coverage')
+            ->weekly()
+            ->onOneServer()
+            ->runInBackground();
+
         // Email a summary of the day's payouts, once the queued transfers have run
         $schedule->command('payouts:send-daily-summary')
             ->dailyAt('12:00')

@@ -1,5 +1,7 @@
 <?php
 
+use App\Support\GitHub;
+
 return [
 
     /*
@@ -92,6 +94,32 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Changelog Sources
+    |--------------------------------------------------------------------------
+    |
+    | Which page carries the changelog for a platform's major version, what that
+    | page is called, and the GitHub repository whose releases it renders. The
+    | What's New page uses this to link each minor version at the latest patch
+    | release listed for it on the changelog.
+    |
+    | Majors whose changelog is hand-written are left out — there's no release
+    | feed behind them to line a link up with.
+    |
+    */
+
+    'changelog' => [
+        'desktop' => [
+            1 => ['page' => 'getting-started/releasenotes', 'label' => 'release notes', 'repository' => 'nativephp/electron'],
+            2 => ['page' => 'getting-started/releasenotes', 'label' => 'release notes', 'repository' => 'nativephp/desktop'],
+        ],
+        'mobile' => [
+            3 => ['page' => 'getting-started/changelog', 'label' => 'changelog', 'repository' => 'nativephp/mobile-air'],
+            4 => ['page' => 'getting-started/changelog', 'label' => 'changelog', 'repository' => 'nativephp/mobile-air'],
+        ],
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
     | Jump
     |--------------------------------------------------------------------------
     |
@@ -155,6 +183,29 @@ return [
                 'super-native/search' => 'digging-deeper/search',
                 'super-native/accessibility' => 'digging-deeper/accessibility',
             ],
+        ],
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Source Repositories
+    |--------------------------------------------------------------------------
+    |
+    | The GitHub package DocsCoverageAuditor cross-references each platform's
+    | docs against, and the path within that package to its published config
+    | file. Console commands are located by scanning the whole repo tree, so
+    | there's no equivalent path to configure for those.
+    |
+    */
+
+    'source_repos' => [
+        'desktop' => [
+            'package' => GitHub::PACKAGE_DESKTOP,
+            'config_path' => 'config/nativephp.php',
+        ],
+        'mobile' => [
+            'package' => GitHub::PACKAGE_MOBILE_AIR,
+            'config_path' => 'config/nativephp.php',
         ],
     ],
 

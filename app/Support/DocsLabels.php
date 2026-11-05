@@ -2,6 +2,8 @@
 
 namespace App\Support;
 
+use App\Enums\DocsPlatform;
+
 /**
  * Platform/version come from the route rather than being passed in, since
  * BladeMarkdownPreprocessor hands page markdown to Blade with no view data
@@ -11,11 +13,12 @@ final class DocsLabels
 {
     public static function productName(): string
     {
-        return match (request()->route('platform')) {
-            'mobile' => 'NativePHP for Mobile',
-            'desktop' => 'NativePHP for Desktop',
-            default => 'NativePHP',
-        };
+        return DocsPlatform::tryFromRoute()?->label() ?? 'NativePHP';
+    }
+
+    public static function jumpUrl(): ?string
+    {
+        return self::pageUrl('the-basics/jump');
     }
 
     /**
@@ -27,9 +30,21 @@ final class DocsLabels
         return self::pageUrl('getting-started/versioning', $fragment);
     }
 
-    public static function jumpUrl(): ?string
+    /**
+     * The current platform/version is always a real directory when a badge
+     * is rendering (it's rendering on a live page inside it), so unlike
+     * pageUrl() this never needs a file_exists guard.
+     */
+    public static function whatsNewUrl(): ?string
     {
-        return self::pageUrl('the-basics/jump');
+        $platform = request()->route('platform');
+        $version = request()->route('version');
+
+        if (blank($platform) || blank($version)) {
+            return null;
+        }
+
+        return route('docs.whats-new', ['platform' => $platform, 'version' => $version]);
     }
 
     private static function pageUrl(string $page, ?string $fragment = null): ?string
