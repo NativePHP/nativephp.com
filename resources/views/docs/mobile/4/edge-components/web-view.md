@@ -129,6 +129,23 @@ in an inline script during parse, poll briefly instead of sampling once.
 
 </aside>
 
+<aside>
+
+#### Only load code you trust
+
+A web view runs on your app's own origin, so any script it loads runs with your app's privileges. In
+[PHP mode](#php-mode) that script can also reach the native bridge and call native functions, exactly like the rest of
+your app. A page you serve, a remote URL, a third-party script, or HTML you've built from user input all get that same
+reach — and so does a malicious or compromised script.
+
+Treat the web view like any other untrusted-code boundary:
+
+- Prefer loading only code that ships in your own app bundle.
+- Take extra care with anything loaded over the network or supplied by users: remote URLs, third-party scripts, and
+  user-generated HTML or JavaScript.
+
+</aside>
+
 ### Fullscreen
 
 The `fullscreen` attribute reproduces the classic v3 default-webview presentation: the element takes all available
