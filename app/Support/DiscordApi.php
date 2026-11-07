@@ -13,7 +13,8 @@ class DiscordApi
         private ?string $botToken,
         private ?string $guildId,
         private ?string $ultraRoleId,
-        private ?string $earlyAdopterRoleId
+        private ?string $earlyAdopterRoleId,
+        private ?string $pluginDeveloperRoleId
     ) {}
 
     public static function make(): static
@@ -22,7 +23,8 @@ class DiscordApi
             config('services.discord.bot_token', ''),
             config('services.discord.guild_id', ''),
             config('services.discord.ultra_role_id', ''),
-            config('services.discord.early_adopter_role_id', '')
+            config('services.discord.early_adopter_role_id', ''),
+            config('services.discord.plugin_developer_role_id', '')
         );
     }
 
@@ -99,6 +101,21 @@ class DiscordApi
     public function hasEarlyAdopterRole(string $discordUserId): bool
     {
         return $this->hasRole($discordUserId, $this->earlyAdopterRoleId);
+    }
+
+    public function assignPluginDeveloperRole(string $discordUserId): bool
+    {
+        return $this->assignRole($discordUserId, $this->pluginDeveloperRoleId, 'Plugin Developer');
+    }
+
+    public function removePluginDeveloperRole(string $discordUserId): bool
+    {
+        return $this->removeRole($discordUserId, $this->pluginDeveloperRoleId, 'Plugin Developer');
+    }
+
+    public function hasPluginDeveloperRole(string $discordUserId): bool
+    {
+        return $this->hasRole($discordUserId, $this->pluginDeveloperRoleId);
     }
 
     private function assignRole(string $discordUserId, ?string $roleId, string $roleName): bool

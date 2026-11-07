@@ -123,6 +123,10 @@ class DiscordIntegrationController extends Controller
             if ($user->discord_early_adopter_role_granted_at) {
                 $discord->removeEarlyAdopterRole($user->discord_id);
             }
+
+            if ($user->discord_plugin_developer_role_granted_at) {
+                $discord->removePluginDeveloperRole($user->discord_id);
+            }
         }
 
         $user->update([
@@ -130,6 +134,7 @@ class DiscordIntegrationController extends Controller
             'discord_username' => null,
             'discord_role_granted_at' => null,
             'discord_early_adopter_role_granted_at' => null,
+            'discord_plugin_developer_role_granted_at' => null,
         ]);
 
         return back()->with('success', 'Discord account disconnected successfully.');
