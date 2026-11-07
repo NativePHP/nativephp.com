@@ -26,8 +26,35 @@ Useful for badges, image overlays, floating labels, and layered UI effects.
 Accepts any EDGE elements as children. Children are rendered in order, with later children appearing on top of earlier
 ones.
 
-Each child is **placed at its natural size and centered** in the stack's bounds. Give a child `w-full` or `h-full` to
-force it to fill the stack.
+Every child is positioned **absolutely** and placed at its natural size — you don't need `relative` on the stack or
+`absolute` on the children. By default each child is **centered** in the stack's bounds. Give a child `w-full` or
+`h-full` to force it to fill the stack.
+
+The stack itself **sizes to its largest child** when you don't give it explicit dimensions, so a small overlaid
+element (a badge, a dot) won't shrink the stack.
+
+### Anchoring children
+
+Move a child away from the centre with two points — one on the stack, one on the child:
+
+- **`anchor`** — the point on the **stack** the child hooks onto.
+- **`origin`** — the point **on the child** that lands there.
+
+Both default to `center` and accept `center`, the four edges (`top`, `right`, `bottom`, `left`) and the four corners
+(`top-left` … `bottom-right`) — as an attribute or an `anchor-*` / `origin-*` class. The child's `origin` point is
+placed exactly on the stack's `anchor` point, so a child can sit on — or hang off — an edge or corner. See
+[Positioning](../the-basics/positioning#anchor-amp-origin) for the full model.
+
+@verbatim
+```blade
+<native:stack class="w-[56] h-[56]">
+    <native:image src="https://i.pravatar.cc/128?img=12" class="w-[56] h-[56] rounded-full" />
+    {{-- The dot's centre (origin default) sits on the stack's top-right corner. --}}
+    <native:column anchor="top-right"
+        class="w-[14] h-[14] rounded-full bg-green-500 border-2 border-white" />
+</native:stack>
+```
+@endverbatim
 
 ## Supported Tailwind classes
 
@@ -46,19 +73,21 @@ Everything else from the shared list applies as on any element (`p-*`, `m-*`, `b
 
 ## Examples
 
-### Avatar with centered badge
+### Avatar with a corner status dot
 
 @verbatim
 ```blade
 <native:stack class="w-[56] h-[56]">
-    <native:column class="w-[56] h-[56] rounded-full bg-theme-surface-variant" />
-    <native:column class="w-[20] h-[20] bg-green-500 rounded-full border-2 border-white" />
+    <native:image src="https://i.pravatar.cc/128?img=12" class="w-[56] h-[56] rounded-full" />
+    {{-- The dot's centre sits on the avatar's bottom-right corner. --}}
+    <native:column anchor="bottom-right"
+        class="w-[16] h-[16] bg-green-500 rounded-full border-2 border-white" />
 </native:stack>
 ```
 @endverbatim
 
-In a real app the base layer would typically be a `<native:image>` avatar (e.g.
-`<native:image src="https://i.pravatar.cc/128?img=12" class="w-[56] h-[56] rounded-full" />`).
+Set `origin` too if you want a different part of the badge on the corner — e.g. `anchor="top-right"
+origin="top-right"` tucks the badge fully *inside* the corner instead of straddling it.
 
 ### Badge on an icon
 
@@ -89,9 +118,9 @@ In a real app the base layer would typically be a `<native:image>` avatar (e.g.
 
 <aside>
 
-For corner-anchored placement (e.g. a status dot pinned to the bottom-right of an avatar), wrap your content in a
-`<native:column class="relative">` parent and use `<native:column class="absolute bottom-[0] right-[0]">` for the
-anchored child. See [Positioning](../the-basics/positioning).
+Because a child's `origin` can extend past the stack's `anchor`, a child **can draw outside the stack** on both iOS
+and Android — handy for badges that poke over a corner. Nothing clips by default; clipping only applies when the
+stack (or an ancestor) has rounded corners or is a scroll view. See [Positioning](../the-basics/positioning#anchor-amp-origin).
 
 </aside>
 
