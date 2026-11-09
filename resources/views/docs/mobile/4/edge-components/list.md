@@ -124,6 +124,17 @@ Independent of the mutually-exclusive slot above, a row can also show a stack of
   `icon` is a shared [icon](icon) name, `ios` / `android` override it per platform, and `color` takes any
   [color value](../digging-deeper/theming#color-values).
 
+### Trailing appearance
+
+- `trailingTextStyle` <x-docs.version-badge package="mobile-ui" since="0.9" /> - Size of `trailingText`: `headline` matches the headline size; `label` uses a small caption
+- `trailingAlign` <x-docs.version-badge package="mobile-ui" since="0.9" /> - Vertical alignment of both the leading and trailing slots: `center` or `top`. On Android,
+  `center` also uses two-line row spacing
+
+Both props are optional. When omitted, each platform keeps its defaults: iOS uses headline-sized trailing text
+and centered slots; Android uses a small trailing label and top-aligns slots in rows with both overline and
+supporting text. Set `trailingTextStyle="headline" trailingAlign="center"` for headline-sized, centered trailing
+text on both platforms.
+
 ### Color overrides
 
 All color props accept the full [color grammar](../digging-deeper/theming#color-values) — hex (including
@@ -368,6 +379,8 @@ Trailing slot:
 
 - `trailingIcon(?string $name = null, IosSymbol|string|null $ios = null, AndroidSymbol|string|null $android = null)`
 - `trailingText(string $text)`
+- `trailingTextStyle(string $style)` <x-docs.version-badge package="mobile-ui" since="0.9" /> - `headline` or `label`
+- `trailingAlign(string $align)` <x-docs.version-badge package="mobile-ui" since="0.9" /> - `center` or `top`
 - `trailingCheckbox(bool $checked = false)`
 - `trailingSwitch(bool $checked = false)`
 - `trailingIconButton(?string $name = null, IosSymbol|string|null $ios = null, AndroidSymbol|string|null $android = null)`
