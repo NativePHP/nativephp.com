@@ -146,8 +146,10 @@ class GitHubRepositoryStarsTest extends TestCase
         $this->artisan('github:sync-repo-stars');
 
         $this->blade('<x-navbar.device-dropdowns />')
-            ->assertSeeInOrder(['https://github.com/nativephp/mobile-air', 'mobile-air', '1.2k stars'], false)
-            ->assertSeeInOrder(['https://github.com/nativephp/desktop', 'desktop', '5.7k stars'], false)
+            ->assertSeeInOrder(['https://github.com/nativephp/mobile-air', '<span class="opacity-60">nativephp/</span>mobile-air', '1.2k stars'], false)
+            ->assertSeeInOrder(['https://github.com/nativephp/desktop', '<span class="opacity-60">nativephp/</span>desktop', '5.7k stars'], false)
+            ->assertSee('aria-label="nativephp/mobile-air"', false)
+            ->assertSee('aria-label="nativephp/desktop"', false)
             ->assertDontSee('Visit our GitHub repository');
     }
 
@@ -156,9 +158,9 @@ class GitHubRepositoryStarsTest extends TestCase
         Http::fake();
 
         $this->blade('<x-navbar.device-dropdowns />')
-            ->assertSeeInOrder(['https://github.com/nativephp/mobile-air', 'mobile-air', 'GitHub'], false)
-            ->assertSeeInOrder(['https://github.com/nativephp/desktop', 'desktop', 'GitHub'], false)
-            ->assertDontSee('stars');
+            ->assertSeeInOrder(['https://github.com/nativephp/mobile-air', 'nativephp/</span>mobile-air', 'GitHub'], false)
+            ->assertSeeInOrder(['https://github.com/nativephp/desktop', 'nativephp/</span>desktop', 'GitHub'], false)
+            ->assertDontSeeText('stars');
 
         Http::assertNothingSent();
     }
@@ -172,5 +174,13 @@ class GitHubRepositoryStarsTest extends TestCase
         $this->blade('<x-navbar.device-dropdowns />')->assertSee('1.2k stars');
 
         Http::assertNothingSent();
+    }
+
+    public function test_dropdown_items_without_a_title_prefix_render_the_title_alone(): void
+    {
+        $this->blade('<x-navbar.device-dropdown-item href="/docs" title="Documentation" />')
+            ->assertSee('<div class="font-medium">Documentation</div>', false)
+            ->assertSee('aria-label="Documentation"', false)
+            ->assertDontSee('opacity-60', false);
     }
 }

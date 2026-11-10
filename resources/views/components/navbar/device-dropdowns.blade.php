@@ -37,6 +37,7 @@
         @endif
         <x-navbar.device-dropdown-item
             href="https://github.com/nativephp/mobile-air"
+            title-prefix="nativephp/"
             title="mobile-air"
             :subtitle="$mobileAirStars ?? 'GitHub'"
             icon="github"
@@ -67,6 +68,7 @@
         @endif
         <x-navbar.device-dropdown-item
             href="https://github.com/nativephp/desktop"
+            title-prefix="nativephp/"
             title="desktop"
             :subtitle="$desktopStars ?? 'GitHub'"
             icon="github"
