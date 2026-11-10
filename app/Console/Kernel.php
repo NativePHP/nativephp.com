@@ -24,6 +24,12 @@ class Kernel extends ConsoleKernel
             ->onOneServer()
             ->runInBackground();
 
+        // Refresh the repository star counts shown in the site header's Mobile and Desktop dropdowns
+        $schedule->command('github:sync-repo-stars')
+            ->dailyAt('09:00')
+            ->onOneServer()
+            ->runInBackground();
+
         // Remove Discord Max role for users with expired Max licenses
         $schedule->command('discord:remove-expired-roles')
             ->dailyAt('10:30')
