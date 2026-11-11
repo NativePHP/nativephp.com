@@ -5,10 +5,12 @@ order: 275
 
 ## Overview
 
-A menu is a tap-to-open dropdown (SwiftUI `Menu` / Compose `DropdownMenu`) attached to a component. It isn't a
+A menu is a dropdown (SwiftUI `Menu` / Compose `DropdownMenu`) attached to a component. It isn't a
 standalone element — you build a list of actions and attach it with an attribute:
 
 - `:menu` on a [button](button) or [pressable](pressable) — tapping opens the menu instead of firing `@press`.
+- `:context-menu` on a [pressable](pressable) — a long press opens the menu, and a tap still fires `@press`. See
+  [Opening on a long press](#opening-on-a-long-press) below.
 - `:trailing-menu` on a [list item](list) — opens from the row's trailing edge.
 - `items()` on a nav-bar action — see [Menus in the nav bar](#menus-in-the-nav-bar) below.
 
@@ -48,6 +50,59 @@ Build the array in your component (in `render()`, `mount()`, or a helper) and pa
 @endverbatim
 
 When `:menu` is set, tapping opens the menu — it shadows the element's own `@press`.
+
+## Opening on a long press
+
+<x-docs.version-badge since="4.7" /> <x-docs.version-badge package="mobile-ui" since="0.9" />
+
+`:menu` takes over the tap, which doesn't suit a row in a list, where a tap should open the row. Use `:context-menu`
+on a pressable instead. It takes the same items, opens them when the row is pressed and held, and leaves the tap to
+`@press`:
+
+@verbatim
+```blade
+@foreach ($conversations as $chat)
+    <native:pressable
+        @press="open({{ $chat->id }})"
+        :context-menu="$this->rowMenu($chat)"
+        class="w-full px-4 py-3"
+    >
+        <native:text class="text-base font-medium text-theme-on-surface">{{ $chat->name }}</native:text>
+        <native:text class="text-sm text-theme-on-surface-variant">{{ $chat->preview }}</native:text>
+    </native:pressable>
+@endforeach
+```
+@endverbatim
+
+Each row needs its own items, so build them in a helper on your component that puts the row's id into each handler:
+
+```php
+use App\Models\Conversation;
+use Native\Mobile\Edge\Layouts\Builders\NavAction;
+
+protected function rowMenu(Conversation $chat): array
+{
+    return [
+        NavAction::make('pin')->icon('pin')->label('Pin')->press("pin({$chat->id})"),
+        NavAction::make('mute')
+            ->icon(ios: 'bell.slash', android: 'notifications_off')
+            ->label('Mute')
+            ->press("mute({$chat->id})"),
+        NavAction::divider(),
+        NavAction::make('delete')->icon('trash')->label('Delete')->press("delete({$chat->id})")->destructive(),
+    ];
+}
+```
+
+Each platform draws its own context menu. On iOS it's SwiftUI's `.contextMenu`, so the row lifts, the screen behind
+it dims and the haptic plays. On Android the same dropdown as `:menu` opens where the finger is, with the long-press
+haptic. TalkBack offers it as the row's long-press action.
+
+A few things to keep in mind:
+
+- Don't put `@longPress` on the same pressable. They both want the same gesture.
+- A pressable takes `:menu` or `:context-menu`, not both. Setting both throws an exception.
+- There are no submenus. As with the other inline menus, `items()` only works on nav-bar actions.
 
 ## Attaching to a list item
 
