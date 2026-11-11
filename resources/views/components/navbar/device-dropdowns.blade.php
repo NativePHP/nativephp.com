@@ -1,5 +1,7 @@
 @php
     $showShowcase = \App\Models\Showcase::approved()->count() >= 4;
+    $mobileAirStars = \App\Support\GitHub::mobileAir()->formattedStars();
+    $desktopStars = \App\Support\GitHub::desktop()->formattedStars();
 @endphp
 
 <nav class="flex items-center gap-1.5 lg:gap-2">
@@ -35,8 +37,9 @@
         @endif
         <x-navbar.device-dropdown-item
             href="https://github.com/nativephp/mobile-air"
-            title="GitHub"
-            subtitle="Visit our GitHub repository"
+            title-prefix="nativephp/"
+            title="mobile-air"
+            :subtitle="$mobileAirStars ?? 'GitHub'"
             icon="github"
         />
     </x-navbar.device-dropdown>
@@ -65,8 +68,9 @@
         @endif
         <x-navbar.device-dropdown-item
             href="https://github.com/nativephp/desktop"
-            title="GitHub"
-            subtitle="Visit our GitHub repository"
+            title-prefix="nativephp/"
+            title="desktop"
+            :subtitle="$desktopStars ?? 'GitHub'"
             icon="github"
         />
     </x-navbar.device-dropdown>
