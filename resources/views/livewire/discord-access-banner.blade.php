@@ -43,6 +43,16 @@
                                                 Early Adopter Eligible
                                             </span>
                                         @endif
+
+                                        @if($hasPluginDeveloperRole)
+                                            <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
+                                                Plugin Developer Active
+                                            </span>
+                                        @elseif(auth()->user()->hasHadPluginApproved())
+                                            <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
+                                                Plugin Developer Eligible
+                                            </span>
+                                        @endif
                                     </div>
                                 @endif
                             @else
@@ -74,7 +84,13 @@
                                     <span wire:loading wire:target="requestEarlyAdopterRole">Requesting...</span>
                                 </button>
                             @endif
-                            @if(($hasUltraRole || !(auth()->user()->hasMaxAccess() || auth()->user()->hasUltraAccess())) && ($hasEarlyAdopterRole || !auth()->user()->isEapCustomer()))
+                            @if(!$hasPluginDeveloperRole && auth()->user()->hasHadPluginApproved())
+                                <button wire:click="requestPluginDeveloperRole" type="button" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                                    <span wire:loading.remove wire:target="requestPluginDeveloperRole">Claim Plugin Developer Role</span>
+                                    <span wire:loading wire:target="requestPluginDeveloperRole">Claiming...</span>
+                                </button>
+                            @endif
+                            @if(($hasUltraRole || !(auth()->user()->hasMaxAccess() || auth()->user()->hasUltraAccess())) && ($hasEarlyAdopterRole || !auth()->user()->isEapCustomer()) && ($hasPluginDeveloperRole || !auth()->user()->hasHadPluginApproved()))
                                 <a href="https://discord.gg/nativephp" target="_blank" rel="noopener noreferrer" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
                                     Open Discord
                                 </a>
