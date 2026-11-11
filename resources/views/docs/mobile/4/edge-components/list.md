@@ -35,8 +35,46 @@ Pair with [`<native:list-item>`](#list-item) for Material3 list rows, or use any
   inset-grouped style (rounded cards — iOS `.insetGrouped`, grouped cards on Android); `plain` keeps flat rows with
   plain section headers instead (optional, boolean, default: `false`)
 - `on-refresh` - Component method called on pull-to-refresh (optional, string) [iOS]
+- `refresh-indicator` - Name of a plugin-provided indicator to show instead of the platform spinner when the list is
+  pulled (optional, string). See [Custom pull-to-refresh indicators](#custom-pull-to-refresh-indicators)
+- `refresh-indicator-options` - Settings passed to that indicator (optional, array). Bind it:
+  `:refresh-indicator-options="[...]"`
 - `on-end-reached` - Component method called when the user nears the end of the list (optional, string)
 - `end-reached-buffer` <x-docs.version-badge package="mobile-ui" since="0.7" /> - Number of items from the end at which `on-end-reached` is triggered (optional, integer, default: `3`)
+
+## Custom pull-to-refresh indicators
+
+Not in `nativephp/mobile-ui` 0.9.0; it needs the release that includes
+[NativePHP/mobile-ui#198](https://github.com/NativePHP/mobile-ui/pull/198).
+
+A list with `on-refresh` shows the platform spinner when pulled. `refresh-indicator` replaces it with an indicator a
+plugin provides, such as an animated logo, and `refresh-indicator-options` passes that indicator its settings:
+
+@verbatim
+```blade
+<native:list
+    on-refresh="reload"
+    refresh-indicator="lottie"
+    :refresh-indicator-options="['asset' => 'animations/logo.lottie']"
+>
+    @foreach ($posts as $post)
+        <native:list-item :headline="$post->title" />
+    @endforeach
+</native:list>
+```
+@endverbatim
+
+If no installed plugin provides an indicator with that name, the list keeps the platform spinner, so a screen can name
+an indicator whether or not the app ships it. `nativephp/mobile-ui` ships no indicator of its own: to write one, see
+[Pull-to-refresh indicators](../plugins/ui-components#pull-to-refresh-indicators).
+
+On Android, the indicator fills a 48dp disc styled like the stock indicator, which slides down with the pull. On iOS,
+the list runs its own pull-to-refresh and the indicator fills a 40pt square in the gap the pull opens above the rows.
+When the pull crosses the refresh threshold, the indicator bounces and the device gives a haptic tap, as the platform
+spinners do.
+
+Only `<native:list>` supports custom indicators: [`<native:refreshable>`](refreshable) always shows the platform
+spinner.
 
 
 ## Children
@@ -357,6 +395,8 @@ NativeList::make(
 - `showsIndicators(bool $value = true)` - Show scroll indicators
 - `separator(bool $value = true)` - Render dividers between rows
 - `onRefresh(string $method)` - Pull-to-refresh handler
+- `refreshIndicator(string $name, array $options = [])` - Plugin-provided pull-to-refresh indicator and its settings,
+  e.g. `->refreshIndicator('lottie', ['asset' => 'animations/logo.lottie'])`
 - `onEndReached(string $method)` - End-reached handler
 - `endReachedBuffer(int $items)` - Number of items from the end at which the end-reached handler is triggered (default: `3`)
 
