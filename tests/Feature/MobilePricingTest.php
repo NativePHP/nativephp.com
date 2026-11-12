@@ -629,4 +629,62 @@ class MobilePricingTest extends TestCase
             ->assertSet('upgradePreview', null)
             ->assertOk();
     }
+
+    #[Test]
+    public function ultra_subscriber_cannot_start_a_new_checkout_session()
+    {
+        $user = $this->createSubscribedUser(self::MAX_PRICE_ID);
+        Auth::login($user);
+
+        Livewire::test(MobilePricing::class)
+            ->call('createCheckoutSession', 'max')
+            ->assertRedirect(route('dashboard'));
+
+        $this->assertSame(1, $user->subscriptions()->count());
+    }
+
+    #[Test]
+    public function guest_cannot_start_a_checkout_session_for_an_email_with_an_active_subscription()
+    {
+        $user = $this->createSubscribedUser(self::MAX_PRICE_ID);
+
+        Livewire::test(MobilePricing::class)
+            ->call('handlePurchaseRequest', [
+                'email' => $user->email,
+                'plan' => 'max',
+            ])
+            ->assertRedirect(route('login'));
+
+        $this->assertSame(1, $user->subscriptions()->count());
+    }
+
+    #[Test]
+    public function pro_subscriber_cannot_bypass_the_upgrade_flow_with_a_new_checkout_session()
+    {
+        $user = $this->createSubscribedUser(self::PRO_PRICE_ID);
+        Auth::login($user);
+
+        Livewire::test(MobilePricing::class)
+            ->call('createCheckoutSession', 'max')
+            ->assertRedirect(route('dashboard'));
+    }
+
+    private function createSubscribedUser(string $priceId): User
+    {
+        $user = User::factory()->create(['stripe_id' => 'cus_'.uniqid()]);
+
+        $subscription = Cashier::$subscriptionModel::factory()
+            ->for($user)
+            ->active()
+            ->create([
+                'stripe_price' => $priceId,
+                'is_comped' => false,
+            ]);
+
+        Cashier::$subscriptionItemModel::factory()
+            ->for($subscription, 'subscription')
+            ->create(['stripe_price' => $priceId]);
+
+        return $user;
+    }
 }
