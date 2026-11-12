@@ -177,6 +177,7 @@ missing macro, so a typo fails loudly rather than silently passing.
 **Events not firing?**
 - Confirm you're dispatching on the main thread
 - Check the event class name matches the manifest
+- Check the event class implements `DispatchableFromNative` (see [Events](events#implement-dispatchablefromnative))
 - Verify the `#[OnNative]` attribute uses the correct class
 
 ## Official Plugins & Dev Kit
