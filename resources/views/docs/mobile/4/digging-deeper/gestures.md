@@ -36,7 +36,9 @@ As the user drags, `$drag` updates on the UI thread and the bound props follow i
 and shrinks together, with no PHP involved during the gesture.
 
 To have a drag settle on set points when the finger lifts, like a row that slides aside to show its actions, give the
-gesture area [snap points](../edge-components/gesture-area#swipe-to-reveal).
+gesture area [snap points](../edge-components/gesture-area#swipe-to-reveal). To have it do something when you let
+it go far enough, like a message that slides sideways to reply, give it a
+[trigger](../edge-components/gesture-area#swipe-to-reply).
 
 ### Formulas
 

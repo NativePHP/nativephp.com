@@ -42,6 +42,9 @@ screen in your app and drag the card.
 - `snap-x` / `snap-y` <x-docs.version-badge since="4.7" /> <x-docs.version-badge package="mobile-ui" since="0.9" /> - The points a bound pan settles on when the finger lifts
   (optional), as an array of numbers or a comma-separated string. Give at least two. See
   [Swipe to reveal](#swipe-to-reveal).
+- `trigger-x` / `trigger-y` <x-docs.version-badge since="4.8" /> <x-docs.version-badge package="mobile-ui" since="0.10" /> - How far a bound pan has to go for letting go to call
+  `@trigger` (optional, float). The sign is the direction, so `-64` is 64 points to the left. It takes the place of
+  snap points on that axis. See [Swipe to reply](#swipe-to-reply).
 - `swipe-fingers` - How many fingers a `@swipe` needs (optional, integer, default `1`).
 
 <aside>
@@ -56,7 +59,10 @@ interpolation formulas.
 
 - `@dragEnd` <x-docs.version-badge since="4.5" /> <x-docs.version-badge package="mobile-ui" since="0.5" /> - Component method to call when the finger lifts after a drag.
   It gets the final translation on each axis as two floats, `x` then `y`. A bound axis reports its shared value,
-  which with snap points is the point it settled on. An unbound axis reports how far the finger moved.
+  which with snap points is the point it settled on, and with a trigger is where it rests. An unbound axis reports
+  how far the finger moved.
+- `@trigger` <x-docs.version-badge since="4.8" /> <x-docs.version-badge package="mobile-ui" since="0.10" /> - Component method to call when the finger lifts past the
+  `trigger-x` or `trigger-y` point. It gets no arguments.
 - `@pinchEnd` - Component method to call when the fingers lift after a pinch, with the final scale as a float.
 - `@swipe` - Component method to call on a quick swipe, with its direction as a string: `left`, `right`, `up` or
   `down`.
@@ -72,6 +78,8 @@ A gesture area shares its touches with the scroll view around it and with the sy
 - On iOS 26, which lets you swipe back from anywhere on a screen, a sideways drag that starts on a `pan-x` area or a
   `@swipe` area moves the area and leaves the screen where it is. A swipe in from the left edge of the screen still
   goes back.
+- A pan with a trigger only takes drags that head the trigger's way. A drag the other way is left to the scroll view
+  or to swipe back, as if the area weren't there.
 - A swipe across a pressable inside the area, or one around it, doesn't press it. On Android, before mobile-ui 0.9,
   it pressed it as well.
 
@@ -211,5 +219,73 @@ public function reply(): void
 
 A button shrunk or faded to nothing still takes taps where it sits. That's why the example only makes Reply pressable
 once the card has settled open. Otherwise a tap beside a closed card would reply.
+
+</aside>
+
+## Swipe to reply
+
+<x-docs.version-badge since="4.8" /> <x-docs.version-badge package="mobile-ui" since="0.10" />
+
+With `trigger-x` (or `trigger-y`), a bound pan does something when you let it go far enough, the way a message in a
+chat app slides sideways to reply:
+
+- The content follows the finger the trigger's way as far as the trigger point. Past it, it moves a third as far as
+  the finger does. It doesn't move the other way at all.
+- Each time the pull goes past the point, the phone plays a light haptic. Coming back under it plays nothing.
+- When the finger lifts, the content springs back to rest. If it was past the point, `@trigger` is called.
+
+Here a message slides left, and a Reply icon beside it grows, turns upright and fades in as it goes. Both read the
+same shared value, so the icon is in place when the haptic plays:
+
+@verbatim
+```blade static
+@php
+    $shown = $pull->interpolate([-64, 0], [1, 0]);
+    $turn = $pull->interpolate([-64, 0], [0, 90]);
+@endphp
+
+<native:gesture-area :pan-x="$pull" trigger-x="-64" @trigger="reply({{ $message->id }})" class="w-full">
+    <native:row :translate-x="$pull" class="w-full gap-2 items-center">
+        <native:column class="flex-shrink px-4 py-3 rounded-2xl bg-theme-surface">
+            <native:text>{{ $message->body }}</native:text>
+        </native:column>
+
+        <native:stack :scale="$shown" :opacity="$shown" :rotate="$turn">
+            <native:icon ios="arrowshape.turn.up.left" android="reply" :size="20" class="text-theme-primary" />
+        </native:stack>
+    </native:row>
+</native:gesture-area>
+```
+@endverbatim
+
+PHP has nothing to do while the finger moves or when it lifts, because the message always springs back by itself.
+`reply()` only runs when the pull went far enough:
+
+```php
+use Native\Mobile\Edge\SharedValue;
+
+public ?SharedValue $pull = null;
+
+public ?int $replyingTo = null;
+
+public function mount(): void
+{
+    $this->pull = SharedValue::make();
+}
+
+public function reply(int $id): void
+{
+    $this->replyingTo = $id;
+}
+```
+
+The pull only starts when the finger heads the trigger's way. Here that's left, so a drag up or down still scrolls
+the thread, and on iOS 26 a drag to the right still goes back.
+
+<aside>
+
+A trigger needs a pan bound on its own axis only: `pan-x` alone for `trigger-x`, or `pan-y` alone for `trigger-y`.
+In a list, give each row its own shared value, kept on the component by the row's id, so one row's pull doesn't move
+the others. Simulators and emulators don't play haptics, so try the haptic on a phone.
 
 </aside>
