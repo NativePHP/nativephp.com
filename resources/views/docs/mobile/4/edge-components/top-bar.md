@@ -96,13 +96,17 @@ On iOS, if more than 5 actions are provided, they collapse into an overflow menu
 
 ### `<native:top-bar-action>` Props
 
-- `id` - Unique identifier (required)
+- `id` - Unique identifier (required, except on a `section` or `row`)
 - `icon` - A named [icon](icon#icon-name-reference) — the cross-platform fallback (optional if a platform icon is given)
 - `ios-icon` / `android-icon` - Per-platform icon overrides: an enum case (`App\Icons\Ios`, `App\Icons\Android`, `App\Icons\AndroidOutlined`) or a raw symbol string. `ios` / `android` are accepted as shorthand (optional). See [Platform icons](#platform-icons)
 - `material-variant` - Material style hint for Android, e.g. `outlined` (optional). Set automatically when you use an `AndroidOutlined` enum case
 - `label` - Text label. Used for accessibility and displayed in overflow menus (optional but recommended)
 - `url` - A URL to navigate to when tapped (optional)
 - `destructive` - Render in the destructive (red) tint (optional, boolean)
+- `subtitle` - A second, smaller line under the label, for an action inside a menu (optional, string)
+- `checked` - Show a checkmark, for an action inside a menu (optional, boolean)
+- `section` - Group the actions nested inside this one, with `label` as the heading (optional, boolean). See [Menus](#menus)
+- `row` - Show the actions nested inside this one as a compact row of icon-over-label buttons (optional, boolean). See [Menus](#menus)
 
 <aside>
 
@@ -110,6 +114,31 @@ Any `url` that doesn't match a registered native route will exit to the web view
 method on your screen instead of navigating, use `@tap="methodName"`.
 
 </aside>
+
+### Menus
+
+Nest `<native:top-bar-action>` elements inside an action and it opens a pull-down menu of them instead of firing a
+press. Inside a menu, an action with its own nested actions is a submenu, and the `section` and `row` attributes
+group items the way [`NavAction::section()` and `NavAction::row()`](menus#sections-rows-and-submenus) do:
+
+@verbatim
+```blade static
+<native:top-bar title="Inbox">
+    <native:top-bar-action id="more" icon="ellipsis" a11y-label="More">
+        <native:top-bar-action section label="Sort by">
+            <native:top-bar-action id="sort_date" label="Date" :checked="$sort === 'date'" @tap="sortBy('date')" />
+            <native:top-bar-action id="sort_sender" label="Sender" :checked="$sort === 'sender'" @tap="sortBy('sender')" />
+        </native:top-bar-action>
+        <native:top-bar-action section>
+            <native:top-bar-action id="archive_all" label="Archive All" icon="archive" @tap="archiveAll" />
+        </native:top-bar-action>
+    </native:top-bar-action>
+</native:top-bar>
+```
+@endverbatim
+
+See [Menus](menus#menus-in-blade) for a full example and how menus look on each platform. A `custom` bar draws its
+actions as plain buttons and ignores nested actions.
 
 ### Platform icons
 
