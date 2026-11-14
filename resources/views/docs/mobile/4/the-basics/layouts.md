@@ -120,6 +120,10 @@ properties or methods on it (such as `$screen->navTitle()`) to customize the chr
 The chrome is described entirely with these fluent builders — you never place a top bar or tab bar as an element
 in a screen's Blade.
 
+Any icon you pass to these builders can also be one of your own
+[custom icons](../edge-components/icon#custom-icons) <x-docs.version-badge since="4.7" />, such as
+`Icon::custom('git-commit-vertical')`.
+
 ### `NavBar` — the top bar
 
 - `make()` — create a builder

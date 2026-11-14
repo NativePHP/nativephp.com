@@ -10,15 +10,20 @@ use Illuminate\Support\Facades\Log;
 
 trait ResolvesGitHubToken
 {
-    protected function getGitHubToken(): ?string
+    protected function getGitHubToken(bool $forSatisBuild = false): ?string
     {
         /** @var Plugin $plugin */
         $plugin = $this->plugin;
 
-        return $this->resolveGitHubTokenFor($plugin);
+        return $this->resolveGitHubTokenFor($plugin, $forSatisBuild);
     }
 
-    protected function resolveGitHubTokenFor(Plugin $plugin): ?string
+    /**
+     * A token for a Satis build sits in that app's queue until a worker clones with it. Installation
+     * tokens only last an hour and are cached for 55 minutes, so a cached one could expire before the
+     * build starts. Builds get a newly minted one instead.
+     */
+    protected function resolveGitHubTokenFor(Plugin $plugin, bool $forSatisBuild = false): ?string
     {
         $user = $plugin->user;
         $repo = $plugin->getRepositoryOwnerAndName();
@@ -29,7 +34,9 @@ trait ResolvesGitHubToken
             $installation = $appService->findInstallationForRepo($user, $repo['owner'], $repo['repo']);
 
             if ($installation) {
-                $token = $appService->getInstallationToken($installation);
+                $token = $forSatisBuild
+                    ? $appService->refreshInstallationToken($installation)
+                    : $appService->getInstallationToken($installation);
 
                 if ($token && $this->gitHubAcceptsToken($plugin, $token)) {
                     Log::debug('[GitHub] Using installation token', [

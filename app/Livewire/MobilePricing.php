@@ -71,6 +71,18 @@ class MobilePricing extends Component
             return;
         }
 
+        if ($this->hasActivePaidSubscription($user)) {
+            Log::warning('Blocked checkout session for a user who already has an active paid subscription.', [
+                'user_id' => $user->id,
+            ]);
+
+            $message = 'This account already has an active subscription. Manage it from your dashboard.';
+
+            return Auth::id() === $user->id
+                ? redirect(route('dashboard'))->with('message', $message)
+                : redirect(route('login'))->with('message', $message);
+        }
+
         // Cancel any comped subscription before creating a new paid one
         if ($user->hasCompedSubscription()) {
             $user->subscription('default')->cancelNow();
@@ -218,6 +230,16 @@ class MobilePricing extends Component
         $subscription->skipTrial()->swapAndInvoice($newPriceId);
 
         return redirect(route('dashboard'))->with('success', 'Your subscription has been upgraded to Ultra!');
+    }
+
+    /**
+     * Comped subscriptions are replaced at checkout, so only paid ones block a new checkout.
+     */
+    private function hasActivePaidSubscription(User $user): bool
+    {
+        $subscription = $user->subscription('default');
+
+        return $subscription && $subscription->active() && ! $user->hasCompedSubscription();
     }
 
     private function findOrCreateUser(string $email): User

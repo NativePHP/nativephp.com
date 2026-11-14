@@ -66,7 +66,7 @@
                         })
                     }
                 "
-                class="flex flex-wrap items-center justify-center gap-2.5 *:opacity-0"
+                class="flex flex-wrap items-center justify-center gap-x-3 gap-y-2 *:opacity-0"
                 aria-label="Social networks"
             >
                 <x-social-networks-all />

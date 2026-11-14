@@ -53,9 +53,22 @@ class EditPlugin extends EditRecord
                 ->icon('heroicon-o-check')
                 ->color('success')
                 ->visible(fn () => $this->record->isPending())
-                ->disabled(fn () => ! $this->record->passesRequiredReviewChecks())
-                ->action(fn () => $this->record->approve(auth()->id()))
+                ->action(function (): void {
+                    if (! $this->record->passesRequiredReviewChecks()) {
+                        Notification::make()
+                            ->title('Required review checks are failing')
+                            ->body(implode(', ', $this->record->getFailingRequiredChecks()))
+                            ->danger()
+                            ->send();
+
+                        return;
+                    }
+
+                    $this->record->approve(auth()->id());
+                })
                 ->requiresConfirmation()
+                ->modalSubmitAction(fn (Actions\Action $action): Actions\Action|false => $this->record->passesRequiredReviewChecks() ? $action : false)
+                ->modalCancelActionLabel(fn (): string => $this->record->passesRequiredReviewChecks() ? 'Cancel' : 'Close')
                 ->modalHeading('Approve Plugin')
                 ->modalDescription(fn () => ! $this->record->passesRequiredReviewChecks()
                     ? "Cannot approve '{$this->record->name}' — required checks are failing: ".implode(', ', $this->record->getFailingRequiredChecks())

@@ -157,6 +157,55 @@ class PluginSyncServiceTest extends TestCase
         Http::assertNotSent(fn (Request $request): bool => isset($request['ref']) || str_contains($request->url(), '/commits/'));
     }
 
+    public function test_sync_clears_platform_versions_removed_from_nativephp_json(): void
+    {
+        Http::fake([
+            'api.github.com/repos/acme/test-plugin/contents/composer.json' => Http::response([
+                'content' => base64_encode(json_encode(['name' => 'acme/test-plugin'])),
+            ]),
+            'api.github.com/repos/acme/test-plugin/contents/nativephp.json' => Http::response([
+                'content' => base64_encode(json_encode(['android' => ['min_version' => '33']])),
+            ]),
+            'api.github.com/repos/acme/test-plugin/releases/latest' => Http::response([], 404),
+            'api.github.com/repos/acme/test-plugin/tags*' => Http::response([]),
+            '*' => Http::response([], 404),
+        ]);
+
+        $plugin = Plugin::factory()->create([
+            'name' => 'acme/test-plugin',
+            'repository_url' => 'https://github.com/acme/test-plugin',
+            'ios_version' => '18.0',
+            'android_version' => '28',
+        ]);
+
+        $this->assertTrue((new PluginSyncService)->sync($plugin));
+        $this->assertNull($plugin->fresh()->ios_version);
+        $this->assertSame('33', $plugin->fresh()->android_version);
+    }
+
+    public function test_sync_clears_platform_versions_when_nativephp_json_is_removed(): void
+    {
+        Http::fake([
+            'api.github.com/repos/acme/test-plugin/contents/composer.json' => Http::response([
+                'content' => base64_encode(json_encode(['name' => 'acme/test-plugin'])),
+            ]),
+            'api.github.com/repos/acme/test-plugin/releases/latest' => Http::response([], 404),
+            'api.github.com/repos/acme/test-plugin/tags*' => Http::response([]),
+            '*' => Http::response([], 404),
+        ]);
+
+        $plugin = Plugin::factory()->create([
+            'name' => 'acme/test-plugin',
+            'repository_url' => 'https://github.com/acme/test-plugin',
+            'ios_version' => '18.0',
+            'android_version' => '28',
+        ]);
+
+        $this->assertTrue((new PluginSyncService)->sync($plugin));
+        $this->assertNull($plugin->fresh()->ios_version);
+        $this->assertNull($plugin->fresh()->android_version);
+    }
+
     public function test_sync_extracts_mobile_min_version_from_composer_data(): void
     {
         $composerJson = json_encode([

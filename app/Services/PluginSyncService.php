@@ -86,6 +86,8 @@ class PluginSyncService
         $updateData = [
             'composer_data' => $composerData,
             'nativephp_data' => $nativephpData,
+            'ios_version' => $nativephpData ? $this->extractIosVersion($nativephpData) : null,
+            'android_version' => $nativephpData ? $this->extractAndroidVersion($nativephpData) : null,
             'last_synced_at' => now(),
         ];
 
@@ -108,11 +110,6 @@ class PluginSyncService
             if (isset($composerData['description'])) {
                 $updateData['description'] = $composerData['description'];
             }
-        }
-
-        if ($nativephpData) {
-            $updateData['ios_version'] = $this->extractIosVersion($nativephpData);
-            $updateData['android_version'] = $this->extractAndroidVersion($nativephpData);
         }
 
         if ($composerData) {

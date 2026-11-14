@@ -1,95 +1,33 @@
-<div>
-    <a
-        href="https://x.com/nativephp"
-        title="Twitter"
-        class="group dark:hover:bg-haiti inline-grid size-10 place-items-center rounded-xl bg-zinc-200/80 transition duration-200 hover:bg-gray-200/70 dark:bg-gray-700/40"
-    >
-        <x-icons.twitter
-            class="size-[1.1rem] text-black transition duration-200 group-hover:text-violet-400 dark:text-white"
-        />
-    </a>
-</div>
+@php
+    $networks = [
+        ['href' => $githubLink, 'title' => 'Source code of NativePHP', 'icon' => 'github', 'size' => 'size-[1.2rem]'],
+        ['href' => $openCollectiveLink, 'title' => 'NativePHP on Open Collective', 'icon' => 'opencollective', 'size' => 'size-[1.2rem]'],
+        ['href' => $discordLink, 'title' => 'Go to discord server', 'icon' => 'discord', 'size' => 'size-[1.25rem]'],
+        ['href' => 'https://youtube.com/@NativePHPOfficial', 'title' => 'NativePHP on YouTube', 'icon' => 'youtube', 'size' => 'size-[1.5rem]'],
+        ['href' => 'https://www.twitch.tv/nativephp', 'title' => 'NativePHP on Twitch', 'icon' => 'twitch', 'size' => 'size-[1.15rem]'],
+        ['href' => 'https://dev-null.sh/@nativephp', 'title' => 'NativePHP on /dev/null', 'icon' => 'devnull', 'size' => 'size-[1.1rem]'],
+        ['href' => 'https://x.com/nativephp', 'title' => 'NativePHP on X', 'icon' => 'twitter', 'size' => 'size-[1.1rem]'],
+        ['href' => $bskyLink, 'title' => 'NativePHP on Bluesky', 'icon' => 'bluesky', 'size' => 'size-[1.2rem]'],
+        ['href' => 'https://www.threads.com/@nativephp', 'title' => 'NativePHP on Threads', 'icon' => 'threads', 'size' => 'size-[1.15rem]'],
+        ['href' => 'https://www.facebook.com/profile.php?id=61578672170369', 'title' => 'NativePHP on Facebook', 'icon' => 'facebook', 'size' => 'size-[1.2rem]'],
+        ['href' => 'https://www.instagram.com/nativephp/', 'title' => 'NativePHP on Instagram', 'icon' => 'instagram', 'size' => 'size-[1.2rem]'],
+        ['href' => 'https://www.tiktok.com/@nativephp', 'title' => 'NativePHP on TikTok', 'icon' => 'tiktok', 'size' => 'size-[1.15rem]'],
+        ['href' => 'https://www.linkedin.com/company/nativephp/', 'title' => 'NativePHP on LinkedIn', 'icon' => 'linkedin', 'size' => 'size-[1.2rem]'],
+    ];
+@endphp
 
-<div>
-    <a
-        href="https://youtube.com/@NativePHPOfficial"
-        title="Youtube"
-        class="group dark:hover:bg-haiti inline-grid size-10 place-items-center rounded-xl bg-zinc-200/80 transition duration-200 hover:bg-gray-200/70 dark:bg-gray-700/40"
-    >
-        <x-icons.youtube
-            class="size-[1.4rem] text-black transition duration-200 group-hover:text-violet-400 dark:text-white"
-        />
-    </a>
-</div>
-
-<div>
-    <a
-        href="{{ $githubLink }}"
-        title="Source code of NativePHP"
-        class="group dark:hover:bg-haiti inline-grid size-10 place-items-center rounded-xl bg-zinc-200/80 transition duration-200 hover:bg-gray-200/70 dark:bg-gray-700/40"
-    >
-        <x-icons.github
-            class="size-[1.1rem] transition duration-200 group-hover:text-violet-400 dark:text-white"
-        />
-    </a>
-</div>
-
-<div>
-    <a
-        href="{{ $discordLink }}"
-        title="Go to discord server"
-        class="group dark:hover:bg-haiti inline-grid size-10 place-items-center rounded-xl bg-zinc-200/80 transition duration-200 hover:bg-gray-200/70 dark:bg-gray-700/40"
-    >
-        <x-icons.discord
-            class="size-[1.1rem] text-black transition duration-200 group-hover:text-violet-400 dark:text-white"
-        />
-    </a>
-</div>
-
-<div>
-    <a
-        href="{{ $openCollectiveLink }}"
-        title="NativePHP on Open Collective"
-        class="group dark:hover:bg-haiti inline-grid size-10 place-items-center rounded-xl bg-zinc-200/80 transition duration-200 hover:bg-gray-200/70 dark:bg-gray-700/40"
-    >
-        <x-icons.opencollective
-            class="size-[1.1rem] text-black transition duration-200 group-hover:text-violet-400 dark:text-white"
-        />
-    </a>
-</div>
-
-<div>
-    <a
-        href="{{ $bskyLink }}"
-        title="Bluesky"
-        class="group dark:hover:bg-haiti inline-grid size-10 place-items-center rounded-xl bg-zinc-200/80 transition duration-200 hover:bg-gray-200/70 dark:bg-gray-700/40"
-    >
-        <x-icons.bluesky
-            class="size-[1.1rem] text-black transition duration-200 group-hover:text-violet-400 dark:text-white"
-        />
-    </a>
-</div>
-
-<div>
-    <a
-        href="https://pinkary.com/@nativephp"
-        title="NativePHP on Pinkary"
-        class="group dark:hover:bg-haiti inline-grid size-10 place-items-center rounded-xl bg-zinc-200/80 transition duration-200 hover:bg-gray-200/70 dark:bg-gray-700/40"
-    >
-        <x-icons.pinkary
-            class="size-[1.6rem] text-black transition duration-200 group-hover:text-violet-400 dark:text-white"
-        />
-    </a>
-</div>
-
-<div>
-    <a
-        href="https://www.linkedin.com/company/nativephp/"
-        title="NativePHP on LinkedIn"
-        class="group dark:hover:bg-haiti inline-grid size-10 place-items-center rounded-xl bg-zinc-200/80 transition duration-200 hover:bg-gray-200/70 dark:bg-gray-700/40"
-    >
-        <x-icons.linkedin
-            class="size-[1.1rem] text-black transition duration-200 group-hover:text-violet-400 dark:text-white"
-        />
-    </a>
-</div>
+@foreach ($networks as $network)
+    <div>
+        <a
+            href="{{ $network['href'] }}"
+            title="{{ $network['title'] }}"
+            aria-label="{{ $network['title'] }}"
+            class="group inline-grid size-8 place-items-center"
+        >
+            <x-dynamic-component
+                :component="'icons.' . $network['icon']"
+                class="{{ $network['size'] }} text-gray-500 transition duration-200 group-hover:text-violet-400 dark:text-gray-400"
+            />
+        </a>
+    </div>
+@endforeach

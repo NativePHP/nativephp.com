@@ -229,6 +229,7 @@ class PluginResource extends Resource
                             ->label('Demo Video (required)')
                             ->content(fn (?Plugin $record) => match (true) {
                                 $record?->hasDemoVideo() => '✅ '.$record->demoVideo()->providerLabel().' — attested '.$record->demo_video_attested_at->diffForHumans(),
+                                $record?->requiresDemoVideo() === false => '✅ Not required — submitted before demo videos were required',
                                 $record?->demoVideo() !== null => '❌ Not attested by developer',
                                 default => '❌ Missing',
                             }),
@@ -608,7 +609,11 @@ class PluginResource extends Resource
                             $lines = collect([
                                 ['License file *', $checks['has_license_file']],
                                 ['Release version *', $checks['has_release_version'] ? $checks['release_version'] : false],
-                                ['Demo video *', $record->hasDemoVideo() ? $record->demoVideo()->providerLabel() : false],
+                                ['Demo video *', match (true) {
+                                    $record->hasDemoVideo() => $record->demoVideo()->providerLabel(),
+                                    ! $record->requiresDemoVideo() => 'not required',
+                                    default => false,
+                                }],
                                 ['iOS support', $checks['supports_ios']],
                                 ['Android support', $checks['supports_android']],
                                 ['JS support', $checks['supports_js']],
@@ -632,7 +637,7 @@ class PluginResource extends Resource
                                 'supports_ios', 'supports_android', 'supports_js',
                                 'requires_mobile_sdk',
                                 'has_ios_min_version', 'has_android_min_version',
-                            ])->filter()->count() + ($record->hasDemoVideo() ? 1 : 0);
+                            ])->filter()->count() + ($record->meetsDemoVideoRequirement() ? 1 : 0);
 
                             Notification::make()
                                 ->title("Review checks complete ({$passed}/9 passed)")

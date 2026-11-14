@@ -3,9 +3,13 @@
 namespace App\Support;
 
 use App\Support\GitHub\Release;
+use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Number;
+use Illuminate\Support\Str;
 
 class GitHub
 {
@@ -20,7 +24,7 @@ class GitHub
     public const PACKAGE_MOBILE_AIR = 'nativephp/mobile-air';
 
     public function __construct(
-        private string $package
+        public readonly string $package
     ) {}
 
     public static function desktop(): static
@@ -103,6 +107,60 @@ class GitHub
         return $this->releases()->filter(
             fn (Release $release) => version_compare(ltrim((string) $release->tag_name, 'v'), $floor, '>=')
         )->values();
+    }
+
+    /**
+     * The repository's star count as last cached by refreshStars(). Never hits
+     * the GitHub API, so it is safe to call while rendering a page.
+     */
+    public function stars(): ?int
+    {
+        return Cache::get($this->getCacheKey('stars'));
+    }
+
+    /**
+     * The cached star count in a compact, human form such as "1.2k stars", or
+     * null when nothing has been cached yet.
+     */
+    public function formattedStars(): ?string
+    {
+        $stars = $this->stars();
+
+        if ($stars === null) {
+            return null;
+        }
+
+        return Str::lower(Number::abbreviate($stars, maxPrecision: 1)).' '.Str::plural('star', $stars);
+    }
+
+    /**
+     * Fetch the star count from GitHub and cache it with no expiry. A failed
+     * request leaves the previously cached count in place.
+     */
+    public function refreshStars(): ?int
+    {
+        try {
+            $response = Http::timeout(10)
+                ->accept('application/vnd.github+json')
+                ->when(config('services.github.token'), fn ($request, string $token) => $request->withToken($token))
+                ->get('https://api.github.com/repos/'.$this->package);
+        } catch (ConnectionException $e) {
+            Log::warning('Failed to fetch GitHub star count', ['repository' => $this->package, 'error' => $e->getMessage()]);
+
+            return null;
+        }
+
+        $stars = $response->json('stargazers_count');
+
+        if ($response->failed() || ! is_int($stars)) {
+            Log::warning('Failed to fetch GitHub star count', ['repository' => $this->package, 'status' => $response->status()]);
+
+            return null;
+        }
+
+        Cache::forever($this->getCacheKey('stars'), $stars);
+
+        return $stars;
     }
 
     private function fetchLatestVersion(): ?Release

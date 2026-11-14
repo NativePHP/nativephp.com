@@ -128,6 +128,30 @@ class ContributingAndSecurityPagesTest extends TestCase
     }
 
     #[Test]
+    public function the_old_mobile_docs_contributing_page_redirects_permanently_to_the_contributing_page(): void
+    {
+        $this
+            ->get('/docs/mobile/4/getting-started/contributing')
+            ->assertMovedPermanently()
+            ->assertRedirect('/contributing');
+    }
+
+    #[Test]
+    public function the_unversioned_mobile_docs_contributing_link_redirects_straight_to_the_contributing_page(): void
+    {
+        $this
+            ->get('/docs/mobile/getting-started/contributing')
+            ->assertMovedPermanently()
+            ->assertRedirect('/contributing');
+    }
+
+    #[Test]
+    public function the_mobile_docs_no_longer_have_their_own_contributing_page(): void
+    {
+        $this->assertFileDoesNotExist(resource_path('views/docs/mobile/4/getting-started/contributing.md'));
+    }
+
+    #[Test]
     public function the_footer_links_to_the_contributing_and_security_pages(): void
     {
         $this

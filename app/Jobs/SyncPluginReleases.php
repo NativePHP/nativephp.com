@@ -50,7 +50,7 @@ class SyncPluginReleases implements ShouldQueue
             return;
         }
 
-        $token = $this->getGitHubToken();
+        $token = $this->getGitHubToken(forSatisBuild: $this->triggerSatisBuild && $this->plugin->isPaid());
 
         Log::info('[SyncPluginReleases] Fetching releases from GitHub', [
             'plugin_id' => $this->plugin->id,

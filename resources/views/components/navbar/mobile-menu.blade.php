@@ -485,24 +485,13 @@
             </div>
 
             <div
-                class="h-0.5 w-full rounded-full bg-current opacity-5"
+                class="h-0.5 w-full rounded-full bg-current opacity-5 md:hidden"
                 role="presentation"
             ></div>
 
             <div class="mt-4 flex justify-center md:hidden">
                 <x-bifrost-button />
             </div>
-
-            <nav
-                class="mx-auto mt-4 flex"
-                aria-label="Social media"
-            >
-                <div
-                    class="flex flex-wrap justify-center-safe gap-2 contrast-120"
-                >
-                    <x-social-networks-all />
-                </div>
-            </nav>
         </div>
     </div>
 </div>
