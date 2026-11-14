@@ -102,6 +102,9 @@ On iOS, if more than 5 actions are provided, they collapse into an overflow menu
 - `material-variant` - Material style hint for Android, e.g. `outlined` (optional). Set automatically when you use an `AndroidOutlined` enum case
 - `label` - Text label. Used for accessibility and displayed in overflow menus (optional but recommended)
 - `url` - A URL to navigate to when tapped (optional)
+- `transition` <x-docs.version-badge since="4.8" /> - The transition used when tapping navigates to `url`, as a
+  [transition](../the-basics/routing#custom-transitions) value such as `slide_from_bottom` (optional, default: `none`).
+  Only applies to an action with a `url` and no `@tap`
 - `destructive` - Render in the destructive (red) tint (optional, boolean)
 
 <aside>
@@ -110,6 +113,23 @@ Any `url` that doesn't match a registered native route will exit to the web view
 method on your screen instead of navigating, use `@tap="methodName"`.
 
 </aside>
+
+To present the destination like a sheet, give the action a `transition`:
+
+@verbatim
+```blade static
+<native:top-bar-action
+    id="settings"
+    icon="settings"
+    label="Settings"
+    url="/settings"
+    transition="slide_from_bottom"
+/>
+```
+@endverbatim
+
+The settings screen can then dismiss itself with `$this->back(Transition::SlideToBottom)`. See
+[Custom transitions](../the-basics/routing#custom-transitions).
 
 ### Platform icons
 
@@ -205,9 +225,12 @@ class PhotoViewer extends NativeComponent
 This is equivalent to returning `NavBarOptions::make()->hidden()` from `navigationOptions()`; if both are set, the
 explicit builder wins. It's the top-bar parallel to the tab bar's [`hidden()`](bottom-nav#per-screen-tab-bar).
 
-Navigation keeps working while the bar is hidden — pushes, pops, and `@navigate` all behave normally. With the bar
-hidden the screen is full-bleed: on Android the content extends up to the very top edge, under the transparent
-status bar; use the safe-area utilities on elements that should stay clear of the clock and status icons. On iOS
+With native chrome, the bar isn't removed: its config stays on the screen and is marked hidden, so the
+`NavigationStack` stays in place. Navigation keeps working while the bar is hidden — pushes, pops, and `@navigate` all
+behave normally.
+
+With the bar hidden the screen is full-bleed: on Android the content extends up to the very top edge, under the
+transparent status bar; use the safe-area utilities on elements that should stay clear of the clock and status icons. On iOS
 the edge-swipe-back gesture is tied to the visible bar, so a pushed screen that hides it should render its own back
 control (for example a floating button that uses `@navigate` to return to the parent screen).
 

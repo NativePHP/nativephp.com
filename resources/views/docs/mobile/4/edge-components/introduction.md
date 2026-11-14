@@ -73,6 +73,40 @@ Boolean attributes follow PHP truthiness. A bare attribute (`disabled`) or a bou
 as you'd expect, but a literal string such as `disabled="false"` is a non-empty string and counts as `true`. Bind
 booleans with `:` whenever the value can be false.
 
+## Handlers
+
+Event attributes such as `@press`, `@tap`, `@change`, and `@dismiss` take a handler. A handler is one of:
+
+- a method name: `@press="save"`
+- a method call with literal arguments: `@press="selectItem(@{{ $item->id }})"`
+- an assignment to a public property <x-docs.version-badge since="4.8" />: `@press="$showSheet = true"`
+- a bool toggle <x-docs.version-badge since="4.8" />: `@press="$expanded = !$expanded"`
+
+@verbatim
+```blade
+<native:button label="Open" @press="$showSheet = true" />
+
+<native:bottom-sheet :visible="$showSheet" @dismiss="$showSheet = false">
+    {{-- ... --}}
+</native:bottom-sheet>
+
+<native:pressable @press="$tab = 'settings'">
+    <native:text>Settings</native:text>
+</native:pressable>
+```
+@endverbatim
+
+The assigned value must be a literal: `true`, `false`, `null`, a number, or a quoted string. Nothing is evaluated, so
+`$open = foo()`, `$open = $other`, and `$open = !$other` don't run. A toggle only works on a property that holds a
+bool. Assignments go through the same state pipeline as [data binding](../digging-deeper/data-binding), so
+`#[Locked]` properties are refused and the `updating` / `updated` hooks fire. The same syntax works in a
+[nested component's](../the-basics/nested-components#events-up) event binding.
+
+A handler that can't run is never dropped silently. With `app.debug` on, it throws
+`Native\Mobile\Edge\Exceptions\InvalidHandlerException`, and the error screen names the handler and the component.
+With debug off, it's logged and nothing runs. That covers a method the component doesn't have, an expression handlers
+don't support, a property that isn't public, and a toggle on a property that isn't a bool.
+
 ## The `native:` prefix is optional
 
 `<native:column>` and `<column>` compile to exactly the same thing — the prefix is optional. We use it throughout
