@@ -117,7 +117,7 @@ layout's `navBar()`.
 
 ## Sections, rows and submenus
 
-<x-docs.version-badge since="4.8" />
+<x-docs.version-badge since="4.9" />
 
 A nav-bar menu doesn't have to be a flat list. You can group items into titled sections, put a compact row of
 buttons across the top, nest a submenu, and give any item a subtitle or a checkmark. This menu is laid out like the
