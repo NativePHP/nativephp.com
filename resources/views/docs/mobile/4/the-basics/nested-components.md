@@ -139,6 +139,16 @@ public function onTaskToggled(string $source, string $title, bool $done): void
 }
 ```
 
+A tag binding can also set one of the parent's properties instead of calling a method
+<x-docs.version-badge since="4.8" />, using the same `$property = <literal>` syntax as any other
+[handler](../edge-components/introduction#handlers). The emit's arguments are ignored:
+
+@verbatim
+```blade static
+<native:task-editor :task-id="$task['id']" @saved="$editing = false" />
+```
+@endverbatim
+
 **`#[On]` listeners** — a string-form `#[On('event-name')]` method fires on *any* ancestor, however deep the
 emitter is. A grandchild's emit reaches the screen without the intermediate child forwarding anything:
 
@@ -243,6 +253,48 @@ The parameter names `self`, `to` and `component` are read as the destination:
 parameters other names.
 
 </aside>
+
+## Skipping unchanged children with #[Memo]
+
+<x-docs.version-badge since="4.8" />
+
+A screen re-runs its Blade view on every frame: every tap, keystroke, async result, or native event. Its children
+re-render with it, so a long list of extracted rows rebuilds every row even when only one changed. Add the `#[Memo]`
+attribute to a child whose output depends only on its own props and state:
+
+```php
+namespace App\NativeComponents;
+
+use Illuminate\View\View;
+use Native\Mobile\Attributes\Memo;
+use Native\Mobile\Edge\NativeComponent;
+
+#[Memo]
+class TaskRow extends NativeComponent
+{
+    public array $task = [];
+
+    public function render(): View
+    {
+        return view('native.task-row');
+    }
+}
+```
+
+When nothing the child renders from has changed, it reuses the elements it built last time and skips its Blade view.
+It re-renders when any of these change:
+
+- its public properties, both props and its own state
+- the `@event` bindings on its mounting tag
+- the public properties of any child nested inside it
+
+A child's first render and streaming renders are never memoized.
+
+> [!IMPORTANT]
+> `#[Memo]` is opt-in because it only compares props, state, and bindings. If the child's `render()` or view also
+> reads the time, the session, config, or the database, a memoized child keeps showing what it showed last. The same
+> goes for a `#[Computed]` or `#[Poll]`-driven value that changes without a public property changing. Leave
+> `#[Memo]` off those children.
 
 ## Lifecycle
 

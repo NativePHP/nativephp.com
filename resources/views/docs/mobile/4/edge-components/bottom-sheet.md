@@ -30,6 +30,10 @@ Per Material 3, the container color resolves from `theme.surface`. For a custom 
 ```
 @endverbatim
 
+Handlers like `@press="$show = true"` and `@dismiss="$show = false"` set the property directly — no component method
+needed <x-docs.version-badge since="4.8" />. Keep the property in sync on `@dismiss` so the sheet opens again the
+next time you set it to `true`. See [Handlers](introduction#handlers) for the full syntax.
+
 ## Props
 
 - `visible` - Whether the sheet is shown (required, boolean)

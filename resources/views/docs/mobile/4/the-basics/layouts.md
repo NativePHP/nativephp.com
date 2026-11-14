@@ -115,6 +115,42 @@ class SyncUpTabsLayout extends NativeLayout
 The `$screen` parameter is the live `NativeComponent` instance for the current screen, so the layout can read
 properties or methods on it (such as `$screen->navTitle()`) to customize the chrome per screen.
 
+## Native chrome
+
+<x-docs.version-badge changed="4.8" />
+
+Layouts render their bars with the platform's own navigation chrome: a `NavigationStack` and `TabView` on iOS, a
+`NavHost` and `Scaffold` on Android. You get edge-swipe back, predictive back, large titles, and Liquid Glass on
+iOS 26+ without any extra setup. This is controlled by `usesNativeChrome()`, which returns `true` by default.
+
+Before 4.8, the default was `false`, and a layout had to override `usesNativeChrome()` to get native chrome. A layout
+that never overrode it now renders native bars.
+
+To fall back to the custom-drawn `Column` chrome, override it and return `false`:
+
+```php
+use Native\Mobile\Edge\Layouts\NativeLayout;
+
+class LegacyLayout extends NativeLayout
+{
+    public function usesNativeChrome(): bool
+    {
+        return false;
+    }
+}
+```
+
+> [!WARNING]
+> The `Column` fallback is temporary. The switch will be removed, and native chrome will be the only option. Treat
+> `return false` as a stopgap while you move a layout over.
+
+### Hiding bars with native chrome
+
+`$hidesNavBar` / `NavBarOptions::make()->hidden()` and `$hidesTabBar` / `TabBarOptions::make()->hidden()` still hide
+a bar on one screen, but native chrome hides it differently. The `Column` path drops the bar from the tree. With
+native chrome, the bar's config is kept and marked hidden, so the `NavigationStack` and `TabView` stay in place and
+pushes, pops, and tab switches keep working across screens that hide a bar.
+
 ## Builder reference
 
 The chrome is described entirely with these fluent builders — you never place a top bar or tab bar as an element
@@ -421,6 +457,13 @@ When a screen renders, the framework's `wrapWithChrome` flow:
 2. Calls `$layout->navBar($screen)` and `$layout->tabBar($screen)`.
 3. Merges in any `navigationOptions()` declared on the screen.
 4. Merges in any imperative state set via `$this->setNavBar([...])` / `$this->setTabBar([...])`.
+
+With [native chrome](#native-chrome) (the default), the screen content is then wrapped in a native root element that
+carries the bar config as props, and the platform's navigation renderer draws the bars. You don't manage safe areas
+for the bars yourself.
+
+A layout that returns `false` from `usesNativeChrome()` takes the `Column` path instead:
+
 5. Wraps the screen content in a `Column` filling the screen, with the bars stacked above and below the content.
 6. Picks the right safe-area variant for the wrapper:
     - **TabBar present** → wrapper uses `safeAreaTop()`; the bar handles its own bottom inset.

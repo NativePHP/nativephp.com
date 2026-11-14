@@ -3,6 +3,41 @@ title: Upgrade Guide
 order: 3
 ---
 
+## Upgrading To 4.8 From 4.7
+
+After `composer update nativephp/mobile`, run `php artisan native:install --force`. `composer update` doesn't touch
+the native iOS and Android projects, so the navigation and transition changes in 4.8 only reach your app after a
+reinstall.
+
+### Layouts use native chrome by default
+
+`NativeLayout::usesNativeChrome()` now returns `true`. If your layouts never overrode it, their nav and tab bars switch
+from the custom-drawn `Column` chrome to the platform's native renderers (`NavigationStack` / `TabView` on iOS,
+`NavHost` / `Scaffold` on Android). Inline `<native:top-bar>` and `<native:bottom-nav>` were already native, so this
+brings layout-supplied bars in line with them.
+
+Open a few existing screens on a device or simulator and check the chrome, especially screens that set
+`$hidesNavBar` or `$hidesTabBar`. With native chrome those bars are marked hidden instead of being removed from the
+tree.
+
+To keep the old chrome for now, override the method and return `false`:
+
+```php
+public function usesNativeChrome(): bool
+{
+    return false;
+}
+```
+
+This opt-out is temporary and will be removed. See [Native chrome](../the-basics/layouts#native-chrome).
+
+### Handlers that can't run now throw in debug
+
+Handlers such as `@press="$showSheet = true"` now work (see [Handlers](../edge-components/introduction#handlers)).
+Handlers that can't run are no longer dropped silently: with `app.debug` on they throw `InvalidHandlerException`, and
+with it off they're logged. If an error screen names a handler after you upgrade, it's usually a typo in a method name
+or an assignment whose value isn't a literal.
+
 ## Upgrading To 4.6 From 4.5
 
 ### Translated iOS permission strings need `supported_locales`

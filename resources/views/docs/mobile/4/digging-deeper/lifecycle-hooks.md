@@ -166,6 +166,51 @@ class Dashboard extends NativeComponent
 
 </aside>
 
+## The app going to the background
+
+<x-docs.version-badge since="4.8" />
+
+The hooks above follow screens. To react when the whole app leaves the foreground and comes back, listen for the
+`AppBackgrounded` and `AppForegrounded` events:
+
+```php
+use Native\Mobile\Attributes\On;
+use Native\Mobile\Events\App\AppBackgrounded;
+use Native\Mobile\Events\App\AppForegrounded;
+
+#[On(AppBackgrounded::class)]
+public function backgrounded(): void
+{
+    // Save a draft. The OS may suspend PHP right after this.
+}
+
+#[On(AppForegrounded::class)]
+public function foregrounded(int $secondsAway): void
+{
+    // Away for more than five minutes? Reload anything that may be stale.
+}
+```
+
+- `AppBackgrounded` fires when the user goes home, switches apps, or locks the device. The OS may suspend PHP right
+  after it, so save what must survive and don't start slow work.
+- `AppForegrounded` fires when the app comes back. `$secondsAway` is measured natively on a clock that keeps counting
+  while the device sleeps, which makes it a good fit for timeouts such as locking the app or refreshing stale data.
+  A cold launch does not fire it.
+
+Returning to the app doesn't call `onResume()` — that only runs when a screen is shown again after the one above it
+is popped. `AppForegrounded` is the hook for "the user is back".
+
+<aside>
+
+On Android, opening another app's activity also counts as going to the background, including the system camera and
+an in-app browser (a Chrome Custom Tab), because they run in their own processes. On iOS, the image picker and in-app
+browser run inside your app, so they don't fire these events.
+
+</aside>
+
+Both events [broadcast globally](../the-basics/events#broadcasting-globally), so you can also listen anywhere in the
+app with `Event::listen(AppBackgrounded::class, ...)`.
+
 ## Observing the lifecycle from outside
 
 <x-docs.version-badge since="4.1" />
