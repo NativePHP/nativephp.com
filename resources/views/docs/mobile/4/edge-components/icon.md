@@ -143,7 +143,7 @@ php artisan native-ui:generate-icons
 Every icon name — whether passed to `<native:icon>` or to the `icon` attribute of any other EDGE component — goes
 through a four-tier resolution strategy:
 
-1. **Direct platform icons** - On iOS, a name that contains a `.` (e.g., `car.side.fill`) or is already an SF Symbol name (e.g., `heart`, `phone`) is used as written. On Android, any Material Icon ligature name works directly (e.g., `shopping_cart`)
+1. **Direct platform icons** - On iOS, a name that contains a `.` (e.g., `car.side.fill`) or is already an SF Symbol name (e.g., `heart`, `phone`) <x-docs.version-badge changed="4.9" /> is used as written. On Android, any Material Icon ligature name works directly (e.g., `shopping_cart`)
 2. **Manual mapping** - Explicit mappings for common icons and aliases (e.g., `home`, `settings`, `user`)
 3. **Smart fallback** - Normalizes unmapped icon names to a platform equivalent
 4. **Default fallback** - Uses a circle icon if no match is found
@@ -176,8 +176,9 @@ underscores (`archive-box` → `archivebox`). It deliberately does **not** guess
 SF Symbols ship their plain glyph at the bare name, so when you want the filled variant, ask for it explicitly
 (`archivebox.fill`, or the `Ios::ArchiveboxFill` enum case).
 
-A name that is already an SF Symbol bypasses the mapping too, so `heart`, `phone` and `star` draw those outline
-symbols. For the filled variant, ask for it by name (`heart.fill`, or `Ios::HeartFill`) or use an alias that maps to it
+A name that is already an SF Symbol bypasses the mapping too <x-docs.version-badge changed="4.9" />, so `heart`, `phone`
+and `star` draw those outline symbols. Before 4.9 they went through the mapping, which drew most of them filled. For
+the filled variant, ask for it by name (`heart.fill`, or `Ios::HeartFill`) or use an alias that maps to it
 (`favorite` → `heart.fill`). On Android, a shared `heart` or `star` draws the filled Material icon, so give each platform
 its own name when both should match:
 
@@ -376,7 +377,7 @@ Naming an icon after the system icon it stands in for gives you a sensible fallb
 ## Icon name reference
 
 Every name listed here works on both iOS and Android. Most are aliases that map to a platform icon. Some are also SF
-Symbol names, and on iOS those draw that SF Symbol as written (see [How names resolve](#how-names-resolve)):
+Symbol names, and on iOS those draw that SF Symbol as written <x-docs.version-badge changed="4.9" /> (see [How names resolve](#how-names-resolve)):
 
 - `bell`, `bolt`, `bookmark`, `camera`, `cart`, `clock`, `folder`, `heart`, `lightbulb`, `lock`, `map`, `message`,
   `person`, `phone`, `photo`, `receipt`, `star` and `video` draw the outline symbol on iOS and the filled Material icon
