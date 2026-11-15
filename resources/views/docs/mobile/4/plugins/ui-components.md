@@ -278,6 +278,33 @@ listen for `$this->emit('link')`. Choose names that your users are unlikely to u
 
 </aside>
 
+### Closing Overlays on Navigation
+
+<x-docs.version-badge since="4.8" />
+
+When a screen navigates away, its open [bottom sheets](../edge-components/bottom-sheet) and
+[modals](../edge-components/modal) close. If one stayed open, it would cover the next screen, and its later dismiss
+callback could reach the wrong component.
+
+If your element is presented over the whole window, such as a sheet or a modal, and shown while its `visible` prop is
+true, return `true` from `closesOnNavigation()` so it closes too:
+
+```php
+class Sheet extends Element
+{
+    protected string $type = 'my_sheet';
+
+    public static function closesOnNavigation(): bool
+    {
+        return true;
+    }
+}
+```
+
+Then `navigate()`, `back()` and `replace()` publish the leaving screen's last frame with `visible` set to `false` on
+every node of that type, including nodes inside child components. Your renderers dismiss the overlay when `visible`
+turns `false`, as they would for any other render. The element's `$type` must match the manifest `type`.
+
 ## The Blade Component
 
 A thin class that names the element type and declares whether it takes children:
