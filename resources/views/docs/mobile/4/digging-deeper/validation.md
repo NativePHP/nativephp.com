@@ -149,8 +149,9 @@ $this->validate(
 
 <aside>
 
-`validateOnly()` finds the field's rule by its exact key, so `validateOnly('items.0.name')` doesn't match an
-`items.*.name` rule. Run `validate()` for wildcard rules.
+Since 4.9, `validateOnly()` also applies wildcard rules, so `validateOnly('items.0.name')` checks the field against
+an `items.*.name` rule. As in Laravel, each `*` stands for one segment of the key. In 4.7 and 4.8, `validateOnly()`
+finds a rule only by its exact key, so run `validate()` for wildcard rules there.
 
 </aside>
 
@@ -221,32 +222,43 @@ The bag is also passed to partials the screen renders, so `@@error` works inside
 
 ## Which handlers are covered
 
-Validation errors are kept in the bag and the screen re-renders only when they're thrown while the screen handles a
-user interaction:
+<x-docs.version-badge since="4.9" />
+
+Validation errors are kept in the bag, and the screen re-renders, when they're thrown from one of the screen's
+handlers:
 
 - An event handler in the view, such as `@press`, `@tap` or `@change`.
 - A [`native:model`](data-binding) sync, including the `updated{Property}()` hook it runs.
+- An `#[On]` or `#[OnNative]` [event listener](../the-basics/events), or a closure registered with `->on()`.
+- A handler that a child component's event runs, either through `#[On]` or through an `@event` attribute on the
+  child's tag.
+- A `#[Poll]` method.
+- `onBackPressed()`.
 
 A `ValidationException` thrown anywhere else is not caught, and it reaches the error overlay like any other
-exception. That includes:
+exception. That includes `mount()`, `onResume()` and the other [lifecycle hooks](lifecycle-hooks). In those places,
+call `validate()` inside a `try`/`catch` block, or check the data yourself and use `addError()`.
 
-- `mount()`, `onResume()`, `onBackPressed()` and other [lifecycle hooks](lifecycle-hooks).
-- `#[On]` and `#[OnNative]` [event listeners](../the-basics/events).
-- `#[Poll]` methods.
+In 4.7 and 4.8, only the first two kinds were covered. Event listeners, `#[Poll]` methods and `onBackPressed()`
+reached the error overlay.
 
-In those places, call `validate()` inside a `try`/`catch` block, or check the data yourself and use `addError()`.
+### Child components
+
+Each handler is covered by the component it belongs to. When a child calls `emit()` and the parent's listener fails
+validation, the messages go into the **parent's** bag, and the child's handler carries on after `emit()`. If the
+parent doesn't use `ValidatesInput`, the error overlay appears, as it would for any other handler of that parent.
 
 <aside>
 
-When a child component calls `emit()`, the parent's handler runs as part of the child's interaction. If the parent
-calls `validate()` there and it fails, the exception reaches the child: if the child uses `ValidatesInput`, the
-messages end up in the **child's** bag, and if it doesn't, the error overlay appears. Validate in the component that
-owns the data, and emit only once it passes.
+In 4.7 and 4.8, the parent's listener ran as part of the child's interaction, so its messages ended up in the
+child's bag when the child used `ValidatesInput`. There, validate in the component that owns the data, and emit only
+once it passes.
 
 </aside>
 
 ## Testing
 
-[Interactions in tests](../testing/interactions) go through the same entry point as taps on a device, so a failed
-validation in a test leaves its messages in the bag and re-renders the screen, just as it does in the app. You can
+[Interactions in tests](../testing/interactions) go through the same handlers as on a device, so a failed validation
+in a test leaves its messages in the bag and re-renders the screen, just as it does in the app. That includes
+`emitNative()`, `firePoll()` and `pressBack()`. You can
 assert on the error text in the rendered screen, or read `getErrorBag()` from the component.
