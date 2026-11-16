@@ -29,6 +29,8 @@ All [shared layout and style attributes](layout) are supported, plus:
 
 - `menu` - Attach a tap-to-open dropdown; opening the menu shadows `@press`. See [Menus](menus)
 - `@navigate` - Navigate directly from the view, with no component method. See [Routing](../the-basics/routing#navigating-from-blade)
+- `disabled` - Stops `@press`, `@longPress`, `@doubleTap` and the press-down and press-up handlers, and announces the pressable as unavailable (optional, boolean, default: `false`). Style the disabled look yourself.
+- `a11y-role`, `a11y-checked`, `a11y-selected`, `a11y-expanded`, `a11y-state`, `a11y-error`, `a11y-value`, `:a11y-actions` - See [Composing your own controls](../digging-deeper/accessibility#composing-your-own-controls).
 
 ## Events
 
