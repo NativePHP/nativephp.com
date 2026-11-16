@@ -6,6 +6,9 @@
                 "./artisan",
                 "boost:mcp"
             ]
+        },
+        "nightwatch": {
+            "url": "https://nightwatch.laravel.com/mcp"
         }
     }
 }
