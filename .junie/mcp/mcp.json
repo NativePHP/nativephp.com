@@ -3,6 +3,9 @@
         "laravel-boost": {
             "command": "php",
             "args": ["./artisan", "boost:mcp"]
+        },
+        "nightwatch": {
+            "url": "https://nightwatch.laravel.com/mcp"
         }
     }
 }
