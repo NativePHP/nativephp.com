@@ -38,6 +38,9 @@ and shrinks together, with no PHP involved during the gesture.
 To have a drag settle on set points when the finger lifts, like a row that slides aside to show its actions, give the
 gesture area [snap points](../edge-components/gesture-area#swipe-to-reveal).
 
+A pinch or a double tap drives a shared value the same way, through the gesture area's `zoom`. That's how a photo
+viewer zooms its photos. See [Zoomable images](../edge-components/gesture-area#zoomable-images).
+
 ### Formulas
 
 Rather than bind the raw value everywhere, derive from it with a chainable formula. Each method returns a new
