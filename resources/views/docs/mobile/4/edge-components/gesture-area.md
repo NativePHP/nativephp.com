@@ -30,12 +30,13 @@ screen in your app and drag the card.
 - `pan-y` - A [`SharedValue`](../digging-deeper/gestures) that receives the vertical drag translation. Bind it, then
   read it from animatable props (`translate-y`, `opacity`, `scale`, …) on the children.
 - `pan-x` - The same for the horizontal drag translation. Bind one axis or both.
-- `pinch` - A `SharedValue` that receives the pinch scale factor, where `1` is the content's own size. Read it from
-  `scale` on the children.
-- `pinch-min` / `pinch-max` - The smallest and largest the pinch scale can go (optional, float). The limit is applied
+- `zoom` <x-docs.version-badge since="4.9" /> - A `SharedValue` that receives the zoom scale, where `1` is the content's whole size. A pinch
+  drives it, and so does a [double tap](#double-tap-to-zoom). Read it from `scale` on the children. Before 4.9 the
+  zoom attributes were named `pinch`, `pinch-min`, `pinch-max` and `@pinchEnd`, and those names still work.
+- `zoom-min` / `zoom-max` <x-docs.version-badge since="4.9" /> - The smallest and largest the scale can go (optional, float). The limit is applied
   as the fingers move, so the scale never runs past it and a pinch that changes direction responds straight away.
-- `bounded` <x-docs.version-badge since="4.7" /> <x-docs.version-badge package="mobile-ui" since="0.9" /> - Keep zoomed content on screen (optional, boolean). See
-  [Zoomable images](#zoomable-images).
+- `bounded` <x-docs.version-badge since="4.7" /> <x-docs.version-badge package="mobile-ui" since="0.9" /> - Keep zoomed content on screen, and leave drags it can't use to
+  whatever is around the area (optional, boolean). See [Zoomable images](#zoomable-images).
 - `content-ratio` <x-docs.version-badge since="4.7" /> <x-docs.version-badge package="mobile-ui" since="0.9" /> - The content's width over height, for `bounded` (optional, float).
   The content is taken to be that shape fitted inside the area, which is where an image with `fit="contain"` draws.
   Leave it out when the content fills the area.
@@ -57,7 +58,10 @@ interpolation formulas.
 - `@dragEnd` <x-docs.version-badge since="4.5" /> <x-docs.version-badge package="mobile-ui" since="0.5" /> - Component method to call when the finger lifts after a drag.
   It gets the final translation on each axis as two floats, `x` then `y`. A bound axis reports its shared value,
   which with snap points is the point it settled on. An unbound axis reports how far the finger moved.
-- `@pinchEnd` - Component method to call when the fingers lift after a pinch, with the final scale as a float.
+- `@zoomEnd` <x-docs.version-badge since="4.9" /> - Component method to call when a zoom ends, with the final scale as a float. That's when the
+  fingers lift after a pinch, or when a [double tap's](#double-tap-to-zoom) zoom lands.
+- `@doubleTap.zoom` <x-docs.version-badge since="4.9" /> <x-docs.version-badge package="mobile-ui" since="0.11" /> - The scale a double tap zooms to (float). It isn't a component
+  method. See [Double tap to zoom](#double-tap-to-zoom).
 - `@swipe` - Component method to call on a quick swipe, with its direction as a string: `left`, `right`, `up` or
   `down`.
 
@@ -74,6 +78,8 @@ A gesture area shares its touches with the scroll view around it and with the sy
   goes back.
 - A swipe across a pressable inside the area, or one around it, doesn't press it. On Android, before mobile-ui 0.9,
   it pressed it as well.
+- A `bounded` area leaves a one-finger drag to whatever is around it, such as a pager or a scroll view, unless its
+  zoomed content has room to move that way. See [Who gets a drag](#who-gets-a-drag).
 
 ## Zoomable images
 
@@ -82,18 +88,24 @@ A gesture area shares its touches with the scroll view around it and with the sy
 With `bounded`, the gesture area keeps zoomed content inside its own edges, the way a photo viewer does:
 
 - Zoomed in, the content pans until its edges meet the area's edges, and no further.
-- On an axis where the zoomed content still fits, such as the height of a wide photo, it stays centered. At its own
+- On an axis where the zoomed content still fits, such as the height of a wide photo, it stays centered. At its whole
   size it fits both ways, so it doesn't move at all.
-- A drag past an edge moves with resistance, and the content springs back into place when the finger lifts.
+- A drag past an edge moves with resistance, and the content springs back into place when the finger lifts. Inside
+  a pager or a scroll view, the rest of the drag [pages or scrolls instead](#who-gets-a-drag).
 - A pinch zooms around the point between the fingers, and two fingers pan as they pinch.
+- Let go of a drag and the content carries on at the finger's speed, slowing to a stop, and bounces off an edge it
+  reaches. A finger held still before it lifts doesn't glide. `@dragEnd` is called as the finger lifts, with where
+  the content will come to rest. <x-docs.version-badge package="mobile-ui" since="0.11" />
+- The area clips its content to its own frame, so zoomed content never draws over the elements around it, or over
+  the next page in a pager. <x-docs.version-badge package="mobile-ui" since="0.11" />
 
-Bind both pan axes and the pinch, bind the content's transforms to the same values, and pass the image's shape as
+Bind both pan axes and the zoom, bind the content's transforms to the same values, and pass the image's shape as
 `content-ratio`:
 
 @verbatim
 ```blade static
 <native:gesture-area
-    :pinch="$zoom" pinch-min="1" pinch-max="4"
+    :zoom="$zoom" zoom-min="1" zoom-max="4"
     :pan-x="$panX" :pan-y="$panY"
     bounded :content-ratio="$width / $height"
     class="w-full flex-1">
@@ -109,7 +121,7 @@ Bind both pan axes and the pinch, bind the content's transforms to the same valu
 ```
 @endverbatim
 
-The shared values live on the component. Making fresh ones puts the image back at its own size, in the middle:
+The shared values live on the component. Making fresh ones puts the image back at its whole size, in the middle:
 
 ```php
 use Native\Mobile\Edge\SharedValue;
@@ -133,6 +145,129 @@ drawn smaller than the area (with bars above and below, or at the sides) could t
 Pass its width over height so the bounds match the picture.
 
 </aside>
+
+### Double tap to zoom
+
+<x-docs.version-badge since="4.9" /> <x-docs.version-badge package="mobile-ui" since="0.11" />
+
+Add `@doubleTap.zoom` to the area, with the scale a double tap zooms to:
+
+@verbatim
+```blade static
+<native:gesture-area
+    :zoom="$zoom" zoom-min="1" zoom-max="4" @doubleTap.zoom="2"
+    :pan-x="$panX" :pan-y="$panY"
+    bounded :content-ratio="$width / $height"
+    class="w-full flex-1">
+```
+@endverbatim
+
+A double tap at whole size zooms to that scale and brings the tapped point to the middle, as far as `bounded` lets it
+go. A double tap on zoomed content takes it back to whole size, in the middle. Both ways animate over about a third
+of a second, and `@zoomEnd` is called with the new scale once the zoom lands, the same as after a pinch.
+
+It needs `:zoom` bound. Like a pinch, it aims by moving the bound pans, so bind `pan-x` and `pan-y` as well.
+
+An `@event.modifier="value"` attribute isn't a PHP handler the way `@event="method"` is. Its value goes straight to
+the phone, so `@doubleTap.zoom="2"` tells the area to zoom to a scale of 2 on a double tap, and the phone does that
+without calling PHP. The value can be echoed, as in `@doubleTap.zoom="@{{ $level }}"`. A scale of `1` or less leaves
+the double tap off.
+
+### Who gets a drag
+
+<x-docs.version-badge package="mobile-ui" changed="0.11" />
+
+At whole size, a bounded area leaves one-finger drags to whatever is around it: a pager pages, a scroll view scrolls,
+and the pan of a gesture area around it moves, such as a drag to close. Zoomed in, it takes a drag while the content
+has room to move the way the finger is going, so the same drag that paged now pans the photo. Two fingers down are
+always the area's, for a pinch.
+
+Zoomed content at an edge leaves a drag that way to a pager or scroll view around it, so a zoomed photo at its right
+edge pages on a swipe left. It keeps the drag from a gesture area's pan, though. A drag to close only works at whole
+size, so panning a zoomed photo up to its top edge doesn't start closing the viewer.
+
+Room to move means more than 2 points, and a zoom that ends a hair past 1x counts as whole size. Keep both pans
+bound all the time. There's no need to unbind them, or to change the markup, when the zoom changes.
+
+When zoomed content reaches its edge part way through a drag and the finger keeps going, the rest of the drag moves
+the pager or scroll view around it. A pager slides on to the next page, the way the Photos app does. With nothing
+around to take the drag, the content moves past the edge with resistance and springs back when the finger lifts.
+
+Before mobile-ui 0.11, a bounded area with its pans bound took every one-finger drag, so a pager around it couldn't
+page.
+
+### A photo viewer
+
+<x-docs.version-badge since="4.9" /> <x-docs.version-badge package="mobile-ui" since="0.11" />
+
+A horizontal [pager](pager) of photos, each one zoomable on its own page:
+
+@verbatim
+```blade static
+<native:pager horizontal report-on-settle :page="$index" on-page-change="paged" class="w-full h-full">
+    @foreach ($photos as $i => $photo)
+        <native:gesture-area
+            :native:key="'photo-'.$i"
+            :zoom="$zooms[$i]" zoom-min="1" zoom-max="4" @doubleTap.zoom="2"
+            :pan-x="$pansX[$i]" :pan-y="$pansY[$i]"
+            bounded :content-ratio="$photo['width'] / $photo['height']"
+            class="w-full h-full">
+            <native:image
+                :src="$photo['url']"
+                fit="contain"
+                :scale="$zooms[$i]"
+                :translate-x="$pansX[$i]"
+                :translate-y="$pansY[$i]"
+                class="w-full h-full"
+            />
+        </native:gesture-area>
+    @endforeach
+</native:pager>
+```
+@endverbatim
+
+At whole size a swipe sideways pages. Zoomed in, it pans the photo, and once the photo's edge is reached the same
+swipe carries on into the next page. A drag down to close goes on a gesture area around the pager, with its own
+`pan-y`, and the photos leave that drag to it while they're at whole size.
+
+Each photo has its own three shared values, kept on the component by its place in the list. `paged()` gives the
+photo you left fresh ones, so it's back at whole size when you come back to it. With `report-on-settle`, `paged()`
+is only called once the swipe has come to rest, so the photo doesn't jump back to whole size while it's still
+sliding off screen:
+
+```php
+use Native\Mobile\Edge\SharedValue;
+
+public array $photos = []; // each one ['url' => ..., 'width' => ..., 'height' => ...]
+
+public int $index = 0;
+
+public array $zooms = [];
+public array $pansX = [];
+public array $pansY = [];
+
+public function mount(): void
+{
+    // Load $this->photos, then give each photo its shared values.
+
+    foreach (array_keys($this->photos) as $i) {
+        $this->rest($i);
+    }
+}
+
+public function paged(int $index): void
+{
+    $this->rest($this->index);
+    $this->index = $index;
+}
+
+private function rest(int $i): void
+{
+    $this->zooms[$i] = SharedValue::make(1.0);
+    $this->pansX[$i] = SharedValue::make();
+    $this->pansY[$i] = SharedValue::make();
+}
+```
 
 ## Swipe to reveal
 
