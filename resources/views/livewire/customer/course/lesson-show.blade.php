@@ -116,8 +116,7 @@
                                     <span class="min-w-0 flex-1 truncate {{ $isCurrent ? 'font-medium' : '' }} {{ $isLessonComplete ? 'line-through' : '' }}" title="{{ $outlineLesson->title }}">{{ $outlineLesson->title }}</span>
                                     @if ($isDraft)
                                         <flux:badge variant="pill" color="amber" size="sm">Coming Soon</flux:badge>
-                                    @endif
-                                    @if ($outlineLesson->duration_in_seconds)
+                                    @elseif ($outlineLesson->duration_in_seconds)
                                         <span class="shrink-0 text-xs text-zinc-400 dark:text-zinc-500">{{ gmdate('i:s', $outlineLesson->duration_in_seconds) }}</span>
                                     @endif
                                 </a>

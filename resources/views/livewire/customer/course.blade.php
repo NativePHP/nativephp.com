@@ -80,8 +80,7 @@
                                         </div>
                                         @if ($isDraft)
                                             <flux:badge variant="pill" color="amber" size="sm">Coming Soon</flux:badge>
-                                        @endif
-                                        @if ($lesson->duration_in_seconds)
+                                        @elseif ($lesson->duration_in_seconds)
                                             <flux:text class="text-xs shrink-0">{{ gmdate('i:s', $lesson->duration_in_seconds) }}</flux:text>
                                         @endif
                                     </div>
@@ -299,8 +298,7 @@
                                             </div>
                                             @if ($isUnreleased)
                                                 <flux:badge variant="pill" color="amber" size="sm">Coming Soon</flux:badge>
-                                            @endif
-                                            @if ($lesson->duration_in_seconds)
+                                            @elseif ($lesson->duration_in_seconds)
                                                 <flux:text class="shrink-0 text-xs">{{ gmdate('i:s', $lesson->duration_in_seconds) }}</flux:text>
                                             @endif
                                         </div>
