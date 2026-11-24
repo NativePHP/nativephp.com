@@ -121,7 +121,9 @@
         "
         class="min-h-screen overflow-x-clip bg-white font-poppins antialiased selection:bg-black selection:text-[#b4a9ff] dark:bg-[#050714] dark:text-white"
     >
-        @if (now()->isBefore('2027-01-01T00:00:00Z'))
+        @if (now()->isBefore('2026-12-01T08:00:00Z'))
+            <x-black-friday-banner />
+        @elseif (now()->isBefore('2027-01-01T00:00:00Z'))
             <x-bifrost-birthday-banner />
         @else
             <x-newsletter-banner />

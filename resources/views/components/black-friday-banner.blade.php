@@ -1,19 +1,23 @@
 <a
-    href="/bifrost"
-    onclick="fathom.trackEvent('black_friday_banner_click');"
-    class="group relative z-30 flex flex-col items-center justify-center gap-3 overflow-hidden bg-gradient-to-tl from-orange-100 to-gray-200/60 px-5 py-3 select-none sm:flex-row dark:from-orange-950/65 dark:to-gray-950/50"
+    href="https://bifrost.nativephp.com/newsletter"
+    target="_blank"
+    rel="noopener"
+    onclick="window.fathom?.trackEvent('bifrost_black_friday_banner_click')"
+    data-site-banner
+    class="group relative z-30 flex flex-col flex-wrap items-center justify-center gap-x-3 gap-y-2.5 overflow-hidden bg-gradient-to-tl from-orange-100 to-gray-200/60 px-5 py-3 select-none 3xs:flex-row dark:from-orange-950/65 dark:to-gray-950/50"
 >
-    {{-- Label Section --}}
+    {{-- Label --}}
     <div
-        class="flex flex-col items-center gap-2 transition duration-200 ease-in-out will-change-transform group-hover:-translate-x-0.5 sm:flex-row sm:gap-3"
+        class="flex items-center justify-center gap-3 transition duration-200 ease-in-out will-change-transform group-hover:-translate-x-0.5"
     >
         {{-- Icon --}}
         <x-icons.banner.dollar-decrease
             class="h-5 shrink-0 dark:text-orange-200"
+            aria-hidden="true"
         />
 
         {{-- Text --}}
-        <div class="text-center sm:text-left">
+        <div>
             <style>
                 .bf-gradient-text {
                     background-image: linear-gradient(
@@ -23,7 +27,7 @@
                         var(--color-black) 70%
                     );
                     background-size: 200% 100%;
-                    animation: shine 2s linear infinite;
+                    animation: bf-shine 2s linear infinite;
                 }
                 .dark .bf-gradient-text {
                     background-image: linear-gradient(
@@ -33,7 +37,7 @@
                         var(--color-white) 70%
                     );
                 }
-                @keyframes shine {
+                @keyframes bf-shine {
                     from {
                         background-position: 200% center;
                     }
@@ -43,52 +47,26 @@
                 }
             </style>
             <div
-                class="bf-gradient-text bg-clip-text tracking-tight text-pretty text-transparent"
+                class="bf-gradient-text bg-clip-text tracking-tight text-pretty text-transparent sm:text-center"
             >
-                <b>Black Friday:</b> <em>40% off</em> Bifrost <b>Hela</b> & <b>Thor</b> plans • Code: <b>BLACKFRIDAY40</b>
+                <b>Black Friday:</b>
+                up to
+                <b>50% off</b>
+                Bifrost annual plans
             </div>
         </div>
     </div>
 
-    {{-- Countdown Timer --}}
-    <div
-        x-data="countdown('2025-12-02T00:00:00Z')"
-        class="flex items-center gap-2 text-xs font-medium"
+    {{-- Call to action --}}
+    <span
+        class="shrink-0 rounded-md bg-white/70 px-2 py-0.5 text-sm font-semibold text-orange-900 ring-1 ring-orange-200 dark:bg-white/10 dark:text-orange-100 dark:ring-white/10"
     >
-        <span class="text-gray-600 dark:text-gray-400">Ends in:</span>
-        <div class="flex items-center gap-1">
-            <number-flow
-                x-ref="dd"
-                class="font-bold tabular-nums"
-            ></number-flow>
-            <span class="text-gray-500 dark:text-gray-400">d</span>
-        </div>
-        <div class="flex items-center gap-1">
-            <number-flow
-                x-ref="hh"
-                class="font-bold tabular-nums"
-            ></number-flow>
-            <span class="text-gray-500 dark:text-gray-400">h</span>
-        </div>
-        <div class="flex items-center gap-1">
-            <number-flow
-                x-ref="mm"
-                class="font-bold tabular-nums"
-            ></number-flow>
-            <span class="text-gray-500 dark:text-gray-400">m</span>
-        </div>
-        <div class="flex items-center gap-1">
-            <number-flow
-                x-ref="ss"
-                class="font-bold tabular-nums"
-            ></number-flow>
-            <span class="text-gray-500 dark:text-gray-400">s</span>
-        </div>
-    </div>
+        Get the code by email
+    </span>
 
-    {{-- Icon --}}
+    {{-- Arrow --}}
     <div
-        class="hidden transition duration-200 ease-in-out will-change-transform group-hover:translate-x-0.5 sm:block"
+        class="transition duration-200 ease-in-out will-change-transform group-hover:translate-x-0.5"
     >
         <x-icons.right-arrow class="size-3 shrink-0" />
     </div>
