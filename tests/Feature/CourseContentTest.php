@@ -377,7 +377,70 @@ class CourseContentTest extends TestCase
     }
 
     /**
-     * The markup for a single lesson row in the pre-purchase outline.
+     * An unreleased lesson may already have a duration set, but it shouldn't be
+     * shown until the lesson is out — the Coming Soon badge takes its place.
+     */
+    #[Test]
+    public function owners_do_not_see_the_duration_of_unreleased_lessons(): void
+    {
+        $user = User::factory()->create();
+        $product = Product::where('slug', 'nativephp-masterclass')->first();
+        ProductLicense::factory()->create([
+            'user_id' => $user->id,
+            'product_id' => $product->id,
+        ]);
+
+        $course = Course::factory()->published()->create();
+        $module = CourseModule::factory()->published()->create(['course_id' => $course->id]);
+        CourseLesson::factory()->published()->create([
+            'course_module_id' => $module->id,
+            'title' => 'Released Lesson',
+            'duration_in_seconds' => 125,
+            'sort_order' => 1,
+        ]);
+        CourseLesson::factory()->create([
+            'course_module_id' => $module->id,
+            'title' => 'Unreleased Lesson',
+            'duration_in_seconds' => 278,
+            'sort_order' => 2,
+        ]);
+
+        Livewire::actingAs($user)
+            ->test(Index::class)
+            ->assertSeeInOrder(['Released Lesson', '02:05'])
+            ->assertSeeInOrder(['Unreleased Lesson', 'Coming Soon'])
+            ->assertDontSee('04:38');
+    }
+
+    #[Test]
+    public function the_curriculum_outline_does_not_show_the_duration_of_unreleased_lessons(): void
+    {
+        $user = User::factory()->create();
+
+        $course = Course::factory()->published()->create();
+        $module = CourseModule::factory()->published()->create(['course_id' => $course->id]);
+        $released = CourseLesson::factory()->published()->create([
+            'course_module_id' => $module->id,
+            'duration_in_seconds' => 125,
+            'sort_order' => 1,
+        ]);
+        $unreleased = CourseLesson::factory()->create([
+            'course_module_id' => $module->id,
+            'duration_in_seconds' => 278,
+            'sort_order' => 2,
+        ]);
+
+        $html = Livewire::actingAs($user)->test(Index::class)->html();
+
+        $unreleasedRow = $this->outlineRowFor($html, $unreleased->id);
+
+        $this->assertStringContainsString('02:05', $this->outlineRowFor($html, $released->id));
+        $this->assertStringContainsString('Coming Soon', $unreleasedRow);
+        $this->assertStringNotContainsString('04:38', $unreleasedRow);
+    }
+
+    /**
+     * The markup for a single lesson row in a course outline.
      */
     private function outlineRowFor(string $html, int $lessonId): string
     {
@@ -1093,6 +1156,36 @@ class CourseContentTest extends TestCase
             ->assertSee('Draft Lesson')
             ->assertSee('Coming Soon')
             ->assertSee(route('customer.course.lesson', $draftLesson), false);
+    }
+
+    #[Test]
+    public function the_lesson_sidebar_does_not_show_the_duration_of_draft_lessons_to_admins(): void
+    {
+        config(['filament.users' => ['admin@test.com']]);
+        $admin = User::factory()->create(['email' => 'admin@test.com']);
+
+        $course = Course::factory()->published()->create();
+        $module = CourseModule::factory()->published()->create(['course_id' => $course->id]);
+        $currentLesson = CourseLesson::factory()->published()->create([
+            'course_module_id' => $module->id,
+            'duration_in_seconds' => 125,
+            'sort_order' => 1,
+        ]);
+        $draftLesson = CourseLesson::factory()->create([
+            'course_module_id' => $module->id,
+            'duration_in_seconds' => 278,
+            'sort_order' => 2,
+        ]);
+
+        $html = Livewire::actingAs($admin)
+            ->test(LessonShow::class, ['lesson' => $currentLesson])
+            ->html();
+
+        $draftRow = $this->outlineRowFor($html, $draftLesson->id);
+
+        $this->assertStringContainsString('02:05', $this->outlineRowFor($html, $currentLesson->id));
+        $this->assertStringContainsString('Coming Soon', $draftRow);
+        $this->assertStringNotContainsString('04:38', $draftRow);
     }
 
     #[Test]
