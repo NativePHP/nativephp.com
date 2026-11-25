@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Carbon;
 use PHPUnit\Framework\Attributes\Test;
@@ -91,5 +92,35 @@ class BifrostBlackFridayBannerTest extends TestCase
         $this->get('/')
             ->assertOk()
             ->assertSee('@open-bifrost-waitlist-modal.window', escape: false);
+    }
+
+    #[Test]
+    public function the_waitlist_modal_prefills_a_signed_in_users_first_name_and_email(): void
+    {
+        $user = User::factory()->make(['name' => 'Ada Lovelace', 'email' => 'ada@example.com']);
+
+        $this->blade('<x-bifrost-waitlist-modal :user="$user" />', ['user' => $user])
+            ->assertSee('value="Ada"', escape: false)
+            ->assertSee('value="ada@example.com"', escape: false)
+            ->assertDontSee('Lovelace');
+    }
+
+    #[Test]
+    public function the_waitlist_modal_is_empty_for_guests(): void
+    {
+        $html = (string) $this->blade('<x-bifrost-waitlist-modal />');
+
+        $this->assertSame(2, substr_count($html, 'value=""'));
+    }
+
+    #[Test]
+    public function the_site_waitlist_modal_is_prefilled_for_the_signed_in_user(): void
+    {
+        $user = User::factory()->create(['name' => 'Ada Lovelace', 'email' => 'ada@example.com']);
+
+        $this->actingAs($user)
+            ->get('/')
+            ->assertOk()
+            ->assertSee('value="ada@example.com"', escape: false);
     }
 }

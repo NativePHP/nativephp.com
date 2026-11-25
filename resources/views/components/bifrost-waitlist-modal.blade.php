@@ -1,9 +1,12 @@
+@props(['user' => null])
+
 {{--
     Bifrost waitlist modal. Opened from anywhere on the site by dispatching an
     `open-bifrost-waitlist-modal` window event, and on load when the URL has
     `?waitlist`. The form posts to Kit with fetch and shows Kit's reply in place,
     so people never leave the page. If the request itself fails, it points to
-    the hosted Kit form instead.
+    the hosted Kit form instead. Pass a signed-in `user` to prefill their first
+    name and email, so signing up is one click.
 --}}
 <div
     x-data="{
@@ -12,7 +15,7 @@
         error: '',
         show() {
             this.open = true
-            this.$nextTick(() => this.$refs.name?.focus())
+            this.$nextTick(() => (this.$refs.email.value ? this.$refs.submit : this.$refs.name)?.focus())
         },
         async submit() {
             this.status = 'sending'
@@ -131,16 +134,19 @@
                         name="fields[first_name]"
                         placeholder="First name"
                         autocomplete="given-name"
+                        value="{{ $user?->first_name }}"
                         class="w-full rounded-xl border border-gray-300 bg-white px-4 py-3 text-sm text-gray-900 placeholder-gray-400 focus:border-indigo-500 focus:ring-indigo-500 dark:border-gray-700 dark:bg-gray-800 dark:text-white dark:placeholder-gray-500"
                     />
 
                     <label for="bifrost-waitlist-email" class="sr-only">Email address</label>
                     <input
+                        x-ref="email"
                         type="email"
                         id="bifrost-waitlist-email"
                         name="email_address"
                         placeholder="you@example.com"
                         autocomplete="email"
+                        value="{{ $user?->email }}"
                         required
                         class="w-full rounded-xl border border-gray-300 bg-white px-4 py-3 text-sm text-gray-900 placeholder-gray-400 focus:border-indigo-500 focus:ring-indigo-500 dark:border-gray-700 dark:bg-gray-800 dark:text-white dark:placeholder-gray-500"
                     />
@@ -162,6 +168,7 @@
                     </p>
 
                     <button
+                        x-ref="submit"
                         type="submit"
                         :disabled="status === 'sending'"
                         class="rounded-xl bg-gray-900 px-6 py-3 text-sm font-semibold text-white transition duration-200 hover:bg-gray-800 disabled:opacity-60 dark:bg-white dark:text-gray-900 dark:hover:bg-gray-100"

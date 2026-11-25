@@ -140,7 +140,7 @@
         <x-footer />
 
         <x-newsletter-modal />
-        <x-bifrost-waitlist-modal />
+        <x-bifrost-waitlist-modal :user="auth()->user()" />
 
         <x-impersonate::banner />
 
