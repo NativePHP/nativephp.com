@@ -188,11 +188,11 @@ class PluginBundle extends Model
     /**
      * Calculate the discount percentage for a given price amount.
      */
-    public function getDiscountPercentFor(int $priceAmount): int
+    public function getDiscountPercentFor(?int $priceAmount): int
     {
         $retailValue = $this->retail_value;
 
-        if ($retailValue <= 0) {
+        if ($priceAmount === null || $retailValue <= 0) {
             return 0;
         }
 
@@ -226,8 +226,12 @@ class PluginBundle extends Model
     /**
      * Get the savings amount in cents for a given price amount.
      */
-    public function getSavingsFor(int $priceAmount): int
+    public function getSavingsFor(?int $priceAmount): int
     {
+        if ($priceAmount === null) {
+            return 0;
+        }
+
         return max(0, $this->retail_value - $priceAmount);
     }
 
