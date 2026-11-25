@@ -102,6 +102,50 @@
         </div>
     @endif
 
+    {{-- Bifrost Waitlist Banner --}}
+    @unless(now()->isBefore('2026-12-01T08:00:00Z'))
+        <div
+            x-data="{ visible: $persist(true).as('bifrost-waitlist-dashboard-visible') }"
+            x-show="visible"
+            x-cloak
+            class="relative mb-6 rounded-lg border border-indigo-200 bg-gradient-to-r from-sky-50 via-indigo-50 to-violet-100 p-6 dark:border-indigo-700/50 dark:from-sky-950/40 dark:via-indigo-950/40 dark:to-violet-950/40"
+        >
+            <button
+                type="button"
+                x-on:click="visible = false"
+                class="absolute top-3 right-3 rounded-lg p-2 text-indigo-400 transition hover:bg-white/60 hover:text-indigo-600 dark:hover:bg-white/5 dark:hover:text-indigo-200"
+            >
+                <x-icons.xmark class="size-3" />
+                <span class="sr-only">Dismiss</span>
+            </button>
+            <div class="flex items-start">
+                <div class="shrink-0 text-indigo-600 dark:text-indigo-300">
+                    <x-icons.rocket class="size-6" />
+                </div>
+                <div class="ml-4 flex-1 pr-6">
+                    <h3 class="font-medium text-zinc-900 dark:text-zinc-100">
+                        Ship your PHP app to the App Store without the usual pain
+                    </h3>
+                    <p class="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
+                        Free, practical guides from the Bifrost team on native builds, signing and getting through store review.
+                    </p>
+                    <div class="mt-4">
+                        <button
+                            type="button"
+                            x-on:click="
+                                $dispatch('open-bifrost-waitlist-modal')
+                                window.fathom?.trackEvent('bifrost_waitlist_dashboard_click')
+                            "
+                            class="inline-flex items-center rounded-md border border-transparent bg-black px-4 py-2 text-sm font-medium text-white transition hover:bg-zinc-800 focus:outline-none focus:ring-2 focus:ring-zinc-500 focus:ring-offset-2 dark:bg-white dark:text-black dark:hover:bg-zinc-200"
+                        >
+                            Get the free guides
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endunless
+
     {{-- Banners --}}
     <div class="mb-6 grid grid-cols-1 gap-6 lg:grid-cols-2">
         @feature(App\Features\ShowPlugins::class)

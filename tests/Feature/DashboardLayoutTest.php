@@ -173,6 +173,32 @@ class DashboardLayoutTest extends TestCase
     }
 
     // ========================================
+    // Bifrost Waitlist Banner Tests
+    // ========================================
+
+    public function test_dashboard_hides_bifrost_waitlist_banner_during_black_friday(): void
+    {
+        $this->travelTo(Carbon::parse('2026-12-01T07:59:59Z'));
+
+        Livewire::actingAs(User::factory()->create())
+            ->test(Dashboard::class)
+            ->assertOk()
+            ->assertDontSee('bifrost_waitlist_dashboard_click', escape: false);
+    }
+
+    public function test_dashboard_shows_bifrost_waitlist_banner_after_black_friday(): void
+    {
+        $this->travelTo(Carbon::parse('2026-12-01T08:00:00Z'));
+
+        Livewire::actingAs(User::factory()->create())
+            ->test(Dashboard::class)
+            ->assertOk()
+            ->assertSee('Ship your PHP app to the App Store without the usual pain')
+            ->assertSee('open-bifrost-waitlist-modal', escape: false)
+            ->assertSee('bifrost_waitlist_dashboard_click', escape: false);
+    }
+
+    // ========================================
     // Ultra Upsell Banner Tests
     // ========================================
 

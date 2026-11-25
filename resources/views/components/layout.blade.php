@@ -140,6 +140,7 @@
         <x-footer />
 
         <x-newsletter-modal />
+        <x-bifrost-waitlist-modal />
 
         <x-impersonate::banner />
 

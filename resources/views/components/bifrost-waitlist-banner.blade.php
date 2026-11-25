@@ -1,10 +1,11 @@
-<a
-    href="https://bifrost-technologies.kit.com/03a1490f56"
-    target="_blank"
-    rel="noopener"
-    onclick="window.fathom?.trackEvent('bifrost_waitlist_banner_click')"
+<button
+    type="button"
+    x-on:click="
+        $dispatch('open-bifrost-waitlist-modal')
+        window.fathom?.trackEvent('bifrost_waitlist_banner_click')
+    "
     data-site-banner
-    class="group relative z-30 flex flex-col flex-wrap items-center justify-center gap-x-3 gap-y-2.5 overflow-hidden bg-gradient-to-r from-sky-50 via-indigo-50 to-violet-100 px-5 py-3 select-none 3xs:flex-row dark:from-sky-950/50 dark:via-indigo-950/50 dark:to-violet-950/50"
+    class="group relative z-30 flex w-full flex-col flex-wrap items-center justify-center gap-x-3 gap-y-2.5 overflow-hidden bg-gradient-to-r from-sky-50 via-indigo-50 to-violet-100 px-5 py-3 select-none 3xs:flex-row dark:from-sky-950/50 dark:via-indigo-950/50 dark:to-violet-950/50"
 >
     {{-- Label --}}
     <div
@@ -36,4 +37,4 @@
     >
         <x-icons.right-arrow class="size-3 shrink-0" />
     </div>
-</a>
+</button>

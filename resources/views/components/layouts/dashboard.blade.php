@@ -263,6 +263,8 @@
 
         <flux:toast />
 
+        <x-bifrost-waitlist-modal />
+
         <x-impersonate::banner/>
 
         @livewireScriptConfig
