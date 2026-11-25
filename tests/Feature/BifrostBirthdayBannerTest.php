@@ -23,13 +23,14 @@ class BifrostBirthdayBannerTest extends TestCase
     }
 
     #[Test]
-    public function the_homepage_carries_the_birthday_banner_instead_of_the_newsletter_offer_during_the_sale(): void
+    public function the_homepage_carries_the_waitlist_banner_instead_of_the_birthday_or_newsletter_banner_in_december(): void
     {
         $this->travelTo(Carbon::parse('2026-12-31T23:59:59Z'));
 
         $this->get('/')
             ->assertOk()
-            ->assertSee('HAPPYBIRTHDAY')
+            ->assertSee('bifrost_waitlist_banner_click', escape: false)
+            ->assertDontSee('HAPPYBIRTHDAY')
             ->assertDontSee('newsletter_banner_click', escape: false);
     }
 
