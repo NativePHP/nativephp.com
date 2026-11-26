@@ -126,6 +126,28 @@ Native::test(Tasks::class)
     ->press('deleteTask(1)');  // swipe-to-delete arrives as a press
 ```
 
+### Gestures
+
+A [gesture area](../edge-components/gesture-area)'s callbacks fire with what the device would send when the gesture
+ends:
+
+- `dragEnd($target, $x, $y = 0.0)` — finish a drag at a translation, for `@dragEnd`.
+- `pinch($target, $scale)` — finish a pinch at a scale, for `@pinchEnd`.
+- `swipe($target, $direction = 'left')` — swipe `left`, `right`, `up` or `down`, for `@swipe`.
+- `trigger($target)` <x-docs.version-badge since="4.8" /> — let a pull go past its trigger point, for `@trigger`.
+
+@verbatim
+```blade static
+<native:gesture-area ref="swipe-5" :pan-x="$pull" trigger-x="-64" @trigger="reply(5)">
+```
+@endverbatim
+
+```php
+Native::test(Thread::class)
+    ->trigger('swipe-5')
+    ->assertSet('replyingTo', 5);
+```
+
 ## Setting properties and calling methods
 
 Two lower-level tools reach the component directly.
