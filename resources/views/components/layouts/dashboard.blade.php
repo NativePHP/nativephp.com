@@ -263,6 +263,8 @@
 
         <flux:toast />
 
+        <x-bifrost-waitlist-modal :user="auth()->user()" />
+
         <x-impersonate::banner/>
 
         @livewireScriptConfig

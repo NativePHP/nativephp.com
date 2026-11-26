@@ -124,7 +124,7 @@
         @if (now()->isBefore('2026-12-01T12:00:00Z'))
             <x-black-friday-banner />
         @elseif (now()->isBefore('2027-01-01T00:00:00Z'))
-            <x-bifrost-birthday-banner />
+            <x-bifrost-waitlist-banner />
         @else
             <x-newsletter-banner />
         @endif
@@ -140,6 +140,7 @@
         <x-footer />
 
         <x-newsletter-modal />
+        <x-bifrost-waitlist-modal :user="auth()->user()" />
 
         <x-impersonate::banner />
 

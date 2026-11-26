@@ -35,6 +35,15 @@ return [
         'key' => env('ANYSTACK_API_KEY'),
     ],
 
+    'kit' => [
+        /*
+         * The Bifrost waitlist form on Kit. The waitlist modal posts here with fetch and
+         * reads Kit's JSON reply; the hosted page is the fallback if that request fails.
+         */
+        'waitlist_subscribe_url' => env('KIT_WAITLIST_SUBSCRIBE_URL', 'https://app.kit.com/forms/10242151/subscriptions'),
+        'waitlist_hosted_url' => env('KIT_WAITLIST_HOSTED_URL', 'https://bifrost-technologies.kit.com/03a1490f56'),
+    ],
+
     'mailcoach' => [
         /*
          * The public subscribe endpoint for the NativePHP newsletter list. Forms post

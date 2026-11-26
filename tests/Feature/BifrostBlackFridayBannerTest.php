@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Carbon;
 use PHPUnit\Framework\Attributes\Test;
@@ -43,13 +44,83 @@ class BifrostBlackFridayBannerTest extends TestCase
     }
 
     #[Test]
-    public function the_birthday_banner_comes_back_once_the_sale_ends(): void
+    public function the_waitlist_banner_replaces_the_black_friday_banner_once_the_sale_ends(): void
     {
         $this->travelTo(Carbon::parse('2026-12-01T12:00:00Z'));
 
         $this->get('/')
             ->assertOk()
             ->assertDontSee('bifrost_black_friday_banner_click', escape: false)
-            ->assertSee('bifrost_birthday_banner_click', escape: false);
+            ->assertDontSee('bifrost_birthday_banner_click', escape: false)
+            ->assertSee('bifrost_waitlist_banner_click', escape: false);
+    }
+
+    #[Test]
+    public function the_waitlist_banner_opens_the_waitlist_modal(): void
+    {
+        $this->blade('<x-bifrost-waitlist-banner />')
+            ->assertSee('Ship your PHP app to the App Store without the usual pain.')
+            ->assertSee('open-bifrost-waitlist-modal', escape: false)
+            ->assertSee('bifrost_waitlist_banner_click', escape: false)
+            ->assertDontSee('href=', escape: false);
+    }
+
+    #[Test]
+    public function the_waitlist_modal_posts_name_and_email_to_the_kit_form(): void
+    {
+        config(['services.kit.waitlist_subscribe_url' => 'https://app.kit.com/forms/123/subscriptions']);
+
+        $this->blade('<x-bifrost-waitlist-modal />')
+            ->assertSee('action="https://app.kit.com/forms/123/subscriptions"', escape: false)
+            ->assertSee('name="email_address"', escape: false)
+            ->assertSee('name="fields[first_name]"', escape: false)
+            ->assertSee('@open-bifrost-waitlist-modal.window', escape: false);
+    }
+
+    #[Test]
+    public function the_waitlist_modal_opens_itself_from_the_waitlist_link(): void
+    {
+        $this->get('/?waitlist=1')
+            ->assertOk()
+            ->assertSee('bifrost-waitlist-modal-heading', escape: false)
+            ->assertSee('x-init="show()"', escape: false);
+    }
+
+    #[Test]
+    public function every_page_carries_the_waitlist_modal(): void
+    {
+        $this->get('/')
+            ->assertOk()
+            ->assertSee('@open-bifrost-waitlist-modal.window', escape: false);
+    }
+
+    #[Test]
+    public function the_waitlist_modal_prefills_a_signed_in_users_first_name_and_email(): void
+    {
+        $user = User::factory()->make(['name' => 'Ada Lovelace', 'email' => 'ada@example.com']);
+
+        $this->blade('<x-bifrost-waitlist-modal :user="$user" />', ['user' => $user])
+            ->assertSee('value="Ada"', escape: false)
+            ->assertSee('value="ada@example.com"', escape: false)
+            ->assertDontSee('Lovelace');
+    }
+
+    #[Test]
+    public function the_waitlist_modal_is_empty_for_guests(): void
+    {
+        $html = (string) $this->blade('<x-bifrost-waitlist-modal />');
+
+        $this->assertSame(2, substr_count($html, 'value=""'));
+    }
+
+    #[Test]
+    public function the_site_waitlist_modal_is_prefilled_for_the_signed_in_user(): void
+    {
+        $user = User::factory()->create(['name' => 'Ada Lovelace', 'email' => 'ada@example.com']);
+
+        $this->actingAs($user)
+            ->get('/')
+            ->assertOk()
+            ->assertSee('value="ada@example.com"', escape: false);
     }
 }
