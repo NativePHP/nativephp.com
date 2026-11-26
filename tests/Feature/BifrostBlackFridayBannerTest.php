@@ -34,7 +34,7 @@ class BifrostBlackFridayBannerTest extends TestCase
     #[Test]
     public function the_homepage_carries_the_black_friday_banner_until_the_sale_ends(): void
     {
-        $this->travelTo(Carbon::parse('2026-12-01T07:59:59Z'));
+        $this->travelTo(Carbon::parse('2026-12-01T11:59:59Z'));
 
         $this->get('/')
             ->assertOk()
@@ -45,7 +45,7 @@ class BifrostBlackFridayBannerTest extends TestCase
     #[Test]
     public function the_birthday_banner_comes_back_once_the_sale_ends(): void
     {
-        $this->travelTo(Carbon::parse('2026-12-01T08:00:00Z'));
+        $this->travelTo(Carbon::parse('2026-12-01T12:00:00Z'));
 
         $this->get('/')
             ->assertOk()
