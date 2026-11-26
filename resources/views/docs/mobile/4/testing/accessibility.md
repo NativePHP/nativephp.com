@@ -19,6 +19,8 @@ Flags the same problems the audit rules define: icon-only buttons, chips, and ta
 clickable icons and images without labels or `alt` text, pressables with neither visible text nor a label, form
 controls with no label of any kind, and list items whose trailing icon button is unlabeled.
 
+It also checks controls you've composed yourself, once they opt in with `a11y-role` or another of the props in [Composing your own controls](../digging-deeper/accessibility#composing-your-own-controls): a `checkbox` or `switch` without `a11y-checked`, an `adjustable` without a value or without both `@a11yIncrement` and `@a11yDecrement`, a `progress` without a value, a `radiogroup` or `tablist` without a label, an `a11y-modal` container without a label, and a role or state prop on a native control that ignores it.
+
 ```php
 it('renders an accessible screen', function () {
     Native::visit('/checkout')->assertAccessible();
@@ -76,6 +78,26 @@ it('has no unexpected accessibility violations', function () {
 
     // A single known gap tracked in TICKET-123; everything else must be clean.
     expect($violations)->toHaveCount(1);
+});
+```
+
+## Screen-reader actions and announcements
+
+The harness can run what a screen reader would. `a11yIncrement()`, `a11yDecrement()` and `a11yDismiss()` call an element's handlers by its ref, and `a11yAction()` runs an entry from its actions menu by label. `tap()` refuses to tap a `disabled` pressable.
+
+`assertFocused()` and `assertAnnounced()` check what `Accessibility::focus()` and `Accessibility::announce()` sent:
+
+```php
+it('takes the screen reader to the first error', function () {
+    Native::test(NewTicket::class)
+        ->tap('submit')
+        ->assertFocused('priority');
+});
+
+it('offers delete without the swipe', function () {
+    Native::test(Inbox::class)
+        ->a11yAction('mail-42', 'Delete')
+        ->assertSet('deleted', 42);
 });
 ```
 
