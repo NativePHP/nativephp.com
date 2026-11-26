@@ -57,6 +57,10 @@ automatically when the object goes out of scope.
 | `->buttonPressed(Closure $cb)` | Run a callback when a button is tapped (see below) |
 | `->on(string $class, Closure $cb)` | Callback for a custom event set via `->event()` |
 
+Since 4.6.1, a class passed to `->event()` must implement `Native\Mobile\Events\Contracts\DispatchableFromNative`.
+Extending `ButtonPressed` also works, since it already implements the interface. Without it, the event never reaches
+PHP listeners or `->on()` callbacks in a web view.
+
 ### Handling button presses
 
 Chain a callback directly onto the alert. It runs on your live component, so `$this` works just like a method:

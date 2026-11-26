@@ -50,6 +50,10 @@ only the relevant listeners are executed when these events are fired.
 
 Events are simple PHP classes that receive some parameters. You can extend existing events for convenience.
 
+Since 3.3.11, a custom event class must implement `Native\Mobile\Events\Contracts\DispatchableFromNative`.
+Extending a built-in event also works, since they all implement it. Without the marker your PHP listeners never
+hear the event, though JavaScript and `#[OnNative]` listeners in the web view still do.
+
 Let's see a complete example...
 
 ### Define your custom event class
