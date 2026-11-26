@@ -37,6 +37,8 @@ Pair with [`<native:list-item>`](#list-item) for Material3 list rows, or use any
 - `on-refresh` - Component method called on pull-to-refresh (optional, string) [iOS]
 - `on-end-reached` - Component method called when the user nears the end of the list (optional, string)
 - `end-reached-buffer` <x-docs.version-badge package="mobile-ui" since="0.7" /> - Number of items from the end at which `on-end-reached` is triggered (optional, integer, default: `3`)
+- `auto-scroll-to` <x-docs.version-badge package="mobile-ui" since="0.9" /> - Index of the row to open the list at,
+  counting from `0`. Negative values turn it off. See [Opening at a row](#opening-at-a-row) (optional, integer)
 
 
 ## Children
@@ -317,6 +319,35 @@ here just gives the demo enough rows to scroll before the end-reached trigger fi
 A buffer of `5` triggers `loadMore()` when the list is within five items of the end. When omitted, the buffer defaults to `3`.
 @endverbatim
 
+### Opening at a row
+
+<x-docs.version-badge package="mobile-ui" since="0.9" />
+
+Use `auto-scroll-to` to open a list with a given row at the top. It's useful for a deep link to a record, a screen
+restored after a relaunch, or a row the user has just added.
+
+@verbatim
+```blade static
+<native:list :auto-scroll-to="$openAt">
+    @foreach ($posts as $post)
+        <native:list-item native:key="post-{{ $post->id }}" :headline="$post->title" />
+    @endforeach
+</native:list>
+```
+@endverbatim
+
+Rows count from `0` in the order they're written. In a list with [sections](#list-section), the rows count straight
+through the sections, and section headers and footers don't count.
+
+The list jumps to the row when it's created, and scrolls to it again, animated, only when the index changes. A
+re-render that keeps the same index leaves the list where the user scrolled it. If the row hasn't loaded yet, for
+example while `on-end-reached` fetches the next page, the list scrolls to it when it arrives.
+
+Content changes on their own don't apply the index again. To scroll to the same row a second time, render once with a
+negative index, then set the row again in a later render.
+
+To open a [virtual list](virtual-list#opening-at-a-row) at a row, its window has to hold that row as well.
+
 ## Testing a list
 
 In a [component test](../testing/introduction), target a row's callbacks by the expression you wrote in the template.
@@ -359,6 +390,7 @@ NativeList::make(
 - `onRefresh(string $method)` - Pull-to-refresh handler
 - `onEndReached(string $method)` - End-reached handler
 - `endReachedBuffer(int $items)` - Number of items from the end at which the end-reached handler is triggered (default: `3`)
+- `autoScrollTo(int $index)` - Open the list at row `$index`. See [Opening at a row](#opening-at-a-row)
 
 ### `ListItem` methods
 
