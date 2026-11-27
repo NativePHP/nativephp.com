@@ -30,6 +30,26 @@ Per Material 3, the container color resolves from `theme.surface`. For a custom 
 ```
 @endverbatim
 
+<aside>
+
+Inline handlers like `@press="$showSheet = true"` work in Jump previews. In your own app, call a method instead:
+
+```php
+public bool $showSheet = false;
+
+public function openSheet(): void { $this->showSheet = true; }
+public function closeSheet(): void { $this->showSheet = false; }
+```
+
+@verbatim
+```blade
+<native:button label="Open" @press="openSheet" />
+<native:bottom-sheet :visible="$showSheet" @dismiss="closeSheet">
+```
+@endverbatim
+
+</aside>
+
 ## Props
 
 - `visible` - Whether the sheet is shown (required, boolean)
