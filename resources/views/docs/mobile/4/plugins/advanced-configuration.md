@@ -172,16 +172,24 @@ Add application-level `<meta-data>` elements for SDK configuration:
             },
             {
                 "name": "com.google.firebase.messaging.default_notification_icon",
-                "value": "@drawable/ic_notification"
+                "resource": "@drawable/ic_notification"
             }
         ]
     }
 }
 ```
 
-Each entry has:
-- **name** — The meta-data key
-- **value** — The value (supports `${ENV_VAR}` placeholders)
+Each entry has a `name` and either a `value` or a `resource`:
+
+| Key | Description |
+|-----|-------------|
+| `name` | The meta-data key (required) |
+| `value` | A literal value, written as `android:value`. Supports `${ENV_VAR}` placeholders |
+| `resource` | A resource reference such as `@drawable/ic_notification` or `@color/brand`, written as `android:resource` |
+
+Use `resource` when the SDK reads the key as a resource ID. Firebase Messaging reads
+`default_notification_icon` and `default_notification_color` this way, so with `value` it can't find the icon and
+falls back to its default.
 
 ## Declarative Assets
 
