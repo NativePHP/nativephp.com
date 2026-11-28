@@ -48,6 +48,9 @@ All three variants accept the same shared prop set. The bare variant adds a `col
 - `placeholder` - Placeholder shown when empty (optional, string)
 - `label` - Label rendered above the field (optional, string)
 - `supporting` - Helper text rendered below the field (optional, string)
+- `selection` <x-docs.version-badge package="mobile-ui" since="0.9" /> - Where the caret goes when your component
+  changes the field's text: a code-point offset for a caret, or `[$start, $end]` to select a range (optional, int,
+  array or null). See [Placing the caret](#placing-the-caret)
 
 ### State
 
@@ -280,9 +283,12 @@ A few contract details:
 
 - `@selectionChange` is never emitted for `secure` inputs. The callback isn't even serialized when `secure` is set,
   and both renderers additionally refuse to emit — so caret telemetry can't leak password-field context.
-- When PHP pushes a new `value` onto the input, the field is replaced wholesale and the caret drops at the end.
-  Both platforms report that immediately as a single `(text, length, length)` event, bypassing the debounce — a
-  handler that rewrites the bound model will see one follow-up event.
+- When PHP pushes a new `value` onto the input, the field is replaced wholesale and the caret drops at the end, or
+  where [`selection`](#placing-the-caret) says. Both platforms report that immediately as a single event, bypassing
+  the debounce — a handler that rewrites the bound model will see one follow-up event.
+- <x-docs.version-badge package="mobile-ui" since="0.9" /> Pressing a button or pressable while the field is
+  focused sends any pending selection event first, so the press handler sees where the caret is now, not where it was
+  a keystroke ago.
 - Discontiguous selections (multi-range, iOS) are reported as a single span from the lowest start to the highest
   end, so the range can cover text the user did not select.
 - `read-only` inputs don't report on iOS, where read-only implies disabled and the field never focuses; they do on
@@ -293,6 +299,71 @@ A few contract details:
 Caret and selection reporting requires `nativephp/mobile` 4.0+, which ships the `text_selection` callback kind.
 
 </aside>
+
+### Placing the caret
+
+<x-docs.version-badge package="mobile-ui" since="0.9" />
+
+The other direction: when your component rewrites the field's text, `selection` says where the caret goes. Without
+it, a value you set puts the caret at the end. That's wrong when you've changed something in the middle, such as
+swapping the `@ja` the user typed for the handle they picked from the suggestions.
+
+@verbatim
+```blade
+@php $message = ''; $caret = null; @endphp
+
+<native:outlined-text-input
+    label="Message"
+    native:model.debounce.150ms="message"
+    :selection="$caret"
+    @selectionChange="onCaretMove"
+/>
+```
+@endverbatim
+
+```php
+public string $message = '';
+
+public ?int $caret = null;
+
+/** Where the "@" being typed is, and what follows it, as onCaretMove() found it. */
+public ?array $mention = null;
+
+public function pickMention(string $handle): void
+{
+    $start = $this->mention['start'];
+    $before = mb_substr($this->message, 0, $start).'@'.$handle.' ';
+    $after = mb_substr($this->message, $start + 1 + mb_strlen($this->mention['query']));
+
+    $this->message = $before.$after;
+    $this->caret = mb_strlen($before); // right after "@handle "
+    $this->mention = null;
+}
+```
+
+Offsets are Unicode code points, the same as `@selectionChange` reports. A caret is one offset; pass
+`[$start, $end]` to select a range instead, say a placeholder you've just inserted for the user to type over. Offsets
+past the end are clamped to it, and on iOS an offset inside a character made of several code points (a flag, a
+skin-toned emoji) moves back to the start of that character.
+
+The field only reads `selection` at the moment it takes a new value from your component. It never moves the caret
+while the user types or moves it themselves, even though the attribute stays set, and an echo of what the user typed
+coming back through `native:model` doesn't count as a new value. A field also doesn't read it when it first appears
+with a value: its caret starts at the end.
+
+Set the property back to `null` once the field has the new text, so a value you set later (clearing the field after
+a send, say) puts the caret at the end again. The `@selectionChange` event the field sends after taking your text is
+a good place: when its text matches your property, the caret is where you put it.
+
+<aside>
+
+Keep `:selection` on the field and pass `null` when there's nothing to place, rather than adding the attribute only
+when you need it. On iOS a field that can be told where its caret goes is built differently, so one that gains or
+loses the attribute between renders is rebuilt, and the keyboard drops.
+
+</aside>
+
+`selection` is ignored on `secure` inputs.
 
 ## Per-platform icons
 
@@ -503,6 +574,9 @@ All three elements share the same fluent API (defined on `BaseTextInput`):
 - `font(string $name)` - Custom font (file token or config alias)
 - `a11yLabel(string $value)`, `a11yHint(string $value)`
 - `syncMode(string $mode)`, `debounceMs(int $ms)`
+- `selection(?int $start, ?int $end = null)` <x-docs.version-badge package="mobile-ui" since="0.9" /> - Where the
+  caret goes, or the range to select, when the field takes a new value from your component. `null` leaves it at the
+  end. See [Placing the caret](#placing-the-caret)
 - `selectionDebounceMs(int $ms)` <x-docs.version-badge package="mobile-ui" since="0.4" /> - Coalescing window for `@selectionChange` events (150ms when unset; `0` or less
   means the default, positive values floored at 16ms)
 - `onChange(string $method)`, `onSubmit(string $method)`, `onSelectionChange(string $method)` <x-docs.version-badge package="mobile-ui" since="0.4" />
