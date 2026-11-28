@@ -399,6 +399,41 @@ Because the native half is generated at build time, **a newly added component ne
 `composer update`. Adding a component to the manifest and only restarting PHP gives you an element that serializes
 fine and renders nothing.
 
+## Pull-to-Refresh Indicators
+
+Not in `nativephp/mobile-ui` 0.9.0; it needs the release that includes
+[NativePHP/mobile-ui#198](https://github.com/NativePHP/mobile-ui/pull/198).
+
+A plugin can also provide an indicator that a [`<native:list>`](../edge-components/list#custom-pull-to-refresh-indicators)
+shows instead of the platform spinner when an app names it with `refresh-indicator`. This is not a component: register
+it yourself, by name, from the plugin's `init_function` (see [Advanced Configuration](advanced-configuration)):
+
+```kotlin
+import com.nativephp.plugins.native_ui.NativeUIRefreshIndicators
+
+NativeUIRefreshIndicators.register("lottie") { scope ->
+    // scope.progress(), scope.isRefreshing, scope.options["asset"]
+}
+```
+
+```swift
+NativeUIRefreshIndicators.shared.register("lottie") { scope in
+    // scope.progress, scope.isRefreshing, scope.options["asset"]
+    AnyView(MyIndicator(scope: scope))
+}
+```
+
+The scope gives the indicator:
+
+- `progress` - How far the list is pulled, from `0` at rest to `1` exactly where letting go starts a refresh, so an
+  indicator that looks complete at `1` tells the user they can let go. On Android it is a function: call it while
+  drawing so a pull doesn't recompose
+- `isRefreshing` - Whether the refresh the pull triggered is running
+- `options` - The app's `refresh-indicator-options`, decoded from JSON
+
+The list sizes and places the indicator: it fills a 48dp disc on Android and a 40pt square on iOS. The list also
+handles the bounce and haptic tap when the pull crosses the threshold, so the indicator only draws.
+
 ## Using It in an App
 
 Install and register the plugin the [usual way](./using-plugins), then the element is just an element:
