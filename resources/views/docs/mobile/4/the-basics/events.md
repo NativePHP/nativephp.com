@@ -409,6 +409,8 @@ These events of the package carry the marker:
 
 | Event | Fires when | Arguments | More |
 | --- | --- | --- | --- |
+| `Native\Mobile\Events\App\AppBackgrounded` | The app goes to the background | None | [Lifecycle Hooks](../digging-deeper/lifecycle-hooks#the-app-going-to-the-background) |
+| `Native\Mobile\Events\App\AppForegrounded` | The app comes back from the background | `secondsAway` | [Lifecycle Hooks](../digging-deeper/lifecycle-hooks#the-app-going-to-the-background) |
 | `Native\Mobile\Events\System\AppearanceChanged` | The system switches between light and dark | `mode` | [Theming](../digging-deeper/theming#reacting-to-changes) |
 | `Native\Mobile\Events\System\OrientationChanged` | The app window turns to portrait or landscape | `orientation` | [System](system#orientation) |
 | `Native\Mobile\Events\Device\ThermalStateChanged` | The thermal state of the device changes | `state`, `previous` | [Device](device#events) |

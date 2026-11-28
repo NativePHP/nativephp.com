@@ -53,6 +53,14 @@ $this->back();
 Pops the current screen off the stack and returns to whatever was beneath it. The default transition is a slide-out
 to the right.
 
+To dismiss a screen you presented from the bottom, pass a transition <x-docs.version-badge since="4.8" />:
+
+```php
+use Native\Mobile\Edge\Transition;
+
+$this->back(Transition::SlideToBottom);
+```
+
 ## Replacing the current screen
 
 ```php
@@ -80,11 +88,23 @@ native experience.
 
 ## Custom transitions
 
-Chain `transition()` after a navigation method to override the default animation:
+`navigate()`, `back()`, and `replace()` take an optional transition that overrides the default animation
+<x-docs.version-badge since="4.8" />. It's the last argument, after the URI and data:
 
 ```php
 use Native\Mobile\Edge\Transition;
 
+$this->navigate('/settings', [], Transition::SlideFromBottom);
+$this->replace('/login', [], Transition::None);
+$this->back(Transition::SlideToBottom);
+```
+
+You can pass a `Transition` case or its string value, such as `'slide_from_bottom'`. Calls without a transition
+behave as they did before.
+
+You can also chain `transition()` after a navigation method:
+
+```php
 $this->navigate('/item/42')->transition(Transition::SlideFromBottom);
 ```
 
@@ -93,12 +113,19 @@ Available cases:
 - `Transition::SlideFromRight` - default for `navigate()`
 - `Transition::SlideFromLeft` - default for `back()`
 - `Transition::SlideFromBottom` - modal-style presentation
+- `Transition::SlideToBottom` <x-docs.version-badge since="4.8" /> - modal-style dismissal, the inverse of `SlideFromBottom`: the outgoing screen slides down off the bottom edge, revealing the screen beneath it. Pair the two for sheet-style present and dismiss
 - `Transition::Fade` - default for `replace()`
 - `Transition::FadeFromBottom` - subtle vertical fade
 - `Transition::ScaleFromCenter` - zoom-in effect
 - `Transition::ParallaxPush` - incoming screen slides in from the right while the outgoing screen drifts partially left underneath
 - `Transition::Morph` <x-docs.version-badge since="4.7" /> - cross-fade while elements that share a `ref` move between the two screens. See [Morphing elements between screens](#morphing-elements-between-screens)
 - `Transition::None` - swap with no animation
+
+<aside>
+
+In 4.8, `SlideToBottom` animates on iOS only. On Android it currently falls back to a cross-fade.
+
+</aside>
 
 ## Navigating from Blade
 

@@ -31,6 +31,10 @@ Per Material 3, backdrop and surface colors come from `theme.background`. The cl
 ```
 @endverbatim
 
+Handlers like `@press="$show = true"` and `@dismiss="$show = false"` set the property directly — no component method
+needed <x-docs.version-badge since="4.8" />. Keep the property in sync on `@dismiss` so the modal opens again the
+next time you set it to `true`. See [Handlers](introduction#handlers) for the full syntax.
+
 ## Props
 
 - `visible` - Whether the modal is shown (required, boolean)
