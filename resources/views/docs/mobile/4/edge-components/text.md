@@ -33,6 +33,7 @@ All [shared layout and style attributes](layout) are supported, plus:
 - `color` - Text color as hex string (optional, default: `#000000`)
 - `text-align` - Alignment: `left`, `center`, or `right` — a label, a `TextAlign` case, or the integer `0`/`1`/`2` (optional, default: `left`)
 - `max-lines` - Maximum lines before truncating with ellipsis (optional, int)
+- `min-scale` <x-docs.version-badge since="4.8" /> <x-docs.version-badge package="mobile-ui" since="0.10" /> - The smallest share of the font size that the text may shrink to, so that it fits its lines before it truncates (optional, float, `0` to `1`). Use it with `max-lines`. See [Shrink to fit](#shrink-to-fit).
 - `font-style` - `0`=normal, `1`=italic (optional, int)
 - `font-family` - Typeface: `0`=sans, `1`=serif, `2`=mono (optional, int)
 - `underline` - Underline: `1`=on, `0`=off (optional, int)
@@ -189,6 +190,32 @@ Line height only affects multi-line text.
 On iOS, *increasing* leading (`relaxed`, `loose`, or a large `leading-[…px]`) is
 exact; tightening below the font's natural line height (`none`, `tight`) is limited
 by SwiftUI and may bottom out at the natural spacing. Android is exact both ways.
+
+</aside>
+
+## Shrink to fit
+
+<x-docs.version-badge since="4.8" /> <x-docs.version-badge package="mobile-ui" since="0.10" />
+
+A value that must stay on one line, like a number inside a progress ring, grows with the system text size until it
+no longer fits. Add `min-scale` to let the text shrink to fit its lines before it truncates. The value is the
+smallest share of the font size that the text may shrink to: `0.5` allows half the size.
+
+@verbatim
+```blade
+<native:text class="text-3xl font-bold text-theme-on-surface" max-lines="1" min-scale="0.5">
+    {{ $remaining }}
+</native:text>
+```
+@endverbatim
+
+A text that fits keeps its size. Without `min-scale`, or at `1`, the text does not shrink. Values outside `0` to
+`1` are clamped.
+
+<aside>
+
+Use `min-scale` with `max-lines`: SwiftUI only shrinks text that has a line limit. On Android, text with
+[inline runs](#inline-runs) keeps its size, because each run sets its own size.
 
 </aside>
 
@@ -359,4 +386,5 @@ Text::make('Hello')
 - `color(string $hex)` - Text color
 - `textAlign(int|string|TextAlign $align)` - `left`/`center`/`right`, a `TextAlign` case, or `0`/`1`/`2`
 - `maxLines(int $lines)` - Truncate after N lines
+- `minScale(float $scale)` <x-docs.version-badge since="4.8" /> - Shrink to fit, down to this share of the font size (`0` to `1`)
 - `selectable(bool $on = true)` - Make the subtree selectable (mirrors `select-text` / `select-none`)
