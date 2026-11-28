@@ -39,6 +39,7 @@ All [shared layout and style attributes](layout) are supported, plus:
 - `line-through` - Strikethrough: `1`=on, `0`=off (optional, int)
 - `text-transform` - Case: `0`=none, `1`=uppercase, `2`=lowercase, `3`=capitalize (optional, int)
 - `letter-spacing` - Tracking in em relative to font size (optional, float)
+- `text-outline` - Draws the text hollow, as an outline this many points wide in its color (optional, float) — see [Outlined text](#outlined-text)
 - `font` - Custom font: a `resources/fonts/` file token or a config alias like `accent` (optional, string) — see [Custom fonts](#custom-fonts)
 
 Line height is set with `leading-*` classes — see [Line height](#line-height).
@@ -204,6 +205,7 @@ Style text with Tailwind classes — these compose with `text-*` size and `font-
   `tracking-normal`, `tracking-wide`, `tracking-wider`, `tracking-widest` (in em,
   relative to the font size)
 - **Font family** — `font-sans` (default), `font-serif`, `font-mono`
+- **Outline** — `text-outline`, `text-outline-2`, `text-outline-[1.5]` (in points) — see [Outlined text](#outlined-text)
 
 @verbatim
 ```blade
@@ -230,6 +232,29 @@ its own classes (weight, color, size):
 
 Runs render in document order, so interleaved text and nested `<native:text>` stay in sequence. A `<native:text>`
 with no nested runs behaves exactly like a plain string.
+
+## Outlined text
+
+`text-outline` draws text hollow: just the outline of its glyphs, in the text color, centered on their edges. It's
+the same look as CSS `-webkit-text-stroke` with a transparent fill. The width is in points: `text-outline` is 1,
+`text-outline-2` is 2, and `text-outline-[1.5]` takes any value.
+
+It works on a whole `<native:text>` or on one inline run. Nested runs inherit it, and `text-outline-0` turns it off
+again:
+
+@verbatim
+```blade
+<native:text class="text-2xl font-semibold text-theme-on-surface">
+    /dev<native:text class="text-outline text-theme-primary">/</native:text>null
+</native:text>
+```
+@endverbatim
+
+<aside>
+
+On iOS, outlined text needs iOS 18 or later. Before that it draws filled.
+
+</aside>
 
 ## Text selection
 
